@@ -7,16 +7,17 @@
  */
 
 import {
+  AbsoluteFsPath,
   CompilationTicket,
+  NgCompiler,
+  NgCompilerOptions,
+  ProgramDriver,
+  TrackedIncrementalBuildStrategy,
   freshCompilationTicket,
   incrementalFromCompilerTicket,
-  NgCompiler,
+  resolve,
   resourceChangeTicket,
-} from '@angular/compiler-cli/src/ngtsc/core';
-import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {AbsoluteFsPath, resolve} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {TrackedIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
-import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
+} from '@angular/compiler-cli';
 
 import {LanguageServiceAdapter} from './adapters';
 

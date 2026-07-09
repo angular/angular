@@ -32,8 +32,10 @@ import {OutputRef, OutputRefSubscription} from './output_ref';
  */
 export class OutputEmitterRef<T> implements OutputRef<T> {
   private destroyed = false;
-  private listeners: Array<(value: T) => void> | null = null;
+  private listeners: Array<((value: T) => void) | null> | null = null;
   private errorHandler = inject(ErrorHandler, {optional: true});
+  private isEmitting = false;
+  private hasNullListeners = false;
 
   /** @internal */
   destroyRef: DestroyRef = inject(DestroyRef);
@@ -60,9 +62,18 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
 
     return {
       unsubscribe: () => {
-        const idx = this.listeners?.indexOf(callback);
-        if (idx !== undefined && idx !== -1) {
-          this.listeners?.splice(idx, 1);
+        const index = this.listeners ? this.listeners.indexOf(callback) : -1;
+        if (index > -1) {
+          // If we try to unsubscribe while an `emit` is happening, we can throw off the loop.
+          // Replace the listener with null so we can clean it up later. Note that it would be
+          // simpler to clone the array when iterating over it, but we're trying to avoid cloning
+          // since unsubscribing from within the event should be fairly uncommon.
+          if (this.isEmitting) {
+            this.hasNullListeners = true;
+            this.listeners![index] = null;
+          } else {
+            this.listeners!.splice(index, 1);
+          }
         }
       },
     };
@@ -86,18 +97,37 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
       return;
     }
 
+    this.isEmitting = true;
     const previousConsumer = setActiveConsumer(null);
     try {
       for (const listenerFn of this.listeners) {
         try {
-          listenerFn(value);
+          if (listenerFn !== null) {
+            listenerFn(value);
+          }
         } catch (err: unknown) {
           this.errorHandler?.handleError(err);
         }
       }
     } finally {
+      if (this.hasNullListeners) {
+        this.hasNullListeners = false;
+        this.listeners && removeNullValues(this.listeners);
+      }
       setActiveConsumer(previousConsumer);
+      this.isEmitting = false;
     }
+  }
+}
+
+function removeNullValues(arr: unknown[]): void {
+  let i = arr.length - 1;
+
+  while (i > -1) {
+    if (arr[i] === null) {
+      arr.splice(i, 1);
+    }
+    i--;
   }
 }
 

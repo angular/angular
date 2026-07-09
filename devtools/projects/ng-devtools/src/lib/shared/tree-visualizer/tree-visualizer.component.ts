@@ -8,7 +8,6 @@
 
 import {
   afterNextRender,
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
@@ -44,7 +43,6 @@ let instanceIdx = 0;
     </svg>
   `,
   styleUrl: 'tree-visualizer.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreeVisualizerComponent<T extends TreeNode = TreeNode> {
   protected readonly container = viewChild.required<ElementRef>('container');
@@ -102,6 +100,10 @@ export class TreeVisualizerComponent<T extends TreeNode = TreeNode> {
 
   snapToNode(node: T, scale?: number) {
     this.visualizer()?.snapToNode(node, scale);
+  }
+
+  highlightNode(node: T | null) {
+    this.visualizer()?.highlightNode(node);
   }
 
   getNodeById(id: string) {

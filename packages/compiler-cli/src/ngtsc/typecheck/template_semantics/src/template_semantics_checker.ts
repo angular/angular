@@ -122,7 +122,7 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
 
     // Two-way bindings to template variables are only allowed if the variables are signals.
     const symbol = this.templateTypeChecker.getSymbolOfNode(target, this.component);
-    if (symbol !== null && !isSignalReference(symbol)) {
+    if (symbol !== null && !isSignalReference(symbol, this.templateTypeChecker)) {
       let errorMessage: string;
 
       if (isVariable) {

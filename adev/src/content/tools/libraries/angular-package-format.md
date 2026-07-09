@@ -280,7 +280,7 @@ In this section are the definitions of all of them to provide additional clarity
 
 ### Package
 
-The smallest set of files that are published to NPM and installed together, for example `@angular/core`.
+The smallest set of files that are published to npm and installed together, for example `@angular/core`.
 This package includes a manifest called package.json, compiled source code, typescript definition files, source maps, metadata, etc.
 The package is installed with `npm install @angular/core`.
 

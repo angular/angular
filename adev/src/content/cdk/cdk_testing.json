@@ -4953,7 +4953,8 @@
                 }
               ],
               "rawComment": "/**\n   * Gets a `HarnessLoader` that searches for harnesses under the first element matching the given\n   * selector within the current harness's content.\n   * @param selector The selector for an element in the component's content.\n   * @returns A `HarnessLoader` that searches for harnesses under the given selector.\n   */",
-              "returnType": "Promise<HarnessLoader>"
+              "returnType": "Promise<HarnessLoader>",
+              "returnDescription": "A `HarnessLoader` that searches for harnesses under the given selector."
             }
           ],
           "implementation": {
@@ -5030,7 +5031,8 @@
                 }
               ],
               "rawComment": "/**\n   * Gets a list of `HarnessLoader` for each element matching the given selector under the current\n   * harness's cotnent that searches for harnesses under that element.\n   * @param selector The selector for elements in the component's content.\n   * @returns A list of `HarnessLoader` for each element matching the given selector.\n   */",
-              "returnType": "Promise<HarnessLoader[]>"
+              "returnType": "Promise<HarnessLoader[]>",
+              "returnDescription": "A list of `HarnessLoader` for each element matching the given selector."
             }
           ],
           "implementation": {
@@ -5116,7 +5118,8 @@
                 }
               ],
               "rawComment": "/**\n   * Gets the first matching harness for the given query within the current harness's content.\n   * @param query The harness query to search for.\n   * @returns The first harness matching the given query.\n   * @throws If no matching harness is found.\n   */",
-              "returnType": "Promise<T>"
+              "returnType": "Promise<T>",
+              "returnDescription": "The first harness matching the given query."
             }
           ],
           "implementation": {
@@ -5211,7 +5214,8 @@
                 }
               ],
               "rawComment": "/**\n   * Gets the first matching harness for the given query within the current harness's content.\n   * @param query The harness query to search for.\n   * @returns The first harness matching the given query, or null if none is found.\n   */",
-              "returnType": "Promise<T | null>"
+              "returnType": "Promise<T | null>",
+              "returnDescription": "The first harness matching the given query, or null if none is found."
             }
           ],
           "implementation": {
@@ -5313,7 +5317,8 @@
                 }
               ],
               "rawComment": "/**\n   * Gets a matching harness for the given query and index within the current harness's content.\n   * @param query The harness query to search for.\n   * @param index The zero-indexed offset of the component to find.\n   * @returns The first harness matching the given query.\n   * @throws If no matching harness is found.\n   */",
-              "returnType": "Promise<T>"
+              "returnType": "Promise<T>",
+              "returnDescription": "The first harness matching the given query."
             }
           ],
           "implementation": {
@@ -5423,7 +5428,8 @@
                 }
               ],
               "rawComment": "/**\n   * Gets all matching harnesses for the given query within the current harness's content.\n   * @param query The harness query to search for.\n   * @returns The list of harness matching the given query.\n   */",
-              "returnType": "Promise<T[]>"
+              "returnType": "Promise<T[]>",
+              "returnDescription": "The list of harness matching the given query."
             }
           ],
           "implementation": {
@@ -5510,7 +5516,8 @@
                 }
               ],
               "rawComment": "/**\n   * Returns the number of matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns The number of matching harnesses for the given query.\n   */",
-              "returnType": "Promise<number>"
+              "returnType": "Promise<number>",
+              "returnDescription": "The number of matching harnesses for the given query."
             }
           ],
           "implementation": {
@@ -5597,7 +5604,8 @@
                 }
               ],
               "rawComment": "/**\n   * Checks whether there is a matching harnesses for the given query within the current harness's\n   * content.\n   *\n   * @param query The harness query to search for.\n   * @returns Whether there is matching harnesses for the given query.\n   */",
-              "returnType": "Promise<boolean>"
+              "returnType": "Promise<boolean>",
+              "returnDescription": "Whether there is matching harnesses for the given query."
             }
           ],
           "implementation": {

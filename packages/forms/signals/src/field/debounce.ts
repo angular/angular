@@ -17,6 +17,6 @@ import {Debouncer} from '../api/types';
  */
 export const DEBOUNCER: MetadataKey<
   Signal<Debouncer<any> | undefined> | undefined,
-  Debouncer<any> | undefined,
+  Debouncer<any>,
   Debouncer<any> | undefined
 > = createMetadataKey();

@@ -16,7 +16,7 @@ import {
   type Signal,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {isNode} from '@angular/private/testing';
+import {isNode, timeout, useAutoTick} from '@angular/private/testing';
 
 import {
   applyEach,
@@ -43,6 +43,8 @@ interface Address {
 }
 
 describe('resources', () => {
+  useAutoTick();
+
   let appRef: ApplicationRef;
   let backend: HttpTestingController;
   let injector: Injector;
@@ -404,6 +406,41 @@ describe('resources', () => {
     expect(f().metadata(RES)).toBe(undefined);
   });
 
+  it('should support debounce in validateHttp', async () => {
+    const usernameForm = form(
+      signal('unique-user'),
+      (p) => {
+        validateHttp(p, {
+          request: ({value}) => `/api/check?username=${value()}`,
+          debounce: 50, // Short debounce
+          onSuccess: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
+          onError: () => null,
+        });
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    const req1 = backend.expectOne('/api/check?username=unique-user');
+    req1.flush(true);
+    await appRef.whenStable();
+    expect(usernameForm().valid()).toBe(true);
+    usernameForm().value.set('taken-user');
+    TestBed.tick();
+
+    // Should not have triggered a new request yet
+    backend.expectNone('/api/check?username=taken-user');
+
+    // Wait for debounce
+    await timeout(80);
+    TestBed.tick();
+    const req2 = backend.expectOne('/api/check?username=taken-user');
+    req2.flush(false);
+    await appRef.whenStable();
+
+    expect(usernameForm().valid()).toBe(false);
+  });
+
   describe('reloadValidation', () => {
     it('should trigger a reload of async http validation', async () => {
       const usernameForm = form(
@@ -469,5 +506,33 @@ describe('resources', () => {
     );
 
     expect(success).toBeTrue();
+  });
+
+  it('should not throw NG0992 when using validateAsync on parent and lazily-created child', () => {
+    const model = signal({child: ''});
+    const injector = TestBed.inject(Injector);
+    function createForm() {
+      form(
+        model,
+        (p) => {
+          validateAsync(p, {
+            params: () => 1,
+            factory: () => resource({loader: async () => []}),
+            onSuccess: () => null,
+            onError: () => null,
+          });
+
+          validateAsync(p.child, {
+            params: () => 1,
+            factory: () => resource({loader: async () => []}),
+            onSuccess: () => null,
+            onError: () => null,
+          });
+        },
+        {injector},
+      );
+    }
+
+    expect(() => createForm()).not.toThrow();
   });
 });

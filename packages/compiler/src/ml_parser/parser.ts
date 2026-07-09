@@ -31,6 +31,7 @@ import {
   IncompleteComponentOpenToken,
   IncompleteLetToken,
   IncompleteTagOpenToken,
+  InElementCommentToken,
   InterpolatedAttributeToken,
   InterpolatedTextToken,
   LetEndToken,
@@ -392,7 +393,8 @@ class _TreeBuilder {
   private _consumeElementStartTag(startTagToken: TagOpenStartToken | IncompleteTagOpenToken) {
     const attrs: html.Attribute[] = [];
     const directives: html.Directive[] = [];
-    this._consumeAttributesAndDirectives(attrs, directives);
+    const comments: html.StartTagComment[] = [];
+    this._consumeAttributesAndDirectives(attrs, directives, comments);
 
     const fullName = this._getElementFullName(startTagToken, this._getClosestElementLikeParent());
     const tagDef = this._getTagDefinition(fullName);
@@ -437,6 +439,8 @@ class _TreeBuilder {
       startSpan,
       undefined,
       tagDef?.isVoid ?? false,
+      undefined,
+      comments,
     );
     const parent = this._getContainer();
     const isClosedByChild =
@@ -463,7 +467,8 @@ class _TreeBuilder {
     const componentName = startToken.parts[0];
     const attrs: html.Attribute[] = [];
     const directives: html.Directive[] = [];
-    this._consumeAttributesAndDirectives(attrs, directives);
+    const comments: html.StartTagComment[] = [];
+    this._consumeAttributesAndDirectives(attrs, directives, comments);
 
     const closestElement = this._getClosestElementLikeParent();
     const tagName = this._getComponentTagName(startToken, closestElement);
@@ -493,6 +498,8 @@ class _TreeBuilder {
       span,
       startSpan,
       undefined,
+      undefined,
+      comments,
     );
     const parent = this._getContainer();
     const isClosedByChild =
@@ -514,15 +521,26 @@ class _TreeBuilder {
   private _consumeAttributesAndDirectives(
     attributesResult: html.Attribute[],
     directivesResult: html.Directive[],
+    commentsResult: html.StartTagComment[],
   ) {
     while (
       this._peek.type === TokenType.ATTR_NAME ||
-      this._peek.type === TokenType.DIRECTIVE_NAME
+      this._peek.type === TokenType.DIRECTIVE_NAME ||
+      this._peek.type === TokenType.IN_ELEMENT_COMMENT
     ) {
       if (this._peek.type === TokenType.DIRECTIVE_NAME) {
         directivesResult.push(this._consumeDirective(this._peek));
-      } else {
+      } else if (this._peek.type === TokenType.ATTR_NAME) {
         attributesResult.push(this._consumeAttr(this._advance<AttributeNameToken>()));
+      } else {
+        const commentToken = this._advance<InElementCommentToken>();
+        commentsResult.push(
+          new html.StartTagComment(
+            commentToken.parts[0],
+            commentToken.parts[1],
+            commentToken.sourceSpan,
+          ),
+        );
       }
     }
   }
@@ -843,7 +861,7 @@ class _TreeBuilder {
       endToken = this._advance();
     }
 
-    const end = endToken.sourceSpan.fullStart;
+    const end = endToken.sourceSpan.end;
     const span = new ParseSourceSpan(
       startToken.sourceSpan.start,
       end,

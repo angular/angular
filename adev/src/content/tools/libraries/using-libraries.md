@@ -120,7 +120,7 @@ import * as $ from 'jquery';
 ```
 
 If you import it using import statements, you have two different copies of the library: one imported as a global library, and one imported as a module.
-This is especially bad for libraries with plugins, like JQuery, because each copy includes different plugins.
+This is especially bad for libraries with plugins, like jQuery, because each copy includes different plugins.
 
 Instead, run the `npm install @types/jquery` Angular CLI command to download typings for your library and then follow the library installation steps.
 This gives you access to the global variables exposed by that library.
@@ -135,7 +135,7 @@ For example:
 declare var libraryName: any;
 ```
 
-Some scripts extend other libraries; for instance with JQuery plugins:
+Some scripts extend other libraries; for instance with jQuery plugins:
 
 ```ts
 $('.test').myPlugin();

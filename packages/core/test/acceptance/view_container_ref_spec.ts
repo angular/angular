@@ -13,6 +13,7 @@ import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 import {ANIMATION_QUEUE} from '../../src/animation/queue';
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Compiler,
   Component,
@@ -47,7 +48,6 @@ import {
   ViewChildren,
   ViewContainerRef,
   ɵsetDocument,
-  ChangeDetectionStrategy,
 } from '../../src/core';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
 
@@ -1669,43 +1669,6 @@ describe('ViewContainerRef', () => {
       const element = componentRef.location.nativeElement;
       expect((element.namespaceURI || '').toLowerCase()).not.toContain('svg');
       componentRef.destroy();
-    });
-
-    it('should be compatible with componentRef generated via TestBed.createComponent in component factory', () => {
-      @Component({
-        selector: 'child',
-        template: `Child Component`,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class Child {}
-
-      @Component({
-        selector: 'comp',
-        template: '<ng-template #ref></ng-template>',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class Comp {
-        @ViewChild('ref', {read: ViewContainerRef, static: true})
-        viewContainerRef!: ViewContainerRef;
-
-        ngOnInit() {
-          const makeComponentFactory = (componentType: any) => ({
-            create: () => TestBed.createComponent(componentType).componentRef,
-          });
-          this.viewContainerRef.createComponent(makeComponentFactory(Child) as any);
-        }
-      }
-
-      TestBed.configureTestingModule({declarations: [Comp, Child]});
-
-      const fixture = TestBed.createComponent(Comp);
-      fixture.detectChanges();
-
-      expect(fixture.debugElement.nativeElement.innerHTML).toContain('Child Component');
     });
 
     it('should return ComponentRef with ChangeDetectorRef attached to root view', () => {

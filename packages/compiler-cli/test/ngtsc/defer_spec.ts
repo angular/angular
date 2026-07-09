@@ -125,6 +125,85 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should include incremental hydration runtime activator when `@defer` uses hydrate triggers', () => {
+      env.write(
+        'cmp-a.ts',
+        `
+          import { Component } from '@angular/core';
+
+          @Component({
+            selector: 'cmp-a',
+            template: 'CmpA!'
+          })
+          export class CmpA {}
+        `,
+      );
+
+      env.write(
+        '/test.ts',
+        `
+          import { Component } from '@angular/core';
+          import { CmpA } from './cmp-a';
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [CmpA],
+            template: \`
+              @defer (hydrate on idle) {
+                <cmp-a />
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('i0.ɵɵenableIncrementalHydrationRuntime');
+      expect(jsContents).toContain('i0.ɵɵdeferHydrateOnIdle()');
+    });
+
+    it('should NOT include incremental hydration runtime activator when `@defer` has no hydrate triggers', () => {
+      env.write(
+        'cmp-a.ts',
+        `
+          import { Component } from '@angular/core';
+
+          @Component({
+            selector: 'cmp-a',
+            template: 'CmpA!'
+          })
+          export class CmpA {}
+        `,
+      );
+
+      env.write(
+        '/test.ts',
+        `
+          import { Component } from '@angular/core';
+          import { CmpA } from './cmp-a';
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [CmpA],
+            template: \`
+              @defer (on idle) {
+                <cmp-a />
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).not.toContain('ɵɵenableIncrementalHydrationRuntime');
+    });
+
     describe('imports', () => {
       it('should retain regular imports when symbol is eagerly referenced', () => {
         env.write(

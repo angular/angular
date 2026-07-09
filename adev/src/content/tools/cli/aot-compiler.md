@@ -369,7 +369,7 @@ And it does not interfere with the ES module's exported API.
 One of the Angular compiler's most helpful features is the ability to type-check expressions within templates, and catch any errors before they cause crashes at runtime.
 In the template type-checking phase, the Angular template compiler uses the TypeScript compiler to validate the binding expressions in templates.
 
-Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's TypeScript configuration file
+Enable this phase explicitly by adding the compiler option `"strictTemplates"` in the `"angularCompilerOptions"` of the project's TypeScript configuration file
 (see [Angular Compiler Options](reference/configs/angular-compiler-options)).
 
 Template validation produces error messages when a type error is detected in a template binding

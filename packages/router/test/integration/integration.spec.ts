@@ -73,6 +73,7 @@ import {eagerUrlUpdateStrategyIntegrationSuite} from './eager_url_update_strateg
 import {duplicateInFlightNavigationsIntegrationSuite} from './duplicate_in_flight_navigations.spec';
 import {navigationErrorsIntegrationSuite} from './navigation_errors.spec';
 import {useAutoTick} from '@angular/private/testing';
+import {RouterTestingHarness} from '../../testing';
 
 for (const browserAPI of ['navigation', 'history'] as const) {
   describe(`${browserAPI}-based routing`, () => {
@@ -393,6 +394,33 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(event!.restoredState!.navigationId).toEqual(userVictorNavStart.id);
     });
 
+    it('should restore internal route on popstate when browserUrl is used', async () => {
+      const router: Router = TestBed.inject(Router);
+      const location: Location = TestBed.inject(Location);
+
+      router.resetConfig([
+        {path: 'home', component: SimpleCmp},
+        {path: 'one', component: SimpleCmp},
+      ]);
+
+      const harness = await RouterTestingHarness.create('/home');
+      router.setUpLocationChangeListener();
+
+      await router.navigateByUrl('/one', {browserUrl: '/display-one'});
+      expect(location.path()).toEqual('/display-one');
+      expect(router.url).toEqual('/one');
+
+      location.back();
+      await advance(harness.fixture);
+      expect(location.path()).toEqual('/home');
+      expect(router.url).toEqual('/home');
+
+      location.forward();
+      await advance(harness.fixture);
+      expect(router.url).toEqual('/one');
+      expect(location.path()).toEqual('/display-one');
+    });
+
     it('should navigate to the same url when config changes', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);
@@ -642,16 +670,22 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       expect(team.recordedParams).toEqual([{id: '22'}]);
       expect(team.snapshotParams).toEqual([{id: '22'}]);
-      expect(user.recordedParams).toEqual([{name: 'victor'}]);
-      expect(user.snapshotParams).toEqual([{name: 'victor'}]);
+      expect(user.recordedParams).toEqual([{id: '22', name: 'victor'}]);
+      expect(user.snapshotParams).toEqual([{id: '22', name: 'victor'}]);
 
       router.navigateByUrl('/team/22/user/fedor');
       await advance(fixture);
 
       expect(team.recordedParams).toEqual([{id: '22'}]);
       expect(team.snapshotParams).toEqual([{id: '22'}]);
-      expect(user.recordedParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
-      expect(user.snapshotParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
+      expect(user.recordedParams).toEqual([
+        {id: '22', name: 'victor'},
+        {id: '22', name: 'fedor'},
+      ]);
+      expect(user.snapshotParams).toEqual([
+        {id: '22', name: 'victor'},
+        {id: '22', name: 'fedor'},
+      ]);
     });
 
     it('should work when navigating to /', async () => {
@@ -761,7 +795,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(router.lastSuccessfulNavigation()).toBe(null);
 
       router.navigateByUrl('/user/init');
-      const navigation = router.getCurrentNavigation();
+      const navigation = router.currentNavigation();
       expect(router.lastSuccessfulNavigation()).toBe(null);
       await advance(fixture);
 

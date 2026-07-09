@@ -1,4 +1,4 @@
-import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {CartStore} from './cart-store';
 import {CartItem} from './cart-types';
 
@@ -46,7 +46,6 @@ import {CartItem} from './cart-types';
       }
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CartDisplay {
   cartStore = inject(CartStore);

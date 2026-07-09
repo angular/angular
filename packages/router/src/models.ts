@@ -7,6 +7,7 @@
  */
 
 import {
+  DefaultExport,
   EnvironmentInjector,
   EnvironmentProviders,
   NgModuleFactory,
@@ -15,6 +16,7 @@ import {
   Type,
 } from '@angular/core';
 import {Observable} from 'rxjs';
+export {DefaultExport} from '@angular/core';
 
 import type {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
@@ -79,7 +81,7 @@ export type DeprecatedResolve = DeprecatedGuard | any;
 /**
  * The supported types that can be returned from a `Router` guard.
  *
- * @see [Routing guide](guide/routing/common-router-tasks#preventing-unauthorized-access)
+ * @see [Routing guide](guide/routing/route-guards)
  * @publicApi
  */
 export type GuardResult = boolean | UrlTree | RedirectCommand;
@@ -111,7 +113,7 @@ export type GuardResult = boolean | UrlTree | RedirectCommand;
  *   ],
  * };
  * ```
- * @see [Routing guide](guide/routing/common-router-tasks#preventing-unauthorized-access)
+ * @see [Routing guide](guide/routing/route-guards)
  *
  * @publicApi
  */
@@ -136,7 +138,7 @@ export type MaybeAsync<T> = T | Observable<T> | Promise<T>;
  *
  * @see {@link Route}
  * @see {@link Router}
- * @see [Router configuration guide](guide/routing/router-reference#configuration)
+ * @see [Router configuration guide](guide/routing/router-reference)
  * @publicApi
  */
 export type Routes = Route[];
@@ -212,22 +214,6 @@ export type Data = {
 export type ResolveData = {
   [key: string | symbol]: ResolveFn<unknown> | DeprecatedResolve;
 };
-
-/**
- * An ES Module object with a default export of the given type.
- *
- * @see {@link Route#loadComponent}
- * @see {@link LoadChildrenCallback}
- *
- * @publicApi
- */
-export interface DefaultExport<T> {
-  /**
-   * Default exports are bound under the name `"default"`, per the ES Module spec:
-   * https://tc39.es/ecma262/#table-export-forms-mapping-to-exportentry-records
-   */
-  default: T;
-}
 
 /**
  *
@@ -328,7 +314,7 @@ export type RedirectFunction = (
  * change or query params have changed. This does not include matrix parameters.
  *
  * @see {@link Route#runGuardsAndResolvers}
- * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior#control-when-guards-and-resolvers-execute)
+ * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior)
  * @publicApi
  */
 export type RunGuardsAndResolvers =
@@ -620,7 +606,7 @@ export interface Route {
   /**
    * An object specifying a lazy-loaded component.
    *
-   * @see [Injection context lazy loading](guide/routing/define-routes#injection-context-lazy-loading)
+   * @see [Injection context lazy loading](guide/routing/loading-strategies)
    *
    */
   loadComponent?: () =>
@@ -732,7 +718,7 @@ export interface Route {
   /**
    * An object specifying lazy-loaded child routes.
    *
-   * @see [Injection context lazy loading](guide/routing/define-routes#injection-context-lazy-loading)
+   * @see [Injection context lazy loading](guide/routing/loading-strategies)
    *
    */
   loadChildren?: LoadChildren;
@@ -753,7 +739,7 @@ export interface Route {
    * change or query params have changed. This does not include matrix parameters.
    *
    * @see {@link RunGuardsAndResolvers}
-   * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior#control-when-guards-and-resolvers-execute)
+   * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior)
    */
   runGuardsAndResolvers?: RunGuardsAndResolvers;
 
@@ -819,7 +805,8 @@ export interface LoadedRouterConfig {
  *
  * @Injectable()
  * class CanActivateTeam implements CanActivate {
- *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *   private readonly permissions = inject(Permissions);
+ *   private readonly currentUser = inject(UserToken);
  *
  *   canActivate(
  *     route: ActivatedRouteSnapshot,
@@ -937,7 +924,8 @@ export type CanActivateFn = (
  *
  * @Injectable()
  * class CanActivateTeam implements CanActivateChild {
- *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *   private readonly permissions = inject(Permissions);
+ *   private readonly currentUser = inject(UserToken);
  *
  *   canActivateChild(
  *     route: ActivatedRouteSnapshot,
@@ -1028,7 +1016,8 @@ export type CanActivateChildFn = (
  * ```ts
  * @Injectable()
  * class CanDeactivateTeam implements CanDeactivate<TeamComponent> {
- *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *   private readonly permissions = inject(Permissions);
+ *   private readonly currentUser = inject(UserToken);
  *
  *   canDeactivate(
  *     component: TeamComponent,
@@ -1111,9 +1100,14 @@ export type CanDeactivateFn<T> = (
  *
  * @Injectable()
  * class CanMatchTeamSection implements CanMatch {
- *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *   private readonly permissions = inject(Permissions);
+ *   private readonly currentUser = inject(UserToken);
  *
- *   canMatch(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean {
+ *   canMatch(
+ *     route: Route,
+ *     segments: UrlSegment[],
+ *     currentSnapshot: PartialMatchRouteSnapshot,
+ *   ): Observable<boolean> | Promise<boolean> | boolean {
  *     return this.permissions.canAccess(this.currentUser, route, segments);
  *   }
  * }
@@ -1154,7 +1148,7 @@ export interface CanMatch {
   canMatch(
     route: Route,
     segments: UrlSegment[],
-    currentSnapshot?: PartialMatchRouteSnapshot,
+    currentSnapshot: PartialMatchRouteSnapshot,
   ): MaybeAsync<GuardResult>;
 }
 
@@ -1172,9 +1166,7 @@ export interface CanMatch {
  *
  * @param route The route configuration.
  * @param segments The URL segments that have not been consumed by previous parent route evaluations.
- * @param currentSnapshot The current route snapshot up to this point in the matching process. While this parameter is optional,
- * it will always be defined when called by the Router. It is only optional for backwards compatibility with functions defined prior
- * to the introduction of this parameter.
+ * @param currentSnapshot The current route snapshot up to this point in the matching process.
  *
  * @publicApi
  * @see {@link Route}
@@ -1183,7 +1175,7 @@ export interface CanMatch {
 export type CanMatchFn = (
   route: Route,
   segments: UrlSegment[],
-  currentSnapshot?: PartialMatchRouteSnapshot,
+  currentSnapshot: PartialMatchRouteSnapshot,
 ) => MaybeAsync<GuardResult>;
 
 /**
@@ -1226,7 +1218,7 @@ export type PartialMatchRouteSnapshot = Pick<
  * ```ts
  * @Injectable({ providedIn: 'root' })
  * export class HeroResolver implements Resolve<Hero> {
- *   constructor(private service: HeroService) {}
+ *   private readonly service = inject(HeroService);
  *
  *   resolve(
  *     route: ActivatedRouteSnapshot,
@@ -1267,7 +1259,7 @@ export type PartialMatchRouteSnapshot = Pick<
  * })
  * export class HeroComponent {
  *
- *  constructor(private activatedRoute: ActivatedRoute) {}
+ *   private readonly activatedRoute = inject(ActivatedRoute);
  *
  *  ngOnInit() {
  *    this.activatedRoute.data.subscribe(({ hero }) => {
@@ -1442,7 +1434,8 @@ export type ResolveFn<T> = (
  *
  * @Injectable()
  * class CanLoadTeamSection implements CanLoad {
- *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
+ *   private readonly permissions = inject(Permissions);
+ *   private readonly currentUser = inject(UserToken);
  *
  *   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean {
  *     return this.permissions.canLoadChildren(this.currentUser, route, segments);

@@ -112,12 +112,6 @@ export interface InternalOptions {
    */
   _enableSelectorless?: boolean;
 
-  // TODO(crisbeto): this is a temporary flag that will be removed in v20.
-  /**
-   * Whether to check the event side of two-way bindings.
-   */
-  _checkTwoWayBoundEvents?: boolean;
-
   /**
    * Whether this is a compilation of Angular core itself.
    *
@@ -135,7 +129,8 @@ export interface InternalOptions {
  * Also includes a few miscellaneous options.
  */
 export interface NgCompilerOptions
-  extends ts.CompilerOptions,
+  extends
+    ts.CompilerOptions,
     LegacyNgcOptions,
     BazelAndG3Options,
     DiagnosticOptions,

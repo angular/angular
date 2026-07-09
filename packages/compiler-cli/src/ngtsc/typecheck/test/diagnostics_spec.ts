@@ -187,6 +187,21 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should disallow binding to event properties starting with on', () => {
+      const messages = diagnose(
+        `<div [onclick]="handler"></div>`,
+        `
+      class TestComponent {
+        handler: any;
+      }`,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 6): Binding to event property 'onclick' is disallowed for security reasons, please use (click)=...
+If 'onclick' is a directive input, make sure the directive is imported by the current module.`,
+      ]);
+    });
+
     it('checks text attributes that are consumed by bindings with literal string types', () => {
       const messages = diagnose(
         `<div dir mode="drak"></div><div dir mode="light"></div>`,
@@ -1466,6 +1481,27 @@ class TestComponent {
         `
           export class TestComponent {
             state: { mode: 'hide' } | { mode: 'show'; menu: number };
+          }
+        `,
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('should narrow a let declaration with the same name as a component property', () => {
+      const messages = diagnose(
+        `
+          @let state = this.state();
+          @switch (state.mode) {
+            @case ('show') { {{ state.menu }}; }
+            @case ('hide') {}
+            @default never(state);
+          }
+        `,
+        `
+          import {InputSignal} from '@angular/core';
+          export class TestComponent {
+            state: InputSignal<{ mode: 'hide' } | { mode: 'show'; menu: number }>;
           }
         `,
       );

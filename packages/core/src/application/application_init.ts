@@ -11,11 +11,11 @@ import {Observable} from 'rxjs';
 import {
   EnvironmentProviders,
   inject,
-  Injectable,
   InjectionToken,
   Injector,
   makeEnvironmentProviders,
   runInInjectionContext,
+  Service,
 } from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {isPromise, isSubscribable} from '../util/lang';
@@ -206,7 +206,7 @@ export function provideAppInitializer(
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class ApplicationInitStatus {
   // Using non null assertion, these fields are defined below
   // within the `new Promise` callback (synchronously).

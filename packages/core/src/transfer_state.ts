@@ -142,7 +142,8 @@ export class TransferState {
 
     // Escape script tag to avoid break out of <script> tag in serialized output.
     // Encoding of `<` is the same behaviour as G3 script_builders.
-    return JSON.stringify(this.store).replace(/</g, '\\u003C');
+    // Encoding of `/` prevents crawlers from incorrectly indexing relative URLs in inline JSON.
+    return JSON.stringify(this.store).replace(/</g, '\\u003C').replace(/\//g, '\\u002F');
   }
 }
 
@@ -153,7 +154,7 @@ export function retrieveTransferredState(
   // Locate the script tag with the JSON data transferred from the server.
   // The id of the script tag is set to the Angular appId + 'state'.
   const script = doc.getElementById(appId + '-state');
-  if (script?.textContent) {
+  if (script?.tagName === 'SCRIPT' && script.textContent) {
     try {
       // Avoid using any here as it triggers lint errors in google3 (any is not allowed).
       // Decoding of `<` is done of the box by browsers and node.js, same behaviour as G3

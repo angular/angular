@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ClassPropertyName} from '@angular/compiler';
 import ts from 'typescript';
 
 import {
@@ -16,7 +17,6 @@ import {
 } from '../../../diagnostics';
 import {Reference} from '../../../imports';
 import {
-  ClassPropertyName,
   DirectiveMeta,
   flattenInheritedDirectiveMetadata,
   HostDirectiveMeta,

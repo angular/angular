@@ -1,10 +1,14 @@
 @if (routerDebugApiSupport()) {
   <div class="filter">
-    <input
-      #searchInput
-      (input)="searchRoutes($event.target.value)"
+    <ng-filter
+      #filter
+      (filter)="handleFilter($event)"
+      (nextMatched)="navigateMatchedRoute('next')"
+      (prevMatched)="navigateMatchedRoute('prev')"
+      [matchesCount]="searchMatches().length"
+      [currentMatch]="currentSearchMatchIdx() + 1"
       placeholder="Search routes"
-      class="ng-input filter-input"
+      [debounce]="250"
     />
     <div class="show-full-path">
       <input id="show-full-path" type="checkbox" (change)="togglePathSettings()" />
@@ -48,9 +52,9 @@
 
           <!-- TODO: Convert to a description list (<dl>) -->
           <div class="scrollable-wrapper">
-            <table class="ng-table">
+            <dl class="ng-dl">
               @if (!data.matcher) {
-                <tr
+                <div
                   ng-route-details-row
                   label="Path"
                   dataKey="path"
@@ -58,9 +62,9 @@
                   actionBtnType="navigate"
                   [actionBtnTooltip]="'Navigate to ' + data.path"
                   (actionBtnClick)="navigateRoute(route)"
-                ></tr>
+                ></div>
               } @else {
-                <tr
+                <div
                   ng-route-details-row
                   label="Matcher"
                   dataKey="matcher"
@@ -68,11 +72,11 @@
                   actionBtnType="view-source"
                   actionBtnTooltip="View source"
                   (actionBtnClick)="viewFunctionSource(data.matcher, 'matcher')"
-                ></tr>
+                ></div>
               }
 
               @if (!data.redirectTo) {
-                <tr
+                <div
                   ng-route-details-row
                   label="Component"
                   dataKey="component"
@@ -81,9 +85,9 @@
                   actionBtnTooltip="View source"
                   [actionBtnDisabled]="!!data?.isLazy"
                   (actionBtnClick)="viewComponentSource(data.component)"
-                ></tr>
+                ></div>
               } @else {
-                <tr
+                <div
                   ng-route-details-row
                   label="Redirect to"
                   dataKey="redirectTo"
@@ -91,23 +95,28 @@
                   actionBtnType="view-source"
                   actionBtnTooltip="View source"
                   (actionBtnClick)="viewFunctionSource(data.redirectTo, 'redirectTo')"
-                ></tr>
+                ></div>
               }
 
               @if (data.pathMatch) {
-                <tr ng-route-details-row label="Path Match" dataKey="pathMatch" [data]="data"></tr>
+                <div
+                  ng-route-details-row
+                  label="Path Match"
+                  dataKey="pathMatch"
+                  [data]="data"
+                ></div>
               }
               @if (data.data) {
-                <tr
+                <div
                   ng-route-details-row
                   label="Data"
                   [renderValueAsJson]="true"
                   dataKey="data"
                   [data]="data"
-                ></tr>
+                ></div>
               }
               @if (data.resolvers) {
-                <tr
+                <div
                   ng-route-details-row
                   label="Resolvers"
                   [renderValueAsJson]="true"
@@ -115,11 +124,11 @@
                   [data]="data"
                   actionBtnType="view-source"
                   (actionBtnClick)="viewSourceFromRouter($event, 'resolvers')"
-                ></tr>
+                ></div>
               }
 
               @if (data.canActivateGuards && data.canActivateGuards.length > 0) {
-                <tr
+                <div
                   ng-route-details-row
                   label="Can Activate Guards"
                   type="list"
@@ -128,20 +137,20 @@
                   actionBtnType="view-source"
                   actionBtnTooltip="View source"
                   (actionBtnClick)="viewSourceFromRouter($event, 'canActivate')"
-                ></tr>
+                ></div>
               }
               @if (data.canActivateChildGuards && data.canActivateChildGuards.length > 0) {
-                <tr
+                <div
                   ng-route-details-row
                   label="Can Activate Child Guards"
                   type="list"
                   dataKey="canActivateChildGuards"
                   [data]="data"
                   (actionBtnClick)="viewSourceFromRouter($event, 'canActivateChild')"
-                ></tr>
+                ></div>
               }
               @if (data.canDeactivateGuards && data.canDeactivateGuards.length > 0) {
-                <tr
+                <div
                   ng-route-details-row
                   label="Can DeActivate Guards"
                   type="list"
@@ -150,10 +159,10 @@
                   actionBtnType="view-source"
                   actionBtnTooltip="View source"
                   (actionBtnClick)="viewSourceFromRouter($event, 'canDeactivate')"
-                ></tr>
+                ></div>
               }
               @if (data.canMatchGuards && data.canMatchGuards.length > 0) {
-                <tr
+                <div
                   ng-route-details-row
                   label="Can Match Guards"
                   type="list"
@@ -162,11 +171,11 @@
                   actionBtnType="view-source"
                   actionBtnTooltip="View source"
                   (actionBtnClick)="viewSourceFromRouter($event, 'canMatch')"
-                ></tr>
+                ></div>
               }
 
               @if (data.providers && data.providers.length > 0) {
-                <tr
+                <div
                   ng-route-details-row
                   label="Providers"
                   type="list"
@@ -175,10 +184,10 @@
                   actionBtnType="view-source"
                   actionBtnTooltip="View source"
                   (actionBtnClick)="viewSourceFromRouter($event, 'providers')"
-                ></tr>
+                ></div>
               }
               @if (data.title) {
-                <tr
+                <div
                   ng-route-details-row
                   label="Title"
                   dataKey="title"
@@ -186,11 +195,11 @@
                   actionBtnType="view-source"
                   actionBtnTooltip="View source"
                   (actionBtnClick)="viewFunctionSource(data.title, 'title')"
-                ></tr>
+                ></div>
               }
 
               @if (data.runGuardsAndResolvers) {
-                <tr
+                <div
                   ng-route-details-row
                   label="RunGuardsAndResolvers"
                   dataKey="runGuardsAndResolvers"
@@ -200,25 +209,31 @@
                   (actionBtnClick)="
                     viewFunctionSource(data.runGuardsAndResolvers, 'runGuardsAndResolvers')
                   "
-                ></tr>
+                ></div>
               }
 
-              <tr
+              <div
                 ng-route-details-row
                 label="Active"
                 type="flag"
                 dataKey="isActive"
                 [data]="data"
-              ></tr>
-              <tr
+              ></div>
+              <div
                 ng-route-details-row
                 label="Auxiliary"
                 type="flag"
                 dataKey="isAux"
                 [data]="data"
-              ></tr>
-              <tr ng-route-details-row label="Lazy" type="flag" dataKey="isLazy" [data]="data"></tr>
-            </table>
+              ></div>
+              <div
+                ng-route-details-row
+                label="Lazy"
+                type="flag"
+                dataKey="isLazy"
+                [data]="data"
+              ></div>
+            </dl>
           </div>
         </div>
       </as-split-area>

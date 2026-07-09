@@ -12,7 +12,7 @@ import {
   FakeNavigation,
   FakeNavigationCurrentEntryChangeEvent,
 } from '../fake_navigation';
-import {ensureDocument} from '@angular/private/testing';
+import {ensureDocument, timeout} from '@angular/private/testing';
 
 ensureDocument();
 
@@ -671,7 +671,7 @@ describe('navigation', () => {
           },
         });
         locals.navigation.pushState(null, '', '/pushed');
-        await new Promise((resolve) => setTimeout(resolve));
+        await timeout();
         expect(precommitHandlerCalled).toBeTrue();
         expect(locals.navigation.currentEntry.url).toBe('https://test.com/pushed');
       });
@@ -704,7 +704,7 @@ describe('navigation', () => {
         });
 
         locals.navigation.pushState(null, '', '/pushed-throw');
-        await new Promise((resolve) => setTimeout(resolve));
+        await timeout();
         expect(locals.navigation.currentEntry.url).not.toBe('https://test.com/pushed-throw');
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(0);
       });
@@ -717,7 +717,7 @@ describe('navigation', () => {
           },
         });
         locals.navigation.replaceState(null, '', '/replaced');
-        await new Promise((resolve) => setTimeout(resolve));
+        await timeout();
         expect(precommitHandlerCalled).toBeTrue();
         expect(locals.navigation.currentEntry.url).toBe('https://test.com/replaced');
       });
@@ -733,7 +733,7 @@ describe('navigation', () => {
         });
 
         locals.navigation.replaceState(null, '', '/replaced-reject');
-        await new Promise((resolve) => setTimeout(resolve));
+        await timeout();
         expect(precommitHandlerCalled).toBeTrue();
         const navigateEvent = locals.navigateEvents[locals.navigateEvents.length - 1];
         expect(navigateEvent.signal.aborted).toBeTrue();
@@ -753,7 +753,7 @@ describe('navigation', () => {
         });
 
         locals.navigation.replaceState(null, '', '/replaced-throw');
-        await new Promise((resolve) => setTimeout(resolve));
+        await timeout();
         expect(precommitHandlerCalled).toBeTrue();
         const navigateEvent = locals.navigateEvents[locals.navigateEvents.length - 1];
         expect(navigateEvent.signal.aborted).toBeTrue();
@@ -765,7 +765,7 @@ describe('navigation', () => {
         it('correctly changes URL and replaces history entry by default', async () => {
           // First, push a state
           locals.navigation.pushState(null, '', '/initial-for-replace-push');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
           locals.pendingInterceptOptions.push({
             precommitHandler: async (event) => {
               event.redirect('/redirected-from-push', {history: 'push'});
@@ -773,7 +773,7 @@ describe('navigation', () => {
           });
           const originalNumEntries = locals.navigation.entries().length;
           locals.navigation.pushState(null, '', '/pushed');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
 
           expect(locals.navigation.currentEntry.url).toBe('https://test.com/redirected-from-push');
           expect(locals.navigation.entries().length).toBe(originalNumEntries + 1);
@@ -782,7 +782,7 @@ describe('navigation', () => {
         it('correctly changes URL and replaces history entry when history: "replace"', async () => {
           // First, push a state
           locals.navigation.pushState(null, '', '/initial-for-replace-push');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
           locals.pendingInterceptOptions.push({
             precommitHandler: async (event) => {
               event.redirect('/redirected-from-push', {history: 'replace'});
@@ -790,7 +790,7 @@ describe('navigation', () => {
           });
           const originalNumEntries = locals.navigation.entries().length;
           locals.navigation.pushState(null, '', '/pushed');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
 
           expect(locals.navigation.currentEntry.url).toBe('https://test.com/redirected-from-push');
           // pushState (becomes entry) + redirect with replace (replaces that entry)
@@ -807,7 +807,7 @@ describe('navigation', () => {
           const nextEvent = locals.nextNavigateEvent();
           locals.navigation.pushState(null, '', '/pushed-for-info');
           const e = await nextEvent;
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
           expect(e.info).toEqual(redirectInfo);
         });
 
@@ -819,7 +819,7 @@ describe('navigation', () => {
             },
           });
           locals.navigation.pushState(null, '', '/pushed-for-state');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
 
           expect(locals.navigation.currentEntry.getState()).toEqual(redirectState);
         });
@@ -829,7 +829,7 @@ describe('navigation', () => {
         it('correctly changes URL and replaces history entry by default', async () => {
           // First, push a state
           locals.navigation.pushState(null, '', '/initial-for-replace-push');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
           locals.navigateEvents.length = 0;
 
           locals.pendingInterceptOptions.push({
@@ -839,7 +839,7 @@ describe('navigation', () => {
           });
           const originalNumEntries = locals.navigation.entries().length;
           locals.navigation.replaceState(null, '', '/replaced-for-push');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
 
           expect(locals.navigation.currentEntry.url).toBe(
             'https://test.com/redirected-from-replace-push',
@@ -851,7 +851,7 @@ describe('navigation', () => {
         it('correctly changes URL and replaces history entry when history: "replace"', async () => {
           // First, push a state
           locals.navigation.pushState(null, '', '/initial-for-replace-replace');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
           locals.navigateEvents.length = 0;
 
           locals.pendingInterceptOptions.push({
@@ -861,7 +861,7 @@ describe('navigation', () => {
           });
           const originalNumEntries = locals.navigation.entries().length;
           locals.navigation.replaceState(null, '', '/replaced-for-replace');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
 
           expect(locals.navigation.currentEntry.url).toBe(
             'https://test.com/redirected-from-replace-replace',
@@ -874,7 +874,7 @@ describe('navigation', () => {
           const redirectInfo = {isRedirectedReplace: true};
           // First, push a state
           locals.navigation.pushState(null, '', '/initial-for-replace-info');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
           locals.navigateEvents.length = 0;
 
           locals.pendingInterceptOptions.push({
@@ -885,7 +885,7 @@ describe('navigation', () => {
           const redirectedEvent = locals.nextNavigateEvent(); // Redirected navigation
           locals.navigation.replaceState(null, '', '/replaced-for-info');
           const e = await redirectedEvent;
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
 
           expect(e.info).toEqual(redirectInfo);
         });
@@ -894,7 +894,7 @@ describe('navigation', () => {
           const redirectState = {isRedirectedReplace: true};
           // First, push a state
           locals.navigation.pushState(null, '', '/initial-for-replace-state');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
 
           locals.pendingInterceptOptions.push({
             precommitHandler: async (event) => {
@@ -902,7 +902,7 @@ describe('navigation', () => {
             },
           });
           locals.navigation.replaceState(null, '', '/replaced-for-state');
-          await new Promise((resolve) => setTimeout(resolve));
+          await timeout();
 
           expect(locals.navigation.currentEntry.getState()).toEqual(redirectState);
         });
@@ -1492,7 +1492,7 @@ describe('navigation', () => {
       // Determine if we need to await committed/finished for go() or if nextNavigateEvent is enough.
       // go() uses internal mechanism, but eventually updates currentEntry.
       // We can wait for the loop to settle.
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await timeout();
       expect(locals.navigation.currentEntry.key).toBe(thirdPageEntry.key);
     });
   });

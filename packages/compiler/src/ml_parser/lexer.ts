@@ -153,9 +153,14 @@ const SUPPORTED_BLOCKS = [
   '@placeholder',
   '@loading',
   '@error',
+  '@content',
 ] as const;
 
 const INTERPOLATION = {start: '{{', end: '}}'} as const;
+
+const DEFAULT_NEVER_PATTERN = /^default[^\S\r\n]+never/;
+
+const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
 
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
@@ -291,7 +296,17 @@ class _Tokenizer {
       }
       return true;
     });
-    return this._cursor.getChars(nameCursor).trim();
+
+    let result = this._cursor.getChars(nameCursor).trim();
+
+    // Normalize whitespaces.
+    if (ELSE_IF_PATTERN.test(result)) {
+      result = 'else if';
+    } else if (DEFAULT_NEVER_PATTERN.test(result)) {
+      result = 'default never';
+    }
+
+    return result;
   }
 
   private _consumeBlockStart(start: CharacterCursor) {
@@ -423,8 +438,8 @@ class _Tokenizer {
     const endChar = this._cursor.peek();
     if (endChar === chars.$SEMICOLON) {
       this._beginToken(TokenType.LET_END);
-      this._endToken([]);
       this._cursor.advance();
+      this._endToken([]);
     } else {
       startToken.type = TokenType.INCOMPLETE_LET;
       startToken.sourceSpan = this._cursor.getSpan(start);
@@ -804,12 +819,21 @@ class _Tokenizer {
     return [prefix, name];
   }
 
-  private _consumeSingleLineComment() {
+  private _consumeSingleLineComment(start: CharacterCursor) {
+    const contentStart = this._cursor.clone();
     this._attemptCharCodeUntilFn((code) => chars.isNewLine(code) || code === chars.$EOF);
+
+    const spanEnd = this._cursor.clone();
+    const content = spanEnd.getChars(contentStart);
+
+    this._beginToken(TokenType.IN_ELEMENT_COMMENT, start);
+    this._endToken([content, 'single'], spanEnd);
+
     this._attemptCharCodeUntilFn(isNotWhitespace);
   }
 
-  private _consumeMultiLineComment() {
+  private _consumeMultiLineComment(start: CharacterCursor) {
+    const contentStart = this._cursor.clone();
     this._attemptCharCodeUntilFn((code) => {
       if (code === chars.$EOF) {
         return true;
@@ -821,9 +845,18 @@ class _Tokenizer {
       }
       return false;
     });
+
+    const contentEnd = this._cursor.clone();
+    const content = contentEnd.getChars(contentStart);
+
+    let spanEnd = contentEnd;
     if (this._attemptStr('*/')) {
+      spanEnd = this._cursor.clone();
       this._attemptCharCodeUntilFn(isNotWhitespace);
     }
+
+    this._beginToken(TokenType.IN_ELEMENT_COMMENT, start);
+    this._endToken([content, 'multi'], spanEnd);
   }
 
   private _consumeTagOpen(start: CharacterCursor) {
@@ -863,13 +896,14 @@ class _Tokenizer {
       }
 
       while (true) {
+        const commentStart = this._cursor.clone();
         if (this._attemptStr('//')) {
-          this._consumeSingleLineComment();
+          this._consumeSingleLineComment(commentStart);
           continue;
         }
 
         if (this._attemptStr('/*')) {
-          this._consumeMultiLineComment();
+          this._consumeMultiLineComment(commentStart);
           continue;
         }
 

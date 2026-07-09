@@ -7,6 +7,7 @@
 import { AfterContentInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
+import { DefaultExport } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { EnvironmentInjector } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
@@ -149,11 +150,11 @@ export type CanLoadFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gua
 // @public
 export interface CanMatch {
     // (undocumented)
-    canMatch(route: Route, segments: UrlSegment[], currentSnapshot?: PartialMatchRouteSnapshot): MaybeAsync<GuardResult>;
+    canMatch(route: Route, segments: UrlSegment[], currentSnapshot: PartialMatchRouteSnapshot): MaybeAsync<GuardResult>;
 }
 
 // @public
-export type CanMatchFn = (route: Route, segments: UrlSegment[], currentSnapshot?: PartialMatchRouteSnapshot) => MaybeAsync<GuardResult>;
+export type CanMatchFn = (route: Route, segments: UrlSegment[], currentSnapshot: PartialMatchRouteSnapshot) => MaybeAsync<GuardResult>;
 
 // @public
 export class ChildActivationEnd {
@@ -201,6 +202,7 @@ export type ComponentInputBindingFeature = RouterFeature<RouterFeatureKind.Compo
 // @public
 export interface ComponentInputBindingOptions {
     queryParams?: boolean;
+    unmatchedInputBehavior?: 'alwaysUndefined' | 'undefinedIfStale';
 }
 
 // @public
@@ -217,10 +219,7 @@ export type Data = {
 // @public
 export type DebugTracingFeature = RouterFeature<RouterFeatureKind.DebugTracingFeature>;
 
-// @public
-export interface DefaultExport<T> {
-    default: T;
-}
+export { DefaultExport }
 
 // @public
 export class DefaultTitleStrategy extends TitleStrategy {
@@ -871,10 +870,10 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     // (undocumented)
-    set routerLinkActive(data: string[] | string);
+    set routerLinkActive(data: string[] | string | null | undefined);
     routerLinkActiveOptions: {
         exact: boolean;
-    } | Partial<IsActiveMatchOptions>;
+    } | Partial<IsActiveMatchOptions> | null | undefined;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": { "alias": "routerLinkActiveOptions"; "required": false; }; "ariaCurrentWhenActive": { "alias": "ariaCurrentWhenActive"; "required": false; }; "routerLinkActive": { "alias": "routerLinkActive"; "required": false; }; }, { "isActiveChange": "isActiveChange"; }, ["links"], never, true, never>;
     // (undocumented)
@@ -1022,7 +1021,7 @@ export class Scroll {
 export abstract class TitleStrategy {
     // (undocumented)
     buildTitle(snapshot: RouterStateSnapshot): string | undefined;
-    getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): any;
+    getResolvedTitleForRoute(snapshot: ActivatedRouteSnapshot): string | undefined;
     abstract updateTitle(snapshot: RouterStateSnapshot): void;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<TitleStrategy, never>;

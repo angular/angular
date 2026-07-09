@@ -103,7 +103,7 @@ describe('SignalFormControl (web)', () => {
       readonly signalControl = new SignalFormControl(
         10,
         (p) => {
-          disabled(p, ({value}) => value() > 15);
+          disabled(p, {when: ({value}) => value() > 15});
         },
         {injector: inject(Injector)},
       );

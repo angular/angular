@@ -7,10 +7,12 @@
  */
 
 import {DOCUMENT} from '../..';
+import {CSP_NONCE} from '@angular/core';
 import {HttpHeaders} from '../src/headers';
 import {
   JSONP_ERR_HEADERS_NOT_SUPPORTED,
   JSONP_ERR_NO_CALLBACK,
+  JSONP_ERR_UNSAFE_URL,
   JSONP_ERR_WRONG_METHOD,
   JSONP_ERR_WRONG_RESPONSE_TYPE,
   JsonpCallbackContext,
@@ -24,7 +26,7 @@ import {toArray} from 'rxjs/operators';
 import {MockDocument} from './jsonp_mock';
 
 describe('JsonpClientBackend', () => {
-  const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
+  const SAMPLE_REQ = new HttpRequest<never>('JSONP', 'https://example.com/test');
   let home: any;
   let document: MockDocument;
   let backend: JsonpClientBackend;
@@ -43,6 +45,7 @@ describe('JsonpClientBackend', () => {
         JsonpClientBackend,
         {provide: JsonpCallbackContext, useValue: {}},
         {provide: DOCUMENT, useValue: mockDoc},
+        {provide: CSP_NONCE, useValue: null},
       ],
     });
     backend = TestBed.inject(JsonpClientBackend);
@@ -98,6 +101,71 @@ describe('JsonpClientBackend', () => {
     // executing.
     expect(document.mock!.ownerDocument).not.toEqual(document);
   });
+  describe('CSP nonce', () => {
+    it('sets nonce attribute on script element when CSP_NONCE token is provided', (done) => {
+      TestBed.resetTestingModule();
+      const mockDoc = new MockDocument();
+      TestBed.configureTestingModule({
+        providers: [
+          JsonpClientBackend,
+          {provide: JsonpCallbackContext, useValue: {}},
+          {provide: DOCUMENT, useValue: mockDoc},
+          {provide: CSP_NONCE, useValue: 'test-nonce-123'},
+        ],
+      });
+      const nonceBackend = TestBed.inject(JsonpClientBackend);
+      nonceBackend.handle(SAMPLE_REQ).subscribe();
+
+      expect(mockDoc.mock!.getAttribute('nonce')).toBe('test-nonce-123');
+      done();
+    });
+
+    it('does not set nonce attribute when CSP_NONCE token is not provided', (done) => {
+      backend.handle(SAMPLE_REQ).subscribe();
+
+      expect(document.mock!.getAttribute('nonce')).toBeNull();
+      done();
+    });
+  });
+
+  describe('URL protocols', () => {
+    it('allows absolute HTTP(S) URLs', () => {
+      const urls = [
+        'http://example.com/test',
+        'https://example.com/test',
+        'HTTP://example.com/test',
+      ];
+
+      for (const url of urls) {
+        const subscription = backend.handle(SAMPLE_REQ.clone<never>({url})).subscribe();
+
+        subscription.unsubscribe();
+      }
+    });
+
+    it('rejects URLs without absolute HTTP(S) protocols before creating a script element', () => {
+      const urls = [
+        '//example.com/test',
+        '/test',
+        'test',
+        'data:text/javascript,alert(1)',
+        'blob:https://example.com/jsonp',
+        'javascript:alert(1)',
+        'file:///tmp/jsonp.js',
+        'filesystem:https://example.com/temporary/jsonp.js',
+        'ftp://example.com/jsonp.js',
+        'custom-scheme://example.com/jsonp.js',
+      ];
+
+      for (const url of urls) {
+        expect(() => backend.handle(SAMPLE_REQ.clone<never>({url}))).toThrowError(
+          `NG02826: ${JSONP_ERR_UNSAFE_URL}`,
+        );
+        expect(document.mock).toBeUndefined();
+      }
+    });
+  });
+
   describe('throws an error', () => {
     it('when request method is not JSONP', () =>
       expect(() => backend.handle(SAMPLE_REQ.clone<never>({method: 'GET'}))).toThrowError(

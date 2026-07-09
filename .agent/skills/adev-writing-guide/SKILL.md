@@ -1,6 +1,6 @@
 ---
 name: adev-writing-guide
-description: Comprehensive writing guide for Angular documentation (adev). Covers Google Technical Writing standards, Angular-specific markdown extensions, code blocks, and components. Use when authoring or reviewing content in adev/src/content.
+description: Comprehensive writing guide for Angular documentation (adev). Covers Google Technical Writing standards, Angular-specific markdown extensions, code blocks, and components. You MUST use this skill any time you plan to create, edit, or review documentation files in `adev/` or `adev/src/content`.
 ---
 
 # Angular Documentation (adev) Writing Guide

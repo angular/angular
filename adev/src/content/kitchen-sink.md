@@ -212,7 +212,7 @@ You can create multifile examples by wrapping the examples inside a `<docs-code-
 
 ### Adding `preview` to your code example
 
-Adding the `preview` flag builds a running example of the code below the code snippet. This also automatically adds a button to open the running example in Stackblitz.
+Adding the `preview` flag builds a running example of the code below the code snippet. This also automatically adds a button to open the running example in StackBlitz.
 
 NOTE: `preview` only works with standalone.
 

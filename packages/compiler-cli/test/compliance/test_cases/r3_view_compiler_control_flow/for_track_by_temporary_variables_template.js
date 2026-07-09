@@ -1,6 +1,6 @@
 function _forTrack0($index, $item) {
   /* @ts-ignore */
-  return ($item == null ? null : $item.name == null ? null : $item.name[0] == null ? null : $item.name[0].toUpperCase()) ?? this.foo;
+    return $item?.name?.[0]?.toUpperCase() ?? this.foo; 
 }
 
 function _forTrack1($index, $item) {

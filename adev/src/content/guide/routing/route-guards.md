@@ -125,11 +125,16 @@ It has access to the following default arguments:
 
 - `route`: `Route` - The route configuration being evaluated
 - `segments`: `UrlSegment[]` - The URL segments that have not been consumed by previous parent route evaluations
+- `currentSnapshot: PartialMatchRouteSnapshot` - The current route snapshot up to this point in the matching process
 
 It can return the [standard return guard types](#route-guard-return-types), but when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
 
 ```ts
-export const featureToggleGuard: CanMatchFn = (route: Route, segments: UrlSegment[]) => {
+export const featureToggleGuard: CanMatchFn = (
+  route: Route,
+  segments: UrlSegment[],
+  currentSnapshot: PartialMatchRouteSnapshot,
+) => {
   const featureService = inject(FeatureService);
   return featureService.isFeatureEnabled('newDashboard');
 };

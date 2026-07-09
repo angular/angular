@@ -218,6 +218,35 @@ describe('component input binding', () => {
     expect(instance.language).toEqual(undefined);
   });
 
+  it('omits binding undefined to inputs not available in router data if never available', async () => {
+    @Component({
+      template: '',
+      standalone: false,
+    })
+    class MyComponent {
+      @Input() language: string | undefined = 'default';
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [{path: '**', component: MyComponent}],
+          withComponentInputBinding({unmatchedInputBehavior: 'undefinedIfStale'}),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    const instance = await harness.navigateByUrl('/', MyComponent);
+    expect(instance.language).toEqual('default');
+
+    await harness.navigateByUrl('/?language=english');
+    expect(instance.language).toEqual('english');
+
+    await harness.navigateByUrl('/');
+    expect(instance.language).toEqual(undefined);
+  });
+
   it('does not set component inputs from matching query params when queryParam inputs are disabled', async () => {
     @Component({
       template: '',

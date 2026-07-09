@@ -254,8 +254,10 @@ describe('Forms compat', () => {
       const f = compatForm(
         cat,
         (p) => {
-          disabled(p, ({value}) => {
-            return value().name === 'disabled-cat';
+          disabled(p, {
+            when: ({value}) => {
+              return value().name === 'disabled-cat';
+            },
           });
         },
         {
@@ -286,8 +288,10 @@ describe('Forms compat', () => {
       const f = compatForm(
         cat,
         (p) => {
-          hidden(p, ({value}) => {
-            return value().name === 'hidden-cat';
+          hidden(p, {
+            when: ({value}) => {
+              return value().name === 'hidden-cat';
+            },
           });
         },
         {
@@ -717,8 +721,10 @@ describe('Forms compat', () => {
             return valueOf(path.age) < 8 ? [] : [];
           });
 
-          readonly(path.name, ({valueOf}) => {
-            return valueOf(path.age) < 8;
+          readonly(path.name, {
+            when: ({valueOf}) => {
+              return valueOf(path.age) < 8;
+            },
           });
 
           email(path.name, {

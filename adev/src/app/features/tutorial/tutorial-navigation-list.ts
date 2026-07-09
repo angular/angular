@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
-import {RouterLink, RouterLinkActive} from '@angular/router';
 import {NgTemplateOutlet} from '@angular/common';
+import {Component, input} from '@angular/core';
 import {NavigationItem} from '@angular/docs';
+import {RouterLink, RouterLinkActive} from '@angular/router';
 
 @Component({
   selector: 'adev-tutorial-navigation-list',
@@ -43,7 +43,6 @@ import {NavigationItem} from '@angular/docs';
     <ng-container *ngTemplateOutlet="navigationList; context: {$implicit: navigationItems()}" />
   `,
   styleUrls: ['./tutorial-navigation-list.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TutorialNavigationList {
   readonly navigationItems = input.required<NavigationItem[]>();

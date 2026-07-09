@@ -9,7 +9,7 @@
 import {InputSignalNode} from '../../authoring/input/input_signal_node';
 import {ModuleWithProviders, ProcessProvidersFunction} from '../../di/interface/provider';
 import {EnvironmentInjector} from '../../di/r3_injector';
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {FactoryFn} from '../definition_factory';
@@ -200,7 +200,7 @@ export interface DirectiveDef<T> {
   readonly hostAttrs: TAttributes | null;
 
   /** Token representing the directive. Used by DI. */
-  readonly type: Type<T>;
+  readonly type: Type<T> | AbstractType<T>;
 
   /** Function that resolves `providers` and publishes them into the DI system. */
   providersResolver: ProvidersResolver | null;
@@ -263,6 +263,12 @@ export interface DirectiveDef<T> {
   hostDirectives: (HostDirectiveDef | (() => HostDirectiveConfig[]))[] | null;
 
   controlDef: ControlDirectiveDef | null;
+
+  /**
+   * Cache of inputs that this custom control directive covers,
+   * used by the signal forms system.
+   */
+  signalFormsInputPresence: Record<string, boolean> | null;
 
   setInput:
     | (<U extends T>(
@@ -426,7 +432,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
  */
 export interface PipeDef<T> {
   /** Token representing the pipe. */
-  type: Type<T>;
+  type: Type<T> | AbstractType<T>;
 
   /**
    * Pipe name.

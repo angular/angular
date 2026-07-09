@@ -25,10 +25,22 @@
     0px -4px 0px 0px var(--tertiary-contrast), 0px 0px 0px 0px var(--tertiary-contrast);
 }
 
+.autocomplete-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
 .retro-autocomplete {
   display: flex;
   position: relative;
   align-items: center;
+  box-shadow: var(--retro-flat-shadow);
+  background-color: var(--retro-button-color);
+}
+
+.retro-autocomplete:focus-within {
+  box-shadow: var(--retro-pressed-shadow);
 }
 
 .material-symbols-outlined {
@@ -43,32 +55,23 @@
   z-index: 1;
 }
 
-[ngComboboxInput] {
+.autocomplete-input {
   width: 15rem;
   font-size: 0.6rem;
   border-radius: 0;
   font-family: 'Press Start 2P';
   word-spacing: -5px;
-  padding: 0.75rem 0.5rem 0.75rem 2.5rem;
+  padding: 0.75rem 2.5rem 0.75rem 2.5rem;
   color: #000;
   border: none;
-  box-shadow: var(--retro-flat-shadow);
-  background-color: var(--retro-button-color);
+  background-color: transparent;
+  box-shadow: none;
+  outline: none;
 }
 
-[ngComboboxInput]::placeholder {
+.autocomplete-input::placeholder {
   color: #000;
   opacity: 0.7;
-}
-
-[ngComboboxInput]:focus {
-  outline: none;
-  transform: translate(1px, 1px);
-  box-shadow: var(--retro-pressed-shadow);
-}
-
-[ngCombobox]:has([aria-expanded='false']) .popup {
-  display: none;
 }
 
 .popup {
@@ -85,15 +88,16 @@
   padding: 1rem;
 }
 
-[ngListbox] {
+.listbox {
   gap: 2px;
   height: 100%;
   display: flex;
   overflow: auto;
   flex-direction: column;
+  outline: none;
 }
 
-[ngOption] {
+.option {
   display: flex;
   cursor: pointer;
   align-items: center;
@@ -101,23 +105,24 @@
   padding: 0 1rem;
   min-height: 2.25rem;
   border-radius: 0;
+  outline: none;
 }
 
-[ngOption]:hover {
+.option:hover {
   background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
 }
 
-[ngOption][data-active='true'] {
+.option[data-active='true'] {
   outline-offset: -2px;
   outline: 2px dashed var(--hot-pink);
 }
 
-[ngOption][aria-selected='true'] {
+.option[aria-selected='true'] {
   color: var(--hot-pink);
   background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
 }
 
-[ngOption]:not([aria-selected='true']) .check-icon {
+.option:not([aria-selected='true']) .check-icon {
   display: none;
 }
 
@@ -127,4 +132,49 @@
 
 .check-icon {
   font-size: 0.9rem;
+}
+
+.clear-button {
+  position: absolute;
+  right: 0.75rem;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--win95-gray);
+  color: var(--win95-shadow);
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--win95-light) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-light);
+  box-shadow: 1px 1px 0 var(--win95-shadow);
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  font-family: 'Press Start 2P';
+  font-size: 0.6rem;
+  user-select: none;
+}
+
+.clear-button:hover {
+  background: #e0e0e0;
+  outline: 1px dashed var(--win95-dark-gray);
+  outline-offset: 1px;
+}
+
+.clear-button:active {
+  border-color: var(--win95-dark-gray) var(--win95-light) var(--win95-light) var(--win95-dark-gray);
+  box-shadow: 1px 1px 0 var(--win95-shadow) inset;
+}
+
+.clear-button:focus-visible {
+  outline: 2px dashed var(--hot-pink);
+  outline-offset: 4px;
+}
+
+.clear-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

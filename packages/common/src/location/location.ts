@@ -319,7 +319,7 @@ function _stripBasePath(basePath: string, url: string): string {
 }
 
 function _stripIndexHtml(url: string): string {
-  return url.replace(/\/index.html$/, '');
+  return url.replace(/\/index\.html$/, '');
 }
 
 function _stripOrigin(baseHref: string): string {

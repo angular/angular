@@ -7,24 +7,20 @@
  */
 import {
   afterNextRender,
-  ɵpromiseWithResolvers as promiseWithResolvers,
   DestroyRef,
   EnvironmentInjector,
   inject,
-  Injectable,
+  ɵpromiseWithResolvers as promiseWithResolvers,
+  Service,
 } from '@angular/core';
 
 import {
+  Location,
   PlatformLocation,
   PlatformNavigation,
   ɵPRECOMMIT_HANDLER_SUPPORTED as PRECOMMIT_HANDLER_SUPPORTED,
 } from '@angular/common';
-import {StateManager} from './state_manager';
-import {
-  NavigationExtras,
-  RestoredState,
-  Navigation as RouterNavigation,
-} from '../navigation_transition';
+import {Subject, SubscriptionLike} from 'rxjs';
 import {
   BeforeActivateRoutes,
   BeforeRoutesRecognized,
@@ -38,13 +34,18 @@ import {
   NavigationTrigger,
   PrivateRouterEvents,
 } from '../events';
-import {Subject, SubscriptionLike} from 'rxjs';
-import {UrlTree} from '../url_tree';
+import {
+  NavigationExtras,
+  RestoredState,
+  Navigation as RouterNavigation,
+} from '../navigation_transition';
 import {ROUTER_SCROLLER} from '../router_scroller';
+import {UrlTree} from '../url_tree';
+import {StateManager} from './state_manager';
 
 type NavigationInfo = {ɵrouterInfo: {intercept: boolean}};
 
-@Injectable({providedIn: 'root'})
+@Service()
 /**
  * A `StateManager` that uses the browser's Navigation API to get the state of a `popstate`
  * event.
@@ -65,8 +66,7 @@ export class NavigationStateManager extends StateManager {
   /** The base origin of the application, extracted from PlatformLocation. */
   private readonly base = new URL(inject(PlatformLocation).href).origin;
   /** The root URL of the Angular application, considering the base href. */
-  private readonly appRootURL = new URL(this.location.prepareExternalUrl?.('/') ?? '/', this.base)
-    .href;
+  private readonly appRootUrl = new URL(this.location.prepareExternalUrl?.('/') ?? '/', this.base);
   private readonly precommitHandlerSupported = inject(PRECOMMIT_HANDLER_SUPPORTED);
   /**
    * The `NavigationHistoryEntry` from the Navigation API that corresponds to the last successfully
@@ -268,8 +268,7 @@ export class NavigationStateManager extends StateManager {
     // Prepare the state to be stored in the NavigationHistoryEntry.
     const state = {
       ...transition.extras.state,
-      // Include router's navigationId for tracking. Required for in-memory scroll restoration
-      navigationId: transition.id,
+      ...this.generateNgRouterState(transition),
     };
 
     const info: NavigationInfo = {ɵrouterInfo: {intercept: true}};
@@ -400,6 +399,17 @@ export class NavigationStateManager extends StateManager {
     }
     const isTriggeredByRouterTransition = !!routerInfo;
     if (!isTriggeredByRouterTransition) {
+      const {pathname: destPathname, origin: destOrigin} = new URL(event.destination.url);
+      const {pathname: rootPathname, origin: appOrigin} = this.appRootUrl;
+      const rootPath = rootPathname.endsWith('/') ? rootPathname : rootPathname + '/';
+
+      if (
+        destOrigin !== appOrigin ||
+        (destPathname !== rootPathname && !destPathname.startsWith(rootPath))
+      ) {
+        return;
+      }
+
       // If there's an ongoing navigation in the Angular Router, abort it. This new navigation
       // supersedes it. If the navigation was triggered by the Router, it may be the navigation
       // happening from _inside_ the navigation transition, or a separate Router.navigate call
@@ -489,7 +499,7 @@ export class NavigationStateManager extends StateManager {
               : 'push';
           const state = {
             ...transition.extras.state,
-            navigationId: transition.id,
+            ...this.generateNgRouterState(transition),
           };
           // this might be a path or an actual URL depending on the baseHref
           const pathOrUrl = this.location.prepareExternalUrl(internalPath);
@@ -524,11 +534,9 @@ export class NavigationStateManager extends StateManager {
    * @param event The `NavigateEvent` from the Navigation API.
    */
   private handleNavigateEventTriggeredOutsideRouterAPIs(event: NavigateEvent) {
-    // TODO(atscott): Consider if the destination URL doesn't start with `appRootURL`.
-    // Should we ignore it or not intercept in the first place?
-
     // Extract the application-relative path from the full destination URL.
-    const path = event.destination.url.substring(this.appRootURL.length - 1);
+    // The url will always start with the appRootUrl because of the boundary check in handleNavigate.
+    const path = event.destination.url.substring(this.appRootUrl.href.length - 1);
     const state = event.destination.getState() as RestoredState | null | undefined;
     this.nonRouterCurrentEntryChangeSubject.next({path, state});
   }
@@ -540,8 +548,34 @@ export class NavigationStateManager extends StateManager {
     const internalPath = this.createBrowserPath(transition);
     const eventDestination = new URL(navigateEvent.destination.url);
     // this might be a path or an actual URL depending on the baseHref
-    const routerDestination = this.location.prepareExternalUrl(internalPath);
-    return new URL(routerDestination, eventDestination.origin).href === eventDestination.href;
+    const routerDestination = new URL(
+      this.location.prepareExternalUrl(internalPath),
+      eventDestination.origin,
+    );
+
+    eventDestination.searchParams.sort();
+    routerDestination.searchParams.sort();
+
+    const {pathname: destPathname, search: destSearch, hash: hashDest} = routerDestination;
+    const {
+      pathname: eventDestPathname,
+      search: eventDestSearch,
+      hash: eventDestHash,
+    } = eventDestination;
+
+    return (
+      destSearch === eventDestSearch &&
+      hashDest === eventDestHash &&
+      Location.stripTrailingSlash(destPathname) === Location.stripTrailingSlash(eventDestPathname)
+    );
+  }
+
+  private generateNgRouterState(transition: RouterNavigation) {
+    return {
+      ...this.routerUrlState(transition),
+      // Include router's navigationId for tracking. Required for in-memory scroll restoration
+      navigationId: transition.id,
+    };
   }
 
   private deferredCommitSupported(event: NavigateEvent): boolean {

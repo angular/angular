@@ -634,6 +634,116 @@ export declare class MyApp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: defer_multiple_hydrate_single_activator.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @defer (hydrate on idle) {
+      One
+    }
+    @defer (hydrate on timer(500)) {
+      Two
+    }
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @defer (hydrate on idle) {
+      One
+    }
+    @defer (hydrate on timer(500)) {
+      Two
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_multiple_hydrate_single_activator.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_nested_hydrate_inner.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class InnerCmp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: InnerCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: InnerCmp, isStandalone: true, selector: "inner-cmp", ngImport: i0, template: `
+    @defer (hydrate on idle) {
+      hello
+    }
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: InnerCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'inner-cmp',
+                    template: `
+    @defer (hydrate on idle) {
+      hello
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_nested_hydrate_inner.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class InnerCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<InnerCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<InnerCmp, "inner-cmp", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_nested_hydrate.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "my-app", ngImport: i0, template: `
+    @defer (on idle) {
+      <inner-cmp />
+    }
+  `, isInline: true, deferBlockDependencies: [() => [/* @ts-ignore */
+                import("./defer_nested_hydrate_inner").then(m => m.InnerCmp)]] });
+}
+i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, resolveDeferredDeps: () => [/* @ts-ignore */
+        import("./defer_nested_hydrate_inner").then(m => m.InnerCmp)], resolveMetadata: InnerCmp => ({ decorators: [{
+                type: Component,
+                args: [{
+                        selector: 'my-app',
+                        imports: [InnerCmp],
+                        template: `
+    @defer (on idle) {
+      <inner-cmp />
+    }
+  `,
+                    }]
+            }], ctorParameters: null, propDecorators: null }) });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_nested_hydrate.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: deferred_when_with_pipe.js
  ****************************************************************************************************/
 import { Component, Pipe } from '@angular/core';

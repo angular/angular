@@ -45,7 +45,7 @@ import {form, FormField} from '@angular/forms/signals';
 })
 export class Example {
   // 1. Define your model with initial values (avoid undefined)
-  userModel = signal({
+  protected readonly userModel = signal({
     name: '', // CRITICAL: NEVER use null or undefined as initial values
     email: '',
     age: 0, // Use 0 for numbers, NOT null
@@ -64,7 +64,7 @@ export class Example {
   // });
 
   // 2. Create the form
-  userForm = form(this.userModel);
+  protected readonly userForm = form(this.userModel);
 }
 ```
 
@@ -145,10 +145,10 @@ import {disabled, readonly, hidden} from '@angular/forms/signals';
 
 userForm = form(this.userModel, (schemaPath) => {
   // Conditionally disabled
-  disabled(schemaPath.password, ({valueOf}) => !valueOf(schemaPath.createAccount));
+  disabled(schemaPath.password, {when: ({valueOf}) => !valueOf(schemaPath.createAccount)});
 
   // Conditionally hidden (does NOT remove from model, just marks as hidden)
-  hidden(schemaPath.shippingAddress, ({valueOf}) => valueOf(schemaPath.sameAsBilling));
+  hidden(schemaPath.shippingAddress, {when: ({valueOf}) => valueOf(schemaPath.sameAsBilling)});
 
   // Readonly
   readonly(schemaPath.username);
@@ -170,9 +170,19 @@ Do _NOT_ bind the `name` field.
 When using `[formField]`, you MUST NOT set the following attributes in the template (either static or bound):
 
 - `min`, `max` (Use validators in the schema instead)
-- `value`, `[value]`, `[attr.value]` (Already handled by `[formField]`)
+- `value`, `[value]`, `[attr.value]` on **text/number/date inputs** (Already handled by `[formField]`)
 - `[attr.min]`, `[attr.max]`
 - `[disabled]`, `[readonly]` (Already handled by `[formField]`)
+
+**Exception**: Static `value` on `<input type="radio">` and `<input type="checkbox">` is **allowed and required** — it identifies which option the input represents, not the bound field value.
+
+```html
+<!-- CORRECT: value on radio specifies which option this button represents -->
+<input type="radio" value="economy" [formField]="bookingForm.package.tier" />
+
+<!-- WRONG: value binding on a regular input -->
+<input [value]="someVar" [formField]="form.name" />
+```
 
 Do NOT do this: `<input min="1" [formField]>` or `<input [value]="val" [formField]>`.
 
@@ -506,39 +516,39 @@ form(
 
 ## Common Pitfalls (DO NOT DO THESE)
 
-| Error Scenario         | WRONG (Common Mistake)                        | RIGHT (Correct Way)                                         |
-| :--------------------- | :-------------------------------------------- | :---------------------------------------------------------- |
-| **Accessing Flags**    | `form.field.valid()`                          | `form.field().valid()`                                      |
-| **Accessing value**    | `form.field.value()`                          | `form.field().value()`                                      |
-| **Setting value**      | `form.field.set(x)`                           | Update model signal: `this.model.update(...)`               |
-| **Form root flags**    | `form.invalid()`                              | `form().invalid()`                                          |
-| **Double-calling**     | `form.field()()`                              | `form.field().value()`                                      |
-| **Rules Context**      | `({ touched }) => touched()`                  | `({ state }) => state.touched()`                            |
-| **Calling Paths**      | `applyWhen(p.foo, () => p.foo() === 'x')`     | `applyWhen(p.foo, ({ valueOf }) => valueOf(p.foo) === 'x')` |
-| **applyWhen args**     | `applyWhen(condition, () => {...})`           | `applyWhen(path, condition, schemaFn)` - needs 3 args       |
-| **Array length**       | `form.items().length`                         | `form.items.length` (structural)                            |
-| **Multi-select array** | `<select [formField]="form.tags">` (string[]) | Use checkboxes for array fields                             |
-| **readonly attribute** | `<input readonly [formField]>`                | Use `readonly()` rule in schema                             |
-| **min/max attributes** | `<input min="1" max="10">`                    | Use `min()` and `max()` rules in schema                     |
-| **value binding**      | `<input [value]="val">`                       | Do NOT use `[value]` with `[formField]`                     |
-| **when option**        | `pattern(p.x, /.../, {when: ...})`            | `when` only works with `required()`                         |
-| **Submit callback**    | `submit(form, () => { ... })`                 | `submit(form, async () => { ... })`                         |
-| **Async params**       | `params: s.field`                             | `params: ({ value }) => value()`                            |
-| **Async onError**      | Omitting `onError`                            | `onError` is REQUIRED in `validateAsync`                    |
-| **resource() API**     | `request: signal`                             | `params: signal`                                            |
-| **applyEach args**     | `applyEach(s.items, (item, index) => ...)`    | `applyEach(s.items, (item) => ...)`                         |
-| **Nested @for**        | `$parent.$index`                              | Use `let outerIndex = $index`                               |
-| **FormState import**   | `import { FormState }`                        | `FormState` does not exist, use `FieldState`                |
-| **Null in model**      | `signal({ name: null })`                      | `signal({ name: '' })` or `signal({ age: 0 })`              |
-| **Validate syntax**    | `validate(s.field, { value } => ...)`         | `validate(s.field, ({ value }) => ...)`                     |
-| **Checkbox Array**     | `[formField]="form.tags"` (string[])          | Checkboxes ONLY bind to `boolean`                           |
+| Error Scenario         | WRONG (Common Mistake)                        | RIGHT (Correct Way)                                                              |
+| :--------------------- | :-------------------------------------------- | :------------------------------------------------------------------------------- |
+| **Accessing Flags**    | `form.field.valid()`                          | `form.field().valid()`                                                           |
+| **Accessing value**    | `form.field.value()`                          | `form.field().value()`                                                           |
+| **Setting value**      | `form.field.set(x)`                           | Update model signal: `this.model.update(...)`                                    |
+| **Form root flags**    | `form.invalid()`                              | `form().invalid()`                                                               |
+| **Double-calling**     | `form.field()()`                              | `form.field().value()`                                                           |
+| **Rules Context**      | `({ touched }) => touched()`                  | `({ state }) => state.touched()`                                                 |
+| **Calling Paths**      | `applyWhen(p.foo, () => p.foo() === 'x')`     | `applyWhen(p.foo, ({ valueOf }) => valueOf(p.foo) === 'x')`                      |
+| **applyWhen args**     | `applyWhen(condition, () => {...})`           | `applyWhen(path, condition, schemaFn)` - needs 3 args                            |
+| **Array length**       | `form.items().length`                         | `form.items.length` (structural)                                                 |
+| **Multi-select array** | `<select [formField]="form.tags">` (string[]) | Use checkboxes for array fields                                                  |
+| **readonly attribute** | `<input readonly [formField]>`                | Use `readonly()` rule in schema                                                  |
+| **min/max attributes** | `<input min="1" max="10">`                    | Use `min()` and `max()` rules in schema                                          |
+| **value binding**      | `<input [value]="val">`                       | Do NOT use `[value]` with `[formField]` (static `value` on radio/checkbox is OK) |
+| **when option**        | `pattern(p.x, /.../, {when: ...})`            | `when` only works with `required()`                                              |
+| **Submit callback**    | `submit(form, () => { ... })`                 | `submit(form, async () => { ... })`                                              |
+| **Async params**       | `params: s.field`                             | `params: ({ value }) => value()`                                                 |
+| **Async onError**      | Omitting `onError`                            | `onError` is REQUIRED in `validateAsync`                                         |
+| **resource() API**     | `request: signal`                             | `params: signal`                                                                 |
+| **applyEach args**     | `applyEach(s.items, (item, index) => ...)`    | `applyEach(s.items, (item) => ...)`                                              |
+| **Nested @for**        | `$parent.$index`                              | Use `let outerIndex = $index`                                                    |
+| **FormState import**   | `import { FormState }`                        | `FormState` does not exist, use `FieldState`                                     |
+| **Null in model**      | `signal({ name: null })`                      | `signal({ name: '' })` or `signal({ age: 0 })`                                   |
+| **Validate syntax**    | `validate(s.field, { value } => ...)`         | `validate(s.field, ({ value }) => ...)`                                          |
+| **Checkbox Array**     | `[formField]="form.tags"` (string[])          | Checkboxes ONLY bind to `boolean`                                                |
 
 ## Big Form Example
 
 ### `src/app/app.ts`
 
 ```ts
-import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {
   form,
   FormField,
@@ -553,13 +563,11 @@ import {
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [FormField],
   templateUrl: './app.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  model = signal({
+  protected readonly model = signal({
     personalInfo: {
       firstName: '',
       lastName: '',
@@ -577,7 +585,7 @@ export class App {
     companions: [] as Array<{name: string; relation: string}>,
   });
 
-  bookingForm = form(this.model, (s) => {
+  protected readonly bookingForm = form(this.model, (s) => {
     required(s.personalInfo.firstName, {message: 'First name is required'});
     required(s.personalInfo.lastName, {message: 'Last name is required'});
     required(s.personalInfo.email, {message: 'Email is required'});
@@ -598,7 +606,7 @@ export class App {
     });
 
     // valueOf is used to access values of other fields in rules
-    hidden(s.package.extras, ({valueOf}) => valueOf(s.package.tier) === 'economy');
+    hidden(s.package.extras, {when: ({valueOf}) => valueOf(s.package.tier) === 'economy'});
 
     applyEach(s.companions, (companion) => {
       required(companion.name, {message: 'Companion name required'});
@@ -822,7 +830,7 @@ min(s.age, 18); max(s.age, 99); // Then just:
 </select>
 
 <!-- OR - Map to boolean fields in the model -->
-model = signal({ hasWifi: false, hasGym: false });
+protected readonly model = signal({ hasWifi: false, hasGym: false });
 <input type="checkbox" [formField]="form.hasWifi" />
 ```
 
@@ -875,7 +883,7 @@ import {FormState} from '@angular/forms/signals';
 {{ totalPrice() | number:'1.2-2' }}
 
 <!-- RIGHT - format in the component -->
-totalPriceFormatted = computed(() => this.totalPrice().toFixed(2));
+protected readonly totalPriceFormatted = computed(() => this.totalPrice().toFixed(2));
 <!-- then: -->
 {{ totalPriceFormatted() }}
 ```

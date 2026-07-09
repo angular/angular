@@ -11,17 +11,17 @@ import {Component, input, computed} from '@angular/core';
 
 @Component({
   selector: 'app-user',
-  template: `<p>User: {{ name() }} ({{ age() }})</p>`,
+  template: `<p>{{ label() }} ({{ age() }})</p>`,
 })
 export class User {
   // Optional input with default value
-  name = input('Guest');
+  readonly name = input('Guest');
 
   // Required input
-  age = input.required<number>();
+  readonly age = input.required<number>();
 
   // Inputs are reactive signals
-  label = computed(() => `Name: ${this.name()}`);
+  protected readonly label = computed(() => `Name: ${this.name()}`);
 }
 ```
 
@@ -44,10 +44,10 @@ import { input, booleanAttribute } from '@angular/core';
 @Component({...})
 export class CustomButton {
   // Alias example
-  label = input('', { alias: 'btnLabel' });
+  readonly label = input('', { alias: 'btnLabel' });
 
   // Transform example using built-in helper
-  disabled = input(false, { transform: booleanAttribute });
+  readonly disabled = input(false, { transform: booleanAttribute });
 }
 ```
 
@@ -61,7 +61,7 @@ Use `model()` to create an input that supports two-way data binding.
   template: `<button (click)="increment()">+</button>`,
 })
 export class CustomCounter {
-  value = model(0);
+  readonly value = model(0);
 
   increment() {
     this.value.update((v) => v + 1);

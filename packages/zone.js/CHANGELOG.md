@@ -1,3 +1,9 @@
+## <small>0.16.2 (2026-05-06)</small>
+
+* feat(zone.js): support vitest patching in zone.js/testing (#68395) ([62c6e3b](https://github.com/angular/angular/commit/62c6e3b)), closes [#68395](https://github.com/angular/angular/issues/68395) [#68395](https://github.com/angular/angular/issues/68395)
+* fix(zone.js): allow draining microtasks in `Promise.then` (through flag) ([fc6a7ee](https://github.com/angular/angular/commit/fc6a7ee)), closes [angular#45273](https://github.com/angular/issues/45273) [angular#44446](https://github.com/angular/issues/44446) [angular#55590](https://github.com/angular/issues/55590) [angular#51328](https://github.com/angular/issues/51328)
+
+
 ## <small>0.16.1 (2026-02-18)</small>
 
 * fix(zone.js): support passthrough of Promise.try API ([fc557f0](https://github.com/angular/angular/commit/fc557f0)), closes [#67057](https://github.com/angular/angular/issues/67057)
@@ -396,7 +402,7 @@ import 'zone.js/dist/zone';
 ### Bug Fixes
 
 - **zone.js:** don't rely on global node typings outside of node/ directory ([#31783](https://github.com/angular/angular/issues/31783)) ([5c9a896](https://github.com/angular/angular/commit/5c9a896))
-- **zone.js:** should expose some other internal intefaces ([#31866](https://github.com/angular/angular/issues/31866)) ([f5c605b](https://github.com/angular/angular/commit/f5c605b))
+- **zone.js:** should expose some other internal interfaces ([#31866](https://github.com/angular/angular/issues/31866)) ([f5c605b](https://github.com/angular/angular/commit/f5c605b))
 
 <a name="0.10.0"></a>
 
@@ -879,7 +885,7 @@ import 'zone.js/dist/zone';
 ### Bug Fixes
 
 - **core:** remove debugger ([#639](https://github.com/angular/zone.js/issues/639)) ([0534b19](https://github.com/angular/zone.js/commit/0534b19))
-- **error:** fix [#618](https://github.com/angular/zone.js/issues/618), ZoneAwareError should copy Error's static propeties ([#647](https://github.com/angular/zone.js/issues/647)) ([2d30914](https://github.com/angular/zone.js/commit/2d30914))
+- **error:** fix [#618](https://github.com/angular/zone.js/issues/618), ZoneAwareError should copy Error's static properties ([#647](https://github.com/angular/zone.js/issues/647)) ([2d30914](https://github.com/angular/zone.js/commit/2d30914))
 - **jasmine:** support "pending" `it` clauses with no test body ([96cb3d0](https://github.com/angular/zone.js/commit/96cb3d0)), closes [#659](https://github.com/angular/zone.js/issues/659)
 - **minification:** fix [#607](https://github.com/angular/zone.js/issues/607) to change catch variable name to error/err ([#609](https://github.com/angular/zone.js/issues/609)) ([33d0d8d](https://github.com/angular/zone.js/commit/33d0d8d))
 - **node:** patch crypto as macroTask and add test cases for crypto, remove http patch ([#612](https://github.com/angular/zone.js/issues/612)) ([9e81037](https://github.com/angular/zone.js/commit/9e81037))

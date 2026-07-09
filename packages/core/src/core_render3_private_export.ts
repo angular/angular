@@ -16,7 +16,6 @@ export {
   ProfilerEvent as ɵProfilerEvent,
 } from '../primitives/devtools';
 export {compileNgModuleFactory as ɵcompileNgModuleFactory} from './application/application_ngmodule_factory_compiler';
-export {isBoundToModule as ɵisBoundToModule} from './application/application_ref';
 export {injectChangeDetectorRef as ɵinjectChangeDetectorRef} from './change_detection/change_detector_ref';
 export {createInjector as ɵcreateInjector} from './di/create_injector';
 export {
@@ -34,8 +33,10 @@ export {
 } from './metadata/ng_module_def';
 export {AfterRenderManager as ɵAfterRenderManager} from './render3/after_render/manager';
 export {inferTagNameFromDefinition as ɵinferTagNameFromDefinition} from './render3/component_ref';
+export {ɵɵenableIncrementalHydrationRuntime} from './hydration/incremental_runtime';
 export {getLContext as ɵgetLContext} from './render3/context_discovery';
 export {depsTracker as ɵdepsTracker} from './render3/deps_tracker/deps_tracker';
+export {getComponentInstanceDeepLinkId as ɵgetComponentInstanceDeepLinkId} from './render3/debug/chrome_dev_tools_performance';
 export {
   NG_COMP_DEF as ɵNG_COMP_DEF,
   NG_DIR_DEF as ɵNG_DIR_DEF,
@@ -150,6 +151,9 @@ export {
   ɵɵelementContainerStart,
   ɵɵelementEnd,
   ɵɵelementStart,
+  ɵɵforeignComponent,
+  ɵɵforeignContent,
+  ɵɵforeignContentFn,
   ɵɵenableBindings,
   ɵɵExternalStylesFeature,
   ɵɵFactoryDeclaration,
@@ -273,6 +277,7 @@ export {
   ɵɵngDeclareDirective,
   ɵɵngDeclareFactory,
   ɵɵngDeclareInjectable,
+  ɵɵngDeclareService,
   ɵɵngDeclareInjector,
   ɵɵngDeclareNgModule,
   ɵɵngDeclarePipe,
@@ -281,15 +286,20 @@ export {compilePipe as ɵcompilePipe} from './render3/jit/pipe';
 export {isNgModule as ɵisNgModule} from './render3/jit/util';
 export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
 export {
+  ControlFlowBlock as ɵControlFlowBlock,
   ControlFlowBlockType as ɵControlFlowBlockType,
   DeferBlockData as ɵDeferBlockData,
   ForLoopBlockData as ɵForLoopBlockData,
-  ControlFlowBlock as ɵControlFlowBlock,
 } from './render3/util/control_flow_types';
 export {
+  ExternalCoreGlobalUtils as ɵExternalCoreGlobalUtils,
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
-  GlobalDevModeUtils as ɵGlobalDevModeUtils,
 } from './render3/util/global_utils';
+export {
+  DebugSignalGraph as ɵDebugSignalGraph,
+  DebugSignalGraphEdge as ɵDebugSignalGraphEdge,
+  DebugSignalGraphNode as ɵDebugSignalGraphNode,
+} from './render3/util/signal_debug';
 export {getTransferState as ɵgetTransferState} from './render3/util/transfer_state_utils';
 export {
   isViewDirty as ɵisViewDirty,

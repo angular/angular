@@ -7,11 +7,9 @@ Get started with Angular quickly with online starters or locally with your termi
 
 If you just want to play around with Angular in your browser without setting up a project, you can use our online sandbox:
 
-<docs-card-container>
-  <docs-card title="" href="/playground" link="Open on Playground">
-  The fastest way to play with an Angular app. No setup required.
-  </docs-card>
-</docs-card-container>
+<docs-card title="Playground" href="/playground" link="Open on Playground" iconImgSrc="adev/src/assets/icons/playground.svg" titleInline>
+The fastest way to play with an Angular app. No setup required.
+</docs-card>
 
 ## Set up a new project locally
 
@@ -21,7 +19,7 @@ If you're starting a new project, you'll most likely want to create a local proj
 
 - **Node.js** - [v20.19.0 or newer](/reference/versions)
 - **Text editor** - We recommend [Visual Studio Code](https://code.visualstudio.com/)
-- **Terminal** - Required for running Angular CLI commands
+- **Terminal** - Required for running [Angular CLI](/tools/cli) commands
 - **Development Tool** - To improve your development workflow, we recommend the [Angular Language Service](/tools/language-service)
 
 ### Instructions
@@ -57,14 +55,13 @@ Open a terminal (if you're using [Visual Studio Code](https://code.visualstudio.
     >
     bun install -g @angular/cli
     </docs-code>
-
 </docs-code-multifile>
 
 If you are having issues running this command in Windows or Unix, check out the [CLI docs](/tools/cli/setup-local#install-the-angular-cli) for more info.
 
 #### Create a new project
 
-In your terminal, run the CLI command `ng new` with the desired project name. In the following examples, we'll be using the example project name of `my-first-angular-app`.
+In your terminal, run the CLI command [`ng new`](cli/new) with the desired project name. In the following examples, we'll be using the example project name of `my-first-angular-app`.
 
 ```shell
 ng new <project-name>

@@ -431,7 +431,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-drop.ts",
         "startLine": 19,
-        "endLine": 49
+        "endLine": 46
       }
     },
     {
@@ -483,19 +483,6 @@
       }
     },
     {
-      "name": "CDK_DROP_LIST_GROUP",
-      "type": "any",
-      "entryType": "constant",
-      "rawComment": "/**\n * Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as\n * alternative token to the actual `CdkDropListGroup` class which could cause unnecessary\n * retention of the class and its directive metadata.\n */",
-      "description": "Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as\nalternative token to the actual `CdkDropListGroup` class which could cause unnecessary\nretention of the class and its directive metadata.",
-      "jsdocTags": [],
-      "source": {
-        "filePath": "/src/cdk/drag-drop/directives/drop-list-group.ts",
-        "startLine": 16,
-        "endLine": 18
-      }
-    },
-    {
       "name": "CdkDragRelease",
       "entryType": "interface",
       "members": [
@@ -534,6 +521,19 @@
       }
     },
     {
+      "name": "CDK_DROP_LIST_GROUP",
+      "type": "any",
+      "entryType": "constant",
+      "rawComment": "/**\n * Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as\n * alternative token to the actual `CdkDropListGroup` class which could cause unnecessary\n * retention of the class and its directive metadata.\n */",
+      "description": "Injection token that can be used to reference instances of `CdkDropListGroup`. It serves as\nalternative token to the actual `CdkDropListGroup` class which could cause unnecessary\nretention of the class and its directive metadata.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/cdk/drag-drop/directives/drop-list-group.ts",
+        "startLine": 17,
+        "endLine": 19
+      }
+    },
+    {
       "name": "CDK_DRAG_PLACEHOLDER",
       "type": "any",
       "entryType": "constant",
@@ -557,70 +557,6 @@
         "filePath": "/src/cdk/drag-drop/directives/drag-preview.ts",
         "startLine": 25,
         "endLine": 25
-      }
-    },
-    {
-      "name": "CdkDropListGroup",
-      "isAbstract": false,
-      "entryType": "undecorated_class",
-      "members": [
-        {
-          "name": "disabled",
-          "type": "boolean",
-          "memberType": "property",
-          "memberTags": [],
-          "description": "Whether starting a dragging sequence from inside this group is disabled.",
-          "jsdocTags": []
-        },
-        {
-          "name": "ngOnDestroy",
-          "signatures": [
-            {
-              "name": "ngOnDestroy",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnDestroy",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        }
-      ],
-      "generics": [
-        {
-          "name": "T"
-        }
-      ],
-      "description": "Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`\nelements that are placed inside a `cdkDropListGroup` will be connected to each other\nautomatically. Can be used as an alternative to the `cdkDropListConnectedTo` input\nfrom `cdkDropList`.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`\n * elements that are placed inside a `cdkDropListGroup` will be connected to each other\n * automatically. Can be used as an alternative to the `cdkDropListConnectedTo` input\n * from `cdkDropList`.\n */",
-      "implements": [
-        "OnDestroy"
-      ],
-      "source": {
-        "filePath": "/src/cdk/drag-drop/directives/drop-list-group.ts",
-        "startLine": 26,
-        "endLine": 42
       }
     },
     {
@@ -703,7 +639,71 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag-placeholder.ts",
         "startLine": 23,
-        "endLine": 44
+        "endLine": 42
+      }
+    },
+    {
+      "name": "CdkDropListGroup",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether starting a dragging sequence from inside this group is disabled.",
+          "jsdocTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "T"
+        }
+      ],
+      "description": "Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`\nelements that are placed inside a `cdkDropListGroup` will be connected to each other\nautomatically. Can be used as an alternative to the `cdkDropListConnectedTo` input\nfrom `cdkDropList`.",
+      "jsdocTags": [],
+      "rawComment": "/**\n * Declaratively connects sibling `cdkDropList` instances together. All of the `cdkDropList`\n * elements that are placed inside a `cdkDropListGroup` will be connected to each other\n * automatically. Can be used as an alternative to the `cdkDropListConnectedTo` input\n * from `cdkDropList`.\n */",
+      "implements": [
+        "OnDestroy"
+      ],
+      "source": {
+        "filePath": "/src/cdk/drag-drop/directives/drop-list-group.ts",
+        "startLine": 27,
+        "endLine": 43
       }
     },
     {
@@ -784,7 +784,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag-preview.ts",
         "startLine": 31,
-        "endLine": 55
+        "endLine": 53
       }
     },
     {
@@ -1315,7 +1315,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag-handle.ts",
         "startLine": 33,
-        "endLine": 89
+        "endLine": 87
       }
     },
     {
@@ -1663,7 +1663,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drop-list.ts",
         "startLine": 36,
-        "endLine": 436
+        "endLine": 434
       }
     },
     {
@@ -2405,8 +2405,8 @@
       ],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-drop-registry.ts",
-        "startLine": 59,
-        "endLine": 336
+        "startLine": 57,
+        "endLine": 331
       }
     },
     {
@@ -3376,7 +3376,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag.ts",
         "startLine": 60,
-        "endLine": 617
+        "endLine": 615
       }
     },
     {
@@ -4049,10 +4049,6 @@
                 {
                   "name": "param",
                   "comment": "Event that triggered the dropping sequence."
-                },
-                {
-                  "name": "breaking-change",
-                  "comment": "15.0.0 `previousIndex` and `event` parameters to become required."
                 }
               ],
               "params": [
@@ -4109,11 +4105,11 @@
                   "name": "event",
                   "description": "Event that triggered the dropping sequence.",
                   "type": "MouseEvent | TouchEvent",
-                  "isOptional": true,
+                  "isOptional": false,
                   "isRestParam": false
                 }
               ],
-              "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   *\n   * @breaking-change 15.0.0 `previousIndex` and `event` parameters to become required.\n   */",
+              "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   */",
               "returnType": "void"
             }
           ],
@@ -4172,7 +4168,7 @@
                 "name": "event",
                 "description": "Event that triggered the dropping sequence.",
                 "type": "MouseEvent | TouchEvent",
-                "isOptional": true,
+                "isOptional": false,
                 "isRestParam": false
               }
             ],
@@ -4210,13 +4206,9 @@
               {
                 "name": "param",
                 "comment": "Event that triggered the dropping sequence."
-              },
-              {
-                "name": "breaking-change",
-                "comment": "15.0.0 `previousIndex` and `event` parameters to become required."
               }
             ],
-            "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   *\n   * @breaking-change 15.0.0 `previousIndex` and `event` parameters to become required.\n   */"
+            "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   */"
           },
           "entryType": "function",
           "description": "Drops an item into this container.",
@@ -4248,13 +4240,9 @@
             {
               "name": "param",
               "comment": "Event that triggered the dropping sequence."
-            },
-            {
-              "name": "breaking-change",
-              "comment": "15.0.0 `previousIndex` and `event` parameters to become required."
             }
           ],
-          "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   *\n   * @breaking-change 15.0.0 `previousIndex` and `event` parameters to become required.\n   */",
+          "rawComment": "/**\n   * Drops an item into this container.\n   * @param item Item being dropped into the container.\n   * @param currentIndex Index at which the item should be inserted.\n   * @param previousIndex Index of the item when dragging started.\n   * @param previousContainer Container from which the item got dragged in.\n   * @param isPointerOverContainer Whether the user's pointer was over the\n   *    container when the item was dropped.\n   * @param distance Distance the user has dragged since the start of the dragging sequence.\n   * @param event Event that triggered the dropping sequence.\n   */",
           "memberType": "method",
           "memberTags": []
         },
@@ -4835,7 +4823,7 @@
       "source": {
         "filePath": "/src/cdk/drag-drop/drop-list-ref.ts",
         "startLine": 73,
-        "endLine": 805
+        "endLine": 803
       }
     },
     {
@@ -6274,7 +6262,7 @@
       "@angular/core"
     ],
     [
-      "Injectable",
+      "Service",
       "@angular/core"
     ],
     [
@@ -6294,11 +6282,11 @@
       "@angular/core"
     ],
     [
-      "OnDestroy",
+      "Input",
       "@angular/core"
     ],
     [
-      "Input",
+      "OnDestroy",
       "@angular/core"
     ],
     [
@@ -6327,10 +6315,6 @@
     ],
     [
       "ChangeDetectorRef",
-      "@angular/core"
-    ],
-    [
-      "ChangeDetectionStrategy",
       "@angular/core"
     ],
     [
@@ -6422,11 +6406,11 @@
       "@angular/cdk/drag-drop"
     ],
     [
-      "CDK_DROP_LIST_GROUP",
+      "CdkDragRelease",
       "@angular/cdk/drag-drop"
     ],
     [
-      "CdkDragRelease",
+      "CDK_DROP_LIST_GROUP",
       "@angular/cdk/drag-drop"
     ],
     [
@@ -6438,11 +6422,11 @@
       "@angular/cdk/drag-drop"
     ],
     [
-      "CdkDropListGroup",
+      "CdkDragPlaceholder",
       "@angular/cdk/drag-drop"
     ],
     [
-      "CdkDragPlaceholder",
+      "CdkDropListGroup",
       "@angular/cdk/drag-drop"
     ],
     [
@@ -6594,10 +6578,6 @@
       "@angular/cdk/drag-drop"
     ],
     [
-      "CDK_DROP_LIST_GROUP",
-      "@angular/cdk/drag-drop"
-    ],
-    [
       "CdkDragRelease",
       "@angular/cdk/drag-drop"
     ],
@@ -6610,23 +6590,15 @@
       "@angular/cdk/drag-drop"
     ],
     [
+      "CDK_DROP_LIST_GROUP",
+      "@angular/cdk/drag-drop"
+    ],
+    [
       "CDK_DRAG_PLACEHOLDER",
       "@angular/cdk/drag-drop"
     ],
     [
       "CDK_DRAG_PREVIEW",
-      "@angular/cdk/drag-drop"
-    ],
-    [
-      "CdkDropListGroup",
-      "@angular/cdk/drag-drop"
-    ],
-    [
-      "CdkDropListGroup.disabled",
-      "@angular/cdk/drag-drop"
-    ],
-    [
-      "CdkDropListGroup.ngOnDestroy",
       "@angular/cdk/drag-drop"
     ],
     [
@@ -6643,6 +6615,18 @@
     ],
     [
       "CdkDragPlaceholder.ngOnDestroy",
+      "@angular/cdk/drag-drop"
+    ],
+    [
+      "CdkDropListGroup",
+      "@angular/cdk/drag-drop"
+    ],
+    [
+      "CdkDropListGroup.disabled",
+      "@angular/cdk/drag-drop"
+    ],
+    [
+      "CdkDropListGroup.ngOnDestroy",
       "@angular/cdk/drag-drop"
     ],
     [

@@ -7,12 +7,12 @@
  */
 
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {Injectable, inject} from '@angular/core';
+import {Service, inject} from '@angular/core';
 import {DocContent, DocsContentLoader} from '@angular/docs';
 import {firstValueFrom} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-@Injectable()
+@Service({autoProvided: false})
 export class ContentLoader implements DocsContentLoader {
   private readonly cache = new Map<string, Promise<DocContent>>();
   private readonly httpClient = inject(HttpClient);

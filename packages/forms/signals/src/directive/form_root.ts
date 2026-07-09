@@ -28,8 +28,9 @@ import {FieldNode} from '../field/node';
  * </form>
  * ```
  *
- * @publicApi
- * @experimental 21.0.0
+ * @see [Setting up form submission with FormRoot](guide/forms/signals/form-submission#setting-up-form-submission-with-formroot)
+ *
+ * @publicApi 22.0
  */
 @Directive({
   selector: 'form[formRoot]',

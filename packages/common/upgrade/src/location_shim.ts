@@ -27,8 +27,6 @@ const DEFAULT_PORTS: {[key: string]: number} = {
  * Location service that provides a drop-in replacement for the $location service
  * provided in AngularJS.
  *
- * @see [Using the Angular Unified Location Service](guide/upgrade#using-the-unified-angular-location-service)
- *
  * @publicApi
  */
 export class $locationShim {

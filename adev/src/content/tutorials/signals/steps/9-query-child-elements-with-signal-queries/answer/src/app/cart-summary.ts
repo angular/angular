@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, input, signal, ChangeDetectionStrategy} from '@angular/core';
+import {Component, DestroyRef, inject, input, signal} from '@angular/core';
 
 @Component({
   selector: 'cart-summary',
@@ -13,7 +13,6 @@ import {Component, DestroyRef, inject, input, signal, ChangeDetectionStrategy} f
     </div>
   `,
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CartSummary {
   itemCount = input.required<number>();

@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, ɵparseCookieValue as parseCookieValue, PlatformLocation} from '../../index';
 import {
   EnvironmentInjector,
   inject,
   Injectable,
   InjectionToken,
   runInInjectionContext,
+  Service,
 } from '@angular/core';
 import {Observable} from 'rxjs';
+import {DOCUMENT, ɵparseCookieValue as parseCookieValue, PlatformLocation} from '../../index';
 
 import {HttpHandler} from './backend';
 import {HttpHandlerFn, HttpInterceptor} from './interceptor';
@@ -48,7 +49,7 @@ export const XSRF_HEADER_NAME = new InjectionToken<string>(
 /**
  * `HttpXsrfTokenExtractor` which retrieves the token from a cookie.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
   private readonly cookieName = inject(XSRF_COOKIE_NAME);
   private readonly doc = inject(DOCUMENT);

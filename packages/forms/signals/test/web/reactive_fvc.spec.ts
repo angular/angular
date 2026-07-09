@@ -15,7 +15,7 @@ import {
   NgControl,
   ReactiveFormsModule,
   Validators,
-  ɵFORM_FIELD_PARSE_ERRORS,
+  ɵFORM_CONTROL_INTEGRATION,
   ControlValueAccessor,
 } from '@angular/forms';
 
@@ -369,9 +369,9 @@ describe('error bindings', () => {
     class MyParsingInput {
       readonly value = model('');
       constructor() {
-        const parseErrorsToken = inject(ɵFORM_FIELD_PARSE_ERRORS, {optional: true, self: true});
+        const parseErrorsToken = inject(ɵFORM_CONTROL_INTEGRATION, {optional: true, self: true});
         if (parseErrorsToken) {
-          parseErrorsToken.set(
+          parseErrorsToken.setParseErrors(
             computed(() => {
               return this.value() === 'INVALID' ? [{kind: 'parse', reason: 'cannot parse'}] : [];
             }),
@@ -413,9 +413,11 @@ describe('error bindings', () => {
     class MyParsingInput {
       readonly value = model('');
       constructor() {
-        const parseErrorsToken = inject(ɵFORM_FIELD_PARSE_ERRORS, {optional: true, self: true});
+        const parseErrorsToken = inject(ɵFORM_CONTROL_INTEGRATION, {optional: true, self: true});
         if (parseErrorsToken) {
-          parseErrorsToken.set(computed(() => (this.value() === 'BAD' ? [{kind: 'parse'}] : [])));
+          parseErrorsToken.setParseErrors(
+            computed(() => (this.value() === 'BAD' ? [{kind: 'parse'}] : [])),
+          );
         }
       }
     }
@@ -457,9 +459,11 @@ describe('error bindings', () => {
     class MyParsingInput {
       readonly value = model('');
       constructor() {
-        const parseErrorsToken = inject(ɵFORM_FIELD_PARSE_ERRORS, {optional: true, self: true});
+        const parseErrorsToken = inject(ɵFORM_CONTROL_INTEGRATION, {optional: true, self: true});
         if (parseErrorsToken) {
-          parseErrorsToken.set(computed(() => (this.value() === 'BAD' ? [{kind: 'parse'}] : [])));
+          parseErrorsToken.setParseErrors(
+            computed(() => (this.value() === 'BAD' ? [{kind: 'parse'}] : [])),
+          );
         }
       }
     }

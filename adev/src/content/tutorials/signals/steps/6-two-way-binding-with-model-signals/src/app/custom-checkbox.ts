@@ -1,5 +1,5 @@
 // TODO: Import model and input from @angular/core
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'custom-checkbox',
@@ -10,7 +10,6 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
       <!-- TODO: Display label -->
     </label>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomCheckbox {
   // TODO: Add model signal for two-way binding

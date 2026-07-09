@@ -36,8 +36,9 @@
 
 version: 3
 
-#availability:
-#  users_unavailable: []
+availability:
+  users_unavailable:
+    - devversion
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -99,11 +100,11 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - crisbeto
         - devversion
-        - thePunderWoman
+        - ~thePunderWoman
         - kirjs
         - JoostK
         - ~amishne
@@ -145,12 +146,12 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - crisbeto
         - devversion
         - kirjs
-        - thePunderWoman
+        - ~thePunderWoman
         - ~pkozlowski-opensource
         - JeanMeche
         - ~amishne
@@ -200,12 +201,12 @@ groups:
       users:
         - ~JiaLiPassion
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - crisbeto
         - devversion
         - kirjs
-        - thePunderWoman
+        - ~thePunderWoman
         - ~pkozlowski-opensource
         - ~amishne
         - ~leonsenft
@@ -250,13 +251,13 @@ groups:
       users:
         - alan-agius4
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - bencodezen
         - crisbeto
         - kirjs
         - JeanMeche
-        - thePunderWoman
+        - ~thePunderWoman
         - devversion
         - josephperrott
         - ~pkozlowski-opensource
@@ -282,13 +283,14 @@ groups:
     reviewers:
       users:
         - AleksanderBodurri
+        - csmick
         - ~devversion
         - dgp1130
+        - eduhmc
         - hawkgs
-        - hybrist
-        - ~josephperrott
         - JeanMeche
-        - milomg
+        - ~josephperrott
+        - ~milomg
 
   # =========================================================
   #  Dev-infra
@@ -323,12 +325,9 @@ groups:
           'third_party/**/{*,.*}',
           'tools/contributing-stats/**/{*,.*}',
           'tools/gulp-tasks/**/{*,.*}',
-          'tools/legacy-saucelabs/**/{*,.*}',
           'tools/manual_api_docs/**/{*,.*}',
           'tools/pnpm-patches/**/{*,.*}',
           'tools/rxjs/**/{*,.*}',
-          'tools/saucelabs-daemon/**/{*,.*}',
-          'tools/saucelabs/**/{*,.*}',
           'tools/symbol-extractor/**/{*,.*}',
           'tools/testing/**/{*,.*}',
           'tools/tslint/**/{*,.*}',
@@ -372,10 +371,10 @@ groups:
         ])
     reviewers:
       users:
-        - AndrewKushnir
+        - ~AndrewKushnir
         - ~alxhub
         - atscott
-        - thePunderWoman
+        - ~thePunderWoman
         - ~pkozlowski-opensource
         - kirjs
         - crisbeto
@@ -408,10 +407,11 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - kirjs
-        - thePunderWoman
+        - JeanMeche
+        - ~thePunderWoman
         - ~pkozlowski-opensource
         - ~amishne
         - ~leonsenft
@@ -456,10 +456,10 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - andrewseguin
         - dgp1130
-        - thePunderWoman
+        - ~thePunderWoman
         - josephperrott
 
   # =========================================================
@@ -478,8 +478,8 @@ groups:
       users:
         - ~pkozlowski-opensource # Pawel Kozlowski
         - ~alxhub # Alex Rickabaugh
-        - thePunderWoman # Jessica Janiuk
-        - AndrewKushnir # Andrew Kushnir
+        - ~thePunderWoman # Jessica Janiuk
+        - ~AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
 
   # External team required reviews
@@ -487,7 +487,7 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude('packages/core/primitives/**/*spec.ts'), [
           'packages/core/primitives/**/{*,.*}',
         ])
     reviewers:

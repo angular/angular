@@ -92,7 +92,7 @@ Choose one of the following browser providers based on your needs:
 
 - **Playwright**: `@vitest/browser-playwright` for Chromium, Firefox, and WebKit.
 - **WebdriverIO**: `@vitest/browser-webdriverio` for Chrome, Firefox, Safari, and Edge.
-- **Preview**: `@vitest/browser-preview` for Webcontainer environments (like StackBlitz).
+- **Preview**: `@vitest/browser-preview` for WebContainer environments (like StackBlitz).
 
 <docs-code-multifile>
   <docs-code header="npm" language="shell">
@@ -131,8 +131,6 @@ Add the `browsers` option to your `test` target's options. The browser name depe
 ```
 
 Headless mode is enabled automatically if the `CI` environment variable is set or if a browser name includes "Headless" (e.g., `ChromeHeadless`). Otherwise, tests will run in a headed browser.
-
-NOTE: Debugging with `ng test --debug` is not supported by browser mode.
 
 ## Automated test refactoring with schematics
 
@@ -225,10 +223,13 @@ Provide a direct path to a Vitest configuration file in your `angular.json`:
 **2. Automatic search for base configuration:**
 If you set `runnerConfig` to `true`, the builder will automatically search for a shared `vitest-base.config.*` file in your project and workspace roots.
 
-## `zone.js` based helpers are not supported
+## `zone.js` Vitest patch
 
-The zone.js patches are not applied when running tests with Vitest, therefore you won't be able to use functions like `fakeAsync`, `flush` or `waitForAsync`.
-To migrate to Vitest you will also need to migrate your tests to native async and Vitest fake timers. See [an example here](/guide/testing/components-scenarios#async-test-with-a-vitest-fake-timers) for fake timers usages with Vitest.
+In order to use functions like `fakeAsync`, `flush` or `waitForAsync`, or to enable your existing tests to work with them, you can add `zone.js/plugins/vitest-patch` to your test target polyfills in `angular.json`.
+
+Regardless, we strongly recommend you start planning to convert your existing test suites to native `async` and Vitest fake timers, since this is the established approach.
+
+See [an example here](/guide/testing/components-scenarios#async-test-with-a-vitest-fake-timers) for fake timers usage with Vitest.
 
 ## Bug reports
 

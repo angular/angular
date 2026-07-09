@@ -28,7 +28,7 @@ preferably with a small repro.
 - Whip up prototypes and proofs of concept.
 
 - Share examples with the community in a web coding environment such as Plunker or CodePen.
-  Create Angular issues and StackOverflow answers supported by live code.
+  Create Angular issues and Stack Overflow answers supported by live code.
 
 - Simulate operations against data collections that aren't yet implemented on your dev/test server.
   You can pass requests thru to the dev/test server for collections that are supported.

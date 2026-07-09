@@ -143,5 +143,26 @@ describe('internal utilities', () => {
       );
       ref.destroy();
     });
+
+    it('should be able to skip over components', () => {
+      @Component({
+        selector: 'comp',
+        template: '<div class="target"></div>',
+      })
+      class Comp {}
+
+      @Component({
+        template: `<section><comp /></section>`,
+        imports: [Comp],
+      })
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const target = fixture.nativeElement.querySelector('.target');
+
+      expect(getClosestComponentName(target)).toBe('Comp');
+      expect(getClosestComponentName(target, (el) => el.tagName !== 'COMP')).toBe('App');
+    });
   });
 });

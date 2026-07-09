@@ -6,15 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ɵFramework as Framework,
-  computed,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import {Component, ɵFramework as Framework, computed, input, output, signal} from '@angular/core';
 import {MatExpansionModule} from '@angular/material/expansion';
 
 import {DirectivePosition} from '../../../../../../../../protocol';
@@ -40,7 +32,6 @@ import {PropActionsMenuComponent} from './prop-actions-menu/prop-actions-menu.co
     ObjectTreeExplorerComponent,
     PropActionsMenuComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewBodyComponent {
   readonly controller = input.required<DirectivePropertyResolver>();

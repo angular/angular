@@ -115,6 +115,7 @@ export class CompatStructure extends FieldNodeStructure {
   override readonly childrenMap = computed(() => undefined);
   override readonly parent: ParentFieldNode | undefined;
   override readonly fieldManager: FormFieldManager;
+  override readonly isOrphaned: Signal<boolean>;
 
   constructor(node: FieldNode, options: CompatFieldNodeOptions) {
     super(options.logic, node, () => {
@@ -130,7 +131,14 @@ export class CompatStructure extends FieldNodeStructure {
 
     const identityInParent = options.kind === 'child' ? options.identityInParent : undefined;
     const initialKeyInParent = options.kind === 'child' ? options.initialKeyInParent : undefined;
-    this.keyInParent = this.createKeyInParent(options, identityInParent, initialKeyInParent);
+
+    const signals = this.createKeyOrOrphanSignals(
+      options.kind,
+      identityInParent,
+      initialKeyInParent,
+    );
+    this.keyInParent = signals.keyInParent;
+    this.isOrphaned = signals.isOrphaned;
 
     this.pathKeys = computed(() =>
       this.parent ? [...this.parent.structure.pathKeys(), this.keyInParent()] : [],

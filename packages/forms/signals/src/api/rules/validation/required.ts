@@ -28,7 +28,7 @@ import {requiredError} from './validation_errors';
  *
  * @see [Signal Form Required Validation](guide/forms/signals/validation#required)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

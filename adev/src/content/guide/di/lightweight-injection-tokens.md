@@ -56,7 +56,7 @@ This is because `LibCard` actually contains two references to the `LibHeader`:
 readonly header = contentChild(LibHeader);
 ```
 
-- One of these reference is in the _type position_-- that is, it specifies `LibHeader` as a type: `readonly header: Signal<LibHeader|undefined>`.
+- One of these references is in the _type position_-- that is, it specifies `LibHeader` as a type: `readonly header: Signal<LibHeader|undefined>`.
 - The other reference is in the _value position_-- that is, `LibHeader` is the value passed into the `contentChild` function: `contentChild(LibHeader)`.
 
 The compiler handles token references in these positions differently:

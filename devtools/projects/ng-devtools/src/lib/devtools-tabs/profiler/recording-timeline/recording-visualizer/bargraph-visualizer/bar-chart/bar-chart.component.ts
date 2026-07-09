@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
+import {Component, computed, input, output} from '@angular/core';
 
 import {BargraphNode} from '../../../record-formatter/bargraph-formatter/bargraph-formatter';
 
@@ -22,7 +22,6 @@ interface BarData {
   selector: 'ng-bar-chart',
   templateUrl: './bar-chart.component.html',
   styleUrls: ['./bar-chart.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BarChartComponent {
   readonly data = input<BargraphNode[]>([]);

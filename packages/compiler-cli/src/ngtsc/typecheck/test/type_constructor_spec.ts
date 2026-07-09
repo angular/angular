@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import ts from 'typescript';
+import {ClassPropertyMapping, TcbInputMapping} from '@angular/compiler';
 
 import {
   absoluteFrom,
+  absoluteFromSourceFile,
   getFileSystem,
   getSourceFileOrError,
   LogicalFileSystem,
@@ -23,22 +25,17 @@ import {
   Reference,
   ReferenceEmitter,
 } from '../../imports';
-import {ClassPropertyMapping, InputMapping} from '../../metadata';
+import {InputMapping} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
-import {TsCreateProgramDriver, UpdateMode} from '../../program_driver';
+import {InliningMode, TsCreateProgramDriver, UpdateMode} from '../../program_driver';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {
-  InliningMode,
-  PendingFileTypeCheckingData,
-  TypeCheckContextImpl,
-  TypeCheckingHost,
-} from '../src/context';
+import {PendingFileTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from '../src/context';
 import {DirectiveSourceManager} from '../src/source';
 import {TypeCheckFile} from '../src/type_check_file';
+import {TypeCheckShimGenerator} from '../src/shim';
 import {ALL_ENABLED_CONFIG} from '../testing';
-import {TcbInputMapping} from '../api';
 
 runInEachFileSystem(() => {
   describe('ngtsc typechecking', () => {
@@ -62,7 +59,6 @@ runInEachFileSystem(() => {
         _('/_typecheck_.ts'),
         ALL_ENABLED_CONFIG,
         new ReferenceEmitter([]),
-        /* reflector */ null!,
         host,
       );
       const sf = file.render();

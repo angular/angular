@@ -6,15 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
+import {Component, computed, input, output} from '@angular/core';
 import {PropType} from '../../../../../../protocol';
 import {FlatNode} from '../object-tree-types';
+import {PropValueHighlighterDirective} from '../prop-value-highlighter/prop-value-highlighter.directive';
 
 @Component({
   selector: 'ng-property-preview',
   templateUrl: './property-preview.component.html',
-  styleUrls: ['./property-preview.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: [
+    './property-preview.component.scss',
+    '../prop-value-highlighter/prop-value-highlighter.scss',
+  ],
+  imports: [PropValueHighlighterDirective],
 })
 export class PropertyPreviewComponent {
   readonly node = input.required<FlatNode>();

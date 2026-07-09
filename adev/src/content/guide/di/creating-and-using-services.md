@@ -1,26 +1,25 @@
 # Creating and using services
 
-Services are reusable pieces of code that can be shared across your Angular application. They typically handle data fetching, business logic, or other functionality that multiple components need to access.
+Services are reusable pieces of code that you can share across your Angular application. You commonly use them to handle data fetching, business logic, or other functionality that multiple components need to access.
 
 ## Creating a service
 
-You can create a service with the [Angular CLI](tools/cli) with the following command:
+You can create a service using the [Angular CLI](tools/cli) with the following command:
 
 ```bash
 ng generate service CUSTOM_NAME
 ```
 
-This creates a dedicated `CUSTOM_NAME.ts` file in your `src` directory.
+This command creates a dedicated `CUSTOM_NAME.ts` file in your `src` directory.
 
-You can also manually create a service by adding the `@Injectable()` decorator to a TypeScript class. This tells Angular that the service can be injected as a dependency.
+You can also manually create a service by adding the `@Service()` decorator to a TypeScript class. This tells Angular that you can use the class as an injectable dependency.
 
-Here is an example of a service that allows users to add and request data:
+The following example defines a service that allows users to add and retrieve data:
 
-```ts
-// 📄 src/app/basic-data-store.ts
-import {Injectable} from '@angular/core';
+```ts {header: "src/app/basic-data-store.ts"}
+import {Service} from '@angular/core';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class BasicDataStore {
   private data: string[] = [];
 
@@ -36,13 +35,81 @@ export class BasicDataStore {
 
 ## How services become available
 
-When you use `@Injectable({ providedIn: 'root' })` in your service, Angular:
+Services are provisioned at the root level by default. When a service is provided globally, Angular guarantees three main benefits:
 
-- **Creates a single instance** (singleton) for your entire application
-- **Makes it available everywhere** without any additional configuration
-- **Enables tree-shaking** so the service is only included in your JavaScript bundle if it's actually used
+- **Singleton Instance:** Creates a single, shared instance for the entire application.
+- **Global Availability:** Automatically accessible anywhere without manual provider registration.
+- **Tree-shakability:** Ensures the service is excluded from the final production bundle if your code never explicitly uses it.
 
-This is the recommended approach for most services.
+### Using the `@Service` vs `@Injectable` decorator
+
+The `@Service` decorator serves as a modern, ergonomic shorthand for the traditional `@Injectable({ providedIn: 'root' })` syntax.
+
+Use this quick reference to decide which decorator fits your scenario:
+
+| Feature / Requirement                         | `@Service` | `@Injectable`                           |
+| --------------------------------------------- | ---------- | --------------------------------------- |
+| **`inject()` function support**               | Yes        | Yes                                     |
+| **Constructor-based DI**                      | ❌ No      | Yes                                     |
+| **Implicit root singleton provider**          | Yes        | ❌ No (requires `{providedIn: 'root'}`) |
+| **Advanced provider keys (`useClass`, etc.)** | ❌ No      | Yes                                     |
+| **Custom initialization factories**           | Yes        | Yes                                     |
+| **Non-root scopes (`platform`, etc.)**        | ❌ No      | Yes                                     |
+
+### Replacing the implementation with a factory
+
+If you need to control how the singleton is created, for example, to swap in a different implementation depending on the environment, pass a `factory` function.
+
+The factory runs in an [injection context](guide/di/dependency-injection-context), so you can use [`inject()`](api/core/inject) inside it to read other dependencies.
+
+The following `Analytics` service is a no-op locally so events don't pollute the console during development. In production, the factory reads an `ANALYTICS_ENABLED` token and returns a `GoogleAnalytics` subclass that forwards events to the real tracker:
+
+```ts {header: "src/app/analytics.ts"}
+import {inject, InjectionToken, Service} from '@angular/core';
+import {ANALYTICS_ENABLED} from './token';
+
+@Service({
+  factory: () => (inject(ANALYTICS_ENABLED) ? new GoogleAnalytics() : new Analytics()),
+})
+export class Analytics {
+  track(event: string, payload?: Record<string, unknown>) {
+    // No-op by default.
+  }
+}
+
+class GoogleAnalytics extends Analytics {
+  override track(event: string, payload?: Record<string, unknown>) {
+    // Dispatches an analytics event to Google Analytics
+  }
+}
+```
+
+NOTE: The `factory` option replaces the `useClass`, `useValue`, `useExisting`, and `useFactory` options of `@Injectable`. If you need any of those, keep using `@Injectable`.
+
+### Opting out of automatic provisioning
+
+By default, `@Service` provides the class at the root injector. If you want to provide it manually, for example, to scope it to a specific route or component, set `autoProvided: false`:
+
+```ts {header: "src/app/analytics-logger.ts"}
+import {Service} from '@angular/core';
+
+@Service({autoProvided: false})
+export class AnalyticsLogger {
+  trackEvent(name: string) {
+    console.log('event:', name);
+  }
+}
+```
+
+You are then responsible for adding the service to a `providers` array, just like with a plain `@Injectable()`:
+
+### When to use `@Service` vs `@Injectable`
+
+Reach for `@Service` when you are creating a new singleton class that uses `inject()` for its dependencies. Keep using `@Injectable` when you need any of the following:
+
+- **Constructor-based dependency injection.** `@Service` only supports the [`inject()`](api/core/inject) function.
+- **Advanced provider configuration** such as `useClass`, `useValue`, `useExisting`, or `useFactory`. `@Service` exposes a single `factory` option instead.
+- **Non-root scopes** such as `providedIn: 'platform'`.
 
 ## Injecting a service
 
@@ -71,12 +138,10 @@ export class Example {
 ### Injecting into another service
 
 ```ts
-import {inject, Injectable} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {AdvancedDataStore} from './advanced-data-store';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class BasicDataStore {
   private advancedDataStore = inject(AdvancedDataStore);
   private data: string[] = [];
@@ -93,7 +158,7 @@ export class BasicDataStore {
 
 ## Next steps
 
-While `providedIn: 'root'` covers most use cases, Angular offers additional ways to provide services for specialized scenarios:
+While `providedIn: 'root'` covers most use cases, Angular also provides additional ways you can configure services for more specialized scenarios:
 
 - **Component-specific instances** - When components need their own isolated service instances
 - **Manual configuration** - For services that require runtime configuration

@@ -5,13 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ConfigAPI, PluginObj} from '@babel/core';
+import {ConfigAPI, PluginObject} from '@babel/core';
 
 import {ConsoleLogger, LogLevel} from '../../../src/ngtsc/logging';
 import {LinkerOptions} from '../../src/file_linker/linker_options';
 
-import {createEs2015LinkerPlugin} from './es2015_linker_plugin';
 import {NodeJSFileSystem} from '../../../src/ngtsc/file_system/src/node_js_file_system';
+import {createEs2015LinkerPlugin} from './es2015_linker_plugin';
 
 /**
  * This is the Babel plugin definition that is provided as a default export from the package, such
@@ -28,8 +28,8 @@ import {NodeJSFileSystem} from '../../../src/ngtsc/file_system/src/node_js_file_
  * @param api Provides access to the Babel environment that is configuring this plugin.
  * @param options The plugin options that have been configured.
  */
-export function defaultLinkerPlugin(api: ConfigAPI, options: Partial<LinkerOptions>): PluginObj {
-  api.assertVersion(7);
+export function defaultLinkerPlugin(api: ConfigAPI, options: Partial<LinkerOptions>): PluginObject {
+  api.assertVersion(8);
 
   return createEs2015LinkerPlugin({
     ...options,

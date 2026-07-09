@@ -125,6 +125,51 @@ export declare class MyModule {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: host_bindings_with_temporaries_use_null.js
+ ****************************************************************************************************/
+import { Directive, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    getData = () => undefined;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: false, selector: "[hostBindingDir]", host: { properties: { "id": "getData()?.id" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    host: { '[id]': 'getData()?.id' },
+                    standalone: false,
+                }]
+        }] });
+export class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [HostBindingDir] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [HostBindingDir] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_with_temporaries_use_null.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    getData: () => {
+        id: number;
+    } | undefined;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: host_class_bindings_with_temporaries.js
  ****************************************************************************************************/
 import { Directive } from '@angular/core';

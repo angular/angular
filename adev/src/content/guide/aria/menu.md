@@ -174,84 +174,82 @@ Disable specific menu items using the `disabled` input. Control focus behavior w
 
 When `[softDisabled]="true"`, disabled items can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled items are skipped during keyboard navigation.
 
-## APIs
+## Testing
 
-### Menu
+Angular Aria provides component harnesses for testing menu components.
+Here is an example of how to use the harnesses in a component test:
 
-The container directive for menu items.
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {MenuHarness, MenuItemHarness} from '@angular/aria/menu/testing';
+import {MyMenuComponent} from './my-menu'; // Your component
 
-#### Inputs
+describe('MyMenuComponent', () => {
+  let fixture: ComponentFixture<MyMenuComponent>;
+  let loader: HarnessLoader;
 
-| Property       | Type      | Default | Description                                                   |
-| -------------- | --------- | ------- | ------------------------------------------------------------- |
-| `disabled`     | `boolean` | `false` | Disables all items in the menu                                |
-| `wrap`         | `boolean` | `true`  | Whether keyboard navigation wraps at edges                    |
-| `softDisabled` | `boolean` | `true`  | When `true`, disabled items are focusable but not interactive |
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyMenuComponent],
+    });
 
-#### Methods
+    fixture = TestBed.createComponent(MyMenuComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
-| Method  | Parameters | Description     |
-| ------- | ---------- | --------------- |
-| `close` | none       | Closes the menu |
+  it('should open menu and click item', async () => {
+    // Load the menu harness by its trigger text
+    const menu = await loader.getHarness(MenuHarness.with({triggerText: 'Open Menu'}));
 
-### MenuBar
+    // Verify initial state
+    expect(await menu.isOpen()).toBe(false);
 
-A horizontal container for multiple menus.
+    // Open the menu
+    await menu.open();
+    expect(await menu.isOpen()).toBe(true);
 
-#### Inputs
+    // Get items
+    const items = await menu.getItems();
+    expect(items.length).toBe(3);
+    expect(await items[0].getText()).toBe('Item 1');
 
-| Property       | Type      | Default | Description                                                   |
-| -------------- | --------- | ------- | ------------------------------------------------------------- |
-| `disabled`     | `boolean` | `false` | Disables the entire menubar                                   |
-| `wrap`         | `boolean` | `true`  | Whether keyboard navigation wraps at edges                    |
-| `softDisabled` | `boolean` | `true`  | When `true`, disabled items are focusable but not interactive |
+    // Click first item
+    await items[0].click();
 
-### MenuItem
+    // Menu should close after selection (depending on your implementation)
+    expect(await menu.isOpen()).toBe(false);
+  });
 
-An individual item within a menu.
+  it('should interact with submenus', async () => {
+    const menu = await loader.getHarness(MenuHarness.with({triggerText: 'Open Menu'}));
+    await menu.open();
 
-#### Inputs
+    // Get the item that triggers a submenu
+    const subItem = await loader.getHarness(MenuItemHarness.with({text: 'Submenu'}));
+    expect(await subItem.hasSubmenu()).toBe(true);
 
-| Property     | Type      | Default | Description                                          |
-| ------------ | --------- | ------- | ---------------------------------------------------- |
-| `value`      | `any`     | —       | **Required.** Value for this item                    |
-| `disabled`   | `boolean` | `false` | Disables this menu item                              |
-| `submenu`    | `Menu`    | —       | Reference to a submenu                               |
-| `searchTerm` | `string`  | `''`    | Search term for typeahead (supports two-way binding) |
+    // Open submenu
+    await subItem.click();
+    const submenu = await subItem.getSubmenu();
+    expect(submenu).toBeTruthy();
+    expect(await submenu!.isOpen()).toBe(true);
 
-#### Signals
+    // Interact with submenu items
+    const subItems = await submenu!.getItems();
+    expect(subItems.length).toBe(1);
+  });
+});
+```
 
-| Property   | Type              | Description                                |
-| ---------- | ----------------- | ------------------------------------------ |
-| `active`   | `Signal<boolean>` | Whether the item currently has focus       |
-| `expanded` | `Signal<boolean>` | Whether the submenu is expanded            |
-| `hasPopup` | `Signal<boolean>` | Whether the item has an associated submenu |
+## API reference
 
-NOTE: MenuItem does not expose public methods. Use the `submenu` input to associate submenus with menu items.
+For detailed API documentation, inspect the following API references:
 
-### MenuTrigger
-
-A button or element that opens a menu.
-
-#### Inputs
-
-| Property       | Type      | Default | Description                                |
-| -------------- | --------- | ------- | ------------------------------------------ |
-| `menu`         | `Menu`    | —       | **Required.** The menu to trigger          |
-| `disabled`     | `boolean` | `false` | Disables the trigger                       |
-| `softDisabled` | `boolean` | `true`  | When `true`, disabled trigger is focusable |
-
-#### Signals
-
-| Property   | Type              | Description                                |
-| ---------- | ----------------- | ------------------------------------------ |
-| `expanded` | `Signal<boolean>` | Whether the menu is currently open         |
-| `hasPopup` | `Signal<boolean>` | Whether the trigger has an associated menu |
-
-#### Methods
-
-| Method   | Parameters | Description                  |
-| -------- | ---------- | ---------------------------- |
-| `open`   | none       | Opens the menu               |
-| `close`  | none       | Closes the menu              |
-| `toggle` | none       | Toggles the menu open/closed |
+- [`Menu`](/api/aria/menu/Menu)
+- [`MenuBar`](/api/aria/menu/MenuBar)
+- [`MenuItem`](/api/aria/menu/MenuItem)
+- [`MenuTrigger`](/api/aria/menu/MenuTrigger)
+- [`MenuContent`](/api/aria/menu/MenuContent)

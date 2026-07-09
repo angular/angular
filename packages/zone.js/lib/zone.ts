@@ -31,6 +31,11 @@ declare global {
   const Zone: ZoneType;
   type Zone = _Zone;
   type ZoneType = _ZoneType;
+
+  // g3-only-start
+  // /** This local mod is kept in place so Zone can check the NodeJS `global` variable. */
+  // var global: {};
+  // g3-only-end
   type _PatchFn = PatchFn;
   type _ZonePrivate = ZonePrivate;
   type _ZoneFrame = ZoneFrame;

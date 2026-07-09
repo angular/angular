@@ -6,55 +6,57 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {isPlatformServer, NgComponentOutlet} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   DestroyRef,
-  EnvironmentInjector,
-  PLATFORM_ID,
-  Type,
   effect,
+  EnvironmentInjector,
   inject,
+  injectAsync,
   input,
+  PLATFORM_ID,
+  signal,
+  Type,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {IconComponent, PlaygroundTemplate} from '@angular/docs';
 import {forkJoin, switchMap, tap} from 'rxjs';
 
-import {injectAsync} from '../../core/services/inject-async';
 import {injectNodeRuntimeSandbox} from '../../editor/index';
 import type {NodeRuntimeSandbox} from '../../editor/node-runtime-sandbox.service';
 
-import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playground/routes.json';
 import {ActivatedRoute, Router} from '@angular/router';
+import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playground/routes.json';
 
 @Component({
   selector: 'adev-playground',
   imports: [NgComponentOutlet, IconComponent, CdkMenu, CdkMenuItem, CdkMenuTrigger],
   templateUrl: './playground.component.html',
   styleUrls: ['./playground.component.scss', '../tutorial/tutorial-navigation.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PlaygroundComponent {
   readonly templateId = input<string | undefined>();
 
-  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly destroyRef = inject(DestroyRef);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
+  private editorTutorialManager = injectAsync(() =>
+    import('../../editor/index').then((c) => c.EmbeddedTutorialManager),
+  );
+
   readonly templates: PlaygroundTemplate[] = PLAYGROUND_ROUTE_DATA_JSON.templates;
   readonly defaultTemplate = PLAYGROUND_ROUTE_DATA_JSON.defaultTemplate;
   readonly starterTemplate = PLAYGROUND_ROUTE_DATA_JSON.starterTemplate;
 
   protected nodeRuntimeSandbox?: NodeRuntimeSandbox;
-  protected embeddedEditorComponent?: Type<unknown>;
+  protected embeddedEditorComponent = signal<Type<unknown> | null>(null);
   protected selectedTemplate: PlaygroundTemplate = this.defaultTemplate;
+  private readonly isSandboxReady = signal(false);
 
   constructor() {
     if (this.isServer) {
@@ -76,14 +78,14 @@ export default class PlaygroundComponent {
       .pipe(
         tap(({nodeRuntimeSandbox, embeddedEditorComponent}) => {
           this.nodeRuntimeSandbox = nodeRuntimeSandbox;
-          this.embeddedEditorComponent = embeddedEditorComponent;
+          this.embeddedEditorComponent.set(embeddedEditorComponent);
         }),
         switchMap(() => this.loadTemplate(this.selectedTemplate.path)),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => {
-        this.changeDetectorRef.markForCheck();
         this.nodeRuntimeSandbox?.init();
+        this.isSandboxReady.set(true);
       });
   }
 
@@ -99,14 +101,17 @@ export default class PlaygroundComponent {
     });
     this.selectedTemplate = template;
     await this.loadTemplate(template.path);
-    await this.nodeRuntimeSandbox?.reset();
+    if (this.isSandboxReady()) {
+      await this.nodeRuntimeSandbox?.reset();
+    }
   }
 
   private async loadTemplate(tutorialPath: string) {
-    const embeddedTutorialManager = await injectAsync(this.environmentInjector, () =>
-      import('../../editor/index').then((c) => c.EmbeddedTutorialManager),
-    );
-
-    await embeddedTutorialManager.fetchAndSetTutorialFiles(tutorialPath);
+    try {
+      const embeddedTutorialManager = await this.editorTutorialManager();
+      await embeddedTutorialManager.fetchAndSetTutorialFiles(tutorialPath);
+    } catch (err) {
+      console.error('Failed to load tutorial files', err);
+    }
   }
 }

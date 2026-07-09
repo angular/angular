@@ -93,12 +93,24 @@ import {
 } from './hydration_utils';
 
 describe('platform-server full application hydration integration', () => {
+  const originalWindow = globalThis.window;
+
+  beforeAll(async () => {
+    globalThis.window = globalThis as unknown as Window & typeof globalThis;
+    await import('../../core/primitives/event-dispatch/contract_bundle_min.js' as string);
+  });
+
+  afterAll(() => {
+    globalThis.window = originalWindow;
+  });
+
   beforeEach(() => {
     resetNgDevModeCounters();
   });
 
   afterEach(() => {
     destroyPlatform();
+    window._ejsas = {};
   });
 
   describe('hydration', () => {
@@ -5847,6 +5859,36 @@ describe('platform-server full application hydration integration', () => {
         }
       });
 
+      it('should not throw when ngSkipHydration is set on a component with projectable nodes created via ViewContainerRef.createComponent', async () => {
+        // Regression test for #67928: NG0503 was thrown during serialization even
+        // when ngSkipHydration was applied to a dynamically created component that
+        // received projectable nodes, because serializeLContainer did not respect
+        // the skip-hydration flag before calling serializeLView.
+        @Component({
+          selector: 'dynamic',
+          template: `<ng-content />`,
+          host: {'ngSkipHydration': 'true'},
+        })
+        class DynamicComponent {}
+
+        @Component({
+          selector: 'app',
+          template: `<div #anchor></div>`,
+        })
+        class SimpleComponent {
+          @ViewChild('anchor', {read: ViewContainerRef}) vcr!: ViewContainerRef;
+
+          ngAfterViewInit() {
+            const div = document.createElement('div');
+            this.vcr.createComponent(DynamicComponent, {projectableNodes: [[div]]});
+          }
+        }
+
+        // Before the fix this threw NG0503. After the fix it should succeed.
+        const html = await ssr(SimpleComponent);
+        expect(html).toContain('<dynamic');
+      });
+
       it('should support cases when <ng-content> is used with *ngIf="false"', async () => {
         @Component({
           selector: 'projector-cmp',
@@ -6185,7 +6227,36 @@ describe('platform-server full application hydration integration', () => {
           expect(message).toContain('During hydration Angular expected <b> but found <span>');
           expect(message).toContain('<b>…</b>  <-- AT THIS LOCATION');
           expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+          expect(message).toContain('/guide/hydration#third-party-scripts-with-dom-manipulation');
           verifyNodeHasMismatchInfo(doc);
+        });
+      });
+
+      it('should if there are any third-party scripts that manipulate the DOM', async () => {
+        @Component({
+          selector: 'app',
+          template: `<div>Original content</div>`,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          ngAfterViewInit() {
+            const div = this.doc.querySelector('div');
+            const ins = this.doc.createElement('ins');
+            ins.setAttribute('data-ad-client', 'ca-pub-1234');
+            ins.textContent = 'Ad content';
+            div?.parentNode?.insertBefore(ins, div);
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        resetTViewsFor(SimpleComponent);
+
+        await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [withNoopErrorHandler()],
+        }).catch((err: unknown) => {
+          const message = (err as Error).message;
+          expect(message).toContain('During hydration Angular expected <div> but found <ins>');
+          expect(message).toContain('/guide/hydration#third-party-scripts-with-dom-manipulation');
         });
       });
 

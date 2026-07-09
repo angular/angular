@@ -9,7 +9,6 @@
 import {CdkMenuModule} from '@angular/cdk/menu';
 import {KeyValuePipe} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   EnvironmentInjector,
   afterNextRender,
@@ -56,7 +55,6 @@ export const DEFAULT_STATUS = STATUSES.stable | STATUSES.developerPreview | STAT
   ],
   templateUrl: './api-reference-list.component.html',
   styleUrls: ['./api-reference-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ApiReferenceList {
   // services

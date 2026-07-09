@@ -20,6 +20,7 @@ import type {
   ɵProviderRecord as ProviderRecord,
 } from '@angular/core';
 import {
+  ChangeDetection,
   ComponentExplorerViewQuery,
   DirectiveMetadata,
   DirectivePosition,
@@ -48,16 +49,28 @@ import {mutateNestedProp} from '../property-mutation';
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from '../interfaces';
 import {getAppRoots} from './get-roots';
 import {AcxChangeDetectionStrategy, ChangeDetectionStrategy, Framework} from './core-enums';
-import {unwrapSignal} from '../utils';
+import {unwrapSignal} from '../utils/general';
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
-export const idToInjector = new Map<string, Injector>();
-export const injectorsSeen = new Set<string>();
+export const idToInjector = new Map<string, WeakRef<Injector>>();
+const injectorFinalizer = new FinalizationRegistry<string>((id) => {
+  idToInjector.delete(id);
+});
 let injectorId = 0;
 
 export function getInjectorId() {
   return `${injectorId++}`;
+}
+
+function getOrCreateInjectorId(key: Injector | HTMLElement, injector: Injector): string {
+  if (!injectorToId.has(key)) {
+    const newId = getInjectorId();
+    injectorToId.set(key, newId);
+    idToInjector.set(newId, new WeakRef(injector));
+    injectorFinalizer.register(injector, newId);
+  }
+  return injectorToId.get(key)!;
 }
 
 const INTERNAL_TOKENS = [
@@ -116,7 +129,7 @@ export const getLatestComponentState = (
   directiveForest = directiveForest ?? buildDirectiveForest();
 
   const node = queryDirectiveForest(query.selectedElement, directiveForest);
-  if (!node || !node.nativeElement) {
+  if (!node) {
     return;
   }
 
@@ -160,7 +173,7 @@ export const getLatestComponentState = (
     }
   };
 
-  node.directives.forEach((dir) => populateResultSet(dir));
+  node.directives?.forEach((dir) => populateResultSet(dir));
   if (node.component) {
     populateResultSet(node.component);
   }
@@ -171,18 +184,8 @@ export const getLatestComponentState = (
 };
 
 function serializeElementInjectorWithId(injector: Injector): SerializedInjector | null {
-  let id: string;
   const element = getElementInjectorElement(injector);
-
-  if (!injectorToId.has(element)) {
-    id = getInjectorId();
-    injectorToId.set(element, id);
-    idToInjector.set(id, injector);
-  }
-
-  id = injectorToId.get(element)!;
-  idToInjector.set(id, injector);
-  injectorsSeen.add(id);
+  const id = getOrCreateInjectorId(element, injector);
 
   const serializedInjector = serializeInjector(injector);
   if (serializedInjector === null) {
@@ -201,17 +204,7 @@ function serializeInjectorWithId(injector: Injector): SerializedInjector | null 
 }
 
 function serializeEnvironmentInjectorWithId(injector: Injector): SerializedInjector | null {
-  let id: string;
-
-  if (!injectorToId.has(injector)) {
-    id = getInjectorId();
-    injectorToId.set(injector, id);
-    idToInjector.set(id, injector);
-  }
-
-  id = injectorToId.get(injector)!;
-  idToInjector.set(id, injector);
-  injectorsSeen.add(id);
+  const id = getOrCreateInjectorId(injector, injector);
 
   const serializedInjector = serializeInjector(injector);
   if (serializedInjector === null) {
@@ -225,7 +218,7 @@ const enum DirectiveMetadataKey {
   INPUTS = 'inputs',
   OUTPUTS = 'outputs',
   ENCAPSULATION = 'encapsulation',
-  ON_PUSH = 'onPush',
+  CHANGE_DETECTION = 'changeDetection',
 }
 
 // Gets directive metadata. For newer versions of Angular (v12+) it uses
@@ -246,7 +239,7 @@ const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
           inputs: meta.inputs,
           outputs: meta.outputs,
           encapsulation: meta.encapsulation,
-          onPush: meta.changeDetection === ChangeDetectionStrategy.OnPush,
+          changeDetection: meta.changeDetection,
         };
       }
       case Framework.ACX: {
@@ -257,7 +250,7 @@ const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
           inputs: meta.inputs,
           outputs: meta.outputs,
           encapsulation: meta.encapsulation,
-          onPush: meta.changeDetection === AcxChangeDetectionStrategy.OnPush,
+          changeDetection: meta.changeDetection,
         };
       }
       case Framework.Wiz: {
@@ -288,19 +281,33 @@ const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
     inputs: safelyGrabMetadata(DirectiveMetadataKey.INPUTS),
     outputs: safelyGrabMetadata(DirectiveMetadataKey.OUTPUTS),
     encapsulation: safelyGrabMetadata(DirectiveMetadataKey.ENCAPSULATION),
-    onPush: safelyGrabMetadata(DirectiveMetadataKey.ON_PUSH),
+    changeDetection: safelyGrabMetadata(DirectiveMetadataKey.CHANGE_DETECTION),
   };
 };
 
-export function isOnPushDirective(dir: any): boolean {
+export function getDirectiveCdStrategy(dir: any): ChangeDetection | undefined {
   const metadata = getDirectiveMetadata(dir.instance);
+
   switch (metadata.framework) {
     case Framework.Angular:
-      return Boolean(metadata.onPush);
+      switch (metadata.changeDetection) {
+        case ChangeDetectionStrategy.OnPush:
+          return 'ng-on-push';
+        case ChangeDetectionStrategy.Eager:
+          return 'ng-eager';
+      }
+
     case Framework.ACX:
-      return Boolean(metadata.onPush);
+      switch (metadata.changeDetection) {
+        case AcxChangeDetectionStrategy.Default:
+          return 'acx-default';
+        case AcxChangeDetectionStrategy.OnPush:
+          return 'acx-on-push';
+      }
+
     case Framework.Wiz:
-      return false;
+      return undefined;
+
     default:
       throw new Error(`Unknown framework: "${(metadata as {framework: string}).framework}".`);
   }
@@ -392,10 +399,6 @@ const getDependenciesForDirective = (
         resolutionPath: dependencyResolutionPath,
       };
 
-      if (dependency.token && isInjectionToken(dependency.token)) {
-        service.token = dependency.token!.toString();
-      }
-
       serializedInjectedServices.push(service);
     }
 
@@ -407,7 +410,14 @@ const getDependenciesForDirective = (
 
 const valueToLabel = (value: any): string => {
   if (isInjectionToken(value)) {
-    return value.toString();
+    const token = value.toString();
+
+    // This logic relies on the current InjectionToken.toString implementation.
+    if (token.startsWith('InjectionToken')) {
+      const tokenName = token.replace('InjectionToken', '').trim();
+      return `InjectionToken (${tokenName})`;
+    }
+    return token;
   }
 
   if (typeof value === 'object') {
@@ -669,6 +679,21 @@ function discoverNonApplicationRootComponents(element: Element, roots: Set<Eleme
 }
 
 export const buildDirectiveForest = (): ComponentTreeNode[] => {
+  const ng = ngDebugClient();
+  if ((ng as any).getComponentForest) {
+    const forest: ComponentTreeNode[] = (ng as any).getComponentForest();
+    const frontier = [...forest];
+    while (frontier.length) {
+      const node = frontier.pop()!;
+      const rawNode = node as any;
+      node.tagName ??= rawNode.element ?? rawNode.nativeElement?.nodeName.toLowerCase() ?? '';
+      node.component!.isElement ??= false;
+      for (const child of node.children) {
+        frontier.push(child);
+      }
+    }
+    return forest;
+  }
   return buildDirectiveForestWithStrategy(getRootElements());
 };
 
@@ -698,9 +723,10 @@ export const queryDirectiveForest = (
 export const findNodeInForest = (
   position: ElementPosition,
   forest: ComponentTreeNode[],
-): HTMLElement | null => {
+): Element | null => {
   const foundComponent: ComponentTreeNode | null = queryDirectiveForest(position, forest);
-  return foundComponent ? (foundComponent.nativeElement as HTMLElement) : null;
+  const nativeElement = foundComponent?.nativeElement;
+  return nativeElement instanceof Element ? nativeElement : null;
 };
 
 export const findNodeFromSerializedPosition = (
@@ -721,7 +747,7 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
     );
     return;
   }
-  if (updatedStateData.directiveId.directive !== undefined) {
+  if (node.directives && updatedStateData.directiveId.directive !== undefined) {
     const directive = node.directives[updatedStateData.directiveId.directive].instance;
     mutateNestedProp(directive, updatedStateData.keyPath, updatedStateData.newValue);
     if (ngDebugApiIsSupported(ng, 'getOwningComponent')) {
@@ -751,7 +777,7 @@ export function logValue(valueInfo: {
     return;
   }
 
-  if (valueInfo.directiveId.directive !== undefined) {
+  if (node.directives && valueInfo.directiveId.directive !== undefined) {
     const directiveInstance = node.directives[valueInfo.directiveId.directive].instance;
     if (valueInfo.keyPath === null) {
       logToConsole(directiveInstance);

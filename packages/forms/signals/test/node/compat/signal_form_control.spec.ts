@@ -140,7 +140,7 @@ describe('SignalFormControl', () => {
 
     it('should support disabled via rules', () => {
       const form = createSignalFormControl(10, (p) => {
-        disabled(p, ({value}) => value() > 15);
+        disabled(p, {when: ({value}) => value() > 15});
       });
 
       expect(form.disabled).toBe(false);
@@ -656,7 +656,7 @@ describe('SignalFormControl', () => {
   describe('callback registration', () => {
     it('should call registered onDisabledChange callback when disabled state changes', () => {
       const form = createSignalFormControl(10, (p) => {
-        disabled(p, ({value}) => value() > 15);
+        disabled(p, {when: ({value}) => value() > 15});
       });
       const callback = jasmine.createSpy('onDisabledChange');
 
@@ -674,7 +674,7 @@ describe('SignalFormControl', () => {
 
     it('should NOT track signals read inside onDisabledChange callback', () => {
       const form = createSignalFormControl(10, (p) => {
-        disabled(p, ({value}) => value() > 15);
+        disabled(p, {when: ({value}) => value() > 15});
       });
       const otherSignal = signal(0);
       const callback = jasmine.createSpy('onDisabledChange').and.callFake(() => {

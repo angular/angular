@@ -30,7 +30,7 @@
     }
   },
   "dependencies": {
-    "@babel/core": "7.29.0",
+    "@babel/core": "8.0.1",
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "reflect-metadata": "^0.2.0",
     "chokidar": "^5.0.0",
@@ -40,11 +40,12 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "typescript": "5.9.3"
+    "typescript": "6.0.3",
+    "@types/convert-source-map": "^2.0.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=5.9 <6.1"
+    "typescript": ">=6.0 <6.1"
   },
   "peerDependenciesMeta": {
     "typescript": {
@@ -62,7 +63,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": "^22.22.0 || >=24.13.1"
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
   },
   "bugs": {
     "url": "https://github.com/angular/angular/issues"

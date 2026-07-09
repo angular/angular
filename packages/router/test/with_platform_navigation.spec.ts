@@ -7,7 +7,16 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {NavigationStart, provideRouter, Event, Router} from '../src';
+import {
+  NavigationStart,
+  provideRouter,
+  Event,
+  Router,
+  UrlSerializer,
+  DefaultUrlSerializer,
+  UrlTree,
+  Params,
+} from '../src';
 import {withExperimentalPlatformNavigation, withRouterConfig} from '../src/provide_router';
 import {withBody, useAutoTick, timeout} from '@angular/private/testing';
 import {
@@ -21,6 +30,7 @@ import {
   ɵFakeNavigation as FakeNavigation,
   ɵFakeNavigationPlatformLocation as FakeNavigationPlatformLocation,
   provideLocationMocks,
+  MOCK_PLATFORM_LOCATION_CONFIG,
 } from '@angular/common/testing';
 import {inject} from '@angular/core';
 
@@ -93,7 +103,7 @@ describe('withPlatformNavigation feature', () => {
 
       location.go('/c');
       expect(changed).toBeFalse();
-      await new Promise((resolve) => setTimeout(resolve, 1));
+      await timeout(1);
       expect(changed).toBeTrue();
     });
   });
@@ -225,6 +235,152 @@ describe('withPlatformNavigation feature', () => {
       await timeout(10);
       expect(navigation.transition).toBeNull();
       await expectAsync(finished).toBeResolved();
+    });
+  });
+
+  class TrailingSlashNormalizingUrlSerializer extends DefaultUrlSerializer {
+    override parse(url: string): UrlTree {
+      if (url !== '/' && url.endsWith('/')) {
+        url = url.slice(0, -1);
+      }
+      return super.parse(url);
+    }
+    override serialize(tree: UrlTree): string {
+      let url = super.serialize(tree);
+      if (url !== '/' && url.endsWith('/')) {
+        url = url.slice(0, -1);
+      }
+      return url;
+    }
+  }
+
+  class QueryParamSortingUrlSerializer extends DefaultUrlSerializer {
+    override parse(url: string): UrlTree {
+      const tree = super.parse(url);
+      const sorted: Params = {};
+      for (const key of Object.keys(tree.queryParams).sort()) {
+        sorted[key] = tree.queryParams[key];
+      }
+      tree.queryParams = sorted;
+      return tree;
+    }
+    override serialize(tree: UrlTree): string {
+      const sorted: Params = {};
+      for (const key of Object.keys(tree.queryParams).sort()) {
+        sorted[key] = tree.queryParams[key];
+      }
+      const newTree = new UrlTree(tree.root, sorted, tree.fragment);
+      return super.serialize(newTree);
+    }
+  }
+
+  describe('URL comparison and extraction bugs', () => {
+    useAutoTick();
+    let router: Router;
+    let navigation: PlatformNavigation;
+
+    it('should not trigger new navigation when traversing back to a URL with trailing slash mismatch (with custom serializer)', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: UrlSerializer, useClass: TrailingSlashNormalizingUrlSerializer},
+          {provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: false},
+          provideRouter(
+            [
+              {path: 'foo', children: []},
+              {path: 'bar', children: []},
+            ],
+            withExperimentalPlatformNavigation(),
+          ),
+        ],
+      });
+      navigation = TestBed.inject(PlatformNavigation);
+
+      navigation.navigate('/foo/');
+      await timeout();
+      navigation.navigate('/bar');
+      await timeout();
+
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+      await navigation.transition?.finished;
+
+      const navigateSpy = spyOn(navigation, 'navigate').and.callThrough();
+
+      await navigation.back().finished;
+      await timeout();
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not trigger new navigation when traversing back to a URL with query param order mismatch (with custom serializer)', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: UrlSerializer, useClass: QueryParamSortingUrlSerializer},
+          {provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: false},
+          provideRouter(
+            [
+              {path: 'foo', children: []},
+              {path: 'bar', children: []},
+            ],
+            withExperimentalPlatformNavigation(),
+          ),
+        ],
+      });
+      navigation = TestBed.inject(PlatformNavigation);
+
+      navigation.navigate('/foo?b=2&a=1');
+      await timeout();
+      navigation.navigate('/bar');
+      await timeout();
+
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+      await navigation.transition?.finished;
+
+      const navigateSpy = spyOn(navigation, 'navigate').and.callThrough();
+
+      await navigation.back().finished;
+      await timeout();
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not intercept navigations outside the app root', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: MOCK_PLATFORM_LOCATION_CONFIG,
+            useValue: {
+              startUrl: 'http://localhost/my-app/',
+              appBaseHref: '/my-app/',
+            },
+          },
+          provideRouter([{path: '**', children: []}], withExperimentalPlatformNavigation()),
+        ],
+      });
+      navigation = TestBed.inject(PlatformNavigation);
+
+      let interceptCalled = false;
+      navigation.addEventListener('navigate', (e: any) => {
+        const originalIntercept = e.intercept;
+        e.intercept = function (...args: any[]) {
+          interceptCalled = true;
+          originalIntercept.apply(this, args);
+        };
+      });
+
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+      await navigation.transition?.finished;
+
+      interceptCalled = false;
+      navigation.navigate('http://localhost/other-app/foo');
+      await timeout();
+
+      expect(interceptCalled).toBeFalse();
     });
   });
 });

@@ -1,40 +1,6 @@
-const $arrowFn0$ = (ctx, view) => value => {
-  let $tmp_0_0$;
-  return value == null
-    ? null
-    : value.a == null
-      ? null
-      : value.a.b == null
-        ? null
-        : value.a.b.c == null
-          ? null
-          : ($tmp_0_0$ = value.a.b.c()) == null
-            ? null
-            : ($tmp_0_0$ = $tmp_0_0$()) == null
-              ? null
-              : ($tmp_0_0$ = $tmp_0_0$()) == null
-                ? null
-                : $tmp_0_0$();
-};
+const $arrowFn0$ = (ctx, view) => value =>value?.a?.b?.c?.()?.()?.()?.();
 …
-const $arrowFn1$ = (ctx, view) => () => {
-  let $tmp_0_0$;
-  return ctx.componentProp == null
-    ? null
-    : ctx.componentProp.a == null
-      ? null
-      : ctx.componentProp.a.b == null
-        ? null
-        : ctx.componentProp.a.b.c == null
-          ? null
-          : ($tmp_0_0$ = ctx.componentProp.a.b.c()) == null
-            ? null
-            : ($tmp_0_0$ = $tmp_0_0$()) == null
-              ? null
-              : ($tmp_0_0$ = $tmp_0_0$()) == null
-                ? null
-                : $tmp_0_0$();
-};
+const arrowFn1 = (ctx, view) => () => ctx.componentProp?.a?.b?.c?.()?.()?.()?.();
 …
 $r3$.ɵɵdefineComponent({
   …

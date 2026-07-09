@@ -22,9 +22,10 @@ import {
 import type {FormField} from './form_field';
 import {InputValidityMonitor} from './input_validity_monitor';
 import {
+  formatDateForMinMax,
   getNativeControlValue,
-  isInput,
   inputRequiresValidityTracking,
+  isInput,
   setNativeControlValue,
   setNativeDomProperty,
 } from './native';
@@ -53,13 +54,19 @@ export function nativeControlCreate(
   );
 
   parseErrorsSource.set(parser.errors);
+  parent.onReset = () => {
+    parser.reset();
+    const value = parent.state().value();
+    bindings['controlValue'] = value;
+    setNativeControlValue(input, value);
+  };
   // Pass undefined as the raw value since the parse function doesn't care about it.
   host.listenToDom('input', () => parser.setRawValue(undefined));
   host.listenToDom('blur', () => parent.state().markAsTouched());
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
-    validityMonitor.watchValidity(input, () => parser.setRawValue(undefined));
+    validityMonitor.watchValidity(parent.destroyRef, input, () => parser.setRawValue(undefined));
   }
 
   parent.registerAsBinding();
@@ -91,19 +98,27 @@ export function nativeControlCreate(
 
   return () => {
     const state = parent.state();
-    const controlValue = state.controlValue();
-    if (bindingUpdated(bindings, 'controlValue', controlValue)) {
-      setNativeControlValue(input, controlValue);
-    }
 
     for (const name of CONTROL_BINDING_NAMES) {
       const value = readFieldStateBindingValue(state, name);
       if (bindingUpdated(bindings, name, value)) {
         host.setInputOnDirectives(name, value);
         if (parent.elementAcceptsNativeProperty(name)) {
-          setNativeDomProperty(parent.renderer, input, name, value as string | number | undefined);
+          const domValue = formatDateForMinMax(name, value, input.type);
+          setNativeDomProperty(
+            parent.renderer,
+            input,
+            name,
+            domValue as string | number | boolean | undefined,
+          );
         }
       }
+    }
+
+    // We need to update the value after setting the attributes as some attributes like min/max might prevent from setting the value
+    const controlValue = state.controlValue();
+    if (bindingUpdated(bindings, 'controlValue', controlValue)) {
+      setNativeControlValue(input, controlValue);
     }
 
     updateMode = true;

@@ -14,7 +14,7 @@ import {Router, provideRouter} from '@angular/router';
 import {SearchDialog} from './search-dialog.component';
 import {ENVIRONMENT, WINDOW} from '../../providers';
 import {ALGOLIA_CLIENT, Search} from '../../services';
-import {FakeEventTarget} from '../../testing/index';
+import {FakeEventTarget, timeout, useAutoTick} from '../../testing/index';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {SearchResult} from '../../interfaces';
 
@@ -27,8 +27,10 @@ describe('SearchDialog', () => {
 
   let search: Search;
 
+  useAutoTick();
+
   beforeEach(async () => {
-    searchResults.and.returnValue([]);
+    searchResults.and.returnValue(Promise.resolve({results: [{hits: []}]}));
 
     TestBed.configureTestingModule({
       imports: [SearchDialog],
@@ -54,6 +56,9 @@ describe('SearchDialog', () => {
 
     // Fire the request
     TestBed.inject(ApplicationRef).tick();
+
+    // The delay from debounced (200ms)
+    await timeout(300);
 
     // Wait for the resource to resolve
     await TestBed.inject(ApplicationRef).whenStable();
@@ -85,6 +90,9 @@ describe('SearchDialog', () => {
     // Fire the request
     TestBed.inject(ApplicationRef).tick();
 
+    // The delay from debounced (200ms)
+    await timeout(300);
+
     // Wait for the resource to resolve
     await TestBed.inject(ApplicationRef).whenStable();
 
@@ -96,7 +104,7 @@ describe('SearchDialog', () => {
   });
 
   it('should display `Start typing to see results` message when there are no provided query', () => {
-    searchResults.and.returnValue(undefined);
+    searchResults.and.returnValue(Promise.resolve(undefined));
 
     const startTypingContainer = fixture.debugElement.query(
       By.css('.docs-search-results__start-typing'),
@@ -111,6 +119,9 @@ describe('SearchDialog', () => {
 
     // Fire the request
     TestBed.inject(ApplicationRef).tick();
+
+    // The delay from debounced (200ms)
+    await timeout(300);
 
     // Wait for the resource to resolve
     await TestBed.inject(ApplicationRef).whenStable();

@@ -31,7 +31,7 @@ import {
   Provider,
   runInInjectionContext,
   Type,
-  ɵpublishExternalGlobalUtil,
+  ɵpublishNonCoreGlobalUtil,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -63,6 +63,8 @@ import {
   VIEW_TRANSITION_OPTIONS,
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
+import {ACTIVATED_ROUTE_INJECTOR_FEATURE} from './activated_route_injector_feature';
+import {setupActivatedRouteInjectors} from './operators/setup_activated_route_injectors';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -104,9 +106,9 @@ import {
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     // Publish this util when the router is provided so that the devtools can use it.
-    ɵpublishExternalGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);
-    ɵpublishExternalGlobalUtil('ɵgetRouterInstance', getRouterInstance);
-    ɵpublishExternalGlobalUtil('ɵnavigateByUrl', navigateByUrl);
+    ɵpublishNonCoreGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);
+    ɵpublishNonCoreGlobalUtil('ɵgetRouterInstance', getRouterInstance);
+    ɵpublishNonCoreGlobalUtil('ɵnavigateByUrl', navigateByUrl);
   }
 
   return makeEnvironmentProviders([
@@ -750,7 +752,8 @@ export type ExperimentalAutoCleanupInjectorsFeature =
  *
  * This feature is opt-in and requires `RouteReuseStrategy.shouldDestroyInjector` to return `true`
  * for the routes that should be destroyed. If the `RouteReuseStrategy` uses stored handles, it
- * should also implement `retrieveStoredHandle` to ensure we don't destroy injectors for handles that will be reattached.
+ * should also implement `retrieveStoredRouteHandles` to ensure injectors for handles that will be
+ * reattached are not destroyed.
  *
  * @experimental 21.1
  */
@@ -880,6 +883,20 @@ export function withViewTransitions(
     {
       provide: VIEW_TRANSITION_OPTIONS,
       useValue: {skipNextTransition: !!options?.skipInitialTransition, ...options},
+    },
+  ];
+  return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
+}
+
+export type ActivatedRouteInjectorFeature =
+  RouterFeature<RouterFeatureKind.ViewTransitionsFeature /* temporary - not public API. Must reuse existing */>;
+export function withActivatedRouteInjectors(): ActivatedRouteInjectorFeature {
+  const providers = [
+    {
+      provide: ACTIVATED_ROUTE_INJECTOR_FEATURE,
+      useValue: {
+        operator: setupActivatedRouteInjectors,
+      },
     },
   ];
   return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);

@@ -21,7 +21,11 @@ import type {Debouncer, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * @param config A debounce configuration, which can be either a debounce duration in milliseconds,
  *     `'blur'` to debounce until the field is blurred, or a custom {@link Debouncer} function.
  *
- * @experimental 21.0.0
+ * @see [Debouncing form updates](guide/forms/signals/form-logic#delay-input-operations-with-debounce)
+ * @see [Custom form controls](guide/forms/signals/custom-controls) for using `debounce('blur')` with
+ *     a custom `FormValueControl`.
+ *
+ * @publicApi 22.0
  */
 export function debounce<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

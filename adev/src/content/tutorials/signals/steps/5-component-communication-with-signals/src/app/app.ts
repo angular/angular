@@ -1,5 +1,5 @@
 // TODO: Import signal from @angular/core
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component} from '@angular/core';
 import {ProductCard} from './product-card';
 
 @Component({
@@ -24,7 +24,6 @@ import {ProductCard} from './product-card';
     </div>
   `,
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   // TODO: Create parent signals for product data

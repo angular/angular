@@ -41,11 +41,6 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual('<style>a {};</style>');
     });
 
-    it('should use the document head as default host', () => {
-      ssh.addStyles(['a {};', 'b {};']);
-      expect(doc.head).toHaveText('a {};b {};');
-    });
-
     it('should remove style nodes on destroy', () => {
       ssh.addStyles(['a {};']);
       ssh.addHost(someHost);
@@ -73,6 +68,44 @@ describe('SharedStylesHost', () => {
       expect(doc.head.innerHTML).toContain('<style ng-style-reused="">a {};</style>');
       expect(doc.head.innerHTML).not.toContain('ng-app-id');
     });
+
+    it('should not duplicate styles when the same host is added multiple times', () => {
+      ssh.addStyles(['a {};']);
+      ssh.addHost(doc.head);
+      ssh.addHost(doc.head);
+
+      expect(doc.head.querySelectorAll('style')).toHaveSize(1);
+    });
+
+    it('should not duplicate styles from prerendering', () => {
+      const ssrStyle = document.createElement('style');
+      ssrStyle.textContent = 'a {};';
+      ssrStyle.setAttribute('ng-app-id', 'app-id');
+      doc.head.appendChild(ssrStyle);
+
+      ssh = new SharedStylesHost(doc, 'app-id');
+      ssh.addHost(doc.head);
+
+      expect(doc.head.querySelectorAll('style')).toHaveSize(1);
+    });
+
+    it('should not duplicate styles from prerendering during subsequent renders', () => {
+      const styleContent = 'a {};';
+
+      const ssrStyle = document.createElement('style');
+      ssrStyle.textContent = styleContent;
+      ssrStyle.setAttribute('ng-app-id', 'app-id');
+      doc.head.appendChild(ssrStyle);
+
+      ssh = new SharedStylesHost(doc, 'app-id');
+      ssh.addHost(doc.head);
+
+      expect(doc.head.querySelectorAll('style')).toHaveSize(1);
+
+      ssh.addStyles([styleContent]);
+
+      expect(doc.head.querySelectorAll('style')).toHaveSize(1);
+    });
   });
 
   describe('external', () => {
@@ -93,12 +126,6 @@ describe('SharedStylesHost', () => {
       ssh.addHost(someHost);
       ssh.addStyles([], ['component-1.css']);
       expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="component-1.css">');
-    });
-
-    it('should use the document head as default host', () => {
-      ssh.addStyles([], ['component-1.css', 'component-2.css']);
-      expect(doc.head.innerHTML).toContain('<link rel="stylesheet" href="component-1.css">');
-      expect(doc.head.innerHTML).toContain('<link rel="stylesheet" href="component-2.css">');
     });
 
     it('should remove style nodes on destroy', () => {
@@ -140,6 +167,70 @@ describe('SharedStylesHost', () => {
         '<link rel="stylesheet" href="component-1.css" ng-style-reused="">',
       );
       expect(doc.head.innerHTML).not.toContain('ng-app-id');
+    });
+
+    it('should not duplicate styles when the same host is added multiple times', () => {
+      ssh.addStyles([], ['component-1.css']);
+      ssh.addHost(doc.head);
+      ssh.addHost(doc.head);
+
+      expect(doc.head.querySelectorAll('link')).toHaveSize(1);
+    });
+
+    it('should not duplicate styles from prerendering', () => {
+      const ssrLink = document.createElement('link');
+      ssrLink.setAttribute('href', 'component-1.css');
+      ssrLink.setAttribute('ng-app-id', 'app-id');
+      doc.head.appendChild(ssrLink);
+
+      ssh = new SharedStylesHost(doc, 'app-id');
+      ssh.addHost(doc.head);
+
+      expect(doc.head.querySelectorAll('link')).toHaveSize(1);
+    });
+
+    it('should not duplicate styles from prerendering during subsequent renders', () => {
+      const href = 'component-1.css';
+      const ssrLink = document.createElement('link');
+      ssrLink.setAttribute('href', href);
+      ssrLink.setAttribute('ng-app-id', 'app-id');
+      doc.head.appendChild(ssrLink);
+
+      ssh = new SharedStylesHost(doc, 'app-id');
+      ssh.addHost(doc.head);
+
+      expect(doc.head.querySelectorAll('link')).toHaveSize(1);
+
+      ssh.addStyles([], [href]);
+
+      expect(doc.head.querySelectorAll('link')).toHaveSize(1);
+    });
+  });
+
+  describe('removeHost', () => {
+    it('should remove inline style nodes from the host', () => {
+      ssh.addStyles(['a {}']);
+      ssh.addHost(someHost);
+      expect(someHost.innerHTML).toEqual('<style>a {}</style>');
+
+      ssh.removeHost(someHost);
+      expect(someHost.innerHTML).toEqual('');
+    });
+
+    it('should remove external style nodes from the host', () => {
+      ssh.addStyles([], ['component.css']);
+      ssh.addHost(someHost);
+      expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="component.css">');
+
+      ssh.removeHost(someHost);
+      expect(someHost.innerHTML).toEqual('');
+    });
+
+    it('should not add new styles to the host after removal', () => {
+      ssh.addHost(someHost);
+      ssh.removeHost(someHost);
+      ssh.addStyles(['a {}']);
+      expect(someHost.innerHTML).toEqual('');
     });
   });
 });

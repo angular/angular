@@ -1,6 +1,9 @@
-import {fetchLongTermSupportBranchesFromNpm, ActiveReleaseTrains} from '@angular/ng-dev';
-import {ReleaseConfig} from '@angular/ng-dev';
-import {AuthenticatedGitClient} from '@angular/ng-dev';
+import {
+  fetchLongTermSupportBranchesFromNpm,
+  ActiveReleaseTrains,
+  AuthenticatedGitClient,
+  ReleaseConfig,
+} from '@angular/ng-dev';
 
 export interface Deployment {
   branch: string;

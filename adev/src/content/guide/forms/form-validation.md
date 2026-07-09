@@ -8,7 +8,7 @@ This page shows how to validate user input from the UI and display useful valida
 To add validation to a template-driven form, you add the same validation attributes as you would with [native HTML form validation](https://developer.mozilla.org/docs/Web/Guide/HTML/HTML5/Constraint_validation).
 Angular uses directives to match these attributes with validator functions in the framework.
 
-Every time the value of a form control changes, Angular runs validation and generates either a list of validation errors that results in an `INVALID` status, or null, which results in a VALID status.
+Every time the value of a form control changes, Angular runs validation and generates either a list of validation errors that results in an `INVALID` status, or `null`, which results in a `VALID` status.
 
 You can then inspect the control's state by exporting `ngModel` to a local template variable.
 The following example exports `NgModel` into a variable called `name`:
@@ -237,7 +237,7 @@ Asynchronous validators implement the `AsyncValidatorFn` and `AsyncValidator` in
 These are very similar to their synchronous counterparts, with the following differences.
 
 - The `validate()` functions must return a Promise or an observable,
-- The observable returned must be finite, meaning it must complete at some point.
+- The observable returned must be finite, meaning that it must complete at some point.
   To convert an infinite observable into a finite one, pipe the observable through a filtering operator such as `first`, `last`, `take`, or `takeUntil`.
 
 Asynchronous validation happens after the synchronous validation, and is performed only if the synchronous validation is successful.
@@ -369,7 +369,7 @@ onCountryChange(country: string) {
 Use [`setValidators`](api/forms/AbstractControl#setValidators) to replace all existing synchronous validators on a control, or [`clearValidators`](api/forms/AbstractControl#clearValidators) to remove all validators.
 
 ```ts
-toggleStrictNameValidation(isStenablerict: boolean) {
+toggleStrictNameValidation(isStrict: boolean) {
   const nameControl = this.profileForm.get('name');
 
   if (enable) {

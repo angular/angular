@@ -6,23 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
-
-import {ReferenceEmitter} from '../../imports';
-import {ReflectionHost} from '../../reflection';
-import {ImportManager} from '../../translator';
 import {
   TcbDirectiveMetadata,
+  TcbExpr,
   TcbPipeMetadata,
   TcbReferenceKey,
-  TcbReferenceMetadata,
   TypeCheckingConfig,
   TypeCtorMetadata,
-} from '../api';
+} from '@angular/compiler';
+import ts from 'typescript';
+import {AbsoluteFsPath} from '../../file_system';
+
+import {ReferenceEmitter} from '../../imports';
+
+import {ImportManager} from '../../translator';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {generateTypeCtorDeclarationFn} from './type_constructor';
-import {declareVariable, TcbExpr} from './ops/codegen';
 
 /**
  * A context which hosts one or more Type Check Blocks (TCBs).
@@ -47,14 +47,17 @@ export class Environment extends ReferenceEmitEnvironment {
   private pipeInsts = new Map<TcbReferenceKey, string>();
   protected pipeInstStatements: TcbExpr[] = [];
 
+  copiedSourceOriginPath?: AbsoluteFsPath;
+
   constructor(
     readonly config: TypeCheckingConfig,
     importManager: ImportManager,
     refEmitter: ReferenceEmitter,
-    reflector: ReflectionHost,
     contextFile: ts.SourceFile,
+    copiedSourceOriginPath?: AbsoluteFsPath,
   ) {
-    super(importManager, refEmitter, reflector, contextFile);
+    super(importManager, refEmitter, contextFile);
+    this.copiedSourceOriginPath = copiedSourceOriginPath;
   }
 
   /**
@@ -64,16 +67,15 @@ export class Environment extends ReferenceEmitEnvironment {
    * type constructor, or to an inline type constructor.
    */
   typeCtorFor(dir: TcbDirectiveMetadata): TcbExpr {
-    const key = getTcbReferenceKey(dir.ref);
-    if (this.typeCtors.has(key)) {
-      return new TcbExpr(this.typeCtors.get(key)!);
+    if (this.typeCtors.has(dir.ref.key)) {
+      return new TcbExpr(this.typeCtors.get(dir.ref.key)!);
     }
 
     if (dir.requiresInlineTypeCtor) {
       // The constructor has already been created inline, we just need to construct a reference to
       // it.
       const typeCtorExpr = `${this.referenceTcbValue(dir.ref).print()}.ngTypeCtor`;
-      this.typeCtors.set(key, typeCtorExpr);
+      this.typeCtors.set(dir.ref.key, typeCtorExpr);
       return new TcbExpr(typeCtorExpr);
     } else {
       const fnName = `_ctor${this.nextIds.typeCtor++}`;
@@ -91,7 +93,7 @@ export class Environment extends ReferenceEmitEnvironment {
       const typeParams = dir.typeParameters || undefined;
       const typeCtor = generateTypeCtorDeclarationFn(this, meta, nodeTypeRef, typeParams);
       this.typeCtorStatements.push(typeCtor);
-      this.typeCtors.set(key, fnName);
+      this.typeCtors.set(dir.ref.key, fnName);
       return new TcbExpr(fnName);
     }
   }
@@ -100,27 +102,18 @@ export class Environment extends ReferenceEmitEnvironment {
    * Get an expression referring to an instance of the given pipe.
    */
   pipeInst(pipe: TcbPipeMetadata): TcbExpr {
-    const key = getTcbReferenceKey(pipe.ref);
-    if (this.pipeInsts.has(key)) {
-      return new TcbExpr(this.pipeInsts.get(key)!);
+    if (this.pipeInsts.has(pipe.ref.key)) {
+      return new TcbExpr(this.pipeInsts.get(pipe.ref.key)!);
     }
 
     const pipeType = this.referenceTcbValue(pipe.ref);
     const pipeInstId = `_pipe${this.nextIds.pipeInst++}`;
-
-    this.pipeInsts.set(key, pipeInstId);
-    this.pipeInstStatements.push(declareVariable(new TcbExpr(pipeInstId), pipeType));
+    this.pipeInsts.set(pipe.ref.key, pipeInstId);
+    this.pipeInstStatements.push(new TcbExpr(`var ${pipeInstId} = null! as ${pipeType.print()}`));
     return new TcbExpr(pipeInstId);
   }
 
   getPreludeStatements(): TcbExpr[] {
     return [...this.pipeInstStatements, ...this.typeCtorStatements];
   }
-}
-
-export function getTcbReferenceKey(ref: TcbReferenceMetadata): TcbReferenceKey {
-  if (ref.nodeFilePath !== undefined && ref.nodeNameSpan !== undefined) {
-    return `${ref.nodeFilePath}#${ref.nodeNameSpan.start}` as TcbReferenceKey;
-  }
-  return (ref.moduleName ? `${ref.moduleName}#${ref.name}` : ref.name) as TcbReferenceKey;
 }

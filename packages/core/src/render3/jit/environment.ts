@@ -9,8 +9,8 @@
 import {forwardRef, resolveForwardRef} from '../../di/forward_ref';
 import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
+import {ɵɵdefineService} from '../../di/interface/service';
 import {registerNgModuleType} from '../../linker/ng_module_registration';
-import * as iframe_attrs_validation from '../../sanitization/iframe_attrs_validation';
 import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
 
@@ -30,6 +30,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵdefineInjectable': ɵɵdefineInjectable,
   'ɵɵdefineInjector': ɵɵdefineInjector,
   'ɵɵdefineNgModule': r3.ɵɵdefineNgModule,
+  'ɵɵdefineService': ɵɵdefineService,
   'ɵɵdefinePipe': r3.ɵɵdefinePipe,
   'ɵɵdirectiveInject': r3.ɵɵdirectiveInject,
   'ɵɵgetInheritedFactory': r3.ɵɵgetInheritedFactory,
@@ -54,6 +55,9 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵelementStart': r3.ɵɵelementStart,
   'ɵɵelementEnd': r3.ɵɵelementEnd,
   'ɵɵelement': r3.ɵɵelement,
+  'ɵɵforeignComponent': r3.ɵɵforeignComponent,
+  'ɵɵforeignContent': r3.ɵɵforeignContent,
+  'ɵɵforeignContentFn': r3.ɵɵforeignContentFn,
   'ɵɵelementContainerStart': r3.ɵɵelementContainerStart,
   'ɵɵelementContainerEnd': r3.ɵɵelementContainerEnd,
   'ɵɵdomElement': r3.ɵɵdomElement,
@@ -134,6 +138,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵdeferHydrateOnInteraction': r3.ɵɵdeferHydrateOnInteraction,
   'ɵɵdeferHydrateOnViewport': r3.ɵɵdeferHydrateOnViewport,
   'ɵɵdeferEnableTimerScheduling': r3.ɵɵdeferEnableTimerScheduling,
+  'ɵɵenableIncrementalHydrationRuntime': r3.ɵɵenableIncrementalHydrationRuntime,
   'ɵɵrepeater': r3.ɵɵrepeater,
   'ɵɵrepeaterCreate': r3.ɵɵrepeaterCreate,
   'ɵɵrepeaterTrackByIndex': r3.ɵɵrepeaterTrackByIndex,

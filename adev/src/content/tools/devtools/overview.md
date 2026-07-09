@@ -15,15 +15,16 @@ HELPFUL: Chrome's new tab page does not run installed extensions, so the Angular
 
 ## Open your application
 
-When you open the extension, you'll see three additional tabs:
+When you open the extension, you'll see four additional tabs:
 
 | Tabs                                      | Details                                                                                                                |
 | :---------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
 | [Components](tools/devtools/component)    | Lets you explore the components and directives in your application and preview or edit their state.                    |
 | [Profiler](tools/devtools/profiler)       | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
 | [Injector Tree](tools/devtools/injectors) | Lets you visualize the Environment and Element Injector hierarchy                                                      |
+| [Router Tree](tools/devtools/router)      | Lets you visualize the routing tree of your application.                                                               |
 
-Other tabs like `Router Tree` or `Transfer State` are experimental and can be enabled via the devtools settings and are not documented yet.
+Other tabs like `Transfer State` are experimental and can be enabled via the devtools settings and are not documented yet.
 
 HELPFUL: For users of Chromium based browsers, you might be interested in the [Performance panel integration](/best-practices/profiling-with-chrome-devtools).
 

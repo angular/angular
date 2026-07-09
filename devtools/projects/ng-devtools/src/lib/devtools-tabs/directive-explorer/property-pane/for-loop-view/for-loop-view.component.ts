@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
+import {Component, computed, input} from '@angular/core';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {ForLoopBlock} from '../../../../../../../protocol';
 import {ObjectTreeExplorerComponent} from '../../../../shared/object-tree-explorer/object-tree-explorer.component';
@@ -19,7 +19,6 @@ import {MatToolbar} from '@angular/material/toolbar';
   selector: 'ng-for-loop-view',
   styleUrls: ['./for-loop-view.component.scss', '../styles/view-tab.scss'],
   imports: [MatExpansionModule, ObjectTreeExplorerComponent, MatToolbar],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForLoopViewComponent {
   protected readonly forLoop = input.required<NonNullable<ForLoopBlock>>();

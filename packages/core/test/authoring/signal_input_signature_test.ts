@@ -12,7 +12,7 @@
  * the resulting types match our expectations (via comments asserting the `.d.ts`).
  */
 
-import {input} from '../../src/core';
+import {booleanAttribute, input, numberAttribute} from '../../src/core';
 // import preserved to simplify `.d.ts` emit and simplify the `type_tester` logic.
 // tslint:disable-next-line no-duplicate-imports
 import {InputSignal, InputSignalWithTransform} from '../../src/core';
@@ -100,6 +100,19 @@ export class InputSignatureTest {
   __requiredWithTransformButNoWriteT = input.required<string>({
     // @ts-expect-error
     transform: (v: string | boolean) => '',
+  });
+
+  /** boolean, string | boolean */
+  explicitReadWithBooleanAttributeTransform = input<boolean>(false, {transform: booleanAttribute});
+  /** number, string | number */
+  explicitReadWithNumberAttributeTransform = input<number>(0, {transform: numberAttribute});
+  /** boolean | undefined, string | boolean | undefined */
+  explicitReadWithUndefinedInitialBooleanAttributeTransform = input<boolean>(undefined, {
+    transform: booleanAttribute,
+  });
+  /** number | undefined, string | number | undefined */
+  explicitReadWithUndefinedInitialNumberAttributeTransform = input<number>(undefined, {
+    transform: numberAttribute,
   });
 
   /** string, string | boolean */

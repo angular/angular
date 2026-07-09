@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  InternalOptions,
-  LegacyNgcOptions,
-  TypeCheckingOptions,
-} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {InternalOptions, TypeCheckingOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {
   absoluteFrom,
   AbsoluteFsPath,
@@ -21,8 +17,8 @@ import {
 import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
-import {LanguageService} from '../../src/language_service';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../api';
+import {LanguageService} from '../../src/language_service';
 
 import {OpenBuffer} from './buffer';
 import {patchLanguageServiceProjectsWithTestHost} from './language_service_test_cache';
@@ -80,8 +76,7 @@ function writeTsconfig(
 }
 
 export type TestableOptions = TypeCheckingOptions &
-  InternalOptions &
-  Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'> & {
+  InternalOptions & {
     // This already exists in `InternalOptions`, but it's `internal` so it's stripped away.
     _enableSelectorless?: boolean;
   };

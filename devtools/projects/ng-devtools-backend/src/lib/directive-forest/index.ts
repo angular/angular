@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentTreeNode} from '../interfaces';
 import {LTreeStrategy} from './ltree';
 import {RTreeStrategy} from './render-tree';
 

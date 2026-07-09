@@ -18,10 +18,12 @@ ng_project(
     angular_assets = [
         "property-preview.component.html",
         ":property-preview_styles",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer/prop-value-highlighter:styles",
     ],
     deps = [
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer/prop-value-highlighter",
         "//devtools/projects/protocol",
     ],
 )

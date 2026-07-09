@@ -12,9 +12,7 @@ The `outputFromObservable` lets you create a component or directive output that 
 import {Directive} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 
-@Directive({
-  /*...*/
-})
+@Directive(/* ... */)
 class Draggable {
   pointerMoves$: Observable<PointerMovements> = listenToPointerMoves();
 
@@ -37,7 +35,7 @@ The `outputToObservable` function lets you create an RxJS observable from a comp
 import {outputToObservable} from '@angular/core/rxjs-interop';
 
 @Component(/*...*/)
-    class CustomSlider {
+class CustomSlider {
     valueChange = output<number>();
 }
 

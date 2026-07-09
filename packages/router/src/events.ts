@@ -670,7 +670,7 @@ export function isPublicRouterEvent(e: Event | PrivateRouterEvents): e is Event 
  *
  * * [NavigationStart](api/router/NavigationStart): Navigation starts.
  * * [RouteConfigLoadStart](api/router/RouteConfigLoadStart): Before
- * the router [lazy loads](guide/routing/common-router-tasks#lazy-loading) a route configuration.
+ * the router [lazy loads](guide/routing/loading-strategies) a route configuration.
  * * [RouteConfigLoadEnd](api/router/RouteConfigLoadEnd): After a route has been lazy loaded.
  * * [RoutesRecognized](api/router/RoutesRecognized): When the router parses the URL
  * and the routes are recognized.

@@ -15,9 +15,9 @@ import {
   output,
   signal,
   viewChild,
-  ChangeDetectionStrategy,
   computed,
   DestroyRef,
+  untracked,
 } from '@angular/core';
 import {
   ComponentExplorerView,
@@ -37,7 +37,7 @@ import {FrameManager} from '../../application-services/frame_manager';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {FlatNode} from './directive-forest/component-data-source';
 import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
-import {findNodeByPosition, IndexedNode, indexForest} from './directive-forest/index-forest';
+import {IndexedNode} from './directive-forest/index-forest';
 import {constructPathOfKeysToPropertyValue} from './property-resolver/directive-property-resolver';
 import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 import {FlatNode as PropertyFlatNode} from '../../shared/object-tree-explorer/object-tree-types';
@@ -55,6 +55,7 @@ import {SplitComponent} from '../../shared/split/split.component';
 import {Direction} from '../../shared/split/interface';
 import {SignalGraphManager} from './signal-graph-manager/signal-graph-manager';
 import {DevtoolsSignalGraphNode} from '../../shared/signal-graph';
+import {Settings} from '../../application-services/settings';
 
 const FOREST_VER_SPLIT_SIZE = 30;
 const SIGNAL_GRAPH_VER_SPLIT_SIZE = 70;
@@ -68,7 +69,13 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if (a.component && b.component && a.component.id !== b.component.id) {
     return false;
   }
-  const aDirectives = new Set(a.directives.map((d) => d.id));
+  if (!a.directives && !b.directives) {
+    return true;
+  }
+  if (!a.directives || !b.directives) {
+    return false;
+  }
+  const aDirectives = new Set(a.directives.map((d) => d.id) ?? []);
   for (const dir of b.directives) {
     if (!aDirectives.has(dir.id)) {
       return false;
@@ -99,11 +106,9 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     SignalGraphPaneComponent,
     ResponsiveSplitDirective,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DirectiveExplorerComponent {
   readonly showCommentNodes = input(false);
-  readonly isHydrationEnabled = input(false);
   readonly toggleInspector = output<void>();
 
   readonly directiveForest = viewChild.required(DirectiveForestComponent);
@@ -121,13 +126,13 @@ export class DirectiveExplorerComponent {
 
   private _clickedElement: IndexedNode | null = null;
   private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
-  private showHydrationNodeHighlights = false;
 
   private readonly _appOperations = inject(ApplicationOperations);
   private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
   private readonly _propResolver = inject(ElementPropertyResolver);
   private readonly _frameManager = inject(FrameManager);
 
+  private readonly settings = inject(Settings);
   private readonly platform = inject(Platform);
   private readonly snackBar = inject(MatSnackBar);
   protected readonly signalGraph = inject(SignalGraphManager);
@@ -234,9 +239,8 @@ export class DirectiveExplorerComponent {
     const selectedEl = this.currentSelectedElement();
     if (!selectedEl) return;
 
-    const directiveIndex = selectedEl.directives.findIndex(
-      (directive) => directive.name === directiveName,
-    );
+    const directiveIndex =
+      selectedEl.directives?.findIndex((directive) => directive.name === directiveName) ?? -1;
 
     const selectedFrame = this._frameManager.selectedFrame();
     if (!this._frameManager.activeFrameHasUniqueUrl()) {
@@ -278,7 +282,7 @@ export class DirectiveExplorerComponent {
   }
 
   highlight(node: FlatNode): void {
-    if (!node.original.component) {
+    if (!node.hasNativeElement) {
       return;
     }
     this._messageBus.emit('createHighlightOverlay', [node.position]);
@@ -361,27 +365,18 @@ export class DirectiveExplorerComponent {
     }
   }
 
-  toggleHydrationNodesHighlights(toggle: boolean) {
-    if (toggle) {
-      this.hightlightHydrationNodes();
-    } else {
-      this.removeHydrationNodesHightlights();
-    }
-    this.showHydrationNodeHighlights = toggle;
-  }
-
-  hightlightHydrationNodes() {
+  createHydrationOverlays() {
     this._messageBus.emit('createHydrationOverlay');
   }
 
-  removeHydrationNodesHightlights() {
+  removeHydrationOverlays() {
     this._messageBus.emit('removeHydrationOverlay');
   }
 
   private refreshHydrationNodeHighlightsIfNeeded() {
-    if (this.showHydrationNodeHighlights) {
-      this.removeHydrationNodesHightlights();
-      this.hightlightHydrationNodes();
+    if (untracked(this.settings.showHydrationOverlays)) {
+      this.removeHydrationOverlays();
+      this.createHydrationOverlays();
     }
   }
 

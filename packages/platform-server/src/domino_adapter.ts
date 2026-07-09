@@ -7,9 +7,13 @@
  */
 
 import {ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
 import {ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 
-import domino from './bundled-domino';
+import {RuntimeErrorCode} from './errors';
+
+// g3-only import domino from 'domino';
+import domino from '../third_party/domino/bundled-domino'; // 3p-only
 
 export function setDomTypes() {
   // Make all Domino types available in the global env.
@@ -115,6 +119,9 @@ export class DominoAdapter extends BrowserDomAdapter {
   }
 
   override getCookie(name: string): string {
-    throw new Error('getCookie has not been implemented');
+    throw new RuntimeError(
+      RuntimeErrorCode.GET_COOKIE_NOT_IMPLEMENTED,
+      (typeof ngDevMode === 'undefined' || ngDevMode) && 'getCookie has not been implemented',
+    );
   }
 }

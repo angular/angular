@@ -229,6 +229,7 @@ export class PartialComponentLinkerVersion1<
 
     return {
       ...baseMeta,
+      legacyOptionalChaining: major < 22 && version !== PLACEHOLDER_VERSION,
       viewProviders: metaObj.has('viewProviders') ? metaObj.getOpaque('viewProviders') : null,
       template: {
         nodes: template.nodes,
@@ -253,6 +254,7 @@ export class PartialComponentLinkerVersion1<
       i18nUseExternalIds: false,
       declarations,
       hasDirectiveDependencies: !baseMeta.isStandalone || hasDirectiveDependencies,
+      foreignImports: null,
     };
   }
 

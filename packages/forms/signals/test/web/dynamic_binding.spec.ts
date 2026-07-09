@@ -73,7 +73,7 @@ describe('createComponent', () => {
       const environmentInjector = TestBed.inject(EnvironmentInjector);
       const control = TestBed.runInInjectionContext(() => {
         return form(signal('initial value'), (p) => {
-          disabled(p, disabledSignal);
+          disabled(p, {when: disabledSignal});
         });
       });
 

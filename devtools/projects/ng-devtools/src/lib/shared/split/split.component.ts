@@ -9,7 +9,6 @@
 import {
   afterNextRender,
   booleanAttribute,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   effect,
@@ -86,7 +85,6 @@ import {
 @Component({
   selector: 'as-split',
   exportAs: 'asSplit',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: [`./split.component.scss`],
   template: `<ng-content></ng-content>
     @for (_ of displayedAreas; track $index) {

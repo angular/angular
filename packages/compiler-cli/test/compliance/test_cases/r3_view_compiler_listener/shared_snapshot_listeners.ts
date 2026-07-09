@@ -1,11 +1,11 @@
-import {Component, NgModule} from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 
 @Component({
     selector: 'my-component',
     template: `
     <div *ngIf="showing">
-      <div (click)="onClick(foo)"></div>
-      <button (click)="onClick2(bar)"></button>
+      <div (click)="onClick(1)"></div>
+      <button (click)="onClick2(2)"></button>
     </div>
   `,
     standalone: false

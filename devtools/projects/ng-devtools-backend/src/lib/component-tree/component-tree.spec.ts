@@ -6,14 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, ɵGlobalDevModeUtils} from '@angular/core';
+import {
+  Injector,
+  ɵExternalCoreGlobalUtils,
+  ɵProviderRecord as ProviderRecord,
+  InjectionToken,
+} from '@angular/core';
 import {
   getInjectorFromElementNode,
   getRootElements,
   serializeProviderRecord,
 } from './component-tree';
 
-type Ng = ɵGlobalDevModeUtils['ng'];
+type Ng = ɵExternalCoreGlobalUtils;
 const NG_VERSION = 'ng-version';
 const VERSION = '0.0.0-PLACEHOLDER';
 
@@ -164,6 +169,18 @@ describe('component-tree', () => {
       const result = serializeProviderRecord(providerRecord, 0);
       expect(result.type).toBe('type');
       expect(result.token).toBe('MyCustomService');
+    });
+
+    it('should handle injection tokens', () => {
+      const result = serializeProviderRecord(
+        {
+          token: new InjectionToken('FOO'),
+          isViewProvider: false,
+        } as ProviderRecord,
+        0,
+      );
+
+      expect(result.token).toBe('InjectionToken (FOO)');
     });
   });
 });

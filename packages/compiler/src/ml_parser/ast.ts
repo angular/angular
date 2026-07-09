@@ -26,7 +26,8 @@ export type Node =
   | Block
   | BlockParameter
   | Component
-  | Directive;
+  | Directive
+  | StartTagComment;
 
 export abstract class NodeWithI18n implements BaseNode {
   constructor(
@@ -97,6 +98,17 @@ export class Attribute extends NodeWithI18n {
   }
 }
 
+export class StartTagComment implements BaseNode {
+  constructor(
+    public value: string,
+    public type: 'single' | 'multi',
+    public sourceSpan: ParseSourceSpan,
+  ) {}
+  visit(visitor: Visitor, context: any): any {
+    return visitor.visitStartTagComment ? visitor.visitStartTagComment(this, context) : undefined;
+  }
+}
+
 export class Element extends NodeWithI18n {
   constructor(
     public name: string,
@@ -109,6 +121,7 @@ export class Element extends NodeWithI18n {
     public endSourceSpan: ParseSourceSpan | null = null,
     readonly isVoid: boolean,
     i18n?: I18nMeta,
+    public comments: StartTagComment[] = [],
   ) {
     super(sourceSpan, i18n);
   }
@@ -159,6 +172,7 @@ export class Component extends NodeWithI18n {
     readonly startSourceSpan: ParseSourceSpan,
     public endSourceSpan: ParseSourceSpan | null = null,
     i18n?: I18nMeta,
+    public comments: StartTagComment[] = [],
   ) {
     super(sourceSpan, i18n);
   }
@@ -223,6 +237,7 @@ export interface Visitor {
   visitLetDeclaration(decl: LetDeclaration, context: any): any;
   visitComponent(component: Component, context: any): any;
   visitDirective(directive: Directive, context: any): any;
+  visitStartTagComment?(comment: StartTagComment, context: any): any;
 }
 
 export function visitAll(visitor: Visitor, nodes: Node[], context: any = null): any[] {
@@ -247,11 +262,13 @@ export class RecursiveVisitor implements Visitor {
     this.visitChildren(context, (visit) => {
       visit(ast.attrs);
       visit(ast.directives);
+      visit(ast.comments);
       visit(ast.children);
     });
   }
 
   visitAttribute(ast: Attribute, context: any): any {}
+  visitStartTagComment(ast: StartTagComment, context: any): any {}
   visitText(ast: Text, context: any): any {}
   visitComment(ast: Comment, context: any): any {}
 
@@ -277,6 +294,7 @@ export class RecursiveVisitor implements Visitor {
   visitComponent(component: Component, context: any) {
     this.visitChildren(context, (visit) => {
       visit(component.attrs);
+      visit(component.comments);
       visit(component.children);
     });
   }

@@ -7,13 +7,14 @@
  */
 
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
-import {Signal} from '@angular/core';
+import {DebounceTimer, ResourceSnapshot, Signal} from '@angular/core';
 import {
   FieldContext,
-  SchemaPath,
+  LogicFn,
   PathKind,
-  TreeValidationResult,
+  SchemaPath,
   SchemaPathRules,
+  TreeValidationResult,
 } from '../../types';
 import {MapToErrorsFn, validateAsync} from './validate_async';
 
@@ -25,8 +26,11 @@ import {MapToErrorsFn, validateAsync} from './validate_async';
  * @template TResult The type of result returned by the httpResource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
+ * @see [HTTP validation with validateHttp](guide/forms/signals/async-operations#http-validation-with-validatehttp)
+ * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
   /**
@@ -62,6 +66,16 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
    * The options to use when creating the httpResource.
    */
   readonly options?: HttpResourceOptions<TResult, unknown>;
+
+  /**
+   * Duration in milliseconds to wait before triggering the async operation, or a function that
+   * returns a promise that resolves when the update should proceed.
+   */
+  readonly debounce?: DebounceTimer<string | HttpResourceRequest | undefined>;
+  /**
+   * A function that receives the field context and returns true if the async validation should be run.
+   */
+  readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
 
 /**
@@ -75,17 +89,22 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
  * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
+ * @see [HTTP validation with validateHttp](guide/forms/signals/async-operations#http-validation-with-validatehttp)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   opts: HttpValidatorOptions<TValue, TResult, TPathKind>,
 ) {
   validateAsync(path, {
-    params: opts.request,
+    params: opts.request as (
+      ctx: FieldContext<TValue, TPathKind>,
+    ) => string | HttpResourceRequest | undefined,
+    debounce: opts.debounce,
     factory: (request: Signal<any>) => httpResource(request, opts.options),
     onSuccess: opts.onSuccess,
     onError: opts.onError,
+    when: opts.when,
   });
 }

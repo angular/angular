@@ -48,7 +48,15 @@ import {ChainedInjector} from '../../src/render3/chained_injector';
 import {getComponentDef} from '../../src/render3/def_getters';
 import {getInjectorResolutionPath} from '../../src/render3/util/injector_discovery_utils';
 import {global} from '../../src/util/global';
-import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '../../testing';
+import {
+  ComponentFixture,
+  DeferBlockBehavior,
+  DeferBlockState,
+  fakeAsync,
+  flush,
+  TestBed,
+  tick,
+} from '../../testing';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -1158,6 +1166,73 @@ describe('@defer', () => {
       expect(reportedErrors.length).toBe(1);
       expect(reportedErrors[0].message).toContain('NG0750');
       expect(reportedErrors[0].message).toContain(`(used in the 'MyCmp' component template)`);
+    });
+
+    it('should include detailed failure info in the error message when no `@error` block is defined', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'NestedCmp',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'simple-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when isVisible) {
+            <nested-cmp />
+          } @loading {
+            Loading...
+          } @placeholder {
+            Placeholder
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyCmp {
+        isVisible = false;
+      }
+
+      const failedReason = new Error('Failed to load module X');
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [new Promise((_, reject) => setTimeout(() => reject(failedReason), 0))];
+        },
+      };
+
+      const reportedErrors: Error[] = [];
+      TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
+        providers: [
+          {
+            provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
+            useValue: deferDepsInterceptor,
+          },
+          {
+            provide: ErrorHandler,
+            useClass: class extends ErrorHandler {
+              override handleError(error: Error) {
+                reportedErrors.push(error);
+              }
+            },
+          },
+        ],
+      });
+
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      fixture.componentInstance.isVisible = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(reportedErrors.length).toBe(1);
+      const errorMsg = reportedErrors[0].message;
+      expect(errorMsg).toContain('NG0750');
+      expect(errorMsg).toContain('Failed to load module X');
     });
 
     it('should not render `@error` block if loaded component has errors', async () => {
@@ -4465,7 +4540,6 @@ describe('@defer', () => {
                 @placeholder {<button>p{{item}} </button>}
               }
            `,
-      
         changeDetection: ChangeDetectionStrategy.Eager,})
       class MyCmp {
         items = [1, 2, 3, 4, 5, 6];
@@ -4585,6 +4659,36 @@ describe('@defer', () => {
       expect(activeObservers[2].observedElements.has(button)).toBe(true);
       expect(activeObservers[2].options).toEqual({rootMargin: '1vh'});
     }));
+
+    it('should not attach observer if rendering manually', async () => {
+      @Component({
+        template: `
+          @defer (on viewport(trigger)) {
+            Main content
+          } @placeholder {
+            Placeholder
+          }
+
+          <button #trigger></button>
+        `,
+      })
+      class MyCmp {}
+
+      TestBed.configureTestingModule({
+        deferBlockBehavior: DeferBlockBehavior.Manual,
+      });
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.detectChanges();
+
+      expect(activeObservers.length).toBe(0);
+      expect(fixture.nativeElement.textContent.trim()).toBe('Placeholder');
+
+      const deferBlock = (await fixture.getDeferBlocks())[0];
+      await deferBlock.render(DeferBlockState.Complete);
+
+      expect(activeObservers.length).toBe(0);
+      expect(fixture.nativeElement.textContent.trim()).toBe('Main content');
+    });
   });
 
   describe('DOM-based events cleanup', () => {

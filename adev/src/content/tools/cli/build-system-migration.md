@@ -12,8 +12,8 @@ This new build system is stable and fully supported for use with Angular applica
 You can migrate to the new build system with applications that use the `browser` builder.
 If using a custom builder, please refer to the documentation for that builder on possible migration options.
 
-IMPORTANT: The existing webpack-based build system is still considered stable and fully supported.
-Applications can continue to use the `browser` builder and projects can opt-out of migrating during an update.
+IMPORTANT: The existing webpack-based build system and `browser` builder are deprecated.
+Applications can temporarily continue to use the `browser` builder and projects can opt-out of migrating during an update, but the Angular team recommends migrating to the new build system.
 
 ## For new applications
 
@@ -130,7 +130,7 @@ The following list discusses all the `browser` builder options that will need to
 - `resourcesOutputPath` should be removed, this is now always `media`.
 - `vendorChunk` should be removed, as this was a performance optimization which is no longer needed.
 - `commonChunk` should be removed, as this was a performance optimization which is no longer needed.
-- `deployUrl` should be removed and is not supported. Prefer [`<base href>`](guide/routing/common-router-tasks) instead. See [deployment documentation](tools/cli/deployment#--deploy-url) for more information.
+- `deployUrl` should be removed and is not supported. Prefer [`<base href>`](guide/routing/router-reference#base-href) instead. See [deployment documentation](tools/cli/deployment#--deploy-url) for more information.
 - `ngswConfigPath` should be renamed to `serviceWorker`.
 
 If the application is not using SSR currently, this should be the final step to allow `ng build` to function.

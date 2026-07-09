@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, inject, input} from '@angular/core';
+import {Component, computed, inject, input} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {DataSource} from '@angular/cdk/collections';
@@ -22,7 +22,6 @@ import {FlatNode, Property} from '../../object-tree-explorer/object-tree-types';
   templateUrl: './signal-value-tree.component.html',
   imports: [ObjectTreeExplorerComponent],
   styleUrl: './signal-value-tree.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignalValueTreeComponent {
   private readonly messageBus = inject(MessageBus);

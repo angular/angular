@@ -10,7 +10,7 @@
   "author": "Angular",
   "license": "MIT",
   "engines": {
-    "node": "^22.22.0 || >=24.13.1"
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
   },
   "main": "../../dist/bin/vscode-ng-language-service/server/src/server.js",
   "bin": {
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@angular/language-service": "workspace:*",
-    "typescript": "6.0.1-rc"
+    "typescript": "6.0.3"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",

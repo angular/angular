@@ -20,8 +20,11 @@ import type {FieldContext, PathKind, SchemaPath, SchemaPathRules, TreeValidator}
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @see [Cross-field validation](guide/forms/signals/cross-field-logic#using-validatetree)
+ * @see [Custom validation rules](guide/forms/signals/validation#using-validatetree)
+ *
  * @category logic
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

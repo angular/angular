@@ -1,4 +1,4 @@
-<dialog #searchDialog>
+<dialog #searchDialog id="docsSearchDialog">
   <div class="docs-search-container" (docsClickOutside)="closeSearchDialog()">
     <docs-text-field
       [autofocus]="true"
@@ -27,14 +27,16 @@
                     </i>
                   </span>
 
-                  <!-- Page title -->
-                  <span [innerHtml]="result.labelHtml"></span>
-                  @if (result.package) {
-                    <span
-                      [innerHTML]="result.package"
-                      class="docs-search-result__label__package"
-                    ></span>
-                  }
+                  <!-- Page title and package badge -->
+                  <span class="docs-search-result__label__text">
+                    <span [innerHtml]="result.labelHtml"></span>
+                    @if (result.package) {
+                      <span
+                        [innerHTML]="result.package"
+                        class="docs-search-result__label__package"
+                      ></span>
+                    }
+                  </span>
                 </p>
 
                 @if (result.subLabelHtml) {
@@ -65,10 +67,20 @@
       <div class="docs-search-results docs-mini-scroll-track">
         @if (!resultsResource.hasValue()) {
           <div class="docs-search-results__start-typing">
+            <img
+              src="assets/images/angie/magnifying-glass.svg"
+              class="docs-search-angie"
+              aria-hidden="true"
+            />
             <span>Start typing to see results</span>
           </div>
         } @else if (searchResults().length === 0) {
           <div class="docs-search-results__no-results">
+            <img
+              src="assets/images/angie/question.svg"
+              class="docs-search-angie"
+              aria-hidden="true"
+            />
             <span>No results found</span>
           </div>
         }

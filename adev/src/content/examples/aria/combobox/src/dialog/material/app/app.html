@@ -1,46 +1,103 @@
-<div ngCombobox #combobox="ngCombobox" [readonly]="true" class="material-combobox">
-  <div class="combobox-input-container">
-    <input ngComboboxInput placeholder="Select a country..." [value]="value()" />
-    <span class="material-symbols-outlined icon arrow-icon" translate="no" aria-hidden="true"
+<!--
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ -->
+
+<div
+  class="example-combobox-container"
+  ngCombobox
+  #combobox="ngCombobox"
+  [(expanded)]="popupExpanded"
+>
+  <div #origin class="example-combobox-input-container">
+    <input
+      class="example-combobox-input example-dialog-input"
+      placeholder="Select a country..."
+      [value]="value()"
+      [readonly]="true"
+      [tabindex]="-1"
+    />
+    <span class="material-symbols-outlined example-icon example-arrow-icon" aria-hidden="true"
       >arrow_drop_down</span
     >
   </div>
 
-  <ng-template ngComboboxPopupContainer>
-    <dialog ngComboboxDialog class="dialog">
-      <div ngCombobox #combobox="ngCombobox" filterMode="manual" [alwaysExpanded]="true">
-        <div class="combobox-input-container">
-          <span class="material-symbols-outlined icon search-icon" translate="no" aria-hidden="true"
-            >search</span
-          >
-          <input
-            ngComboboxInput
-            class="combobox-input"
-            placeholder="Search..."
-            [(value)]="searchString"
-          />
-        </div>
+  <ng-template
+    [cdkConnectedOverlay]="{origin: combobox.element, usePopover: 'inline', matchWidth: true}"
+    [cdkConnectedOverlayOpen]="popupExpanded()"
+    [cdkConnectedOverlayDisableClose]="true"
+  >
+    <ng-template ngComboboxPopup [combobox]="combobox">
+      <div class="example-popover">
+        <div class="example-dialog" ngComboboxWidget>
+          <div class="example-combobox-container">
+            <!-- Inner Combobox (Editable Search Trigger) -->
+            <div class="example-combobox-input-container">
+              <span
+                class="material-symbols-outlined example-icon example-search-icon"
+                aria-hidden="true"
+                >search</span
+              >
+              <input
+                ngCombobox
+                #innerCombobox="ngCombobox"
+                #searchInput
+                class="example-combobox-input"
+                placeholder="Search..."
+                [(ngModel)]="searchString"
+                [alwaysExpanded]="true"
+                (keydown.escape)="onSearchEscape($event)"
+              />
+            </div>
 
-        <ng-template ngComboboxPopupContainer>
-          @if (options().length === 0) {
-            <div class="no-results">No results found</div>
-          }
+            <div aria-live="polite" class="cdk-visually-hidden">
+              {{ options().length === 0 ? 'No results found for ' + searchString() : '' }}
+            </div>
 
-          <div ngListbox [(values)]="selectedCountries">
-            @for (option of options(); track option) {
-              <div ngOption [value]="option" [label]="option">
-                <span class="option-label">{{ option }}</span>
-                <span
-                  class="material-symbols-outlined icon check-icon"
-                  translate="no"
-                  aria-hidden="true"
-                  >check</span
+            <!-- Connected Popup wrapping the options listbox -->
+            <ng-template ngComboboxPopup [combobox]="innerCombobox">
+              <div class="example-popup example-popup-no-margin">
+                @if (options().length === 0) {
+                  <div class="example-no-results">No results found</div>
+                }
+                <div
+                  #listbox="ngListbox"
+                  ngListbox
+                  ngComboboxWidget
+                  class="example-listbox"
+                  focusMode="activedescendant"
+                  tabindex="-1"
+                  selectionMode="explicit"
+                  [(value)]="selectedCountries"
+                  (click)="onCommit()"
+                  (keydown.enter)="onCommit()"
+                  [activeDescendant]="listbox.activeDescendant()"
+                  [class.example-empty]="options().length === 0"
                 >
+                  @for (option of options(); track option) {
+                    <div
+                      class="example-option example-selectable example-stateful"
+                      ngOption
+                      [value]="option"
+                      [label]="option"
+                    >
+                      <span>{{ option }}</span>
+                      <span
+                        aria-hidden="true"
+                        class="material-symbols-outlined example-icon example-selected-icon"
+                        >check</span
+                      >
+                    </div>
+                  }
+                </div>
               </div>
-            }
+            </ng-template>
           </div>
-        </ng-template>
+        </div>
       </div>
-    </dialog>
+    </ng-template>
   </ng-template>
 </div>

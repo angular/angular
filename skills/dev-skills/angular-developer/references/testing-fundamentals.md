@@ -24,13 +24,10 @@ describe('MyComponent', () => {
   let fixture: ComponentFixture<MyComponent>;
   let h1: HTMLElement;
 
-  beforeEach(async () => {
-    // 1. Configure the test module
-    await TestBed.configureTestingModule({
-      imports: [MyComponent],
-    }).compileComponents();
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
 
-    // 2. Create the component fixture
+    // Create the component fixture
     fixture = TestBed.createComponent(MyComponent);
     component = fixture.componentInstance;
     h1 = fixture.nativeElement.querySelector('h1');
@@ -64,12 +61,3 @@ describe('MyComponent', () => {
   - `fixture.componentInstance`: Access the component's class instance.
   - `fixture.nativeElement`: Access the component's root DOM element.
   - `fixture.debugElement`: An Angular-specific wrapper around the `nativeElement` that provides safer, platform-agnostic ways to query the DOM (e.g., `debugElement.query(By.css('p'))`).
-
-## Custom Utilities
-
-To keep tests fast and avoid long waits, this project provides custom utilities:
-
-- **`useAutoTick()`**: (from `packages/private/testing/src/utils.ts`) Fast-forwards time via a mock clock to avoid real waits.
-- **`await timeout(ms)`**: (from `packages/private/testing/src/utils.ts`) Use for cases where a specific real-time delay is unavoidable.
-
-Always prefer `useAutoTick()` to keep tests efficient.

@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
 @Component({
@@ -57,7 +57,6 @@ import {FormsModule} from '@angular/forms';
       <button type="submit" [disabled]="loginForm.invalid">Sign In</button>
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   email = '';

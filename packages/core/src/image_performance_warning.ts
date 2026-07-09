@@ -7,12 +7,12 @@
  */
 
 import {IMAGE_CONFIG, ImageConfig} from './application/application_tokens';
-import {Injectable} from './di';
-import {inject} from './di/injector_compatibility';
-import {formatRuntimeError, RuntimeErrorCode} from './errors';
 import {OnDestroy} from './change_detection/lifecycle_hooks';
-import {getDocument} from './render3/interfaces/document';
+import {Service} from './di';
+import {inject} from './di/injector_compatibility';
 import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
+import {formatRuntimeError, RuntimeErrorCode} from './errors';
+import {getDocument} from './render3/interfaces/document';
 
 // A delay in milliseconds before the scan is run after onLoad, to avoid any
 // potential race conditions with other LCP-related functions. This delay
@@ -22,7 +22,7 @@ const SCAN_DELAY = 200;
 
 const OVERSIZED_IMAGE_TOLERANCE = 1200;
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class ImagePerformanceWarning implements OnDestroy {
   // Map of full image URLs -> original `ngSrc` values.
   private window: Window | null = null;

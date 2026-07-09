@@ -519,6 +519,266 @@ runInEachFileSystem(() => {
       expect(messages).toEqual([]);
     });
 
+    describe('de-duplication', () => {
+      it('should expose original inputs if a directive matches both as a host directive and through the template', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Input} from '@angular/core';
+
+            @Directive({selector: '[dir]'})
+            export class HostDir {
+              @Input() value = 0;
+              @Input({alias: 'otherAlias'}) other = false;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['value: valueAlias']}]
+            })
+            export class Dir {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir [value]="greeting" [valueAlias]="greeting" [otherAlias]="greeting"></div>',
+              imports: [HostDir, Dir]
+            })
+            export class App {
+              greeting = 'hi';
+            }
+          `,
+        );
+
+        // First diagnostic checks that the input is available under the original name.
+        // Second diagnostic checks that an input that would otherwise be hidden by a host directive is available.
+        // Third diagnostic checks that the host directive alias does not apply.
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(3);
+        expect(diags[0].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
+        expect(diags[1].messageText).toBe(`Type 'string' is not assignable to type 'boolean'.`);
+        expect(diags[2].messageText).toBe(
+          `Can't bind to 'valueAlias' since it isn't a known property of 'div'.`,
+        );
+      });
+
+      it('should expose original outputs if a directive matches both as a host directive and through the template', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Output, EventEmitter} from '@angular/core';
+
+            @Directive({selector: '[dir]'})
+            export class HostDir {
+              @Output() eventOne = new EventEmitter<number>();
+              @Output('twoAlias') eventTwo = new EventEmitter<boolean>();
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, outputs: ['eventOne: oneAlias']}]
+            })
+            export class Dir {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir (eventOne)="expectsString($event)" (oneAlias)="expectsString($event)" (twoAlias)="expectsString($event)"></div>',
+              imports: [HostDir, Dir]
+            })
+            export class App {
+              expectsString(value: string) {}
+            }
+          `,
+        );
+
+        // First diagnostic checks that the output is available under the original name.
+        // Second diagnostic checks that an output that would otherwise be hidden by a host directive is available.
+        // Third diagnostic checks that the host directive alias does not apply.
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(3);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+        expect(diags[1].messageText).toBe(
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
+        );
+        expect(diags[2].messageText).toBe(
+          `Argument of type 'Event' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should combine inputs configuration if host directive is exposed multiple times with non-conflicting configurations', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Input} from '@angular/core';
+
+            @Directive()
+            export class HostDir {
+              @Input() value = 0;
+              @Input({alias: 'otherInput'}) other = false;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['value']}]
+            })
+            export class DirOne {}
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['otherInput: otherAlias']}]
+            })
+            export class DirTwo {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir [value]="greeting" [otherAlias]="greeting"></div>',
+              imports: [DirOne, DirTwo]
+            })
+            export class App {
+              greeting = 'hi';
+            }
+          `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(2);
+        expect(diagnostics[0].messageText).toBe(
+          `Type 'string' is not assignable to type 'number'.`,
+        );
+        expect(diagnostics[1].messageText).toBe(
+          `Type 'string' is not assignable to type 'boolean'.`,
+        );
+      });
+
+      it('should combine inputs configuration if host directive is exposed multiple times with identical configurations', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Input} from '@angular/core';
+
+            @Directive()
+            export class HostDir {
+              @Input() value = 0;
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['value']}]
+            })
+            export class DirOne {}
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, inputs: ['value']}]
+            })
+            export class DirTwo {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir [value]="greeting"></div>',
+              imports: [DirOne, DirTwo]
+            })
+            export class App {
+              greeting = 'hi';
+            }
+          `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].messageText).toBe(
+          `Type 'string' is not assignable to type 'number'.`,
+        );
+      });
+
+      it('should combine output configuration if host directive is exposed multiple times with non-conflicting configurations', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Output, EventEmitter} from '@angular/core';
+
+            @Directive()
+            export class HostDir {
+              @Output() myEvent = new EventEmitter<number>();
+              @Output('otherOutput') myOtherEvent = new EventEmitter<boolean>();
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, outputs: ['myEvent']}]
+            })
+            export class DirOne {}
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, outputs: ['otherOutput: otherAlias']}]
+            })
+            export class DirTwo {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir (myEvent)="expectsString($event)" (otherAlias)="expectsString($event)"></div>',
+              imports: [DirOne, DirTwo]
+            })
+            export class App {
+              expectsString(value: string) {}
+            }
+          `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(2);
+        expect(diagnostics[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+        expect(diagnostics[1].messageText).toBe(
+          `Argument of type 'boolean' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should combine outputs configuration if host directive is exposed multiple times with identical configurations', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Directive, Component, Output, EventEmitter} from '@angular/core';
+
+            @Directive()
+            export class HostDir {
+              @Output() myEvent = new EventEmitter<number>();
+            }
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, outputs: ['myEvent']}]
+            })
+            export class DirOne {}
+
+            @Directive({
+              selector: '[dir]',
+              hostDirectives: [{directive: HostDir, outputs: ['myEvent']}]
+            })
+            export class DirTwo {}
+
+            @Component({
+              selector: 'my-comp',
+              template: '<div dir (myEvent)="expectsString($event)"></div>',
+              imports: [DirOne, DirTwo]
+            })
+            export class App {
+              expectsString(value: string) {}
+            }
+          `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+    });
+
     describe('validations', () => {
       it('should produce a diagnostic if a host directive is not standalone', () => {
         env.write(
@@ -1078,6 +1338,149 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
+      });
+
+      it('should produce a diagnostic if an input is exposed under multiple names in a chain of host directives', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive()
+          class DuplicateHostDir {
+            @Input() inp: any;
+          }
+
+          @Directive({hostDirectives: [{directive: DuplicateHostDir, inputs: ['inp: alias']}]})
+          class HostOne {}
+
+          @Directive({hostDirectives: [HostOne, {directive: DuplicateHostDir, inputs: ['inp']}]})
+          class HostTwo {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostTwo, {directive: DuplicateHostDir, inputs: ['inp: alias2']}],
+          })
+          class Dir {}
+
+          @Component({
+            template: '<div dir></div>',
+            imports: [Dir],
+          })
+          class App {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          'Input declared in DuplicateHostDir.inp is exposed under the following conflicting names: "alias", "inp", "alias2"',
+        );
+      });
+
+      it('should produce a diagnostic if an aliased input is exposed under multiple names in a chain of host directives', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Component, Input} from '@angular/core';
+
+          @Directive()
+          class DuplicateHostDir {
+            @Input({alias: 'foo'}) inp: any;
+          }
+
+          @Directive({hostDirectives: [{directive: DuplicateHostDir, inputs: ['foo']}]})
+          class HostDir {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostDir, {directive: DuplicateHostDir, inputs: ['foo: alias']}],
+          })
+          class Dir {}
+
+          @Component({
+            template: '<div dir></div>',
+            imports: [Dir],
+          })
+          class App {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          'Input declared in DuplicateHostDir.inp is exposed under the following conflicting names: "foo", "alias"',
+        );
+      });
+
+      it('should produce a diagnostic if an output is exposed under multiple names in a chain of host directives', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Component, Output, EventEmitter} from '@angular/core';
+
+          @Directive()
+          class DuplicateHostDir {
+            @Output() myEvent = new EventEmitter<void>();
+          }
+
+          @Directive({hostDirectives: [{directive: DuplicateHostDir, outputs: ['myEvent']}]})
+          class HostDir {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostDir, {directive: DuplicateHostDir, outputs: ['myEvent: alias']}],
+          })
+          class Dir {}
+
+          @Component({
+            template: '<div dir></div>',
+            imports: [Dir],
+          })
+          class App {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          'Output declared in DuplicateHostDir.myEvent is exposed under the following conflicting names: "myEvent", "alias"',
+        );
+      });
+
+      it('should produce a diagnostic if an aliased output is exposed under multiple names in a chain of host directives', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Component, Output, EventEmitter} from '@angular/core';
+
+          @Directive()
+          class DuplicateHostDir {
+            @Output('foo') myEvent = new EventEmitter<void>();
+          }
+
+          @Directive({hostDirectives: [{directive: DuplicateHostDir, outputs: ['foo']}]})
+          class HostDir {}
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [HostDir, {directive: DuplicateHostDir, outputs: ['foo: alias']}],
+          })
+          class Dir {}
+
+          @Component({
+            template: '<div dir></div>',
+            imports: [Dir],
+          })
+          class App {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          'Output declared in DuplicateHostDir.myEvent is exposed under the following conflicting names: "foo", "alias"',
+        );
       });
     });
   });

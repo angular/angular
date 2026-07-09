@@ -7,7 +7,7 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^22.22.0 || >=24.13.1"
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
   },
   "exports": {
     ".": {
@@ -23,6 +23,10 @@
     "./api": {
       "types": "./api.d.ts",
       "default": "./api_bundle.js"
+    },
+    "./private": {
+      "types": "./private.d.ts",
+      "default": "./private_bundle.js"
     }
   },
   "repository": {

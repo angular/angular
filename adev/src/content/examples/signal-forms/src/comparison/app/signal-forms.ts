@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {email, form, FormField, minLength, required} from '@angular/forms/signals';
 
 @Component({
@@ -33,7 +33,6 @@ import {email, form, FormField, minLength, required} from '@angular/forms/signal
       <button type="submit" [disabled]="loginForm().invalid()">Sign In</button>
     </form>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   loginModel = signal({

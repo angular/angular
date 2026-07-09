@@ -12,11 +12,8 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    let $tmp_2_0$;
-    $r3$.ɵɵadvance(2);
-    $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 3, ctx.valueA))
-                  (ctx.valueA == null ? null : ctx.valueA.a == null ? null : ctx.valueA.a.b)
-                  (($tmp_2_0$ = ctx.valueA.getRawValue()) == null ? null : $tmp_2_0$.getTitle());
-    $r3$.ɵɵi18nApply(1);
+    i0.ɵɵadvance(2);
+    i0.ɵɵi18nExp(i0.ɵɵpipeBind1(2, 3, ctx.valueA))(ctx.valueA?.a?.b)(ctx.valueA.getRawValue()?.getTitle());
+    i0.ɵɵi18nApply(1);
   }
 }

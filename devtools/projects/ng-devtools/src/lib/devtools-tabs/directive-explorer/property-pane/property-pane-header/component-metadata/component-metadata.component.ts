@@ -7,12 +7,15 @@
  */
 
 import {
-  ChangeDetectionStrategy,
   Component,
   ɵFramework as Framework,
   computed,
   inject,
   input,
+  ɵAcxChangeDetectionStrategy as AcxChangeDetectionStrategy,
+  ɵAcxViewEncapsulation as AcxViewEncapsulation,
+  ChangeDetectionStrategy as AngularChangeDetectionStrategy,
+  ViewEncapsulation as AngularViewEncapsulation,
 } from '@angular/core';
 
 import {
@@ -23,63 +26,95 @@ import {
 
 import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs-ref-button.component';
 import {ElementPropertyResolver} from '../../../property-resolver/element-property-resolver';
+import {APP_DATA} from '../../../../../application-providers/app_data';
+
+// Legacy `Native` (gone since v11) is no longer required since the minimal supported version is v12.
+const ANGULAR_VIEW_ENCAPSULATION: {[key in AngularViewEncapsulation]: string} = {
+  [AngularViewEncapsulation.Emulated]: 'Emulated',
+  [AngularViewEncapsulation.None]: 'None',
+  [AngularViewEncapsulation.ShadowDom]: 'ShadowDom',
+  [AngularViewEncapsulation.ExperimentalIsolatedShadowDom]: 'ExperimentalIsolatedShadowDom',
+};
+
+const ACX_VIEW_ENCAPSULATION: {[key in AcxViewEncapsulation]: string} = {
+  [AcxViewEncapsulation.Emulated]: 'Emulated',
+  [AcxViewEncapsulation.None]: 'None',
+};
+
+// Legacy support (i.e. pre-v21.2)
+const ANGULAR_PRE_V21_2_CHANGE_DETECTION: {[key in AngularChangeDetectionStrategy]: string} = {
+  [AngularChangeDetectionStrategy.Default]: 'Default', // Deprecated as of v21.2+
+  [AngularChangeDetectionStrategy.OnPush]: 'OnPush',
+};
+
+const ANGULAR_CHANGE_DETECTION: {[key in AngularChangeDetectionStrategy]: string} = {
+  [AngularChangeDetectionStrategy.OnPush]: 'OnPush',
+  [AngularChangeDetectionStrategy.Eager]: 'Eager',
+};
+
+const ACX_CHANGE_DETECTION: {[key in AcxChangeDetectionStrategy]: string} = {
+  [AcxChangeDetectionStrategy.Default]: 'Default',
+  [AcxChangeDetectionStrategy.OnPush]: 'OnPush',
+};
 
 @Component({
   selector: 'ng-component-metadata',
   templateUrl: './component-metadata.component.html',
   styleUrls: ['./component-metadata.component.scss'],
   imports: [DocsRefButtonComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ComponentMetadataComponent {
-  readonly currentSelectedComponent = input.required<ComponentType>();
+  private readonly nestedProps = inject(ElementPropertyResolver);
+  private readonly appData = inject(APP_DATA);
 
-  private _nestedProps = inject(ElementPropertyResolver);
+  protected readonly currentSelectedComponent = input.required<ComponentType>();
 
-  angularViewEncapsulationModes = [
-    'Emulated',
-    'Native',
-    'None',
-    'ShadowDom',
-    'ExperimentalIsolatedShadowDom',
-  ];
-  acxViewEncapsulationModes = ['Emulated', 'None'];
-
-  readonly controller = computed(() => {
+  protected readonly controller = computed(() => {
     const comp = this.currentSelectedComponent();
     if (!comp) {
       return;
     }
-    return this._nestedProps.getDirectiveController(comp.name);
+    return this.nestedProps.getDirectiveController(comp.name);
   });
 
-  readonly viewEncapsulation = computed(() => {
+  protected readonly viewEncapsulation = computed(() => {
     const metadata = this.controller()?.directiveMetadata;
     if (!metadata) return undefined;
 
     const encapsulation = (metadata as AngularDirectiveMetadata | AcxDirectiveMetadata)
       .encapsulation;
-    if (!encapsulation) return undefined;
 
     switch (metadata.framework) {
       case Framework.Angular:
-        return this.angularViewEncapsulationModes[encapsulation];
+        return ANGULAR_VIEW_ENCAPSULATION[encapsulation as AngularViewEncapsulation];
       case Framework.ACX:
-        return this.acxViewEncapsulationModes[encapsulation];
+        return ACX_VIEW_ENCAPSULATION[encapsulation as AcxViewEncapsulation];
       default:
         return undefined;
     }
   });
 
-  readonly changeDetectionStrategy = computed(() => {
+  protected readonly changeDetectionStrategy = computed(() => {
     const metadata = this.controller()?.directiveMetadata;
     if (!metadata) return undefined;
 
     const meta = metadata as Partial<AcxDirectiveMetadata | AngularDirectiveMetadata>;
-    if (meta.onPush !== undefined) {
-      return meta.onPush ? 'OnPush' : 'Eager';
-    } else {
-      return undefined;
+    const changeDetection = meta.changeDetection;
+
+    switch (metadata.framework) {
+      case Framework.Angular:
+        const {majorVersion, minorVersion} = this.appData();
+
+        // Show legacy `Default` for pre-v21.2
+        const isPre21_2 =
+          (0 < majorVersion && majorVersion < 21) || (majorVersion === 21 && minorVersion < 2);
+        const ngCdMap = isPre21_2 ? ANGULAR_PRE_V21_2_CHANGE_DETECTION : ANGULAR_CHANGE_DETECTION;
+
+        return ngCdMap[changeDetection as AngularChangeDetectionStrategy];
+      case Framework.ACX:
+        return ACX_CHANGE_DETECTION[changeDetection as AcxChangeDetectionStrategy];
+      default:
+        return undefined;
     }
   });
 }

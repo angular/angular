@@ -14,7 +14,7 @@ import type {InputValidityMonitor} from './input_validity_monitor';
 // Re-export shared native utilities from main forms package
 export {
   ɵisNativeFormElement as isNativeFormElement,
-  ɵisNumericFormElement as isNumericFormElement,
+  ɵelementAcceptsMinMax as elementAcceptsMinMax,
   ɵisTextualFormElement as isTextualFormElement,
   ɵsetNativeDomProperty as setNativeDomProperty,
   type ɵNativeFormControl as NativeFormControl,
@@ -176,4 +176,26 @@ export function inputRequiresValidityTracking(input: HTMLInputElement): boolean 
     input.type === 'time' ||
     input.type === 'week'
   );
+}
+
+function formatDateForInput(date: Date, type: 'date' | 'month'): string {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+
+  if (type === 'month') {
+    return `${year}-${month}`;
+  }
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function formatDateForMinMax(name: string, value: unknown, type: string): unknown {
+  if (
+    value instanceof Date &&
+    (name === 'min' || name === 'max') &&
+    (type === 'date' || type === 'month')
+  ) {
+    return formatDateForInput(value, type);
+  }
+  return value;
 }

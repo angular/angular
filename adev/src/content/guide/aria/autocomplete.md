@@ -52,7 +52,7 @@ Angular's autocomplete provides a fully accessible combobox implementation with:
 
 - **Keyboard Navigation** - Navigate options with arrow keys, select with Enter, close with Escape
 - **Screen Reader Support** - Built-in ARIA attributes for assistive technologies
-- **Three Filter Modes** - Choose between auto-select, manual selection, or highlighting behavior
+- **Dynamic Highlight Behavior** - Built-in support for inline selection suggestions
 - **Signal-Based Reactivity** - Reactive state management using Angular signals
 - **Popover API Integration** - Leverages the native HTML Popover API for optimal positioning
 - **Bidirectional Text Support** - Automatically handles right-to-left (RTL) languages
@@ -149,42 +149,79 @@ Highlight mode allows the user to navigate options with arrow keys without chang
   </docs-tab>
 </docs-tab-group>
 
-## APIs
+### Signal Forms Integration
 
-### Combobox Directive
+Angular Aria integrates seamlessly with the signal-based [Signal Forms](guide/forms/signals/overview) API. You can encapsulate complex inputs into reusable custom control components implementing `FormValueControl`.
 
-The `ngCombobox` directive provides the container for autocomplete functionality.
+The following example demonstrates a country selector component implementing `FormValueControl<string>`, bound to the parent form using `[formField]` and protected by schema validation rules.
 
-#### Inputs
+<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/autocomplete/src/signal-forms/app/app.ts">
+  <docs-code header="app.ts" path="adev/src/content/examples/aria/autocomplete/src/signal-forms/app/app.ts"/>
+  <docs-code header="app.html" path="adev/src/content/examples/aria/autocomplete/src/signal-forms/app/app.html"/>
+  <docs-code header="country-selector.ts" path="adev/src/content/examples/aria/autocomplete/src/signal-forms/app/country-selector.ts"/>
+  <docs-code header="country-selector.html" path="adev/src/content/examples/aria/autocomplete/src/signal-forms/app/country-selector.html"/>
+  <docs-code header="country-selector.css" path="adev/src/content/examples/aria/autocomplete/src/signal-forms/app/country-selector.css"/>
+  <docs-code header="app.css" path="adev/src/content/examples/aria/autocomplete/src/signal-forms/app/app.css"/>
+</docs-code-multifile>
 
-| Property     | Type                                           | Default    | Description                                       |
-| ------------ | ---------------------------------------------- | ---------- | ------------------------------------------------- |
-| `filterMode` | `'auto-select'` \| `'manual'` \| `'highlight'` | `'manual'` | Controls selection behavior                       |
-| `disabled`   | `boolean`                                      | `false`    | Disables the combobox                             |
-| `firstMatch` | `string`                                       | -          | The value of the first matching item in the popup |
+## Testing
 
-#### Outputs
+The autocomplete pattern can be tested using a combination of `ComboboxHarness` and `ListboxHarness` from `@angular/aria/combobox/testing` and `@angular/aria/listbox/testing`.
+Here is an example of how to use the harnesses to test an autocomplete component:
 
-| Property   | Type              | Description                                           |
-| ---------- | ----------------- | ----------------------------------------------------- |
-| `expanded` | `Signal<boolean>` | Signal indicating whether the popup is currently open |
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ComboboxHarness} from '@angular/aria/combobox/testing';
+import {ListboxHarness} from '@angular/aria/listbox/testing';
+import {MyAutocompleteComponent} from './my-autocomplete'; // Your component
 
-### ComboboxInput Directive
+describe('MyAutocompleteComponent', () => {
+  let fixture: ComponentFixture<MyAutocompleteComponent>;
+  let loader: HarnessLoader;
 
-The `ngComboboxInput` directive connects an input element to the combobox.
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyAutocompleteComponent],
+    });
 
-#### Model
+    fixture = TestBed.createComponent(MyAutocompleteComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
-| Property | Type     | Description                                                  |
-| -------- | -------- | ------------------------------------------------------------ |
-| `value`  | `string` | Two-way bindable string value of the input using `[(value)]` |
+  it('should filter options based on input', async () => {
+    const combobox = await loader.getHarness(ComboboxHarness);
 
-### ComboboxPopupContainer Directive
+    // Type in the input to trigger filtering
+    await combobox.setValue('ap');
+    expect(await combobox.isOpen()).toBe(true);
 
-The `ngComboboxPopupContainer` directive wraps the popup content and manages its display.
+    // Get the listbox harness from the popup
+    const listbox = await combobox.getPopupWidget(ListboxHarness);
+    const options = await listbox.getOptions();
 
-Must be used with `<ng-template>` inside a popover element.
+    // Verify options are filtered (e.g., 'Apple', 'Apricot')
+    expect(options.length).toBe(2);
+    expect(await options[0].getText()).toBe('Apple');
 
-### Related components
+    // Select the first option
+    await options[0].click();
 
-Autocomplete uses [Listbox](/api/aria/listbox/Listbox) and [Option](/api/aria/listbox/Option) directives to render the suggestion list. See the [Listbox documentation](/guide/aria/listbox) for additional customization options.
+    // Verify the input value is updated and popup is closed
+    expect(await combobox.isOpen()).toBe(false);
+    expect(await combobox.getValue()).toBe('Apple');
+  });
+});
+```
+
+## API reference
+
+For detailed API documentation, inspect the following API references:
+
+- [`Combobox`](/api/aria/combobox/Combobox)
+- [`ComboboxPopup`](/api/aria/combobox/ComboboxPopup)
+- [`ComboboxWidget`](/api/aria/combobox/ComboboxWidget)
+- [`Listbox`](/api/aria/listbox/Listbox)
+- [`Option`](/api/aria/listbox/Option)

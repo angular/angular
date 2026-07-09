@@ -283,7 +283,7 @@ When the service worker's request for `ngsw.json` returns a `404`, then the serv
 
 <!-- vale Angular.Google_Acronyms = NO -->
 
-A small script, `safety-worker.js`, is also included in the `@angular/service-worker` NPM package.
+A small script, `safety-worker.js`, is also included in the `@angular/service-worker` npm package.
 When loaded, it un-registers itself from the browser and removes the service worker caches.
 This script can be used as a last resort to get rid of unwanted service workers already installed on client pages.
 

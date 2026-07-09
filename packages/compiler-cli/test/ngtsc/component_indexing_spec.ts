@@ -13,7 +13,6 @@ import {
   IndexedComponent,
   TopLevelIdentifier,
 } from '../../src/ngtsc/indexer';
-import {ParseSourceFile} from '@angular/compiler';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -54,7 +53,7 @@ runInEachFileSystem(() => {
           jasmine.objectContaining<IndexedComponent>({
             name: 'TestCmp',
             selector: 'test-cmp',
-            file: new ParseSourceFile(componentContent, testSourceFile),
+            fileUrl: testSourceFile,
           }),
         );
       });
@@ -83,9 +82,7 @@ runInEachFileSystem(() => {
               target: null,
             },
           ]),
-          usedComponents: new Set(),
-          isInline: true,
-          file: new ParseSourceFile(componentContent, testSourceFile),
+          fileUrl: testSourceFile,
         });
       });
 
@@ -116,9 +113,7 @@ runInEachFileSystem(() => {
               target: null,
             },
           ]),
-          usedComponents: new Set(),
-          isInline: false,
-          file: new ParseSourceFile('{{foo}}', testTemplateFile),
+          fileUrl: testTemplateFile,
         });
       });
 
@@ -153,9 +148,7 @@ runInEachFileSystem(() => {
               target: null,
             },
           ]),
-          usedComponents: new Set(),
-          isInline: false,
-          file: new ParseSourceFile('  \n  {{foo}}', testTemplateFile),
+          fileUrl: testTemplateFile,
         });
       });
 
@@ -205,12 +198,6 @@ runInEachFileSystem(() => {
         const testImportComp = indexedComps.find((cmp) => cmp.name === 'TestImportCmp');
         expect(testComp).toBeDefined();
         expect(testImportComp).toBeDefined();
-
-        expect(testComp!.template.usedComponents.size).toBe(0);
-        expect(testImportComp!.template.usedComponents.size).toBe(1);
-
-        const [usedComp] = Array.from(testImportComp!.template.usedComponents);
-        expect(indexed.get(usedComp)).toEqual(testComp);
       });
     });
   });

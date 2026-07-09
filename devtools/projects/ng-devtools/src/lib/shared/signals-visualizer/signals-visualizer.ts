@@ -60,8 +60,9 @@ const CLUSTER_EDGE_CLASS = 'cluster-edge';
 const CLUSTER_CHILD_CLASS = 'cluster-child';
 const CLOSE_BTN_CLASS = 'cluster-close-btn';
 const NODE_EPOCH_UPDATE_ANIM_CLASS = 'node-epoch-anim';
-const HIGHLIGHTED_CLASS = 'highlighted';
-const HIGHLIGHTED_ORIGIN_CLASS = 'highlighted-origin';
+const HIGHLIGHTED_NODE_CLASS = 'highlighted';
+const HIGHLIGHTED_DEP_CLASS = 'highlighted-dep';
+const HIGHLIGHTED_DEP_ORIGIN_CLASS = 'highlighted-dep-origin';
 
 // Keep in sync with signals-visualizer.component.scss
 const NODE_WIDTH = 100;
@@ -126,6 +127,7 @@ export class SignalsGraphVisualizer {
     d3svg.call(this.zoomController);
   }
 
+  /** Snaps to a provided node. */
   snapToNode(nodeId: string): void;
   snapToNode(node: DevtoolsSignalGraphNode): void;
   snapToNode(node: string | DevtoolsSignalGraphNode) {
@@ -160,11 +162,15 @@ export class SignalsGraphVisualizer {
     }
   }
 
-  setSelected(selectedId: string | null) {
+  /**
+   * Adds a standard outline to the provided node.
+   * Using `null`, clears the highlighted node.
+   */
+  highlightNode(nodeId: string | null) {
     d3.select(this.svg)
       .select('.output .nodes')
       .selectAll<SVGGElement, string>(`.${NODE_CLASS}`)
-      .classed('selected', (d) => d === selectedId);
+      .classed(HIGHLIGHTED_NODE_CLASS, (d) => d === nodeId);
   }
 
   zoomScale(scale: number) {
@@ -679,7 +685,7 @@ export class SignalsGraphVisualizer {
           const edgeSelector = group[idx];
           const edgeSelection = d3.select(edgeSelector);
           this.highlightedPath.edges.push(edgeSelection);
-          appendClasses(edgeSelection, HIGHLIGHTED_CLASS);
+          appendClasses(edgeSelection, HIGHLIGHTED_DEP_CLASS);
         }
       });
   }
@@ -700,10 +706,10 @@ export class SignalsGraphVisualizer {
           let className: string;
 
           if (isOriginNode) {
-            className = HIGHLIGHTED_ORIGIN_CLASS;
+            className = HIGHLIGHTED_DEP_ORIGIN_CLASS;
             this.highlightedPath.originNode = nodeSelection;
           } else {
-            className = HIGHLIGHTED_CLASS;
+            className = HIGHLIGHTED_DEP_CLASS;
             this.highlightedPath.pathNodes.push(nodeSelection);
           }
 
@@ -717,13 +723,13 @@ export class SignalsGraphVisualizer {
     const {originNode, pathNodes, edges} = this.highlightedPath;
 
     if (originNode) {
-      removeClasses(originNode, HIGHLIGHTED_ORIGIN_CLASS);
+      removeClasses(originNode, HIGHLIGHTED_DEP_ORIGIN_CLASS);
     }
     for (const node of pathNodes) {
-      removeClasses(node, HIGHLIGHTED_CLASS);
+      removeClasses(node, HIGHLIGHTED_DEP_CLASS);
     }
     for (const edge of edges) {
-      removeClasses(edge, HIGHLIGHTED_CLASS);
+      removeClasses(edge, HIGHLIGHTED_DEP_CLASS);
     }
 
     this.highlightedPath = {

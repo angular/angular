@@ -14,7 +14,7 @@ import {HydrationStatus} from '../../../../protocol';
 
 import {ComponentTreeNode} from '../interfaces';
 import {ngDebugClient} from '../ng-debug-api/ng-debug-api';
-import {isCustomElement} from '../utils';
+import {isCustomElement} from '../utils/general';
 import {
   ControlFlowBlocksIterator,
   createControlFlowTreeNode,
@@ -58,7 +58,7 @@ function extractViewTree(
         name: dir.constructor.name,
       };
     }),
-    element: domNode.nodeName.toLowerCase(),
+    tagName: domNode.nodeName.toLowerCase(),
     nativeElement: domNode,
     hydration: hydrationStatus(domNode),
     controlFlowBlock: null,
@@ -80,7 +80,8 @@ function extractViewTree(
     };
   }
 
-  const isDisplayableNode = component || componentTreeNode.directives.length || isDehydratedElement;
+  const isDisplayableNode =
+    component || componentTreeNode.directives?.length || isDehydratedElement;
   if (isDisplayableNode) {
     result.push(componentTreeNode);
   }
@@ -133,9 +134,9 @@ function groupControlFlowBlocksChildren(
   result.push(blockTreeNode);
 }
 
-function hydrationStatus(element: Node): HydrationStatus {
+function hydrationStatus(element: Node): HydrationStatus | undefined {
   if (!(element instanceof Element)) {
-    return null;
+    return undefined;
   }
 
   if (!!element.getAttribute('ngh')) {
@@ -155,7 +156,7 @@ function hydrationStatus(element: Node): HydrationStatus {
         actualNodeDetails: hydrationInfo.actualNodeDetails,
       };
     default:
-      return null;
+      return undefined;
   }
 }
 

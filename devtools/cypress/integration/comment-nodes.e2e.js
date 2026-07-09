@@ -8,7 +8,7 @@
 
 function showComments() {
   cy.get('.main-toolbar > .settings > button:last-child').click();
-  cy.get('.cdk-overlay-container mat-slide-toggle + span:contains("Show comment nodes")').click();
+  cy.get('ng-settings #show-comment-nodes').click();
 }
 
 describe('Comment nodes', () => {

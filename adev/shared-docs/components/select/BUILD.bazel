@@ -16,6 +16,7 @@ ng_project(
     ],
     deps = [
         "//adev:node_modules/@angular/aria",
+        "//adev:node_modules/@angular/cdk",
         "//adev:node_modules/@angular/common",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/forms",

@@ -733,3 +733,88 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  ****************************************************************************************************/
 export {};
 
+/****************************************************************************************************
+ * PARTIAL FILE: abstract_directive.js
+ ****************************************************************************************************/
+import { Component, Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class AbstractDir {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AbstractDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AbstractDir, isStandalone: true, selector: "[test-dir]", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AbstractDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[test-dir]',
+                }]
+        }] });
+export class AbstractInherited extends AbstractDir {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AbstractInherited, deps: null, target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AbstractInherited, isStandalone: true, selector: "[dir2]", usesInheritance: true, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AbstractInherited, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[dir2]',
+                }]
+        }] });
+export class AbstractComp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AbstractComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AbstractComp, isStandalone: true, selector: "test-comp", ngImport: i0, template: '', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AbstractComp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'test-comp',
+                    template: ''
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: abstract_directive.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare abstract class AbstractDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<AbstractDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractDir, "[test-dir]", never, {}, {}, never, never, true, never>;
+}
+export declare abstract class AbstractInherited extends AbstractDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<AbstractInherited, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractInherited, "[dir2]", never, {}, {}, never, never, true, never>;
+}
+export declare abstract class AbstractComp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<AbstractComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AbstractComp, "test-comp", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_animate_enter.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestCmp {
+    disabled = false;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: true, selector: "test-cmp", host: { properties: { "animate.enter": "disabled ? undefined : 'enter-class'" } }, ngImport: i0, template: '', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'test-cmp',
+                    template: '',
+                    host: {
+                        '[animate.enter]': "disabled ? undefined : 'enter-class'",
+                    }
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_animate_enter.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestCmp {
+    disabled: boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, true, never>;
+}
+

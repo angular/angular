@@ -32,6 +32,13 @@ const LINK_EXEMPT = new Set([
   'type',
   'Host',
   'filter',
+  'required',
+  'pattern',
+  'min',
+  'max',
+  'minLength',
+  'maxLength',
+  'query',
 ]);
 
 export function shouldLinkSymbol(symbol: string): boolean {

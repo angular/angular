@@ -9,11 +9,12 @@
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
 import {readPatchedLView} from '../context_discovery';
-import {LContainer} from '../interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
+import {TNode} from '../interfaces/node';
 import {isLContainer, isLView, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CONTEXT, LView, NEXT} from '../interfaces/view';
+import {CHILD_HEAD, CONTEXT, LView, NEXT, TVIEW} from '../interfaces/view';
 
-import {getLViewParent} from './view_utils';
+import {getComponentLViewByIndex, getLViewParent} from './view_utils';
 
 /**
  * Retrieve the root view from any component or `LView` by walking the parent `LView` until
@@ -64,4 +65,91 @@ function getNearestLContainer(viewOrContainer: LContainer | LView | null) {
     viewOrContainer = viewOrContainer[NEXT];
   }
   return viewOrContainer as LContainer | null;
+}
+
+/**
+ * A generator that yields the logical children of a given TNode in its LView.
+ *
+ * @param tNode The parent TNode.
+ * @param lView The current LView.
+ * @returns A generator that yields [TNode, LView] pairs for each logical child.
+ */
+function* walkLViewChildren(tNode: TNode, lView: LView): IterableIterator<[TNode, LView]> {
+  // Visit child TNodes in the current view.
+  let child = tNode.child;
+  while (child) {
+    yield [child, lView];
+    child = child.next;
+  }
+
+  // If this is a component, visit its internal view.
+  if (tNode.componentOffset > -1) {
+    const componentLView = getComponentLViewByIndex(tNode.index, lView);
+    if (isLView(componentLView)) {
+      const componentTView = componentLView[TVIEW];
+      let componentChild = componentTView.firstChild;
+      while (componentChild) {
+        yield [componentChild, componentLView];
+        componentChild = componentChild.next;
+      }
+    }
+  }
+
+  // If this is a container (like `@if`), visit its embedded views.
+  const slot = lView[tNode.index];
+  if (isLContainer(slot)) {
+    for (let i = CONTAINER_HEADER_OFFSET; i < slot.length; i++) {
+      const embeddedLView = slot[i] as LView;
+      const embeddedTView = embeddedLView[TVIEW];
+      let embeddedChild = embeddedTView.firstChild;
+      while (embeddedChild) {
+        yield [embeddedChild, embeddedLView];
+        embeddedChild = embeddedChild.next;
+      }
+    }
+  }
+}
+
+/**
+ * Recursively iterates through transitive descendants of an input view.
+ *
+ * @param lView The input LView.
+ * @returns A generator that yields [TNode, LView] pairs for all descendants.
+ */
+function* walkLViewDescendants(lView: LView): IterableIterator<[TNode, LView]> {
+  const tView = lView[TVIEW];
+  let child = tView.firstChild;
+  while (child) {
+    yield* walkTNodeDescendants(child, lView);
+    child = child.next;
+  }
+}
+
+/**
+ * Recursively iterates through the descendants of a TNode in the view tree,
+ * yielding the node itself and all its transitive descendants.
+ *
+ * @param tNode The starting TNode.
+ * @param lView The LView associated with the TNode.
+ * @returns A generator that yields [TNode, LView] pairs for the node and its descendants.
+ */
+function* walkTNodeDescendants(tNode: TNode, lView: LView): IterableIterator<[TNode, LView]> {
+  yield [tNode, lView];
+  for (const [childTNode, childLView] of walkLViewChildren(tNode, lView)) {
+    yield* walkTNodeDescendants(childTNode, childLView);
+  }
+}
+
+/**
+ * Iterates through transitive descendants of an input view and filters down to only components/directives.
+ *
+ * @param lView The input LView.
+ * @returns A generator that yields [TNode, LView] pairs for nodes with directives.
+ */
+export function* walkLViewDirectives(lView: LView): IterableIterator<[TNode, LView]> {
+  for (const [tNode, currentLView] of walkLViewDescendants(lView)) {
+    if (tNode.directiveEnd > tNode.directiveStart) {
+      yield [tNode, currentLView];
+    }
+  }
 }

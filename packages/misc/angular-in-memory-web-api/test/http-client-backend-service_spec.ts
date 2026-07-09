@@ -24,7 +24,7 @@ import {
 import {importProvidersFrom, Injectable} from '@angular/core';
 import {TestBed, waitForAsync} from '@angular/core/testing';
 import {HttpClientBackendService, HttpClientInMemoryWebApiModule} from 'angular-in-memory-web-api';
-import {Observable, zip, of} from 'rxjs';
+import {Observable, of, zip} from 'rxjs';
 import {concatMap, map, tap} from 'rxjs/operators';
 
 import {Hero} from './fixtures/hero';
@@ -555,7 +555,6 @@ describe('HttpClient Backend Service', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         imports: [
-          HttpClientModule,
           HttpClientInMemoryWebApiModule.forRoot(HeroInMemDataService, {
             delay,
             passThruUnknownUrl: true,
@@ -591,6 +590,21 @@ describe('HttpClient Backend Service', () => {
         expect(passthru.id).toBe(42, 'passthru object should have id 42');
       }, failRequest);
     }));
+  });
+
+  describe('HttpClient passThru creation', () => {
+    it('should create the passThru backend', () => {
+      TestBed.configureTestingModule({
+        imports: [
+          HttpClientInMemoryWebApiModule.forRoot(HeroInMemDataService, {
+            delay,
+            passThruUnknownUrl: true,
+          }),
+        ],
+      });
+      const httpBackend = TestBed.inject<any>(HttpBackend);
+      expect(() => httpBackend.createPassThruBackend()).not.toThrow();
+    });
   });
 
   describe('Http dataEncapsulation = true', () => {

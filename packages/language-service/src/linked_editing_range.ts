@@ -7,7 +7,7 @@
  */
 
 import {TmplAstElement} from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {NgCompiler} from '@angular/compiler-cli';
 import tss from 'typescript';
 
 import {LinkedEditingRanges} from '../api';

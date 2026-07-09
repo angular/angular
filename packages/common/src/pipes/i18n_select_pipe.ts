@@ -45,11 +45,11 @@ export class I18nSelectPipe implements PipeTransform {
       throw invalidPipeArgumentError(I18nSelectPipe, mapping);
     }
 
-    if (mapping.hasOwnProperty(value)) {
+    if (Object.hasOwn(mapping, value)) {
       return mapping[value];
     }
 
-    if (mapping.hasOwnProperty('other')) {
+    if (Object.hasOwn(mapping, 'other')) {
       return mapping['other'];
     }
 

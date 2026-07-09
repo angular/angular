@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {Component, input} from '@angular/core';
 
 type ButtonType = 'primary' | 'secondary' | 'icon';
 type ButtonSize = 'standard' | 'mid' | 'compact';
@@ -15,7 +15,6 @@ type ButtonSize = 'standard' | 'mid' | 'compact';
   selector: 'button[ng-button]',
   template: '<ng-content/>',
   styleUrl: './button.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ng-button',
     '[class.type-primary]': `btnType() === 'primary'`,

@@ -14,10 +14,12 @@ import type {DisabledReason} from './types';
 /**
  * The base set of properties shared by all form control contracts.
  *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
+ *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export interface FormUiControl {
+export interface FormUiControl<TValue> {
   /**
    * An input to receive the errors for the field. If implemented, the `Field` directive will
    * automatically bind errors from the bound field to this input.
@@ -82,8 +84,8 @@ export interface FormUiControl {
    * automatically bind the min value from the bound field to this input.
    */
   readonly min?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+    | InputSignal<NonNullable<TValue> | undefined>
+    | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
   /**
    * An input to receive the min length for the field. If implemented, the `Field` directive will
    * automatically bind the min length from the bound field to this input.
@@ -96,8 +98,8 @@ export interface FormUiControl {
    * automatically bind the max value from the bound field to this input.
    */
   readonly max?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+    | InputSignal<NonNullable<TValue> | undefined>
+    | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
   /**
    * An input to receive the max length for the field. If implemented, the `Field` directive will
    * automatically bind the max length from the bound field to this input.
@@ -113,7 +115,10 @@ export interface FormUiControl {
     | InputSignal<readonly RegExp[]>
     | InputSignalWithTransform<readonly RegExp[], unknown>;
   /**
-   * An output to emit when the control is touched.
+   * An output to emit when the user finishes interacting with the control, marking the field as
+   * touched. Emit this in response to the native `blur` event (when focus leaves the control), not
+   * `focus`. The `Field` directive listens to this output to update the field's touched status,
+   * which blur-based rules such as `debounce('blur')` rely on.
    */
   readonly touch?: OutputRef<void>;
   /**
@@ -123,6 +128,10 @@ export interface FormUiControl {
    * when asked to focus this control.
    */
   focus?(options?: FocusOptions): void;
+  /**
+   * Resets the UI control to its pristine state.
+   */
+  reset?(): void;
 }
 
 // Verify that `FormUiControl` implements `FormFieldBindingOptions`.
@@ -130,7 +139,7 @@ export interface FormUiControl {
 // However, we don't want to add it as an actual `extends` clause to avoid confusing users.
 type Check<T extends true> = T;
 type FormUiControlImplementsFormFieldBindingOptions = Check<
-  FormUiControl extends FormFieldBindingOptions ? true : false
+  FormUiControl<unknown> extends FormFieldBindingOptions ? true : false
 >;
 
 /**
@@ -143,10 +152,12 @@ type FormUiControlImplementsFormFieldBindingOptions = Check<
  *
  * @template TValue The type of `FieldTree` that the implementing component can edit.
  *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
+ *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export interface FormValueControl<TValue> extends FormUiControl {
+export interface FormValueControl<TValue> extends FormUiControl<TValue> {
   /**
    * The value is the only required property in this contract. A component that wants to integrate
    * with the `Field` directive via this contract, *must* provide a `model()` that will be kept in
@@ -172,11 +183,13 @@ export interface FormValueControl<TValue> extends FormUiControl {
  * implemented, but if they are will be kept in sync with the field state of the field bound to the
  * `Field` directive.
  *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
+ *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 // TODO: should we make this generic extends `boolean | null` so people can use `null` for parse error?
-export interface FormCheckboxControl extends FormUiControl {
+export interface FormCheckboxControl extends FormUiControl<boolean> {
   /**
    * The checked is the only required property in this contract. A component that wants to integrate
    * with the `Field` directive, *must* provide a `model()` that will be kept in sync with the

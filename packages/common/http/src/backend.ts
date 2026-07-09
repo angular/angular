@@ -8,28 +8,27 @@
 
 import {Observable} from 'rxjs';
 
-import {HttpRequest} from './request';
-import {HttpEvent} from './response';
-import {FetchBackend} from './fetch';
-import {HttpXhrBackend} from './xhr';
 import {
+  ɵConsole as Console,
   EnvironmentInjector,
+  ɵformatRuntimeError as formatRuntimeError,
   inject,
   Injectable,
-  ɵConsole as Console,
-  ɵformatRuntimeError as formatRuntimeError,
   PendingTasks,
 } from '@angular/core';
 import {finalize} from 'rxjs/operators';
+import {FetchBackend} from './fetch';
+import {HttpRequest} from './request';
+import {HttpEvent} from './response';
 
 import {RuntimeErrorCode} from './errors';
 import {
   ChainedInterceptorFn,
+  chainedInterceptorFn,
   HTTP_INTERCEPTOR_FNS,
   HTTP_ROOT_INTERCEPTOR_FNS,
-  REQUESTS_CONTRIBUTE_TO_STABILITY,
-  chainedInterceptorFn,
   interceptorChainEndFn,
+  REQUESTS_CONTRIBUTE_TO_STABILITY,
 } from './interceptor';
 
 /**

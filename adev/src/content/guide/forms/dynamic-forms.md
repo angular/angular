@@ -9,12 +9,12 @@ A typical use-case is a questionnaire.
 You might need to get input from users in different contexts.
 The format and style of the forms a user sees should remain constant, while the actual questions you need to ask vary with the context.
 
-In this tutorial you will build a dynamic form that presents a basic questionnaire.
+In this tutorial, you will build a dynamic form that presents a basic questionnaire.
 You build an online application for heroes seeking employment.
 The agency is constantly tinkering with the application process, but by using the dynamic form
 you can create the new forms on the fly without changing the application code.
 
-The tutorial walks you through the following steps.
+The tutorial walks you through the following steps:
 
 1. Enable reactive forms for a project.
 1. Establish a data model to represent form controls.
@@ -30,7 +30,7 @@ The basic version can evolve to support a richer variety of questions, more grac
 
 Dynamic forms are based on reactive forms.
 
-To give the application access reactive forms directives, import `ReactiveFormsModule` from the `@angular/forms` library into the necessary components.
+To give the application access to reactive form directives, import `ReactiveFormsModule` from the `@angular/forms` package into the necessary components.
 
 <docs-code-multifile>
     <docs-code header="dynamic-form.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form.component.ts"/>

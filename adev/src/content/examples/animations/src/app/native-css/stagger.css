@@ -1,3 +1,7 @@
+.items-container {
+  min-height: 4.5rem;
+}
+
 .items {
   list-style: none;
   padding: 0;

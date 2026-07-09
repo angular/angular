@@ -27,12 +27,12 @@ template: function MyApp_Template(rf, $ctx$) {
 		+1, " ", 
 		typeof $r3$.ɵɵpureFunction0(13, _c0) === "object", " ", 
 		!(typeof $r3$.ɵɵpureFunction0(14, _c0) === "object"), " ", 
-		typeof ($ctx$.foo == null ? null : $ctx$.foo.bar) === "string", " ", 
-		$r3$.ɵɵpipeBind1(1, 11, typeof ($ctx$.foo == null ? null : $ctx$.foo.bar)), " ",
-		void "test", " ",
-		(-1) ** 3, " ",
-		"bar" in $ctx$.foo, " ",
-		$ctx$.bar instanceof $ctx$.Bar, " "
-	  ]);	
+		typeof ctx.foo?.bar === "string", " ", 
+		i0.ɵɵpipeBind1(1, 11, typeof ctx.foo?.bar), " ", 
+		void "test", " ", 
+		(-1) ** 3, " ", 
+		"bar" in ctx.foo, " ", 
+		ctx.bar instanceof ctx.Bar, " "
+	  ]);
 	}
 }

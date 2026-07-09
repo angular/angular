@@ -7,22 +7,23 @@
  */
 
 import {
-  Injectable,
   InjectionToken,
   Provider,
+  Service,
+  debounced,
   inject,
   linkedSignal,
   resource,
   signal,
 } from '@angular/core';
-import {ENVIRONMENT} from '../providers/index';
-import type {Environment, SearchResult, SearchResultItem, SnippetResult} from '../interfaces/index';
 import {
-  LiteClient,
-  liteClient as algoliasearch,
-  SearchResponses,
   SearchResult as AlgoliaSearchResult,
+  LiteClient,
+  SearchResponses,
+  liteClient as algoliasearch,
 } from 'algoliasearch/lite';
+import type {Environment, SearchResult, SearchResultItem, SnippetResult} from '../interfaces/index';
+import {ENVIRONMENT} from '../providers/index';
 
 export const SEARCH_DELAY = 200;
 // Maximum number of facet values to return for each facet during a regular search.
@@ -39,22 +40,18 @@ export const provideAlgoliaSearchClient = (config: Environment): Provider => {
   };
 };
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class Search {
   readonly searchQuery = signal('');
 
   private readonly config = inject(ENVIRONMENT);
   private readonly client = inject(ALGOLIA_CLIENT);
 
+  debounceParams = debounced(this.searchQuery, SEARCH_DELAY);
+
   readonly resultsResource = resource({
-    params: () => this.searchQuery() || undefined, // coerces empty string to undefined
-    loader: async ({params: query, abortSignal}) => {
-      // Until we have a better alternative we debounce by awaiting for a short delay.
-      await wait(SEARCH_DELAY, abortSignal);
-      return this.searchWithQuery(query);
-    },
+    params: () => this.debounceParams.value() || undefined, // coerces empty string to undefined
+    loader: async ({params}) => this.searchWithQuery(params),
   });
 
   readonly searchResults = linkedSignal<SearchResultItem[] | undefined, SearchResultItem[]>({
@@ -221,27 +218,6 @@ export class Search {
 
 function matched(snippet: SnippetResult | undefined): boolean {
   return snippet?.matchLevel !== undefined && snippet.matchLevel !== 'none';
-}
-
-/**
- * Temporary helper to implement the debounce functionality on the search resource
- */
-function wait(ms: number, signal: AbortSignal): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    let timeout: ReturnType<typeof setTimeout> | undefined;
-
-    const onAbort = () => {
-      clearTimeout(timeout);
-      reject(new Error('Operation aborted'));
-    };
-
-    timeout = setTimeout(() => {
-      signal.removeEventListener('abort', onAbort);
-      resolve();
-    }, ms);
-
-    signal.addEventListener('abort', onAbort, {once: true});
-  });
 }
 
 function extractPackageNameFromUrl(url: string): string | null {

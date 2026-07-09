@@ -11,10 +11,11 @@ import {
   ParseLocation,
   ParseSourceFile,
   ParseSourceSpan,
+  TypeCheckId,
 } from '@angular/compiler';
 import ts from 'typescript';
 
-import {TypeCheckId, SourceMapping} from '../api';
+import {SourceMapping} from '../api';
 import {getTypeCheckId} from '../diagnostics';
 
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';

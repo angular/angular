@@ -3394,6 +3394,13 @@ describe('HtmlLexer', () => {
         [TokenType.BLOCK_CLOSE],
         [TokenType.EOF],
       ]);
+
+      expect(tokenizeAndHumanizeParts('@default                  never;')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'default never'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse @default never(expr);', () => {
@@ -3450,6 +3457,16 @@ describe('HtmlLexer', () => {
       expect(tokenizeAndHumanizeParts('@else if (foo !== 2) {hello}')).toEqual([
         [TokenType.BLOCK_OPEN_START, 'else if'],
         [TokenType.BLOCK_PARAMETER, 'foo !== 2'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.TEXT, 'hello'],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should normalize @else if block name with spaces', () => {
+      expect(tokenizeAndHumanizeParts('@else            if {hello}')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'else if'],
         [TokenType.BLOCK_OPEN_END],
         [TokenType.TEXT, 'hello'],
         [TokenType.BLOCK_CLOSE],

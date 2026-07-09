@@ -67,6 +67,35 @@ runInEachFileSystem(() => {
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
     });
 
+    it('should emit when prefetch idle timeout >= main idle timeout', () => {
+      const diags = getDiags(`@defer (on idle(1s); prefetch on idle(2s)) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
+
+    it('should not emit when prefetch idle timeout < main idle timeout', () => {
+      const diags = getDiags(`@defer (on idle(2s); prefetch on idle(1s)) { <div></div> }`);
+      expect(diags.length).toBe(0);
+    });
+
+    it('should emit when prefetch idle matches main idle with no timeout', () => {
+      const diags = getDiags(`@defer (on idle; prefetch on idle) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
+
+    it('should not emit when only main idle has timeout', () => {
+      const diags = getDiags(`@defer (on idle(1s); prefetch on idle) { <div></div> }`);
+      expect(diags.length).toBe(0);
+    });
+
+    it('should not emit when only prefetch idle has timeout', () => {
+      const diags = getDiags(`@defer (on idle; prefetch on idle(1s)) { <div></div> }`);
+      expect(diags.length).toBe(0);
+    });
+
     it('should emit when prefetch identical to main viewport/interaction/hover', () => {
       const diags = getDiags(
         `@defer (on viewport(ref); prefetch on viewport(ref)) { <div></div> }`,
@@ -147,6 +176,34 @@ runInEachFileSystem(() => {
       const diags = getDiags(
         `@defer (on viewport; prefetch on viewport({})) { <div></div> } @placeholder { <div></div> }`,
       );
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
+
+    it('should emit when prefetch trigger is configured without a main trigger', () => {
+      const diags = getDiags(`@defer (prefetch on viewport(ref)) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
+
+    it('should emit when prefetch timer is configured without a main trigger', () => {
+      const diags = getDiags(`@defer (prefetch on timer(500ms)) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
+
+    it('should emit when prefetch idle is configured without a main trigger', () => {
+      const diags = getDiags(`@defer (prefetch on idle(500)) { <div></div> }`);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));
+    });
+
+    it('should emit when prefetch when is configured without a main trigger', () => {
+      const diags = getDiags(`@defer (prefetch when true) { <div></div> }`);
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
       expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION));

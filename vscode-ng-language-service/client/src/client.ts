@@ -31,6 +31,7 @@ import {
   isNotTypescriptOrSupportedDecoratorField,
   isNotTypescriptOrSupportedDecoratorRange,
 } from './embedded_support';
+import {OpenJsDocLinkCommandId} from '../../common/initialize';
 
 interface GetTcbResponse {
   uri: vscode.Uri;
@@ -96,7 +97,9 @@ export class AngularLanguageClient implements vscode.Disposable {
       revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
       outputChannel: this.outputChannel,
       markdown: {
-        isTrusted: true,
+        isTrusted: {
+          enabledCommands: [OpenJsDocLinkCommandId],
+        },
       },
       middleware: {
         provideCodeActions: async (
@@ -436,8 +439,7 @@ export class AngularLanguageClient implements vscode.Disposable {
       args.push('--logVerbosity', ngLog);
     }
 
-    const ngProbeLocations = getProbeLocations(this.context.extensionPath);
-    args.push('--ngProbeLocations', ngProbeLocations.join(','));
+    args.push('--ngProbeLocations', this.context.extensionPath);
 
     const includeAutomaticOptionalChainCompletions = config.get<boolean>(
       'angular.suggest.includeAutomaticOptionalChainCompletions',
@@ -510,12 +512,11 @@ export class AngularLanguageClient implements vscode.Disposable {
     // dynamically via workspace/configuration request by the server.
     // This allows users to change these settings without restarting.
 
-    const tsdk = config.get('typescript.tsdk', '');
+    const tsdk = await this.getTsdkPath();
     if (tsdk.trim().length > 0) {
       args.push('--tsdk', tsdk);
     }
-    const tsProbeLocations = [...getProbeLocations(this.context.extensionPath)];
-    args.push('--tsProbeLocations', tsProbeLocations.join(','));
+    args.push('--tsProbeLocations', this.context.extensionPath);
 
     const supportClientSide = config.get('angular.server.useClientSideFileWatcher');
 
@@ -627,6 +628,75 @@ export class AngularLanguageClient implements vscode.Disposable {
     }
   }
 
+  private async getTsdkPath(): Promise<string> {
+    const config = vscode.workspace.getConfiguration();
+    const jsTsTsdkInspect = config.inspect<string>('js/ts.tsdk.path');
+    const tsTsdkInspect = config.inspect<string>('typescript.tsdk');
+
+    // 1. Check workspace/folder settings first (highest priority)
+    // ONLY check or load workspace-level settings if the workspace is trusted
+    if (vscode.workspace.isTrusted) {
+      const jsTsWorkspaceTsdk = (
+        jsTsTsdkInspect?.workspaceValue ?? jsTsTsdkInspect?.workspaceFolderValue
+      )?.trim();
+      const tsWorkspaceTsdk = (
+        tsTsdkInspect?.workspaceValue ?? tsTsdkInspect?.workspaceFolderValue
+      )?.trim();
+      const workspaceTsdk = jsTsWorkspaceTsdk || tsWorkspaceTsdk;
+
+      if (workspaceTsdk) {
+        const stateKey = `approvedTsdk:${workspaceTsdk}`;
+        const isApproved = this.context.workspaceState.get<boolean>(stateKey);
+
+        if (isApproved) {
+          if (!path.isAbsolute(workspaceTsdk)) {
+            const workspaceFolders = vscode.workspace.workspaceFolders || [];
+            for (const folder of workspaceFolders) {
+              const absolutePath = path.join(folder.uri.fsPath, workspaceTsdk);
+              if (fs.existsSync(path.join(absolutePath, 'tsserverlibrary.js'))) {
+                return absolutePath;
+              }
+            }
+            if (workspaceFolders.length > 0) {
+              return path.join(workspaceFolders[0].uri.fsPath, workspaceTsdk);
+            }
+          }
+          return workspaceTsdk;
+        }
+
+        if (isApproved === undefined) {
+          // Prompt the user asynchronously, without blocking current server initialization
+          this.promptForTsdkApproval(workspaceTsdk, stateKey);
+        }
+
+        // Fall back to globalValue (or bundled) while waiting for approval or if rejected
+      }
+    }
+
+    return jsTsTsdkInspect?.globalValue?.trim() ?? tsTsdkInspect?.globalValue?.trim() ?? '';
+  }
+
+  private async promptForTsdkApproval(workspaceTsdk: string, stateKey: string): Promise<void> {
+    const allowOption = 'Allow';
+    const disallowOption = 'Disallow';
+
+    const choice = await vscode.window.showWarningMessage(
+      `This workspace configures a custom TypeScript compiler path (${workspaceTsdk}) via 'js/ts.tsdk.path' or 'typescript.tsdk'. ` +
+        `Do you want to allow the Angular Language Service to load the TypeScript compiler from this path?`,
+      allowOption,
+      disallowOption,
+    );
+
+    if (choice === allowOption) {
+      await this.context.workspaceState.update(stateKey, true);
+      // Restart the language server so it launches with the newly authorized compiler path
+      await vscode.commands.executeCommand('angular.restartNgServer');
+    } else {
+      // Remember rejection to avoid repeatedly prompting on startup/activation
+      await this.context.workspaceState.update(stateKey, false);
+    }
+  }
+
   dispose() {
     this.disposeSessionDisposables();
     for (let d = this.disposables.pop(); d !== undefined; d = this.disposables.pop()) {
@@ -701,24 +771,6 @@ function registerNotificationHandlers(
   );
 
   return vscode.Disposable.from(...disposables);
-}
-
-/**
- * Return the paths for the module that corresponds to the specified `configValue`,
- * and use the specified `bundled` as fallback if none is provided.
- * @param configName
- * @param bundled
- */
-function getProbeLocations(bundled: string): string[] {
-  const locations = [];
-  // Prioritize the bundled version
-  locations.push(bundled);
-  // Look in workspaces currently open
-  const workspaceFolders = vscode.workspace.workspaceFolders || [];
-  for (const folder of workspaceFolders) {
-    locations.push(folder.uri.fsPath);
-  }
-  return locations;
 }
 
 function extensionVersionCompatibleWithAllProjects(serverModuleLocation: string): boolean {

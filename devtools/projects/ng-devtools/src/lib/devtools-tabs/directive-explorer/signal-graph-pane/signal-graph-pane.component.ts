@@ -7,7 +7,6 @@
  */
 
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -38,7 +37,6 @@ type SelectedNodeSource = {
   selector: 'ng-signal-graph-pane',
   styleUrl: './signal-graph-pane.component.scss',
   imports: [SignalsVisualizerComponent, SignalDetailsComponent, MatIcon, ButtonComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignalGraphPaneComponent {
   protected readonly visualizer = viewChild.required<SignalsVisualizerComponent>('visualizer');

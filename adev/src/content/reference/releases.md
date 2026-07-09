@@ -19,7 +19,7 @@ To make these transitions as straightforward as possible, the Angular team makes
 - We follow the deprecation policy described here, so you have time to update your applications to the latest APIs and best practices
 
 HELPFUL: The practices described in this document apply to Angular 2.0 and later.
-If you are currently using AngularJS, see [Upgrading from AngularJS](https://angular.io/guide/upgrade 'Upgrading from Angular JS').
+If you are currently using AngularJS, see [Upgrading from AngularJS](https://angular.io/guide/upgrade 'Upgrading from AngularJS').
 _AngularJS_ is the name for all v1.x versions of Angular.
 
 ## Angular versioning
@@ -72,13 +72,13 @@ HELPFUL: Approximate dates are offered as general guidance and are subject to ch
 
 ### Release schedule
 
-<!-- Release schedule for upcoming versions is TBA. -->
+Release schedule for upcoming versions will be announced soon.
 
-| Version | Date               |
+<!-- | Version | Date               |
 | :------ | :----------------- |
 | v21.1   | Week of 2026-01-12 |
 | v21.2   | Week of 2026-02-23 |
-| v22.0   | Week of 2026-06-01 |
+| v22.0   | Week of 2026-06-01 | -->
 
 ### Support window
 
@@ -93,13 +93,13 @@ All major releases are typically supported for 18 months.
 
 The following table provides the status for Angular versions under support.
 
-| Version | Status | Released   | Active ends | LTS ends   |
-| :------ | :----- | :--------- | :---------- | :--------- |
-| ^21.0.0 | Active | 2025-11-19 | 2026-05-19  | 2027-05-19 |
-| ^20.0.0 | LTS    | 2025-05-28 | 2025-11-19  | 2026-11-28 |
-| ^19.0.0 | LTS    | 2024-11-19 | 2025-05-28  | 2026-05-19 |
+| Version | Status | Released   | Active ends     | LTS ends        |
+| :------ | :----- | :--------- | :-------------- | :-------------- |
+| ^22.0.0 | Active | 2026-06-03 | To be announced | To be announced |
+| ^21.0.0 | LTS    | 2025-11-19 | 2026-06-03      | To be announced |
+| ^20.0.0 | LTS    | 2025-05-28 | 2025-11-19      | 2026-11-28      |
 
-Angular versions v2 to v18 are no longer supported.
+Angular versions v2 to v19 are no longer supported.
 
 ### LTS fixes
 

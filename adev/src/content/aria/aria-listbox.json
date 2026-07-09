@@ -23,7 +23,9 @@
           "name": "active",
           "type": "Signal<any>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "Whether the option is currently active (focused).",
           "jsdocTags": []
         },
@@ -41,20 +43,11 @@
           "isRequiredInput": false
         },
         {
-          "name": "searchTerm",
-          "type": "Signal<string>",
-          "memberType": "property",
-          "memberTags": [
-            "protected"
-          ],
-          "description": "The text used by the typeahead search.",
-          "jsdocTags": []
-        },
-        {
           "name": "value",
           "type": "InputSignal<V>",
           "memberType": "property",
           "memberTags": [
+            "readonly",
             "input"
           ],
           "description": "The value of the option.",
@@ -67,6 +60,7 @@
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
+            "readonly",
             "input"
           ],
           "description": "Whether an item is disabled.",
@@ -79,6 +73,7 @@
           "type": "InputSignal<string | undefined>",
           "memberType": "property",
           "memberTags": [
+            "readonly",
             "input"
           ],
           "description": "The text used by the typeahead search.",
@@ -95,6 +90,72 @@
           ],
           "description": "Whether the option is selected.",
           "jsdocTags": []
+        },
+        {
+          "name": "ngOnInit",
+          "signatures": [
+            {
+              "name": "ngOnInit",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [
@@ -104,10 +165,6 @@
       ],
       "description": "A selectable option in an `ngListbox`.\n\nThis directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n`ngListbox`. The `value` input is used to identify the option, and the `label` input provides\nthe accessible name for the option.\n\n```html\n<li ngOption value=\"item-id\" label=\"Item Name\">\n  Item Name\n</li>\n```",
       "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
         {
           "name": "see",
           "comment": "[Listbox](guide/aria/listbox)"
@@ -125,8 +182,11 @@
           "comment": "[Multiselect](guide/aria/multiselect)"
         }
       ],
-      "rawComment": "/**\n * A selectable option in an `ngListbox`.\n *\n * This directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n * `ngListbox`. The `value` input is used to identify the option, and the `label` input provides\n * the accessible name for the option.\n *\n * ```html\n * <li ngOption value=\"item-id\" label=\"Item Name\">\n *   Item Name\n * </li>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
-      "implements": [],
+      "rawComment": "/**\n * A selectable option in an `ngListbox`.\n *\n * This directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n * `ngListbox`. The `value` input is used to identify the option, and the `label` input provides\n * the accessible name for the option.\n *\n * ```html\n * <li ngOption value=\"item-id\" label=\"Item Name\">\n *   Item Name\n * </li>\n * ```\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
+      "implements": [
+        "OnInit",
+        "OnDestroy"
+      ],
       "isStandalone": true,
       "selector": "[ngOption]",
       "exportAs": [
@@ -137,24 +197,27 @@
       ],
       "source": {
         "filePath": "/src/aria/listbox/option.ts",
-        "startLine": 34,
-        "endLine": 88
+        "startLine": 41,
+        "endLine": 98
       }
     },
     {
       "name": "Listbox",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "id",
           "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "A unique identifier for the listbox.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
         },
         {
           "name": "element",
@@ -171,100 +234,199 @@
           "type": "Signal<Direction>",
           "memberType": "property",
           "memberTags": [
-            "protected"
+            "protected",
+            "readonly"
           ],
           "description": "A signal wrapper for directionality.",
-          "jsdocTags": []
-        },
-        {
-          "name": "items",
-          "type": "Signal<OptionPattern<V>[]>",
-          "memberType": "property",
-          "memberTags": [
-            "protected"
-          ],
-          "description": "The Option UIPatterns of the child Options.",
           "jsdocTags": []
         },
         {
           "name": "orientation",
           "type": "InputSignal<\"vertical\" | \"horizontal\">",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
           "description": "Whether the list is vertically or horizontally oriented.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "orientation",
+          "isRequiredInput": false
         },
         {
           "name": "multi",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
           "description": "Whether multiple items in the list can be selected at once.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "multi",
+          "isRequiredInput": false
         },
         {
           "name": "wrap",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
           "description": "Whether focus should wrap when navigating.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "wrap",
+          "isRequiredInput": false
         },
         {
           "name": "softDisabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
           "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "softDisabled",
+          "isRequiredInput": false
         },
         {
           "name": "focusMode",
           "type": "InputSignal<\"roving\" | \"activedescendant\">",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
           "description": "The focus strategy used by the list.\n- `roving`: Focus is moved to the active item using `tabindex`.\n- `activedescendant`: Focus remains on the listbox container, and `aria-activedescendant` is used to indicate the active item.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "focusMode",
+          "isRequiredInput": false
         },
         {
           "name": "selectionMode",
           "type": "InputSignal<\"follow\" | \"explicit\">",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
           "description": "The selection strategy used by the list.\n- `follow`: The focused item is automatically selected.\n- `explicit`: Items are selected explicitly by the user (e.g., via click or spacebar).",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "selectionMode",
+          "isRequiredInput": false
         },
         {
           "name": "typeaheadDelay",
           "type": "InputSignal<number>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
           "description": "The amount of time before the typeahead search is reset.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "typeaheadDelay",
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
           "description": "Whether the listbox is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
         },
         {
           "name": "readonly",
           "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
           "description": "Whether the listbox is readonly.",
+          "jsdocTags": [],
+          "inputAlias": "readonly",
+          "isRequiredInput": false
+        },
+        {
+          "name": "tabIndex",
+          "type": "InputSignal<undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The tabindex of the listbox.",
+          "jsdocTags": [],
+          "inputAlias": "tabindex",
+          "isRequiredInput": false
+        },
+        {
+          "name": "value",
+          "type": "ModelSignal<V[]>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "The values of the currently selected items.",
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": false,
+          "outputAlias": "valueChange"
+        },
+        {
+          "name": "activeDescendant",
+          "type": "Signal<string | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The ID of the active descendant in the listbox.",
           "jsdocTags": []
         },
         {
-          "name": "values",
-          "type": "ModelSignal<V[]>",
-          "memberType": "property",
-          "memberTags": [],
-          "description": "The values of the currently selected items.",
-          "jsdocTags": []
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
         },
         {
           "name": "scrollActiveItemIntoView",
@@ -347,6 +509,55 @@
           "rawComment": "/** Navigates to the first item in the listbox. */",
           "memberType": "method",
           "memberTags": []
+        },
+        {
+          "name": "gotoIndex",
+          "signatures": [
+            {
+              "name": "gotoIndex",
+              "entryType": "function",
+              "description": "Navigates to an item at a specific index in the listbox.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "index",
+                  "description": "",
+                  "type": "number",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Navigates to an item at a specific index in the listbox. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "index",
+                "description": "",
+                "type": "number",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "gotoIndex",
+            "description": "Navigates to an item at a specific index in the listbox.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Navigates to an item at a specific index in the listbox. */"
+          },
+          "entryType": "function",
+          "description": "Navigates to an item at a specific index in the listbox.",
+          "jsdocTags": [],
+          "rawComment": "/** Navigates to an item at a specific index in the listbox. */",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [
@@ -356,10 +567,6 @@
       ],
       "description": "Represents a container used to display a list of items for a user to select from.\n\nThe `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\nselectable list. It supports single and multiple selection modes, as well as various focus and\norientation strategies.\n\n```html\n<ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">\n  @for (item of items; track item.id) {\n    <li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n      {{item.name}}\n    </li>\n  }\n</ul>\n```",
       "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        },
         {
           "name": "see",
           "comment": "[Listbox](guide/aria/listbox)"
@@ -377,12 +584,22 @@
           "comment": "[Multiselect](guide/aria/multiselect)"
         }
       ],
-      "rawComment": "/**\n * Represents a container used to display a list of items for a user to select from.\n *\n * The `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\n * selectable list. It supports single and multiple selection modes, as well as various focus and\n * orientation strategies.\n *\n * ```html\n * <ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">\n *   @for (item of items; track item.id) {\n *     <li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n *       {{item.name}}\n *     </li>\n *   }\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
-      "implements": [],
+      "rawComment": "/**\n * Represents a container used to display a list of items for a user to select from.\n *\n * The `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\n * selectable list. It supports single and multiple selection modes, as well as various focus and\n * orientation strategies.\n *\n * ```html\n * <ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">\n *   @for (item of items; track item.id) {\n *     <li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n *       {{item.name}}\n *     </li>\n *   }\n * </ul>\n * ```\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
+      "implements": [
+        "OnDestroy"
+      ],
+      "isStandalone": true,
+      "selector": "[ngListbox]",
+      "exportAs": [
+        "ngListbox"
+      ],
+      "aliases": [
+        "ngListbox"
+      ],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 53,
-        "endLine": 213
+        "startLine": 52,
+        "endLine": 222
       }
     }
   ],
@@ -412,6 +629,14 @@
       "@angular/core"
     ],
     [
+      "OnInit",
+      "@angular/core"
+    ],
+    [
+      "OnDestroy",
+      "@angular/core"
+    ],
+    [
       "_IdGenerator",
       "@angular/cdk/a11y"
     ],
@@ -420,7 +645,7 @@
       "@angular/core"
     ],
     [
-      "contentChildren",
+      "afterNextRender",
       "@angular/core"
     ],
     [
@@ -429,6 +654,10 @@
     ],
     [
       "signal",
+      "@angular/core"
+    ],
+    [
+      "Signal",
       "@angular/core"
     ],
     [
@@ -464,10 +693,6 @@
       "@angular/aria/listbox"
     ],
     [
-      "Option.searchTerm",
-      "@angular/aria/listbox"
-    ],
-    [
       "Option.value",
       "@angular/aria/listbox"
     ],
@@ -484,6 +709,14 @@
       "@angular/aria/listbox"
     ],
     [
+      "Option.ngOnInit",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.ngOnDestroy",
+      "@angular/aria/listbox"
+    ],
+    [
       "Listbox",
       "@angular/aria/listbox"
     ],
@@ -497,10 +730,6 @@
     ],
     [
       "Listbox.textDirection",
-      "@angular/aria/listbox"
-    ],
-    [
-      "Listbox.items",
       "@angular/aria/listbox"
     ],
     [
@@ -540,7 +769,19 @@
       "@angular/aria/listbox"
     ],
     [
-      "Listbox.values",
+      "Listbox.tabIndex",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.value",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.activeDescendant",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.ngOnDestroy",
       "@angular/aria/listbox"
     ],
     [
@@ -549,6 +790,10 @@
     ],
     [
       "Listbox.gotoFirst",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.gotoIndex",
       "@angular/aria/listbox"
     ]
   ]

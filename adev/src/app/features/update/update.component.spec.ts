@@ -13,7 +13,7 @@ import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {By} from '@angular/platform-browser';
 
 import UpdateComponent from './update.component';
-import {ApplicationComplexity} from './recommendations';
+import {ApplicationComplexity, RECOMMENDATIONS} from './recommendations';
 
 describe('UpdateComponent', () => {
   let component: UpdateComponent;
@@ -88,6 +88,16 @@ describe('UpdateComponent', () => {
         // If no recommendations exist for these versions, that's acceptable
         // The test verifies the component renders without errors
         expect(badges.length).toBe(0);
+      }
+    });
+  });
+
+  describe('RECOMMENDATIONS data', () => {
+    it('should use Markdown links instead of raw <a> HTML tags', () => {
+      for (const step of RECOMMENDATIONS) {
+        expect(step.action)
+          .withContext(`step "${step.step}" should use [text](url), not raw <a> HTML`)
+          .not.toMatch(/<a\s/i);
       }
     });
   });

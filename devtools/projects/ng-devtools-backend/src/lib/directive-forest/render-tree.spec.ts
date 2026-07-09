@@ -79,7 +79,8 @@ describe('render tree extraction', () => {
     expect(rtree[0].children.length).toBe(2);
     expect(rtree[0].children[0].component?.instance).toBe(childComponent);
     expect(rtree[0].children[1].component).toBe(null);
-    expect(rtree[0].children[1].directives[0].instance).toBe(childDirective);
+    expect(rtree[0].children[1].directives).toBeDefined();
+    expect(rtree[0].children[1].directives![0].instance).toBe(childDirective);
   });
 
   it('should skip nodes without directives', () => {
@@ -169,7 +170,7 @@ describe('render tree extraction', () => {
     expect(rtree.length).toBe(1);
 
     const appRTreeNode = rtree[0];
-    expect(appRTreeNode.children.map((c) => c.element)).toEqual(['@defer', 'child']);
+    expect(appRTreeNode.children.map((c) => c.tagName)).toEqual(['@defer', 'child']);
 
     const outerDefer = appRTreeNode.children[0];
     expect(outerDefer.children.length).toBe(2);
@@ -177,16 +178,16 @@ describe('render tree extraction', () => {
     const [deferChild, innerDefer] = outerDefer.children;
     expect(deferChild).toEqual(
       jasmine.objectContaining({
-        element: 'defer-child',
+        tagName: 'defer-child',
         nativeElement: deferChildNode,
       }),
     );
-    expect(innerDefer.element).toEqual('@defer');
+    expect(innerDefer.tagName).toEqual('@defer');
 
     expect(innerDefer.children.length).toBe(1);
     expect(innerDefer.children[0]).toEqual(
       jasmine.objectContaining({
-        element: 'nested-defer-child',
+        tagName: 'nested-defer-child',
         nativeElement: nestedDeferChildNode,
       }),
     );

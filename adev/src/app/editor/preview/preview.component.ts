@@ -6,19 +6,25 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject, computed} from '@angular/core';
-import {DomSanitizer} from '@angular/platform-browser';
+import {Component, computed, inject} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
+import {DomSanitizer} from '@angular/platform-browser';
 import {LoadingStep} from '../enums/loading-steps';
 import {NodeRuntimeSandbox} from '../node-runtime-sandbox.service';
 import {NodeRuntimeState} from '../node-runtime-state.service';
 import {PreviewError} from './preview-error.component';
 
+const ANGIE_DIR = 'assets/images/angie';
+
+const BOOT_POSES: Partial<Record<LoadingStep, string>> = {
+  [LoadingStep.INSTALL]: 'coding-01',
+  [LoadingStep.START_DEV_SERVER]: 'superhero',
+};
+
 @Component({
   selector: 'docs-tutorial-preview',
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PreviewError],
 })
 export class Preview {
@@ -33,5 +39,10 @@ export class Preview {
   protected readonly previewUrlForIFrame = computed(() => {
     const url = this.previewUrl();
     return url !== null ? this.domSanitizer.bypassSecurityTrustResourceUrl(url) : null;
+  });
+
+  protected readonly bootPoseSrc = computed(() => {
+    const pose = BOOT_POSES[this.loadingProgressValue() as LoadingStep] ?? 'greeting';
+    return `${ANGIE_DIR}/${pose}.svg`;
   });
 }

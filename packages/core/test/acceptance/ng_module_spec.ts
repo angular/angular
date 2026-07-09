@@ -7,29 +7,29 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
+import {withBody} from '@angular/private/testing';
 import {
   Component,
   createNgModule,
   CUSTOM_ELEMENTS_SCHEMA,
+  ɵɵdefineComponent as defineComponent,
+  ɵɵdefineInjector as defineInjector,
+  ɵɵdefineNgModule as defineNgModule,
   destroyPlatform,
   Directive,
+  ɵɵelement as element,
   Injectable,
   InjectionToken,
   NgModule,
   NgModuleRef,
   NO_ERRORS_SCHEMA,
   Pipe,
-  ɵsetClassMetadata as setClassMetadata,
-  ɵɵdefineComponent as defineComponent,
-  ɵɵdefineInjector as defineInjector,
-  ɵɵdefineNgModule as defineNgModule,
-  ɵɵelement as element,
   ɵɵproperty as property,
+  ɵsetClassMetadata as setClassMetadata,
 } from '../../src/core';
 import {KNOWN_CONTROL_FLOW_DIRECTIVES} from '../../src/render3/instructions/element_validation';
 import {TestBed} from '../../testing';
-import {BrowserModule, platformBrowser} from '@angular/platform-browser';
-import {withBody} from '@angular/private/testing';
 
 describe('NgModule', () => {
   @Component({
@@ -1031,24 +1031,5 @@ describe('NgModule', () => {
     fixture.detectChanges();
 
     expect(value).toBe('foo');
-  });
-
-  it('should be able to create a component through the ComponentFactoryResolver of an NgModuleRef in a module constructor', () => {
-    let componentInstance: TestCmp | undefined;
-
-    @NgModule({
-      declarations: [TestCmp],
-      exports: [TestCmp],
-    })
-    class MyModule {
-      constructor(ngModuleRef: NgModuleRef<any>) {
-        const factory = ngModuleRef.componentFactoryResolver.resolveComponentFactory(TestCmp);
-        componentInstance = factory.create(ngModuleRef.injector).instance;
-      }
-    }
-
-    TestBed.configureTestingModule({imports: [MyModule]});
-    TestBed.createComponent(TestCmp);
-    expect(componentInstance).toBeInstanceOf(TestCmp);
   });
 });

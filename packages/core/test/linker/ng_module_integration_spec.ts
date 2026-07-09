@@ -345,16 +345,6 @@ describe('NgModule', () => {
   });
 
   describe('bootstrap components', () => {
-    it('should create ComponentFactories', () => {
-      @NgModule({declarations: [SomeComp], bootstrap: [SomeComp]})
-      class SomeModule {}
-
-      const ngModule = createModule(SomeModule);
-      expect(
-        ngModule.componentFactoryResolver.resolveComponentFactory(SomeComp).componentType,
-      ).toBe(SomeComp);
-    });
-
     it('should store the ComponentFactories in the NgModuleInjector', () => {
       @NgModule({declarations: [SomeComp], bootstrap: [SomeComp]})
       class SomeModule {}

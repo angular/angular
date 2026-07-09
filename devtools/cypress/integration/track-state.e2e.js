@@ -6,16 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-function showTransferState() {
-  cy.get('.main-toolbar > .settings > button:last-child').click();
-  cy.get(
-    '.cdk-overlay-container mat-slide-toggle + span:contains("Enable Transfer State Tab")',
-  ).click();
-}
-
 function goToTransferStateTab() {
-  showTransferState();
-  cy.get('body').type('{esc}');
   cy.get('a[mat-tab-link]:contains("Transfer State")').click();
   cy.get('ng-transfer-state').should('exist');
   cy.get('ng-transfer-state').should('be.visible');
@@ -27,45 +18,64 @@ describe('transfer state tab', () => {
     goToTransferStateTab();
   });
 
-  it('shows summary stats', () => {
-    cy.get('.summary-card .stat-label').contains('Keys');
-    cy.get('.summary-card .stat-label').contains('Total Size');
+  it('shows summary stats with Keys and Size labels', () => {
+    cy.get('ng-transfer-state .summary-stats .stat-label').contains('Keys');
+    cy.get('ng-transfer-state .summary-stats .stat-label').contains('Size');
   });
 
-  it('shows table headers', () => {
+  it('renders table headers', () => {
     cy.get('.transfer-state-table th').contains('Key');
     cy.get('.transfer-state-table th').contains('Type');
     cy.get('.transfer-state-table th').contains('Size');
     cy.get('.transfer-state-table th').contains('Value');
   });
 
-  it('shows the object row with correct data', () => {
+  it('renders the object row with a type badge and an expandable value', () => {
     cy.get('.transfer-state-table tr[mat-row]')
+      .filter(':contains("obj")')
       .first()
       .within(() => {
-        cy.get('td').eq(0).find('code').should('have.text', 'obj');
-        cy.get('td').eq(1).find('.type-badge').should('have.text', 'object');
-        cy.get('td').eq(2).should('have.text', '79 B');
-        cy.get('td').eq(3).find('.value-preview').should('contain.text', '"appName": "DevTools"');
-        cy.get('td').eq(3).find('.value-preview').should('contain.text', '"appVersion": "0.0.1"');
-        cy.get('td')
-          .eq(3)
-          .find('.value-preview')
-          .should('contain.text', '"appDescription": "Angular DevTools"');
+        cy.get('.key-cell code').should('have.text', 'obj');
+        cy.get('.type-badge').should('have.text', 'object');
+        cy.get('.value-cell ng-object-tree-explorer').should('exist');
       });
   });
 
-  it('shows the array row with correct data', () => {
+  it('renders the array row with a type badge', () => {
     cy.get('.transfer-state-table tr[mat-row]')
-      .last()
+      .filter(':contains("arr")')
+      .first()
       .within(() => {
-        cy.get('td').eq(0).find('code').should('have.text', 'arr');
-        cy.get('td').eq(1).find('.type-badge').should('have.text', 'array');
-        cy.get('td').eq(2).should('have.text', '11 B');
-        cy.get('td')
-          .eq(3)
-          .find('.value-preview')
-          .should('contain.text', '[\n  1,\n  2,\n  3,\n  4,\n  5\n]');
+        cy.get('.key-cell code').should('have.text', 'arr');
+        cy.get('.type-badge').should('have.text', 'array');
       });
+  });
+
+  it('filters rows by key', () => {
+    cy.get('.transfer-state-table tr[mat-row]').its('length').should('be.greaterThan', 1);
+
+    cy.get('.filter input.filter-input').type('greeting');
+
+    cy.get('.transfer-state-table tr[mat-row]').should('have.length', 1);
+    cy.get('.transfer-state-table tr[mat-row] .key-cell code').should('have.text', 'greeting');
+  });
+
+  it('clears the filter via the clear button', () => {
+    cy.get('.filter input.filter-input').type('nope-no-match');
+    cy.get('.transfer-state-table tr[mat-row]').should('have.length', 0);
+
+    cy.get('.filter .filter-clear').click();
+    cy.get('.filter input.filter-input').should('have.value', '');
+    cy.get('.transfer-state-table tr[mat-row]').its('length').should('be.greaterThan', 1);
+  });
+
+  it('sorts by key when the Key header is clicked', () => {
+    cy.get('.transfer-state-table th:contains("Key")').click();
+
+    cy.get('.transfer-state-table tr[mat-row] .key-cell code').then(($cells) => {
+      const keys = Array.from($cells, (el) => el.textContent.trim());
+      const sorted = [...keys].sort((a, b) => a.localeCompare(b));
+      expect(keys).to.deep.equal(sorted);
+    });
   });
 });

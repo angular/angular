@@ -8,3 +8,4 @@
 
 export {ProfilerEvent, type Profiler} from './src/profiler_types';
 export {Framework} from './src/framework';
+export type {DevtoolsToolDiscoveryEvent, ToolDefinition, ToolGroup} from './src/tool_definitions';

@@ -8,6 +8,7 @@ generate_guides(
     ]),
     data = [
         "//adev/src/assets/images/v21-event:v21-event-images",
+        "//adev/src/assets/images/v22-event:v22-event-images",
         "//adev/src/assets/others:angular-v21-release.ics",
         "//adev/src/content/examples",
     ],

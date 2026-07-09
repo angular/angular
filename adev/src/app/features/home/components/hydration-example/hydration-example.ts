@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, signal, WritableSignal} from '@angular/core';
+import {Component, signal, WritableSignal} from '@angular/core';
 import {IconComponent} from '@angular/docs';
 import {RouterLink} from '@angular/router';
 
@@ -27,7 +27,6 @@ interface SimulationCard {
   imports: [RouterLink, IconComponent],
   templateUrl: './hydration-example.html',
   styleUrls: ['./hydration-example.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HydrationExample {
   latency = signal(500);

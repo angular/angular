@@ -375,3 +375,161 @@ export declare class StandaloneComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<StandaloneComponent, "other-standalone", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: foreign_component.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export function FancyButton() { }
+// @angular/core does not expose the `ForeignComponent` type this should return.
+function frameworkImport(component) {
+    return () => { };
+}
+export class TestCmp {
+    title = 'Submit';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: true, selector: "main", ngImport: i0, template: `
+    <FancyButton class="btn-cls" unsafe-attr="value" [label]="title" [unsafe-input]="title" />
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'main',
+                    template: `
+    <FancyButton class="btn-cls" unsafe-attr="value" [label]="title" [unsafe-input]="title" />
+  `,
+                    // @ts-ignore: @angular/core does not expose the `foreignImports` property.
+                    foreignImports: [
+                        // @ts-ignore: @angular/core does not expose the `ForeignComponent` type this expects.
+                        frameworkImport(FancyButton),
+                    ],
+                }]
+        }] });
+export class TestCmpChildren {
+    title = 'Submit';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpChildren, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmpChildren, isStandalone: true, selector: "main-children", ngImport: i0, template: `
+    <FancyButton [label]="title">
+      @content (icon) {
+        <span>Icon!</span>
+      }
+      @content (description) {
+        <span>Description text</span>
+      }
+      <span>Other children</span>
+    </FancyButton>
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpChildren, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'main-children',
+                    template: `
+    <FancyButton [label]="title">
+      @content (icon) {
+        <span>Icon!</span>
+      }
+      @content (description) {
+        <span>Description text</span>
+      }
+      <span>Other children</span>
+    </FancyButton>
+  `,
+                    // @ts-ignore: @angular/core does not expose the `foreignImports` property.
+                    foreignImports: [
+                        // @ts-ignore: @angular/core does not expose the `ForeignComponent` type this expects.
+                        frameworkImport(FancyButton),
+                    ],
+                }]
+        }] });
+export class TestCmpRenderProps {
+    title = 'Submit';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpRenderProps, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmpRenderProps, isStandalone: true, selector: "main-render-props", ngImport: i0, template: `
+    <FancyButton [label]="title">
+      @content (items; let item, index) {
+        <span>#{{index}}: {{item}}</span>
+      }
+    </FancyButton>
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpRenderProps, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'main-render-props',
+                    template: `
+    <FancyButton [label]="title">
+      @content (items; let item, index) {
+        <span>#{{index}}: {{item}}</span>
+      }
+    </FancyButton>
+  `,
+                    // @ts-ignore: @angular/core does not expose the `foreignImports` property.
+                    foreignImports: [
+                        // @ts-ignore: @angular/core does not expose the `ForeignComponent` type this expects.
+                        frameworkImport(FancyButton),
+                    ],
+                }]
+        }] });
+// Nest @if to demonstrate that multiple `nextContext()` calls are correctly merged into one.
+export class TestCmpConditional {
+    title = 'Submit';
+    innerCondition = true;
+    outerCondition = true;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpConditional, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmpConditional, isStandalone: true, selector: "main-conditional", ngImport: i0, template: `
+    @if (outerCondition) {
+      @if (innerCondition) {
+        <FancyButton [label]="title" />
+      }
+    }
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpConditional, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'main-conditional',
+                    template: `
+    @if (outerCondition) {
+      @if (innerCondition) {
+        <FancyButton [label]="title" />
+      }
+    }
+  `,
+                    // @ts-ignore: @angular/core does not expose the `foreignImports` property.
+                    foreignImports: [
+                        // @ts-ignore: @angular/core does not expose the `ForeignComponent` type this expects.
+                        frameworkImport(FancyButton),
+                    ],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: foreign_component.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare function FancyButton(): void;
+export declare class TestCmp {
+    title: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "main", never, {}, {}, never, never, true, never>;
+}
+export declare class TestCmpChildren {
+    title: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpChildren, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmpChildren, "main-children", never, {}, {}, never, never, true, never>;
+}
+export declare class TestCmpRenderProps {
+    title: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpRenderProps, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmpRenderProps, "main-render-props", never, {}, {}, never, never, true, never>;
+}
+export declare class TestCmpConditional {
+    title: string;
+    innerCondition: boolean;
+    outerCondition: boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpConditional, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmpConditional, "main-conditional", never, {}, {}, never, never, true, never>;
+}
+

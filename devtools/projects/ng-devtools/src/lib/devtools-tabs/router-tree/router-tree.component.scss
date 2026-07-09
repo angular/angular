@@ -8,11 +8,13 @@
   .filter {
     border-bottom: 1px solid var(--color-separator);
     display: flex;
+    justify-content: space-between;
     gap: 1.25rem;
     padding: 0.5rem;
 
-    .filter-input {
-      width: 12rem;
+    ng-filter {
+      --ng-filter-width: 8rem;
+      --ng-filter-height: 24px;
     }
 
     .show-full-path {

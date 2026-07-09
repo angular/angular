@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ResourceRef, Signal} from '@angular/core';
+import {DebounceTimer, Resource, Signal, computed, debounced, ɵchain} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
 import {assertPathIsCurrent} from '../../../schema/schema';
 import {
   FieldContext,
+  LogicFn,
   PathKind,
   SchemaPath,
   SchemaPathRules,
@@ -34,7 +35,7 @@ import {IS_ASYNC_VALIDATION_RESOURCE, createManagedMetadataKey, metadata} from '
  * @template TResult The type of result returned by the async operation
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind.Root> = (
   result: TResult,
@@ -49,9 +50,12 @@ export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind
  * @template TParams The type of parameters to the resource.
  * @template TResult The type of result returned by the resource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
+ *
  * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
+ * @see [Custom async validation](guide/forms/signals/async-operations#custom-async-validation-with-validateasync)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export interface AsyncValidatorOptions<
   TValue,
@@ -68,6 +72,12 @@ export interface AsyncValidatorOptions<
   readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
 
   /**
+   * Duration in milliseconds to wait before triggering the async operation, or a function that
+   * returns a promise that resolves when the update should proceed.
+   */
+  readonly debounce?: DebounceTimer<TParams | undefined>;
+
+  /**
    * A function that receives the resource params and returns a resource of the given params.
    * The given params should be used as is to create the resource.
    * The forms system will report the params as `undefined` when this validation doesn't need to be run.
@@ -75,7 +85,7 @@ export interface AsyncValidatorOptions<
    * @param params The params to use for constructing the resource
    * @returns A reference to the constructed resource.
    */
-  readonly factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult | undefined>;
+  readonly factory: (params: Signal<TParams | undefined>) => Resource<TResult | undefined>;
   /**
    * A function to handle errors thrown by httpResource (HTTP errors, network errors, etc.).
    * Receives the error and the field context, returns a list of validation errors.
@@ -93,6 +103,10 @@ export interface AsyncValidatorOptions<
    *   If a field is not given, the error is assumed to apply to the field being validated.
    */
   readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
+  /**
+   * A function that receives the field context and returns true if the async validation should be run.
+   */
+  readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
 
 /**
@@ -107,8 +121,9 @@ export interface AsyncValidatorOptions<
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
  * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
+ * @see [Custom async validation](guide/forms/signals/async-operations#custom-async-validation-with-validateasync)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
@@ -118,7 +133,14 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
   const RESOURCE = createManagedMetadataKey<ReturnType<typeof opts.factory>, TParams | undefined>(
-    (_state, params) => opts.factory(params),
+    (_state, params) => {
+      if (opts.debounce !== undefined) {
+        const debouncedResource = debounced(() => params(), opts.debounce);
+        const wrappedParams = computed(() => ɵchain(debouncedResource));
+        return opts.factory(wrappedParams);
+      }
+      return opts.factory(params);
+    },
   );
   RESOURCE[IS_ASYNC_VALIDATION_RESOURCE] = true;
 
@@ -126,6 +148,9 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
     const node = ctx.stateOf(path) as FieldNode;
     const validationState = node.validationState;
     if (validationState.shouldSkipValidation() || !validationState.syncValid()) {
+      return undefined;
+    }
+    if (opts.when && !opts.when(ctx)) {
       return undefined;
     }
     return opts.params(ctx);

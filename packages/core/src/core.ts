@@ -76,6 +76,7 @@ export {
   TRANSLATIONS,
   TRANSLATIONS_FORMAT,
 } from './i18n/tokens';
+// g3-only export {ForeignComponent} from './interface/foreign_component';
 export {AbstractType, Type} from './interface/type';
 export * from './linker';
 export * from './linker/ng_module_factory_loader_impl';
@@ -111,11 +112,13 @@ export {
   outputBinding,
   twoWayBinding,
 } from './render3/dynamic_bindings';
+// g3-only export {provideForeignRootContext} from './render3/foreign_context';
+// g3-only export {foreignImport} from './render3/foreign_import';
 export {createEnvironmentInjector, createNgModule} from './render3/ng_module_ref';
-export {publishExternalGlobalUtil as ɵpublishExternalGlobalUtil} from './render3/util/global_utils';
+export {publishNonCoreGlobalUtil as ɵpublishNonCoreGlobalUtil} from './render3/util/global_utils';
 export * from './resource';
 export {Sanitizer} from './sanitization/sanitizer';
-export {SecurityContext} from './sanitization/security';
+export {SecurityContext} from './sanitization/dom_security_schema';
 export {
   GetTestability,
   setTestabilityGetter,
@@ -125,8 +128,10 @@ export {
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
 export {TypeDecorator} from './util/decorators';
+export {DefaultExport} from './util/default_export';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
 export * from './version';
+export * from './webmcp';
 export * from './zone';
 
 import {global} from './util/global';

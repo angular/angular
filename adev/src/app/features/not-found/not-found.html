@@ -1,29 +1,29 @@
 <main class="docs-viewer">
-  <header class="docs-header">
-    <div class="docs-page-title">
-      <h1 tabindex="-1"><span class="docs-emoji">Page Not Found 🙃</span></h1>
+  <div class="docs-not-found">
+    <img src="assets/images/angie/sad.svg" class="docs-not-found__angie" aria-hidden="true" />
+    <div class="docs-not-found__bubble">
+      <h1 tabindex="-1">Page Not Found</h1>
+      <p>
+        We couldn't find what you were looking for. We have initiated a search for the term
+        extracted from the URL.
+      </p>
+      <p>
+        If you think this is a mistake, please
+        <a
+          href="https://github.com/angular/angular/issues/new?template=3-docs-bug.yaml"
+          target="_blank"
+        >
+          open an issue</a
+        >
+        so we can fix it.
+      </p>
     </div>
-  </header>
-  <p>
-    We couldn't find what you were looking for. We have initiated a search for the term extracted
-    from the URL.
-  </p>
-  <p>
-    If you think this is a mistake, please
-    <a
-      href="https://github.com/angular/angular/issues/new?template=3-docs-bug.yaml"
-      target="_blank"
-    >
-      open an issue</a
-    >
-    so we can fix it.
-  </p>
+  </div>
 
   <!-- Search results that match the queried URL that we couldn't find  -->
   @if (searchResults().length > 0) {
     <!-- The search results are faded in if/once we have results -->
     <div animate.enter="enter-animation">
-      <br /><br />
       <h2>Feeling lucky?</h2>
       <p>Maybe what you're looking for is in the list below:</p>
 

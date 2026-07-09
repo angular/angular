@@ -23,19 +23,43 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * ```
  *
  * @param path The target path to add the hidden logic to.
- * @param logic A reactive function that returns `true` when the field is hidden.
+ * @param config Options object containing the `when` condition.
+ *  - `when`: A reactive function that returns `true` when the field is hidden.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @see [Hidden fields](guide/forms/signals/form-logic#configuring-hidden-state-on-fields)
+ * @see [Availability state](guide/forms/signals/field-state-management#availability-state)
+ *
  * @category logic
- * @experimental 21.0.0
+ * @publicApi 22.0
+ */
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  config: {when: NoInfer<LogicFn<TValue, boolean, TPathKind>>},
+): void;
+
+/**
+ * Adds logic to a field to conditionally hide it.
+ *
+ * @deprecated Passing a function directly to `hidden` is deprecated. Use `{ when: ... }` instead.
  */
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   logic: NoInfer<LogicFn<TValue, boolean, TPathKind>>,
+): void;
+
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  configOrLogic:
+    | {when: NoInfer<LogicFn<TValue, boolean, TPathKind>>}
+    | NoInfer<LogicFn<TValue, boolean, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
+
+  const logic = typeof configOrLogic === 'function' ? configOrLogic : configOrLogic.when;
+
   pathNode.builder.addHiddenRule(logic);
 }

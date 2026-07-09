@@ -8,22 +8,34 @@
 
 import {Component, computed, effect, Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {FieldNode} from '../../src/field/node';
 import {
   apply,
   applyEach,
   debounce,
   disabled,
+  EmailValidationError,
   form,
   FormField,
   hidden,
+  MaxDateValidationError,
+  MaxLengthValidationError,
+  MaxValidationError,
+  MinDateValidationError,
+  MinLengthValidationError,
+  MinValidationError,
+  NativeInputParseError,
+  PatternValidationError,
   readonly,
   required,
   requiredError,
+  RequiredValidationError,
   Schema,
   schema,
   SchemaOrSchemaFn,
   SchemaPath,
   SchemaPathTree,
+  StandardSchemaValidationError,
   validate,
   validateTree,
   ValidationError,
@@ -76,6 +88,60 @@ describe('FieldNode', () => {
       },
     );
     expect(f.c).toBeUndefined();
+  });
+
+  it('infers built-in error types from getError', () => {
+    const f = form(signal({a: 1}), {injector: TestBed.inject(Injector)});
+    const field = f.a();
+
+    {
+      const error = field.getError('required');
+      let t: (RequiredValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('min');
+      let t: (MinValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('minDate');
+      let t: (MinDateValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('max');
+      let t: (MaxValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('maxDate');
+      let t: (MaxDateValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('minLength');
+      let t: (MinLengthValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('maxLength');
+      let t: (MaxLengthValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('pattern');
+      let t: (PatternValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('email');
+      let t: (EmailValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('standardSchema');
+      let t: (StandardSchemaValidationError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('parse');
+      let t: (NativeInputParseError & ValidationError.WithFieldTree) | undefined = error;
+    }
+    {
+      const error = field.getError('custom');
+      let t: ValidationError.WithFieldTree | undefined = error;
+    }
   });
 
   it('can get a child inside of a computed', () => {
@@ -287,7 +353,7 @@ describe('FieldNode', () => {
           b: 2,
         }),
         (p) => {
-          hidden(p, () => true);
+          hidden(p, {when: () => true});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -352,7 +418,7 @@ describe('FieldNode', () => {
           b: 2,
         }),
         (p) => {
-          readonly(p, isReadonly);
+          readonly(p, {when: isReadonly});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -536,7 +602,7 @@ describe('FieldNode', () => {
           b: 2,
         }),
         (p) => {
-          hidden(p, () => true);
+          hidden(p, {when: () => true});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -601,7 +667,7 @@ describe('FieldNode', () => {
           b: 2,
         }),
         (p) => {
-          hidden(p, isHidden);
+          hidden(p, {when: isHidden});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -668,11 +734,13 @@ describe('FieldNode', () => {
         signal({names: [{name: 'Alex'}, {name: 'Miles'}]}),
         (p) => {
           applyEach(p.names, (a) => {
-            disabled(a.name, ({value, fieldTreeOf}) => {
-              const el = fieldTreeOf(a);
-              expect(el().value().name).toBe(value());
-              expect([...fieldTreeOf(p).names].findIndex((e: any) => e === el)).not.toBe(-1);
-              return true;
+            disabled(a.name, {
+              when: ({value, fieldTreeOf}) => {
+                const el = fieldTreeOf(a);
+                expect(el().value().name).toBe(value());
+                expect([...fieldTreeOf(p).names].findIndex((e: any) => e === el)).not.toBe(-1);
+                return true;
+              },
             });
           });
         },
@@ -688,7 +756,7 @@ describe('FieldNode', () => {
         (p) => {
           applyEach(p, (a) => {
             a;
-            disabled(a, ({value}) => value() % 2 === 0);
+            disabled(a, {when: ({value}) => value() % 2 === 0});
           });
         },
         {injector: TestBed.inject(Injector)},
@@ -705,7 +773,7 @@ describe('FieldNode', () => {
         (p) => {
           applyEach(p, (el) => {
             // Disabled if even.
-            disabled(el, ({value}) => value() % 2 === 0);
+            disabled(el, {when: ({value}) => value() % 2 === 0});
           });
         },
         {injector: TestBed.inject(Injector)},
@@ -801,7 +869,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          disabled(p.a, ({value}) => value() !== 2);
+          disabled(p.a, {when: ({value}) => value() !== 2});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -819,7 +887,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          disabled(p.a, () => 'a cannot be changed');
+          disabled(p.a, {when: () => 'a cannot be changed'});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -837,7 +905,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          disabled(p.a, ({value}) => (value() > 5 ? 'a cannot be changed' : false));
+          disabled(p.a, {when: ({value}) => (value() > 5 ? 'a cannot be changed' : false)});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -860,7 +928,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          disabled(p, () => 'form unavailable');
+          disabled(p, {when: () => 'form unavailable'});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -886,7 +954,7 @@ describe('FieldNode', () => {
         signal({a: '', b: ''}),
         (p) => {
           disabled(p.a);
-          disabled(p.b, 'disabled!');
+          disabled(p.b, {when: 'disabled!'});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -924,7 +992,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          readonly(p.a, ({value}) => value() > 10);
+          readonly(p.a, {when: ({value}) => value() > 10});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -954,7 +1022,7 @@ describe('FieldNode', () => {
       const f = form(
         signal(''),
         (p) => {
-          readonly(p, isReadonly);
+          readonly(p, {when: isReadonly});
           required(p);
         },
         {injector: TestBed.inject(Injector)},
@@ -1389,7 +1457,7 @@ describe('FieldNode', () => {
       }
 
       const addressSchema: SchemaOrSchemaFn<Address> = (p) => {
-        disabled(p.street, () => true);
+        disabled(p.street, {when: () => true});
       };
 
       const data = signal<{name: string; address: Address}>({
@@ -1429,7 +1497,7 @@ describe('FieldNode', () => {
 
     it('should resolve predefined schema paths within the local context', () => {
       const s = schema<{a: string; b: string}>((p) => {
-        disabled(p.b, ({valueOf}) => valueOf(p.a) === 'disable-b');
+        disabled(p.b, {when: ({valueOf}) => valueOf(p.a) === 'disable-b'});
       });
 
       const f = form(
@@ -1447,7 +1515,7 @@ describe('FieldNode', () => {
 
     it('should resolve predefined schema paths deeply nested within the schema', () => {
       const s = schema<{a: string; b: string}>((p) => {
-        disabled(p.b, ({valueOf}) => valueOf(p.a) === 'disable-b');
+        disabled(p.b, {when: ({valueOf}) => valueOf(p.a) === 'disable-b'});
       });
 
       const f = form(
@@ -1471,9 +1539,11 @@ describe('FieldNode', () => {
       const f = form(
         signal(''),
         (p) => {
-          disabled(p, ({fieldTreeOf}) => {
-            fieldTreeOf(otherP);
-            return true;
+          disabled(p, {
+            when: ({fieldTreeOf}) => {
+              fieldTreeOf(otherP);
+              return true;
+            },
           });
         },
         {injector: TestBed.inject(Injector)},
@@ -1497,6 +1567,149 @@ describe('FieldNode', () => {
       expect(f().dirty()).toBe(false);
       expect(f.a().dirty()).toBe(false);
       expect(f.a.b().dirty()).toBe(false);
+    });
+
+    it('should immediately update value on reset even if a debounce is pending', async () => {
+      let resolveDebounce: (value: void | PromiseLike<void>) => void;
+      const debouncePromise = new Promise<void>((resolve) => {
+        resolveDebounce = resolve;
+      });
+
+      const model = signal('initial');
+      const f = form(
+        model,
+        (p) => {
+          debounce(p, () => debouncePromise);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // 1. Simulate user input
+      f().controlValue.set('user input');
+
+      // Value should still be 'initial' because of debounce
+      expect(f().value()).toBe('initial');
+
+      // 2. Call reset with a new value
+      f().reset('reset value');
+
+      // Value should be 'reset value' immediately
+      expect(f().value()).toBe('reset value');
+      expect(f().controlValue()).toBe('reset value');
+
+      // 3. Resolve the debounce
+      resolveDebounce!();
+      await Promise.resolve(); // Wait for promise microtasks
+
+      // Value should STILL be 'reset value', not 'user input'
+      expect(f().value()).toBe('reset value');
+    });
+
+    it('should immediately update value on reset when "blur" debounce is pending (Escape key scenario)', () => {
+      const model = signal('initial');
+      const f = form(
+        model,
+        (p) => {
+          debounce(p, 'blur');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // Simulate typing: controlValue is updated, but model value is not (pending blur)
+      f().controlValue.set('user input');
+      expect(f().value()).toBe('initial');
+      expect(f().controlValue()).toBe('user input');
+
+      // Simulate Escape key: call reset
+      f().reset('initial');
+
+      // Value should be reset immediately and controlValue should match
+      expect(f().value()).toBe('initial');
+      expect(f().controlValue()).toBe('initial');
+
+      // Simulate blur later
+      f().markAsTouched();
+
+      // Value should still be 'initial'
+      expect(f().value()).toBe('initial');
+    });
+
+    it('should abort pending debounce on reset without value and not trigger further sync', async () => {
+      let resolveDebounce: (value: void | PromiseLike<void>) => void;
+      const debouncePromise = new Promise<void>((resolve) => {
+        resolveDebounce = resolve;
+      });
+
+      const model = signal('initial');
+      const f = form(
+        model,
+        (p) => {
+          debounce(p, () => debouncePromise);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // 1. Simulate user input to trigger a pending debounce
+      f().controlValue.set('user input');
+      expect(f().value()).toBe('initial');
+
+      // Spy on value.set
+      spyOn(f().value, 'set').and.callThrough();
+
+      // 2. Call reset without value
+      f().reset();
+
+      // value and controlValue should immediately be 'initial'
+      expect(f().value()).toBe('initial');
+      expect(f().controlValue()).toBe('initial');
+
+      // 3. Resolve the debounce
+      resolveDebounce!();
+      await Promise.resolve(); // Wait for promise microtasks
+
+      // value.set should NEVER have been called during or after reset
+      expect(f().value.set).not.toHaveBeenCalled();
+      expect(f().value()).toBe('initial');
+    });
+
+    it('should abort pending debounce on reset with new value and only call value.set once immediately', async () => {
+      let resolveDebounce: (value: void | PromiseLike<void>) => void;
+      const debouncePromise = new Promise<void>((resolve) => {
+        resolveDebounce = resolve;
+      });
+
+      const model = signal('initial');
+      const f = form(
+        model,
+        (p) => {
+          debounce(p, () => debouncePromise);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // 1. Simulate user input to trigger a pending debounce
+      f().controlValue.set('user input');
+      expect(f().value()).toBe('initial');
+
+      // Spy on value.set
+      spyOn(f().value, 'set').and.callThrough();
+
+      // 2. Call reset with a new value
+      f().reset('reset value');
+
+      // value should immediately be 'reset value'
+      expect(f().value()).toBe('reset value');
+      expect(f().controlValue()).toBe('reset value');
+      expect(f().value.set).toHaveBeenCalledTimes(1);
+      expect(f().value.set).toHaveBeenCalledWith('reset value');
+
+      // 3. Resolve the debounce
+      resolveDebounce!();
+      await Promise.resolve(); // Wait for promise microtasks
+
+      // value.set should STILL have only been called once (the immediate one)
+      expect(f().value.set).toHaveBeenCalledTimes(1);
+      expect(f().value()).toBe('reset value');
     });
   });
 });

@@ -30,6 +30,19 @@ import {
 } from '../../src/core';
 import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
+import {
+  createContainerRef,
+  enableLocateOrCreateContainerRefImpl,
+} from '../../src/linker/view_container_ref';
+import {getLContext} from '../../src/render3/context_discovery';
+import {DehydratedView} from '../../src/hydration/interfaces';
+import {
+  TElementContainerNode,
+  TElementNode,
+  TContainerNode,
+  TNodeType,
+} from '../../src/render3/interfaces/node';
+import {HYDRATION, TVIEW} from '../../src/render3/interfaces/view';
 
 describe('query logic', () => {
   beforeEach(() => {
@@ -1760,6 +1773,48 @@ describe('query logic', () => {
       const qList = fixture.componentInstance.query!;
       expect(qList.length).toBe(1);
       expect(qList.first).toBeInstanceOf(ViewContainerRef);
+    });
+
+    it('should not throw when hydration metadata has no serialized container data', () => {
+      @Component({
+        template: `<div #foo></div>`,
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class TestCmp {}
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const element = fixture.nativeElement.querySelector('div')!;
+      const context = getLContext(element)!;
+      const hostLView = context.lView!;
+      const candidateTNode = hostLView[TVIEW].data[context.nodeIndex] as unknown;
+
+      expect(candidateTNode).toBeDefined();
+      expect(!!candidateTNode && typeof candidateTNode === 'object' && 'type' in candidateTNode)
+        .withContext('Expected a TNode with a type field.')
+        .toBeTrue();
+
+      const hostTNode = candidateTNode as TElementNode | TContainerNode | TElementContainerNode;
+      expect(!!(hostTNode.type & (TNodeType.AnyContainer | TNodeType.AnyRNode)))
+        .withContext('Expected a host TNode that can create a ViewContainerRef.')
+        .toBeTrue();
+
+      hostLView[HYDRATION] = {data: {}, firstChild: null} as DehydratedView;
+      enableLocateOrCreateContainerRefImpl();
+
+      const warnSpy = spyOn(console, 'warn');
+
+      expect(() => createContainerRef(hostTNode, hostLView)).not.toThrow();
+
+      const warningMessages = warnSpy.calls
+        .allArgs()
+        .map(([message]) => String(message))
+        .join('\n');
+
+      expect(warningMessages).toContain(
+        'Unexpected state: no hydration info available for a given TNode, which represents a view container.',
+      );
     });
 
     it('should read ElementRef with a native element pointing to comment DOM node from ng-template', () => {

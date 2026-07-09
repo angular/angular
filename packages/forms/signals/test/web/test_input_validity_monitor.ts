@@ -6,14 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable} from '@angular/core';
+import {DestroyRef, Injectable} from '@angular/core';
 import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
 
 @Injectable()
 export class TestInputValidityMonitor extends InputValidityMonitor {
   private state = new Map<HTMLInputElement, {badInput?: boolean; callback?: () => void}>();
 
-  override watchValidity(element: HTMLInputElement, callback: () => void): void {
+  override watchValidity(
+    _destroyRef: DestroyRef,
+    element: HTMLInputElement,
+    callback: () => void,
+  ): void {
     const currentState = this.state.get(element) ?? {};
     this.state.set(element, {...currentState, callback});
   }

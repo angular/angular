@@ -140,8 +140,6 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NO_BINDING_TARGET = 315,
     // (undocumented)
-    NO_COMPONENT_FACTORY_FOUND = 917,
-    // (undocumented)
     NO_SUPPORTING_DIFFER_FACTORY = 901,
     // (undocumented)
     OUTPUT_REF_DESTROYED = 953,
@@ -193,8 +191,6 @@ export const enum RuntimeErrorCode {
     UNKNOWN_ELEMENT = 304,
     // (undocumented)
     UNSAFE_ATTRIBUTE_BINDING = -910,
-    // @deprecated (undocumented)
-    UNSAFE_IFRAME_ATTRS = -910,
     // (undocumented)
     UNSAFE_VALUE_IN_RESOURCE_URL = 904,
     // (undocumented)

@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentRef, inject, Injectable} from '@angular/core';
+import {ComponentRef, inject, Service} from '@angular/core';
 
+import {Route} from './models';
 import {OutletContext} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
-import {Route} from './models';
 import {TreeNode} from './utils/tree';
 
 /**
@@ -49,6 +49,12 @@ export function destroyDetachedRouteHandle(handle: DetachedRouteHandle): void {
   const internalHandle = handle as DetachedRouteHandleInternal;
   if (internalHandle && internalHandle.componentRef) {
     internalHandle.componentRef.destroy();
+    // It is critical to destroy the `_localInjector` here. When a route is detached
+    // by the `RouteReuseStrategy`, the `_localInjector` is retained because the
+    // ActivatedRoute object is stored and can be attached later.
+    // When the developer drops the handle (e.g., deciding not to reuse it),
+    // they must manually invoke `destroyDetachedRouteHandle` to prevent a memory leak.
+    internalHandle.route.value._localInjector?.destroy();
   }
 }
 
@@ -64,7 +70,7 @@ export interface ExperimentalRouteReuseStrategy {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useFactory: () => inject(DefaultRouteReuseStrategy)})
+@Service({factory: () => inject(DefaultRouteReuseStrategy)})
 export abstract class RouteReuseStrategy {
   /** Determines if this route (and its subtree) should be detached to be reused later */
   abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
@@ -150,5 +156,5 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
   }
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class DefaultRouteReuseStrategy extends BaseRouteReuseStrategy {}

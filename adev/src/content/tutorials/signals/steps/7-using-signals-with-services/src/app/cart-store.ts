@@ -1,10 +1,8 @@
 // TODO: Import computed from @angular/core
-import {Injectable, signal} from '@angular/core';
+import {Service, signal} from '@angular/core';
 import {CartItem} from './cart-types';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class CartStore {
   private items = signal<CartItem[]>([]);
 

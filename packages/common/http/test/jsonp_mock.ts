@@ -25,6 +25,16 @@ export class MockScriptElement {
   remove() {
     this.ownerDocument.removeNode(this);
   }
+
+  private attrs: Record<string, string> = {};
+
+  setAttribute(name: string, value: string): void {
+    this.attrs[name] = value;
+  }
+
+  getAttribute(name: string): string | null {
+    return this.attrs.hasOwnProperty(name) ? this.attrs[name] : null;
+  }
 }
 
 export class MockDocument {

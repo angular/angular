@@ -11,7 +11,7 @@ import {ParseSourceSpan} from '../parse_util';
 import * as o from './output_ast';
 import {SourceMapGenerator} from './source_map';
 
-const SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
+const SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r/g;
 const LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 const INDENT_WITH = '  ';
 
@@ -293,9 +293,9 @@ export abstract class AbstractEmitterVisitor
     if (shouldParenthesize) {
       ctx.print(expr.fn, ')');
     }
-    ctx.print(expr, `(`);
+    ctx.print(expr, expr.isOptional ? '?.(' : '(');
     this.visitAllExpressions(expr.args, ctx, ',');
-    ctx.print(expr, `)`);
+    ctx.print(expr, ')');
   }
 
   visitTaggedTemplateLiteralExpr(
@@ -508,14 +508,14 @@ export abstract class AbstractEmitterVisitor
   visitReadPropExpr(ast: o.ReadPropExpr, ctx: EmitterVisitorContext): void {
     this.printLeadingComments(ast, ctx);
     ast.receiver.visitExpression(this, ctx);
-    ctx.print(ast, `.`);
+    ctx.print(ast, ast.isOptional ? `?.` : `.`);
     ctx.print(ast, ast.name);
   }
 
   visitReadKeyExpr(ast: o.ReadKeyExpr, ctx: EmitterVisitorContext): void {
     this.printLeadingComments(ast, ctx);
     ast.receiver.visitExpression(this, ctx);
-    ctx.print(ast, `[`);
+    ctx.print(ast, ast.isOptional ? `?.[` : `[`);
     ast.index.visitExpression(this, ctx);
     ctx.print(ast, `]`);
   }
@@ -661,27 +661,11 @@ export abstract class AbstractEmitterVisitor
     ctx: EmitterVisitorContext,
     separator: string,
   ): void {
-    let incrementedIndent = false;
     for (let i = 0; i < expressions.length; i++) {
       if (i > 0) {
-        if (ctx.lineLength() > 80) {
-          ctx.print(null, separator, true);
-          if (!incrementedIndent) {
-            // continuation are marked with double indent.
-            ctx.incIndent();
-            ctx.incIndent();
-            incrementedIndent = true;
-          }
-        } else {
-          ctx.print(null, separator, false);
-        }
+        ctx.print(null, separator, false);
       }
       handler(expressions[i]);
-    }
-    if (incrementedIndent) {
-      // continuation are marked with double indent.
-      ctx.decIndent();
-      ctx.decIndent();
     }
   }
 

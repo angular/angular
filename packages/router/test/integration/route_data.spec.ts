@@ -429,7 +429,7 @@ export function routeDataIntegrationSuite() {
       const pInj = fixture.debugElement.queryAll(By.directive(NestedComponentWithData))[0]
         .injector!;
       const cmp = pInj.get(NestedComponentWithData);
-      expect(cmp.data).toEqual([{prop: 'nested-b', prop3: 'nested'}]);
+      expect(cmp.data).toEqual([{prop: 'nested-b', prop3: 'nested', prop2: 2}]);
     });
 
     it('should not override inherited resolved data with inherited static data', async () => {

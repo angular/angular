@@ -108,8 +108,8 @@ export class MyComponent {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: false, selector: "my-component", ngImport: i0, template: `
     <div *ngIf="showing">
-      <div (click)="onClick(foo)"></div>
-      <button (click)="onClick2(bar)"></button>
+      <div (click)="onClick(1)"></div>
+      <button (click)="onClick2(2)"></button>
     </div>
   `, isInline: true });
 }
@@ -119,8 +119,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
     <div *ngIf="showing">
-      <div (click)="onClick(foo)"></div>
-      <button (click)="onClick2(bar)"></button>
+      <div (click)="onClick(1)"></div>
+      <button (click)="onClick2(2)"></button>
     </div>
   `,
                     standalone: false
@@ -622,7 +622,7 @@ export class MyComponent {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: false, selector: "my-component", ngImport: i0, template: `
     <ng-template #template>
-      <button (click)="this['mes' + 'sage'] = 'hello'">Click me</button>
+      <button (click)="$any(this)['mes' + 'sage'] = 'hello'">Click me</button>
     </ng-template>
   `, isInline: true });
 }
@@ -632,7 +632,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: 'my-component',
                     template: `
     <ng-template #template>
-      <button (click)="this['mes' + 'sage'] = 'hello'">Click me</button>
+      <button (click)="$any(this)['mes' + 'sage'] = 'hello'">Click me</button>
     </ng-template>
   `,
                     standalone: false
@@ -720,7 +720,7 @@ import * as i0 from "@angular/core";
 export class TestCmp {
     name = '';
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: false, selector: "test-cmp", ngImport: i0, template: 'Name: <input [(ngModel)]="name">', isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(() => NgModelDirective), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: false, selector: "test-cmp", ngImport: i0, template: 'Name: <input [(ngModel)]="name">', isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(() => NgModelDirective), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChange"] }] });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
             type: Component,
@@ -732,9 +732,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }] });
 export class NgModelDirective {
     ngModel = '';
-    ngModelChanges = new EventEmitter();
+    ngModelChange = new EventEmitter();
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, isStandalone: false, selector: "[ngModel]", inputs: { ngModel: "ngModel" }, outputs: { ngModelChanges: "ngModelChanges" }, ngImport: i0 });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, isStandalone: false, selector: "[ngModel]", inputs: { ngModel: "ngModel" }, outputs: { ngModelChange: "ngModelChange" }, ngImport: i0 });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, decorators: [{
             type: Directive,
@@ -744,7 +744,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                 }]
         }], propDecorators: { ngModel: [{
                 type: Input
-            }], ngModelChanges: [{
+            }], ngModelChange: [{
                 type: Output
             }] } });
 export class AppModule {
@@ -769,9 +769,9 @@ export declare class TestCmp {
 }
 export declare class NgModelDirective {
     ngModel: string;
-    ngModelChanges: EventEmitter<string>;
+    ngModelChange: EventEmitter<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; }; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; }; }, { "ngModelChange": "ngModelChange"; }, never, never, false, never>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -787,7 +787,7 @@ import * as i0 from "@angular/core";
 export class TestCmp {
     name = '';
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: false, selector: "test-cmp", ngImport: i0, template: 'Name: <ng-template><input [(ngModel)]="name"></ng-template>', isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(() => NgModelDirective), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChanges"] }] });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: false, selector: "test-cmp", ngImport: i0, template: 'Name: <ng-template><input [(ngModel)]="name"></ng-template>', isInline: true, dependencies: [{ kind: "directive", type: i0.forwardRef(() => NgModelDirective), selector: "[ngModel]", inputs: ["ngModel"], outputs: ["ngModelChange"] }] });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
             type: Component,
@@ -799,9 +799,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }] });
 export class NgModelDirective {
     ngModel = '';
-    ngModelChanges = new EventEmitter();
+    ngModelChange = new EventEmitter();
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, isStandalone: false, selector: "[ngModel]", inputs: { ngModel: "ngModel" }, outputs: { ngModelChanges: "ngModelChanges" }, ngImport: i0 });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, isStandalone: false, selector: "[ngModel]", inputs: { ngModel: "ngModel" }, outputs: { ngModelChange: "ngModelChange" }, ngImport: i0 });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, decorators: [{
             type: Directive,
@@ -811,7 +811,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                 }]
         }], propDecorators: { ngModel: [{
                 type: Input
-            }], ngModelChanges: [{
+            }], ngModelChange: [{
                 type: Output
             }] } });
 export class AppModule {
@@ -836,9 +836,9 @@ export declare class TestCmp {
 }
 export declare class NgModelDirective {
     ngModel: string;
-    ngModelChanges: EventEmitter<string>;
+    ngModelChange: EventEmitter<string>;
     static ɵfac: i0.ɵɵFactoryDeclaration<NgModelDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; }; }, { "ngModelChanges": "ngModelChanges"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgModelDirective, "[ngModel]", never, { "ngModel": { "alias": "ngModel"; "required": false; }; }, { "ngModelChange": "ngModelChange"; }, never, never, false, never>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
@@ -853,17 +853,17 @@ import { Component } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", host: { listeners: { "click": "$event.preventDefault(); $event.target.blur()" } }, ngImport: i0, template: `
-    <div (click)="$event.preventDefault(); $event.target.blur()"></div>
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", host: { listeners: { "click": "$event.preventDefault(); $event.target" } }, ngImport: i0, template: `
+    <div (click)="$event.preventDefault(); $event.target"></div>
   `, isInline: true });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
                     selector: 'my-component',
-                    host: { '(click)': '$event.preventDefault(); $event.target.blur()' },
+                    host: { '(click)': '$event.preventDefault(); $event.target' },
                     template: `
-    <div (click)="$event.preventDefault(); $event.target.blur()"></div>
+    <div (click)="$event.preventDefault(); $event.target"></div>
   `
                 }]
         }] });
@@ -880,15 +880,15 @@ export declare class MyComponent {
 /****************************************************************************************************
  * PARTIAL FILE: mixed_one_way_two_way_listener_order.js
  ****************************************************************************************************/
-import { Component, Directive, Input, Output } from '@angular/core';
+import { Component, Directive, EventEmitter, Input, Output } from '@angular/core';
 import * as i0 from "@angular/core";
 export class Dir {
-    a;
-    aChange;
-    b;
-    c;
-    cChange;
-    d;
+    a = '';
+    aChange = new EventEmitter();
+    b = new EventEmitter();
+    c = '';
+    cChange = new EventEmitter();
+    d = new EventEmitter();
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Dir, isStandalone: true, selector: "[dir]", inputs: { a: "a", c: "c" }, outputs: { aChange: "aChange", b: "b", cChange: "cChange", d: "d" }, ngImport: i0 });
 }
@@ -929,14 +929,15 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 /****************************************************************************************************
  * PARTIAL FILE: mixed_one_way_two_way_listener_order.d.ts
  ****************************************************************************************************/
+import { EventEmitter } from '@angular/core';
 import * as i0 from "@angular/core";
 export declare class Dir {
-    a: unknown;
-    aChange: unknown;
-    b: unknown;
-    c: unknown;
-    cChange: unknown;
-    d: unknown;
+    a: string;
+    aChange: EventEmitter<string>;
+    b: EventEmitter<any>;
+    c: string;
+    cChange: EventEmitter<string>;
+    d: EventEmitter<any>;
     static ɵfac: i0.ɵɵFactoryDeclaration<Dir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<Dir, "[dir]", never, { "a": { "alias": "a"; "required": false; }; "c": { "alias": "c"; "required": false; }; }, { "aChange": "aChange"; "b": "b"; "cChange": "cChange"; "d": "d"; }, never, never, true, never>;
 }

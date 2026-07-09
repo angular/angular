@@ -7,8 +7,13 @@
  */
 
 import {ASTWithName, TmplAstElement} from '@angular/compiler';
-import {ErrorCode as NgCompilerErrorCode, ngErrorCode} from '@angular/compiler-cli';
-import {PotentialDirective, PotentialPipe} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  ErrorCode as NgCompilerErrorCode,
+  ngErrorCode,
+  PotentialDirective,
+  PotentialPipe,
+} from '@angular/compiler-cli';
+
 import type ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';

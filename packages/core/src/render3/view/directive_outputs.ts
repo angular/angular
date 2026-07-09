@@ -42,7 +42,7 @@ export function createOutputListener(
 }
 
 /** Listens to an output on a specific directive. */
-function listenToDirectiveOutput(
+export function listenToDirectiveOutput(
   tNode: TNode,
   lView: LView,
   target: DirectiveDef<unknown>,

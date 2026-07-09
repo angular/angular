@@ -7,8 +7,9 @@
  */
 
 import {isTypeProvider} from '../../di/provider_collection';
-import {assertDefined, assertEqual} from '../../util/assert';
+import {assertDefined} from '../../util/assert';
 import {performanceMarkFeature} from '../../util/performance';
+import {VERSION} from '../../version';
 import {setProfiler} from '../profiler';
 import {Profiler, ProfilerEvent} from '../../../primitives/devtools';
 import {stringifyForError} from '../util/stringify_utils';
@@ -42,6 +43,10 @@ declare global {
       trackName?: string,
       trackGroup?: string,
       color?: DevToolsColor,
+      // Experimental: 7th argument for user-supplied detail data rendered in the DevTools performance panel.
+      // https://developer.mozilla.org/en-US/docs/Web/API/Console/timeStamp_static#browser_compatibility
+      // Requires: chrome://flags/#enable-devtools-deep-link-via-extensibility-api
+      detail?: object,
     ): void;
   }
 }
@@ -50,8 +55,118 @@ let changeDetectionRuns = 0;
 let changeDetectionSyncRuns = 0;
 
 let counter = 0;
+
+/**
+ * Monotonic counter for assigning unique IDs to component instances.
+ * Only used when profiling is active in dev mode.
+ */
+let nextInstanceDeepLinkId = 0;
+
+/**
+ * WeakMap storing the profiler-assigned deep link ID for each component/directive.
+ * Using a WeakMap avoids mutating class instances.
+ */
+const instanceDeepLinkIds = new WeakMap<{}, number>();
+
+/**
+ * Global flag set by the Angular DevTools browser extension.
+ *
+ * The extension injects a content script (`devtools-connected-flag.ts`) at
+ * `document_start` in the MAIN world that sets
+ * `window.__NG_DEVTOOLS_CONNECTED__ = true` **before** any page scripts run.
+ *
+ * `getDeepLinkProperties` checks this flag so that `angular-devtools://`
+ * deep link URLs only appear in Chrome Performance traces when the extension
+ * is installed and can actually handle those custom-scheme links.
+ */
+declare const __NG_DEVTOOLS_CONNECTED__: boolean | undefined;
+
+/**
+ * Returns the deep link ID assigned to a component or directive instance by the
+ * profiler. This ID is used to construct `angular-devtools://` deep-link URLs in
+ * Chrome Performance traces, which allow navigating from a trace entry directly
+ * to the corresponding component in the Angular DevTools extension.
+ *
+ * The ID is `undefined` until `getDeepLinkProperties` is called for the instance
+ * (which happens when profiling is active and the DevTools extension is connected).
+ * Use `assignComponentInstanceDeepLinkId` to force-assign an ID if needed.
+ */
+export function getComponentInstanceDeepLinkId(instance: {}): number | undefined {
+  return instanceDeepLinkIds.get(instance);
+}
+
+export function assignComponentInstanceDeepLinkId(instance: {}): number {
+  const id = nextInstanceDeepLinkId++;
+  instanceDeepLinkIds.set(instance, id);
+  return id;
+}
+/**
+ * Custom URL scheme used by Angular DevTools for deep linking from the
+ * Chrome Performance panel to a specific component instance.
+ */
+const DEEP_LINK_SCHEME = 'angular-devtools';
+
+function getDeepLinkProperties(instance: {}): {url: string; description: string} | undefined {
+  if (typeof __NG_DEVTOOLS_CONNECTED__ === 'undefined' || !__NG_DEVTOOLS_CONNECTED__)
+    return undefined;
+  const instanceId =
+    getComponentInstanceDeepLinkId(instance) ?? assignComponentInstanceDeepLinkId(instance);
+  return {
+    url: `${DEEP_LINK_SCHEME}://component/${instanceId}`,
+    description: 'Component',
+  };
+}
+
 type stackEntry = [ProfilerEvent | ProfilerDIEvent, number];
 const eventsStack: stackEntry[] = [];
+
+function getBaseDocUrl(): string {
+  const full = VERSION.full;
+  const isPreRelease =
+    full.includes('-next') || full.includes('-rc') || full === '0.0.0-PLACEHOLDER';
+  const prefix = isPreRelease ? 'next' : `v${VERSION.major}`;
+  return `https://${prefix}.angular.dev`;
+}
+
+/**
+ * Returns documentation URL for lifecycle hooks.
+ * Extracts lifecycle hook name from the component method string and maps to Angular docs.
+ */
+function getLifecycleHookDocUrl(hookName: string): string | undefined {
+  // Extract lifecycle hook name (e.g., "MyComponent:ngOnInit" -> "ngOnInit")
+  const match = hookName.match(/:(ng\w+)$/);
+  if (!match) return undefined;
+
+  const lifecycleHook = match[1].toLowerCase();
+  const baseUrl = getBaseDocUrl();
+
+  return `${baseUrl}/guide/components/lifecycle#${lifecycleHook}`;
+}
+
+/**
+ * Returns documentation URL for profiler events.
+ */
+function getProfilerEventDocUrl(event: ProfilerEvent | ProfilerDIEvent, entryName: string) {
+  const baseUrl = getBaseDocUrl();
+
+  switch (event) {
+    case ProfilerEvent.ChangeDetectionStart:
+    case ProfilerEvent.ChangeDetectionEnd:
+    case ProfilerEvent.ChangeDetectionSyncStart:
+    case ProfilerEvent.ChangeDetectionSyncEnd:
+      return `${baseUrl}/best-practices/runtime-performance`;
+    case ProfilerEvent.AfterRenderHooksStart:
+    case ProfilerEvent.AfterRenderHooksEnd:
+      return `${baseUrl}/guide/components/lifecycle#aftereveryrender-and-afternextrender`;
+    case ProfilerEvent.DeferBlockStateStart:
+    case ProfilerEvent.DeferBlockStateEnd:
+      return `${baseUrl}/guide/defer`;
+    case ProfilerEvent.LifecycleHookStart:
+      return getLifecycleHookDocUrl(entryName);
+    default:
+      return undefined;
+  }
+}
 
 /**
  * Enum mimicking ProfilerEvent. The idea is to have unique event identifiers for both DI and other profiling events.
@@ -59,6 +174,21 @@ const eventsStack: stackEntry[] = [];
 const enum ProfilerDIEvent {
   InjectorToCreateInstanceEvent = 100,
   InstanceCreatedByInjector = 101,
+}
+
+/**
+ * Resolves the `{url, description}` detail for `console.timeStamp`.
+ *
+ * Chrome DevTools supports only one clickable link. If both a deep link and a
+ * documentation URL are provided, the deep link is preferred.
+ */
+function resolveTimestampDetail(
+  detail?: {url?: string; description?: string},
+  docUrl?: string,
+): Record<string, unknown> | undefined {
+  if (!docUrl) return detail;
+  if (!detail) return {description: 'Documentation', url: docUrl};
+  return detail;
 }
 
 function measureStart(startEvent: ProfilerEvent | ProfilerDIEvent) {
@@ -70,15 +200,18 @@ function measureEnd(
   startEvent: ProfilerEvent | ProfilerDIEvent,
   entryName: string,
   color: DevToolsColor,
+  detail?: {url?: string; description?: string},
 ) {
   let top: stackEntry | undefined;
-
   // The stack may be asymmetric when an end event for a prior start event is missing (e.g. when an exception
   // has occurred), unroll the stack until a matching item has been found in that case.
   do {
     top = eventsStack.pop();
     assertDefined(top, 'Profiling error: could not find start event entry ' + startEvent);
   } while (top[0] !== startEvent);
+
+  const docUrl = getProfilerEventDocUrl(startEvent, entryName);
+  const resolvedDetail = resolveTimestampDetail(detail, docUrl);
 
   console.timeStamp(
     entryName,
@@ -87,6 +220,7 @@ function measureEnd(
     '\u{1F170}\uFE0F Angular',
     undefined,
     color,
+    resolvedDetail,
   );
 }
 
@@ -159,7 +293,12 @@ const devToolsProfiler: Profiler = (
 
     case ProfilerEvent.ComponentEnd: {
       const typeName = getComponentMeasureName(instance!);
-      measureEnd(ProfilerEvent.ComponentStart, typeName, 'primary-light');
+      measureEnd(
+        ProfilerEvent.ComponentStart,
+        typeName,
+        'primary-light',
+        getDeepLinkProperties(instance!),
+      );
       break;
     }
     case ProfilerEvent.DeferBlockStateEnd: {

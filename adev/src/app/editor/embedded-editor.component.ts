@@ -8,7 +8,6 @@
 
 import {isPlatformBrowser} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -23,7 +22,7 @@ import {
 } from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {IconComponent, TutorialType} from '@angular/docs';
-import {MatTabGroup, MatTab} from '@angular/material/tabs';
+import {MatTab, MatTabGroup} from '@angular/material/tabs';
 import {map} from 'rxjs';
 
 import {MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES} from './alert-manager.service';
@@ -45,7 +44,6 @@ export const LARGE_EDITOR_HEIGHT_BREAKPOINT = 550;
 
 @Component({
   selector: EMBEDDED_EDITOR_SELECTOR,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AngularSplitModule, CodeEditor, Preview, Terminal, MatTab, MatTabGroup, IconComponent],
   templateUrl: './embedded-editor.component.html',
   styleUrls: ['./embedded-editor.component.scss'],

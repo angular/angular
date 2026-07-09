@@ -147,6 +147,6 @@ TIP: Want to know more about Angular templates? See the [In-depth Templates guid
 Now that you have dynamic data and templates in the application, it's time to learn how to enhance templates by conditionally hiding or showing certain elements, looping over elements, and more.
 
 <docs-pill-row>
-  <docs-pill title="Modular design with dependency injection" href="essentials/dependency-injection" />
+  <docs-pill title="Forms with Signals" href="essentials/signal-forms" />
   <docs-pill title="In-depth template guide" href="guide/templates" />
 </docs-pill-row>

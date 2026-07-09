@@ -7,7 +7,7 @@
  */
 import ts from 'typescript';
 
-import {TemplateDiagnostic, TypeCheckId} from '../api';
+import {TemplateDiagnostic} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {getSourceMapping, TypeCheckSourceResolver} from './tcb_util';

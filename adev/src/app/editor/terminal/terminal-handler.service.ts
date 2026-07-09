@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, inject, Injectable, signal, Signal, untracked} from '@angular/core';
+import {computed, inject, signal, Signal, untracked, Service} from '@angular/core';
 import {Terminal} from '@xterm/xterm';
 import {FitAddon} from '@xterm/addon-fit';
 import {InteractiveTerminal, adevTerminalDefaultOptions} from './interactive-terminal';
@@ -18,7 +18,7 @@ export enum TerminalType {
   INTERACTIVE,
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class TerminalHandler {
   private readonly window = inject(WINDOW);
   private readonly commandValidator = inject(CommandValidator);

@@ -26,6 +26,9 @@ import {
   ɵTracingSnapshot as TracingSnapshot,
   Optional,
   ɵallLeavingAnimations as allLeavingAnimations,
+  ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
+  makeEnvironmentProviders,
+  type EnvironmentProviders,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -68,6 +71,33 @@ export const REMOVE_STYLES_ON_COMPONENT_DESTROY = new InjectionToken<boolean>(
     factory: () => REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT,
   },
 );
+
+/**
+ * An injection token that allows an application to configure a prefix to be used for all
+ * CSS variables generated compiled with CSS namespacing enabled.
+ *
+ * Typically set via {@link provideCssVarNamespacing}.
+ */
+export const CSS_VAR_NAMESPACE = new InjectionToken<string>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'CSS_VAR_NAMESPACE' : '',
+);
+
+/**
+ * Configures the application to use the given namespace for all CSS variables.
+ *
+ * @param namespace The prefix string to use as a namespace. If not provided, it defaults
+ *     to the `APP_ID`. An underscore is appended unconditionally.
+ * @publicApi
+ */
+export function provideCssVarNamespacing(namespace?: string): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: CSS_VAR_NAMESPACE,
+      useFactory: (appId: string) => `${namespace ?? appId}_`,
+      deps: [APP_ID],
+    },
+  ]);
+}
 
 export function shimContentAttribute(componentShortId: string): string {
   return CONTENT_ATTR.replace(COMPONENT_REGEX, componentShortId);
@@ -134,10 +164,11 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     EmulatedEncapsulationDomRenderer2 | NoneEncapsulationDomRenderer
   >();
   private readonly defaultRenderer: Renderer2;
+  private readonly cssVarNamespace: string;
 
   constructor(
     private readonly eventManager: EventManager,
-    private readonly sharedStylesHost: SharedStylesHost,
+    @Inject(SHARED_STYLES_HOST) private readonly sharedStylesHost: SharedStylesHost,
     @Inject(APP_ID) private readonly appId: string,
     @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestroy: boolean,
     @Inject(DOCUMENT) private readonly doc: Document,
@@ -146,8 +177,16 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Inject(TracingService)
     @Optional()
     private readonly tracingService: TracingService<TracingSnapshot> | null = null,
+    @Inject(CSS_VAR_NAMESPACE) @Optional() cssVarNamespace: string | null = null,
   ) {
-    this.defaultRenderer = new DefaultDomRenderer2(eventManager, doc, ngZone, this.tracingService);
+    this.cssVarNamespace = cssVarNamespace ?? '';
+    this.defaultRenderer = new DefaultDomRenderer2(
+      eventManager,
+      doc,
+      ngZone,
+      this.tracingService,
+      this.cssVarNamespace,
+    );
   }
 
   createRenderer(element: any, type: RendererType2 | null): Renderer2 {
@@ -200,6 +239,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             doc,
             ngZone,
             tracingService,
+            this.cssVarNamespace,
           );
           break;
         case ViewEncapsulation.ShadowDom:
@@ -211,6 +251,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             this.nonce,
             tracingService,
+            this.cssVarNamespace,
             sharedStylesHost,
           );
         case ViewEncapsulation.ExperimentalIsolatedShadowDom:
@@ -222,6 +263,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             this.nonce,
             tracingService,
+            this.cssVarNamespace,
           );
 
         default:
@@ -233,6 +275,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             doc,
             ngZone,
             tracingService,
+            this.cssVarNamespace,
           );
           break;
       }
@@ -270,6 +313,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     private readonly doc: Document,
     protected readonly ngZone: NgZone,
     private readonly tracingService: TracingService<TracingSnapshot> | null,
+    private readonly cssVarNamespace: string = '',
   ) {}
 
   destroy(): void {}
@@ -378,7 +422,11 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
-    if (flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
+    const isVariable = style.startsWith('--');
+    if (isVariable) {
+      style = style.replace('%NS%', this.cssVarNamespace);
+    }
+    if (isVariable || flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
       el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
     } else {
       el.style[style] = value;
@@ -386,7 +434,11 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
-    if (flags & RendererStyleFlags2.DashCase) {
+    const isVariable = style.startsWith('--');
+    if (isVariable) {
+      style = style.replace('%NS%', this.cssVarNamespace);
+    }
+    if (isVariable || flags & RendererStyleFlags2.DashCase) {
       // removeProperty has no effect when used on camelCased properties.
       el.style.removeProperty(style);
     } else {
@@ -501,9 +553,10 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     ngZone: NgZone,
     nonce: string | null,
     tracingService: TracingService<TracingSnapshot> | null,
+    cssVarNamespace: string,
     private sharedStylesHost?: SharedStylesHost,
   ) {
-    super(eventManager, doc, ngZone, tracingService);
+    super(eventManager, doc, ngZone, tracingService, cssVarNamespace);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
@@ -518,7 +571,9 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       styles = addBaseHrefToCssSourceMap(baseHref, styles);
     }
 
-    styles = shimStylesContent(component.id, styles);
+    styles = shimStylesContent(component.id, styles).map((s) =>
+      s.replace(/%NS%/g, cssVarNamespace),
+    );
 
     for (const style of styles) {
       const styleEl = document.createElement('style');
@@ -588,9 +643,10 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     doc: Document,
     ngZone: NgZone,
     tracingService: TracingService<TracingSnapshot> | null,
+    cssVarNamespace: string,
     compId?: string,
   ) {
-    super(eventManager, doc, ngZone, tracingService);
+    super(eventManager, doc, ngZone, tracingService, cssVarNamespace);
     let styles = component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
@@ -598,7 +654,8 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
       styles = addBaseHrefToCssSourceMap(baseHref, styles);
     }
 
-    this.styles = compId ? shimStylesContent(compId, styles) : styles;
+    const shimmed = compId ? shimStylesContent(compId, styles) : styles;
+    this.styles = shimmed.map((s) => s.replace(/%NS%/g, cssVarNamespace));
     this.styleUrls = component.getExternalStyles?.(compId);
   }
 
@@ -629,6 +686,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     doc: Document,
     ngZone: NgZone,
     tracingService: TracingService<TracingSnapshot> | null,
+    cssVarNamespace: string,
   ) {
     const compId = appId + '-' + component.id;
     super(
@@ -639,6 +697,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
       doc,
       ngZone,
       tracingService,
+      cssVarNamespace,
       compId,
     );
     this.contentAttr = shimContentAttribute(compId);

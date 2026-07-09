@@ -8,8 +8,7 @@
 
 import ts from 'typescript';
 import {DeclarationNode} from '../../../reflection';
-
-import {TypeCheckId} from '../../api';
+import {TypeCheckId} from '@angular/compiler';
 
 const TYPE_CHECK_ID_MAP = Symbol('TypeCheckId');
 

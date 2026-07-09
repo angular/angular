@@ -33,16 +33,19 @@ export const missingMemberMeta: CodeActionMeta = {
     errorCode,
     tsLs,
   }) {
-    const tcbNodesInfo =
-      typeCheckInfo === null
-        ? null
-        : getTcbNodesOfTemplateAtPosition(typeCheckInfo, start, compiler);
+    if (typeCheckInfo === null) {
+      return [];
+    }
+    const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(typeCheckInfo.declaration);
+    if (tcb === null) {
+      return [];
+    }
+    const tcbNodesInfo = getTcbNodesOfTemplateAtPosition(typeCheckInfo.nodes, start, tcb);
     if (tcbNodesInfo === null) {
       return [];
     }
 
     const codeActions: ts.CodeFixAction[] = [];
-    const tcb = tcbNodesInfo.componentTcbNode;
     for (const tcbNode of tcbNodesInfo.nodes) {
       const tsLsCodeActions = tsLs.getCodeFixesAtPosition(
         tcb.getSourceFile().fileName,

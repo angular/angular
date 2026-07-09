@@ -850,6 +850,59 @@ describe('route lazy loading migration', () => {
     );
   });
 
+  it('should resolve the correct import when one component name is a suffix of another', async () => {
+    writeFile(
+      'app.module.ts',
+      `
+      import {NgModule} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+      import {FooBarComponent} from './foo-bar';
+      import {BarComponent} from './bar';
+
+      @NgModule({
+        imports: [RouterModule.forRoot([
+          {path: 'foo-bar', component: FooBarComponent},
+          {path: 'bar', component: BarComponent},
+        ])],
+      })
+      export class AppModule {}
+    `,
+    );
+
+    writeFile(
+      'foo-bar.ts',
+      `
+      import {Component} from '@angular/core';
+      @Component({template: 'foo bar', standalone: true})
+      export class FooBarComponent {}
+    `,
+    );
+
+    writeFile(
+      'bar.ts',
+      `
+      import {Component} from '@angular/core';
+      @Component({template: 'bar', standalone: true})
+      export class BarComponent {}
+    `,
+    );
+
+    await runMigration('route-lazy-loading');
+
+    const result = stripWhitespace(tree.readContent('app.module.ts'));
+
+    expect(result).toContain(
+      stripWhitespace(
+        `{path: 'foo-bar', loadComponent: () => import('./foo-bar').then(m => m.FooBarComponent)}`,
+      ),
+    );
+    expect(result).toContain(
+      stripWhitespace(
+        `{path: 'bar', loadComponent: () => import('./bar').then(m => m.BarComponent)}`,
+      ),
+    );
+  });
+
   // TODO: support multiple imports of components
   // ex import * as Components from './components';
   // export const MenuRoutes: Routes = [

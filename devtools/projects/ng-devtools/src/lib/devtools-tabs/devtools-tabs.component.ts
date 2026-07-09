@@ -6,18 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import {Component, computed, effect, inject, output, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {MatTabLink, MatTabNav, MatTabNavPanel} from '@angular/material/tabs';
 import {MatTooltip} from '@angular/material/tooltip';
 import {
@@ -31,7 +22,6 @@ import {
 
 import {ApplicationEnvironment, Frame, TOP_LEVEL_FRAME_ID} from '../application-environment/index';
 import {FrameManager} from '../application-services/frame_manager';
-import {ThemeService} from '../application-services/theme_service';
 
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {InjectorTreeComponent} from './injector-tree/injector-tree.component';
@@ -40,8 +30,11 @@ import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TransferStateComponent} from './transfer-state/transfer-state.component';
 import {TabUpdate} from './tab-update/index';
 import {Settings} from '../application-services/settings';
+import {DEEP_LINK_INSTANCE_ID} from '../application-providers/deep_link';
 import {SUPPORTED_APIS} from '../application-providers/supported_apis';
 import {ButtonComponent} from '../shared/button/button.component';
+import {APP_DATA} from '../application-providers/app_data';
+import {SettingsComponent} from './settings/settings.component';
 
 type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transfer State';
 
@@ -63,30 +56,30 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transf
     RouterTreeComponent,
     InjectorTreeComponent,
     TransferStateComponent,
-    MatSlideToggle,
+    SettingsComponent,
     ButtonComponent,
   ],
   providers: [TabUpdate],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:keydown.Escape)': 'stopInspecting()',
+  },
 })
 export class DevToolsTabsComponent {
   public readonly frameManager = inject(FrameManager);
-  protected readonly themeService = inject(ThemeService);
   private readonly tabUpdate = inject(TabUpdate);
+  private readonly settings = inject(Settings);
   protected readonly messageBus = inject<MessageBus<Events>>(MessageBus);
-  protected readonly settings = inject(Settings);
   protected readonly applicationEnvironment = inject(ApplicationEnvironment);
   protected readonly supportedApis = inject(SUPPORTED_APIS);
+  protected readonly appData = inject(APP_DATA);
+  private readonly deepLinkInstanceId = inject(DEEP_LINK_INSTANCE_ID);
 
-  protected readonly isHydrationEnabled = input(false);
   readonly frameSelected = output<Frame>();
 
   readonly inspectorRunning = signal(false);
 
-  protected readonly showCommentNodes = this.settings.showCommentNodes;
-  protected readonly timingAPIEnabled = this.settings.timingAPIEnabled;
   protected readonly signalGraphEnabled = () => this.supportedApis().signals;
-  protected readonly transferStateEnabled = this.settings.transferStateEnabled;
+  protected readonly showCommentNodes = this.settings.showCommentNodes;
   protected readonly activeTab = this.settings.activeTab;
 
   protected readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
@@ -106,7 +99,7 @@ export class DevToolsTabsComponent {
     if (supportedApis.routes && this.routes().length > 0) {
       tabs.push('Router Tree');
     }
-    if (supportedApis.transferState && this.transferStateEnabled()) {
+    if (this.appData().hydration) {
       tabs.push('Transfer State');
     }
 
@@ -118,16 +111,8 @@ export class DevToolsTabsComponent {
   );
   protected readonly TOP_LEVEL_FRAME_ID = TOP_LEVEL_FRAME_ID;
 
-  protected readonly angularVersion = input<string | undefined>();
-  readonly majorAngularVersion = computed(() => {
-    const version = this.angularVersion();
-    if (!version) {
-      return -1;
-    }
-    return parseInt(version.toString().split('.')[0], 10);
-  });
-
   protected readonly extensionVersion = signal('dev-build');
+  protected readonly settingsOpened = signal(false);
 
   constructor() {
     this.messageBus.on('updateRouterTree', (routes: any[]) => {
@@ -151,6 +136,13 @@ export class DevToolsTabsComponent {
         this.providers.set(providers);
       },
     );
+
+    // Deep link: switch to Components tab when a deep link request arrives.
+    effect(() => {
+      if (this.deepLinkInstanceId() !== null) {
+        this.changeTab('Components');
+      }
+    });
 
     if (typeof chrome !== 'undefined' && chrome.runtime !== undefined) {
       this.extensionVersion.set(chrome.runtime.getManifest().version);
@@ -176,6 +168,12 @@ export class DevToolsTabsComponent {
     this.emitInspectorEvent();
   }
 
+  stopInspecting(): void {
+    if (this.inspectorRunning()) {
+      this.toggleInspector();
+    }
+  }
+
   emitInspectorEvent(): void {
     if (this.inspectorRunning()) {
       this.messageBus.emit('inspectorStart');
@@ -187,19 +185,5 @@ export class DevToolsTabsComponent {
 
   toggleInspectorState(): void {
     this.inspectorRunning.update((state) => !state);
-  }
-
-  toggleTimingAPI(): void {
-    this.timingAPIEnabled.update((state) => !state);
-    this.timingAPIEnabled()
-      ? this.messageBus.emit('enableTimingAPI')
-      : this.messageBus.emit('disableTimingAPI');
-  }
-
-  protected setTransferStateTab(enabled: boolean): void {
-    this.transferStateEnabled.set(enabled);
-    if (!enabled && this.activeTab() === 'Transfer State') {
-      this.activeTab.set('Components');
-    }
   }
 }

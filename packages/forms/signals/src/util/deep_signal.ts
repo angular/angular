@@ -27,6 +27,9 @@ export function deepSignal<S, K extends keyof S>(
 
   read[SIGNAL] = source[SIGNAL];
   read.set = (value: S[K]) => {
+    if (Object.is(untracked(read), value)) {
+      return;
+    }
     source.update((current) => valueForWrite(current, value, prop()) as S);
   };
 

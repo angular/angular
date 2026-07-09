@@ -19,6 +19,7 @@ import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {addDefaultField} from '../field/validation';
+import {REGISTER_WEBMCP_FORM} from '../webmcp/tokens';
 import {DYNAMIC} from '../schema/logic';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema/schema';
@@ -42,8 +43,10 @@ import type {
 /**
  * Options that may be specified when creating a form.
  *
+ * @see [Signal Forms setup](guide/forms/signals/overview#setup)
+ *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export interface FormOptions<TModel> {
   /**
@@ -51,8 +54,23 @@ export interface FormOptions<TModel> {
    * current [injection context](guide/di/dependency-injection-context), will be used.
    */
   injector?: Injector;
+
   /** The name of the root form, used in generating name attributes for the fields. */
   name?: string;
+
+  /**
+   * Configuration options to expose this form as an experimental WebMCP AI agent tool.
+   *
+   * @experimental
+   */
+  experimentalWebMcpTool?: {
+    /** The unique name of the WebMCP tool to create from this form. */
+    name: string;
+
+    /** A description of the tool's purpose and usage information. */
+    description: string;
+  };
+
   /** Options that define how to handle form submission. */
   submission?: FormSubmitOptions<TModel, unknown>;
 }
@@ -80,8 +98,10 @@ export interface FormOptions<TModel> {
  * @return A `FieldTree` representing a form around the data model.
  * @template TModel The type of the data model.
  *
+ * @see [Creating models](guide/forms/signals/models#creating-models)
+ *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
@@ -127,8 +147,10 @@ export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
  * @return A `FieldTree` representing a form around the data model
  * @template TValue The type of the data model.
  *
+ * @see [Creating models](guide/forms/signals/models#creating-models)
+ *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function form<TModel>(
   model: WritableSignal<TModel>,
@@ -175,8 +197,10 @@ export function form<TModel>(
  * @return A `FieldTree` representing a form around the data model.
  * @template TModel The type of the data model.
  *
+ * @see [Creating models](guide/forms/signals/models#creating-models)
+ *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function form<TModel>(
   model: WritableSignal<TModel>,
@@ -196,6 +220,29 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
   const adapter = options?.adapter ?? new BasicFieldAdapter();
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
+
+  // Register a WebMCP tool for the form if configured.
+  const {experimentalWebMcpTool} = options ?? {};
+  if (experimentalWebMcpTool) {
+    const registerWebMcpForm = runInInjectionContext(injector, () =>
+      inject(REGISTER_WEBMCP_FORM, {optional: true}),
+    );
+    if (registerWebMcpForm) {
+      runInInjectionContext(injector, () =>
+        registerWebMcpForm(fieldRoot.fieldTree, {
+          name: experimentalWebMcpTool.name,
+          description: experimentalWebMcpTool.description,
+        }),
+      );
+    } else {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+        throw new Error(
+          `Cannot register form "${experimentalWebMcpTool.name}" as a WebMCP tool. ` +
+            `Make sure to use \`provideExperimentalWebMcpForms()\` in your application bootstrap configuration.`,
+        );
+      }
+    }
+  }
 
   return fieldRoot.fieldTree as FieldTree<TModel>;
 }
@@ -219,8 +266,10 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
  * element of the array.
  * @template TValue The data type of the item field to apply the schema to.
  *
+ * @see [Array items with applyEach](guide/forms/signals/schemas#array-items-with-applyeach)
+ *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function applyEach<TValue extends ReadonlyArray<any>>(
   path: SchemaPath<TValue>,
@@ -258,8 +307,10 @@ export function applyEach<TValue extends Object>(
  * @param schema The schema to apply to the property
  * @template TValue The data type of the field to apply the schema to.
  *
+ * @see [Using the schema with apply](guide/forms/signals/schemas#using-the-schema-with-apply)
+ *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function apply<TValue>(
   path: SchemaPath<TValue>,
@@ -279,8 +330,10 @@ export function apply<TValue>(
  * @param schema The schema to apply to the field when the `logic` function returns `true`.
  * @template TValue The data type of the field to apply the schema to.
  *
+ * @see [Conditional schemas with applyWhen](guide/forms/signals/schemas#conditional-schemas-with-applywhen)
+ *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function applyWhen<TValue>(
   path: SchemaPath<TValue>,
@@ -303,8 +356,10 @@ export function applyWhen<TValue>(
  * @template TValue The data type of the field to apply the schema to.
  * @template TNarrowed The data type of the schema (a narrowed type of TValue).
  *
+ * @see [Type-narrowing with applyWhenValue](guide/forms/signals/schemas#type-narrowing-with-applywhenvalue)
+ *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function applyWhenValue<TValue, TNarrowed extends TValue>(
   path: SchemaPath<TValue>,
@@ -321,8 +376,10 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(
  * @param schema The schema to apply to the field when `predicate` returns `true`.
  * @template TValue The data type of the field to apply the schema to.
  *
+ * @see [Type-narrowing with applyWhenValue](guide/forms/signals/schemas#type-narrowing-with-applywhenvalue)
+ *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function applyWhenValue<TValue>(
   path: SchemaPath<TValue>,
@@ -343,6 +400,9 @@ export function applyWhenValue(
  * resulting from the action to the field. Submission errors returned by the `action` will be integrated
  * into the field as a `ValidationError` on the sub-field indicated by the `fieldTree` property of the
  * submission error.
+ *
+ * Concurrent submissions are prohibited. If a submit is already in progress for the given field or any
+ * of its parents, subsequent calls to `submit` will return `false` immediately without running the action.
  *
  * @example
  * ```ts
@@ -372,8 +432,10 @@ export function applyWhenValue(
  * @returns Whether the submission was successful.
  * @template TModel The data type of the field being submitted.
  *
+ * @see [Form submission](guide/forms/signals/form-submission)
+ *
  * @category submission
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export async function submit<TModel>(
   form: FieldTree<TModel>,
@@ -388,6 +450,10 @@ export async function submit<TModel>(
   options?: FormSubmitOptions<unknown, TModel> | FormSubmitOptions<unknown, TModel>['action'],
 ): Promise<boolean> {
   const node = untracked(form) as FieldState<unknown> as FieldNode;
+
+  if (untracked(node.submitState.submitting)) {
+    return false;
+  }
 
   const field = options === undefined ? node.structure.root.fieldProxy : form;
   const detail = {root: node.structure.root.fieldProxy, submitted: form};
@@ -435,8 +501,10 @@ export async function submit<TModel>(
  * @returns A schema object that implements the given logic.
  * @template TValue The value type of a `FieldTree` that this schema binds to.
  *
+ * @see [Create reusable schemas with schema](guide/forms/signals/schemas#create-reusable-schemas-with-schema)
+ *
  * @category structure
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
   return SchemaImpl.create(fn) as unknown as Schema<TValue>;

@@ -35,9 +35,7 @@ When you want to run code during specific navigation lifecycle events, you can d
 import {Component, inject, signal, effect} from '@angular/core';
 import {Event, Router, NavigationStart, NavigationEnd} from '@angular/router';
 
-@Component({
-  /*...*/
-})
+@Component(/* ... */)
 export class RouterEvents {
   private readonly router = inject(Router);
 
@@ -109,10 +107,10 @@ Track page views for analytics:
 
 ```ts
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {inject, Injectable, DestroyRef} from '@angular/core';
+import {inject, DestroyRef, Service} from '@angular/core';
 import {Router, NavigationEnd} from '@angular/router';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class AnalyticsService {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);

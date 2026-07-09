@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {email, form, FormField, required, submit} from '@angular/forms/signals';
 import {bootstrapApplication} from '@angular/platform-browser';
 
@@ -33,11 +33,11 @@ interface LoginData {
         </label>
 
         @if (loginForm.password().invalid()) {
-          <div class="error">
+          <ul class="error-list">
             @for (error of loginForm.password().errors(); track error) {
-              <p>{{ error.message }}</p>
+              <li>{{ error.message }}</li>
             }
-          </div>
+          </ul>
         }
       </div>
 
@@ -46,7 +46,6 @@ interface LoginData {
   `,
   styleUrl: 'main.css',
   imports: [FormField],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginApp {
   loginModel = signal<LoginData>({

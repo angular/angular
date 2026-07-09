@@ -7,16 +7,7 @@
  */
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  PLATFORM_ID,
-  signal,
-  isDevMode,
-} from '@angular/core';
-import {NavigationEnd, NavigationSkipped, Router, RouterOutlet} from '@angular/router';
-import {filter, map} from 'rxjs/operators';
+import {Component, inject, isDevMode, PLATFORM_ID, signal} from '@angular/core';
 import {
   CookiePopup,
   getActivatedRouteSnapshotFromRouter,
@@ -24,16 +15,17 @@ import {
   SearchDialog,
   TopLevelBannerComponent,
 } from '@angular/docs';
+import {NavigationEnd, NavigationSkipped, Router, RouterOutlet} from '@angular/router';
+import {filter, map} from 'rxjs/operators';
+import {ESCAPE, SEARCH_TRIGGER_KEY} from './core/constants/keys';
 import {Footer} from './core/layout/footer/footer.component';
 import {Navigation} from './core/layout/navigation/navigation.component';
-import {SecondaryNavigation} from './core/layout/secondary-navigation/secondary-navigation.component';
 import {ProgressBarComponent} from './core/layout/progress-bar/progress-bar.component';
-import {ESCAPE, SEARCH_TRIGGER_KEY} from './core/constants/keys';
+import {SecondaryNavigation} from './core/layout/secondary-navigation/secondary-navigation.component';
 import {HeaderService} from './core/services/header.service';
 
 @Component({
   selector: 'adev-root',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CookiePopup,
     Navigation,

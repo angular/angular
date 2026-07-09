@@ -28,8 +28,12 @@
   left: calc(var(--layout-padding) + var(--primary-nav-width));
   z-index: 1;
 
-  @include mq.for-tablet-down {
-    justify-content: flex-start;
+  @include mq.for-tablet-landscape-down {
+    justify-content: center;
+    margin-top: 4rem;
+  }
+
+  @include mq.for-phone-only {
     margin-top: 1rem;
   }
 }
@@ -187,7 +191,9 @@ section {
   }
 
   .search-field {
-    @include mq.for-tablet-down() {
+    display: flex;
+
+    @include mq.for-tablet-landscape-down() {
       display: none;
     }
   }
@@ -273,6 +279,11 @@ section {
     border-radius: 0.5rem;
     width: fit-content;
     margin: 0 auto 2rem;
+
+    @include mq.for-phone-only {
+      width: auto;
+      margin: 0 0.5rem 1rem;
+    }
 
     .tab-background {
       position: absolute;

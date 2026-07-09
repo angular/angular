@@ -585,3 +585,23 @@ export interface R3DeclareHostDirectiveMetadata {
   inputs?: string[];
   outputs?: string[];
 }
+
+/**
+ * Describes the shape of the object that the `ɵɵngDeclareService()` function accepts.
+ *
+ * This interface serves primarily as documentation, as conformance to this interface is not
+ * enforced during linking.
+ */
+export interface R3DeclareServiceMetadata extends R3PartialDeclaration {
+  /**
+   * Determines whether the service should be provided automatically or if the user
+   * is responsible for providing it.
+   */
+  autoProvided?: boolean;
+
+  /**
+   * If provided, an expression that evaluates to a function to use when creating an instance of
+   * this injectable.
+   */
+  factory?: o.Expression;
+}

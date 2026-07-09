@@ -25,6 +25,7 @@ import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
+import {createContentBlock} from './r3_content_blocks';
 import {
   createForLoop,
   createIfBlock,
@@ -263,6 +264,12 @@ class HtmlAstToIvyAst implements html.Visitor {
       );
     }
 
+    if (this.options.collectCommentNodes) {
+      element.comments.forEach((comment) => {
+        this.commentNodes.push(new t.Comment(comment.value || '', comment.sourceSpan));
+      });
+    }
+
     if (elementHasInlineTemplate) {
       // If this node is an inline-template (e.g. has *ngFor) then we need to create a template
       // node that contains this node.
@@ -342,6 +349,13 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   visitComment(comment: html.Comment): null {
+    if (this.options.collectCommentNodes) {
+      this.commentNodes.push(new t.Comment(comment.value || '', comment.sourceSpan));
+    }
+    return null;
+  }
+
+  visitStartTagComment(comment: html.StartTagComment): null {
     if (this.options.collectCommentNodes) {
       this.commentNodes.push(new t.Comment(comment.value || '', comment.sourceSpan));
     }
@@ -431,6 +445,12 @@ class HtmlAstToIvyAst implements html.Visitor {
       component.i18n,
     );
 
+    if (this.options.collectCommentNodes) {
+      component.comments.forEach((comment) => {
+        this.commentNodes.push(new t.Comment(comment.value || '', comment.sourceSpan));
+      });
+    }
+
     if (elementHasInlineTemplate) {
       node = this.wrapInTemplate(
         node,
@@ -483,6 +503,10 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       case 'switch':
         result = createSwitchBlock(block, this, this.bindingParser);
+        break;
+
+      case 'content':
+        result = createContentBlock(block, this);
         break;
 
       case 'for':
@@ -591,10 +615,11 @@ class HtmlAstToIvyAst implements html.Visitor {
         // Note that validation is skipped and property mapping is disabled
         // due to the fact that we need to make sure a given prop is not an
         // input of a directive and directive matching happens at runtime.
+        const isAttrOn = prop.name.toLowerCase().startsWith('attr.on');
         const bep = this.bindingParser.createBoundElementProperty(
           elementName,
           prop,
-          /* skipValidation */ true,
+          /* skipValidation */ !isAttrOn,
           /* mapPropertyName */ false,
         );
         bound.push(t.BoundAttribute.fromBoundElementProperty(bep, i18n));
@@ -723,6 +748,7 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     if (bindParts) {
       if (bindParts[KW_BIND_IDX] != null) {
+        // 3p-only-start
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_BIND_IDX], identifier);
         this.bindingParser.parsePropertyBinding(
@@ -737,6 +763,7 @@ class HtmlAstToIvyAst implements html.Visitor {
           parsedProperties,
           keySpan,
         );
+        // 3p-only-end
       } else if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
           const identifier = bindParts[IDENT_KW_IDX];
@@ -750,6 +777,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         const keySpan = createKeySpan(srcSpan, bindParts[KW_REF_IDX], identifier);
         this.parseReference(identifier, value, srcSpan, keySpan, attribute.valueSpan, references);
       } else if (bindParts[KW_ON_IDX]) {
+        // 3p-only-start
         const events: ParsedEvent[] = [];
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_ON_IDX], identifier);
@@ -764,7 +792,9 @@ class HtmlAstToIvyAst implements html.Visitor {
           keySpan,
         );
         addEvents(events, boundEvents);
+        // 3p-only-end
       } else if (bindParts[KW_BINDON_IDX]) {
+        // 3p-only-start
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_BINDON_IDX], identifier);
         this.bindingParser.parsePropertyBinding(
@@ -789,6 +819,7 @@ class HtmlAstToIvyAst implements html.Visitor {
           keySpan,
           absoluteOffset,
         );
+        // 3p-only-end
       } else if (bindParts[KW_AT_IDX]) {
         const keySpan = createKeySpan(srcSpan, '', name);
         this.bindingParser.parseLiteralAttr(

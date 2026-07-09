@@ -13,7 +13,11 @@ import {DOCUMENT} from '../src/document';
 import {makeStateKey, TransferState} from '../src/transfer_state';
 
 function removeScriptTag(doc: Document, id: string) {
-  doc.getElementById(id)?.remove();
+  let node = doc.getElementById(id);
+  while (node) {
+    node.remove();
+    node = doc.getElementById(id);
+  }
 }
 
 function addScriptTag(doc: Document, appId: string, data: object | string) {
@@ -55,6 +59,24 @@ describe('TransferState', () => {
     addScriptTag(doc, APP_ID, {test: 10});
     const transferState: TransferState = TestBed.inject(TransferState);
     expect(transferState.get(TEST_KEY, 0)).toBe(10);
+  });
+
+  it('ignores non-script elements that clobber the transfer state id', () => {
+    const id = APP_ID + '-state';
+
+    const clobberingNode = doc.createElement('div');
+    clobberingNode.id = id;
+    clobberingNode.textContent = '{"test":999}';
+    doc.body.appendChild(clobberingNode);
+
+    const script = doc.createElement('script');
+    script.id = id;
+    script.setAttribute('type', 'application/json');
+    script.textContent = '{"test":10}';
+    doc.body.appendChild(script);
+
+    const transferState: TransferState = TestBed.inject(TransferState);
+    expect(transferState.get(TEST_KEY, 0)).toBe(0);
   });
 
   it('is initialized to empty state if script tag not found', () => {
@@ -136,12 +158,18 @@ describe('TransferState', () => {
 
     transferState.set(DELAYED_KEY, '</script><script>alert(\'Hello&\' + "World");');
     expect(transferState.toJson()).toBe(
-      `{"delayed":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}`,
+      `{"delayed":"\\u003C\\u002Fscript>\\u003Cscript>alert('Hello&' + \\"World\\");"}`,
     );
   });
 
-  it('should decode `\\u003C` (<) when restoring stating', () => {
-    const encodedState = `{"delayed":"\\u003C/script>\\u003Cscript>alert('Hello&' + \\"World\\");"}`;
+  it('should encode `/` to avoid crawler indexing of inline JSON', () => {
+    const transferState = TestBed.inject(TransferState);
+    transferState.set(DELAYED_KEY, '/foo/bar');
+    expect(transferState.toJson()).toBe(`{"delayed":"\\u002Ffoo\\u002Fbar"}`);
+  });
+
+  it('should decode `\\u003C` (<) and `\\u002F` (/) when restoring stating', () => {
+    const encodedState = `{"delayed":"\\u003C\\u002Fscript>\\u003Cscript>alert('Hello&' + \\"World\\");"}`;
     addScriptTag(doc, APP_ID, encodedState);
     const transferState = TestBed.inject(TransferState);
 
@@ -149,5 +177,17 @@ describe('TransferState', () => {
     expect(transferState.get(DELAYED_KEY, null)).toBe(
       '</script><script>alert(\'Hello&\' + "World");',
     );
+  });
+
+  it('should properly encode and decode relative links in JSON', () => {
+    const relativeLink = '/about/us?query=1';
+    const encodedState = `{"delayed":"\\u002Fabout\\u002Fus?query=1"}`;
+
+    // Ensure restoring from the encoded state correctly decodes the relative link
+    addScriptTag(doc, APP_ID, encodedState);
+    const transferState = TestBed.inject(TransferState);
+
+    expect(transferState.get(DELAYED_KEY, null)).toBe(relativeLink);
+    expect(transferState.toJson()).toBe(encodedState);
   });
 });

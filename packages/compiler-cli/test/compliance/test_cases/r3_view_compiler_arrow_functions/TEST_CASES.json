@@ -142,6 +142,20 @@
       ]
     },
     {
+      "description": "should handle arrow function with optional reads with legacyOptionalChaining",
+      "inputFiles": ["arrow_function_safe_access_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_safe_access_use_null.js"]
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
+    },
+    {
       "description": "should handle arrow function with optional reads in nested views",
       "inputFiles": ["arrow_function_safe_access_nested_views.ts"],
       "expectations": [
@@ -150,6 +164,20 @@
           "files": ["arrow_function_safe_access_nested_views.js"]
         }
       ]
+    },
+    {
+      "description": "should handle arrow function with optional reads in nested views with legacyOptionalChaining",
+      "inputFiles": ["arrow_function_safe_access_nested_views_use_null.ts"],
+      "compilationModeFilter": ["full compile", "instruction compile"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_safe_access_nested_views_use_null.js"]
+        }
+      ],
+      "angularCompilerOptions": {
+        "legacyOptionalChaining": true
+      }
     },
     {
       "description": "should handle arrow function that is passed into a pipe",

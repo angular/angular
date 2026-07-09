@@ -32,7 +32,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
 import {AbstractFormGroupDirective} from '../abstract_form_group_directive';
 import {ControlContainer} from '../control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '../control_value_accessor';
-import {NG_CONTROL_PARSE_ERRORS_PROVIDER, NgControl} from '../ng_control';
+import {NG_CONTROL_INTEGRATION_PROVIDER, NgControl} from '../ng_control';
 import {
   controlParentException,
   disabledAttrWarning,
@@ -90,7 +90,7 @@ const controlNameBinding: Provider = {
  */
 @Directive({
   selector: '[formControlName]',
-  providers: [controlNameBinding, NG_CONTROL_PARSE_ERRORS_PROVIDER],
+  providers: [controlNameBinding, NG_CONTROL_INTEGRATION_PROVIDER],
   standalone: false,
 })
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {

@@ -22,7 +22,7 @@ Here's an example of how to use the `@for` syntax in a component:
   `,
 })
 export class App {
-  operatingSystems = [{id: 'win', name: 'Windows'}, {id: 'osx', name: 'MacOS'}, {id: 'linux', name: 'Linux'}];
+  operatingSystems = [{id: 'win', name: 'Windows'}, {id: 'osx', name: 'macOS'}, {id: 'linux', name: 'Linux'}];
 }
 ```
 

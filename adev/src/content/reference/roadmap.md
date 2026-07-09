@@ -20,12 +20,13 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 ### Available to experiment with
 
-- [Signal Forms](/guide/forms/signals/overview)
-- [Resource API](/guide/signals/resource)
-- [httpResource](/api/common/http/httpResource)
+- [Web MCP](/ai/webmcp)
 
 ### Production ready
 
+- [Signal Forms](/guide/forms/signals/overview)
+- [Resource API](/guide/signals/resource)
+- [httpResource](/api/common/http/httpResource)
 - [Zoneless change detection](/guide/zoneless)
 - [Linked Signal API](/guide/signals/linked-signal)
 - [Incremental hydration](/guide/incremental-hydration)
@@ -38,7 +39,7 @@ Start developing with the latest Angular features from our roadmap. This list re
 ### Bringing the best of AI to Angular
 
 <docs-card-container>
-  <docs-card title="AI Powered Angular" href="">
+  <docs-card title="AI Powered Angular">
   AI continues to shape the development landscape. It has changed how we develop apps and the types of user experiences that are possible. We plan to best support the developer community in AI-assisted coding and integrating AI in their applications.
   </docs-card>
   <docs-card title="AI Development">
@@ -70,16 +71,6 @@ As part of this project, we'll explore the requirement space of cross framework 
 
   </docs-card>
 
-  <docs-card title="Signal Forms" href="/guide/forms/signals/overview">
-  In Angular v21, we landed an experimental version of Signal Forms. This new approach allows developers to manage form state using signals, providing an ergonomic forms creation experience. Next, our plans include promoting Signal Forms to stable and enhancing interoperability with reactive forms - enabling teams to progressively migrate large forms at their own pace.
-  </docs-card>
-  <docs-card title="Reactivity" href="">
-  We introduced experimental signal APIs, resource() and httpResource(), for flexible asynchronous data handling. We plan to promote these APIs to developer preview/stable based on community feedback.
-  We are also evaluating new APIs for unhandled use cases, considering community benefits and tradeoffs before implementation after careful consideration.
-  </docs-card>
-  <docs-card title="Change Detection" href="">
-  With Zoneless being stable and default, we are also planning to shift the default change detection strategy to OnPush, to follow current best practices. [See the RFC discussion for details](https://github.com/angular/angular/discussions/66779).
-  </docs-card>
   <docs-card title="Components">
   In Angular v21, we launched Angular Aria in developer preview, providing eight patterns for accessible, headless components. We're planning to promote these patterns to stable and introduce new patterns where needed . We want to provide developers with a solid foundation for developing their own components using Angular Aria - we provide the interactions and you bring the style that matches your design systems. Developers will have the choice of developing custom components with Angular Aria, use interaction patterns from the CDK, or use ready-made styled Material Components.
 
@@ -90,7 +81,7 @@ For accessibility, we are continuously evaluating the components and patterns ag
 ### Improve tooling
 
 <docs-card-container>
-  <docs-card title="Modernize unit testing tooling with ng test" href="">
+  <docs-card title="Modernize unit testing tooling with ng test">
   Following the stable release of Vitest in Angular v21, it is now our primary test runner. We are now focused on promoting our experimental Karma to Vitest migration tool to stable as well as investigating new features to further refine and improve the developer testing workflow.
 </docs-card>
 </docs-card-container>
@@ -98,27 +89,43 @@ For accessibility, we are continuously evaluating the components and patterns ag
 ## Completed projects
 
 <docs-card-container>
-  <docs-card title="Signal debugging in Angular DevTools" href="" link="Completed in 2025">
-  With the evolution of Signals in Angular, we are working on a better tooling for debugging them. High on the priority list is a UI for inspecting and debugging signals.
-  </docs-card>
-  <docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306" link="Completed in 2025">
-  We're working towards faster edit/refresh cycle by enabling hot module replacement.
 
-In Angular v19 we shipped initial support for CSS and template HMR and in v20 we graduated template HMR to stable. We'll continue collecting feedback to make sure we're addressing developers' needs before we mark this project as complete.
+  <docs-card title="Signal Forms" href="/guide/forms/signals/overview" link="Completed in 2026">
+  Signal Forms are now stable. This new approach allows developers to manage form state using signals, providing an ergonomic forms creation experience. We promoted Signal Forms to stable and enhanced interoperability with reactive forms - enabling teams to progressively migrate large forms at their own pace.
+  </docs-card>
+  
+  <docs-card title="Reactivity" href="/guide/signals" link="Completed in 2026">
+  We introduced new signal APIs, `resource()` and `httpResource()`, for flexible asynchronous data handling. We promoted these APIs to developer stable.
+  </docs-card>
+  
+  <docs-card title="Change Detection" href="/api/core/ChangeDetectionStrategy" link="Completed in 2026">
+  With Zoneless being stable and default, we set the default change detection strategy to `OnPush`, to follow current best practices. We also renamed `ChangeDetectionStrategy.Default` to `ChangeDetectionStrategy.Eager`.
+  
+  [See the RFC discussion for details](https://github.com/angular/angular/discussions/66779).
+  </docs-card>
+
+  <docs-card title="Signal debugging in Angular DevTools" link="Completed in 2026">
+  We've added better tooling for debugging Signals using Angular DevTools. This change includes a new UI for inspecting and debugging signals.
+  </docs-card>
+
+  <docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306" link="Completed in 2025">
+  We're working towards faster edit/refresh cycle by enabling hot module replacement. In Angular v19 we shipped initial support for CSS and template HMR and in v20 we graduated template HMR to stable. We'll continue collecting feedback to make sure we're addressing developers' needs before we mark this project as complete.
 </docs-card>
-<docs-card title="Zoneless Angular" href="" link="Completed in Q4 2025">
+
+<docs-card title="Zoneless Angular"  link="Completed in Q4 2025">
 In v18 we shipped experimental zoneless support in Angular. It enables developers to use the framework without including zone.js in their bundle, which improves performance, debugging experience, and interoperability. As part of the initial release we also introduced zoneless support to the Angular CDK and Angular Material.
 
-    In v19 we introduced zoneless support in server-side rendering, addressed some edge cases, and created a schematic to scaffold zoneless projects. We transitioned <a href="https://fonts.google.com/">Google Fonts</a> to zoneless which improved performance, developer experience, and allowed us to identify gaps that we need to address before moving this feature to developer preview.
+In v19 we introduced zoneless support in server-side rendering, addressed some edge cases, and created a schematic to scaffold zoneless projects. We transitioned <a href="https://fonts.google.com/" target="_blank">Google Fonts</a> to zoneless which improved performance, developer experience, and allowed us to identify gaps that we need to address before moving this feature to developer preview.
 
-    As of Angular v20.2, Zoneless Angular is now stable and includes improvements in error handling and server-side rendering.
-    </docs-card>
-    <docs-card title="Server route configuration" link="Completed in Q2 2025" href="">
-    We're working towards enabling a more ergonomic route configuration on the server. We want to make it trivial to declare which routes should be server-side rendered, prerendered or client-side rendered.
+As of Angular v20.2, Zoneless Angular is now stable and includes improvements in error handling and server-side rendering.
+</docs-card>
+
+<docs-card title="Server route configuration" link="Completed in Q2 2025"  >
+We're working towards enabling a more ergonomic route configuration on the server. We want to make it trivial to declare which routes should be server-side rendered, prerendered or client-side rendered.
 
 In Angular v19 we shipped developer preview of route-level render mode which allows you to granularly configure which routes you want Angular to prerender, server-side render or client-side render. In Angular v20 we graduated it to stable.
 </docs-card>
-<docs-card title="Enable incremental hydration" link="Completed in Q2 2025" href="">
+<docs-card title="Enable incremental hydration" link="Completed in Q2 2025">
 In v17 we graduated hydration from developer preview and we've been consistently observing 40-50% improvements in LCP. Since then we started prototyping incremental hydration and shared a demo on stage at ng-conf.
 
 In v19 we shipped the incremental hydration in developer preview mode, powered by `@defer` blocks. In Angular v20 we graduated it to stable!
@@ -131,15 +138,15 @@ In Angular v20 we graduated all the fundamental reactivity primitives to stable 
 <docs-card title="Support two-dimensional drag-and-drop" link="Completed in Q2 2024" href="https://github.com/angular/components/issues/13372">
 As part of this project, we implemented mixed orientation support for the Angular CDK drag and drop. This is one of the repository's most highly requested features.
 </docs-card>
-<docs-card title="Event replay with SSR and prerendering" link="Completed in Q4 2024" href="https://angular.dev/api/platform-browser/withEventReplay">
+<docs-card title="Event replay with SSR and prerendering" link="Completed in Q4 2024" href="api/platform-browser/withEventReplay">
 In v18 we introduced an event replay functionality when using server-side rendering or prerendering. For this feature we depend on the event dispatch primitive (previously known as jsaction) that is running on Google.com.
 
 In Angular v19 we graduated event replay to stable and enabled it by default for all new projects.
 </docs-card>
-<docs-card title="Integrate Angular Language Service with Schematics" link="Completed in Q4 2024" href="">
+<docs-card title="Integrate Angular Language Service with Schematics" link="Completed in Q4 2024">
 To make it easier for developers to use modern Angular APIs, we enabled integration between the Angular language service and schematics which allows you to refactor your app with a single click.
 </docs-card>
-<docs-card title="Streamline standalone imports with Language Service" link="Completed in Q4 2024" href="">
+<docs-card title="Streamline standalone imports with Language Service" link="Completed in Q4 2024">
 As part of this initiative, the language service automatically imports components and pipes in standalone and NgModule-based apps. Additionally, we've added a template diagnostic to highlight unused imports in standalone components, which should help make application bundles smaller.
 </docs-card>
 <docs-card title="Local template variables" link="Completed in Q3 2024">
@@ -153,7 +160,7 @@ In v17.2 we shared experimental support for Angular Material 3 and in v18 we gra
 <docs-card title="Introduce deferred loading" link="Completed in Q2 2024" href="https://next.angular.dev/guide/templates/defer">
 In v17 we shipped deferrable views in developer preview, which provide an ergonomic API for deferred code loading. In v18 we enabled deferrable views for library developers and graduated the API to stable.
 </docs-card>
-<docs-card title="iframe support in Angular DevTools" link="Completed in Q2 2024" href="">
+<docs-card title="iframe support in Angular DevTools" link="Completed in Q2 2024">
 We enabled debugging and profiling of Angular apps embedded within an iframe on the page.
 </docs-card>
 <docs-card title="Automation for transition of existing hybrid rendering projects to esbuild and vite" link="Completed in Q2 2024" href="tools/cli/build-system-migration">
@@ -162,10 +169,10 @@ In v17 we shipped a vite and esbuild-based application builder and enabled it fo
 <docs-card title="Make Angular.dev the official home for Angular developers" link="Completed in Q2 2024" href="https://goo.gle/angular-dot-dev">
 Angular.dev is the new site, domain and home for Angular development. The new site contains updated documentation, tutorials and guidance that will help developers build with Angular’s latest features.
 </docs-card>
-<docs-card title="Introduce built-in control flow" link="Completed in Q2 2024" href="https://next.angular.dev/essentials/conditionals-and-loops">
+<docs-card title="Introduce built-in control flow" link="Completed in Q2 2024" href="guide/templates/control-flow">
 In v17 we shipped a developer preview version of a new control flow. It brings significant performance improvements and better ergonomics for template authoring. We also provided a migration of existing `*ngIf`, `*ngFor`, and `*ngSwitch` which you can run to move your project to the new implementation. As of v18 the built-in control flow is now stable.
 </docs-card>
-<docs-card title="Modernize getting started tutorial" link="Completed Q4 2023" href="">
+<docs-card title="Modernize getting started tutorial" link="Completed Q4 2023">
 Over the past two quarters, we developed a new [video](https://www.youtube.com/watch?v=xAT0lHYhHMY&list=PL1w1q3fL4pmj9k1FrJ3Pe91EPub2_h4jF) and [textual](/tutorials/learn-angular) tutorial based on standalone components.
 </docs-card>
 <docs-card title="Investigate modern bundlers" link="Completed Q4 2023" href="guide/hydration">
@@ -174,7 +181,7 @@ In Angular v16, we released a developer preview of an esbuild-based builder with
 <docs-card title="Introduce dependency injection debugging APIs" link="Completed Q4 2023" href="tools/devtools">
 To improve the debugging utilities of Angular and Angular DevTools, we'll work on APIs that provide access to the dependency injection runtime. As part of the project, we'll expose debugging methods that allow us to explore the injector hierarchy and the dependencies across their associated providers. As of v17, we shipped a feature that enables us to plug into the dependency injection life-cycle. We also launched a visualization of the injector tree and inspection of the providers declared inside each individual node,
 </docs-card>
-<docs-card title="Improve documentation and schematics for standalone components" link="Completed Q4 2023" href="components">
+<docs-card title="Improve documentation and schematics for standalone components" link="Completed Q4 2023" href="essentials/components">
 We released a developer preview of the `ng new --standalone` schematics collection, allowing you to create apps free of NgModules. In v17 we switched the new application authoring format to standalone APIs and changed the documentation to reflect the recommendation. Additionally, we shipped schematics which support updating existing applications to standalone components, directives, and pipes. Even though NgModules will stick around for foreseeable future, we recommend you to explore the benefits of the new APIs to improve developer experience and benefit from the new features we build for them.
 </docs-card>
 <docs-card title="Explore hydration and server-side rendering improvements" link="Completed Q4 2023">
@@ -230,7 +237,7 @@ We will work on finding a way to implement stricter type checking for reactive f
 <docs-card title="Improve integration of Angular DevTools with framework" link="Completed Q1 2022" href="tools/devtools">
 To improve the integration of Angular DevTools with the framework, we are working on moving the codebase to the angular/angular monorepository. This includes transitioning Angular DevTools to Bazel and integrating it into the existing processes and CI pipeline.
 </docs-card>
-<docs-card title="Launch advanced compiler diagnostics" link="Completed Q1 2022" href="reference/extended-diagnostics">
+<docs-card title="Launch advanced compiler diagnostics" link="Completed Q1 2022" href="extended-diagnostics">
 Extend the diagnostics of the Angular compiler outside type checking. Introduce other correctness and conformance checks to further guarantee correctness and best practices.
 </docs-card>
 <docs-card title="Update our e2e testing strategy" link="Completed Q3 2021" href="guide/testing">
@@ -269,7 +276,7 @@ As part of the v11 release, we introduced an opt-in preview of webpack 5 in the 
 <docs-card title="Faster apps by inlining critical styles in Universal apps" link="Completed Q1 2021" href="guide/ssr">
 Loading external stylesheets is a blocking operation, which means that the browser cannot start rendering your app until it loads all the referenced CSS. Having render-blocking resources in the header of a page can significantly impact its load performance, for example, its first contentful paint. To make apps faster, we have been collaborating with the Google Chrome team on inlining critical CSS and loading the rest of the styles asynchronously.
 </docs-card>
-<docs-card title="Improve debugging with better Angular error messages" link="Completed Q1 2021" href="reference/errors">
+<docs-card title="Improve debugging with better Angular error messages" link="Completed Q1 2021" href="errors">
 Error messages often bring limited actionable information to help developers resolve them. We have been working on making error messages more discoverable by adding associated codes, developing guides, and other materials to ensure a smoother debugging experience.
 </docs-card>
 <docs-card title="Improved developer onboarding with refreshed introductory documentation" link="Completed Q1 2021" href="tutorials">

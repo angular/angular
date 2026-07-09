@@ -11,6 +11,7 @@ import type {FormField} from '../directive/form_field';
 import type {Debouncer, DisabledReason} from '../api/types';
 import {DEBOUNCER} from './debounce';
 import type {FieldNode} from './node';
+import {shallowArrayEquals} from '../util/array';
 import {shortCircuitTrue} from './util';
 
 /**
@@ -105,10 +106,13 @@ export class FieldNodeState {
    * The `field` property of the `DisabledReason` can be used to determine which field ultimately
    * caused the disablement.
    */
-  readonly disabledReasons: Signal<readonly DisabledReason[]> = computed(() => [
-    ...(this.node.structure.parent?.nodeState.disabledReasons() ?? []),
-    ...this.node.logicNode.logic.disabledReasons.compute(this.node.context),
-  ]);
+  readonly disabledReasons: Signal<readonly DisabledReason[]> = computed(
+    () => [
+      ...(this.node.structure.parent?.nodeState.disabledReasons() ?? []),
+      ...this.node.logicNode.logic.disabledReasons.compute(this.node.context),
+    ],
+    {equal: shallowArrayEquals},
+  );
 
   /**
    * Whether this field is considered disabled.

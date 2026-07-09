@@ -16,7 +16,8 @@
   },
   "capabilities": {
     "untrustedWorkspaces": {
-      "supported": true
+      "supported": "limited",
+      "description": "Angular language features are disabled in untrusted workspaces to prevent execution of untrusted local code."
     },
     "virtualWorkspaces": {
       "supported": "limited",
@@ -363,7 +364,8 @@
           "source.ts"
         ],
         "embeddedLanguages": {
-          "template.tag.ng": "angular-tag-comment"
+          "template.tag.ng": "angular-tag-comment",
+          "template.tag.leading-space": "angular-tag-comment"
         }
       },
       {
@@ -406,17 +408,17 @@
   },
   "dependencies": {
     "@angular/language-service": "workspace:*",
-    "typescript": "6.0.1-rc"
+    "typescript": "6.0.3"
   },
   "devDependencies": {
     "@types/jasmine": "~6.0.0",
     "@types/jasmine-reporters": "~2.5.3",
     "@types/node": "^24.5.2",
     "@types/vscode": "^1.74.3",
-    "@vscode/test-electron": "~2.5.2",
-    "@vscode/vsce": "~3.7.0",
-    "jasmine": "6.1.0",
-    "jasmine-core": "6.1.0",
+    "@vscode/test-electron": "~3.0.0",
+    "@vscode/vsce": "~3.9.0",
+    "jasmine": "6.3.0",
+    "jasmine-core": "6.3.0",
     "jasmine-reporters": "~2.5.2",
     "source-map-support": "^0.5.21",
     "vscode-jsonrpc": "8.2.0",

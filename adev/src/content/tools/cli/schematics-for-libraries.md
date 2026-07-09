@@ -36,10 +36,17 @@ A schematic for the `ng add` command can enhance the initial installation proces
 The following steps define this type of schematic.
 
 1. Go to the `<lib-root>/schematics/ng-add` folder.
-1. Create the main file, `index.ts`.
-1. Open `index.ts` and add the source code for your schematic factory function.
+1. Create a `schema.json` file to define the options that the schematic accepts.
 
-<docs-code header="projects/my-lib/schematics/ng-add/index.ts (ng-add Rule Factory)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/ng-add/index.ts"/>
+   <docs-code header="projects/my-lib/schematics/ng-add/schema.json (ng-add Schema)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/ng-add/schema.json"/>
+
+1. Create a `schema.ts` file to define an interface for the options defined in the `schema.json` file.
+
+   <docs-code header="projects/my-lib/schematics/ng-add/schema.ts (ng-add Schema Interface)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/ng-add/schema.ts"/>
+
+1. Create the main file, `index.ts`, and add the source code for your schematic factory function.
+
+   <docs-code header="projects/my-lib/schematics/ng-add/index.ts (ng-add Rule Factory)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/ng-add/index.ts"/>
 
 The Angular CLI will install the latest version of the library automatically, and this example is taking it a step further by adding the `MyLibModule` to the root of the application. The `addRootImport` function accepts a callback that needs to return a code block. You can write any code inside of the string tagged with the `code` function and any external symbol have to be wrapped with the `external` function to ensure that the appropriate import statements are generated.
 
@@ -63,7 +70,7 @@ Possible values are:
 To bundle your schematics together with your library, you must configure the library to build the schematics separately, then add them to the bundle.
 You must build your schematics _after_ you build your library, so they are placed in the correct directory.
 
-- Your library needs a custom Typescript configuration file with instructions on how to compile your schematics into your distributed library
+- Your library needs a custom TypeScript configuration file with instructions on how to compile your schematics into your distributed library
 - To add the schematics to the library bundle, add scripts to the library's `package.json` file
 
 Assume you have a library project `my-lib` in your Angular workspace.
@@ -144,12 +151,10 @@ Schematic templates support special syntax to execute code and variable substitu
 
    ```ts {header:projects/my-lib/schematics/my-service/files/__name@dasherize__.service.ts.template (Schematic Template)}
 
-   import { Injectable } from '@angular/core';
+   import { Service } from '@angular/core';
    import { HttpClient } from '@angular/common/http';
 
-   @Injectable({
-      providedIn: 'root'
-   })
+   @Service()
    export class <%= classify(name) %>Service {
       private http = inject(HttpClient);
    }

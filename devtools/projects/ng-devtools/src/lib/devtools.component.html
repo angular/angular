@@ -1,14 +1,10 @@
 <div class="devtools mat-app-background" style="height: 100%">
   @switch (angularStatus()) {
     @case (AngularStatus.EXISTS) {
-      @if (angularIsInDevMode()) {
+      @if (appData().devMode) {
         @if (supportedVersion()) {
           <div class="devtools-wrapper noselect">
-            <ng-devtools-tabs
-              (frameSelected)="inspectFrame($event)"
-              [isHydrationEnabled]="hydration()"
-              [angularVersion]="angularVersion()"
-            ></ng-devtools-tabs>
+            <ng-devtools-tabs (frameSelected)="inspectFrame($event)" />
           </div>
         } @else {
           <div class="devtools-state-screen">

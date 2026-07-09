@@ -25,8 +25,10 @@ import type {
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @see [Custom validation rules](guide/forms/signals/validation#using-validate)
+ *
  * @category logic
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
