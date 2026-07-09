@@ -103,6 +103,27 @@ describe('$localize tag with translations', () => {
       );
     });
   });
+
+  describe('with a `__proto__` message id', () => {
+    afterEach(() => {
+      clearTranslations();
+    });
+
+    it('should treat `__proto__` as an ordinary translation key', () => {
+      loadTranslations({
+        ['__proto__' as MessageId]: 'pwned' as TargetMessage,
+        [computeMsgId('abc', '')]: 'abc' as TargetMessage,
+      });
+
+      const store = ($localize as unknown as {TRANSLATIONS: Record<string, unknown>}).TRANSLATIONS;
+      // The malicious id must be stored as an own key rather than assigned through the inherited
+      // `__proto__` setter, which would reparent the map (and drop the entry).
+      expect(Object.getPrototypeOf(store)).toBe(null);
+      expect(Object.prototype.hasOwnProperty.call(store, '__proto__')).toBe(true);
+      // A translation loaded alongside it still resolves.
+      expect($localize`abc`).toEqual('abc');
+    });
+  });
 });
 
 function computeIds(
