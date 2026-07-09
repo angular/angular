@@ -33,7 +33,7 @@ describe('declareExperimentalWebMcpTool', () => {
       content: [{type: 'text', text: 'Hello!'}],
     });
 
-    declareExperimentalWebMcpTool(
+    await declareExperimentalWebMcpTool(
       {
         name: 'testTool',
         description: 'A test tool',
@@ -62,10 +62,10 @@ describe('declareExperimentalWebMcpTool', () => {
     });
   });
 
-  it('should throw if the tool is already registered', () => {
+  it('should throw if the tool is already registered', async () => {
     const injector = Injector.create({providers: []});
 
-    declareExperimentalWebMcpTool(
+    await declareExperimentalWebMcpTool(
       {
         name: 'testTool',
         description: 'A test tool',
@@ -75,7 +75,7 @@ describe('declareExperimentalWebMcpTool', () => {
       injector,
     );
 
-    expect(() => {
+    await expectAsync(
       declareExperimentalWebMcpTool(
         {
           name: 'testTool',
@@ -84,14 +84,14 @@ describe('declareExperimentalWebMcpTool', () => {
           execute: async () => ({content: []}),
         },
         injector,
-      );
-    }).toThrowError(/already registered/);
+      ),
+    ).toBeRejectedWithError(/already registered/);
   });
 
-  it('should unregister the tool when its `Injector` is destroyed', () => {
+  it('should unregister the tool when its `Injector` is destroyed', async () => {
     const injector = Injector.create({providers: []});
 
-    declareExperimentalWebMcpTool(
+    await declareExperimentalWebMcpTool(
       {
         name: 'testTool',
         description: 'A test tool',
@@ -110,11 +110,11 @@ describe('declareExperimentalWebMcpTool', () => {
     expect(globalThis.navigator.modelContextTesting!.listTools()).toEqual([]);
   });
 
-  it('should unregister the tool when its injection context is destroyed and no `injector` is provided', () => {
+  it('should unregister the tool when its injection context is destroyed and no `injector` is provided', async () => {
     const injector = Injector.create({providers: []});
 
-    runInInjectionContext(injector, () => {
-      declareExperimentalWebMcpTool({
+    await runInInjectionContext(injector, async () => {
+      await declareExperimentalWebMcpTool({
         name: 'testTool',
         description: 'A test tool',
         inputSchema: {type: 'object', properties: {}},
@@ -131,15 +131,17 @@ describe('declareExperimentalWebMcpTool', () => {
     expect(globalThis.navigator.modelContextTesting!.listTools()).toEqual([]);
   });
 
-  it('should throw when called outside an injection context and no `injector` is provided', () => {
-    expect(() => {
+  it('should throw when called outside an injection context and no `injector` is provided', async () => {
+    await expectAsync(
       declareExperimentalWebMcpTool({
         name: 'testTool',
         description: 'A test tool',
         inputSchema: {type: 'object', properties: {}},
         execute: async () => ({content: []}),
-      });
-    }).toThrowMatching((err) => err.code === RuntimeErrorCode.MISSING_INJECTION_CONTEXT);
+      }),
+    ).toBeRejectedWith(
+      jasmine.objectContaining({code: RuntimeErrorCode.MISSING_INJECTION_CONTEXT}),
+    );
   });
 
   it('should pass an `AbortSignal` to the tool and abort it when the injector is destroyed', async () => {
@@ -148,7 +150,7 @@ describe('declareExperimentalWebMcpTool', () => {
       .createSpy<Execute<JsonSchemaForInference>>('execute')
       .and.returnValue({content: []});
 
-    declareExperimentalWebMcpTool(
+    await declareExperimentalWebMcpTool(
       {
         name: 'testTool',
         description: 'A test tool',
@@ -175,7 +177,7 @@ describe('declareExperimentalWebMcpTool', () => {
     });
 
     let injectedService!: TestService;
-    declareExperimentalWebMcpTool(
+    await declareExperimentalWebMcpTool(
       {
         name: 'testTool',
         description: 'A test tool',

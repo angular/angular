@@ -28,10 +28,9 @@ import type {ModelContext, ToolDescriptor} from './types';
  *     `injector` argument provided.
  * @experimental
  */
-export function declareExperimentalWebMcpTool<const InputSchema extends JsonSchemaForInference>(
-  tool: ToolDescriptor<InputSchema>,
-  injector?: Injector,
-): void {
+export async function declareExperimentalWebMcpTool<
+  const InputSchema extends JsonSchemaForInference,
+>(tool: ToolDescriptor<InputSchema>, injector?: Injector): Promise<void> {
   // SSR may not have a document yet, so we abort before checking it.
   if (typeof ngServerMode !== 'undefined' && ngServerMode) return;
 
@@ -68,8 +67,8 @@ export function declareExperimentalWebMcpTool<const InputSchema extends JsonSche
       ),
   };
 
-  modelContext.registerTool(wrappedTool, {signal: abortCtrl.signal});
-
   // Unregister when the associated `Injector` is destroyed.
   destroyRef.onDestroy(() => void abortCtrl.abort());
+
+  await modelContext.registerTool(wrappedTool, {signal: abortCtrl.signal});
 }
