@@ -8,20 +8,23 @@
 
 import {HttpTransferCacheOptions, ɵwithHttpTransferCache} from '@angular/common/http';
 import {
+  APP_BOOTSTRAP_LISTENER,
+  ApplicationRef,
+  ɵCACHE_ACTIVE as CACHE_ACTIVE,
+  ɵConsole as Console,
   ENVIRONMENT_INITIALIZER,
   EnvironmentProviders,
+  ɵformatRuntimeError as formatRuntimeError,
   inject,
+  ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
   makeEnvironmentProviders,
   Provider,
-  ɵConsole as Console,
+  provideStabilityDebugging,
   ɵRuntimeError as RuntimeError,
-  ɵformatRuntimeError as formatRuntimeError,
   ɵwithDomHydration as withDomHydration,
   ɵwithEventReplay,
   ɵwithI18nSupport,
-  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵwithIncrementalHydration,
-  ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
 } from '@angular/core';
 import {RuntimeErrorCode} from './errors';
 
@@ -37,6 +40,7 @@ export enum HydrationFeatureKind {
   I18nSupport,
   EventReplay,
   IncrementalHydration,
+  NoIncrementalHydration,
 }
 
 /**
@@ -113,7 +117,7 @@ export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSup
  * Basic example of how you can enable event replay in your application when
  * `bootstrapApplication` function is used:
  * ```ts
- * bootstrapApplication(AppComponent, {
+ * bootstrapApplication(App, {
  *   providers: [provideClientHydration(withEventReplay())]
  * });
  * ```
@@ -132,15 +136,28 @@ export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventRe
  * Basic example of how you can enable incremental hydration in your application when
  * the `bootstrapApplication` function is used:
  * ```ts
- * bootstrapApplication(AppComponent, {
+ * bootstrapApplication(App, {
  *   providers: [provideClientHydration(withIncrementalHydration())]
  * });
  * ```
  * @publicApi 20.0
  * @see {@link provideClientHydration}
+ *
+ * @deprecated Since v22.0.0, incremental hydration is enabled by default with `provideClientHydration`.
+ * Intent to remove in v24.
  */
 export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKind.IncrementalHydration> {
   return hydrationFeature(HydrationFeatureKind.IncrementalHydration, ɵwithIncrementalHydration());
+}
+
+/**
+ * Disables support for incremental hydration (which is enabled by default).
+ *
+ * @publicApi 22.0
+ * @see {@link provideClientHydration}
+ */
+export function withNoIncrementalHydration(): HydrationFeature<HydrationFeatureKind.NoIncrementalHydration> {
+  return hydrationFeature(HydrationFeatureKind.NoIncrementalHydration);
 }
 
 /**
@@ -182,6 +199,7 @@ function provideEnabledBlockingInitialNavigationDetector(): Provider[] {
  * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and
  * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching
  * [here](guide/ssr#caching-data-when-using-httpclient).
+ * Incremental hydration. [Learn more](guide/incremental-hydration).
  *
  * These functions allow you to disable some of the default features or enable new ones:
  *
@@ -189,13 +207,14 @@ function provideEnabledBlockingInitialNavigationDetector(): Provider[] {
  * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options
  * * {@link withI18nSupport} to enable hydration support for i18n blocks
  * * {@link withEventReplay} to enable support for replaying user events
+ * * {@link withNoIncrementalHydration} to disable incremental hydration
  *
  * @usageNotes
  *
  * Basic example of how you can enable hydration in your application when
  * `bootstrapApplication` function is used:
  * ```ts
- * bootstrapApplication(AppComponent, {
+ * bootstrapApplication(App, {
  *   providers: [provideClientHydration()]
  * });
  * ```
@@ -215,6 +234,7 @@ function provideEnabledBlockingInitialNavigationDetector(): Provider[] {
  * @see {@link withHttpTransferCacheOptions}
  * @see {@link withI18nSupport}
  * @see {@link withEventReplay}
+ * @see {@link withNoIncrementalHydration}
  *
  * @param features Optional features to configure additional hydration behaviors.
  * @returns A set of providers to enable hydration.
@@ -239,26 +259,54 @@ export function provideClientHydration(
     HydrationFeatureKind.HttpTransferCacheOptions,
   );
 
-  if (
-    typeof ngDevMode !== 'undefined' &&
-    ngDevMode &&
-    featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) &&
-    hasHttpTransferCacheOptions
-  ) {
-    throw new RuntimeError(
-      RuntimeErrorCode.HYDRATION_CONFLICTING_FEATURES,
-      'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.',
-    );
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    if (featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) && hasHttpTransferCacheOptions) {
+      throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_CONFLICTING_FEATURES,
+        'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.',
+      );
+    }
+    if (
+      featuresKind.has(HydrationFeatureKind.IncrementalHydration) &&
+      featuresKind.has(HydrationFeatureKind.NoIncrementalHydration)
+    ) {
+      throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_CONFLICTING_FEATURES,
+        'Configuration error: found both withIncrementalHydration() and withNoIncrementalHydration() in the same call to provideClientHydration(), which is a contradiction.',
+      );
+    }
   }
 
   return makeEnvironmentProviders([
     typeof ngDevMode !== 'undefined' && ngDevMode
       ? provideEnabledBlockingInitialNavigationDetector()
       : [],
+    typeof ngDevMode !== 'undefined' && ngDevMode ? provideStabilityDebugging() : [],
     withDomHydration(),
     featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions
       ? []
       : ɵwithHttpTransferCache({}),
+    featuresKind.has(HydrationFeatureKind.NoIncrementalHydration)
+      ? []
+      : ɵwithIncrementalHydration(),
     providers,
+    {
+      provide: CACHE_ACTIVE,
+      useValue: {isActive: true},
+    },
+    {
+      provide: APP_BOOTSTRAP_LISTENER,
+      multi: true,
+      useFactory: () => {
+        const appRef = inject(ApplicationRef);
+        const cacheState = inject(CACHE_ACTIVE);
+
+        return () => {
+          appRef.whenStable().then(() => {
+            cacheState.isActive = false;
+          });
+        };
+      },
+    },
   ]);
 }

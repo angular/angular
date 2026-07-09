@@ -48,7 +48,7 @@ export const appConfig: ApplicationConfig = {
       useClass: DemoApplicationEnvironment,
     },
     // We simulate a transfer state created by the server-side rendering.
-    provideAppInitializer(async () => serializeTransferState()),
+    provideAppInitializer(() => serializeTransferState()),
     provideSettings(),
   ],
 };

@@ -9,7 +9,6 @@
 import {Subscription} from 'rxjs';
 
 import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
-import {Injectable} from '../../di/injectable';
 import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders, Provider} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
@@ -22,6 +21,10 @@ import {
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '../../zone/ng_zone';
 
+import {TracingService} from '../../application/tracing';
+import {Service} from '../../di';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {OnDestroy} from '../lifecycle_hooks';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
@@ -29,8 +32,6 @@ import {
   SCHEDULE_IN_ROOT_ZONE,
   ZONELESS_ENABLED,
 } from './zoneless_scheduling';
-import {TracingService} from '../../application/tracing';
-import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -55,8 +56,8 @@ function trackMicrotaskNotificationForDebugging() {
   }
 }
 
-@Injectable({providedIn: 'root'})
-export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
+@Service()
+export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, OnDestroy {
   private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly appRef = inject(ApplicationRef);
   private readonly taskService = inject(PendingTasksInternal);
@@ -82,12 +83,28 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   constructor() {
     this.subscriptions.add(
       this.appRef.afterTick.subscribe(() => {
+        // Prevent stabilization if cleanup causes the last task to be removed
+        // before we can switch to the microtask scheduler.
+        const task = this.taskService.add();
         // If the scheduler isn't running a tick but the application ticked, that means
         // someone called ApplicationRef.tick manually. In this case, we should cancel
         // any change detections that had been scheduled so we don't run an extra one.
         if (!this.runningTick) {
           this.cleanup();
+          // Ticks that happen when ZoneJS is present do not get the microtask scheduling treatment.
+          // ZoneJS is responsible for rerunning change detection on microtask queue empty.
+          // Ticks initiated from tests also do not get microtask treatment so those ticks
+          // do not affect stability timing, which tests are quite sensitive to.
+          // TODO(atscott): we really should not use microtask scheduler
+          // _ever_ when ZoneJS is enabled because ZoneJS is responsible for rerunning change
+          // detection on microtask queue empty. This change breaks some tests
+          if (!this.zonelessEnabled || this.appRef.includeAllTestViews) {
+            this.taskService.remove(task);
+            return;
+          }
         }
+        this.switchToMicrotaskScheduler();
+        this.taskService.remove(task);
       }),
     );
     this.subscriptions.add(
@@ -100,6 +117,22 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         }
       }),
     );
+  }
+
+  // If we're notified of a change within 1 microtask of running change
+  // detection, run another round in the same event loop. This allows code
+  // which uses Promise.resolve (see NgModel) to avoid
+  // ExpressionChanged...Error to still be reflected in a single browser
+  // paint, even if that spans multiple rounds of change detection.
+  private switchToMicrotaskScheduler(): void {
+    this.ngZone.runOutsideAngular(() => {
+      const task = this.taskService.add();
+      this.useMicrotaskScheduler = true;
+      queueMicrotask(() => {
+        this.useMicrotaskScheduler = false;
+        this.taskService.remove(task);
+      });
+    });
   }
 
   notify(source: NotificationSource): void {
@@ -116,12 +149,12 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
 
     switch (source) {
-      case NotificationSource.MarkAncestorsForTraversal: {
+      case NotificationSource.MarkAncestorsForTraversal:
+      case NotificationSource.DeferBlockStateUpdate: {
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
         break;
       }
       case NotificationSource.DebugApplyChanges:
-      case NotificationSource.DeferBlockStateUpdate:
       case NotificationSource.MarkForCheck:
       case NotificationSource.Listener:
       case NotificationSource.SetInput: {
@@ -264,21 +297,11 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         this.schedulerTickApplyArgs,
       );
     } catch (e: unknown) {
-      this.taskService.remove(task);
       this.applicationErrorHandler(e);
     } finally {
+      this.taskService.remove(task);
       this.cleanup();
     }
-    // If we're notified of a change within 1 microtask of running change
-    // detection, run another round in the same event loop. This allows code
-    // which uses Promise.resolve (see NgModel) to avoid
-    // ExpressionChanged...Error to still be reflected in a single browser
-    // paint, even if that spans multiple rounds of change detection.
-    this.useMicrotaskScheduler = true;
-    scheduleCallbackWithMicrotask(() => {
-      this.useMicrotaskScheduler = false;
-      this.taskService.remove(task);
-    });
   }
 
   ngOnDestroy() {
@@ -308,6 +331,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
 /**
  * Provides change detection without ZoneJS for the application bootstrapped using
  * `bootstrapApplication`.
+ *
+ * NOTE: Zoneless is enabled by default in Angular v21+. Ensure `provideZoneChangeDetection` is not used to override this default.
  *
  * This function allows you to configure the application to not use the state/state changes of
  * ZoneJS to schedule change detection in the application. This will work when ZoneJS is not present

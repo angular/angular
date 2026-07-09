@@ -6,25 +6,30 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {
+  ɵAnimationGroupPlayer as AnimationGroupPlayer,
   animate,
   query,
   state,
   style,
   transition,
   trigger,
-  ɵAnimationGroupPlayer as AnimationGroupPlayer,
 } from '@angular/animations';
 import {
   AnimationDriver,
+  ɵTransitionAnimationPlayer as TransitionAnimationPlayer,
   ɵAnimationEngine,
   ɵWebAnimationsDriver,
   ɵWebAnimationsPlayer,
-  ɵTransitionAnimationPlayer as TransitionAnimationPlayer,
 } from '@angular/animations/browser';
-import {Component, ViewChild, provideZoneChangeDetection} from '../../src/core';
-import {TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {isNode} from '@angular/private/testing';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewChild,
+  provideZoneChangeDetection,
+} from '../../src/core';
+import {TestBed} from '../../testing';
 
 (function () {
   // these tests are only meant to be run within the DOM (for now)
@@ -62,6 +67,7 @@ import {isNode} from '@angular/private/testing';
           ]),
         ],
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         public exp: boolean = false;
@@ -181,6 +187,7 @@ import {isNode} from '@angular/private/testing';
           ]),
         ],
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         public exp!: number;
@@ -268,6 +275,7 @@ import {isNode} from '@angular/private/testing';
           ]),
         ],
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         exp = false;
@@ -354,6 +362,7 @@ import {isNode} from '@angular/private/testing';
           ]),
         ],
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         items: any[] = [];
@@ -447,6 +456,7 @@ import {isNode} from '@angular/private/testing';
           ]),
         ],
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         public exp: string | undefined;
@@ -502,6 +512,7 @@ import {isNode} from '@angular/private/testing';
           ]),
         ],
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         public exp: string | undefined;
@@ -567,6 +578,7 @@ import {isNode} from '@angular/private/testing';
           ]),
         ],
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         @ViewChild('elm', {static: true}) public element: any;
@@ -611,6 +623,7 @@ import {isNode} from '@angular/private/testing';
           ]),
         ],
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         @ViewChild('elm', {static: true}) public element: any;
@@ -677,6 +690,7 @@ import {isNode} from '@angular/private/testing';
           ]),
         ],
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         public status: 'active' | 'inactive' = 'inactive';

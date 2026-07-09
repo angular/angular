@@ -56,6 +56,16 @@ class R3AstSourceSpans implements t.Visitor<void> {
     this.visitAll([content.attributes, content.children]);
   }
 
+  visitContentBlock(block: t.ContentBlock) {
+    this.result.push([
+      'ContentBlock',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
+    ]);
+    this.visitAll([block.children]);
+  }
+
   visitVariable(variable: t.Variable) {
     this.result.push([
       'Variable',
@@ -906,7 +916,7 @@ describe('R3 AST source spans', () => {
   describe('@let declaration', () => {
     it('is correct for a let declaration', () => {
       expectFromHtml('@let foo = 123;').toEqual([
-        ['LetDeclaration', '@let foo = 123', 'foo', '123'],
+        ['LetDeclaration', '@let foo = 123;', 'foo', '123'],
       ]);
     });
   });

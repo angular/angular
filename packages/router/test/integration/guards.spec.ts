@@ -110,7 +110,7 @@ export function guardsIntegrationSuite() {
           fixture.destroy();
 
           // Wait until the event task is dispatched.
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          await timeout(10);
           window.removeEventListener('unhandledrejection', onUnhandledrejection);
 
           expect(onUnhandledrejection).not.toHaveBeenCalled();

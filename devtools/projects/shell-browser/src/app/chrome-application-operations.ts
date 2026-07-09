@@ -18,12 +18,12 @@ export class ChromeApplicationOperations extends ApplicationOperations {
   platform = inject(Platform);
 
   override viewSource(position: ElementPosition, target: Frame, directiveIndex?: number): void {
-    const viewSource = `inspect(inspectedApplication.findConstructorByPosition('${position}', ${directiveIndex}))`;
+    const viewSource = `inspect(inspectedApplication.findConstructorByPosition(${stringifyAndEscape(position)}, ${directiveIndex}))`;
     this.runInInspectedWindow(viewSource, target);
   }
 
   override selectDomElement(position: ElementPosition, target: Frame): void {
-    const selectDomElement = `inspect(inspectedApplication.findDomElementByPosition('${position}'))`;
+    const selectDomElement = `inspect(inspectedApplication.findDomElementByPosition(${stringifyAndEscape(position)}))`;
     this.runInInspectedWindow(selectDomElement, target);
   }
 
@@ -36,21 +36,21 @@ export class ChromeApplicationOperations extends ApplicationOperations {
       directivePosition,
       objectPath,
     };
-    const inspect = `inspect(inspectedApplication.findPropertyByPosition('${JSON.stringify(
+    const inspect = `inspect(inspectedApplication.findPropertyByPosition(${stringifyAndEscape(
       args,
-    )}'))`;
+    )}))`;
     this.runInInspectedWindow(inspect, target);
   }
 
   override inspectSignal(position: SignalNodePosition, target: Frame): void {
-    const inspectSignal = `inspect(inspectedApplication.findSignalNodeByPosition('${JSON.stringify(
+    const inspectSignal = `inspect(inspectedApplication.findSignalNodeByPosition(${stringifyAndEscape(
       position,
-    )}'))`;
+    )}))`;
     this.runInInspectedWindow(inspectSignal, target);
   }
 
   override viewSourceFromRouter(name: string, type: string, target: Frame): void {
-    const viewSource = `inspect(inspectedApplication.findConstructorByNameForRouter('${name}', '${type}'))`;
+    const viewSource = `inspect(inspectedApplication.findConstructorByNameForRouter(${JSON.stringify(name)}, ${JSON.stringify(type)}))`;
     this.runInInspectedWindow(viewSource, target);
   }
 
@@ -87,4 +87,8 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     }
     return browser.storage.local;
   }
+}
+
+function stringifyAndEscape(obj: unknown): string {
+  return JSON.stringify(JSON.stringify(obj));
 }

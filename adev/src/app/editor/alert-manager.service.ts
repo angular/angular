@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import { Injectable, inject } from '@angular/core';
-import { LOCAL_STORAGE, WINDOW, isMobile } from '@angular/docs';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ErrorSnackBar, ErrorSnackBarData } from '../core/services/errors-handling/error-snack-bar';
+import {inject, Service} from '@angular/core';
+import {LOCAL_STORAGE, WINDOW, isMobile} from '@angular/docs';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {ErrorSnackBar, ErrorSnackBarData} from '../core/services/errors-handling/error-snack-bar';
 
 export const MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES = 3;
 export const WEBCONTAINERS_COUNTER_KEY = 'numberOfWebcontainers';
@@ -19,7 +19,7 @@ export enum AlertReason {
   MOBILE,
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AlertManager {
   private readonly localStorage = inject(LOCAL_STORAGE);
   private readonly window = inject(WINDOW);
@@ -87,10 +87,10 @@ export class AlertManager {
     let message = '';
     switch (reason) {
       case AlertReason.OUT_OF_MEMORY:
-        message = `Ваш браузер ограничивает память, доступную для запуска Angular Tutorials или Playground. Если у вас открыто несколько вкладок с Tutorials или Playground, закройте некоторые из них и обновите эту страницу.`;
+        message = `Your browser is currently limiting the memory available to run the Angular Tutorials or Playground. If you have multiple tabs open with Tutorials or Playground, please close some of them and refresh this page.`;
         break;
       case AlertReason.MOBILE:
-        message = `Вы запускаете встроенный редактор на мобильном устройстве, это может привести к ошибке нехватки памяти.`;
+        message = `You are running the embedded editor in a mobile device, this may result in an Out of memory error.`;
         break;
     }
 
@@ -98,7 +98,7 @@ export class AlertManager {
       panelClass: 'docs-invert-mode',
       data: {
         message,
-        actionText: 'Я понимаю',
+        actionText: 'I understand',
       } satisfies ErrorSnackBarData,
     });
   }

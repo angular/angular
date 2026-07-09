@@ -13,6 +13,7 @@ import {DECLARATION_COMPONENT_VIEW, LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getComponentLViewByIndex} from '../render3/util/view_utils';
 import {ViewRef} from '../render3/view_ref';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * Base class that provides change detection functionality.
@@ -20,8 +21,7 @@ import {ViewRef} from '../render3/view_ref';
  * Use the methods to add and remove views from the tree, initiate change-detection,
  * and explicitly mark views as _dirty_, meaning that they have changed and need to be re-rendered.
  *
- * @see [Using change detection hooks](guide/components/lifecycle#using-change-detection-hooks)
- * @see [Defining custom change detection](guide/components/lifecycle#defining-custom-change-detection)
+ * @see [Using change detection hooks](guide/components/lifecycle)
  *
  * @usageNotes
  *
@@ -124,6 +124,10 @@ export abstract class ChangeDetectorRef {
    */
   static __NG_ELEMENT_ID__: (flags: InternalInjectFlags) => ChangeDetectorRef =
     injectChangeDetectorRef;
+}
+
+if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  registerSpecialProvider(ChangeDetectorRef);
 }
 
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */

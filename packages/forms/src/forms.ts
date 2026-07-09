@@ -48,7 +48,12 @@ export {
   SelectMultipleControlValueAccessor,
   ɵNgSelectMultipleOption,
 } from './directives/select_multiple_control_value_accessor';
-export {SetDisabledStateOption} from './directives/shared';
+export {
+  selectValueAccessor as ɵselectValueAccessor,
+  SetDisabledStateOption,
+  ɵFORM_CONTROL_INTEGRATION,
+  ɵFormControlIntegration,
+} from './directives/shared';
 export {
   AsyncValidator,
   AsyncValidatorFn,
@@ -118,5 +123,13 @@ export {
 } from './model/form_group';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
 export {VERSION} from './version';
+
+export {
+  isNativeFormElement as ɵisNativeFormElement,
+  elementAcceptsMinMax as ɵelementAcceptsMinMax,
+  isTextualFormElement as ɵisTextualFormElement,
+  setNativeDomProperty as ɵsetNativeDomProperty,
+  type NativeFormControl as ɵNativeFormControl,
+} from './directives/native';
 
 export * from './form_providers';

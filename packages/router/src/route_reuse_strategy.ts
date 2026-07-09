@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentRef, inject, Injectable} from '@angular/core';
+import {ComponentRef, inject, Service} from '@angular/core';
 
+import {Route} from './models';
 import {OutletContext} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
 import {TreeNode} from './utils/tree';
@@ -34,11 +35,42 @@ export type DetachedRouteHandleInternal = {
 /**
  * @description
  *
+ * Destroys the component associated with a `DetachedRouteHandle`.
+ *
+ * This function should be used when a `RouteReuseStrategy` decides to drop a stored handle
+ * and wants to ensure that the component is destroyed.
+ *
+ * @param handle The detached route handle to destroy.
+ *
+ * @publicApi
+ * @see [Manually destroying detached route handles](guide/routing/customizing-route-behavior#manually-destroying-detached-route-handles)
+ */
+export function destroyDetachedRouteHandle(handle: DetachedRouteHandle): void {
+  const internalHandle = handle as DetachedRouteHandleInternal;
+  if (internalHandle && internalHandle.componentRef) {
+    internalHandle.componentRef.destroy();
+    // It is critical to destroy the `_localInjector` here. When a route is detached
+    // by the `RouteReuseStrategy`, the `_localInjector` is retained because the
+    // ActivatedRoute object is stored and can be attached later.
+    // When the developer drops the handle (e.g., deciding not to reuse it),
+    // they must manually invoke `destroyDetachedRouteHandle` to prevent a memory leak.
+    internalHandle.route.value._localInjector?.destroy();
+  }
+}
+
+export interface ExperimentalRouteReuseStrategy {
+  shouldDestroyInjector?(route: Route): boolean;
+  retrieveStoredRouteHandles?(): Array<DetachedRouteHandleInternal>;
+}
+
+/**
+ * @description
+ *
  * Provides a way to customize when activated routes get reused.
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useFactory: () => inject(DefaultRouteReuseStrategy)})
+@Service({factory: () => inject(DefaultRouteReuseStrategy)})
 export abstract class RouteReuseStrategy {
   /** Determines if this route (and its subtree) should be detached to be reused later */
   abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
@@ -109,7 +141,20 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
   shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
     return future.routeConfig === curr.routeConfig;
   }
+
+  /**
+   * Determines if the injector for the given route should be destroyed.
+   *
+   * This method is called by the router when the `RouteReuseStrategy` is destroyed.
+   * If this method returns `true`, the router will destroy the injector for the given route.
+   *
+   * @see {@link withExperimentalAutoCleanupInjectors}
+   * @xperimental 21.1
+   */
+  shouldDestroyInjector(route: Route): boolean {
+    return true;
+  }
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class DefaultRouteReuseStrategy extends BaseRouteReuseStrategy {}

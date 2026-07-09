@@ -9,7 +9,12 @@
 import ts from 'typescript';
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 import {AST, Interpolation, PropertyRead, SafePropertyRead, TmplAstNode} from '@angular/compiler';
 
 class UninvokedFunctionInTextInterpolation extends TemplateCheckWithVisitor<ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION> {
@@ -40,8 +45,13 @@ function assertExpressionInvoked(
   const symbol = ctx.templateTypeChecker.getSymbolOfNode(expression, component);
 
   if (symbol !== null && symbol.kind === SymbolKind.Expression) {
-    if (symbol.tsType.getCallSignatures()?.length > 0) {
-      const errorString = `Function in text interpolation should be invoked: ${expression.name}()`;
+    const type = ctx.templateTypeChecker.getTypeOfSymbol(symbol);
+    if (type && type.getCallSignatures()?.length > 0) {
+      const errorString = formatExtendedError(
+        ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION,
+        `Function in text interpolation should be invoked: ${expression.name}()`,
+      );
+
       const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
         symbol.tcbLocation,
       )!;

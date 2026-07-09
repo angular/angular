@@ -13,7 +13,7 @@ import {BackwardsCompatibleInjector, convertToBitFlags} from '../di/injector_com
 import {InjectorMarkers} from '../di/injector_marker';
 import {InternalInjectFlags, InjectOptions} from '../di/interface/injector';
 import {ProviderToken} from '../di/provider_token';
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
 
@@ -914,7 +914,9 @@ export function createNodeInjector(): Injector {
 /**
  * @codeGenApi
  */
-export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
+export function ɵɵgetInheritedFactory<T>(
+  type: Type<any> | AbstractType<any>,
+): (type: Type<T>) => T {
   return noSideEffects(() => {
     const ownConstructor = type.prototype.constructor;
     const ownFactory = ownConstructor[NG_FACTORY_DEF] || getFactoryOf(ownConstructor);

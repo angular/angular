@@ -172,6 +172,40 @@
       ]
     },
     {
+      "description": "should emit `ɵɵenableIncrementalHydrationRuntime` only once per view, even when multiple sibling `@defer` blocks use hydrate triggers",
+      "inputFiles": ["defer_multiple_hydrate_single_activator.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_multiple_hydrate_single_activator_template.js",
+              "generated": "defer_multiple_hydrate_single_activator.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should wire incremental hydration only on the component whose template uses hydrate triggers, when a hydrating `@defer` lives inside a deferred-loaded child component",
+      "inputFiles": ["defer_nested_hydrate.ts", "defer_nested_hydrate_inner.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_nested_hydrate_template.js",
+              "generated": "defer_nested_hydrate.js"
+            },
+            {
+              "expected": "defer_nested_hydrate_inner_template.js",
+              "generated": "defer_nested_hydrate_inner.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a deferred block with a `when` trigger that has a pipe",
       "inputFiles": ["deferred_when_with_pipe.ts"],
       "expectations": [

@@ -15,6 +15,7 @@ import {
   TmplAstBoundEvent,
   TmplAstBoundText,
   TmplAstContent,
+  TmplAstContentBlock,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
   TmplAstDeferredBlockLoading,
@@ -37,8 +38,8 @@ import {
   TmplAstDirective,
   ParseSourceSpan,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {PotentialDirective} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {NgCompiler, PotentialDirective} from '@angular/compiler-cli';
+
 import ts from 'typescript';
 import {TypeCheckInfo} from './utils';
 
@@ -137,6 +138,10 @@ class ClassificationVisitor implements TmplAstVisitor {
 
   visitContent(content: TmplAstContent) {
     this.visitAll(content.children);
+  }
+
+  visitContentBlock(block: TmplAstContentBlock) {
+    this.visitAll(block.children);
   }
 
   visitVariable(variable: TmplAstVariable) {}

@@ -7,4 +7,10 @@
  */
 
 export * from './api';
-export {resource} from './resource';
+export {debounced} from './debounce';
+export {resourceFromSnapshots} from './from_snapshots';
+export {
+  isInParamsFunction as ɵisInParamsFunction,
+  resource,
+  setInParamsFunction as ɵsetInParamsFunction,
+} from './resource';

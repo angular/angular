@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, effect, inject, signal} from '@angular/core';
+import {Component, computed, effect, inject, signal} from '@angular/core';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 
 // 1. INTERFACES
@@ -487,7 +487,6 @@ const DESTINATION_TOLERANCE = 0.005;
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:keydown)': 'handleKeydown($event)',
     '(window:keyup)': 'handleKeyup($event)',

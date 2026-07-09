@@ -10,9 +10,8 @@
 
 // This file contains all ambient imports needed to compile the packages/ source code
 
-/// <reference types="hammerjs" />
 /// <reference lib="es2015" />
-/// <reference path="./goog.d.ts" />
+/// <reference path="./goog.d.ts" /> // 3p-only
 /// <reference path="./system.d.ts" />
 
 // Do not included "node" and "jasmine" types here as we don't

@@ -1,5 +1,6 @@
-<th>{{label()}}</th>
-<td>
+<!-- TODO: Reconsider the existence of this component. -->
+<dt>{{ label() }}</dt>
+<dd>
   @switch (type()) {
     @case ('flag') {
       <span [class]="rowValue() ? 'tag-active' : 'tag-inactive'">
@@ -12,30 +13,39 @@
           <span>{{ provider || '[empty string] ' }}</span
           ><ng-container
             [ngTemplateOutlet]="actionBtn"
-            [ngTemplateOutletContext]="{ value: provider }"
+            [ngTemplateOutletContext]="{value: provider}"
           />
         </div>
       }
     }
     @default {
       @if (rowValue() && renderValueAsJson()) {
-        <ng-route-data-tree
-          (viewSource)="actionBtnClick.emit($event)"
-          [showViewSourceButton]="actionBtnType() === 'view-source'"
-          [data]="rowValue()"
-        />
+        <ng-object-tree-explorer
+          [dataSource]="treeData()"
+          [childrenAccessor]="treeDataChildrenAccessor"
+          [omitRootNodesNames]="true"
+        >
+          <ng-template let-node>
+            @if (!node.expandable) {
+              <ng-container
+                [ngTemplateOutlet]="actionBtn"
+                [ngTemplateOutletContext]="{value: node.prop.descriptor.preview}"
+              />
+            }
+          </ng-template>
+        </ng-object-tree-explorer>
       } @else {
         <div class="value-container">
           <span> {{ rowValue() || '[empty string] ' }} </span
           ><ng-container
             [ngTemplateOutlet]="actionBtn"
-            [ngTemplateOutletContext]="{ value: rowValue() }"
+            [ngTemplateOutletContext]="{value: rowValue()}"
           />
         </div>
       }
     }
   }
-</td>
+</dd>
 
 <ng-template #actionBtn let-value="value">
   @if (actionBtnType() !== 'none') {

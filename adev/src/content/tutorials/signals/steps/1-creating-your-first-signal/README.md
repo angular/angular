@@ -1,21 +1,21 @@
-# Создание и обновление вашего первого сигнала
+# Creating and updating your first signal
 
-Добро пожаловать в туториал по Angular сигналам! [Сигналы](/essentials/signals) — это реактивный примитив Angular, который предоставляет способ управления состоянием и автоматического обновления вашего UI при изменении этого состояния.
+Welcome to the Angular signals tutorial! [Signals](/essentials/signals) are Angular's reactive primitive that provide a way to manage state and automatically update your UI when that state changes.
 
-В этом упражнении вы научитесь:
+In this activity, you'll learn how to:
 
-- Создавать свой первый сигнал, используя функцию `signal()`
-- Отображать его значение в шаблоне
-- Обновлять значение сигнала, используя методы `set()` и `update()`
+- Create your first signal using the `signal()` function
+- Display its value in a template
+- Update the signal value using `set()` and `update()` methods
 
-Давайте создадим интерактивную систему статуса пользователя с помощью сигналов!
+Let's build an interactive user status system with signals!
 
 <hr />
 
 <docs-workflow>
 
-<docs-step title="Импорт функции signal">
-Импортируйте функцию `signal` из `@angular/core` в верхней части файла вашего компонента.
+<docs-step title="Import the signal function">
+Import the `signal` function from `@angular/core` at the top of your component file.
 
 ```ts
 import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
@@ -23,8 +23,8 @@ import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
 
 </docs-step>
 
-<docs-step title="Создание сигнала в вашем компоненте">
-Добавьте сигнал `userStatus` в класс вашего компонента, инициализировав его значением `'offline'`.
+<docs-step title="Create a signal in your component">
+Add a `userStatus` signal to your component class that is initialized with a value of `'offline'`.
 
 ```ts
 @Component({
@@ -37,12 +37,12 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Отображение значения сигнала в шаблоне">
-Обновите индикатор статуса, чтобы отображать текущий статус пользователя:
-1. Привязав сигнал к атрибуту class с помощью `[class]="userStatus()"`
-2. Отобразив текст статуса, заменив `???` на `{{ userStatus() }}`
+<docs-step title="Display the signal value in the template">
+Update the status indicator to display the current user status by:
+1. Binding the signal to the class attribute with `[class]="userStatus()"`
+2. Displaying the status text by replacing `???` with `{{ userStatus() }}`
 
-```html
+```angular-html
 <!-- Update from: -->
 <div class="status-indicator offline">
   <span class="status-dot"></span>
@@ -56,11 +56,11 @@ export class App {
 </div>
 ```
 
-Обратите внимание, как мы вызываем сигнал `userStatus()` с круглыми скобками, чтобы прочитать его значение.
+Notice how we call the signal `userStatus()` with parentheses to read its value.
 </docs-step>
 
-<docs-step title="Добавление методов для обновления сигнала">
-Добавьте методы в ваш компонент, которые изменяют статус пользователя, используя метод `set()`.
+<docs-step title="Add methods to update the signal">
+Add methods to your component that change the user status using the `set()` method.
 
 ```ts
 goOnline() {
@@ -72,29 +72,25 @@ goOffline() {
 }
 ```
 
-Метод `set()` полностью заменяет значение сигнала новым значением.
+The `set()` method replaces the signal's value entirely with a new value.
 
 </docs-step>
 
-<docs-step title="Подключение кнопок управления">
-Кнопки уже есть в шаблоне. Теперь подключите их к вашим методам, добавив:
-1. Обработчики клика с помощью `(click)`
-2. Состояния disabled с помощью `[disabled]`, когда статус уже установлен
+<docs-step title="Wire up the control buttons">
+The buttons are already in the template. Now connect them to your methods by adding:
+1. Click handlers with `(click)`
+2. Disabled states with `[disabled]` when already in that status
 
 ```html
 <!-- Add bindings to the existing buttons: -->
-<button (click)="goOnline()" [disabled]="userStatus() === 'online'">
-  Go Online
-</button>
-<button (click)="goOffline()" [disabled]="userStatus() === 'offline'">
-  Go Offline
-</button>
+<button (click)="goOnline()" [disabled]="userStatus() === 'online'">Go Online</button>
+<button (click)="goOffline()" [disabled]="userStatus() === 'offline'">Go Offline</button>
 ```
 
 </docs-step>
 
-<docs-step title="Добавление метода переключения с использованием update()">
-Добавьте метод `toggleStatus()`, который переключает между online и offline, используя метод `update()`.
+<docs-step title="Add a toggle method using update()">
+Add a `toggleStatus()` method that switches between online and offline using the `update()` method.
 
 ```ts
 toggleStatus() {
@@ -102,29 +98,21 @@ toggleStatus() {
 }
 ```
 
-Метод `update()` принимает функцию, которая получает текущее значение и возвращает новое значение. Это полезно, когда вам нужно изменить существующее значение на основе его текущего состояния.
+The `update()` method takes a function that receives the current value and returns the new value. This is useful when you need to modify the existing value based on its current state.
 
 </docs-step>
 
-<docs-step title="Добавление обработчика кнопки переключения">
-Кнопка переключения уже есть в шаблоне. Подключите её к вашему методу `toggleStatus()`:
+<docs-step title="Add the toggle button handler">
+The toggle button is already in the template. Connect it to your `toggleStatus()` method:
 
 ```html
-<button (click)="toggleStatus()" class="toggle-btn">
-  Toggle Status
-</button>
+<button (click)="toggleStatus()" class="toggle-btn">Toggle Status</button>
 ```
 
 </docs-step>
 
 </docs-workflow>
 
-Поздравляем! Вы создали свой первый сигнал и научились обновлять его, используя методы `set()` и `update()`. Функция `signal()` создает реактивное значение, которое отслеживает Angular, и когда вы обновляете его, ваш UI автоматически отражает изменения.
+Congratulations! You've created your first signal and learned how to update it using both `set()` and `update()` methods. The `signal()` function creates a reactive value that Angular tracks, and when you update it, your UI automatically reflects the changes.
 
-Далее вы узнаете, [как выводить состояние из сигналов с помощью computed](/tutorials/signals/2-deriving-state-with-computed-signals)!
-
-<docs-callout helpful title="О ChangeDetectionStrategy.OnPush">
-
-Вы могли заметить `ChangeDetectionStrategy.OnPush` в декораторе компонента на протяжении этого туториала. Это оптимизация производительности для Angular компонентов, которые используют сигналы. Пока что вы можете смело игнорировать это — просто знайте, что это помогает вашему приложению работать быстрее при использовании сигналов! Вы можете узнать больше в [API документации стратегий обнаружения изменений](/api/core/ChangeDetectionStrategy).
-
-</docs-callout>
+Next, you'll learn [how to derive state from signals using computed](/tutorials/signals/2-deriving-state-with-computed-signals)!

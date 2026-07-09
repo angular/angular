@@ -9,6 +9,7 @@
 // #docregion Component
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   Directive,
   input,
@@ -38,6 +39,7 @@ export class Pane {
 
     <div>panes: {{ serializedPanes }}</div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class ViewChildrenComp implements AfterViewInit {
   @ViewChildren(Pane) panes!: QueryList<Pane>;

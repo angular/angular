@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EnvironmentInjector} from '@angular/core';
-
-import {injectAsync} from '../core/services/inject-async';
+import {EnvironmentInjector, injectAsync, runInInjectionContext} from '@angular/core';
 
 export function injectNodeRuntimeSandbox(injector: EnvironmentInjector) {
-  return injectAsync(injector, () =>
-    import('./node-runtime-sandbox.service').then((c) => c.NodeRuntimeSandbox),
+  return runInInjectionContext(injector, () =>
+    injectAsync(() => import('./node-runtime-sandbox.service').then((c) => c.NodeRuntimeSandbox))(),
   );
 }

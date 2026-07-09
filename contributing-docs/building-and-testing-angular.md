@@ -5,8 +5,10 @@ It also explains the basic mechanics of using `git`, `node`, and `pnpm`.
 
 - [Building and Testing Angular](#building-and-testing-angular)
   - [Prerequisite Software](#prerequisite-software)
+  - [Development in a Container](#development-in-a-container)
+  - [Experimenting in dev-app](#experimenting-in-dev-app)
   - [Getting the Sources](#getting-the-sources)
-  - [Installing NPM Modules](#installing-npm-modules)
+  - [Installing npm Modules](#installing-npm-modules)
   - [Building](#building)
   - [Running Tests Locally](#running-tests-locally)
     - [Testing changes against a local library/project](#testing-changes-against-a-local-libraryproject)
@@ -52,6 +54,25 @@ following on your development machine:
 - On Windows: [MSYS2](https://www.msys2.org/) which is used by Bazel. Follow
   the [instructions](https://bazel.build/install/windows#installing-compilers-and-language-runtimes)
 
+## Development in a Container
+
+You can also use the provided [Dev Container](https://containers.dev/) configuration to set up a development environment. This approach uses Docker to create a container with all the necessary tools (Node.js, pnpm, etc.) pre-installed.
+
+## Experimenting in dev-app
+
+For experimentation while developing Angular, consider running the [dev-app](../dev-app/README.md) in this repository.
+
+**Prerequisites:**
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [VS Code](https://code.visualstudio.com/)
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+**Usage:**
+
+1. Open the Angular repository in VS Code.
+2. Run the **Dev Containers: Reopen in Container** command from the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`).
+
 ## Getting the Sources
 
 Fork and clone the Angular repository:
@@ -74,7 +95,7 @@ cd angular
 git remote add upstream https://github.com/angular/angular.git
 ```
 
-## Installing NPM Modules
+## Installing npm Modules
 
 Next, install the JavaScript modules needed to build and test Angular:
 

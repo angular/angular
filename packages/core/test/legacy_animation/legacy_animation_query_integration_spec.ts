@@ -8,6 +8,7 @@
 import {
   animate,
   animateChild,
+  ɵAnimationGroupPlayer as AnimationGroupPlayer,
   AnimationPlayer,
   AUTO_STYLE,
   group,
@@ -18,22 +19,27 @@ import {
   style,
   transition,
   trigger,
-  ɵAnimationGroupPlayer as AnimationGroupPlayer,
 } from '@angular/animations';
 import {
   AnimationDriver,
-  ɵAnimationEngine,
-  ɵnormalizeKeyframes as normalizeKeyframes,
-  ɵTransitionAnimationPlayer as TransitionAnimationPlayer,
   ɵENTER_CLASSNAME as ENTER_CLASSNAME,
   ɵLEAVE_CLASSNAME as LEAVE_CLASSNAME,
+  ɵnormalizeKeyframes as normalizeKeyframes,
+  ɵTransitionAnimationPlayer as TransitionAnimationPlayer,
+  ɵAnimationEngine,
 } from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
-import {Component, HostBinding, ViewChild, provideZoneChangeDetection} from '../../src/core';
-import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {isNode} from '@angular/private/testing';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostBinding,
+  provideZoneChangeDetection,
+  ViewChild,
+} from '../../src/core';
+import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 
 import {HostListener} from '../../src/metadata/directives';
 
@@ -93,6 +99,7 @@ import {HostListener} from '../../src/metadata/directives';
             trigger('c', [transition('* => 1', [animate(1000, style({opacity: 0}))])]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp0: any;
@@ -149,6 +156,7 @@ import {HostListener} from '../../src/metadata/directives';
             trigger('c', [transition('* => 1', [animate(1000, style({opacity: 0}))])]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp0: any;
@@ -222,6 +230,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp0: any;
@@ -289,6 +298,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -343,6 +353,7 @@ import {HostListener} from '../../src/metadata/directives';
             trigger('child', [transition('* => *', [])]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp0: any;
@@ -424,6 +435,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -539,6 +551,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -607,6 +620,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -657,6 +671,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -732,6 +747,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -776,6 +792,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any;
@@ -830,6 +847,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public items: any[] = [0, 1, 2];
@@ -887,6 +905,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           @ViewChild('container') public container: any;
@@ -936,6 +955,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -998,6 +1018,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -1055,6 +1076,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public items: any[] | undefined;
@@ -1146,6 +1168,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -1217,6 +1240,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any = '';
@@ -1281,6 +1305,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any = '';
@@ -1352,6 +1377,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -1405,6 +1431,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -1466,6 +1493,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any;
@@ -1540,6 +1568,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -1596,6 +1625,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -1656,6 +1686,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ParentCmp {
           public exp: any;
@@ -1671,6 +1702,7 @@ import {HostListener} from '../../src/metadata/directives';
             </div>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ChildCmp {
           public items: any[] = [];
@@ -1707,6 +1739,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ParentCmp {
           public exp: any;
@@ -1722,6 +1755,7 @@ import {HostListener} from '../../src/metadata/directives';
             </div>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ChildCmp {
           public items: any[] = [];
@@ -1767,6 +1801,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ],
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Cmp {
             public exp: any;
@@ -1808,6 +1843,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ],
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Cmp {
             public exp: any;
@@ -1857,6 +1893,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any;
@@ -1947,6 +1984,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -2028,6 +2066,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: any;
@@ -2082,6 +2121,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any;
@@ -2145,6 +2185,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any;
@@ -2210,6 +2251,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any;
@@ -2271,6 +2313,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any;
@@ -2323,6 +2366,7 @@ import {HostListener} from '../../src/metadata/directives';
             trigger('parent', [transition(':leave', [query(':leave', animateChild())])]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ParentCmp {
           public exp: boolean = true;
@@ -2344,6 +2388,7 @@ import {HostListener} from '../../src/metadata/directives';
             trigger('child', [transition(':leave', [animate(1000, style({color: 'gold'}))])]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ChildCmp {
           public childEvent: any;
@@ -2388,6 +2433,7 @@ import {HostListener} from '../../src/metadata/directives';
             trigger('myAnimation', [transition(':leave', [query('@*', animateChild())])]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ParentCmp {
           public exp: boolean = true;
@@ -2406,6 +2452,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ChildCmp {}
 
@@ -2455,6 +2502,7 @@ import {HostListener} from '../../src/metadata/directives';
             trigger('myAnimation', [transition(':leave', [query('@*', animateChild())])]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ParentCmp {
           public exp: boolean = true;
@@ -2466,6 +2514,7 @@ import {HostListener} from '../../src/metadata/directives';
                <nested-child-cmp></nested-child-cmp>
              `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ChildCmp {}
 
@@ -2482,6 +2531,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class NestedChildCmp {}
 
@@ -2539,6 +2589,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: boolean = true;
@@ -2590,6 +2641,7 @@ import {HostListener} from '../../src/metadata/directives';
             </section>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: boolean | undefined;
@@ -2658,6 +2710,7 @@ import {HostListener} from '../../src/metadata/directives';
             </div>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           get title() {
@@ -2761,6 +2814,7 @@ import {HostListener} from '../../src/metadata/directives';
             </div>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp: boolean | undefined;
@@ -2804,6 +2858,7 @@ import {HostListener} from '../../src/metadata/directives';
           ],
           template: '<div [@parent]="exp"><child-cmp #child></child-cmp></div>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ParentCmp {
           public exp: any;
@@ -2818,6 +2873,7 @@ import {HostListener} from '../../src/metadata/directives';
           ],
           template: '<div [@child]="exp"></div>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ChildCmp {
           public exp: any;
@@ -2868,6 +2924,7 @@ import {HostListener} from '../../src/metadata/directives';
             </div>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ParentCmp {
           @ViewChild('child') public childCmp: any;
@@ -2897,6 +2954,7 @@ import {HostListener} from '../../src/metadata/directives';
                  (@child.done)="track($event)"></div>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ChildCmp {
           public exp: any;
@@ -2982,6 +3040,7 @@ import {HostListener} from '../../src/metadata/directives';
                </div>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public parent1Exp = '';
@@ -3033,6 +3092,7 @@ import {HostListener} from '../../src/metadata/directives';
           ],
           template: '<div [@parent]="exp"><child-cmp #child></child-cmp></div>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ParentCmp {
           public exp: any;
@@ -3049,6 +3109,7 @@ import {HostListener} from '../../src/metadata/directives';
           ],
           template: '<div [@child]="exp" class="child"></div>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ChildCmp {
           public exp: any;
@@ -3106,6 +3167,7 @@ import {HostListener} from '../../src/metadata/directives';
           ],
           template: '<div [@parentAnimation]="exp"><child-cmp #child></child-cmp></div>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ParentCmp {
           public exp: any;
@@ -3117,6 +3179,7 @@ import {HostListener} from '../../src/metadata/directives';
           selector: 'child-cmp',
           template: '<grandchild-cmp #grandchild></grandchild-cmp>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ChildCmp {
           @ViewChild('grandchild') public innerCmp: any;
@@ -3134,6 +3197,7 @@ import {HostListener} from '../../src/metadata/directives';
           ],
           template: '<div [@grandChildAnimation]="exp"></div>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class GrandChildCmp {
           public exp: any;
@@ -3219,6 +3283,7 @@ import {HostListener} from '../../src/metadata/directives';
                </div>
              `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any;
@@ -3282,6 +3347,7 @@ import {HostListener} from '../../src/metadata/directives';
                </div>
              `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp1: any;
@@ -3337,6 +3403,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public childPresent = true;
@@ -3386,6 +3453,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp = true;
@@ -3446,6 +3514,7 @@ import {HostListener} from '../../src/metadata/directives';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           public exp = false;
@@ -3505,6 +3574,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ],
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Cmp {
             exp: any = '';
@@ -3553,6 +3623,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ],
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Cmp {
             exp: any = '';
@@ -3605,6 +3676,7 @@ import {HostListener} from '../../src/metadata/directives';
               ]),
             ],
             standalone: false,
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class Cmp {
             exp: any = '';

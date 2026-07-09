@@ -684,7 +684,7 @@ export function toStylingKeyValueArray(
     }
   } else if (typeof unwrappedValue === 'object') {
     for (const key in unwrappedValue) {
-      if (unwrappedValue.hasOwnProperty(key)) {
+      if (Object.hasOwn(unwrappedValue, key)) {
         keyValueArraySet(styleKeyValueArray, key, unwrappedValue[key]);
       }
     }

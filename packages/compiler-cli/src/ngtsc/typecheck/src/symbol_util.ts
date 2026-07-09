@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {Symbol, SymbolKind} from '../api';
+import {Symbol, SymbolKind, TemplateTypeChecker, TcbLocation} from '../api';
 
 /** Names of known signal functions. */
 const SIGNAL_FNS = new Set([
@@ -20,15 +20,28 @@ const SIGNAL_FNS = new Set([
 ]);
 
 /** Returns whether a symbol is a reference to a signal. */
-export function isSignalReference(symbol: Symbol): boolean {
+export function isSignalReference(symbol: Symbol, typeChecker: TemplateTypeChecker): boolean {
+  let location: TcbLocation | null = null;
+  if ('tcbLocation' in symbol) {
+    location = (symbol as any).tcbLocation;
+  } else if ('localVarLocation' in symbol) {
+    location = (symbol as any).localVarLocation;
+  }
+
+  if (location === null) {
+    return false;
+  }
+
+  // We can trick getTypeOfSymbol since it just checks 'tcbLocation'
+  const type = typeChecker.getTypeOfSymbol({tcbLocation: location} as any);
+  if (!type) return false;
+
   return (
     (symbol.kind === SymbolKind.Expression ||
       symbol.kind === SymbolKind.Variable ||
       symbol.kind === SymbolKind.LetDeclaration) &&
-    // Note that `tsType.symbol` isn't optional in the typings,
-    // but it appears that it can be undefined at runtime.
-    ((symbol.tsType.symbol !== undefined && isSignalSymbol(symbol.tsType.symbol)) ||
-      (symbol.tsType.aliasSymbol !== undefined && isSignalSymbol(symbol.tsType.aliasSymbol)))
+    ((type.symbol !== undefined && isSignalSymbol(type.symbol)) ||
+      (type.aliasSymbol !== undefined && isSignalSymbol(type.aliasSymbol)))
   );
 }
 

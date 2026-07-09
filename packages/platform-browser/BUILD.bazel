@@ -11,7 +11,6 @@ ng_project(
         ],
     ),
     deps = [
-        "//:node_modules/@types/hammerjs",
         "//packages:goog_types",
         "//packages:types",
         "//packages/common",

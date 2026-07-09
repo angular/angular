@@ -146,3 +146,65 @@ const activeUserEditCopy = linkedSignal({
   equal: (a, b) => a.id === b.id,
 });
 ```
+
+## Customizing the set operation
+
+Sometimes you may want the `set` and `update` operations of a `linkedSignal` to write back to the source of truth instead of updating the `linkedSignal`'s value directly. You can customize this behavior by passing a `set` function in the options.
+
+The custom `set` function receives two arguments:
+
+1. The new value being set.
+2. A `rawSet` function, which you can invoke to update the `linkedSignal`'s internal state directly (matching the default behavior).
+
+NOTE: Using `rawSet` allows you to update the `linkedSignal`'s value directly. This can be useful to prevent the computation from running, for example if it is an expensive derivation and you already know the result.
+
+### Writing back to a source signal
+
+Consider a component that displays and allows editing temperature in Fahrenheit, but uses a Celsius signal as its source of truth:
+
+```typescript
+const tempC = signal(0);
+const tempF = linkedSignal(() => (tempC() * 9) / 5 + 32, {
+  set: (valF) => tempC.set(((valF - 32) * 5) / 9),
+});
+
+console.log(tempF()); // 32
+
+// Setting Fahrenheit updates Celsius, which reactively updates Fahrenheit
+tempF.set(212);
+console.log(tempC()); // 100
+console.log(tempF()); // 212
+```
+
+### Updating a property inside a parent object
+
+Another common scenario is updating a specific property inside a parent object. The parent is held in a signal, and you link to a nested property:
+
+```typescript
+interface Order {
+  id: number;
+  shippingMethod: string;
+}
+
+const order = signal<Order>({
+  id: 42,
+  shippingMethod: 'Ground',
+});
+
+const shippingMethod = linkedSignal(() => order().shippingMethod, {
+  set: (newMethod) => {
+    // Perform an immutable update to write the change back to the order
+    order.update((currentOrder) => ({
+      ...currentOrder,
+      shippingMethod: newMethod,
+    }));
+  },
+});
+
+console.log(shippingMethod()); // 'Ground'
+
+// Updating the shippingMethod updates the parent order object
+shippingMethod.set('Air');
+console.log(order()); // { id: 42, shippingMethod: 'Air' }
+console.log(shippingMethod()); // 'Air'
+```

@@ -13,7 +13,7 @@
     "noEmitOnError": false,
     "stripInternal": false,
     "strict": true,
-    "lib": ["es5", "dom", "es2015.collection", "es2015.iterable", "es2015.promise"]
+    "lib": ["es5", "dom", "es2015.collection", "es2015.iterable", "es2015.promise", "es2022.object"]
   },
   "files": ["./type.test.ts", "./node_modules/zone.js/zone.ts"]
 }

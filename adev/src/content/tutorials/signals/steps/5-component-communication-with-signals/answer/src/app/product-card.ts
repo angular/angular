@@ -1,4 +1,4 @@
-import {Component, input, ChangeDetectionStrategy} from '@angular/core';
+import {Component, input} from '@angular/core';
 
 @Component({
   selector: 'product-card',
@@ -16,7 +16,6 @@ import {Component, input, ChangeDetectionStrategy} from '@angular/core';
       </p>
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCard {
   // Signal inputs - receive data from parent

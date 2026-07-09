@@ -96,6 +96,16 @@ export interface CompilerFacade {
     sourceMapUrl: string,
     meta: R3DeclareFactoryFacade,
   ): any;
+  compileService(
+    angularCoreEnv: CoreEnvironment,
+    sourceMapUrl: string,
+    meta: R3ServiceMetadataFacade,
+  ): any;
+  compileServiceDeclaration(
+    angularCoreEnv: CoreEnvironment,
+    sourceMapUrl: string,
+    meta: R3DeclareServiceFacade,
+  ): any;
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
@@ -123,6 +133,7 @@ export enum FactoryTarget {
   Injectable = 2,
   Pipe = 3,
   NgModule = 4,
+  Service = 5,
 }
 
 export interface R3DependencyMetadataFacade {
@@ -163,6 +174,14 @@ export interface R3InjectableMetadataFacade {
   deps?: R3DependencyMetadataFacade[];
 }
 
+export interface R3ServiceMetadataFacade {
+  name: string;
+  type: Type;
+  typeArgumentCount: number;
+  autoProvided?: boolean;
+  factory?: OpaqueValue;
+}
+
 export interface R3NgModuleMetadataFacade {
   type: Type;
   bootstrap: Function[];
@@ -198,12 +217,14 @@ export interface R3DirectiveMetadataFacade {
   inputs: (string | {name: string; alias?: string; required?: boolean})[];
   outputs: string[];
   usesInheritance: boolean;
+  controlCreate: {passThroughInput: string | null} | null;
   exportAs: string[] | null;
   providers: Provider[] | null;
   viewQueries: R3QueryMetadataFacade[];
   isStandalone: boolean;
-  isSignal: boolean;
   hostDirectives: R3HostDirectiveMetadataFacade[] | null;
+  isSignal: boolean;
+  legacyOptionalChaining: boolean;
 }
 
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
@@ -253,9 +274,11 @@ export interface R3DeclareDirectiveFacade {
   exportAs?: string[];
   usesInheritance?: boolean;
   usesOnChanges?: boolean;
+  controlCreate?: {passThroughInput: string | null};
   isStandalone?: boolean;
-  hostDirectives?: R3HostDirectiveMetadataFacade[] | null;
   isSignal?: boolean;
+  hostDirectives?: R3HostDirectiveMetadataFacade[] | null;
+  legacyOptionalChaining?: boolean;
 }
 
 export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
@@ -341,6 +364,12 @@ export interface R3DeclareInjectableFacade {
   deps?: R3DeclareDependencyMetadataFacade[];
 }
 
+export interface R3DeclareServiceFacade {
+  type: Type;
+  autoProvided?: boolean;
+  factory?: OpaqueValue;
+}
+
 export enum ViewEncapsulation {
   Emulated = 0,
   // Historically the 1 value was for `Native` encapsulation which has been removed as of v11.
@@ -391,8 +420,8 @@ export interface R3DeclareNgModuleFacade {
 
 export interface R3DeclarePipeFacade {
   type: Type;
-  name: string;
   version: string;
+  name: string;
   pure?: boolean;
   isStandalone?: boolean;
 }

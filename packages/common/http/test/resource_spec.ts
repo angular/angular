@@ -6,17 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isNode} from '@angular/private/testing';
-import {ApplicationRef, Injector, signal} from '@angular/core';
+import {ApplicationRef, Injector, resourceFromSnapshots, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {isNode} from '@angular/private/testing';
+import {Observable} from 'rxjs';
 import {
-  HttpEventType,
-  provideHttpClient,
-  httpResource,
   HttpContext,
   HttpContextToken,
+  HttpEventType,
+  httpResource,
   HttpResourceRef,
+  HttpResponse,
+  provideHttpClient,
 } from '../index';
+import {HttpClient} from '../src/client';
+import {withInterceptors} from '../src/provider';
+import {HttpEvent} from '../src/response';
+import {withHttpTransferCache} from '../src/transfer_cache';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
 describe('httpResource', () => {
@@ -356,6 +362,44 @@ describe('httpResource', () => {
     expect(res.statusCode()).toBe(undefined);
   });
 
+  it('should support chain', async () => {
+    const backend = TestBed.inject(HttpTestingController);
+    const endpoint = resourceFromSnapshots(signal({status: 'resolved', value: '/data'}));
+    const res = httpResource(({chain}) => chain(endpoint), {injector: TestBed.inject(Injector)});
+    TestBed.tick();
+    const req = backend.expectOne('/data');
+    req.flush([]);
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.value()).toEqual([]);
+  });
+
+  it('should unsubscribe the observable when the request emits synchronously', async () => {
+    let unsubscribed = false;
+    const request = signal('/data/0');
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(
+          withInterceptors([
+            () =>
+              new Observable<HttpEvent<unknown>>((subscriber) => {
+                subscriber.next(new HttpResponse({body: request()}));
+                subscriber.complete();
+
+                return () => (unsubscribed = true);
+              }),
+          ]),
+        ),
+      ],
+    });
+
+    const res = httpResource(() => request(), {injector: TestBed.inject(Injector)});
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.value()).toBe('/data/0');
+    expect(unsubscribed).toBeTrue();
+  });
+
   describe('types', () => {
     it('should narrow hasValue() when the value can be undefined', () => {
       const result: HttpResourceRef<number | undefined> = httpResource(() => '/data', {
@@ -398,6 +442,61 @@ describe('httpResource', () => {
         const _value: unknown = result.value();
       } else if (result.error()) {
       }
+    });
+  });
+
+  describe('TransferCache integration', () => {
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [provideHttpClient(), provideHttpClientTesting(), withHttpTransferCache({})],
+      });
+    });
+
+    it('should synchronously resolve with a cached value from TransferState', async () => {
+      globalThis['ngServerMode'] = true;
+      let requestResolved = false;
+      TestBed.inject(HttpClient)
+        .get('/data')
+        .subscribe(() => (requestResolved = true));
+      const req = TestBed.inject(HttpTestingController).expectOne('/data');
+      req.flush([1, 2, 3]);
+
+      expect(requestResolved).toBe(true);
+
+      // Now switch to client mode
+      globalThis['ngServerMode'] = false;
+
+      // Create httpResource. It should immediately read from TransferState.
+      const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
+
+      // It should immediately have the value synchronously and status should be resolved
+      expect(res.status()).toBe('resolved');
+      expect(res.hasValue()).toBe(true);
+      expect(res.value()).toEqual([1, 2, 3]);
+
+      // Also no new request should be made
+      TestBed.inject(HttpTestingController).expectNone('/data');
+    });
+
+    it('should not evaluate the request payload during resource initialization', () => {
+      let requestEvaluated = false;
+      const res = httpResource(
+        () => {
+          requestEvaluated = true;
+          return '/data';
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // Request function should NOT be evaluated during initialization
+      expect(requestEvaluated).toBe(false);
+
+      // Read to trigger it
+      res.status();
+
+      // The request should now have been evaluated
+      expect(requestEvaluated).toBe(true);
     });
   });
 });

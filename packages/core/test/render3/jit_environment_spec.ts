@@ -57,6 +57,7 @@ const PARTIAL_ONLY = new Set<string>([
   'ɵɵngDeclareInjector',
   'ɵɵngDeclareNgModule',
   'ɵɵngDeclarePipe',
+  'ɵɵngDeclareService',
   'ɵɵFactoryTarget',
   'ChangeDetectionStrategy',
   'ViewEncapsulation',

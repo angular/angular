@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injectable, PLATFORM_ID} from '@angular/core';
+import {inject, PLATFORM_ID, Service} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 
 import {WINDOW, ENVIRONMENT, LOCAL_STORAGE, STORAGE_KEY, setCookieConsent} from '@angular/docs';
@@ -19,7 +19,7 @@ interface WindowWithAnalytics extends Window {
   gtag?(...args: any[]): void;
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 /**
  * Google Analytics Service - captures app behaviors and sends them to Google Analytics.
  *

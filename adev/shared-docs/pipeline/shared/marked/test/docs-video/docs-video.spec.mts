@@ -20,15 +20,20 @@ describe('markdown to html', () => {
     markdownDocument = JSDOM.fragment(await parseMarkdown(markdownContent, rendererContext));
   });
 
-  it('should create an iframe in a container', () => {
+  it('should create a video facade in a container', () => {
     const videoContainerEl = markdownDocument.querySelector('.docs-video-container')!;
-    const iframeEl = videoContainerEl.children[0];
+    const facadeEl = videoContainerEl.children[0];
 
     expect(videoContainerEl.children.length).toBe(1);
 
-    expect(iframeEl.nodeName).toBe('IFRAME');
-    expect(iframeEl.getAttribute('src')).toBeTruthy();
-    expect(iframeEl.classList.contains('docs-video')).toBeTrue();
-    expect(iframeEl.getAttribute('title')).toBeTruthy();
+    expect(facadeEl.nodeName).toBe('A');
+    expect(facadeEl.classList.contains('docs-video-facade')).toBeTrue();
+    expect(facadeEl.getAttribute('href')).toContain('youtube.com/watch?v=');
+    expect(facadeEl.getAttribute('data-video-src')).toBeTruthy();
+
+    const thumbnailEl = facadeEl.querySelector('img.docs-video-thumbnail');
+    expect(thumbnailEl?.getAttribute('src')).toContain('i.ytimg.com');
+
+    expect(facadeEl.querySelector('.docs-video-play-button')).toBeTruthy();
   });
 });

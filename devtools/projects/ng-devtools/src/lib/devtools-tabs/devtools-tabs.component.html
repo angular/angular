@@ -64,9 +64,9 @@
       ng-button
       btnType="icon"
       class="toolbar-btn"
-      [matMenuTriggerFor]="menu"
       matTooltip="Open settings"
       aria-label="Open settings"
+      (click)="settingsOpened.set(true)"
     >
       <mat-icon> settings </mat-icon>
     </button>
@@ -80,7 +80,6 @@
       <ng-directive-explorer
         [hidden]="!componentsVisible"
         [showCommentNodes]="showCommentNodes()"
-        [isHydrationEnabled]="isHydrationEnabled()"
         (toggleInspector)="toggleInspector()"
       />
 
@@ -111,59 +110,19 @@
       @defer (when transferStateVisible; prefetch on idle) {
         <ng-transfer-state [hidden]="!transferStateVisible" />
       }
+
+      @if (settingsOpened()) {
+        <ng-settings (close)="settingsOpened.set(false)" />
+      }
     </div>
   }
 </mat-tab-nav-panel>
 
-<mat-menu #menu="matMenu">
-  <div (click)="$event.stopPropagation()">
-    @if (!profilingNotificationsSupported) {
-      <label mat-menu-item disableRipple>
-        <mat-slide-toggle [checked]="timingAPIEnabled()" (change)="toggleTimingAPI()" />
-        <span class="ng-mat-menu-label-text"> Enable timing API </span>
-      </label>
-    }
-    <label mat-menu-item disableRipple>
-      @let currentTheme = themeService.currentTheme();
-      <mat-slide-toggle
-        [checked]="currentTheme === 'dark'"
-        (click)="themeService.toggleDarkMode(currentTheme === 'light')"
-      />
-      <span class="ng-mat-menu-label-text">Dark Mode</span>
-    </label>
-    <label mat-menu-item disableRipple>
-      <mat-slide-toggle
-        [checked]="showCommentNodes()"
-        (change)="showCommentNodes.set($event.checked)"
-      />
-      <span class="ng-mat-menu-label-text">Show comment nodes</span>
-    </label>
-    @if (supportedApis().routes) {
-      <label mat-menu-item disableRipple>
-        <mat-slide-toggle
-          [checked]="routerGraphEnabled()"
-          (change)="setRouterGraph($event.checked)"
-        />
-        <span class="ng-mat-menu-label-text">Enable Router Tree</span>
-      </label>
-    }
-    @if (supportedApis().transferState) {
-      <label mat-menu-item disableRipple>
-        <mat-slide-toggle
-          [checked]="transferStateEnabled()"
-          (change)="setTransferStateTab($event.checked)"
-        />
-        <span class="ng-mat-menu-label-text">Enable Transfer State Tab</span>
-      </label>
-    }
-  </div>
-</mat-menu>
-
 <mat-menu #info="matMenu">
   <p mat-menu-item class="version-label">
     Angular version:
-    @if (majorAngularVersion() > 12 || majorAngularVersion() === 0) {
-      {{ angularVersion() }}
+    @if (appData().majorVersion > 12 || appData().majorVersion === 0) {
+      {{ appData().fullVersion }}
     } @else {
       <span
         matTooltip="
@@ -171,7 +130,7 @@
           older versions of Angular, but it is not officially supported.
         "
       >
-        {{ angularVersion() }} (unsupported)
+        {{ appData().fullVersion }} (unsupported)
       </span>
     }
   </p>

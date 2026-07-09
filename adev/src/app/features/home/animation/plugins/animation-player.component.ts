@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, signal} from '@angular/core';
+import {Component, computed, signal} from '@angular/core';
 import {Animation} from '../animation';
 
 // In milliseconds. Used for going forward or back through the animation.
@@ -19,7 +19,6 @@ export type ComponentAlignment = 'left' | 'center' | 'right';
  */
 @Component({
   selector: 'adev-animation-player',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (animation(); as anim) {
       <div class="deck" [class]="[alignment()]">

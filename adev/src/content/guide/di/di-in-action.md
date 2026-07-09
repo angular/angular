@@ -1,18 +1,15 @@
-# DI в действии
+# DI in action
 
-В этом руководстве рассматриваются дополнительные возможности внедрения зависимостей (DI) в Angular.
+This guide explores additional features of dependency injection (DI) in Angular.
 
-ПРИМЕЧАНИЕ: Для полного ознакомления с InjectionToken и пользовательскими провайдерами см. руководство
-по [определению провайдеров зависимостей](guide/di/defining-dependency-providers#injection-tokens).
+NOTE: For comprehensive coverage of InjectionToken and custom providers, see the [defining dependency providers guide](guide/di/defining-dependency-providers#injection-tokens).
 
-## Внедрение DOM-элемента компонента
+## Inject the component's DOM element
 
-Хотя разработчики стараются избегать этого, некоторые визуальные эффекты и сторонние инструменты требуют прямого доступа
-к DOM.
-В результате вам может потребоваться доступ к DOM-элементу компонента.
+Although developers generally avoid it, some visual effects and third-party tools require you to access the DOM directly.
+In such cases, you may need to access a component's DOM element.
 
-Angular предоставляет доступ к базовому элементу `@Component` или `@Directive` через внедрение с использованием токена
-`ElementRef`:
+Angular exposes the underlying DOM element of a `@Component` or `@Directive` through injection using the `ElementRef` token:
 
 ```ts {highlight:[7]}
 import {Directive, ElementRef, inject} from '@angular/core';
@@ -27,25 +24,54 @@ export class HighlightDirective {
     this.element.nativeElement.style.color = 'red';
   }
 }
-
 ```
 
-## Разрешение циклических зависимостей с помощью forwardRef
+## Inject the host element's tag name
 
-Порядок объявления классов имеет значение в TypeScript.
-Вы не можете ссылаться на класс напрямую, пока он не будет определен.
+To get the tag name of a host element, inject it using the `HOST_TAG_NAME` token.
 
-Обычно это не является проблемой, особенно если вы придерживаетесь рекомендуемого правила _один класс на файл_.
-Но иногда циклические ссылки неизбежны.
-Например, когда класс 'A' ссылается на класс 'B', а 'B' ссылается на 'A', один из них должен быть определен первым.
+```ts
+import {Directive, HOST_TAG_NAME, inject} from '@angular/core';
 
-Функция Angular `forwardRef()` создает _косвенную_ ссылку, которую Angular может разрешить позже.
+@Directive({
+  selector: '[roleButton]',
+})
+export class RoleButtonDirective {
+  private tagName = inject(HOST_TAG_NAME);
 
-Вы сталкиваетесь с аналогичной проблемой, когда класс делает _ссылку на самого себя_.
-Например, в своем массиве `providers`.
-Массив `providers` является свойством функции-декоратора `@Component()`, которая должна находиться перед определением
-класса.
-Вы можете разорвать такие циклические ссылки, используя `forwardRef`.
+  onAction() {
+    switch (this.tagName) {
+      case 'button':
+        // Handle button action
+        break;
+      case 'a':
+        // Handle anchor action
+        break;
+      default:
+        // Handle other elements
+        break;
+    }
+  }
+}
+```
+
+NOTE: If the host element might not have a tag name (e.g., `ng-container` or `ng-template`), make the injection optional.
+
+## Resolve circular dependencies with a forward reference
+
+In TypeScript, the order of class declarations matters.
+You cannot reference a class directly until you define it.
+
+This isn't usually a problem, especially if you adhere to the recommended _one class per file_ rule.
+However, in some cases, circular references are unavoidable.
+For example, if class 'A' refers to class 'B' and class 'B' refers to class 'A', one of them must be defined first.
+
+The Angular `forwardRef()` function creates an _indirect_ reference that Angular can resolve later.
+
+You face a similar problem when a class makes _a reference to itself_.
+For example, in its `providers` array.
+The `providers` array is a property of the `@Component()` decorator function, which must appear before the class definition.
+Such circular references can be resolved using `forwardRef`.
 
 ```typescript {header: 'app.component.ts', highlight: [4]}
 providers: [

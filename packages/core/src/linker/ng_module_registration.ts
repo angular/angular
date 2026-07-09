@@ -40,10 +40,10 @@ function assertSameOrNotExisting(id: string, type: Type<any> | null, incoming: T
  *
  * @codeGenApi
  */
-export function registerNgModuleType(ngModuleType: NgModuleType, id: string): void {
+export function registerNgModuleType(ngModuleType: Type<any>, id: string): void {
   const existing = modules.get(id) || null;
   assertSameOrNotExisting(id, existing, ngModuleType);
-  modules.set(id, ngModuleType);
+  modules.set(id, ngModuleType as NgModuleType);
 }
 
 export function clearModulesForTest(): void {

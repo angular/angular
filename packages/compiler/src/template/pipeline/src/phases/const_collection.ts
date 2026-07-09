@@ -46,7 +46,7 @@ export function collectElementConsts(job: CompilationJob): void {
           if (attributes !== undefined) {
             const attrArray = serializeAttributes(attributes);
             if (attrArray.entries.length > 0) {
-              op.attributes = attrArray;
+              op.attributes = job.pool.getConstLiteral(attrArray, true);
             }
           }
         } else if (ir.isElementOrContainerOp(op)) {
@@ -190,10 +190,7 @@ class ElementAttributes {
       if (value === null) {
         throw Error('Attribute, i18n attribute, & style element attributes must have a value');
       }
-      if (trustedValueFn !== null) {
-        if (!ir.isStringLiteral(value)) {
-          throw Error('AssertionError: extracted attribute value should be string literal');
-        }
+      if (trustedValueFn !== null && ir.isStringLiteral(value)) {
         array.push(
           o.taggedTemplate(
             trustedValueFn,

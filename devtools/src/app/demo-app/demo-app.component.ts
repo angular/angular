@@ -23,11 +23,11 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 
-import {ZippyComponent} from './zippy.component';
+import {RouterModule, RouterOutlet} from '@angular/router';
+import {CookieRecipe} from './cookies.component';
 import {HeavyComponent} from './heavy.component';
 import {SamplePropertiesComponent} from './sample-properties.component';
-import {RouterOutlet, RouterModule} from '@angular/router';
-import {CookieRecipe} from './cookies.component';
+import {ZippyComponent} from './zippy.component';
 
 // structual directive example
 @Directive({

@@ -175,8 +175,8 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
           }
           router.events.subscribe((e) => {
             if (e instanceof GuardsCheckEnd) {
-              expect(router.getCurrentNavigation()?.extractedUrl.toString()).toEqual('/two');
-              expect(router.getCurrentNavigation()?.extras).toBeDefined();
+              expect(router.currentNavigation()?.extractedUrl.toString()).toEqual('/two');
+              expect(router.currentNavigation()?.extras).toBeDefined();
             }
           });
         }

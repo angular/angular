@@ -1,21 +1,19 @@
-# Взаимодействие с бэкенд-сервисами через HTTP
+# Understanding communication with backend services using HTTP
 
-Большинству фронтенд-приложений необходимо взаимодействовать с сервером по протоколу HTTP для загрузки или отправки
-данных и доступа к другим бэкенд-сервисам. Angular предоставляет клиентский HTTP API для приложений Angular — класс
-сервиса `HttpClient` в пакете `@angular/common/http`.
+Most front-end applications need to communicate with a server over the HTTP protocol to download or upload data and access other back-end services. Angular provides a client HTTP API for Angular applications, the `HttpClient` service class in `@angular/common/http`.
 
-## Возможности HTTP-клиента
+## HTTP client service features
 
-Сервис HTTP-клиента предлагает следующие основные возможности:
+The HTTP client service offers the following major features:
 
-- Возможность запрашивать [типизированные значения ответа](guide/http/making-requests#fetching-json-data)
-- Упрощенная [обработка ошибок](guide/http/making-requests#handling-request-failure)
-- [Перехват](guide/http/interceptors) запросов и ответов
-- Надежные [утилиты для тестирования](guide/http/testing)
+- The ability to request [typed response values](guide/http/making-requests#fetching-json-data)
+- Streamlined [error handling](guide/http/making-requests#handling-request-failure)
+- Request and response [interception](guide/http/interceptors)
+- Robust [testing utilities](guide/http/testing)
 
-## Что дальше
+## What's next
 
 <docs-pill-row>
-  <docs-pill href="guide/http/setup" title="Настройка HttpClient"/>
-  <docs-pill href="guide/http/making-requests" title="Выполнение HTTP-запросов"/>
+  <docs-pill href="guide/http/setup" title="Setting up HttpClient"/>
+  <docs-pill href="guide/http/making-requests" title="Making HTTP requests"/>
 </docs-pill-row>

@@ -44,6 +44,7 @@ import {
   getValidConstructorDependencies,
   InjectableClassRegistry,
   makeDuplicateDeclarationError,
+  parseStandaloneOption,
   toFactoryMetadata,
   unwrapExpression,
   wrapTypeReference,
@@ -118,6 +119,10 @@ export class PipeDecoratorHandler
     } else {
       return undefined;
     }
+  }
+
+  isStandalone(decorator: Readonly<Decorator>): boolean {
+    return parseStandaloneOption(decorator, this.evaluator, this.implicitStandaloneValue);
   }
 
   analyze(

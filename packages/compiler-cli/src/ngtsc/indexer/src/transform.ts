@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ParseSourceFile} from '@angular/compiler';
-
 import {DeclarationNode} from '../../reflection';
 
-import {IndexedComponent} from './api';
-import {IndexingContext} from './context';
-import {getTemplateIdentifiers} from './template';
+import {IndexedComponent, NodeAdapter} from './api.js';
+import {IndexingContext} from './context.js';
+import {getTemplateIdentifiers} from './template.js';
 
 /**
  * Generates `IndexedComponent` entries from a `IndexingContext`, which has information
@@ -20,43 +18,33 @@ import {getTemplateIdentifiers} from './template';
  *
  * The context must be populated before `generateAnalysis` is called.
  */
-export function generateAnalysis(context: IndexingContext): Map<DeclarationNode, IndexedComponent> {
-  const analysis = new Map<DeclarationNode, IndexedComponent>();
+export function generateAnalysis<T = DeclarationNode>(
+  context: IndexingContext<T>,
+  adapter: NodeAdapter<T>,
+): Map<T, IndexedComponent<T>> {
+  const analysis = new Map<T, IndexedComponent<T>>();
 
   context.components.forEach(({declaration, selector, boundTemplate, templateMeta}) => {
-    const name = declaration.name.getText();
-
-    const usedComponents = new Set<DeclarationNode>();
-    const usedDirs = boundTemplate.getUsedDirectives();
-    usedDirs.forEach((dir) => {
-      if (dir.isComponent) {
-        usedComponents.add(dir.ref.node);
-      }
-    });
+    const name = adapter.getName(declaration);
+    const fileName = adapter.getFileName(declaration);
 
     // Get source files for the component and the template. If the template is inline, its source
     // file is the component's.
-    const componentFile = new ParseSourceFile(
-      declaration.getSourceFile().getFullText(),
-      declaration.getSourceFile().fileName,
-    );
-    let templateFile: ParseSourceFile;
+    let templateFileUrl: string;
     if (templateMeta.isInline) {
-      templateFile = componentFile;
+      templateFileUrl = fileName;
     } else {
-      templateFile = templateMeta.file;
+      templateFileUrl = templateMeta.file.url;
     }
 
-    const {identifiers, errors} = getTemplateIdentifiers(boundTemplate);
+    const {identifiers, errors} = getTemplateIdentifiers<T>(boundTemplate);
     analysis.set(declaration, {
       name,
       selector,
-      file: componentFile,
+      fileUrl: fileName,
       template: {
         identifiers,
-        usedComponents,
-        isInline: templateMeta.isInline,
-        file: templateFile,
+        fileUrl: templateFileUrl,
       },
       errors,
     });

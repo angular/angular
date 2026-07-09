@@ -49,6 +49,29 @@ export function elementStart(
   );
 }
 
+export function foreignComponent(
+  slot: number,
+  foreignComponentRef: o.Expression,
+  props: o.Expression | null,
+  sourceSpan: ParseSourceSpan | null,
+): ir.CreateOp {
+  const args = [o.literal(slot), foreignComponentRef];
+  if (props !== null) {
+    args.push(props);
+  }
+  return call(Identifiers.foreignComponent, args, sourceSpan);
+}
+
+export function foreignContent(
+  slot: number,
+  foreignComponentIndex: number,
+  parameterized: boolean,
+): o.Expression {
+  return o
+    .importExpr(parameterized ? Identifiers.foreignContentFn : Identifiers.foreignContent)
+    .callFn([o.literal(slot), o.literal(foreignComponentIndex)]);
+}
+
 function elementOrContainerBase(
   instruction: o.ExternalReference,
   slot: number,
@@ -314,6 +337,10 @@ export function defer(
   return call(Identifiers.defer, args, sourceSpan);
 }
 
+export function enableIncrementalHydrationRuntime(sourceSpan: ParseSourceSpan | null): ir.CreateOp {
+  return call(Identifiers.enableIncrementalHydrationRuntime, [], sourceSpan);
+}
+
 const deferTriggerToR3TriggerInstructionsMap = new Map([
   [
     ir.DeferTriggerKind.Idle,
@@ -393,7 +420,7 @@ export function projectionDef(def: o.Expression | null): ir.CreateOp {
 export function projection(
   slot: number,
   projectionSlotIndex: number,
-  attributes: o.LiteralArrayExpr | null,
+  attributes: o.Expression | null,
   fallbackFnName: string | null,
   fallbackDecls: number | null,
   fallbackVars: number | null,

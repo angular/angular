@@ -8,7 +8,6 @@
 
 import {Location} from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -22,23 +21,22 @@ import {
   viewChild,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
+import {MatTab, MatTabGroup, MatTabLabel} from '@angular/material/tabs';
 import {Title} from '@angular/platform-browser';
 import {debounceTime, from, map, switchMap} from 'rxjs';
 
 import {TerminalType} from '../terminal/terminal-handler.service';
 
-import {CodeMirrorEditor} from './code-mirror-editor.service';
-import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
-import {DownloadManager} from '../download-manager.service';
-import {StackBlitzOpener} from '../stackblitz-opener.service';
-import {IconComponent} from '@angular/docs';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {FirebaseStudioLauncher} from '../firebase-studio-launcher.service';
+import {IconComponent} from '@angular/docs';
 import {MatTooltip} from '@angular/material/tooltip';
+import {DownloadManager} from '../download-manager.service';
+import {LoadingStep} from '../enums/loading-steps';
 import {injectEmbeddedTutorialManager} from '../inject-embedded-tutorial-manager';
 import {NodeRuntimeState} from '../node-runtime-state.service';
-import {LoadingStep} from '../enums/loading-steps';
+import {StackBlitzOpener} from '../stackblitz-opener.service';
+import {CodeMirrorEditor} from './code-mirror-editor.service';
+import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
 
 export const REQUIRED_FILES = new Set([
   'src/main.ts',
@@ -52,8 +50,16 @@ const ANGULAR_DEV = 'https://angular.dev';
   selector: 'docs-tutorial-code-editor',
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTabsModule, MatTooltip, IconComponent, CdkMenu, CdkMenuItem, CdkMenuTrigger],
+  imports: [
+    MatTabGroup,
+    MatTab,
+    MatTabLabel,
+    MatTooltip,
+    IconComponent,
+    CdkMenu,
+    CdkMenuItem,
+    CdkMenuTrigger,
+  ],
 })
 export class CodeEditor {
   readonly restrictedMode = input(false);
@@ -72,7 +78,6 @@ export class CodeEditor {
   private readonly diagnosticsState = inject(DiagnosticsState);
   private readonly downloadManager = inject(DownloadManager);
   private readonly stackblitzOpener = inject(StackBlitzOpener);
-  private readonly firebaseStudioLauncher = inject(FirebaseStudioLauncher);
   private readonly title = inject(Title);
   private readonly location = inject(Location);
   private readonly environmentInjector = inject(EnvironmentInjector);
@@ -120,14 +125,66 @@ export class CodeEditor {
 
         this.listenToTabChange();
         this.setSelectedTabOnTutorialChange();
+        this.listenToFileOpenRequests();
       });
 
       cleanupFn(() => this.codeMirrorEditor.disable());
     });
   }
 
-  protected openCurrentSolutionInFirebaseStudio(): void {
-    this.firebaseStudioLauncher.openCurrentSolutionInFirebaseStudio();
+  private listenToFileOpenRequests() {
+    // Handler for opening files at specific locations
+    const openFile = (file: string, line: number, character: number) => {
+      // Normalize the file path - Vite uses /app/... but editor uses src/app/...
+      let normalizedPath = file;
+      if (file.startsWith('/')) {
+        // Remove leading slash and prepend 'src'
+        normalizedPath = 'src' + file;
+      }
+
+      // Find the file in the files list
+      const targetFile = this.files().find((f) => f.filename === normalizedPath);
+      if (targetFile) {
+        // Switch to the file's tab
+        const fileIndex = this.files().indexOf(targetFile);
+        this.matTabGroup().selectedIndex = fileIndex;
+
+        // Explicitly change the current file in the editor
+        this.codeMirrorEditor.changeCurrentFile(targetFile.filename);
+
+        // Wait for the tab to switch and file to load, then scroll to the line
+        setTimeout(() => {
+          this.codeMirrorEditor.scrollToLine(line - 1, character); // Convert to 0-based
+        }, 200);
+      } else {
+        // console.warn('File not found in editor:', normalizedPath);
+      }
+    };
+
+    // Listen for CustomEvent (backward compatibility)
+    const handleCustomEvent = (event: Event) => {
+      const customEvent = event as CustomEvent<{file: string; line: number; character: number}>;
+      const {file, line, character} = customEvent.detail;
+      openFile(file, line, character);
+    };
+
+    // Listen for postMessage from preview iframe (Vite error overlay)
+    const handlePostMessage = (event: MessageEvent) => {
+      // Check if this is an openFileAtLocation message
+      if (event.data?.type === 'openFileAtLocation') {
+        const {file, line, character} = event.data;
+        openFile(file, line, character);
+      }
+    };
+
+    window.addEventListener('openFileAtLocation', handleCustomEvent);
+    window.addEventListener('message', handlePostMessage);
+
+    // Cleanup listeners on destroy
+    this.destroyRef.onDestroy(() => {
+      window.removeEventListener('openFileAtLocation', handleCustomEvent);
+      window.removeEventListener('message', handlePostMessage);
+    });
   }
 
   protected async openCurrentCodeInStackBlitz(): Promise<void> {
@@ -148,6 +205,25 @@ export class CodeEditor {
 
   protected closeErrorsBox(): void {
     this.displayErrorsBox.set(false);
+  }
+
+  protected openFileAtLocation(error: DiagnosticWithLocation): void {
+    // Scroll the editor to the error location
+    // The error is always in the current file since diagnostics are file-specific
+    const lineNumber = error.lineNumber;
+    const characterPosition = error.characterPosition;
+
+    // Calculate the position in the document
+    // CodeMirror uses 0-based line numbers, but our error uses 1-based
+    const line = Math.max(0, lineNumber - 1);
+
+    // Request the editor to scroll to this line
+    // We'll need to add a method to CodeMirrorEditor service to handle this
+    this.codeMirrorEditor.scrollToLine(line, characterPosition);
+  }
+
+  protected closeRenameFile(): void {
+    this.isRenamingFile.set(false);
   }
 
   protected canRenameFile = (filename: string) => this.canDeleteFile(filename);

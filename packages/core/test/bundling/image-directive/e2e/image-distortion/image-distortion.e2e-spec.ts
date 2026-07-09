@@ -20,9 +20,21 @@ describe('NgOptimizedImage directive', () => {
 
   it('should warn if there is image distortion', async () => {
     await browser.get('/e2e/image-distortion-failing');
-    const logs = await collectBrowserLogs(logging.Level.WARNING);
 
-    expect(logs.length).toEqual(7);
+    // Use a deterministic wait to pool logs until all image distortion warnings are detected.
+    const logs: logging.Entry[] = [];
+    await browser.wait(
+      async () => {
+        const newLogs = await collectBrowserLogs(logging.Level.WARNING);
+        logs.push(
+          ...newLogs.filter((l) => l.message.includes(`NG02952`)), // RuntimeErrorCode.UNEXPECTED_DEV_MODE_CHECK_IN_PROD_MODE
+        );
+        return logs.length >= 8;
+      },
+      5000,
+      'Expected 8 image distortion logs to be produced.',
+    );
+
     // Image loading order is not guaranteed, so all logs, rather than single entry
     // needs to be checked in order to test whether a given error message is present.
     const expectErrorMessageInLogs = (logs: logging.Entry[], message: string) => {
@@ -51,6 +63,16 @@ describe('NgOptimizedImage directive', () => {
         'the aspect ratio of the image does not match the aspect ratio indicated by the width and height attributes. ' +
         '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
         '\\nSupplied width and height attributes: 24w x 240h (aspect-ratio: 0.10). ' +
+        '\\nTo fix this, update the width and height attributes.',
+    );
+
+    expectErrorMessageInLogs(
+      logs,
+      'The NgOptimizedImage directive (activated on an \\u003Cimg> element ' +
+        'with the `ngSrc=\\"/e2e/a.png\\"`) has detected that ' +
+        'the aspect ratio of the image does not match the aspect ratio indicated by the width and height attributes. ' +
+        '\\nIntrinsic image size: 250w x 250h (aspect-ratio: 1). ' +
+        '\\nSupplied width and height attributes: 222w x 25h (aspect-ratio: 8.88). ' +
         '\\nTo fix this, update the width and height attributes.',
     );
 

@@ -15,6 +15,7 @@ import {
   forwardRef,
   Pipe,
   Type,
+  AbstractType,
   ViewEncapsulation,
   ɵɵngDeclareComponent,
 } from '../../../src/core';
@@ -34,6 +35,7 @@ describe('component declaration jit compilation', () => {
       version: '18.0.0',
       type: TestClass,
       template: `<div></div>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -47,6 +49,7 @@ describe('component declaration jit compilation', () => {
       type: TestClass,
       template: '<div></div>',
       selector: '[dir], test',
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -66,6 +69,7 @@ describe('component declaration jit compilation', () => {
       outputs: {
         minifiedEventName: 'eventBindingName',
       },
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -92,6 +96,7 @@ describe('component declaration jit compilation', () => {
       inputs: {
         minifiedClassProperty: ['bindingName', 'classProperty', transformFn],
       },
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -114,6 +119,7 @@ describe('component declaration jit compilation', () => {
       type: TestClass,
       template: '<div></div>',
       exportAs: ['a', 'b'],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -127,6 +133,7 @@ describe('component declaration jit compilation', () => {
       type: TestClass,
       template: '<div></div>',
       providers: [{provide: 'token', useValue: 123}],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -141,6 +148,7 @@ describe('component declaration jit compilation', () => {
       type: TestClass,
       template: '<div></div>',
       viewProviders: [{provide: 'token', useValue: 123}],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -169,6 +177,7 @@ describe('component declaration jit compilation', () => {
           emitDistinctChangesOnly: false,
         },
       ],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -207,6 +216,7 @@ describe('component declaration jit compilation', () => {
           emitDistinctChangesOnly: false,
         },
       ],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -244,6 +254,7 @@ describe('component declaration jit compilation', () => {
         classAttribute: 'foo bar',
         styleAttribute: 'width: 100px;',
       },
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -272,6 +283,7 @@ describe('component declaration jit compilation', () => {
       type: TestClass,
       template: '<div></div>',
       usesInheritance: true,
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -285,6 +297,7 @@ describe('component declaration jit compilation', () => {
       type: TestClass,
       template: '<div></div>',
       usesOnChanges: true,
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -311,6 +324,7 @@ describe('component declaration jit compilation', () => {
       type: TestClass,
       template: '<div></div>',
       styles: ['div {}'],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -326,6 +340,7 @@ describe('component declaration jit compilation', () => {
       template: '<div></div>',
       styles: ['div {}'],
       encapsulation: ViewEncapsulation.ShadowDom,
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -340,6 +355,7 @@ describe('component declaration jit compilation', () => {
       type: TestClass,
       template: '<div></div>',
       animations: [{type: 'trigger'}],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -356,11 +372,13 @@ describe('component declaration jit compilation', () => {
       type: TestClass,
       template,
       preserveWhitespaces: true,
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
     const whenOmitted = ɵɵngDeclareComponent({
       version: '18.0.0',
       type: TestClass,
       template,
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(whenTrue, {
@@ -394,6 +412,7 @@ describe('component declaration jit compilation', () => {
         },
       ],
       template: `<div [dir]="'test' | test"></div>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -414,6 +433,7 @@ describe('component declaration jit compilation', () => {
           selector: 'cmp',
         },
       ],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -432,6 +452,7 @@ describe('component declaration jit compilation', () => {
           selector: '[dir]',
         },
       ],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -456,6 +477,7 @@ describe('component declaration jit compilation', () => {
           selector: '[dir]',
         },
       ],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -476,6 +498,7 @@ describe('component declaration jit compilation', () => {
           selector: '[forward]',
         },
       ],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     @Directive({
@@ -506,6 +529,7 @@ describe('component declaration jit compilation', () => {
           selector: '[forward]',
         },
       ],
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     @Directive({
@@ -527,6 +551,7 @@ describe('component declaration jit compilation', () => {
       pipes: {
         'test': TestPipe,
       },
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -544,6 +569,7 @@ describe('component declaration jit compilation', () => {
           return ForwardPipe;
         }),
       },
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     @Pipe({
@@ -568,6 +594,7 @@ describe('component declaration jit compilation', () => {
           return ForwardPipe;
         }),
       },
+      changeDetection: ChangeDetectionStrategy.Eager,
     }) as ComponentDef<TestClass>;
 
     @Pipe({
@@ -663,7 +690,7 @@ function expectComponentDef(
   expect(actual.styles).withContext('styles').toEqual(expectation.styles);
   expect(actual.data).withContext('data').toEqual(expectation.data);
 
-  const convertNullToEmptyArray = <T extends Type<any>[] | null>(arr: T): T =>
+  const convertNullToEmptyArray = <T extends (Type<any> | AbstractType<any>)[] | null>(arr: T): T =>
     arr ?? ([] as unknown as T);
 
   const directiveDefs =

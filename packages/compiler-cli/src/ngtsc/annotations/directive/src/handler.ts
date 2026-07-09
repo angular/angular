@@ -7,13 +7,16 @@
  */
 
 import {
+  ClassPropertyMapping,
   compileClassMetadata,
   compileDeclareClassMetadata,
   compileDeclareDirectiveFromMetadata,
   compileDirectiveFromMetadata,
   ConstantPool,
+  createHostElement,
   FactoryTarget,
   makeBindingParser,
+  MatchSource,
   R3ClassMetadata,
   R3DirectiveMetadata,
   R3TargetBinder,
@@ -27,13 +30,11 @@ import {
   SemanticDepGraphUpdater,
 } from '../../../incremental/semantic_graph';
 import {
-  ClassPropertyMapping,
   DirectiveResources,
   DirectiveTypeCheckMeta,
   extractDirectiveTypeCheckMeta,
   HostDirectiveMeta,
   InputMapping,
-  MatchSource,
   MetadataReader,
   MetadataRegistry,
   MetaKind,
@@ -47,6 +48,7 @@ import {
   ClassMemberKind,
   Decorator,
   ReflectionHost,
+  reflectObjectLiteral,
 } from '../../../reflection';
 import {LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../../scope';
 import {
@@ -63,6 +65,7 @@ import {
   compileInputTransformFields,
   compileNgFactoryDefField,
   compileResults,
+  createSourceSpan,
   extractClassMetadata,
   findAngularDecorator,
   getDirectiveDiagnostics,
@@ -70,14 +73,22 @@ import {
   getUndecoratedClassWithAngularFeaturesDiagnostic,
   InjectableClassRegistry,
   isAngularDecorator,
+  parseStandaloneOption,
   readBaseClass,
   ReferencesRegistry,
   resolveProvidersRequiringFactory,
   toFactoryMetadata,
   UndecoratedMetadataExtractor,
+  unwrapExpression,
   validateHostDirectives,
 } from '../../common';
 
+import {
+  HostBindingsContext,
+  TypeCheckableDirectiveMeta,
+  TypeCheckContext,
+} from '../../../typecheck/api';
+import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 import {
   extractDirectiveMetadata,
   extractHostBindingResources,
@@ -85,13 +96,6 @@ import {
   HostBindingNodes,
 } from './shared';
 import {DirectiveSymbol} from './symbol';
-import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
-import {
-  HostBindingsContext,
-  TypeCheckableDirectiveMeta,
-  TypeCheckContext,
-} from '../../../typecheck/api';
-import {createHostElement} from '../../../typecheck';
 
 const FIELD_DECORATORS = [
   'Input',
@@ -132,9 +136,12 @@ export interface DirectiveHandlerData {
   resources: DirectiveResources;
 }
 
-export class DirectiveDecoratorHandler
-  implements DecoratorHandler<Decorator | null, DirectiveHandlerData, DirectiveSymbol, unknown>
-{
+export class DirectiveDecoratorHandler implements DecoratorHandler<
+  Decorator | null,
+  DirectiveHandlerData,
+  DirectiveSymbol,
+  unknown
+> {
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,
@@ -160,6 +167,7 @@ export class DirectiveDecoratorHandler
     private readonly usePoisonedData: boolean,
     private readonly typeCheckHostBindings: boolean,
     private readonly emitDeclarationOnly: boolean,
+    private readonly legacyOptionalChaining: boolean,
   ) {
     this.undecoratedMetadataExtractor = getDirectiveUndecoratedMetadataExtractor(
       reflector,
@@ -223,6 +231,7 @@ export class DirectiveDecoratorHandler
       this.strictStandalone,
       this.implicitStandaloneValue,
       this.emitDeclarationOnly,
+      this.legacyOptionalChaining,
     );
     // `extractDirectiveMetadata` returns `jitForced = true` when the `@Directive` has
     // set `jit: true`. In this case, compilation of the decorator is skipped. Returning
@@ -316,6 +325,7 @@ export class DirectiveDecoratorHandler
       isStandalone: analysis.meta.isStandalone,
       isSignal: analysis.meta.isSignal,
       imports: null,
+      foreignImports: null,
       rawImports: null,
       deferredImports: null,
       schemas: null,
@@ -360,10 +370,10 @@ export class DirectiveDecoratorHandler
     const hostElement = createHostElement(
       'directive',
       meta.meta.selector,
-      node,
-      meta.hostBindingNodes.literal,
-      meta.hostBindingNodes.bindingDecorators,
-      meta.hostBindingNodes.listenerDecorators,
+      createSourceSpan(node.name),
+      meta.hostBindingNodes.hostObjectLiteralBindings,
+      meta.hostBindingNodes.hostBindingDecorators,
+      meta.hostBindingNodes.hostListenerDecorators,
     );
 
     if (hostElement !== null && scope.directivesOnHost !== null) {

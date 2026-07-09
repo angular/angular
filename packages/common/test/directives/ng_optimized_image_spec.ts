@@ -39,6 +39,7 @@ import {
   resetImagePriorityCount,
 } from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
+import {escapeCssUrl} from '../../src/directives/ng_optimized_image/url';
 
 describe('Image directive', () => {
   beforeEach(() => {
@@ -708,6 +709,7 @@ describe('Image directive', () => {
             [loaderParams]="loaderParams"
           />`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComponent {
           width = 100;
@@ -1227,6 +1229,25 @@ describe('Image directive', () => {
       );
     });
 
+    it('should escape loader output when placeholder is provided as a boolean (security regression)', () => {
+      const maliciousLoader = (config: ImageLoaderConfig) => {
+        if (config.isPlaceholder) {
+          return 'https://mysite.com/img.png"); color: red;/*';
+        }
+        return `${IMG_BASE_URL}/${config.src}`;
+      };
+      setupTestingModule({imageLoader: maliciousLoader});
+      const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder="true" />';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const imageDirective = fixture.debugElement.children[0].injector.get(NgOptimizedImage);
+      const placeholderValue = (imageDirective as any).generatePlaceholder(true) as string;
+
+      expect(placeholderValue).toBe('url("https://mysite.com/img.png\\"); color: red;/*")');
+    });
+
     if (!isNode) {
       // DataURLs get stripped from background-image attribute in Node, but not browsers.
       it('should add a background-image tag when placeholder is provided as a data URL', () => {
@@ -1274,6 +1295,22 @@ describe('Image directive', () => {
       expect(img.getAttribute('style')?.replace(/"/g, '').replace(/\s/g, '')).toBe(
         `background-size:cover;background-position:50%50%;background-repeat:no-repeat;background-image:url(../../assets/my-image.png);filter:blur(${PLACEHOLDER_BLUR_AMOUNT}px);`,
       );
+    });
+
+    it('should prevent CSS injection through placeholder URL values', () => {
+      setupTestingModule({imageLoader});
+      const maliciousPlaceholder = 'https://mysite.com/img.png"); color: red;';
+      const template = `<img ngSrc="path/img.png" width="400" height="300" placeholder='${maliciousPlaceholder}' />`;
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const imageDirective = fixture.debugElement.children[0].injector.get(NgOptimizedImage);
+      const placeholderValue = (imageDirective as any).generatePlaceholder(
+        maliciousPlaceholder,
+      ) as string;
+
+      expect(placeholderValue).toBe('url("https://mysite.com/img.png\\"); color: red;")');
     });
 
     it('should add a background-image tag when placeholder is provided without value', () => {
@@ -1858,6 +1895,7 @@ describe('Image directive', () => {
         selector: 'test-cmp',
         template: `<img [ngSrc]="ngSrc" width="300" height="300" />`,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         ngSrc = `img.png`;
@@ -1881,6 +1919,7 @@ describe('Image directive', () => {
         selector: 'test-cmp',
         template: `<img [ngSrc]="ngSrc" width="300" height="300" sizes="100vw" />`,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         ngSrc = `img.png`;
@@ -2442,6 +2481,30 @@ describe('Image directive', () => {
         expect(img.getAttribute('srcset')).toBeNull();
       });
     });
+  });
+});
+
+describe('escapeCssUrl', () => {
+  it('strips characters that are invalid in URLs and break CSS quoted strings', () => {
+    // \n, \r, \f and \0 all terminate a CSS string per the spec, and none of
+    // them are valid URL characters either, so we just drop them.
+    expect(escapeCssUrl('http://x.com/img\n.jpg')).toBe('http://x.com/img.jpg'); // newline
+    expect(escapeCssUrl('http://x.com/img\r.jpg')).toBe('http://x.com/img.jpg'); // carriage return
+    expect(escapeCssUrl('http://x.com/img\f.jpg')).toBe('http://x.com/img.jpg'); // form feed
+    expect(escapeCssUrl('http://x.com/img\0.jpg')).toBe('http://x.com/img.jpg'); // null byte
+  });
+
+  it('escapes characters that break the CSS url("...") wrapper', () => {
+    // A bare " would end the url("...") string prematurely, so it becomes \".
+    expect(escapeCssUrl('http://x.com/img".jpg')).toBe('http://x.com/img\\".jpg');
+    // A bare \ starts a CSS escape sequence, so it must be doubled to \\.
+    expect(escapeCssUrl('http://x.com/img\\.jpg')).toBe('http://x.com/img\\\\.jpg');
+  });
+
+  it('does not double-escape backslashes', () => {
+    // The \ → \\ replacement runs first, so backslashes introduced by later
+    // replacements are never accidentally escaped a second time.
+    expect(escapeCssUrl('a\\b')).toBe('a\\\\b');
   });
 });
 

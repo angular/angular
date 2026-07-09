@@ -1,0 +1,27 @@
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+  @for (movie of movies; track movie) {
+    <div
+      class="example-box"
+      cdkDrag
+      animate.enter="ease-in-animation"
+      animate.leave="ease-out-animation"
+    >
+      <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+      {{ movie }}
+    </div>
+  }
+</div>
+
+@if (showFallback) {
+  <div class="fallback-el" animate.leave="short-animation">Fallback Element</div>
+}
+
+<button id="hide-and-intercept" (click)="hideAndIntercept()">Hide and Intercept</button>
+
+<div class="test-reorder-container">
+  @for (item of testItems; track item) {
+    <div class="test-item" (animate.leave)="onTestLeave($event)">Item {{ item }}</div>
+  }
+</div>
+<button id="shuffle-test" (click)="shuffleTest()">Shuffle Test</button>
+<button id="remove-test" (click)="removeTest()">Remove Test</button>

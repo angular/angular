@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgStyle} from '../../index';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {CommonModule, NgStyle} from '../../index';
 
 describe('NgStyle', () => {
   let fixture: ComponentFixture<TestComponent>;
@@ -35,14 +36,14 @@ describe('NgStyle', () => {
     TestBed.configureTestingModule({declarations: [TestComponent], imports: [CommonModule]});
   });
 
-  it('should add styles specified in an object literal', waitForAsync(() => {
+  it('should add styles specified in an object literal', () => {
     const template = `<div [ngStyle]="{'max-width': '40px'}"></div>`;
     fixture = createTestComponent(template);
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
-  }));
+  });
 
-  it('should add and change styles specified in an object expression', waitForAsync(() => {
+  it('should add and change styles specified in an object expression', () => {
     const template = `<div [ngStyle]="expr"></div>`;
     fixture = createTestComponent(template);
 
@@ -56,9 +57,9 @@ describe('NgStyle', () => {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '30%'});
-  }));
+  });
 
-  it('should remove styles with a null expression', waitForAsync(() => {
+  it('should remove styles with a null expression', () => {
     const template = `<div [ngStyle]="expr"></div>`;
     fixture = createTestComponent(template);
 
@@ -71,9 +72,9 @@ describe('NgStyle', () => {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
-  }));
+  });
 
-  it('should remove styles with an undefined expression', waitForAsync(() => {
+  it('should remove styles with an undefined expression', () => {
     const template = `<div [ngStyle]="expr"></div>`;
     fixture = createTestComponent(template);
 
@@ -86,9 +87,9 @@ describe('NgStyle', () => {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
-  }));
+  });
 
-  it('should add and remove styles specified using style.unit notation', waitForAsync(() => {
+  it('should add and remove styles specified using style.unit notation', () => {
     const template = `<div [ngStyle]="{'max-width.px': expr}"></div>`;
 
     fixture = createTestComponent(template);
@@ -102,10 +103,10 @@ describe('NgStyle', () => {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
-  }));
+  });
 
   // https://github.com/angular/angular/issues/21064
-  it('should add and remove styles which names are not dash-cased', waitForAsync(() => {
+  it('should add and remove styles which names are not dash-cased', () => {
     fixture = createTestComponent(`<div [ngStyle]="{'color': expr}"></div>`);
 
     getComponent().expr = 'green';
@@ -117,9 +118,9 @@ describe('NgStyle', () => {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('color');
-  }));
+  });
 
-  it('should update styles using style.unit notation when unit changes', waitForAsync(() => {
+  it('should update styles using style.unit notation when unit changes', () => {
     const template = `<div [ngStyle]="expr"></div>`;
 
     fixture = createTestComponent(template);
@@ -133,10 +134,10 @@ describe('NgStyle', () => {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40em'});
-  }));
+  });
 
   // keyValueDiffer is sensitive to key order #9115
-  it('should change styles specified in an object expression', waitForAsync(() => {
+  it('should change styles specified in an object expression', () => {
     const template = `<div [ngStyle]="expr"></div>`;
 
     fixture = createTestComponent(template);
@@ -160,9 +161,9 @@ describe('NgStyle', () => {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'height': '5px', 'width': '5px'});
-  }));
+  });
 
-  it('should remove styles when deleting a key in an object expression', waitForAsync(() => {
+  it('should remove styles when deleting a key in an object expression', () => {
     const template = `<div [ngStyle]="expr"></div>`;
 
     fixture = createTestComponent(template);
@@ -176,9 +177,9 @@ describe('NgStyle', () => {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
-  }));
+  });
 
-  it('should co-operate with the style attribute', waitForAsync(() => {
+  it('should co-operate with the style attribute', () => {
     const template = `<div style="font-size: 12px" [ngStyle]="expr"></div>`;
 
     fixture = createTestComponent(template);
@@ -193,9 +194,9 @@ describe('NgStyle', () => {
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
     expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
-  }));
+  });
 
-  it('should co-operate with the style.[styleName]="expr" special-case in the compiler', waitForAsync(() => {
+  it('should co-operate with the style.[styleName]="expr" special-case in the compiler', () => {
     const template = `<div [style.font-size.px]="12" [ngStyle]="expr"></div>`;
 
     fixture = createTestComponent(template);
@@ -210,7 +211,7 @@ describe('NgStyle', () => {
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
     expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
-  }));
+  });
 
   it('should not write to the native node unless the bound expression has changed', () => {
     const template = `<div [ngStyle]="{'color': expr}"></div>`;
@@ -267,6 +268,7 @@ describe('NgStyle', () => {
       selector: 'test-component',
       imports: [NgStyle],
       template: `<div [ngStyle]="{'width.px': expr}"></div>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       expr = 400;
@@ -283,6 +285,7 @@ describe('NgStyle', () => {
   selector: 'test-cmp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   expr: any;

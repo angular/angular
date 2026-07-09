@@ -7,18 +7,10 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  afterNextRender,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import {Component, afterNextRender, computed, inject, signal} from '@angular/core';
 
 @Component({
   selector: 'docs-icon',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'material-symbols-outlined',
     '[style.font-size.px]': 'fontSize()',

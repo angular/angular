@@ -35,7 +35,13 @@ import {
   nativeRemoveNode,
 } from './dom_node_manipulation';
 import {icuContainerIterate} from './i18n/i18n_tree_shaking';
-import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS, NATIVE} from './interfaces/container';
+import {
+  CONTAINER_HEADER_OFFSET,
+  LContainer,
+  LContainerFlags,
+  MOVED_VIEWS,
+  NATIVE,
+} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {unregisterLView} from './interfaces/lview_tracking';
@@ -76,17 +82,17 @@ import {
   TView,
   TViewType,
   INJECTOR,
+  ID,
 } from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';
 import {ProfilerEvent} from '../../primitives/devtools';
 import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
-import {allLeavingAnimations} from '../animation/longest_animation';
+import {cancelLeavingNodes, reusedNodes, trackLeavingNodes} from '../animation/utils';
 import {Injector} from '../di';
-import {addToAnimationQueue, queueEnterAnimations} from '../animation/queue';
-import {RunLeaveAnimationFn} from '../animation/interfaces';
+import {maybeQueueEnterAnimation, runLeaveAnimationsWithCallback} from './node_animations';
 
-const enum WalkTNodeTreeAction {
+export const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
   Create = 0,
 
@@ -101,18 +107,6 @@ const enum WalkTNodeTreeAction {
 
   /** node destruction using the renderer's API */
   Destroy = 3,
-}
-
-function maybeQueueEnterAnimation(
-  parentLView: LView | undefined,
-  parent: RElement | null,
-  tNode: TNode,
-  injector: Injector,
-): void {
-  const enterAnimations = parentLView?.[ANIMATIONS]?.enter;
-  if (parent !== null && enterAnimations && enterAnimations.has(tNode.index)) {
-    queueEnterAnimations(injector, enterAnimations);
-  }
 }
 
 /**
@@ -157,12 +151,21 @@ function applyToElementOrContainer(
     } else if (action === WalkTNodeTreeAction.Insert && parent !== null) {
       maybeQueueEnterAnimation(parentLView, parent, tNode, injector);
       nativeInsertBefore(renderer, parent, rNode, beforeNode || null, true);
+      cancelLeavingNodes(tNode, rNode as HTMLElement, parentLView);
     } else if (action === WalkTNodeTreeAction.Detach) {
+      if (parentLView?.[ANIMATIONS]?.leave?.has(tNode.index)) {
+        trackLeavingNodes(tNode, rNode as HTMLElement, parentLView);
+      }
+      reusedNodes.delete(rNode as HTMLElement);
       runLeaveAnimationsWithCallback(
         parentLView,
         tNode,
         injector,
         (nodeHasLeaveAnimations: boolean) => {
+          if (reusedNodes.has(rNode as HTMLElement)) {
+            reusedNodes.delete(rNode as HTMLElement);
+            return;
+          }
           // the nodeHasLeaveAnimations indicates to the renderer that the element needs to
           // be removed synchronously and sets the requireSynchronousElementRemoval flag in
           // the renderer.
@@ -170,6 +173,7 @@ function applyToElementOrContainer(
         },
       );
     } else if (action === WalkTNodeTreeAction.Destroy) {
+      reusedNodes.delete(rNode as HTMLElement);
       runLeaveAnimationsWithCallback(parentLView, tNode, injector, () => {
         renderer.destroyNode!(rNode);
       });
@@ -375,60 +379,6 @@ function cleanUpView(tView: TView, lView: LView): void {
   } finally {
     setActiveConsumer(prevConsumer);
   }
-}
-
-function runLeaveAnimationsWithCallback(
-  lView: LView | undefined,
-  tNode: TNode,
-  injector: Injector,
-  callback: Function,
-) {
-  const animations = lView?.[ANIMATIONS];
-  if (animations == null || animations.leave == undefined || !animations.leave.has(tNode.index))
-    return callback(false);
-
-  if (lView) allLeavingAnimations.add(lView);
-
-  addToAnimationQueue(
-    injector,
-    () => {
-      // it's possible that in the time between when the leave animation was
-      // and the time it was executed, the data structure changed. So we need
-      // to be safe here.
-      if (animations.leave && animations.leave.has(tNode.index)) {
-        const leaveAnimationMap = animations.leave;
-        const leaveAnimations = leaveAnimationMap.get(tNode.index);
-        const runningAnimations = [];
-        if (leaveAnimations) {
-          for (let index = 0; index < leaveAnimations.animateFns.length; index++) {
-            const animationFn = leaveAnimations.animateFns[index];
-            const {promise} = animationFn() as ReturnType<RunLeaveAnimationFn>;
-            runningAnimations.push(promise);
-          }
-          animations.detachedLeaveAnimationFns = undefined;
-        }
-        animations.running = Promise.allSettled(runningAnimations);
-        runAfterLeaveAnimations(lView!, callback);
-      } else {
-        if (lView) allLeavingAnimations.delete(lView);
-        callback(false);
-      }
-    },
-    animations,
-  );
-}
-
-function runAfterLeaveAnimations(lView: LView, callback: Function) {
-  const runningAnimations = lView[ANIMATIONS]?.running;
-  if (runningAnimations) {
-    runningAnimations.then(() => {
-      lView[ANIMATIONS]!.running = undefined;
-      allLeavingAnimations.delete(lView);
-      callback(true);
-    });
-    return;
-  }
-  callback(false);
 }
 
 /** Removes listeners and unsubscribes from output subscriptions */
@@ -927,7 +877,7 @@ function applyNodes(
  * @param parentRElement parent DOM element for insertion (Removal does not need it).
  * @param beforeNode Before which node the insertions should happen.
  */
-function applyView(
+export function applyView(
   tView: TView,
   lView: LView,
   renderer: Renderer,
@@ -935,7 +885,7 @@ function applyView(
   parentRElement: null,
   beforeNode: null,
 ): void;
-function applyView(
+export function applyView(
   tView: TView,
   lView: LView,
   renderer: Renderer,
@@ -943,7 +893,7 @@ function applyView(
   parentRElement: RElement | null,
   beforeNode: RNode | null,
 ): void;
-function applyView(
+export function applyView(
   tView: TView,
   lView: LView,
   renderer: Renderer,
@@ -951,7 +901,54 @@ function applyView(
   parentRElement: RElement | null,
   beforeNode: RNode | null,
 ): void {
-  applyNodes(renderer, action, tView.firstChild, lView, parentRElement, beforeNode, false);
+  if (tView.type === TViewType.Foreign) {
+    applyForeignNodes(renderer, action, lView, parentRElement, beforeNode);
+  } else {
+    applyNodes(renderer, action, tView.firstChild, lView, parentRElement, beforeNode, false);
+  }
+}
+
+function applyForeignNodes(
+  renderer: Renderer,
+  action: WalkTNodeTreeAction,
+  lView: LView,
+  parent: RElement | null,
+  beforeNode: RNode | null,
+) {
+  const tView = lView[TVIEW];
+  const headTNode = tView.firstChild!;
+  const tailTNode = headTNode.next!;
+  const head = unwrapRNode(lView[headTNode.index]);
+  const tail = unwrapRNode(lView[tailTNode.index]);
+
+  const fragmentSlotIndex = tailTNode.index + 1;
+  let fragment = lView[fragmentSlotIndex] as any;
+
+  if (action === WalkTNodeTreeAction.Insert || action === WalkTNodeTreeAction.Create) {
+    if (parent !== null) {
+      if (fragment && fragment.hasChildNodes()) {
+        nativeInsertBefore(renderer, parent, fragment, beforeNode, true);
+      } else {
+        nativeInsertBefore(renderer, parent, head!, beforeNode, true);
+        nativeInsertBefore(renderer, parent, tail!, beforeNode, true);
+      }
+    }
+  } else if (action === WalkTNodeTreeAction.Detach) {
+    if (!fragment) {
+      fragment = document.createDocumentFragment();
+      lView[fragmentSlotIndex] = fragment;
+    }
+    if (head && head.parentNode === fragment) {
+      return;
+    }
+    let current: RNode | null = head;
+    while (current !== null) {
+      const next: RNode | null = current.nextSibling;
+      fragment.appendChild(current);
+      if (current === tail) break;
+      current = next;
+    }
+  }
 }
 
 /**
@@ -1090,6 +1087,9 @@ function applyContainer(
       tNode,
       beforeNode,
     );
+  }
+  if ((lContainer[FLAGS] & LContainerFlags.LogicalOnly) !== 0) {
+    return;
   }
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const lView = lContainer[i] as LView;

@@ -85,7 +85,8 @@ const OPTIMIZED_ZONE_EVENT_TASK_DATA: EventTaskData = {
   useG: true,
 };
 
-export const zoneSymbolEventNames: any = {};
+// tslint:disable-next-line:no-toplevel-property-access
+export const zoneSymbolEventNames: any = Object.create(null);
 export const globalSources: any = {};
 
 const EVENT_NAME_SYMBOL_REGX = new RegExp('^' + ZONE_SYMBOL_PREFIX + '(\\w+)(true|false)$');
@@ -96,9 +97,10 @@ function prepareEventNames(eventName: string, eventNameToString?: (eventName: st
   const trueEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + TRUE_STR;
   const symbol = ZONE_SYMBOL_PREFIX + falseEventName;
   const symbolCapture = ZONE_SYMBOL_PREFIX + trueEventName;
-  zoneSymbolEventNames[eventName] = {};
-  zoneSymbolEventNames[eventName][FALSE_STR] = symbol;
-  zoneSymbolEventNames[eventName][TRUE_STR] = symbolCapture;
+  zoneSymbolEventNames[eventName] = {
+    [FALSE_STR]: symbol,
+    [TRUE_STR]: symbolCapture,
+  };
 }
 
 export interface PatchEventTargetOptions {

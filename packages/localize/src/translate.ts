@@ -67,7 +67,11 @@ export function loadTranslations(translations: Record<MessageId, TargetMessage>)
     $localize.translate = translate;
   }
   if (!$localize.TRANSLATIONS) {
-    $localize.TRANSLATIONS = {};
+    // Keyed by message ID, which is taken verbatim from the `translations` map (e.g. parsed from a
+    // translation file), so it can be `__proto__`. Indexing a plain object with that key assigns
+    // through the inherited `__proto__` setter, reparenting the map instead of storing the entry
+    // (and throwing under `--disable-proto=throw`). A null-prototype map makes it an ordinary key.
+    $localize.TRANSLATIONS = Object.create(null);
   }
   Object.keys(translations).forEach((key) => {
     $localize.TRANSLATIONS[key] = parseTranslation(translations[key]);
@@ -86,7 +90,7 @@ export function loadTranslations(translations: Record<MessageId, TargetMessage>)
  */
 export function clearTranslations() {
   $localize.translate = undefined;
-  $localize.TRANSLATIONS = {};
+  $localize.TRANSLATIONS = Object.create(null);
 }
 
 /**

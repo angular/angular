@@ -40,6 +40,11 @@ export const parentCollapsed = (
 export const getDirectivesArrayString = (node: FlatNode): string =>
   node.directives ? node.directives.map((dir) => `[${dir}]`).join('') : '';
 
+export const matchesDirectiveOrComponentId = (node: FlatNode, id: number | null): boolean =>
+  id !== null &&
+  (node.original.component?.id === id ||
+    !!node.original.directives?.some((directive) => directive.id === id));
+
 /** Returns the full node name string as rendered by the tree-node component. */
 export const getFullNodeNameString = (node: FlatNode): string => {
   const cmp = node.original.component;

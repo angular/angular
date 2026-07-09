@@ -10,14 +10,13 @@ import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
-import {CssSelector} from '../../directive_matching';
-import {ShadowCss} from '../../shadow_css';
+import {namespaceCssVariables, ShadowCss} from '../../shadow_css';
 import {CompilationJobKind, TemplateCompilationMode} from '../../template/pipeline/src/compilation';
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {Identifiers as R3} from '../r3_identifiers';
-import {R3CompiledExpression, typeWithParameters} from '../util';
+import {R3CompiledExpression, tsIgnoreComment, typeWithParameters} from '../util';
 
 import {
   DeclarationListEmitMode,
@@ -36,7 +35,6 @@ import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} fr
 const COMPONENT_VARIABLE = '%COMP%';
 const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
-const ANIMATE_LEAVE = `animate.leave`;
 
 function baseDirectiveFields(
   meta: R3DirectiveMetadata,
@@ -80,6 +78,7 @@ function baseDirectiveFields(
       meta.selector || '',
       meta.name,
       definitionMap,
+      meta.legacyOptionalChaining,
     ),
   );
 
@@ -101,16 +100,6 @@ function baseDirectiveFields(
   }
 
   return definitionMap;
-}
-
-function hasAnimationHostBinding(
-  meta: R3DirectiveMetadata | R3ComponentMetadata<R3TemplateDependency>,
-): boolean {
-  return (
-    meta.host.attributes[ANIMATE_LEAVE] !== undefined ||
-    meta.host.properties[ANIMATE_LEAVE] !== undefined ||
-    meta.host.listeners[ANIMATE_LEAVE] !== undefined
-  );
 }
 
 /**
@@ -147,6 +136,11 @@ function addFeatures(
   }
   if (meta.lifecycle.usesOnChanges) {
     features.push(o.importExpr(R3.NgOnChangesFeature));
+  }
+  if (meta.controlCreate !== null) {
+    features.push(
+      o.importExpr(R3.ControlFeature).callFn([o.literal(meta.controlCreate.passThroughInput)]),
+    );
   }
   if ('externalStyles' in meta && meta.externalStyles?.length) {
     const externalStyleNodes = meta.externalStyles.map((externalStyle) => o.literal(externalStyle));
@@ -189,28 +183,6 @@ export function compileComponentFromMetadata(
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
 
-  const selector = meta.selector && CssSelector.parse(meta.selector);
-  const firstSelector = selector && selector[0];
-
-  // e.g. `attr: ["class", ".my.app"]`
-  // This is optional an only included if the first selector of a component specifies attributes.
-  if (firstSelector) {
-    const selectorAttributes = firstSelector.getAttrs();
-    if (selectorAttributes.length) {
-      definitionMap.set(
-        'attrs',
-        constantPool.getConstLiteral(
-          o.literalArr(
-            selectorAttributes.map((value) =>
-              value != null ? o.literal(value) : o.literal(undefined),
-            ),
-          ),
-          /* forceShared */ true,
-        ),
-      );
-    }
-  }
-
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
   const templateTypeName = meta.name;
 
@@ -243,6 +215,8 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn,
     meta.relativeTemplatePath,
     getTemplateSourceLocationsEnabled(),
+    meta.legacyOptionalChaining,
+    meta.foreignImports,
   );
 
   // Then the IR is transformed to prepare it for code generation.
@@ -295,10 +269,11 @@ export function compileComponentFromMetadata(
   let hasStyles = !!meta.externalStyles?.length;
   // e.g. `styles: [str1, str2]`
   if (meta.styles && meta.styles.length) {
+    const namespacedStyles = meta.styles.map((s) => namespaceCssVariables(s));
     const styleValues =
       meta.encapsulation == core.ViewEncapsulation.Emulated
-        ? compileStyles(meta.styles, CONTENT_ATTR, HOST_ATTR)
-        : meta.styles;
+        ? compileStyles(namespacedStyles, CONTENT_ATTR, HOST_ATTR)
+        : namespacedStyles;
     const styleNodes = styleValues.reduce((result, style) => {
       if (style.trim().length > 0) {
         result.push(constantPool.getConstLiteral(o.literal(style)));
@@ -334,7 +309,7 @@ export function compileComponentFromMetadata(
   if (meta.changeDetection !== null) {
     if (
       typeof meta.changeDetection === 'number' &&
-      meta.changeDetection !== core.ChangeDetectionStrategy.Default
+      meta.changeDetection !== core.ChangeDetectionStrategy.OnPush
     ) {
       // changeDetection is resolved during analysis. Only set it if not the default.
       definitionMap.set('changeDetection', o.literal(meta.changeDetection));
@@ -482,6 +457,7 @@ function createHostBindingsFunction(
   selector: string,
   name: string,
   definitionMap: DefinitionMap,
+  legacyOptionalChaining: boolean,
 ): o.Expression | null {
   const bindings = bindingParser.createBoundHostProperties(
     hostBindingsMetadata.properties,
@@ -516,6 +492,7 @@ function createHostBindingsFunction(
       properties: bindings,
       events: eventBindings,
       attributes: hostBindingsMetadata.attributes,
+      legacyOptionalChaining: legacyOptionalChaining,
     },
     bindingParser,
     constantPool,
@@ -532,38 +509,42 @@ function createHostBindingsFunction(
   return emitHostBindingFunction(hostJob);
 }
 
-const HOST_REG_EXP = /^(?:\[([^\]]+)\])|(?:\(([^\)]+)\))$/;
-// Represents the groups in the above regex.
-const enum HostBindingGroup {
-  // group 1: "prop" from "[prop]", or "attr.role" from "[attr.role]", or @anim from [@anim]
-  Binding = 1,
-
-  // group 2: "event" from "(event)"
-  Event = 2,
-}
-
 // Defines Host Bindings structure that contains attributes, listeners, and properties,
 // parsed from the `host` object defined for a Type.
 export interface ParsedHostBindings {
-  attributes: {[key: string]: o.Expression};
-  listeners: {[key: string]: string};
-  properties: {[key: string]: string};
+  attributes: Record<string, o.Expression>;
+  listeners: Record<string, string>;
+  properties: Record<string, string>;
   specialAttributes: {styleAttr?: string; classAttr?: string};
 }
 
 export function parseHostBindings(host: {
   [key: string]: string | o.Expression;
 }): ParsedHostBindings {
-  const attributes: {[key: string]: o.Expression} = {};
-  const listeners: {[key: string]: string} = {};
-  const properties: {[key: string]: string} = {};
+  const attributes: Record<string, o.Expression> = {};
+  const listeners: Record<string, string> = {};
+  const properties: Record<string, string> = {};
   const specialAttributes: {styleAttr?: string; classAttr?: string} = {};
 
   for (const key of Object.keys(host)) {
     const value = host[key];
-    const matches = key.match(HOST_REG_EXP);
 
-    if (matches === null) {
+    if (key.startsWith('(') && key.endsWith(')')) {
+      if (typeof value !== 'string') {
+        // TODO(alxhub): make this a diagnostic.
+        throw new Error(`Event binding must be string`);
+      }
+      listeners[key.slice(1, -1)] = value;
+    } else if (key.startsWith('[') && key.endsWith(']')) {
+      if (typeof value !== 'string') {
+        // TODO(alxhub): make this a diagnostic.
+        throw new Error(`Property binding must be string`);
+      }
+      // synthetic properties (the ones that have a `@` as a prefix)
+      // are still treated the same as regular properties. Therefore
+      // there is no point in storing them in a separate map.
+      properties[key.slice(1, -1)] = value;
+    } else {
       switch (key) {
         case 'class':
           if (typeof value !== 'string') {
@@ -586,21 +567,6 @@ export function parseHostBindings(host: {
             attributes[key] = value;
           }
       }
-    } else if (matches[HostBindingGroup.Binding] != null) {
-      if (typeof value !== 'string') {
-        // TODO(alxhub): make this a diagnostic.
-        throw new Error(`Property binding must be string`);
-      }
-      // synthetic properties (the ones that have a `@` as a prefix)
-      // are still treated the same as regular properties. Therefore
-      // there is no point in storing them in a separate map.
-      properties[matches[HostBindingGroup.Binding]] = value;
-    } else if (matches[HostBindingGroup.Event] != null) {
-      if (typeof value !== 'string') {
-        // TODO(alxhub): make this a diagnostic.
-        throw new Error(`Event binding must be string`);
-      }
-      listeners[matches[HostBindingGroup.Event]] = value;
     }
   }
 
@@ -624,7 +590,39 @@ export function verifyHostBindings(
   const bindingParser = makeBindingParser();
   bindingParser.createDirectiveHostEventAsts(bindings.listeners, sourceSpan);
   bindingParser.createBoundHostProperties(bindings.properties, sourceSpan);
+
+  validateNoEventBindings(bindings, bindingParser, sourceSpan);
+
   return bindingParser.errors;
+}
+
+/**
+ * Validates that there are no event attribute bindings in the host bindings.
+ * @param bindings - Map of host bindings for the component.
+ * @param bindingParser - Binding parser used to create the binding expression.
+ * @param sourceSpan - Source span where the host bindings were defined.
+ */
+function validateNoEventBindings(
+  bindings: ParsedHostBindings,
+  bindingParser: BindingParser,
+  sourceSpan: ParseSourceSpan,
+): void {
+  for (const prop in bindings.properties) {
+    const isAttr = prop.startsWith('attr.');
+    const boundName = isAttr ? prop.slice(5) : prop;
+
+    if (boundName.toLowerCase().startsWith('on')) {
+      const errorType = isAttr ? 'attribute' : 'property';
+      const suggestion = `(${boundName.slice(2)})=...`;
+
+      let msg = `Binding to event ${errorType} '${boundName}' is disallowed for security reasons, please use ${suggestion}`;
+      if (!isAttr) {
+        msg += `\nIf '${prop}' is a directive input, make sure the directive is imported by the current module.`;
+      }
+
+      bindingParser.errors.push(new ParseError(sourceSpan, msg));
+    }
+  }
 }
 
 function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {
@@ -764,7 +762,13 @@ export function compileDeferResolverFunction(
         );
 
         // Dynamic import, e.g. `import('./a').then(...)`.
-        const importExpr = new o.DynamicImportExpr(dep.importPath!).prop('then').callFn([innerFn]);
+        const importExpr = new o.DynamicImportExpr(dep.importPath!)
+          .prop('then')
+          .callFn([innerFn], undefined, undefined, [
+            // Necessary, because we might not generate extensions for the path
+            // and TS may try to enforce it based on the compiler options.
+            tsIgnoreComment(),
+          ]);
         depExpressions.push(importExpr);
       } else {
         // Non-deferrable symbol, just use a reference to the type. Note that it's important to
@@ -782,7 +786,13 @@ export function compileDeferResolverFunction(
       );
 
       // Dynamic import, e.g. `import('./a').then(...)`.
-      const importExpr = new o.DynamicImportExpr(importPath).prop('then').callFn([innerFn]);
+      const importExpr = new o.DynamicImportExpr(importPath)
+        .prop('then')
+        .callFn([innerFn], undefined, undefined, [
+          // Necessary, because we might not generate extensions for the path
+          // and TS may try to enforce it based on the compiler options.
+          tsIgnoreComment(),
+        ]);
       depExpressions.push(importExpr);
     }
   }

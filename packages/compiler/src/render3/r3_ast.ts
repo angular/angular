@@ -208,7 +208,18 @@ export class BoundDeferredTrigger extends DeferredTrigger {
 
 export class NeverDeferredTrigger extends DeferredTrigger {}
 
-export class IdleDeferredTrigger extends DeferredTrigger {}
+export class IdleDeferredTrigger extends DeferredTrigger {
+  constructor(
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    prefetchSpan: ParseSourceSpan | null,
+    onSourceSpan: ParseSourceSpan | null,
+    hydrateSpan: ParseSourceSpan | null,
+    public timeout: number | null,
+  ) {
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
+  }
+}
 
 export class ImmediateDeferredTrigger extends DeferredTrigger {}
 
@@ -328,6 +339,25 @@ export class DeferredBlockError extends BlockNode implements Node {
   }
 }
 
+export class ContentBlock extends BlockNode implements Node {
+  constructor(
+    public name: string,
+    public variables: Variable[],
+    public children: Node[],
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    public i18n?: I18nMeta,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitContentBlock(this);
+  }
+}
+
 export interface DeferredBlockTriggers {
   when?: BoundDeferredTrigger;
   idle?: IdleDeferredTrigger;
@@ -404,12 +434,13 @@ export class DeferredBlock extends BlockNode implements Node {
 export class SwitchBlock extends BlockNode implements Node {
   constructor(
     public expression: AST,
-    public cases: SwitchBlockCase[],
+    public groups: SwitchBlockCaseGroup[],
     /**
      * These blocks are only captured to allow for autocompletion in the language service. They
      * aren't meant to be processed in any other way.
      */
     public unknownBlocks: UnknownBlock[],
+    public exhaustiveCheck: SwitchExhaustiveCheck | null,
     sourceSpan: ParseSourceSpan,
     startSourceSpan: ParseSourceSpan,
     endSourceSpan: ParseSourceSpan | null,
@@ -426,6 +457,22 @@ export class SwitchBlock extends BlockNode implements Node {
 export class SwitchBlockCase extends BlockNode implements Node {
   constructor(
     public expression: AST | null,
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    nameSpan: ParseSourceSpan,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitSwitchBlockCase(this);
+  }
+}
+
+export class SwitchBlockCaseGroup extends BlockNode implements Node {
+  constructor(
+    public cases: SwitchBlockCase[],
     public children: Node[],
     sourceSpan: ParseSourceSpan,
     startSourceSpan: ParseSourceSpan,
@@ -437,7 +484,23 @@ export class SwitchBlockCase extends BlockNode implements Node {
   }
 
   visit<Result>(visitor: Visitor<Result>): Result {
-    return visitor.visitSwitchBlockCase(this);
+    return visitor.visitSwitchBlockCaseGroup(this);
+  }
+}
+
+export class SwitchExhaustiveCheck extends BlockNode implements Node {
+  constructor(
+    public expression: AST | null,
+    sourceSpan: ParseSourceSpan,
+    startSourceSpan: ParseSourceSpan,
+    endSourceSpan: ParseSourceSpan | null,
+    nameSpan: ParseSourceSpan,
+  ) {
+    super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
+  }
+
+  visit<Result>(visitor: Visitor<Result>): Result {
+    return visitor.visitSwitchExhaustiveCheck(this);
   }
 }
 
@@ -445,8 +508,8 @@ export class ForLoopBlock extends BlockNode implements Node {
   constructor(
     public item: Variable,
     public expression: ASTWithSource,
-    public trackBy: ASTWithSource,
-    public trackKeywordSpan: ParseSourceSpan,
+    public trackBy: ASTWithSource | null,
+    public trackKeywordSpan: ParseSourceSpan | null,
     public contextVariables: Variable[],
     public children: Node[],
     public empty: ForLoopBlockEmpty | null,
@@ -708,6 +771,8 @@ export interface Visitor<Result = any> {
   visitDeferredTrigger(trigger: DeferredTrigger): Result;
   visitSwitchBlock(block: SwitchBlock): Result;
   visitSwitchBlockCase(block: SwitchBlockCase): Result;
+  visitSwitchBlockCaseGroup(block: SwitchBlockCaseGroup): Result;
+  visitSwitchExhaustiveCheck(block: SwitchExhaustiveCheck): Result;
   visitForLoopBlock(block: ForLoopBlock): Result;
   visitForLoopBlockEmpty(block: ForLoopBlockEmpty): Result;
   visitIfBlock(block: IfBlock): Result;
@@ -716,6 +781,7 @@ export interface Visitor<Result = any> {
   visitLetDeclaration(decl: LetDeclaration): Result;
   visitComponent(component: Component): Result;
   visitDirective(directive: Directive): Result;
+  visitContentBlock(block: ContentBlock): Result;
 }
 
 export class RecursiveVisitor implements Visitor<void> {
@@ -749,11 +815,14 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.children);
   }
   visitSwitchBlock(block: SwitchBlock): void {
-    visitAll(this, block.cases);
+    visitAll(this, block.groups);
   }
-  visitSwitchBlockCase(block: SwitchBlockCase): void {
+  visitSwitchBlockCase(block: SwitchBlockCase): void {}
+  visitSwitchBlockCaseGroup(block: SwitchBlockCaseGroup): void {
+    visitAll(this, block.cases);
     visitAll(this, block.children);
   }
+  visitSwitchExhaustiveCheck(block: SwitchExhaustiveCheck): void {}
   visitForLoopBlock(block: ForLoopBlock): void {
     const blockItems = [block.item, ...block.contextVariables, ...block.children];
     block.empty && blockItems.push(block.empty);
@@ -766,9 +835,8 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.branches);
   }
   visitIfBlockBranch(block: IfBlockBranch): void {
-    const blockItems = block.children;
-    block.expressionAlias && blockItems.push(block.expressionAlias);
-    visitAll(this, blockItems);
+    visitAll(this, block.children);
+    block.expressionAlias?.visit(this);
   }
   visitContent(content: Content): void {
     visitAll(this, content.children);
@@ -798,6 +866,9 @@ export class RecursiveVisitor implements Visitor<void> {
   visitDeferredTrigger(trigger: DeferredTrigger): void {}
   visitUnknownBlock(block: UnknownBlock): void {}
   visitLetDeclaration(decl: LetDeclaration): void {}
+  visitContentBlock(block: ContentBlock): void {
+    visitAll(this, block.children);
+  }
 }
 
 export function visitAll<Result>(visitor: Visitor<Result>, nodes: Node[]): Result[] {

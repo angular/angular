@@ -10,6 +10,7 @@ import {BoundTarget} from '@angular/compiler';
 
 import {
   AbsoluteSourceSpan,
+  AbstractBoundTemplate,
   AttributeIdentifier,
   DirectiveHostIdentifier,
   ElementIdentifier,
@@ -25,6 +26,7 @@ import {ComponentMeta} from '../src/context';
 import {getTemplateIdentifiers as getTemplateIdentifiersAndErrors} from '../src/template';
 
 import * as util from './util';
+import {DeclarationNode} from '../../reflection';
 
 function bind(template: string, enableSelectorless = false) {
   return util.getBoundTemplate(template, {
@@ -34,7 +36,7 @@ function bind(template: string, enableSelectorless = false) {
   });
 }
 
-function getTemplateIdentifiers(boundTemplate: BoundTarget<ComponentMeta>) {
+function getTemplateIdentifiers(boundTemplate: AbstractBoundTemplate<DeclarationNode>) {
   return getTemplateIdentifiersAndErrors(boundTemplate).identifiers;
 }
 

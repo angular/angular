@@ -287,6 +287,904 @@ export class AppComponent {
     expect(response).toContain({startLine: 32, endLine: 33}); // empty
   });
 
+  it('provides document symbols for TypeScript files (default: filtered to components)', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component, Input, Output, EventEmitter} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: '<div>{{name}}</div>',
+})
+export class AppComponent {
+  name = 'Angular';
+
+  constructor() {}
+
+  greet(): string {
+    return 'Hello, ' + this.name;
+  }
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+    expect(Array.isArray(response)).toBe(true);
+    // Only component classes with templates are shown, without TypeScript children (methods, properties)
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    expect(appComponentSymbol).toBeDefined();
+    expect(appComponentSymbol!.kind).toBe(lsp.SymbolKind.Class);
+    // Class should only have template children, not TypeScript symbols
+    expect(appComponentSymbol!.children).toBeDefined();
+    // Should have (template) container with template symbols
+    const templateSymbol = appComponentSymbol!.children!.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+    expect(templateSymbol!.kind).toBe(lsp.SymbolKind.Namespace);
+    // Should NOT have TypeScript method/property children
+    const nameSymbol = appComponentSymbol!.children!.find((c) => c.name === 'name');
+    expect(nameSymbol).toBeUndefined();
+    const constructorSymbol = appComponentSymbol!.children!.find((c) => c.name === 'constructor');
+    expect(constructorSymbol).toBeUndefined();
+    const greetSymbol = appComponentSymbol!.children!.find((c) => c.name === 'greet');
+    expect(greetSymbol).toBeUndefined();
+  });
+
+  it('handles multiple components in a single file', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'first-comp',
+  template: '<h1>First</h1>',
+})
+export class FirstComponent {
+  value = 1;
+}
+
+@Component({
+  selector: 'second-comp',
+  template: '<h2>Second</h2>',
+})
+export class SecondComponent {
+  value = 2;
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+    expect(Array.isArray(response)).toBe(true);
+    // Both components should be present
+    const firstSymbol = response.find((s) => s.name === 'FirstComponent');
+    expect(firstSymbol).toBeDefined();
+    expect(firstSymbol!.kind).toBe(lsp.SymbolKind.Class);
+    const firstTemplateSymbol = firstSymbol!.children!.find((c) => c.name === '(template)');
+    expect(firstTemplateSymbol).toBeDefined();
+
+    const secondSymbol = response.find((s) => s.name === 'SecondComponent');
+    expect(secondSymbol).toBeDefined();
+    expect(secondSymbol!.kind).toBe(lsp.SymbolKind.Class);
+    const secondTemplateSymbol = secondSymbol!.children!.find((c) => c.name === '(template)');
+    expect(secondTemplateSymbol).toBeDefined();
+
+    // Neither should have TypeScript property children by default
+    const firstValue = firstSymbol!.children!.find((c) => c.name === 'value');
+    expect(firstValue).toBeUndefined();
+    const secondValue = secondSymbol!.children!.find((c) => c.name === 'value');
+    expect(secondValue).toBeUndefined();
+  });
+
+  it('returns empty symbols for TypeScript files without Angular templates', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+// A regular TypeScript file with no Angular components
+export interface User {
+  name: string;
+  age: number;
+}
+
+export function greet(user: User): string {
+  return 'Hello, ' + user.name;
+}
+
+export class UserService {
+  private users: User[] = [];
+
+  addUser(user: User): void {
+    this.users.push(user);
+  }
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+    expect(Array.isArray(response)).toBe(true);
+    // With default filtering, no symbols should be returned for non-Angular files
+    // (TypeScript LS handles these files instead)
+    expect(response.length).toBe(0);
+  });
+
+  it('provides document symbols for Angular templates with control flow', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: \`
+    @if (showContent) {
+      <div class="container">
+        <router-outlet></router-outlet>
+      </div>
+    } @else {
+      <p>No content</p>
+    }
+
+    @for (item of items; track item) {
+      <span #itemRef>{{ item }}</span>
+    } @empty {
+      <p>No items</p>
+    }
+
+    @let message = 'Hello';
+    <ng-content select="header"></ng-content>
+  \`,
+})
+export class AppComponent {
+  showContent = true;
+  items = [1, 2, 3];
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    expect(Array.isArray(response)).toBe(true);
+
+    // Should contain the class symbol
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    expect(appComponentSymbol).toBeDefined();
+    expect(appComponentSymbol!.kind).toBe(lsp.SymbolKind.Class);
+
+    // The class should have a (template) child containing Angular template symbols
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+    expect(templateSymbol!.kind).toBe(lsp.SymbolKind.Namespace);
+    expect(templateSymbol!.children).toBeDefined();
+
+    // Check for @if block (now shows actual expression)
+    const ifSymbol = templateSymbol!.children!.find((c) => c.name === '@if (showContent)');
+    expect(ifSymbol).toBeDefined();
+    expect(ifSymbol!.kind).toBe(lsp.SymbolKind.Struct); // Control flow → Struct
+
+    // Check for @else block
+    const elseSymbol = templateSymbol!.children!.find((c) => c.name === '@else');
+    expect(elseSymbol).toBeDefined();
+
+    // Check for @for block (now shows actual expression)
+    const forSymbol = templateSymbol!.children!.find((c) => c.name === '@for (item of items)');
+    expect(forSymbol).toBeDefined();
+    expect(forSymbol!.kind).toBe(lsp.SymbolKind.Array); // @for loop → Array
+
+    // Check for @let declaration
+    const letSymbol = templateSymbol!.children!.find((c) => c.name === '@let message');
+    expect(letSymbol).toBeDefined();
+    expect(letSymbol!.kind).toBe(lsp.SymbolKind.Variable);
+
+    // Check for ng-content
+    const ngContentSymbol = templateSymbol!.children!.find((c) => c.name.includes('ng-content'));
+    expect(ngContentSymbol).toBeDefined();
+  });
+
+  it('provides document symbols for external HTML template files', async () => {
+    openTextDocument(
+      client,
+      FOO_TEMPLATE,
+      `
+@if (condition) {
+  <div>
+    <router-outlet name="primary"></router-outlet>
+  </div>
+}
+
+@for (item of items; track item) {
+  <span #ref>{{ item }}</span>
+} @empty {
+  <p>Empty</p>
+}
+
+@defer {
+  <heavy-component></heavy-component>
+} @placeholder {
+  <p>Loading...</p>
+}
+`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    expect(Array.isArray(response)).toBe(true);
+
+    // External templates should have template symbols at the root level
+    // Check for @if block (now shows actual expression)
+    const ifSymbol = response.find((s) => s.name === '@if (condition)');
+    expect(ifSymbol).toBeDefined();
+    expect(ifSymbol!.kind).toBe(lsp.SymbolKind.Struct); // Control flow → Struct
+
+    // Check for @for block (now shows actual expression)
+    const forSymbol = response.find((s) => s.name === '@for (item of items)');
+    expect(forSymbol).toBeDefined();
+
+    // Check for @defer block
+    const deferSymbol = response.find((s) => s.name === '@defer');
+    expect(deferSymbol).toBeDefined();
+    expect(deferSymbol!.children).toBeDefined();
+
+    // @defer should have @placeholder as a child
+    const placeholderSymbol = deferSymbol!.children!.find((c) => c.name === '@placeholder');
+    expect(placeholderSymbol).toBeDefined();
+  });
+
+  it('provides document symbols for @else if branches', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: \`
+    @if (status === 'active') {
+      <p>Active</p>
+    } @else if (status === 'pending') {
+      <p>Pending</p>
+    } @else if (status === 'error') {
+      <p>Error</p>
+    } @else {
+      <p>Unknown</p>
+    }
+  \`,
+})
+export class AppComponent {
+  status = 'active';
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    // Check for @if block
+    const ifSymbol = templateSymbol!.children!.find((c) =>
+      c.name.startsWith("@if (status === 'active')"),
+    );
+    expect(ifSymbol).toBeDefined();
+
+    // Check for @else if blocks (should show actual condition)
+    const elseIfPending = templateSymbol!.children!.find((c) =>
+      c.name.includes("@else if (status === 'pending')"),
+    );
+    expect(elseIfPending).toBeDefined();
+
+    const elseIfError = templateSymbol!.children!.find((c) =>
+      c.name.includes("@else if (status === 'error')"),
+    );
+    expect(elseIfError).toBeDefined();
+
+    // Check for @else block
+    const elseSymbol = templateSymbol!.children!.find((c) => c.name === '@else');
+    expect(elseSymbol).toBeDefined();
+  });
+
+  it('provides document symbols for @switch with case fall-through', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: \`
+    @switch (color) {
+      @case ('red') {
+        <p>Red color</p>
+      }
+      @case ('green') {
+        <p>Green color</p>
+      }
+      @default {
+        <p>Unknown color</p>
+      }
+    }
+  \`,
+})
+export class AppComponent {
+  color = 'red';
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    // Check for @switch block (should show actual expression)
+    const switchSymbol = templateSymbol!.children!.find((c) => c.name === '@switch (color)');
+    expect(switchSymbol).toBeDefined();
+    expect(switchSymbol!.children).toBeDefined();
+
+    // Check for @case blocks (should show actual case values)
+    const caseRed = switchSymbol!.children!.find((c) => c.name.includes("@case ('red')"));
+    expect(caseRed).toBeDefined();
+
+    const caseGreen = switchSymbol!.children!.find((c) => c.name.includes("@case ('green')"));
+    expect(caseGreen).toBeDefined();
+
+    // Check for @default
+    const defaultCase = switchSymbol!.children!.find((c) => c.name === '@default');
+    expect(defaultCase).toBeDefined();
+  });
+
+  it('provides document symbols for @for with context variables', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: \`
+    @for (item of items; track item.id; let i = $index; let first = $first; let last = $last) {
+      <div>{{ i }}: {{ item.name }}</div>
+    } @empty {
+      <div>No items</div>
+    }
+  \`,
+})
+export class AppComponent {
+  items = [{id: 1, name: 'A'}, {id: 2, name: 'B'}];
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    // Check for @for block (shows loop variable and collection)
+    const forSymbol = templateSymbol!.children!.find((c) => c.name.includes('@for (item of'));
+    expect(forSymbol).toBeDefined();
+    expect(forSymbol!.children).toBeDefined();
+
+    // Check for loop item variable
+    const itemVar = forSymbol!.children!.find((c) => c.name === 'let item');
+    expect(itemVar).toBeDefined();
+
+    // Check for context variables (aliased)
+    const indexVar = forSymbol!.children!.find((c) => c.name === 'let i');
+    expect(indexVar).toBeDefined();
+
+    const firstVar = forSymbol!.children!.find((c) => c.name === 'let first');
+    expect(firstVar).toBeDefined();
+
+    const lastVar = forSymbol!.children!.find((c) => c.name === 'let last');
+    expect(lastVar).toBeDefined();
+
+    // Check for @empty block
+    const emptySymbol = forSymbol!.children!.find((c) => c.name === '@empty');
+    expect(emptySymbol).toBeDefined();
+  });
+
+  it('provides document symbols for @if/@else-if expression aliases', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: \`
+    @if (user$ | async; as user) {
+      <p>Welcome, {{ user.name }}</p>
+    }
+  \`,
+})
+export class AppComponent {
+  user$ = of({name: 'Test'});
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    // Check for @if block with alias (shows expression and alias)
+    const ifSymbol = templateSymbol!.children!.find(
+      (c) => c.name.includes('@if') && c.name.includes('as user'),
+    );
+    expect(ifSymbol).toBeDefined();
+    expect(ifSymbol!.children).toBeDefined();
+
+    // Check for alias variable
+    const aliasVar = ifSymbol!.children!.find((c) => c.name === 'as user');
+    expect(aliasVar).toBeDefined();
+  });
+
+  it('provides document symbols for @defer with triggers', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: \`
+    @defer (on viewport) {
+      <p>Loaded</p>
+    } @placeholder {
+      <p>Placeholder</p>
+    } @loading {
+      <p>Loading...</p>
+    } @error {
+      <p>Error!</p>
+    }
+  \`,
+})
+export class AppComponent {
+  value = 'test';
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    expect(appComponentSymbol).toBeDefined();
+
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    // Check for @defer block with trigger info
+    const deferSymbol = templateSymbol!.children!.find((c) => c.name.includes('@defer'));
+    expect(deferSymbol).toBeDefined();
+    expect(deferSymbol!.name).toContain('on viewport');
+    expect(deferSymbol!.children).toBeDefined();
+
+    // Check for @placeholder
+    const placeholderSymbol = deferSymbol!.children!.find((c) => c.name.includes('@placeholder'));
+    expect(placeholderSymbol).toBeDefined();
+
+    // Check for @loading
+    const loadingSymbol = deferSymbol!.children!.find((c) => c.name.includes('@loading'));
+    expect(loadingSymbol).toBeDefined();
+
+    // Check for @error
+    const errorSymbol = deferSymbol!.children!.find((c) => c.name === '@error');
+    expect(errorSymbol).toBeDefined();
+  });
+
+  it('provides document symbols for *ngFor structural directive', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+
+@Component({
+  selector: 'my-app',
+  standalone: true,
+  imports: [CommonModule],
+  template: \`
+    <ul>
+      <li *ngFor="let item of items; let i = index; let isFirst = first">
+        {{ i }}: {{ item }}
+      </li>
+    </ul>
+  \`,
+})
+export class AppComponent {
+  items = ['a', 'b', 'c'];
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    // Find the <ul> element
+    const ulSymbol = templateSymbol!.children!.find((c) => c.name === '<ul>');
+    expect(ulSymbol).toBeDefined();
+
+    // Check for *ngFor directive (should show like control flow)
+    const ngForSymbol = ulSymbol!.children!.find((c) => c.name.includes('*ngFor'));
+    expect(ngForSymbol).toBeDefined();
+    expect(ngForSymbol!.name).toContain('let item of');
+
+    // Check for let- variables as children
+    expect(ngForSymbol!.children).toBeDefined();
+    const itemVar = ngForSymbol!.children!.find((c) => c.name === 'let item');
+    expect(itemVar).toBeDefined();
+
+    const indexVar = ngForSymbol!.children!.find((c) => c.name === 'let i');
+    expect(indexVar).toBeDefined();
+
+    const firstVar = ngForSymbol!.children!.find((c) => c.name === 'let isFirst');
+    expect(firstVar).toBeDefined();
+  });
+
+  it('provides document symbols for *ngIf structural directive', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+
+@Component({
+  selector: 'my-app',
+  standalone: true,
+  imports: [CommonModule],
+  template: \`
+    <div *ngIf="isVisible; else notVisible">
+      Visible content
+    </div>
+    <ng-template #notVisible>
+      <p>Not visible</p>
+    </ng-template>
+  \`,
+})
+export class AppComponent {
+  isVisible = true;
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    // Check for *ngIf directive (should show the condition)
+    const ngIfSymbol = templateSymbol!.children!.find((c) => c.name.includes('*ngIf'));
+    expect(ngIfSymbol).toBeDefined();
+    expect(ngIfSymbol!.name).toContain('isVisible');
+
+    // Check for ng-template with reference
+    const ngTemplateSymbol = templateSymbol!.children!.find((c) => c.name === '<ng-template>');
+    expect(ngTemplateSymbol).toBeDefined();
+
+    // Check for the #notVisible reference
+    const notVisibleRef = ngTemplateSymbol!.children!.find((c) => c.name === '#notVisible');
+    expect(notVisibleRef).toBeDefined();
+  });
+
+  it('provides document symbols for custom structural directive let/as microsyntax', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component, Directive, Input} from '@angular/core';
+
+@Directive({
+  selector: '[myDir]',
+  standalone: true,
+})
+export class MyDir<T = unknown> {
+  @Input() myDir: T | null = null;
+  @Input() myDirOf: readonly T[] | null = null;
+  @Input() myDirTrackBy: ((index: number, value: T) => unknown) | null = null;
+}
+
+@Component({
+  selector: 'my-app',
+  standalone: true,
+  imports: [MyDir],
+  template: \
+    '<ng-container *myDir="let item of [1,2,3] as items; trackBy: track; index as i">{{ item }}{{ items.length }}{{ i }}</ng-container>',
+})
+export class AppComponent {
+  track = (index: number) => index;
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    const myDirSymbol = templateSymbol!.children!.find((c) => c.name.includes('*myDir'));
+    expect(myDirSymbol).toBeDefined();
+
+    const childNames = myDirSymbol!.children?.map((c) => c.name) ?? [];
+    expect(childNames).toContain('let item');
+    expect(childNames).toContain('as items');
+    expect(childNames).toContain('as i');
+  });
+
+  it('provides document symbols for @if with expression alias', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  standalone: true,
+  template: \`
+    @if (user; as currentUser) {
+      <div>Hello, {{ currentUser.name }}!</div>
+    } @else if (guestName; as name) {
+      <div>Welcome, {{ name }}!</div>
+    } @else {
+      <div>Anonymous</div>
+    }
+  \`,
+})
+export class AppComponent {
+  user = { name: 'John' };
+  guestName = '';
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    // Check for @if block with alias
+    const ifSymbol = templateSymbol!.children!.find(
+      (c) => c.name.includes('@if') && c.name.includes('currentUser'),
+    );
+    expect(ifSymbol).toBeDefined();
+    expect(ifSymbol!.name).toContain('as currentUser');
+
+    // The alias should appear exactly once as a child
+    const currentUserAliases = ifSymbol!.children!.filter((c) => c.name === 'as currentUser');
+    expect(currentUserAliases.length).toBe(1);
+
+    // Check for @else if block with alias
+    const elseIfSymbol = templateSymbol!.children!.find(
+      (c) => c.name.includes('@else if') && c.name.includes('name'),
+    );
+    expect(elseIfSymbol).toBeDefined();
+    expect(elseIfSymbol!.name).toContain('as name');
+
+    // The alias should appear exactly once
+    const nameAliases = elseIfSymbol!.children!.filter((c) => c.name === 'as name');
+    expect(nameAliases.length).toBe(1);
+
+    // Check for @else block (no alias)
+    const elseSymbol = templateSymbol!.children!.find((c) => c.name === '@else');
+    expect(elseSymbol).toBeDefined();
+  });
+
+  it('provides document symbols for nested @if with alias inside @for', async () => {
+    // Test case similar to user's template structure
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  standalone: true,
+  template: \`
+    @for (category of categories; track category.name) {
+      <div class="category">
+        @for (test of category.tests; track test.name; let i = $index) {
+          @if (!test.passed; as tr) {
+            <div class="failed">{{ tr }}</div>
+          }
+        }
+      </div>
+    }
+  \`,
+})
+export class AppComponent {
+  categories = [
+    { name: 'Category 1', tests: [{ name: 'Test 1', passed: true }, { name: 'Test 2', passed: false }] }
+  ];
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    // Find the outer @for - name is "@for (category of categories)"
+    const outerForSymbol = templateSymbol!.children!.find(
+      (c) => c.name.startsWith('@for') && c.name.includes('category'),
+    );
+    expect(outerForSymbol).toBeDefined();
+
+    // Find the <div> inside outer @for
+    const divSymbol = outerForSymbol!.children!.find((c) => c.name === '<div>');
+    expect(divSymbol).toBeDefined();
+
+    // Find nested @for inside <div> - name is "@for (test of category.tests)"
+    const nestedForSymbol = divSymbol!.children!.find(
+      (c) => c.name.startsWith('@for') && c.name.includes('test of'),
+    );
+    expect(nestedForSymbol).toBeDefined();
+
+    // Check for 'let test' and 'let i' (explicit alias for $index)
+    const testVar = nestedForSymbol!.children!.filter((c) => c.name === 'let test');
+    expect(testVar.length).toBe(1);
+    const indexVar = nestedForSymbol!.children!.filter((c) => c.name === 'let i');
+    expect(indexVar.length).toBe(1);
+
+    // Find @if with alias inside nested @for - name is "@if (!test.passed; as tr)"
+    const ifSymbol = nestedForSymbol!.children!.find(
+      (c) => c.name.startsWith('@if') && c.name.includes('as tr'),
+    );
+    expect(ifSymbol).toBeDefined();
+
+    // The 'tr' alias should appear exactly once
+    const trAliases = ifSymbol!.children!.filter((c) => c.name === 'as tr');
+    expect(trAliases.length).toBe(1);
+  });
+
+  it('provides document symbols for component without "Component" suffix', async () => {
+    // Test that components like "NxWelcome" (without "Component" suffix) still get template symbols
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'app-welcome',
+  template: \`
+    @if (title) {
+      <span>{{ title }}</span>
+    }
+  \`,
+})
+export class Welcome {
+  title = 'Hello';
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    // Should contain the class symbol
+    const welcomeSymbol = response.find((s) => s.name === 'Welcome');
+    expect(welcomeSymbol).toBeDefined();
+    expect(welcomeSymbol!.kind).toBe(lsp.SymbolKind.Class);
+
+    // The class should have a (template) child containing Angular template symbols
+    const templateSymbol = welcomeSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+    expect(templateSymbol!.kind).toBe(lsp.SymbolKind.Namespace);
+
+    // Check for @if block
+    const ifSymbol = templateSymbol!.children!.find((c) => c.name === '@if (title)');
+    expect(ifSymbol).toBeDefined();
+  });
+
+  it('provides document symbols for multiple components in one file', async () => {
+    // Test that files with multiple components (common in tests/storybooks) work correctly
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'app-button',
+  template: \`<button>{{ label }}</button>\`,
+})
+export class ButtonComponent {
+  label = 'Click me';
+}
+
+@Component({
+  selector: 'app-input',
+  template: \`<input [placeholder]="hint" />\`,
+})
+export class InputComponent {
+  hint = 'Type here';
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    // Should contain both class symbols
+    const buttonSymbol = response.find((s) => s.name === 'ButtonComponent');
+    expect(buttonSymbol).toBeDefined();
+    expect(buttonSymbol!.kind).toBe(lsp.SymbolKind.Class);
+
+    const inputSymbol = response.find((s) => s.name === 'InputComponent');
+    expect(inputSymbol).toBeDefined();
+    expect(inputSymbol!.kind).toBe(lsp.SymbolKind.Class);
+
+    // ButtonComponent should have its own (template) with <button>
+    const buttonTemplate = buttonSymbol!.children?.find((c) => c.name === '(template)');
+    expect(buttonTemplate).toBeDefined();
+    const buttonElement = buttonTemplate!.children!.find((c) => c.name === '<button>');
+    expect(buttonElement).toBeDefined();
+
+    // InputComponent should have its own (template) with <input>
+    const inputTemplate = inputSymbol!.children?.find((c) => c.name === '(template)');
+    expect(inputTemplate).toBeDefined();
+    const inputElement = inputTemplate!.children!.find((c) => c.name === '<input>');
+    expect(inputElement).toBeDefined();
+  });
+
   describe('signature help', () => {
     it('should show signature help for an empty call', async () => {
       client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {

@@ -1,19 +1,19 @@
-import {Component, signal, computed, resource, ChangeDetectionStrategy} from '@angular/core';
-import {loadUser} from './user-api';
+import {Component, computed, resource, signal} from '@angular/core';
+import {getUserData} from './user-api';
 
 @Component({
   selector: 'app-root',
   template: `
     <div>
       <h2>User Profile Loader</h2>
-      
+
       <div>
         <button (click)="loadUser(1)">Load User 1</button>
         <button (click)="loadUser(2)">Load User 2</button>
         <button (click)="loadUser(999)">Load Invalid User</button>
         <button (click)="reloadUser()">Reload</button>
       </div>
-      
+
       <div class="status">
         @if (isLoading()) {
           <p>Loading user...</p>
@@ -29,14 +29,13 @@ import {loadUser} from './user-api';
     </div>
   `,
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   userId = signal(1);
 
   userResource = resource({
     params: () => ({id: this.userId()}),
-    loader: (params) => loadUser(params.params.id),
+    loader: (params) => getUserData(params.params.id),
   });
 
   isLoading = computed(() => this.userResource.status() === 'loading');

@@ -1,6 +1,6 @@
+import {Component, signal} from '@angular/core';
+import {email, form, FormField, required, submit} from '@angular/forms/signals';
 import {bootstrapApplication} from '@angular/platform-browser';
-import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
-import {form, Field, required, email, debounce, submit} from '@angular/forms/signals';
 
 interface LoginData {
   email: string;
@@ -14,7 +14,7 @@ interface LoginData {
       <div>
         <label>
           Email:
-          <input type="email" [field]="loginForm.email" />
+          <input type="email" [formField]="loginForm.email" />
         </label>
 
         @if (loginForm.email().invalid()) {
@@ -29,15 +29,15 @@ interface LoginData {
       <div>
         <label>
           Password:
-          <input type="password" [field]="loginForm.password" />
+          <input type="password" [formField]="loginForm.password" />
         </label>
 
         @if (loginForm.password().invalid()) {
-          <div class="error">
+          <ul class="error-list">
             @for (error of loginForm.password().errors(); track error) {
-              <p>{{ error.message }}</p>
+              <li>{{ error.message }}</li>
             }
-          </div>
+          </ul>
         }
       </div>
 
@@ -45,8 +45,7 @@ interface LoginData {
     </form>
   `,
   styleUrl: 'main.css',
-  imports: [Field],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormField],
 })
 export class LoginApp {
   loginModel = signal<LoginData>({

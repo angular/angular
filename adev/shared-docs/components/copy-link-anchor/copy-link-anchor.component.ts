@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject, input, signal} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
+import {Component, inject, input, signal} from '@angular/core';
 import {MatTooltip} from '@angular/material/tooltip';
 import {IconComponent} from '../icon/icon.component';
 
@@ -15,7 +15,7 @@ export const CONFIRMATION_DISPLAY_TIME_MS = 1000;
 
 @Component({
   selector: 'docs-copy-link-button',
-  template: `<docs-icon>{{ showCopySuccess() ? 'check' : 'link' }}</docs-icon>`,
+  template: `<docs-icon></docs-icon>`,
   styles: `
     :host {
       cursor: pointer;
@@ -31,6 +31,13 @@ export const CONFIRMATION_DISPLAY_TIME_MS = 1000;
     :host(.docs-copy-link-success) {
       color: var(--bright-blue);
     }
+    docs-icon::before {
+      content: '\\e250'; /* codepoint for "link" */
+      font-family: 'Material Symbols Outlined';
+    }
+    :host(.docs-copy-link-success) docs-icon::before {
+      content: '\\e668'; /* codepoint for "check" */
+    }
   `,
   hostDirectives: [
     {
@@ -45,7 +52,6 @@ export const CONFIRMATION_DISPLAY_TIME_MS = 1000;
     '[class.docs-copy-link-success]': 'showCopySuccess()',
   },
   imports: [IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CopyLinkButton {
   readonly href = input.required<string>();

@@ -6,15 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  PLATFORM_ID,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {Component, PLATFORM_ID, computed, inject, signal} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
@@ -27,11 +20,10 @@ import {
   markExternalLinks,
   shouldReduceMotion,
 } from '@angular/docs';
+import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
 import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs/operators';
 import {SUB_NAVIGATION_DATA} from '../../../routing/sub-navigation-data';
-import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
-import {isPlatformBrowser} from '@angular/common';
-import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
+import {PRIMARY_NAV_ID, SEARCH_DIALOG_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {PAGE_PREFIX} from '../../constants/pages';
 
 export const ANIMATION_DURATION = 500;
@@ -41,10 +33,8 @@ export const ANIMATION_DURATION = 500;
   imports: [NavigationList, ClickOutside],
   templateUrl: './secondary-navigation.component.html',
   styleUrls: ['./secondary-navigation.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SecondaryNavigation {
-  private readonly destroyRef = inject(DestroyRef);
   private readonly navigationState = inject(NavigationState);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
@@ -66,6 +56,7 @@ export class SecondaryNavigation {
 
   protected readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   protected readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
+  protected readonly SEARCH_DIALOG_ID = SEARCH_DIALOG_ID;
 
   private readonly routeMap: Record<string, NavigationItem[]> = {
     [PAGE_PREFIX.REFERENCE]: getNavigationItemsTree(SUB_NAVIGATION_DATA.reference, (tree) =>
@@ -78,15 +69,15 @@ export class SecondaryNavigation {
 
   private readonly primaryActiveRouteChanged$ = toObservable(this.primaryActiveRouteItem).pipe(
     distinctUntilChanged(),
-    takeUntilDestroyed(this.destroyRef),
+    takeUntilDestroyed(),
   );
 
   private readonly urlAfterRedirects$ = this.router.events.pipe(
     filter((event) => event instanceof NavigationEnd),
-    map((event) => (event as NavigationEnd).urlAfterRedirects),
-    filter((url): url is string => url !== undefined),
+    map((event) => event.urlAfterRedirects),
+    filter((url) => url !== undefined),
     startWith(this.getInitialPath(this.router.routerState.snapshot)),
-    takeUntilDestroyed(this.destroyRef),
+    takeUntilDestroyed(),
   );
 
   constructor() {

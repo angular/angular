@@ -7,27 +7,26 @@
  */
 
 import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef} from '@angular/core';
+import type {FormFieldBindingOptions} from '../directive/form_field';
+import type {ValidationError, WithOptionalFieldTree} from './rules/validation/validation_errors';
 import type {DisabledReason} from './types';
-import {ValidationError, type WithOptionalField} from './validation_errors';
 
 /**
  * The base set of properties shared by all form control contracts.
  *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
+ *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export interface FormUiControl {
-  // TODO: `ValidationError` and `DisabledReason` are inherently tied to the signal forms system.
-  // They don't make sense when using a control separately from the forms system and setting the
-  // inputs individually. Given that, should they still be part of this interface?
-
+export interface FormUiControl<TValue> {
   /**
    * An input to receive the errors for the field. If implemented, the `Field` directive will
    * automatically bind errors from the bound field to this input.
    */
   readonly errors?:
-    | InputSignal<readonly WithOptionalField<ValidationError>[]>
-    | InputSignalWithTransform<readonly WithOptionalField<ValidationError>[], unknown>;
+    | InputSignal<readonly ValidationError.WithOptionalFieldTree[]>
+    | InputSignalWithTransform<readonly ValidationError.WithOptionalFieldTree[], unknown>;
   /**
    * An input to receive the disabled status for the field. If implemented, the `Field` directive
    * will automatically bind the disabled status from the bound field to this input.
@@ -38,8 +37,8 @@ export interface FormUiControl {
    * directive will automatically bind the disabled reason from the bound field to this input.
    */
   readonly disabledReasons?:
-    | InputSignal<readonly WithOptionalField<DisabledReason>[]>
-    | InputSignalWithTransform<readonly WithOptionalField<DisabledReason>[], unknown>;
+    | InputSignal<readonly WithOptionalFieldTree<DisabledReason>[]>
+    | InputSignalWithTransform<readonly WithOptionalFieldTree<DisabledReason>[], unknown>;
   /**
    * An input to receive the readonly status for the field. If implemented, the `Field` directive
    * will automatically bind the readonly status from the bound field to this input.
@@ -64,11 +63,7 @@ export interface FormUiControl {
    * An input to receive the touched status for the field. If implemented, the `Field` directive
    * will automatically bind the touched status from the bound field to this input.
    */
-  readonly touched?:
-    | ModelSignal<boolean>
-    | InputSignal<boolean>
-    | InputSignalWithTransform<boolean, unknown>
-    | OutputRef<boolean>;
+  readonly touched?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
   /**
    * An input to receive the dirty status for the field. If implemented, the `Field` directive
    * will automatically bind the dirty status from the bound field to this input.
@@ -89,8 +84,8 @@ export interface FormUiControl {
    * automatically bind the min value from the bound field to this input.
    */
   readonly min?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+    | InputSignal<NonNullable<TValue> | undefined>
+    | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
   /**
    * An input to receive the min length for the field. If implemented, the `Field` directive will
    * automatically bind the min length from the bound field to this input.
@@ -103,8 +98,8 @@ export interface FormUiControl {
    * automatically bind the max value from the bound field to this input.
    */
   readonly max?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+    | InputSignal<NonNullable<TValue> | undefined>
+    | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
   /**
    * An input to receive the max length for the field. If implemented, the `Field` directive will
    * automatically bind the max length from the bound field to this input.
@@ -119,7 +114,33 @@ export interface FormUiControl {
   readonly pattern?:
     | InputSignal<readonly RegExp[]>
     | InputSignalWithTransform<readonly RegExp[], unknown>;
+  /**
+   * An output to emit when the user finishes interacting with the control, marking the field as
+   * touched. Emit this in response to the native `blur` event (when focus leaves the control), not
+   * `focus`. The `Field` directive listens to this output to update the field's touched status,
+   * which blur-based rules such as `debounce('blur')` rely on.
+   */
+  readonly touch?: OutputRef<void>;
+  /**
+   * Focuses the UI control.
+   *
+   * If the focus method is not implemented, Signal Forms will attempt to focus the host element
+   * when asked to focus this control.
+   */
+  focus?(options?: FocusOptions): void;
+  /**
+   * Resets the UI control to its pristine state.
+   */
+  reset?(): void;
 }
+
+// Verify that `FormUiControl` implements `FormFieldBindingOptions`.
+// We intend for this to be the case so that a `FormUiControl` can act as its own `FormFieldBindingOptions`.
+// However, we don't want to add it as an actual `extends` clause to avoid confusing users.
+type Check<T extends true> = T;
+type FormUiControlImplementsFormFieldBindingOptions = Check<
+  FormUiControl<unknown> extends FormFieldBindingOptions ? true : false
+>;
 
 /**
  * A contract for a form control that edits a `FieldTree` of type `TValue`. Any component that
@@ -131,10 +152,12 @@ export interface FormUiControl {
  *
  * @template TValue The type of `FieldTree` that the implementing component can edit.
  *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
+ *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export interface FormValueControl<TValue> extends FormUiControl {
+export interface FormValueControl<TValue> extends FormUiControl<TValue> {
   /**
    * The value is the only required property in this contract. A component that wants to integrate
    * with the `Field` directive via this contract, *must* provide a `model()` that will be kept in
@@ -160,10 +183,13 @@ export interface FormValueControl<TValue> extends FormUiControl {
  * implemented, but if they are will be kept in sync with the field state of the field bound to the
  * `Field` directive.
  *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
+ *
  * @category control
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export interface FormCheckboxControl extends FormUiControl {
+// TODO: should we make this generic extends `boolean | null` so people can use `null` for parse error?
+export interface FormCheckboxControl extends FormUiControl<boolean> {
   /**
    * The checked is the only required property in this contract. A component that wants to integrate
    * with the `Field` directive, *must* provide a `model()` that will be kept in sync with the

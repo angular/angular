@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {InputOrOutput} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {ImportedSymbolsTracker} from '../../../imports';
-import {InputOrOutput} from '../../../metadata';
 import {ClassMember, ClassMemberAccessLevel, ReflectionHost} from '../../../reflection';
 
 import {validateAccessOfInitializerApiMember} from './initializer_function_access';

@@ -22,42 +22,53 @@ import {printInitializerFunctionSignatureLine} from '../transforms/code-transfor
 import {getFunctionMetadataRenderable} from '../transforms/function-transforms.mjs';
 import {ClassMethodInfo} from './class-method-info';
 import {CodeSymbol} from './code-symbols';
+import {DeprecationWarning} from './deprecation-warning';
 import {HeaderApi} from './header-api';
 import {HighlightTypeScript} from './highlight-ts';
 import {SectionApi} from './section-api';
 import {SectionDescription} from './section-description';
 import {SectionUsageNotes} from './section-usage-notes';
-import {DeprecationWarning} from './deprecation-warning';
 
 export const signatureCard = (
   name: string,
   signature: FunctionSignatureMetadataRenderable,
-  opts: {id: string},
-  printSignaturesAsHeader: boolean,
+  opts: {
+    id: string;
+    printSignaturesAsHeader: boolean;
+    hideUsageNotes?: boolean;
+    hideHeader?: boolean;
+    hideDescription?: boolean;
+  },
 ) => {
   return (
     <div id={opts.id} class={REFERENCE_MEMBER_CARD}>
-      <header class={REFERENCE_MEMBER_CARD_HEADER}>
-        {printSignaturesAsHeader ? (
-          <HighlightTypeScript
-            code={printInitializerFunctionSignatureLine(
-              name,
-              signature,
-              // Always omit types in signature headers, to keep them short.
-              true,
-            )}
-          />
-        ) : (
-          <>
-            <h3>{name}</h3>
-            <div>
-              <CodeSymbol code={signature.returnType} />
-            </div>
-          </>
-        )}
-      </header>
+      {!opts.hideHeader && (
+        <header class={REFERENCE_MEMBER_CARD_HEADER}>
+          {opts.printSignaturesAsHeader ? (
+            <HighlightTypeScript
+              code={printInitializerFunctionSignatureLine(
+                name,
+                signature,
+                // Always omit types in signature headers, to keep them short.
+                true,
+              )}
+            />
+          ) : (
+            <>
+              <h3>{name}</h3>
+              <div>
+                <CodeSymbol code={signature.returnType} />
+              </div>
+            </>
+          )}
+        </header>
+      )}
       <div class={REFERENCE_MEMBER_CARD_BODY}>
-        <ClassMethodInfo entry={signature} />
+        <ClassMethodInfo
+          entry={signature}
+          hideUsageNotes={opts.hideUsageNotes}
+          hideDescription={opts.hideDescription}
+        />
       </div>
     </div>
   );
@@ -65,8 +76,8 @@ export const signatureCard = (
 
 /** Component to render a function API reference document. */
 export function FunctionReference(entry: FunctionEntryRenderable) {
-  // Use signatures as header if there are multiple signatures.
   const printSignaturesAsHeader = entry.signatures.length > 1;
+  const hideSignatureCardDescription = !printSignaturesAsHeader;
 
   return (
     <div className={API_REFERENCE_CONTAINER}>
@@ -75,14 +86,13 @@ export function FunctionReference(entry: FunctionEntryRenderable) {
       <SectionApi entry={entry} />
       <div className={REFERENCE_MEMBERS}>
         {entry.signatures.map((s, i) =>
-          signatureCard(
-            s.name,
-            getFunctionMetadataRenderable(s, entry.moduleName, entry.repo),
-            {
-              id: `${s.name}_${i}`,
-            },
+          signatureCard(s.name, getFunctionMetadataRenderable(s, entry.moduleName, entry.repo), {
+            id: `${s.name}_${i}`,
             printSignaturesAsHeader,
-          ),
+            hideHeader: !printSignaturesAsHeader,
+            hideUsageNotes: hideSignatureCardDescription,
+            hideDescription: hideSignatureCardDescription,
+          }),
         )}
       </div>
 

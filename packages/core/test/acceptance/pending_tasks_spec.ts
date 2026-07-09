@@ -113,6 +113,24 @@ describe('public PendingTasks', () => {
     await expectAsync(appRef.whenStable()).toBeResolved();
     expect(spy).toHaveBeenCalled();
   });
+
+  it('should stop blocking stability if run function throws synchronously', async () => {
+    TestBed.configureTestingModule({
+      rethrowApplicationErrors: false,
+    });
+
+    const appRef = TestBed.inject(ApplicationRef);
+    const pendingTasks = TestBed.inject(PendingTasks);
+    const errorHandler = TestBed.inject(ErrorHandler);
+    const spy = spyOn(errorHandler, 'handleError');
+
+    pendingTasks.run(() => {
+      throw new Error('Sync error');
+    });
+    await expectAsync(appRef.whenStable()).toBeResolved();
+    expect(spy).toHaveBeenCalled();
+    expect(spy.calls.mostRecent().args[0].message).toContain('Sync error');
+  });
 });
 
 function applicationRefIsStable(applicationRef: ApplicationRef) {

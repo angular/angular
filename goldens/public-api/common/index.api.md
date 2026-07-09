@@ -357,7 +357,7 @@ export function isPlatformServer(platformId: Object): boolean;
 // @public
 export class JsonPipe implements PipeTransform {
     // (undocumented)
-    transform(value: any): string;
+    transform(value: unknown): string;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<JsonPipe, never>;
     // (undocumented)
@@ -593,7 +593,7 @@ export class NgIfContext<T = unknown> {
 export class NgLocaleLocalization extends NgLocalization {
     constructor(locale: string);
     // (undocumented)
-    getPluralCategory(value: any, locale?: string): string;
+    getPluralCategory(value: number, locale?: string): string;
     // (undocumented)
     protected locale: string;
     // (undocumented)
@@ -605,7 +605,7 @@ export class NgLocaleLocalization extends NgLocalization {
 // @public (undocumented)
 export abstract class NgLocalization {
     // (undocumented)
-    abstract getPluralCategory(value: any, locale?: string): string;
+    abstract getPluralCategory(value: number, locale?: string): string;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgLocalization, never>;
     // (undocumented)
@@ -1044,6 +1044,10 @@ export enum WeekDay {
 export abstract class XhrFactory {
     // (undocumented)
     abstract build(): XMLHttpRequest;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<XhrFactory, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<XhrFactory>;
 }
 
 // (No @packageDocumentation comment for this package)

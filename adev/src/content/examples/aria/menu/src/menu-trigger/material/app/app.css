@@ -66,7 +66,9 @@
   background: color-mix(in srgb, var(--vivid-pink) 10%, transparent);
 }
 
-[ngMenuItem][data-active='true'] {
+[ngMenuItem]:not([aria-disabled='true']):hover,
+[ngMenuItem]:not([aria-disabled='true']):focus,
+[ngMenuItem][aria-expanded='true'] {
   color: color-mix(in srgb, var(--vivid-pink) 70%, var(--primary-contrast));
   background: color-mix(in srgb, var(--vivid-pink) 5%, transparent);
 }

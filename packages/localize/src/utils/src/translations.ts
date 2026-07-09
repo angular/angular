@@ -68,7 +68,7 @@ export function translate(
   return [
     translation.messageParts,
     translation.placeholderNames.map((placeholder) => {
-      if (message.substitutions.hasOwnProperty(placeholder)) {
+      if (Object.hasOwn(message.substitutions, placeholder)) {
         return message.substitutions[placeholder];
       } else {
         throw new Error(

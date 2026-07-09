@@ -2,15 +2,13 @@
 </docs-decorative-header>
 
 <docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" title="ARIA-паттерн строки меню"/>
-  <docs-pill href="/api/aria/menu/MenuBar" title="Справочник API Menubar"/>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" title="Menubar ARIA pattern"/>
+  <docs-pill href="/api/aria/menu/MenuBar" title="Menubar API Reference"/>
 </docs-pill-row>
 
-## Обзор
+## Overview
 
-Строка меню (menubar) — это горизонтальная панель навигации, которая обеспечивает постоянный доступ к меню приложения.
-Строки меню организуют команды в логические категории, такие как Файл, Правка и Вид, помогая пользователям находить и
-выполнять функции приложения с помощью клавиатуры или мыши.
+The menubar is a horizontal navigation bar that provides persistent access to application menus. Menubars organize commands into logical categories like File, Edit, and View, helping users discover and execute application features through keyboard or mouse interaction.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -38,44 +36,41 @@
   </docs-tab>
 </docs-tab-group>
 
-## Использование
+## Usage
 
-Строки меню хорошо подходят для организации команд приложения в постоянную и понятную навигацию.
+Menubars work well for organizing application commands into persistent, discoverable navigation.
 
-**Используйте строку меню, когда:**
+**Use menubars when:**
 
-- Создаете панели команд приложения (такие как Файл, Правка, Вид, Вставка, Формат)
-- Создаете постоянную навигацию, которая остается видимой во всем интерфейсе
-- Организуете команды в логические категории верхнего уровня
-- Необходима горизонтальная навигация по меню с поддержкой клавиатуры
-- Создаете интерфейсы приложений в десктопном стиле
+- Building application command bars (such as File, Edit, View, Insert, Format)
+- Creating persistent navigation that stays visible across the interface
+- Organizing commands into logical top-level categories
+- Need horizontal menu navigation with keyboard support
+- Building desktop-style application interfaces
 
-**Избегайте использования строки меню, когда:**
+**Avoid menubars when:**
 
-- Создаете выпадающие меню для отдельных действий (вместо этого используйте [Меню с триггером](guide/aria/menu))
-- Создаете контекстные меню (используйте паттерн [Меню](guide/aria/menu))
-- Создаете простые списки отдельных действий (вместо этого используйте [Меню](guide/aria/menu))
-- Разрабатываете мобильные интерфейсы, где горизонтальное пространство ограничено
-- Навигация должна располагаться в боковой панели или в шапке сайта
+- Building dropdown menus for individual actions (use [Menu with trigger](guide/aria/menu) instead)
+- Creating context menus (use [Menu](guide/aria/menu) guide pattern)
+- Simple standalone action lists (use [Menu](guide/aria/menu) instead)
+- Mobile interfaces where horizontal space is limited
+- Navigation belongs in a sidebar or header navigation pattern
 
-## Возможности
+## Features
 
-- **Горизонтальная навигация** — Клавиши со стрелками Влево/Вправо перемещают фокус между категориями верхнего уровня
-- **Постоянная видимость** — Всегда видна, не является модальной или скрываемой
-- **Открытие при наведении** — Подменю открываются при наведении курсора после первого взаимодействия с клавиатурой или
-  клика
-- **Вложенные подменю** — Поддержка нескольких уровней вложенности меню
-- **Навигация с клавиатуры** — Клавиши со стрелками, Enter/Пробел, Escape и поиск при наборе (typeahead)
-- **Отключенные состояния** — Отключение всей строки меню или отдельных элементов
-- **Поддержка RTL** — Автоматическая навигация для языков с письмом справа налево
+- **Horizontal navigation** - Left/Right arrow keys move between top-level categories
+- **Persistent visibility** - Always visible, not modal or dismissable
+- **Hover-to-open** - Submenus open on hover after first keyboard or click interaction
+- **Nested submenus** - Support multiple levels of menu depth
+- **Keyboard navigation** - Arrow keys, Enter/Space, Escape, and typeahead search
+- **Disabled states** - Disable entire menubar or individual items
+- **RTL support** - Automatic right-to-left language navigation
 
-## Примеры
+## Examples
 
-### Базовая строка меню
+### Basic menubar
 
-Строка меню обеспечивает постоянный доступ к командам приложения, организованным в категории верхнего уровня.
-Пользователи перемещаются между категориями с помощью стрелок Влево/Вправо и открывают меню клавишами Enter или Стрелка
-вниз.
+A menubar provides persistent access to application commands organized into top-level categories. Users navigate between categories with Left/Right arrows and open menus with Enter or Down arrow.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -103,13 +98,11 @@
   </docs-tab>
 </docs-tab-group>
 
-Нажмите стрелку Вправо для перемещения между Файл, Правка и Вид. Нажмите Enter или стрелку Вниз, чтобы открыть меню и
-перемещаться по элементам подменю с помощью стрелок Вверх/Вниз.
+Press Right arrow to move between File, Edit, and View. Press Enter or Down arrow to open a menu and navigate submenu items with Up/Down arrows.
 
-### Отключенные элементы строки меню
+### Disabled menubar items
 
-Отключите конкретные элементы меню или всю строку меню, чтобы предотвратить взаимодействие. Управляйте тем, могут ли
-отключенные элементы получать фокус клавиатуры, с помощью Input-свойства `softDisabled`.
+Disable specific menu items or the entire menubar to prevent interaction. Control whether disabled items can receive keyboard focus with the `softDisabled` input.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -137,13 +130,11 @@
   </docs-tab>
 </docs-tab-group>
 
-Когда `[softDisabled]="true"` установлено для строки меню, отключенные элементы могут получать фокус, но не могут быть
-активированы. Когда `[softDisabled]="false"`, отключенные элементы пропускаются при навигации с клавиатуры.
+When `[softDisabled]="true"` on the menubar, disabled items can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled items are skipped during keyboard navigation.
 
-### Поддержка RTL
+### RTL support
 
-Строки меню автоматически адаптируются к языкам с письмом справа налево (RTL). Направление навигации стрелками меняется
-на противоположное, а подменю располагаются с левой стороны.
+Menubars automatically adapt to right-to-left (RTL) languages. Arrow key navigation reverses direction, and submenus position on the left side.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -171,41 +162,63 @@
   </docs-tab>
 </docs-tab-group>
 
-Атрибут `dir="rtl"` включает режим RTL. Стрелка Влево перемещает вправо, стрелка Вправо перемещает влево, сохраняя
-естественную навигацию для пользователей RTL-языков.
+The `dir="rtl"` attribute enables RTL mode. Left arrow moves right, Right arrow moves left, maintaining natural navigation for RTL language users.
 
-## API
+## Testing
 
-Паттерн строки меню использует директивы из библиотеки Angular Aria. Смотрите [руководство по Menu](guide/aria/menu) для
-получения полной документации по API.
+Angular Aria provides component harnesses for testing menubar components.
+Here is an example of how to use the harnesses in a component test:
 
-### MenuBar
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {MenuHarness} from '@angular/aria/menu/testing';
+import {MyMenubarComponent} from './my-menubar'; // Your component
 
-Горизонтальный контейнер для элементов меню верхнего уровня.
+describe('MyMenubarComponent', () => {
+  let fixture: ComponentFixture<MyMenubarComponent>;
+  let loader: HarnessLoader;
 
-#### Input-свойства
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyMenubarComponent],
+    });
 
-| Свойство       | Тип       | По умолчанию | Описание                                                                                      |
-| -------------- | --------- | ------------ | --------------------------------------------------------------------------------------------- |
-| `disabled`     | `boolean` | `false`      | Отключает всю строку меню                                                                     |
-| `wrap`         | `boolean` | `true`       | Определяет, переходит ли навигация с клавиатуры от последнего элемента к первому (циклически) |
-| `softDisabled` | `boolean` | `true`       | Если `true`, отключенные элементы могут получать фокус, но не интерактивны                    |
+    fixture = TestBed.createComponent(MyMenubarComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
-Смотрите [документацию API Menu](guide/aria/menu#apis) для получения полной информации обо всех доступных
-Input-свойствах и Сигналах.
+  it('should interact with menubar items', async () => {
+    // Load the menubar harness (which is a MenuHarness with selector '[ngMenuBar]')
+    const menubar = await loader.getHarness(MenuHarness.with({selector: '[ngMenuBar]'}));
 
-### MenuItem
+    // Menubars are persistent and always "open"
+    expect(await menubar.isOpen()).toBe(true);
+    expect(await menubar.isMenuBar()).toBe(true);
 
-Отдельные элементы внутри строки меню. Тот же API, что и у Menu — см. [MenuItem](guide/aria/menu#menuitem).
+    // Get top-level items
+    const items = await menubar.getItems();
+    expect(items.length).toBe(2);
+    expect(await items[0].getText()).toBe('File');
+    expect(await items[1].getText()).toBe('Edit');
 
-**Специфичное поведение для строки меню:**
+    // Click an item to open its dropdown menu
+    await items[0].click();
 
-- Стрелки Влево/Вправо перемещают между элементами строки меню (в отличие от Вверх/Вниз в вертикальных меню)
-- Первое взаимодействие с клавиатурой или клик включает открытие подменю при наведении
-- Enter или стрелка Вниз открывает подменю и фокусирует первый элемент
-- `aria-haspopup="menu"` указывает на элементы с подменю
+    const fileMenu = await items[0].getSubmenu();
+    expect(fileMenu).toBeTruthy();
+    expect(await fileMenu!.isOpen()).toBe(true);
+  });
+});
+```
 
-### MenuTrigger
+## API reference
 
-Обычно не используется в строках меню — MenuItem обрабатывает поведение триггера напрямую, если у него есть связанное
-подменю. Смотрите [MenuTrigger](guide/aria/menu#menutrigger) для паттернов автономных триггеров меню.
+For detailed API documentation, inspect the following API references:
+
+- [`MenuBar`](/api/aria/menu/MenuBar)
+- [`MenuItem`](/api/aria/menu/MenuItem)
+- [`MenuTrigger`](/api/aria/menu/MenuTrigger)
+- [`Menu`](/api/aria/menu/Menu)

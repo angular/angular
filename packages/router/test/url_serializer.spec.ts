@@ -132,6 +132,17 @@ describe('url serializer', () => {
     expect(url.serialize(tree)).toEqual('/one(left:two/three)');
   });
 
+  it('should parse a secondary segment named "__proto__"', () => {
+    const tree = url.parse('/one(__proto__:two)');
+
+    expectSegment(tree.root.children[PRIMARY_OUTLET], 'one');
+    expectSegment(tree.root.children['__proto__'], 'two');
+    expect(tree.root.numberOfChildren).toEqual(2);
+    expect(Object.getPrototypeOf(tree.root.children)).toBeNull();
+
+    expect(url.serialize(tree)).toEqual('/one(__proto__:two)');
+  });
+
   it('should parse an empty secondary segment group', () => {
     const tree = url.parse('/one()');
 
@@ -414,6 +425,25 @@ describe('url serializer', () => {
       const parsed = url.parse(testUrl);
 
       expect(url.serialize(parsed)).toBe(testUrl);
+    });
+  });
+
+  describe('multiple leading slashes', () => {
+    // Regression test: https://github.com/angular/angular/issues/66233
+    // `///path` was parsed into an empty UrlSegment followed by `path`, which the serializer
+    // rendered as `//path` — a protocol-relative URL that browsers reject with a SecurityError
+    // when passed to history.pushState/replaceState.
+    it('should normalize multiple leading slashes when parsing', () => {
+      expect(url.serialize(url.parse('///test'))).toEqual('/test');
+    });
+
+    it('should normalize any number of leading slashes when parsing', () => {
+      expect(url.serialize(url.parse('////test'))).toEqual('/test');
+      expect(url.serialize(url.parse('/////test'))).toEqual('/test');
+    });
+
+    it('should preserve query params and fragments after normalizing leading slashes', () => {
+      expect(url.serialize(url.parse('///test?foo=bar#frag'))).toEqual('/test?foo=bar#frag');
     });
   });
 

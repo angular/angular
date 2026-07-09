@@ -1,63 +1,48 @@
-# Обзор DevTools
+# DevTools Overview
 
-Angular DevTools — это расширение для браузера, которое предоставляет возможности отладки и профилирования для
-приложений Angular.
+Angular DevTools is a browser extension that provides debugging and profiling capabilities for Angular applications.
 
 <docs-video src="https://www.youtube.com/embed/bavWOHZM6zE"/>
 
-Установите Angular DevTools
-из [Chrome Web Store](https://chrome.google.com/webstore/detail/angular-developer-tools/ienfalfjdbdpebioblfackkekamfmbnh)
-или из [Firefox Addons](https://addons.mozilla.org/firefox/addon/angular-devtools/).
+Install Angular DevTools from the [Chrome Web Store](https://chrome.google.com/webstore/detail/angular-developer-tools/ienfalfjdbdpebioblfackkekamfmbnh) or from [Firefox Addons](https://addons.mozilla.org/firefox/addon/angular-devtools/).
 
-Вы можете открыть Chrome или Firefox DevTools на любой веб-странице, нажав <kbd>F12</kbd> или <kbd><kbd>Ctrl</kbd>+<kbd>
-Shift</kbd>+<kbd>I</kbd></kbd> (Windows или Linux) и <kbd><kbd>Fn</kbd>+<kbd>F12</kbd></kbd> или <kbd><kbd>
-Cmd</kbd>+<kbd>Option</kbd>+<kbd>I</kbd></kbd> (Mac).
-После открытия инструментов разработчика браузера и установки Angular DevTools, вы сможете найти его на вкладке "
-Angular".
+You can open Chrome or Firefox DevTools on any web page by pressing <kbd>F12</kbd> or <kbd><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd></kbd> (Windows or Linux) and <kbd><kbd>Fn</kbd>+<kbd>F12</kbd></kbd> or <kbd><kbd>Cmd</kbd>+<kbd>Option</kbd>+<kbd>I</kbd></kbd> (Mac).
+Once browser DevTools is open and Angular DevTools is installed, you can find it under the "Angular" tab.
 
-HELPFUL: На новой вкладке Chrome установленные расширения не запускаются, поэтому вкладка Angular не появится в
-DevTools. Перейдите на любую другую страницу, чтобы увидеть её.
+HELPFUL: Chrome's new tab page does not run installed extensions, so the Angular tab will not appear in DevTools. Visit any other page to see it.
 
-<img src="assets/images/guide/devtools/devtools.png" alt="Обзор Angular DevTools, показывающий дерево компонентов приложения.">
+<img src="assets/images/guide/devtools/devtools.png" alt="An overview of Angular DevTools showing a tree of components for an application.">
 
-## Откройте ваше приложение
+## Open your application
 
-При открытии расширения вы увидите три дополнительные вкладки:
+When you open the extension, you'll see four additional tabs:
 
-| Вкладки                                   | Подробности                                                                                                                            |
-| :---------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- |
-| [Components](tools/devtools/component)    | Позволяет изучать компоненты и директивы в вашем приложении, а также просматривать или редактировать их состояние.                     |
-| [Profiler](tools/devtools/profiler)       | Позволяет профилировать приложение и понимать, где находятся узкие места производительности во время выполнения обнаружения изменений. |
-| [Injector Tree](tools/devtools/injectors) | Позволяет визуализировать иерархию Environment Injector и Element Injector.                                                            |
+| Tabs                                      | Details                                                                                                                |
+| :---------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| [Components](tools/devtools/component)    | Lets you explore the components and directives in your application and preview or edit their state.                    |
+| [Profiler](tools/devtools/profiler)       | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
+| [Injector Tree](tools/devtools/injectors) | Lets you visualize the Environment and Element Injector hierarchy                                                      |
+| [Router Tree](tools/devtools/router)      | Lets you visualize the routing tree of your application.                                                               |
 
-Другие вкладки, такие как `Router Tree` или `Transfer State`, являются экспериментальными; их можно включить в
-настройках devtools, и они пока не задокументированы.
+Other tabs like `Transfer State` are experimental and can be enabled via the devtools settings and are not documented yet.
 
-HELPFUL: Пользователям браузеров на базе Chromium может быть
-интересна [интеграция с панелью Performance](/best-practices/profiling-with-chrome-devtools).
+HELPFUL: For users of Chromium based browsers, you might be interested in the [Performance panel integration](/best-practices/profiling-with-chrome-devtools).
 
-<img src="assets/images/guide/devtools/devtools-tabs.png" alt="Скриншот верхней части Angular DevTools, иллюстрирующий две вкладки в верхнем левом углу: одну с меткой 'Components' и другую с меткой 'Profiler'.">
+<img src="assets/images/guide/devtools/devtools-tabs.png" alt="A screenshot of the top of Angular DevTools illustrating two tabs in the upper-left corner, one labeled 'Components' and another labeled 'Profiler'.">
 
-В правом верхнем углу Angular DevTools находится кнопка информации, открывающая всплывающее окно.
-В этом окне, среди прочего, указана версия Angular, запущенная на странице, а также версия devtools.
+In the top-right corner of Angular DevTools you'll find the information button which open a popover.
+The information popover contains among others what version of Angular is running on the page as well as the devtools version.
 
-### Приложение Angular не обнаружено
+### Angular application not detected
 
-Если при открытии Angular DevTools вы видите сообщение об ошибке "Angular application not detected" (Приложение Angular
-не обнаружено), это означает, что расширение не может установить связь с приложением Angular на странице.
-Наиболее частая причина — на проверяемой веб-странице нет приложения Angular.
-Убедитесь, что вы проверяете нужную веб-страницу и что приложение Angular запущено.
+If you see an error message "Angular application not detected" when opening Angular DevTools, this means it is not able to communicate with an Angular app on the page.
+The most common reason for this is because the web page you are inspecting does not contain an Angular application.
+Double check that you are inspecting the right web page and that the Angular app is running.
 
-### Обнаружено приложение, собранное с конфигурацией для продакшена
+### We detected an application built with production configuration
 
-Если вы видите сообщение об ошибке "We detected an application built with production configuration. Angular DevTools
-only supports development builds." (Мы обнаружили приложение, собранное с конфигурацией для продакшена. Angular DevTools
-поддерживает только сборки для разработки), это означает, что приложение Angular было найдено на странице, но оно
-скомпилировано с оптимизациями для продакшена.
-При компиляции для продакшена Angular CLI удаляет различные функции отладки, чтобы минимизировать объем JavaScript на
-странице и повысить производительность. Это включает в себя функции, необходимые для связи с DevTools.
+If you see an error message "We detected an application built with production configuration. Angular DevTools only supports development builds.", this means that an Angular application was found on the page, but it was compiled with production optimizations.
+When compiling for production, Angular CLI removes various debug features to minimize the amount of the JavaScript on the page to improve performance. This includes features needed to communicate with DevTools.
 
-Чтобы запустить DevTools, необходимо скомпилировать приложение с отключенными оптимизациями. `ng serve` делает это по
-умолчанию.
-Если вам нужно отладить развернутое приложение, отключите оптимизации в сборке с помощью [опции конфигурации
-`optimization`](reference/configs/workspace-config#optimization-configuration) (`{"optimization": false}`).
+To run DevTools, you need to compile your application with optimizations disabled. `ng serve` does this by default.
+If you need to debug a deployed application, disable optimizations in your build with the [`optimization` configuration option](reference/configs/workspace-config#optimization-configuration) (`{"optimization": false}`).

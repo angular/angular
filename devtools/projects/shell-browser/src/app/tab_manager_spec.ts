@@ -20,6 +20,7 @@ interface MockSender {
 
 const TEST_MESSAGE_ONE = {topic: 'test', args: ['test1']};
 const TEST_MESSAGE_TWO = {topic: 'test', args: ['test2']};
+const EXTENSION_URL_PREFIX = 'chrome-extension://test-extension-id/';
 
 class MockPort {
   onMessageListeners: Function[] = [];
@@ -67,7 +68,7 @@ function assertArrayDoesNotHaveObj<T extends object>(array: T[], obj: T) {
 }
 
 function mockSpyFunction(obj: any, property: string, returnValue: any) {
-  (obj[property] as any).and.returnValue(() => returnValue);
+  (obj[property] as any).and.returnValue(returnValue);
 }
 
 function mockSpyProperty(obj: any, property: string, value: any) {
@@ -107,6 +108,13 @@ describe('Tab Manager - ', () => {
   function createDevToolsPort() {
     const port = new MockPort({
       name: tabId.toString(),
+      sender: {
+        url: `${EXTENSION_URL_PREFIX}devtools.html`,
+        tab: {
+          id: tabId,
+        },
+        frameId: 0,
+      },
     });
     connectToChromeRuntime(port);
     return port;
@@ -120,7 +128,7 @@ describe('Tab Manager - ', () => {
       ['onConnect', 'onDisconnect'],
     );
     mockSpyFunction(chromeRuntime, 'getManifest', {manifest_version: 3});
-    mockSpyFunction(chromeRuntime, 'getURL', (path: string) => path);
+    mockSpyFunction(chromeRuntime, 'getURL', EXTENSION_URL_PREFIX);
     mockSpyProperty(chromeRuntime, 'onConnect', {
       addListener: (listener: (port: MockPort) => void) => {
         chromeRuntimeOnConnectListeners.push(listener);
@@ -204,7 +212,7 @@ describe('Tab Manager - ', () => {
       }
     });
 
-    it('should set frame connection as enabled when an enableFrameConnection message is recieved', async () => {
+    it('should set frame connection as enabled when an enableFrameConnection message is received', async () => {
       for await (const {tab, devtoolsPort} of eachOrderingOfDevToolsInitialization()) {
         expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(false);
 
@@ -258,7 +266,7 @@ describe('Tab Manager - ', () => {
       }
     });
 
-    it('should set backendReady when the contentPort recieves the backendReady message', async () => {
+    it('should set backendReady when the contentPort receives the backendReady message', async () => {
       for await (const {
         contentScriptPort,
         devtoolsPort,
@@ -420,7 +428,7 @@ describe('Tab Manager - ', () => {
       }
     });
 
-    it('should set the correct frame connection as enabled when an enableFrameConnection message is recieved', async () => {
+    it('should set the correct frame connection as enabled when an enableFrameConnection message is received', async () => {
       for await (const {tab, devtoolsPort} of eachOrderingOfDevToolsInitialization()) {
         expect(tab?.contentScripts[topLevelFrameId]?.enabled).toBe(false);
         expect(tab?.contentScripts[childFrameId]?.enabled).toBe(false);

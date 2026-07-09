@@ -8,9 +8,9 @@
 
 import {ResourceLoader} from '@angular/compiler';
 import {
+  ChangeDetectionStrategy,
   Compiler,
   Component,
-  ComponentFactoryResolver,
   CUSTOM_ELEMENTS_SCHEMA,
   Directive,
   Inject,
@@ -21,8 +21,8 @@ import {
   NgModule,
   Optional,
   Pipe,
-  TransferState,
   SkipSelf,
+  TransferState,
   Type,
 } from '@angular/core';
 import {
@@ -34,8 +34,8 @@ import {
   waitForAsync,
   withModule,
 } from '@angular/core/testing';
-import {expect} from '@angular/private/testing/matchers';
 import {isBrowser} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 
 // Services, and components for the tests.
 
@@ -72,6 +72,7 @@ class ParentComp {}
   selector: 'my-if-comp',
   template: `MyIf(<span *ngIf="showMore">More</span>)`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 @Injectable()
 class MyIfComp {
@@ -394,7 +395,7 @@ describe('public testing API', () => {
     xdescribe('components with template url', () => {
       let TestComponent!: Type<unknown>;
 
-      beforeEach(waitForAsync(async () => {
+      beforeEach(() => {
         @Component({
           selector: 'comp',
           templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html',
@@ -405,8 +406,7 @@ describe('public testing API', () => {
         TestComponent = CompWithUrlTemplate;
 
         TestBed.configureTestingModule({declarations: [CompWithUrlTemplate]});
-        await TestBed.compileComponents();
-      }));
+      });
 
       isBrowser &&
         it('should allow to createSync components with templateUrl after explicit async compilation', () => {
@@ -522,16 +522,6 @@ describe('public testing API', () => {
     });
 
     describe('overriding providers', () => {
-      describe('in core', () => {
-        it('ComponentFactoryResolver', () => {
-          const componentFactoryMock = jasmine.createSpyObj('componentFactory', [
-            'resolveComponentFactory',
-          ]);
-          TestBed.overrideProvider(ComponentFactoryResolver, {useValue: componentFactoryMock});
-          expect(TestBed.inject(ComponentFactoryResolver)).toEqual(componentFactoryMock);
-        });
-      });
-
       describe('in NgModules', () => {
         it('should support useValue', () => {
           TestBed.configureTestingModule({
@@ -922,7 +912,6 @@ describe('public testing API', () => {
             providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}],
           });
 
-          TestBed.compileComponents();
           tick();
           const compFixture = TestBed.createComponent(InternalCompWithUrlTemplate);
           expect(compFixture.nativeElement).toHaveText('Hello world!');

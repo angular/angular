@@ -8,6 +8,7 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di/interface/provider';
+import {ForeignComponent} from '../interface/foreign_component';
 import {Type} from '../interface/type';
 import {compileComponent, compileDirective} from '../render3/jit/directive';
 import {compilePipe} from '../render3/jit/pipe';
@@ -408,6 +409,9 @@ export interface ComponentDecorator {
    * life-cycle hooks. For more information, see the
    * [Lifecycle Hooks](guide/components/lifecycle) guide.
    *
+   * HELPFUL: You may not use this interface to describe a class that is a component. Decorators do not affect the typing of the decorated classes.
+   * Use `Type<unknown>` instead of `Type<Component>`.
+   *
    * @usageNotes
    *
    * ### Setting component inputs
@@ -549,7 +553,9 @@ export interface Component extends Directive {
    * which is responsible for propagating the component's bindings.
    * The strategy is one of:
    * - `ChangeDetectionStrategy#OnPush` sets the strategy to `CheckOnce` (on demand).
-   * - `ChangeDetectionStrategy#Default` sets the strategy to `CheckAlways`.
+   * - `ChangeDetectionStrategy#Eager` sets the strategy to `CheckAlways`.
+   *
+   * NOTE: OnPush is enabled by default.
    */
   changeDetection?: ChangeDetectionStrategy;
 
@@ -649,13 +655,21 @@ export interface Component extends Directive {
   imports?: (Type<any> | ReadonlyArray<any>)[];
 
   /**
+   * The foreignImports property specifies components from other frameworks that can be used
+   * within this component's template.
+   *
+   * @internal // 3p-only
+   */
+  foreignImports?: ForeignComponent<any, any>[];
+
+  /**
    * The `deferredImports` property specifies a standalone component's template dependencies,
    * which should be defer-loaded as a part of the `@defer` block. Angular *always* generates
    * dynamic imports for such symbols and removes the regular/eager import. Make sure that imports
    * which bring symbols used in the `deferredImports` don't contain other symbols.
    *
    * Note: this is an internal-only field, use regular `@Component.imports` field instead.
-   * @internal
+   * @internal // 3p-only
    */
   deferredImports?: (Type<any> | ReadonlyArray<any>)[];
 
@@ -800,7 +814,7 @@ export interface InputDecorator {
    * class BankAccount {
    *   // This property is bound using its original name.
    *   // Defining argument required as true inside the Input Decorator
-   *   // makes this property deceleration as mandatory
+   *   // makes this property declaration as mandatory
    *   @Input({ required: true }) bankName!: string;
    *   // Argument alias makes this property value is bound to a different property name
    *   // when this component is instantiated in a template.

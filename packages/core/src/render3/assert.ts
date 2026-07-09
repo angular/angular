@@ -174,26 +174,6 @@ export function assertParentView(lView: LView | null, errMessage?: string) {
   );
 }
 
-export function assertNoDuplicateDirectives(directives: DirectiveDef<unknown>[]): void {
-  // The array needs at least two elements in order to have duplicates.
-  if (directives.length < 2) {
-    return;
-  }
-
-  const seenDirectives = new Set<DirectiveDef<unknown>>();
-
-  for (const current of directives) {
-    if (seenDirectives.has(current)) {
-      throw new RuntimeError(
-        RuntimeErrorCode.DUPLICATE_DIRECTIVE,
-        `Directive ${current.type.name} matches multiple times on the same element. ` +
-          `Directives can only match an element once.`,
-      );
-    }
-    seenDirectives.add(current);
-  }
-}
-
 /**
  * This is a basic sanity check that the `injectorIndex` seems to point to what looks like a
  * NodeInjector data structure.

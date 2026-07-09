@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata, metadata, validate} from '../logic';
-import {MIN_LENGTH} from '../metadata';
-import {SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../types';
-import {minLengthError} from '../validation_errors';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
+import {createMetadataKey, metadata, MIN_LENGTH} from '../metadata';
 import {
   BaseValidatorConfig,
   getLengthOrSize,
@@ -18,6 +15,8 @@ import {
   isEmpty,
   ValueWithLengthOrSize,
 } from './util';
+import {validate} from './validate';
+import {minLengthError} from './validation_errors';
 
 /**
  * Binds a validator to the given path that requires the length of the value to be greater than or
@@ -33,8 +32,9 @@ import {
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @see [Signal Form Min Length Validation](guide/forms/signals/validation#minlength-and-maxlength)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function minLength<
   TValue extends ValueWithLengthOrSize,
@@ -44,10 +44,13 @@ export function minLength<
   minLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MIN_LENGTH_MEMO = metadata(path, (ctx) =>
-    computed(() => (typeof minLength === 'number' ? minLength : minLength(ctx))),
-  );
-  aggregateMetadata(path, MIN_LENGTH, ({state}) => state.metadata(MIN_LENGTH_MEMO)!());
+  const MIN_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return typeof minLength === 'number' ? minLength : minLength(ctx);
+  });
+  metadata(path, MIN_LENGTH, ({state}) => state.metadata(MIN_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

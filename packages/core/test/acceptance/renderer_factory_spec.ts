@@ -36,6 +36,7 @@ import {
   RendererStyleFlags2,
   RendererType2,
   ViewEncapsulation,
+  ChangeDetectionStrategy,
 } from '../../src/core';
 import {RElement} from '../../src/render3/interfaces/renderer_dom';
 import {NoopNgZone} from '../../src/zone/ng_zone';
@@ -54,6 +55,8 @@ describe('renderer factory lifecycle', () => {
     selector: 'some-component',
     template: `foo`,
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponent implements DoCheck {
     ngOnInit() {
@@ -68,6 +71,8 @@ describe('renderer factory lifecycle', () => {
     selector: 'some-component-with-error',
     template: `With error`,
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponentWhichThrows {
     ngOnInit() {
@@ -79,6 +84,8 @@ describe('renderer factory lifecycle', () => {
     selector: 'lol',
     template: `<some-component></some-component>`,
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class TestComponent implements DoCheck {
     ngOnInit() {
@@ -160,6 +167,8 @@ describe('renderer factory lifecycle', () => {
       styles: ['.some-css-class { color: red; }'],
       template: '...',
       encapsulation: ViewEncapsulation.ShadowDom,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class StyledComp {}
 
@@ -177,6 +186,8 @@ describe('renderer factory lifecycle', () => {
       @Component({
         template: '',
         animations: [animA, animB],
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnimComp {}
 
@@ -193,6 +204,8 @@ describe('renderer factory lifecycle', () => {
       @Component({
         template: '...',
         animations: [],
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnimComp {}
 
@@ -206,6 +219,8 @@ describe('renderer factory lifecycle', () => {
       @Component({
         template: '<div @fooAnimation></div>',
         animations: [],
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AnimComp {}
 
@@ -242,6 +257,8 @@ describe('renderer factory lifecycle', () => {
         <div>Root view</div>
         <div *ngIf="visible">Child view</div>
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       visible = true;
@@ -336,6 +353,8 @@ describe('animation renderer factory', () => {
       },
     ],
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponentWithAnimation {
     exp: string | undefined;
@@ -349,6 +368,8 @@ describe('animation renderer factory', () => {
     selector: 'some-component',
     template: 'foo',
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponent {}
 
@@ -428,6 +449,8 @@ describe('custom renderer', () => {
     selector: 'some-component',
     template: `<div><span></span></div>`,
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SomeComponent {}
 
@@ -480,6 +503,8 @@ describe('Renderer2 destruction hooks', () => {
       <span *ngIf="isContentVisible">C</span>
     `,
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class SimpleApp {
     isContentVisible = true;
@@ -489,6 +514,8 @@ describe('Renderer2 destruction hooks', () => {
     selector: 'basic-comp',
     template: 'comp(<ng-content></ng-content>)',
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class BasicComponent {}
 
@@ -500,6 +527,8 @@ describe('Renderer2 destruction hooks', () => {
       <basic-comp *ngIf="isContentVisible">C</basic-comp>
     `,
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class AppWithComponents {
     isContentVisible = true;

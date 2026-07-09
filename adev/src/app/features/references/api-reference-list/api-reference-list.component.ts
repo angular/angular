@@ -7,7 +7,6 @@
  */
 
 import {
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   computed,
@@ -55,7 +54,6 @@ export const DEFAULT_STATUS = STATUSES.stable | STATUSES.developerPreview | STAT
   ],
   templateUrl: './api-reference-list.component.html',
   styleUrls: ['./api-reference-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ApiReferenceList {
   // services

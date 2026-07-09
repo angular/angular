@@ -51,7 +51,7 @@ However, amending an existing commit with the changes makes it difficult for the
 exactly what has changed since the last time they reviewed the Pull Request.
 
 Here is where fixup commits come in handy.
-By addressing review feedback in fixup commits, you make it very straight forward for the reviewer
+By addressing review feedback in fixup commits, you make it very straightforward for the reviewer
 to see what are the new changes that need to be reviewed and verify that their earlier feedback has
 been addressed.
 This can save a lot of effort, especially on larger Pull Requests (where having to re-review _all_

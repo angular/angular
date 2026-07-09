@@ -13,7 +13,9 @@ import type {FieldState} from './types';
 /**
  * Configuration options for signal forms.
  *
- * @experimental 21.0.1
+ * @see [Automatic status classes](guide/forms/signals/migration#automatic-status-classes)
+ *
+ * @publicApi 22.0
  */
 export interface SignalFormsConfig {
   /** A map of CSS class names to predicate functions that determine when to apply them. */
@@ -23,7 +25,9 @@ export interface SignalFormsConfig {
 /**
  * Provides configuration options for signal forms.
  *
- * @experimental 21.0.1
+ * @see [Automatic status classes](guide/forms/signals/migration#automatic-status-classes)
+ *
+ * @publicApi 22.0
  */
 export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[] {
   return [{provide: SIGNAL_FORMS_CONFIG, useValue: config}];

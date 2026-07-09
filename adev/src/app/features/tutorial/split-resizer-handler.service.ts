@@ -8,7 +8,7 @@
 
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {DOCUMENT} from '@angular/common';
-import {DestroyRef, ElementRef, Injectable, inject, signal} from '@angular/core';
+import {DestroyRef, ElementRef, Service, inject, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {fromEvent, combineLatest} from 'rxjs';
 import {map, filter, finalize} from 'rxjs/operators';
@@ -28,7 +28,7 @@ interface MouseEventAndEditor {
 const MIN_WIDTH_OF_CONTENT_IN_PX = 300;
 const MAX_WIDTH_OF_CONTENT_IN_PX = 800;
 
-@Injectable()
+@Service({autoProvided: false})
 export class SplitResizerHandler {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);

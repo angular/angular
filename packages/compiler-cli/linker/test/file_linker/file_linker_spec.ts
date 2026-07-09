@@ -179,6 +179,113 @@ describe('FileLinker', () => {
     });
   });
 
+  describe('legacyOptionalChaining support', () => {
+    function linkComponentWithTemplate(version: string, template: string): string {
+      // Note that the `minVersion` is set to the placeholder,
+      // because that's what we have in the source code as well.
+      const source = `
+        ɵɵngDeclareComponent({
+          minVersion: "0.0.0-PLACEHOLDER",
+          version: "${version}",
+          ngImport: core,
+          template: \`${template}\`,
+          isInline: true,
+          type: SomeComp
+        });
+      `;
+
+      // We need to create a new source file here, because template parsing requires
+      // the template string to have offsets which synthetic nodes do not.
+      const {fileLinker} = createFileLinker(source);
+      const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+      const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+        .expression as ts.CallExpression;
+      const result = fileLinker.linkPartialDeclaration(
+        'ɵɵngDeclareComponent',
+        [call.arguments[0]],
+        new MockDeclarationScope(),
+      );
+      return ts.createPrinter().printNode(ts.EmitHint.Unspecified, result, sourceFile);
+    }
+
+    it('should use null for optional chaining if compiled with a version older than 22', () => {
+      for (const version of ['21.0.0', '21.2.0', '16.2.0']) {
+        const result = linkComponentWithTemplate(version, '{{ foo?.bar }}');
+        expect(result).toContain(' == null');
+      }
+    });
+
+    it('should use undefined for optional chaining if compiled with version 22 or above', () => {
+      for (const version of ['22.0.0', '22.0.1', '22.1.0', '22.0.0-next.0', '23.0.0']) {
+        const result = linkComponentWithTemplate(version, '{{ foo?.bar }}');
+        expect(result).not.toContain(' == null');
+      }
+    });
+
+    it('should not use null for optional chaining if compiled with a local version (0.0.0-PLACEHOLDER)', () => {
+      const result = linkComponentWithTemplate('0.0.0-PLACEHOLDER', '{{ foo?.bar }}');
+      expect(result).not.toContain(' == null');
+    });
+
+    it('should use null for optional chaining when the $safeNavigationMigration magic function is used, regardless of the version', () => {
+      for (const version of ['16.2.0', '22.0.0', '0.0.0-PLACEHOLDER']) {
+        const result = linkComponentWithTemplate(
+          version,
+          '{{ $safeNavigationMigration(foo?.bar) }}',
+        );
+        expect(result).toContain(' == null');
+      }
+    });
+
+    function linkDirectiveWithHostBinding(version: string, expression: string): string {
+      const source = `
+        ɵɵngDeclareDirective({
+          minVersion: "0.0.0-PLACEHOLDER",
+          version: "${version}",
+          ngImport: core,
+          host: {
+            properties: {
+              "attr.foo": "${expression}"
+            }
+          },
+          type: SomeDir
+        });
+      `;
+
+      const {fileLinker} = createFileLinker(source);
+      const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+      const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+        .expression as ts.CallExpression;
+      const result = fileLinker.linkPartialDeclaration(
+        'ɵɵngDeclareDirective',
+        [call.arguments[0]],
+        new MockDeclarationScope(),
+      );
+      return ts.createPrinter().printNode(ts.EmitHint.Unspecified, result, sourceFile);
+    }
+
+    it('should use null for optional chaining in directive host bindings if compiled with a version older than 22', () => {
+      for (const version of ['21.0.0', '21.2.0', '16.2.0']) {
+        const result = linkDirectiveWithHostBinding(version, 'foo?.bar');
+        expect(result).toContain(' == null');
+      }
+    });
+
+    it('should use undefined for optional chaining in directive host bindings if compiled with version 22 or above', () => {
+      for (const version of [
+        '22.0.0',
+        '22.0.1',
+        '22.1.0',
+        '22.0.0-next.0',
+        '23.0.0',
+        '0.0.0-PLACEHOLDER',
+      ]) {
+        const result = linkDirectiveWithHostBinding(version, 'foo?.bar');
+        expect(result).not.toContain(' == null');
+      }
+    });
+  });
+
   describe('getConstantStatements()', () => {
     it('should capture shared constant values', () => {
       const {fileLinker} = createFileLinker();

@@ -351,6 +351,16 @@ describe('Format date', () => {
       });
     });
 
+    it('should throw if the date format exceeds 256 characters to prevent DoS', () => {
+      const expectedError = /Exceeded maximum length of 256 characters/;
+      expect(() => formatDate(date, 'y'.repeat(257), ɵDEFAULT_LOCALE_ID)).toThrowError(
+        expectedError,
+      );
+      expect(() => formatDate(date, "'literal'".repeat(257), ɵDEFAULT_LOCALE_ID)).toThrowError(
+        expectedError,
+      );
+    });
+
     it('should format invalid in IE ISO date', () =>
       expect(formatDate('2017-01-11T12:00:00.014-0500', defaultFormat, ɵDEFAULT_LOCALE_ID)).toEqual(
         'Jan 11, 2017',
@@ -515,24 +525,22 @@ describe('Format date', () => {
     it('should support timezones', () => {
       const isoDate = '2024-02-17T12:00:00Z';
 
-      const date1 = formatDate(isoDate, 'long', 'en', 'America/New_York');
-      const date2 = formatDate(isoDate, 'long', 'en', 'EST');
-      expect(date1).toBe('February 17, 2024, 12:00:00 PM GMT+0');
-      expect(date2).toBe('February 17, 2024, 7:00:00 AM GMT-5');
+      const dateEst = formatDate(isoDate, 'long', 'en', 'EST');
+      expect(dateEst).toBe('February 17, 2024, 7:00:00 AM GMT-5');
 
-      const date3 = formatDate(isoDate, 'long', 'en', '+0500');
-      expect(date3).toBe('February 17, 2024, 5:00:00 PM GMT+5');
+      const dateOffset = formatDate(isoDate, 'long', 'en', '+0500');
+      expect(dateOffset).toBe('February 17, 2024, 5:00:00 PM GMT+5');
     });
 
     it('should return thursday date of the same week', () => {
       // Dec. 31st is a Sunday, last day of the last week of 2023
-      expect(getThursdayThisIsoWeek(new Date('2023-12-31'))).toEqual(new Date('2023-12-28'));
+      expect(getThursdayThisIsoWeek(new Date(2023, 11, 31))).toEqual(new Date(2023, 11, 28));
 
       // Dec. 29th is a Thursday
-      expect(getThursdayThisIsoWeek(new Date('2022-12-29'))).toEqual(new Date('2022-12-29'));
+      expect(getThursdayThisIsoWeek(new Date(2022, 11, 29))).toEqual(new Date(2022, 11, 29));
 
       // Jan 01st is a Monday
-      expect(getThursdayThisIsoWeek(new Date('2024-01-01'))).toEqual(new Date('2024-01-04'));
+      expect(getThursdayThisIsoWeek(new Date(2024, 0, 1))).toEqual(new Date(2024, 0, 4));
     });
   });
 });

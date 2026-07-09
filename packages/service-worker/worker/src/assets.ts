@@ -501,18 +501,51 @@ export abstract class AssetGroup {
    * Create a new `Request` based on the specified URL and `RequestInit` options, preserving only
    * metadata that are known to be safe.
    *
-   * Currently, only headers are preserved.
+   * Currently, headers, referrer, referrer policy, redirect policy, an explicit
+   * `credentials: 'omit'`, and the HTTP cache mode are preserved. On cross-origin redirects,
+   * sensitive headers are removed. This includes `Authorization`, as required by the Fetch redirect
+   * algorithm, and forbidden request headers that could contain credentials.
    *
    * NOTE:
-   *   Things like credential inclusion are intentionally omitted to avoid issues with opaque
-   *   responses.
-   *
+   *   `credentials: 'same-origin'` and `credentials: 'include'` are intentionally not preserved.
+   *   Forwarding `'include'` could leak cookies to cross-origin asset hosts, and forwarding
+   *   `'same-origin'` matches the default `fetch()` behavior so there is nothing to preserve.
+   *   Requests with `cache: 'only-if-cached'` and `mode !== 'same-origin'` are short-circuited
+   *   earlier in `Driver.onFetch()` (they are a known Chrome DevTools quirk), so no special
+   *   handling for that combination is needed here.
    * TODO(gkalpak):
    *   Investigate preserving more metadata. See, also, discussion on preserving `mode`:
-   *   https://github.com/angular/angular/issues/41931#issuecomment-1227601347
+   *   https://github.com/angular/angular/issues/41931#issuecomment-1227601347.
    */
-  private newRequestWithMetadata(url: string, options: RequestInit): Request {
-    return this.adapter.newRequest(url, {headers: options.headers});
+  private newRequestWithMetadata(url: string, options: Request): Request {
+    let headers = options.headers;
+    const parsedUrl = this.adapter.parseUrl(url, this.adapter.origin);
+
+    const hasHeaders = headers.keys().next().done !== true;
+
+    if (hasHeaders && parsedUrl.origin !== this.adapter.origin) {
+      headers = this.adapter.newHeaders(options.headers);
+      headers.delete('Authorization');
+      headers.delete('Proxy-Authorization');
+      headers.delete('Cookie');
+    }
+
+    const init: RequestInit = {
+      headers,
+      referrer: options.referrer,
+      referrerPolicy: options.referrerPolicy,
+      redirect: options.redirect,
+    };
+
+    if (options.credentials === 'omit') {
+      init.credentials = 'omit';
+    }
+
+    if (options.cache !== undefined) {
+      init.cache = options.cache;
+    }
+
+    return this.adapter.newRequest(url, init);
   }
 
   /**

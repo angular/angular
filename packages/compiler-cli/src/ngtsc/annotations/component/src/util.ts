@@ -7,9 +7,9 @@
  */
 
 import {LegacyAnimationTriggerNames} from '@angular/compiler';
-import {isResolvedModuleWithProviders, ResolvedModuleWithProviders} from '../../ng_module';
-import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../../diagnostics';
 import ts from 'typescript';
+import {ErrorCode, makeDiagnostic} from '../../../diagnostics';
+import {isResolvedModuleWithProviders, ResolvedModuleWithProviders} from '../../ng_module';
 
 import {Reference} from '../../../imports';
 import {
@@ -20,7 +20,12 @@ import {
   SyntheticValue,
 } from '../../../partial_evaluator';
 import {ClassDeclaration, isNamedClassDeclaration} from '../../../reflection';
-import {createValueHasWrongTypeError, getOriginNodeForDiagnostics} from '../../common';
+import {
+  createValueHasWrongTypeError,
+  getOriginNodeForDiagnostics,
+  unwrapExpression,
+} from '../../common';
+import {ForeignComponentMeta} from './metadata';
 
 /**
  * Collect the animation names from the static evaluation result.
@@ -99,10 +104,18 @@ export function validateAndFlattenComponentImports(
 
   for (let i = 0; i < imports.length; i++) {
     const ref = imports[i];
+    let refExpr = expr;
+    if (
+      ts.isArrayLiteralExpression(expr) &&
+      expr.elements.length === imports.length &&
+      !expr.elements.some(ts.isSpreadAssignment)
+    ) {
+      refExpr = expr.elements[i];
+    }
 
     if (Array.isArray(ref)) {
       const {imports: childImports, diagnostics: childDiagnostics} =
-        validateAndFlattenComponentImports(ref, expr, isDeferred);
+        validateAndFlattenComponentImports(ref, refExpr, isDeferred);
       flattened.push(...childImports);
       diagnostics.push(...childDiagnostics);
     } else if (ref instanceof Reference) {
@@ -135,28 +148,12 @@ export function validateAndFlattenComponentImports(
         ),
       );
     } else {
-      let diagnosticNode: ts.Node;
-      let diagnosticValue: ResolvedValue;
-
-      if (ref instanceof DynamicValue) {
-        diagnosticNode = ref.node;
-        diagnosticValue = ref;
-      } else if (
-        ts.isArrayLiteralExpression(expr) &&
-        expr.elements.length === imports.length &&
-        !expr.elements.some(ts.isSpreadAssignment) &&
-        !imports.some(Array.isArray)
-      ) {
-        // Reporting a diagnostic on the entire array can be noisy, especially if the user has a
-        // large array. The most common case is that the array will be static so we can reliably
-        // trace back a `ResolvedValue` back to its node using its index. This allows us to report
-        // the exact node that caused the issue.
-        diagnosticNode = expr.elements[i];
-        diagnosticValue = ref;
-      } else {
-        diagnosticNode = expr;
-        diagnosticValue = imports;
-      }
+      const {node: diagnosticNode, value: diagnosticValue} = getDiagnosticOrigin(
+        ref,
+        expr,
+        refExpr,
+        imports,
+      );
 
       diagnostics.push(
         createValueHasWrongTypeError(diagnosticNode, diagnosticValue, errorMessage).toDiagnostic(),
@@ -165,6 +162,115 @@ export function validateAndFlattenComponentImports(
   }
 
   return {imports: flattened, diagnostics};
+}
+
+export function extractForeignImportsFromAst(expr: ts.Expression): {
+  foreignImports: ForeignComponentMeta[];
+  diagnostics: ts.Diagnostic[];
+} {
+  const foreignImports: ForeignComponentMeta[] = [];
+  const diagnostics: ts.Diagnostic[] = [];
+
+  const unwrappedExpr = unwrapExpression(expr);
+  if (!ts.isArrayLiteralExpression(unwrappedExpr)) {
+    diagnostics.push(
+      makeDiagnostic(
+        ErrorCode.VALUE_HAS_WRONG_TYPE,
+        expr,
+        `'foreignImports' must be an array of foreign imports, e.g. 'foreignImports: [myImport(MyComponent)]'.`,
+      ),
+    );
+    return {foreignImports, diagnostics};
+  }
+
+  for (const element of unwrappedExpr.elements) {
+    const unwrappedEl = unwrapExpression(element);
+    if (!ts.isCallExpression(unwrappedEl)) {
+      diagnostics.push(
+        makeDiagnostic(
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          element,
+          `Each foreign import must be a call expression, e.g. 'myImport(MyComponent)'.`,
+        ),
+      );
+      continue;
+    }
+
+    const callee = unwrapExpression(unwrappedEl.expression);
+    if (!ts.isIdentifier(callee)) {
+      diagnostics.push(
+        makeDiagnostic(
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          unwrappedEl.expression,
+          `The foreign import function must be a simple identifier, e.g. 'myImport(MyComponent)'.`,
+        ),
+      );
+      continue;
+    }
+
+    if (unwrappedEl.arguments.length !== 1) {
+      diagnostics.push(
+        makeDiagnostic(
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          element,
+          `Foreign import calls must receive exactly one argument, e.g. 'myImport(MyComponent)'.`,
+        ),
+      );
+      continue;
+    }
+
+    const arg = unwrapExpression(unwrappedEl.arguments[0]);
+    if (!ts.isIdentifier(arg)) {
+      diagnostics.push(
+        makeDiagnostic(
+          ErrorCode.VALUE_HAS_WRONG_TYPE,
+          unwrappedEl.arguments[0],
+          `The component reference passed to the foreign import must be a simple identifier, e.g. 'myImport(MyComponent)'.`,
+        ),
+      );
+      continue;
+    }
+
+    foreignImports.push({
+      name: arg.text,
+      rawExpression: element,
+    });
+  }
+
+  return {foreignImports, diagnostics};
+}
+
+/**
+ * Reporting a diagnostic on the entire array can be noisy, especially if the user has a
+ * large array. Attempt to determine the most accurate position within the array expression to report the
+ * diagnostic on.
+ */
+function getDiagnosticOrigin(
+  ref: ResolvedValue,
+  expr: ts.Expression,
+  refExpr: ts.Expression,
+  fallbackValue: ResolvedValue,
+): {node: ts.Node; value: ResolvedValue} {
+  if (ref instanceof DynamicValue && isWithinExpression(ref.node, expr)) {
+    // Use the dynamic value position itself if it occurs within the expression.
+    return {node: ref.node, value: ref};
+  } else if (refExpr !== expr) {
+    // The reference comes from a specific element in `expr`, so use that element to report the diagnostic on.
+    return {node: refExpr, value: ref};
+  } else {
+    return {node: expr, value: fallbackValue};
+  }
+}
+
+function isWithinExpression(node: ts.Node, expr: ts.Expression): boolean {
+  let current: ts.Node | undefined = node;
+  while (current !== undefined) {
+    if (current === expr) {
+      return true;
+    }
+    current = current.parent;
+  }
+  return false;
 }
 
 /**

@@ -1,40 +1,39 @@
-# Форматирование данных на основе локали
+# Format data based on locale
 
-Angular предоставляет следующие встроенные [Pipe-ы](guide/templates/pipes) для преобразования данных.
-Эти Pipe-ы используют токен [`LOCALE_ID`][ApiCoreLocaleId] для форматирования данных на основе правил каждой локали.
+Angular provides the following built-in data transformation [pipes](guide/templates/pipes).
+The data transformation pipes use the [`LOCALE_ID`][ApiCoreLocaleId] token to format data based on rules of each locale.
 
-| Pipe преобразования данных              | Подробности                                   |
-| :-------------------------------------- | :-------------------------------------------- |
-| [`DatePipe`][ApiCommonDatepipe]         | Форматирует значение даты.                    |
-| [`CurrencyPipe`][ApiCommonCurrencypipe] | Преобразует число в строку валюты.            |
-| [`DecimalPipe`][ApiCommonDecimalpipe]   | Преобразует число в строку десятичного числа. |
-| [`PercentPipe`][ApiCommonPercentpipe]   | Преобразует число в строку процентов.         |
+| Data transformation pipe                | Details                                           |
+| :-------------------------------------- | :------------------------------------------------ |
+| [`DatePipe`][ApiCommonDatepipe]         | Formats a date value.                             |
+| [`CurrencyPipe`][ApiCommonCurrencypipe] | Transforms a number into a currency string.       |
+| [`DecimalPipe`][ApiCommonDecimalpipe]   | Transforms a number into a decimal number string. |
+| [`PercentPipe`][ApiCommonPercentpipe]   | Transforms a number into a percentage string.     |
 
-## Использование DatePipe для отображения текущей даты
+## Use DatePipe to display the current date
 
-Чтобы отобразить текущую дату в формате для текущей локали, используйте следующий формат для `DatePipe`.
+To display the current date in the format for the current locale, use the following format for the `DatePipe`.
 
 ```angular-html
 {{ today | date }}
 ```
 
-## Переопределение текущей локали для CurrencyPipe
+## Override current locale for CurrencyPipe
 
-Добавьте параметр `locale` в Pipe, чтобы переопределить текущее значение токена `LOCALE_ID`.
+Add the `locale` parameter to the pipe to override the current value of `LOCALE_ID` token.
 
-Чтобы принудительно использовать американский английский \(`en-US`\) для валюты, используйте следующий формат для
-`CurrencyPipe`
+To force the currency to use American English \(`en-US`\), use the following format for the `CurrencyPipe`
 
 ```angular-html
-{{ amount | currency : 'en-US' }}
+{{ amount | currency: 'USD' : 'symbol' : '1.2-2' : 'en-US' }}
 ```
 
-HELPFUL: Локаль, указанная для `CurrencyPipe`, переопределяет глобальный токен `LOCALE_ID` вашего приложения.
+HELPFUL: The locale specified for the `CurrencyPipe` overrides the global `LOCALE_ID` token of your application.
 
-## Что дальше
+## What's next
 
 <docs-pill-row>
-  <docs-pill href="guide/i18n/prepare" title="Подготовка компонента к переводу"/>
+  <docs-pill href="guide/i18n/prepare" title="Prepare component for translation"/>
 </docs-pill-row>
 
 [ApiCommonCurrencypipe]: api/common/CurrencyPipe 'CurrencyPipe | Common - API | Angular'

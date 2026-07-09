@@ -11,7 +11,6 @@ import {
   ElementRef,
   forwardRef,
   inject,
-  Injectable,
   Injector,
   Input,
   OnDestroy,
@@ -19,6 +18,7 @@ import {
   Provider,
   Renderer2,
   ɵRuntimeError as RuntimeError,
+  Service,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -51,9 +51,9 @@ function throwNameError() {
  * @description
  * Class used by Angular to track radio buttons. For internal use only.
  */
-@Injectable({providedIn: 'root'})
+@Service()
 export class RadioControlRegistry {
-  private _accessors: any[] = [];
+  private _accessors: [NgControl, RadioControlValueAccessor][] = [];
 
   /**
    * @description

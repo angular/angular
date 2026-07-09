@@ -1,49 +1,47 @@
-<docs-decorative-header title="Шаблоны" imgSrc="adev/src/assets/images/templates.svg"> <!-- markdownlint-disable-line -->
-Используйте синтаксис шаблонов Angular для создания динамических пользовательских интерфейсов.
+<docs-decorative-header title="Templates" imgSrc="adev/src/assets/images/templates.svg"> <!-- markdownlint-disable-line -->
+Use Angular's template syntax to create dynamic user interfaces.
 </docs-decorative-header>
 
-Шаблоны компонентов — это не просто статический HTML; они могут использовать данные из класса вашего компонента и
-устанавливать обработчики для взаимодействия с пользователем.
+Component templates aren't just static HTML— they can use data from your component class and set up handlers for user interaction.
 
-## Отображение динамического текста
+## Showing dynamic text
 
-В Angular _привязка (binding)_ создает динамическую связь между шаблоном компонента и его данными. Эта связь
-гарантирует, что изменения данных компонента автоматически обновляют отрисованный шаблон.
+In Angular, a _binding_ creates a dynamic connection between a component's template and its data. This connection ensures that changes to the component's data automatically update the rendered template.
 
-Вы можете создать привязку для отображения динамического текста в шаблоне, используя двойные фигурные скобки:
+You can create a binding to show some dynamic text in a template by using double curly-braces:
 
 ```angular-ts
 @Component({
   selector: 'user-profile',
-  template: `<h1>Profile for {{userName()}}</h1>`,
+  template: `<h1>Profile for {{ userName() }}</h1>`,
 })
 export class UserProfile {
   userName = signal('pro_programmer_123');
 }
 ```
 
-Когда Angular отрисовывает компонент, вы видите:
+When Angular renders the component, you see:
 
 ```html
 <h1>Profile for pro_programmer_123</h1>
 ```
 
-Angular автоматически поддерживает актуальность привязки при изменении значения сигнала. Основываясь на примере выше,
-если мы обновим значение сигнала `userName`:
+Angular automatically keeps the binding up-to-date when the value of the signal changes. Building on
+the example above, if we update the value of the `userName` signal:
 
 ```typescript
 this.userName.set('cool_coder_789');
 ```
 
-Отрисованная страница обновится, чтобы отразить новое значение:
+The rendered page updates to reflect the new value:
 
 ```html
 <h1>Profile for cool_coder_789</h1>
 ```
 
-## Установка динамических свойств и атрибутов
+## Setting dynamic properties and attributes
 
-Angular поддерживает привязку динамических значений к свойствам DOM с помощью квадратных скобок:
+Angular supports binding dynamic values into DOM properties with square brackets:
 
 ```angular-ts
 @Component({
@@ -56,18 +54,18 @@ export class UserProfile {
 }
 ```
 
-Вы также можете привязываться к _атрибутам_ HTML, добавляя префикс `attr.` к имени атрибута:
+You can also bind to HTML _attributes_ by prefixing the attribute name with `attr.`:
 
 ```angular-html
 <!-- Bind the `role` attribute on the `<ul>` element to value of `listRole`. -->
-<ul [attr.role]="listRole()">
+<ul [attr.role]="listRole()"></ul>
 ```
 
-Angular автоматически обновляет свойства и атрибуты DOM, когда изменяется связанное значение.
+Angular automatically updates DOM properties and attributes when the bound value changes.
 
-## Обработка взаимодействия с пользователем
+## Handling user interaction
 
-Angular позволяет добавлять слушатели событий к элементу в вашем шаблоне с помощью круглых скобок:
+Angular lets you add event listeners to an element in your template with parentheses:
 
 ```angular-ts
 @Component({
@@ -78,12 +76,13 @@ Angular позволяет добавлять слушатели событий 
 export class UserProfile {
   /* ... */
 
-  cancelSubscription() { /* Your event handling code goes here. */  }
+  cancelSubscription() {
+    /* Your event handling code goes here. */
+  }
 }
 ```
 
-Если вам нужно передать объект [события (event)](https://developer.mozilla.org/docs/Web/API/Event) в ваш слушатель, вы
-можете использовать встроенную переменную Angular `$event` внутри вызова функции:
+If you need to pass the [event](https://developer.mozilla.org/docs/Web/API/Event) object to your listener, you can use Angular's built-in `$event` variable inside the function call:
 
 ```angular-ts
 @Component({
@@ -94,13 +93,15 @@ export class UserProfile {
 export class UserProfile {
   /* ... */
 
-  cancelSubscription(event: Event) { /* Your event handling code goes here. */  }
+  cancelSubscription(event: Event) {
+    /* Your event handling code goes here. */
+  }
 }
 ```
 
-## Управление потоком (Control flow) с `@if` и `@for`
+## Control flow with `@if` and `@for`
 
-Вы можете условно скрывать и показывать части шаблона с помощью блока `@if` в Angular:
+You can conditionally hide and show parts of a template with Angular's `@if` block:
 
 ```angular-html
 <h1>User profile</h1>
@@ -111,7 +112,7 @@ export class UserProfile {
 }
 ```
 
-Блок `@if` также поддерживает необязательный блок `@else`:
+The `@if` block also supports an optional `@else` block:
 
 ```angular-html
 <h1>User profile</h1>
@@ -125,31 +126,27 @@ export class UserProfile {
 }
 ```
 
-Вы можете повторять часть шаблона несколько раз с помощью блока `@for` в Angular:
+You can repeat part of a template multiple times with Angular's `@for` block:
 
 ```angular-html
 <h1>User profile</h1>
 
 <ul class="user-badge-list">
   @for (badge of badges(); track badge.id) {
-    <li class="user-badge">{{badge.name}}</li>
+    <li class="user-badge">{{ badge.name }}</li>
   }
 </ul>
 ```
 
-Angular использует ключевое слово `track`, показанное в примере выше, чтобы связать данные с элементами DOM, созданными
-с помощью `@for`. См. [_Почему track в блоках @for
-важен?_](guide/templates/control-flow#why-is-track-in-for-blocks-important) для получения дополнительной информации.
+Angular uses the `track` keyword, shown in the example above, to associate data with the DOM elements created by `@for`. See [_Why is track in @for blocks important?_](guide/templates/control-flow#why-is-track-in-for-blocks-important) for more info.
 
-TIP: Хотите узнать больше о шаблонах Angular? Смотрите [Углубленное руководство по шаблонам](guide/templates) для
-получения полной информации.
+TIP: Want to know more about Angular templates? See the [In-depth Templates guide](guide/templates) for the full details.
 
-## Следующий шаг
+## Next Step
 
-Теперь, когда у вас есть динамические данные и шаблоны в приложении, пришло время узнать, как улучшить шаблоны, условно
-скрывая или показывая определенные элементы, перебирая элементы и многое другое.
+Now that you have dynamic data and templates in the application, it's time to learn how to enhance templates by conditionally hiding or showing certain elements, looping over elements, and more.
 
 <docs-pill-row>
-  <docs-pill title="Модульный дизайн с внедрением зависимостей" href="essentials/dependency-injection" />
-  <docs-pill title="Углубленное руководство по шаблонам" href="guide/templates" />
+  <docs-pill title="Forms with Signals" href="essentials/signal-forms" />
+  <docs-pill title="In-depth template guide" href="guide/templates" />
 </docs-pill-row>

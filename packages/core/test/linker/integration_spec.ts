@@ -7,11 +7,17 @@
  */
 
 import {CommonModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
+import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  PipeTransform,
+} from '../../src/change_detection/change_detection';
 import {
   Attribute,
   Compiler,
   Component,
-  ComponentFactory,
   ComponentRef,
   ContentChildren,
   createComponent,
@@ -40,20 +46,12 @@ import {
   ViewRef,
   ɵsetClassDebugInfo,
 } from '../../src/core';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  PipeTransform,
-} from '../../src/change_detection/change_detection';
-import {ComponentFactoryResolver} from '../../src/linker/component_factory_resolver';
 import {ElementRef} from '../../src/linker/element_ref';
 import {QueryList} from '../../src/linker/query_list';
 import {TemplateRef} from '../../src/linker/template_ref';
 import {ViewContainerRef} from '../../src/linker/view_container_ref';
 import {EmbeddedViewRef} from '../../src/linker/view_ref';
 import {fakeAsync, getTestBed, TestBed, tick, waitForAsync} from '../../testing';
-import {createMouseEvent, dispatchEvent, el, isCommentNode} from '@angular/private/testing';
-import {expect} from '@angular/private/testing/matchers';
 
 import {stringify} from '../../src/util/stringify';
 
@@ -1094,50 +1092,6 @@ describe('integration tests', function () {
           );
         }));
 
-        it('should create a component that has been freshly compiled', () => {
-          @Component({
-            template: '',
-            standalone: false,
-          })
-          class RootComp {
-            constructor(public vc: ViewContainerRef) {}
-          }
-
-          @NgModule({
-            declarations: [RootComp],
-            providers: [{provide: 'someToken', useValue: 'someRootValue'}],
-          })
-          class RootModule {}
-
-          @Component({
-            template: '',
-            standalone: false,
-          })
-          class MyComp {
-            constructor(@Inject('someToken') public someToken: string) {}
-          }
-
-          @NgModule({
-            declarations: [MyComp],
-            providers: [{provide: 'someToken', useValue: 'someValue'}],
-          })
-          class MyModule {}
-
-          const compFixture = TestBed.configureTestingModule({
-            imports: [RootModule],
-          }).createComponent(RootComp);
-          const compiler = TestBed.inject(Compiler);
-          const myCompFactory = <ComponentFactory<MyComp>>(
-            compiler.compileModuleAndAllComponentsSync(MyModule).componentFactories[0]
-          );
-
-          // Note: the ComponentFactory was created directly via the compiler, i.e. it
-          // does not have an association to an NgModuleRef.
-          // -> expect the providers of the module that the view container belongs to.
-          const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
-          expect(compRef.instance.someToken).toBe('someRootValue');
-        });
-
         it('should create a component with the passed NgModuleRef', () => {
           @Component({
             template: '',
@@ -1180,51 +1134,6 @@ describe('integration tests', function () {
           });
           expect(compRef.instance.someToken).toBe('someValue');
         });
-
-        it('should create a component with the NgModuleRef of the ComponentFactoryResolver', () => {
-          @Component({
-            template: '',
-            standalone: false,
-          })
-          class RootComp {
-            constructor(public vc: ViewContainerRef) {}
-          }
-
-          @NgModule({
-            declarations: [RootComp],
-            providers: [{provide: 'someToken', useValue: 'someRootValue'}],
-          })
-          class RootModule {}
-
-          @Component({
-            template: '',
-            standalone: false,
-          })
-          class MyComp {
-            constructor(@Inject('someToken') public someToken: string) {}
-          }
-
-          @NgModule({
-            declarations: [MyComp],
-            providers: [{provide: 'someToken', useValue: 'someValue'}],
-          })
-          class MyModule {}
-
-          const compFixture = TestBed.configureTestingModule({
-            imports: [RootModule],
-          }).createComponent(RootComp);
-          const compiler = TestBed.inject(Compiler);
-          const myModule = compiler
-            .compileModuleSync(MyModule)
-            .create(TestBed.inject(NgModuleRef).injector);
-          const myCompFactory = myModule.componentFactoryResolver.resolveComponentFactory(MyComp);
-
-          // Note: MyComp was declared as entryComponent in MyModule,
-          // and we don't pass an explicit ModuleRef to the createComponent call.
-          // -> expect the providers of MyModule!
-          const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
-          expect(compRef.instance.someToken).toBe('someValue');
-        });
       });
 
       describe('.insert', () => {
@@ -1240,7 +1149,7 @@ describe('integration tests', function () {
           ref.destroy();
           expect(() => {
             dynamicVp.insert(ref.hostView);
-          }).toThrowError('Cannot insert a destroyed View in a ViewContainer!');
+          }).toThrowError(/Cannot insert a destroyed View in a ViewContainer!/);
         }));
       });
 
@@ -1257,7 +1166,7 @@ describe('integration tests', function () {
           ref.destroy();
           expect(() => {
             dynamicVp.move(ref.hostView, 1);
-          }).toThrowError('Cannot move a destroyed View in a ViewContainer!');
+          }).toThrowError(/Cannot move a destroyed View in a ViewContainer!/);
         }));
       });
     });
@@ -1584,7 +1493,6 @@ describe('integration tests', function () {
       standalone: false,
     })
     class TestCmp {
-      constructor(public cfr: ComponentFactoryResolver) {}
       @ViewChild('menuItemsContainer', {static: true, read: ViewContainerRef})
       menuItemsContainer!: ViewContainerRef;
     }
@@ -1607,12 +1515,19 @@ describe('integration tests', function () {
 
       const fixture = TestBed.createComponent(TestCmp);
       const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
-      const dynamicCmptFactory =
-        fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
 
-      const cmptRefWithAa = dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Aa')]]);
-      const cmptRefWithBb = dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Bb')]]);
-      const cmptRefWithCc = dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Cc')]]);
+      const cmptRefWithAa = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('Aa')]],
+      });
+      const cmptRefWithBb = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('Bb')]],
+      });
+      const cmptRefWithCc = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('Cc')]],
+      });
 
       menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
       menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
@@ -1632,21 +1547,20 @@ describe('integration tests', function () {
 
       const fixture = TestBed.createComponent(TestCmp);
       const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
-      const dynamicCmptFactory =
-        fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
 
-      const cmptRefWithAa = dynamicCmptFactory.create(Injector.NULL, [
-        [createElWithContent('A')],
-        [createElWithContent('a', 'button')],
-      ]);
-      const cmptRefWithBb = dynamicCmptFactory.create(Injector.NULL, [
-        [createElWithContent('B')],
-        [createElWithContent('b', 'button')],
-      ]);
-      const cmptRefWithCc = dynamicCmptFactory.create(Injector.NULL, [
-        [createElWithContent('C')],
-        [createElWithContent('c', 'button')],
-      ]);
+      const cmptRefWithAa = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('A')], [createElWithContent('a', 'button')]],
+      });
+
+      const cmptRefWithBb = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('B')], [createElWithContent('b', 'button')]],
+      });
+      const cmptRefWithCc = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('C')], [createElWithContent('c', 'button')]],
+      });
 
       menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
       menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
@@ -1668,21 +1582,19 @@ describe('integration tests', function () {
 
       const fixture = TestBed.createComponent(TestCmp);
       const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
-      const dynamicCmptFactory =
-        fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
 
-      const cmptRefWithAa = dynamicCmptFactory.create(Injector.NULL, [
-        [createElWithContent('A')],
-        [createElWithContent('a', 'button')],
-      ]);
-      const cmptRefWithBb = dynamicCmptFactory.create(Injector.NULL, [
-        [createElWithContent('B')],
-        [createElWithContent('b', 'button')],
-      ]);
-      const cmptRefWithCc = dynamicCmptFactory.create(Injector.NULL, [
-        [createElWithContent('C')],
-        [createElWithContent('c', 'button')],
-      ]);
+      const cmptRefWithAa = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('A')], [createElWithContent('a', 'button')]],
+      });
+      const cmptRefWithBb = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('B')], [createElWithContent('b', 'button')]],
+      });
+      const cmptRefWithCc = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('C')], [createElWithContent('c', 'button')]],
+      });
 
       menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
       menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
@@ -1708,12 +1620,19 @@ describe('integration tests', function () {
 
       const fixture = TestBed.createComponent(TestCmp);
       const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
-      const dynamicCmptFactory =
-        fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
 
-      const cmptRefWithAa = dynamicCmptFactory.create(Injector.NULL, [[]]);
-      const cmptRefWithBb = dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Bb')]]);
-      const cmptRefWithCc = dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Cc')]]);
+      const cmptRefWithAa = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[]],
+      });
+      const cmptRefWithBb = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('Bb')]],
+      });
+      const cmptRefWithCc = createComponent(DynamicMenuItem, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        projectableNodes: [[createElWithContent('Cc')]],
+      });
 
       menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
       menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
@@ -1742,7 +1661,7 @@ describe('integration tests', function () {
       );
     });
 
-    it('should throw on bindings to unknown properties', () => {
+    it('should throw on bindings to unknown properties (micro-syntax)', () => {
       TestBed.configureTestingModule({imports: [CommonModule], declarations: [MyComp]});
       const template = '<div *ngFor="let item in ctxArrProp">{{item}}</div>';
       TestBed.overrideComponent(MyComp, {set: {template}});
@@ -2286,7 +2205,7 @@ describe('integration tests', function () {
 
 @Component({
   selector: 'cmp-with-default-interpolation',
-  template: `{{text}}`,
+  template: `{{ text }}`,
   standalone: false,
 })
 class ComponentWithDefaultInterpolation {
@@ -2491,6 +2410,7 @@ class PushCmpWithAsyncPipe {
   selector: 'my-comp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MyComp {
   readonly ctxProp = signal<string | undefined>(undefined);
@@ -2989,6 +2909,7 @@ function createParentBus(peb: EventBus) {
   providers: [{provide: EventBus, useFactory: createParentBus, deps: [[EventBus, new SkipSelf()]]}],
   template: `<child-consuming-event-bus></child-consuming-event-bus>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ParentProvidingEventBus {
   bus: EventBus;
@@ -3097,8 +3018,10 @@ class DirectiveThrowingAnError {
 
 @Component({
   selector: 'component-with-template',
-  template: `No View Decorator: <div *ngFor="let item of items">{{item}}</div>`,
+  template: `No View Decorator:
+    <div *ngFor="let item of items">{{ item }}</div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ComponentWithTemplate {
   items = [1, 2, 3];
@@ -3128,6 +3051,7 @@ class DirectiveWithPropDecorators {
 @Component({
   selector: 'some-cmp',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SomeCmp {
   value: any;
@@ -3137,6 +3061,7 @@ class SomeCmp {
   selector: 'parent-cmp',
   template: `<cmp [test$]="name"></cmp>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class ParentCmp {
   name: string = 'hello';
@@ -3146,6 +3071,7 @@ export class ParentCmp {
   selector: 'cmp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SomeCmpWithInput {
   @Input() test$: any;

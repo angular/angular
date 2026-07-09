@@ -45,20 +45,16 @@ export class ReferenceGraph<T = DeclarationNode> {
       return null;
     } else {
       // Look through the outgoing edges of `source`.
-      // TODO(alxhub): use proper iteration when the legacy build is removed. (#27762)
       let candidatePath: T[] | null = null;
-      this.references.get(source)!.forEach((edge) => {
-        // Early exit if a path has already been found.
-        if (candidatePath !== null) {
-          return;
-        }
+      for (const edge of this.references.get(source)!) {
         // Look for a path from this outgoing edge to `target`.
         const partialPath = this.collectPathFrom(edge, target, seen);
         if (partialPath !== null) {
           // A path exists from `edge` to `target`. Insert `source` at the beginning.
           candidatePath = [source, ...partialPath];
+          break;
         }
-      });
+      }
 
       return candidatePath;
     }
@@ -66,13 +62,12 @@ export class ReferenceGraph<T = DeclarationNode> {
 
   private collectTransitiveReferences(set: Set<T>, decl: T): void {
     if (this.references.has(decl)) {
-      // TODO(alxhub): use proper iteration when the legacy build is removed. (#27762)
-      this.references.get(decl)!.forEach((ref) => {
+      for (const ref of this.references.get(decl)!) {
         if (!set.has(ref)) {
           set.add(ref);
           this.collectTransitiveReferences(set, ref);
         }
-      });
+      }
     }
   }
 }

@@ -7,7 +7,7 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Type} from '../interface/type';
+import {AbstractType, Type} from '../interface/type';
 import {getComponentDef} from '../render3/def_getters';
 import {getFactoryDef} from '../render3/definition_factory';
 import {cyclicDependencyErrorWithDetails, throwInvalidProviderError} from '../render3/errors_di';
@@ -100,7 +100,7 @@ export type ImportProvidersSource =
 
 type WalkProviderTreeVisitor = (
   provider: SingleProvider,
-  container: Type<unknown> | InjectorType<unknown>,
+  container: Type<unknown> | AbstractType<unknown> | InjectorType<unknown>,
 ) => void;
 
 /**
@@ -152,10 +152,10 @@ export function importProvidersFrom(...sources: ImportProvidersSource[]): Enviro
 
 export function internalImportProvidersFrom(
   checkForStandaloneCmp: boolean,
-  ...sources: ImportProvidersSource[]
+  ...sources: (ImportProvidersSource | AbstractType<unknown>)[]
 ): Provider[] {
   const providersOut: SingleProvider[] = [];
-  const dedup = new Set<Type<unknown>>(); // already seen types
+  const dedup = new Set<Type<unknown> | AbstractType<unknown>>(); // already seen types
   let injectorTypesWithProviders: InjectorTypeWithProviders<unknown>[] | undefined;
 
   const collectProviders: WalkProviderTreeVisitor = (provider) => {
@@ -232,10 +232,10 @@ export type SingleProvider =
  * an injector definition are processed. (following View Engine semantics: see FW-1349)
  */
 export function walkProviderTree(
-  container: Type<unknown> | InjectorTypeWithProviders<unknown>,
+  container: Type<unknown> | AbstractType<unknown> | InjectorTypeWithProviders<unknown>,
   visitor: WalkProviderTreeVisitor,
-  parents: Type<unknown>[],
-  dedup: Set<Type<unknown>>,
+  parents: (Type<unknown> | AbstractType<unknown>)[],
+  dedup: Set<Type<unknown> | AbstractType<unknown>>,
 ): container is InjectorTypeWithProviders<unknown> {
   container = resolveForwardRef(container);
   if (!container) return false;

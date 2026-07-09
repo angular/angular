@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
+import {ApplicationRef, computed, Injector, Resource, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {timeout, useAutoTick} from '@angular/private/testing';
+
 import {
   customError,
   FieldTree,
@@ -92,6 +94,31 @@ describe('validation status', () => {
       expect(f.child().valid()).toBe(true);
       expect(f.child().invalid()).toBe(false);
     });
+
+    it('should not notify dependents if errors are shallowly equal', () => {
+      let computeCount = 0;
+      const val = signal('VALID');
+      const f = form(
+        val,
+        (p) => {
+          validate(p, ({value}) => (value() === 'INVALID' ? [{kind: 'custom'}] : []));
+        },
+        {injector},
+      );
+
+      const errorWatcher = computed(() => {
+        computeCount++;
+        return f().errors();
+      });
+
+      errorWatcher();
+      expect(computeCount).toBe(1);
+
+      val.set('STILL_VALID');
+
+      errorWatcher();
+      expect(computeCount).toBe(1);
+    });
   });
 
   describe('tree validator', () => {
@@ -171,6 +198,7 @@ describe('validation status', () => {
   });
 
   describe('async validator', () => {
+    useAutoTick();
     it('should affect validity of host field if no target specified', async () => {
       let res: Resource<unknown>;
 
@@ -413,6 +441,45 @@ describe('validation status', () => {
 
       expect(f().pending()).toBe(false);
       expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(true);
+    });
+
+    it('should produce pending status during debounce period', async () => {
+      let res: Resource<unknown>;
+
+      const f = form(
+        signal('VALID'),
+        (p) => {
+          validateAsync(p, {
+            params: ({value}) => value(),
+            debounce: 100,
+            factory: (params) =>
+              (res = resource({
+                params,
+                loader: ({params}) =>
+                  new Promise<ValidationError[]>((r) =>
+                    setTimeout(() => r(validateValueForChild(params, undefined))),
+                  ),
+              })),
+            onSuccess: (results) => results,
+            onError: () => null,
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(f().pending()).toBe(false);
+
+      f().value.set('INVALID');
+      await appRef.whenStable();
+
+      expect(f().pending()).withContext('pending during debounce').toBe(true);
+
+      await timeout(150);
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
       expect(f().invalid()).toBe(true);
     });
   });

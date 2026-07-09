@@ -9,7 +9,6 @@
 import {DOCUMENT, isPlatformBrowser, Location} from '@angular/common';
 import {
   ApplicationRef,
-  ChangeDetectionStrategy,
   Component,
   ComponentRef,
   createComponent,
@@ -32,16 +31,16 @@ import {Router} from '@angular/router';
 import {fromEvent} from 'rxjs';
 import {Snippet} from '../../../interfaces';
 import {NavigationState, TOC_SKIP_CONTENT_MARKER} from '../../../services';
-import {handleHrefClickEventWithRouter} from '../../../utils';
+import {handleHrefClickEventWithRouter, isFirefox} from '../../../utils';
 import {IconComponent} from '../../icon/icon.component';
 import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
 
 import {DomSanitizer} from '@angular/platform-browser';
 import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
-import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {CopyLinkButton} from '../../copy-link-anchor/copy-link-anchor.component';
-import {ExampleViewer} from '../example-viewer/example-viewer.component';
+import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {TabGroup} from '../../tab-group/tab-group.component';
+import {ExampleViewer} from '../example-viewer/example-viewer.component';
 
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
 export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
@@ -56,7 +55,6 @@ const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/{{BUILD_SCM_
   selector: DOCS_VIEWER_SELECTOR,
   template: '',
   styleUrls: ['docs-viewer.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class.docs-animate-content]': 'animateContent',
@@ -126,6 +124,7 @@ export class DocViewer {
       // In case when content contains tabs, create tabs component and move
       // content in a tab into tab panel.
       this.constructTabs(contentContainer);
+      this.setupVideoFacades(contentContainer);
     }
 
     // Display Breadcrumb component if the `<docs-breadcrumb>` element exists
@@ -408,6 +407,38 @@ export class DocViewer {
       const tabGroupRef = this.viewContainer.createComponent(TabGroup);
       tabGroupRef.setInput('tabs', tabs);
       tabGroup.parentElement!.replaceChild(tabGroupRef.location.nativeElement, tabGroup);
+    }
+  }
+
+  private setupVideoFacades(element: HTMLElement): void {
+    const facades = element.querySelectorAll<HTMLAnchorElement>('a.docs-video-facade');
+
+    for (const facade of Array.from(facades)) {
+      const src = facade.getAttribute('data-video-src');
+      if (!src) {
+        continue;
+      }
+
+      if (isFirefox) {
+        const thumbnail = facade.querySelector<HTMLImageElement>('img.docs-video-thumbnail');
+        thumbnail?.addEventListener(
+          'error',
+          () => {
+            thumbnail.src = thumbnail.src.replace('maxresdefault', 'hqdefault');
+          },
+          {once: true},
+        );
+        continue;
+      }
+
+      const iframe = this.document.createElement('iframe');
+      iframe.className = 'docs-video';
+      iframe.src = src;
+      iframe.title = facade.getAttribute('data-video-title') ?? 'Video player';
+      iframe.setAttribute('allow', 'accelerometer; encrypted-media; gyroscope; picture-in-picture');
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.setAttribute('credentialless', '');
+      facade.replaceWith(iframe);
     }
   }
 }

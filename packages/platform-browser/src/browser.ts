@@ -6,19 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  CommonModule,
-  DOCUMENT,
-  XhrFactory,
-  ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
-} from '@angular/common';
+import {CommonModule, DOCUMENT, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {
   ApplicationConfig,
   ApplicationModule,
   ApplicationRef,
   createPlatformFactory,
   ErrorHandler,
+  inject,
   InjectionToken,
+  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
+  ɵinternalCreateApplication as internalCreateApplication,
   NgModule,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
@@ -26,22 +24,22 @@ import {
   PlatformRef,
   Provider,
   RendererFactory2,
-  StaticProvider,
-  Testability,
-  Type,
-  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
-  ɵinternalCreateApplication as internalCreateApplication,
+  ɵresolveComponentResources as resolveComponentResources,
   ɵRuntimeError as RuntimeError,
-  ɵsetDocument,
+  ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
+  StaticProvider,
+  NgZone,
+  Testability,
+  TestabilityRegistry,
   ɵTESTABILITY as TESTABILITY,
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
-  inject,
-  ɵresolveComponentResources as resolveComponentResources,
+  ɵUSE_PENDING_TASKS,
+  Type,
+  ɵsetDocument,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from './browser/testability';
-import {BrowserXhr} from './browser/xhr';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
@@ -65,7 +63,7 @@ export interface BootstrapContext {
 /**
  * Bootstraps an instance of an Angular application and renders a standalone component as the
  * application's root component. More information about standalone components can be found in [this
- * guide](guide/components/importing).
+ * guide](guide/components).
  *
  * @usageNotes
  * The root component passed into this function *must* be a standalone one (should have the
@@ -197,11 +195,18 @@ async function resolveJitResources(): Promise<void> {
  *
  * @publicApi
  */
-export function provideProtractorTestingSupport(): Provider[] {
+export function provideProtractorTestingSupport(
+  options: {usePendingTasksForStability?: boolean} = {},
+): Provider[] {
   // Return a copy to prevent changes to the original array in case any in-place
   // alterations are performed to the `provideProtractorTestingSupport` call results in app
   // code.
-  return [...TESTABILITY_PROVIDERS];
+  return [
+    ...TESTABILITY_PROVIDERS,
+    options?.usePendingTasksForStability !== undefined
+      ? {provide: ɵUSE_PENDING_TASKS, useValue: options.usePendingTasksForStability ?? false}
+      : [],
+  ];
 }
 
 export function initDomAdapter() {
@@ -251,10 +256,12 @@ const TESTABILITY_PROVIDERS = [
   {
     provide: TESTABILITY,
     useClass: Testability,
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
   {
     provide: Testability, // Also provide as `Testability` for backwards-compatibility.
     useClass: Testability,
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
 ];
 
@@ -268,10 +275,11 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   },
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
   DomRendererFactory2,
-  SharedStylesHost,
+  {provide: SHARED_STYLES_HOST, useClass: SharedStylesHost},
+  // Only remains for backwards compatibility, should be removed once g3 no longer needs it.
+  {provide: SharedStylesHost, useExisting: SHARED_STYLES_HOST},
   EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
-  {provide: XhrFactory, useClass: BrowserXhr},
   typeof ngDevMode === 'undefined' || ngDevMode
     ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true}
     : [],

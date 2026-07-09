@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import tss from 'typescript';
+import type ts from 'typescript';
 
 import {getTcbNodesOfTemplateAtPosition} from '../template_target';
 import {getTypeCheckInfoAtPosition} from '../utils';
@@ -33,16 +33,19 @@ export const missingMemberMeta: CodeActionMeta = {
     errorCode,
     tsLs,
   }) {
-    const tcbNodesInfo =
-      typeCheckInfo === null
-        ? null
-        : getTcbNodesOfTemplateAtPosition(typeCheckInfo, start, compiler);
+    if (typeCheckInfo === null) {
+      return [];
+    }
+    const tcb = compiler.getTemplateTypeChecker().getTypeCheckBlock(typeCheckInfo.declaration);
+    if (tcb === null) {
+      return [];
+    }
+    const tcbNodesInfo = getTcbNodesOfTemplateAtPosition(typeCheckInfo.nodes, start, tcb);
     if (tcbNodesInfo === null) {
       return [];
     }
 
-    const codeActions: tss.CodeFixAction[] = [];
-    const tcb = tcbNodesInfo.componentTcbNode;
+    const codeActions: ts.CodeFixAction[] = [];
     for (const tcbNode of tcbNodesInfo.nodes) {
       const tsLsCodeActions = tsLs.getCodeFixesAtPosition(
         tcb.getSourceFile().fileName,
@@ -75,8 +78,8 @@ export const missingMemberMeta: CodeActionMeta = {
     compiler,
     diagnostics,
   }) {
-    const changes: tss.FileTextChanges[] = [];
-    const seen: Set<tss.ClassDeclaration> = new Set();
+    const changes: ts.FileTextChanges[] = [];
+    const seen: Set<ts.ClassDeclaration> = new Set();
     for (const diag of diagnostics) {
       if (!errorCodes.includes(diag.code)) {
         continue;

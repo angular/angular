@@ -55,13 +55,16 @@ const EMAIL_REGEXP =
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function email<TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
   validate(path, (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
     if (isEmpty(ctx.value())) {
       return undefined;
     }

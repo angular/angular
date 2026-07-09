@@ -159,6 +159,29 @@ export class UserDetailComponent {
 }
 ```
 
+When navigating multiple levels up, all `..` segments must be in the **first element** of the commands array. The router only parses `..` from the first command string — subsequent array elements are treated as literal path segments.
+
+```angular-ts {prefer}
+// From: /team/123/users/456
+// Result: /team/123/settings
+this.router.navigate(['../../settings'], {relativeTo: this.route});
+```
+
+When using `relativeTo`, never prefix the first command with `/`. A leading `/` makes the navigation absolute and ignores `relativeTo` entirely.
+
+```angular-ts {prefer}
+// From: /team/123/users/456
+// Result: /team/123/users/456/edit
+this.router.navigate(['edit'], {relativeTo: this.route});
+```
+
+```angular-ts {avoid}
+// From: /team/123/users/456
+// Leading '/' causes absolute navigation — relativeTo is ignored
+// Result: /edit
+this.router.navigate(['/edit'], {relativeTo: this.route});
+```
+
 ### `router.navigateByUrl()`
 
 Метод `router.navigateByUrl()` предоставляет прямой способ программной навигации с использованием строковых путей URL, а

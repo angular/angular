@@ -378,7 +378,7 @@ runInNativeFileSystem(() => {
     const cwd = fs.resolve('/');
     const filename = fs.resolve(cwd, testPath);
     return transformSync(input, {
-      plugins: [makeEs5TranslatePlugin(diagnostics, translations, pluginOptions)],
+      plugins: [() => makeEs5TranslatePlugin(diagnostics, translations, pluginOptions)],
       filename,
       cwd,
     })!.code!;

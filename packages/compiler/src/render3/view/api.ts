@@ -116,6 +116,11 @@ export interface R3DirectiveMetadata {
    * Additional directives applied to the directive host.
    */
   hostDirectives: R3HostDirectiveMetadata[] | null;
+
+  /**
+   * Whether null should be used instead of undefined for optional chaining.
+   */
+  legacyOptionalChaining: boolean;
 }
 
 /**
@@ -294,6 +299,11 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency>
    * not be set. If component has empty array imports then this field is not set.
    */
   rawImports?: o.Expression;
+
+  /**
+   * Foreign components imported by the component.
+   */
+  foreignImports: R3ForeignComponentMetadata[] | null;
 }
 
 /**
@@ -393,6 +403,21 @@ export interface R3PipeDependencyMetadata extends R3TemplateDependency {
 
 export interface R3NgModuleDependencyMetadata extends R3TemplateDependency {
   kind: R3TemplateDependencyKind.NgModule;
+}
+
+/**
+ * Information about a foreign component that is used in a component template.
+ */
+export interface R3ForeignComponentMetadata {
+  /**
+   * The foreign component's name.
+   */
+  name: string;
+
+  /**
+   * The expression used to refer to this foreign component.
+   */
+  component: o.Expression;
 }
 
 /**

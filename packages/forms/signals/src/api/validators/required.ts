@@ -28,7 +28,7 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,

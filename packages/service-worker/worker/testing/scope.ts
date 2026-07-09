@@ -181,11 +181,8 @@ export class SwTestHarnessImpl
     return new MockResponse(body, init);
   }
 
-  override newHeaders(headers: {[name: string]: string}): Headers {
-    return Object.keys(headers).reduce((mock, name) => {
-      mock.set(name, headers[name]);
-      return mock;
-    }, new MockHeaders());
+  override newHeaders(headers: HeadersInit): Headers {
+    return new MockHeaders(headers);
   }
 
   async skipWaiting(): Promise<void> {

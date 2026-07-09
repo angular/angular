@@ -45,12 +45,12 @@ Schematic описывает конвейер преобразований, ко
 Объект `RuleFactory` определяет функцию высшего порядка, которая создает `Rule`.
 
 ```ts {header: "index.ts"}
-import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
+import {Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 
 // You don't have to export the function as default.
 // You can also have more than one rule factory per file.
-export function helloWorld(\_options: any): Rule {
-   return (tree: Tree,\_context: SchematicContext) => {
+export function helloWorld(_options: any): Rule {
+  return (tree: Tree, _context: SchematicContext) => {
     return tree;
   };
 }

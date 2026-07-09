@@ -35,7 +35,7 @@ import {
   RoutesRecognized,
 } from '../../index';
 
-import {provideRouter, withPlatformNavigation} from '../../src/provide_router';
+import {provideRouter, withExperimentalPlatformNavigation} from '../../src/provide_router';
 import {
   BlankCmp,
   CollectParamsCmp,
@@ -72,7 +72,8 @@ import {navigationIntegrationTestSuite} from './navigation.spec';
 import {eagerUrlUpdateStrategyIntegrationSuite} from './eager_url_update_strategy.spec';
 import {duplicateInFlightNavigationsIntegrationSuite} from './duplicate_in_flight_navigations.spec';
 import {navigationErrorsIntegrationSuite} from './navigation_errors.spec';
-import {useAutoTick} from '../helpers';
+import {useAutoTick} from '@angular/private/testing';
+import {RouterTestingHarness} from '../../testing';
 
 for (const browserAPI of ['navigation', 'history'] as const) {
   describe(`${browserAPI}-based routing`, () => {
@@ -87,7 +88,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           provideRouter(
             [{path: 'simple', component: SimpleCmp}],
             browserAPI === 'navigation'
-              ? withPlatformNavigation()
+              ? withExperimentalPlatformNavigation()
               : (makeEnvironmentProviders([]) as any),
           ),
         ],
@@ -129,7 +130,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       @Component({
         selector: 'need-cd',
-        template: `{{'it works!'}}`,
+        template: `{{ 'it works!' }}`,
         standalone: false,
       })
       class NeedCdCmp {}
@@ -215,7 +216,9 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     it('should work when an outlet is added/removed', async () => {
       @Component({
         selector: 'someRoot',
-        template: `[<div *ngIf="cond()"><router-outlet></router-outlet></div>]`,
+        template: `[
+          <div *ngIf="cond()"><router-outlet></router-outlet></div>
+          ]`,
         standalone: false,
       })
       class RootCmpWithLink {
@@ -234,15 +237,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       router.navigateByUrl('/simple');
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[simple]');
+      expect(fixture.nativeElement).toHaveText('[ simple ]');
 
       fixture.componentInstance.cond.set(false);
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[]');
+      expect(fixture.nativeElement).toHaveText('[  ]');
 
       fixture.componentInstance.cond.set(true);
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[simple]');
+      expect(fixture.nativeElement).toHaveText('[ simple ]');
     });
 
     it('should update location when navigating', async () => {
@@ -389,6 +392,33 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(location.path()).toEqual('/team/22/user/victor');
       expect(event!.navigationTrigger).toEqual('popstate');
       expect(event!.restoredState!.navigationId).toEqual(userVictorNavStart.id);
+    });
+
+    it('should restore internal route on popstate when browserUrl is used', async () => {
+      const router: Router = TestBed.inject(Router);
+      const location: Location = TestBed.inject(Location);
+
+      router.resetConfig([
+        {path: 'home', component: SimpleCmp},
+        {path: 'one', component: SimpleCmp},
+      ]);
+
+      const harness = await RouterTestingHarness.create('/home');
+      router.setUpLocationChangeListener();
+
+      await router.navigateByUrl('/one', {browserUrl: '/display-one'});
+      expect(location.path()).toEqual('/display-one');
+      expect(router.url).toEqual('/one');
+
+      location.back();
+      await advance(harness.fixture);
+      expect(location.path()).toEqual('/home');
+      expect(router.url).toEqual('/home');
+
+      location.forward();
+      await advance(harness.fixture);
+      expect(router.url).toEqual('/one');
+      expect(location.path()).toEqual('/display-one');
     });
 
     it('should navigate to the same url when config changes', async () => {
@@ -640,16 +670,22 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       expect(team.recordedParams).toEqual([{id: '22'}]);
       expect(team.snapshotParams).toEqual([{id: '22'}]);
-      expect(user.recordedParams).toEqual([{name: 'victor'}]);
-      expect(user.snapshotParams).toEqual([{name: 'victor'}]);
+      expect(user.recordedParams).toEqual([{id: '22', name: 'victor'}]);
+      expect(user.snapshotParams).toEqual([{id: '22', name: 'victor'}]);
 
       router.navigateByUrl('/team/22/user/fedor');
       await advance(fixture);
 
       expect(team.recordedParams).toEqual([{id: '22'}]);
       expect(team.snapshotParams).toEqual([{id: '22'}]);
-      expect(user.recordedParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
-      expect(user.snapshotParams).toEqual([{name: 'victor'}, {name: 'fedor'}]);
+      expect(user.recordedParams).toEqual([
+        {id: '22', name: 'victor'},
+        {id: '22', name: 'fedor'},
+      ]);
+      expect(user.snapshotParams).toEqual([
+        {id: '22', name: 'victor'},
+        {id: '22', name: 'fedor'},
+      ]);
     });
 
     it('should work when navigating to /', async () => {
@@ -759,7 +795,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(router.lastSuccessfulNavigation()).toBe(null);
 
       router.navigateByUrl('/user/init');
-      const navigation = router.getCurrentNavigation();
+      const navigation = router.currentNavigation();
       expect(router.lastSuccessfulNavigation()).toBe(null);
       await advance(fixture);
 
@@ -863,7 +899,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     it('should emit an event when an outlet gets activated', async () => {
       @Component({
         selector: 'container',
-        template: `<router-outlet (activate)="recordActivate($event)" (deactivate)="recordDeactivate($event)"></router-outlet>`,
+        template: `<router-outlet
+          (activate)="recordActivate($event)"
+          (deactivate)="recordDeactivate($event)"
+        ></router-outlet>`,
         standalone: false,
       })
       class Container {
@@ -927,7 +966,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
     navigationErrorsIntegrationSuite(browserAPI);
     eagerUrlUpdateStrategyIntegrationSuite();
-    duplicateInFlightNavigationsIntegrationSuite();
+    duplicateInFlightNavigationsIntegrationSuite(browserAPI);
     navigationIntegrationTestSuite(browserAPI);
     routeDataIntegrationSuite();
     routerLinkIntegrationSpec();

@@ -56,7 +56,7 @@ export class ElementPropertyResolver {
         directive: undefined,
       };
       if (!indexedNode.component || indexedNode.component.name !== key) {
-        position.directive = indexedNode.directives.findIndex((d) => d.name === key);
+        position.directive = indexedNode.directives?.findIndex((d) => d.name === key) ?? -1;
       }
       this._directivePropertiesController.set(
         key,

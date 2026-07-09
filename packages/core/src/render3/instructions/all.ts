@@ -38,6 +38,7 @@ export * from './di';
 export * from './di_attr';
 export * from './element';
 export * from './element_container';
+export * from './foreign_component';
 export {
   ɵgetUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode,

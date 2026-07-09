@@ -184,6 +184,11 @@ export enum ErrorCode {
    */
   COMPONENT_ANIMATIONS_CONFLICT = 2027,
 
+  /**
+   * Raised when an `@Service` class is using constructor dependency injection.
+   */
+  SERVICE_CONSTRUCTOR_DI = 2028,
+
   SYMBOL_NOT_EXPORTED = 3001,
   /**
    * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
@@ -438,6 +443,42 @@ export enum ErrorCode {
 
   /** Raised when the user has an unsupported binding on a `Field` directive. */
   FORM_FIELD_UNSUPPORTED_BINDING = 8022,
+
+  /**
+   * Raised when multiple components in the compilation scope match a given element in a template.
+   */
+  MULTIPLE_MATCHING_COMPONENTS = 8023,
+
+  /**
+   * Raised when a host directive input/output is exposed multiple times under the same name.
+   */
+  CONFLICTING_HOST_DIRECTIVE_BINDING = -8024,
+
+  /**
+   * Raised when a foreign component node has an unsupported Angular binding.
+   */
+  FOREIGN_COMPONENT_UNSUPPORTED_BINDING = 8025,
+
+  /**
+   * Raised when a `@content` block is not used as a direct child of a foreign component.
+   */
+  INVALID_CONTENT_PLACEMENT = 8026,
+
+  /**
+   * Raised when a `@content` block is named 'children', which is unnecessary because children should be passed
+   * implicitly.
+   */
+  FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN = 8027,
+
+  /**
+   * Raised when multiple `@content` blocks with the same name are defined for a foreign component.
+   */
+  CONFLICTING_CONTENT_DECLARATION = 8028,
+
+  /**
+   * Raised when a `@content` block name conflicts with an input binding on the parent foreign component.
+   */
+  CONFLICTING_CONTENT_AND_PROPERTY = 8029,
 
   /**
    * A two way binding in a template has an incorrect syntax,

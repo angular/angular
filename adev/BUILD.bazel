@@ -16,6 +16,7 @@ exports_files([
 APPLICATION_FILES = [
     "//adev/src/assets/images",
     "//adev/src/assets/images/v21-event:v21-event-images",
+    "//adev/src/assets/images/v22-event:v22-event-images",
     "//adev/src/assets/others",
     "//adev/src/assets/previews",
     "//adev/src/assets:tutorials",
@@ -56,7 +57,6 @@ APPLICATION_DEPS = [
     ":node_modules/fflate",
     ":node_modules/marked",
     ":node_modules/ngx-progressbar",
-    ":node_modules/open-in-idx",
     ":node_modules/tailwindcss",
     ":node_modules/typescript",
     ":node_modules/@types/dom-navigation",

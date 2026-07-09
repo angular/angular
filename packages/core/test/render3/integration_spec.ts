@@ -7,13 +7,19 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, HostBinding, provideZoneChangeDetection} from '../../src/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Directive,
+  HostBinding,
+  provideZoneChangeDetection,
+} from '../../src/core';
 import {TestBed} from '../../testing';
 
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
+import {SecurityContext} from '../../src/sanitization/dom_security_schema';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
-import {SecurityContext} from '../../src/sanitization/security';
 
 describe('element discovery', () => {
   it('should only monkey-patch immediate child nodes in a component', () => {
@@ -135,9 +141,7 @@ describe('element discovery', () => {
   it('should cache the element context on a element was preemptively monkey-patched', () => {
     @Component({
       selector: 'structured-comp',
-      template: `
-        <section></section>
-      `,
+      template: ` <section></section> `,
     })
     class StructuredComp {}
 
@@ -160,10 +164,10 @@ describe('element discovery', () => {
     @Component({
       selector: 'structured-comp',
       template: `
-            <section>
-              <p></p>
-            </section>
-          `,
+        <section>
+          <p></p>
+        </section>
+      `,
     })
     class StructuredComp {}
 
@@ -184,9 +188,7 @@ describe('element discovery', () => {
   it('should be able to pull in element context data even if the element is decorated using styling', () => {
     @Component({
       selector: 'structured-comp',
-      template: `
-            <section></section>
-          `,
+      template: ` <section></section> `,
     })
     class StructuredComp {}
 
@@ -225,13 +227,13 @@ describe('element discovery', () => {
     @Component({
       selector: 'projector-comp',
       template: `
-            welcome
-            <header>
-              <h1>
-                <ng-content></ng-content>
-              </h1>
-            </header>
-          `,
+        welcome
+        <header>
+          <h1>
+            <ng-content></ng-content>
+          </h1>
+        </header>
+      `,
     })
     class ProjectorComp {}
 
@@ -239,13 +241,13 @@ describe('element discovery', () => {
       selector: 'parent-comp',
       imports: [ProjectorComp],
       template: `
-            <section>
-              <projector-comp>
-                <p>this content is projected</p>
-                this content is projected also
-              </projector-comp>
-            </section>
-          `,
+        <section>
+          <projector-comp>
+            <p>this content is projected</p>
+            this content is projected also
+          </projector-comp>
+        </section>
+      `,
     })
     class ParentComp {}
 
@@ -300,9 +302,7 @@ describe('element discovery', () => {
   it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular', () => {
     @Component({
       selector: 'structured-comp',
-      template: `
-             <section></section>
-           `,
+      template: ` <section></section> `,
     })
     class StructuredComp {}
 
@@ -382,9 +382,9 @@ describe('element discovery', () => {
       selector: 'structured-comp',
       imports: [MyDir1, MyDir2, MyDir3],
       template: `
-            <div my-dir-1 my-dir-2></div>
-            <div my-dir-3></div>
-          `,
+        <div my-dir-1 my-dir-2></div>
+        <div my-dir-3></div>
+      `,
     })
     class StructuredComp {}
 
@@ -455,9 +455,7 @@ describe('element discovery', () => {
 
     @Component({
       selector: 'child-comp',
-      template: `
-             <div></div>
-           `,
+      template: ` <div></div> `,
     })
     class ChildComp {
       constructor() {
@@ -468,9 +466,7 @@ describe('element discovery', () => {
     @Component({
       selector: 'parent-comp',
       imports: [ChildComp, MyDir1, MyDir2],
-      template: `
-             <child-comp my-dir-1 my-dir-2></child-comp>
-           `,
+      template: ` <child-comp my-dir-1 my-dir-2></child-comp> `,
     })
     class ParentComp {}
 
@@ -522,10 +518,10 @@ describe('element discovery', () => {
     @Component({
       selector: 'child-comp',
       template: `
-            <div></div>
-            <div></div>
-            <div></div>
-          `,
+        <div></div>
+        <div></div>
+        <div></div>
+      `,
     })
     class ChildComp {}
 
@@ -533,10 +529,10 @@ describe('element discovery', () => {
       selector: 'parent-comp',
       imports: [ChildComp],
       template: `
-            <section>
-              <child-comp></child-comp>
-            </section>
-          `,
+        <section>
+          <child-comp></child-comp>
+        </section>
+      `,
     })
     class ParentComp {}
 
@@ -567,9 +563,8 @@ describe('sanitization', () => {
   it('should sanitize data using the provided sanitization interface', () => {
     @Component({
       selector: 'sanitize-this',
-      template: `
-        <a [href]="href"></a>
-      `,
+      template: ` <a [href]="href"></a> `,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SanitizationComp {
       href = '';
@@ -612,7 +607,7 @@ describe('sanitization', () => {
       selector: '[unsafeUrlHostBindingDir]',
     })
     class UnsafeUrlHostBindingDir {
-      @HostBinding() cite: any = 'http://cite-dir-value';
+      @HostBinding() href: any = 'http://href-dir-value';
 
       constructor() {
         hostBindingDir = this;
@@ -622,9 +617,8 @@ describe('sanitization', () => {
     @Component({
       selector: 'sanitize-this',
       imports: [UnsafeUrlHostBindingDir],
-      template: `
-        <blockquote unsafeUrlHostBindingDir></blockquote>
-      `,
+      template: ` <a unsafeUrlHostBindingDir>text</a> `,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SimpleComp {}
 
@@ -640,16 +634,130 @@ describe('sanitization', () => {
       ],
     });
     const fixture = TestBed.createComponent(SimpleComp);
-    hostBindingDir!.cite = 'http://foo';
+    hostBindingDir!.href = 'http://foo';
     fixture.detectChanges();
 
-    const anchor = fixture.nativeElement.querySelector('blockquote')!;
-    expect(anchor.getAttribute('cite')).toEqual('http://bar');
+    const anchor = fixture.nativeElement.querySelector('a')!;
+    expect(anchor.getAttribute('href')).toEqual('http://bar');
 
-    hostBindingDir!.cite = sanitizer.bypassSecurityTrustUrl('http://foo');
+    hostBindingDir!.href = sanitizer.bypassSecurityTrustUrl('http://foo');
     fixture.detectChanges();
 
-    expect(anchor.getAttribute('cite')).toEqual('http://foo');
+    expect(anchor.getAttribute('href')).toEqual('http://foo');
+  });
+
+  it('should throw when binding to animate element with attributeName="href"', () => {
+    @Component({
+      selector: 'test-comp',
+      template: `<svg><animate attributeName="href" [to]="'foo'"></animate></svg>`,
+    })
+    class TestComp {}
+
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+    const fixture = TestBed.createComponent(TestComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /Angular has detected that the `to` was applied/,
+    );
+  });
+
+  it('should throw when binding to set element with attributeName="href"', () => {
+    @Component({
+      selector: 'test-comp',
+      template: `<svg><set attributeName="href" [to]="'foo'"></set></svg>`,
+    })
+    class TestComp {}
+
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+    const fixture = TestBed.createComponent(TestComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /Angular has detected that the `to` was applied/,
+    );
+  });
+
+  // The SVG `attributeName` is case-sensitive when accessed via the DOM API
+  // (i.e. `setAttribute('attributename', ...)` and `setAttribute('attributeName', ...)`
+  // create two distinct attributes). However, the browser tokenizer normalizes
+  // the lowercase form `attributename` to `attributeName` on initial parsing,
+  // which means the client-side sanitizer still ends up seeing `attributeName`.
+  // The SSR renderer (Domino) does not perform this normalization, so we
+  // explicitly look up the lowercase form as well to make sure the sanitizer
+  // is triggered consistently in both environments.
+  it('should throw when binding to set element with attributename="href"', () => {
+    @Component({
+      selector: 'test-comp',
+      template: `<svg><set attributename="href" [attr.to]="'foo'"></set></svg>`,
+    })
+    class TestComp {}
+
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+    const fixture = TestBed.createComponent(TestComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /Angular has detected that the `to` was applied/,
+    );
+  });
+
+  it('should not throw when binding to animate element when attributeName is not href', () => {
+    @Component({
+      selector: 'test-comp',
+      template: `<svg><animate attributeName="display" [to]="'foo'"></animate></svg>`,
+    })
+    class TestComp {}
+
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+    const fixture = TestBed.createComponent(TestComp);
+    expect(() => fixture.detectChanges()).not.toThrow();
+  });
+
+  it('should throw on uppercase iframe element', () => {
+    @Directive({
+      selector: '[unsafeUrlHostBindingDir]',
+      host: {
+        '[attr.src]': '"http://src-dir-value"',
+      },
+    })
+    class UnsafeUrlHostBindingDir {}
+
+    @Component({
+      imports: [UnsafeUrlHostBindingDir],
+      template: ` <IFRAME unsafeUrlHostBindingDir></IFRAME>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class SimpleComp {}
+
+    const fixture = TestBed.createComponent(SimpleComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /NG0904: unsafe value used in a resource URL/,
+    );
+  });
+
+  it('should throw on uppercase SRC attribute on iframe element', () => {
+    @Directive({
+      selector: '[unsafeUrlHostBindingDir]',
+      host: {
+        '[attr.SRC]': '"http://src-dir-value"',
+      },
+    })
+    class UnsafeUrlHostBindingDir {}
+
+    @Component({
+      imports: [UnsafeUrlHostBindingDir],
+      template: ` <iframe unsafeUrlHostBindingDir></iframe>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class SimpleComp {}
+
+    const fixture = TestBed.createComponent(SimpleComp);
+    expect(() => fixture.detectChanges()).toThrowError(
+      /NG0904: unsafe value used in a resource URL/,
+    );
   });
 });
 

@@ -62,7 +62,11 @@ export function compileTest(
 ): CompileResult {
   const rootDir = getRootDirectory(fs);
   const outDir = getBuildOutputDirectory(fs);
-  const options = getOptions(rootDir, outDir, compilerOptions, angularCompilerOptions);
+  const options = getOptions(rootDir, outDir, compilerOptions, {
+    ...angularCompilerOptions,
+    // TODO: Do we want to enable strictTemplates for compliance tests?
+    strictTemplates: false,
+  });
   const rootNames = files.map((f) => fs.resolve(f));
   const host = new NgtscTestCompilerHost(fs, options);
   const {diagnostics, emitResult} = performCompilation({rootNames, host, options});

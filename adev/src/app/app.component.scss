@@ -40,6 +40,13 @@
     }
   }
 
+  // Lock the page behind the mobile primary-nav drawer. `clip` preserves the primary nav's sticky context.
+  @include mq.for-phone-only {
+    &:has(.adev-nav-primary--open) {
+      overflow: clip;
+    }
+  }
+
   &:has(.adev-home) {
     .adev-nav {
       width: 0;

@@ -7,7 +7,6 @@
  */
 
 import {
-  afterNextRender,
   Component,
   ElementRef,
   effect,
@@ -15,11 +14,12 @@ import {
   output,
   signal,
   viewChild,
-  ChangeDetectionStrategy,
   linkedSignal,
+  computed,
 } from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {ContainerType} from '../../../../../../../../../../protocol';
+import {Property} from '../object-tree-types';
+import {PropValueHighlighterDirective} from '../prop-value-highlighter/prop-value-highlighter.directive';
 
 type EditorType = string | number | boolean;
 type EditorResult = EditorType | Array<EditorType>;
@@ -40,23 +40,22 @@ const parseValue = (value: EditorResult): EditorResult => {
 @Component({
   templateUrl: './property-editor.component.html',
   selector: 'ng-property-editor',
-  styleUrls: ['./property-editor.component.scss'],
-  imports: [FormsModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: [
+    './property-editor.component.scss',
+    '../prop-value-highlighter/prop-value-highlighter.scss',
+  ],
+  imports: [FormsModule, PropValueHighlighterDirective],
   host: {
     '(click)': 'onClick()',
   },
 })
 export class PropertyEditorComponent {
-  readonly key = input.required<string>();
-  readonly initialValue = input.required<EditorResult>();
-  readonly previewValue = input.required<string>();
+  protected readonly inputEl = viewChild<ElementRef<HTMLInputElement>>('inputEl');
 
-  readonly containerType = input<ContainerType>();
+  protected readonly property = input.required<Property>();
+  protected readonly initialValue = computed(() => this.property().descriptor.value);
 
-  readonly updateValue = output<EditorResult>();
-
-  readonly inputEl = viewChild<ElementRef<HTMLInputElement>>('inputEl');
+  protected readonly updateValue = output<EditorResult>();
 
   readState = PropertyEditorState.Read;
   writeState = PropertyEditorState.Write;

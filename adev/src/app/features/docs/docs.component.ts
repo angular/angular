@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Component, computed, input} from '@angular/core';
 import {DocContent, DocViewer} from '@angular/docs';
-import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 
 @Component({
   selector: 'docs-docs',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DocViewer],
   styleUrls: ['./docs.component.scss'],
   templateUrl: './docs.component.html',

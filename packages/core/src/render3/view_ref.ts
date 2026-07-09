@@ -150,7 +150,6 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * @Component({
    *   selector: 'app-root',
    *   template: `Number of ticks: {{numberOfTicks}}`
-   *   changeDetection: ChangeDetectionStrategy.OnPush,
    * })
    * class AppComponent {
    *   numberOfTicks = 0;

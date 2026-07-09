@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, signal} from '@angular/core';
+import {signal, Service} from '@angular/core';
 import {isIos} from '@angular/docs';
 
 import {LoadingStep} from './enums/loading-steps';
@@ -27,7 +27,7 @@ export enum ErrorType {
   UNSUPPORTED_BROWSER_ENVIRONMENT,
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class NodeRuntimeState {
   private readonly _loadingStep = signal<number>(LoadingStep.NOT_STARTED);
   loadingStep = this._loadingStep.asReadonly();

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {NodePath, PluginObj, types as t} from '@babel/core';
+import {NodePath, PluginObject, types as t} from '@babel/core';
 
 import {isLocalize, TranslatePluginOptions} from '../../source_file_utils';
 
@@ -25,7 +25,7 @@ import {isLocalize, TranslatePluginOptions} from '../../source_file_utils';
 export function makeLocalePlugin(
   locale: string,
   {localizeName = '$localize'}: TranslatePluginOptions = {},
-): PluginObj {
+): PluginObject {
   return {
     visitor: {
       MemberExpression(expression: NodePath<t.MemberExpression>) {

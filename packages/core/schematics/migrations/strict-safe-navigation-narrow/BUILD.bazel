@@ -1,0 +1,40 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+ts_project(
+    name = "strict-safe-navigation-narrow",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/@angular-devkit/core",
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@schematics/angular",
+        "//packages/core/schematics/utils",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*.spec.ts"]),
+    deps = [
+        ":strict-safe-navigation-narrow",
+        "//:node_modules/@angular-devkit/core",
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@schematics/angular",
+        "//packages/core/schematics/utils",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [":test_lib"],
+)

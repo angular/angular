@@ -34,7 +34,7 @@ export function patchPromise(Zone: ZoneType): void {
     api.onUnhandledError = (e: any) => {
       if (api.showUncaughtError()) {
         const rejection = e && e.rejection;
-        if (rejection) {
+        if (rejection && e.zone && e.task) {
           console.error(
             'Unhandled Promise rejection:',
             rejection instanceof Error ? rejection.message : rejection,

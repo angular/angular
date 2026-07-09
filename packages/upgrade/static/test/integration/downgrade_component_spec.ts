@@ -10,6 +10,7 @@ import {
   ChangeDetectionStrategy,
   Compiler,
   Component,
+  createComponent,
   destroyPlatform,
   Directive,
   ElementRef,
@@ -17,6 +18,7 @@ import {
   Injector,
   input,
   Input,
+  model,
   NgModule,
   NgModuleRef,
   OnChanges,
@@ -70,6 +72,7 @@ withEachNg1Version(() => {
           'oneWayA: {{oneWayA}}; oneWayB: {{oneWayB}}; ' +
           'twoWayA: {{twoWayA}}; twoWayB: {{twoWayB}}; ({{ngOnChangesCount}})',
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Ng2Component implements OnChanges {
         ngOnChangesCount = 0;
@@ -182,6 +185,7 @@ withEachNg1Version(() => {
         selector: 'ng2',
         inputs: ['message'],
         template: 'Message: {{message()}}',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2Component {
@@ -214,6 +218,93 @@ withEachNg1Version(() => {
 
         $apply(upgrade, 'name = "everyone"');
         expect(multiTrim(document.body.textContent)).toEqual('Message: Hello everyone');
+      });
+    }));
+
+    it('should propagate AngularJS→Angular changes through model() signals', waitForAsync(() => {
+      const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
+        $rootScope['value'] = 'initial';
+      });
+
+      @Component({
+        selector: 'ng2',
+        template: 'Value: {{value()}}',
+        changeDetection: ChangeDetectionStrategy.Eager,
+        standalone: false,
+      })
+      class Ng2Component {
+        value = model<string>('');
+      }
+
+      @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      // Wire up the model() signal for JIT tests. AOT compilation handles this automatically.
+      (Ng2Component as any).ɵcmp.inputs = {value: ['value', /* InputFlags.SignalBased */ 1]};
+      (Ng2Component as any).ɵcmp.outputs = {valueChange: 'value'};
+
+      ng1Module.directive('ng2', downgradeComponent({component: Ng2Component}));
+
+      const element = html(`
+        <div>
+          <ng2 bindon-value="value"></ng2>
+          | value: {{value}}
+        </div>`);
+
+      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+        expect(multiTrim(document.body.textContent)).toEqual('Value: initial | value: initial');
+
+        $apply(upgrade, 'value = "updated"');
+        expect(multiTrim(document.body.textContent)).toEqual('Value: updated | value: updated');
+      });
+    }));
+
+    it('should propagate Angular→AngularJS changes through model() signals', waitForAsync(() => {
+      const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
+        $rootScope['value'] = 'initial';
+      });
+
+      let componentInstance: Ng2Component;
+
+      @Component({
+        selector: 'ng2',
+        template: 'Value: {{value()}}',
+        changeDetection: ChangeDetectionStrategy.Eager,
+        standalone: false,
+      })
+      class Ng2Component {
+        value = model<string>('');
+        constructor() {
+          componentInstance = this;
+        }
+      }
+
+      @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      // Wire up the model() signal for JIT tests. AOT compilation handles this automatically.
+      (Ng2Component as any).ɵcmp.inputs = {value: ['value', /* InputFlags.SignalBased */ 1]};
+      (Ng2Component as any).ɵcmp.outputs = {valueChange: 'value'};
+
+      ng1Module.directive('ng2', downgradeComponent({component: Ng2Component}));
+
+      const element = html(`
+        <div>
+          <ng2 bindon-value="value"></ng2>
+          | value: {{value}}
+        </div>`);
+
+      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+        expect(multiTrim(document.body.textContent)).toEqual('Value: initial | value: initial');
+
+        $apply(upgrade, () => componentInstance.value.set('from-angular'));
+        expect(multiTrim(document.body.textContent)).toEqual(
+          'Value: from-angular | value: from-angular',
+        );
       });
     }));
 
@@ -269,6 +360,7 @@ withEachNg1Version(() => {
         selector: 'ng2',
         template: `model: {{ model }};`,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Ng2Component implements OnChanges {
         ngOnChangesCount = 0;
@@ -317,6 +409,7 @@ withEachNg1Version(() => {
         selector: 'ng2',
         template: '{{ value1 }} | {{ value2 }}',
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Ng2Component {
         @Input() value1 = -1;
@@ -385,6 +478,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2',
         template: '{{ value1 }} | {{ value2 }}',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2Component {
@@ -450,6 +544,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2',
         template: '{{ value }}',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2Component {
@@ -487,6 +582,7 @@ withEachNg1Version(() => {
         selector: 'ng2',
         template: ` ngOnChangesCount: {{ ngOnChangesCount }} | firstChangesCount:
           {{ firstChangesCount }} | initialValue: {{ initialValue }}`,
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2Component implements OnChanges {
@@ -548,6 +644,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2',
         template: '<span>{{_value}}</span>',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2 {
@@ -615,6 +712,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2',
         template: '<ul><li>test1</li><li>test2</li></ul>',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2Component implements OnDestroy {
@@ -680,6 +778,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2-outer',
         template: '<div *ngIf="!destroyIt"><ng1></ng1></div>',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2OuterComponent {
@@ -689,6 +788,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2-inner',
         template: 'test',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2InnerComponent implements OnDestroy {
@@ -738,6 +838,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2',
         template: '<span>NG2</span>',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2Component {}
@@ -801,6 +902,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2',
         template: 'test',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2Component {}
@@ -846,6 +948,7 @@ withEachNg1Version(() => {
       @Component({
         selector: '[itWorks]',
         template: 'It works',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class WorksComponent {}
@@ -870,6 +973,7 @@ withEachNg1Version(() => {
       @Component({
         selector: '[itWorks]',
         template: 'It works',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class WorksComponent {}
@@ -877,6 +981,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'root-component',
         template: '<span itWorks></span>!',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class RootComponent {}
@@ -911,6 +1016,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'child',
         template: 'child',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class ChildComponent {
@@ -948,6 +1054,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2B',
         template: "{{ 'Ng2 template' }}",
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2ComponentB {}
@@ -978,6 +1085,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2',
         template: '',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2Component {
@@ -996,6 +1104,7 @@ withEachNg1Version(() => {
 
       @Component({
         template: '',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class LazyLoadedComponent {
@@ -1019,9 +1128,10 @@ withEachNg1Version(() => {
         const compiler = modInjector.get(Compiler);
         const modFactory = compiler.compileModuleSync(LazyLoadedModule);
         const childMod = modFactory.create(modInjector);
-        const cmpFactory =
-          childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent)!;
-        const lazyCmp = cmpFactory.create(componentInjector);
+        const lazyCmp = createComponent(LazyLoadedComponent, {
+          environmentInjector: childMod.injector,
+          elementInjector: componentInjector,
+        });
 
         expect(lazyCmp.instance.module.injector === childMod.injector).toBe(true);
       });
@@ -1031,6 +1141,7 @@ withEachNg1Version(() => {
       @Component({
         selector: 'ng2',
         template: '',
+        changeDetection: ChangeDetectionStrategy.Eager,
         standalone: false,
       })
       class Ng2Component {}
@@ -1069,7 +1180,11 @@ withEachNg1Version(() => {
     afterEach(() => destroyPlatform());
 
     it('should downgrade a standalone component using NgModule APIs', waitForAsync(() => {
-      @Component({selector: 'ng2', template: 'Hi from Angular!'})
+      @Component({
+        selector: 'ng2',
+        template: 'Hi from Angular!',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
       class Ng2Component {}
 
       const ng1Module = angular

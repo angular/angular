@@ -36,16 +36,17 @@ import {
   ViewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ɵDomRendererFactory2 as DomRendererFactory2} from '../../../index';
-import {InjectableAnimationEngine} from '../../../animations/src/providers';
 import {el, isNode} from '@angular/private/testing';
+import {InjectableAnimationEngine} from '../../../animations/src/providers';
+import {ɵDomRendererFactory2 as DomRendererFactory2} from '../../../index';
 
+import {ChangeDetectionStrategy} from '@angular/compiler';
+import {provideAnimationsAsync} from '../public_api';
 import {
   AsyncAnimationRendererFactory,
   DynamicDelegationRenderer,
   ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN,
 } from '../src/async_animation_renderer';
-import {provideAnimationsAsync} from '../public_api';
 
 type AnimationBrowserModule = typeof import('@angular/animations/browser');
 
@@ -310,6 +311,7 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           exp: any;
@@ -352,6 +354,7 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
             trigger('animation2', [transition(':leave', [])]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           exp1: any = true;

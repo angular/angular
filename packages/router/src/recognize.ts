@@ -48,7 +48,7 @@ export async function recognize(
   config: Routes,
   urlTree: UrlTree,
   urlSerializer: UrlSerializer,
-  paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
+  paramsInheritanceStrategy: ParamsInheritanceStrategy,
   abortSignal: AbortSignal,
 ): Promise<{state: RouterStateSnapshot; tree: UrlTree}> {
   return new Recognizer(
@@ -438,6 +438,7 @@ export class Recognizer {
       consumedSegments,
       remainingSegments,
       childConfig,
+      outlet,
     );
 
     if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {

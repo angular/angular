@@ -34,6 +34,7 @@
       color 0.3s ease,
       background-color 0.3s ease;
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
 
   @media (prefers-reduced-motion) {
@@ -46,6 +47,12 @@
     margin: 0;
     overflow-y: auto;
     overflow-x: hidden;
+    scrollbar-gutter: stable;
+
+    // Lock background scrolling while the search dialog is open as a modal.
+    &:has(docs-search-dialog dialog[open]) {
+      overflow: hidden;
+    }
   }
 
   html,
@@ -308,15 +315,18 @@
 
       .mdc-tab {
         padding-inline: 15px !important;
+        border-block-end: 2px solid transparent;
+      }
+
+      .mdc-tab__text-label {
+        transition: none;
+        line-height: 1.5;
       }
 
       .mdc-tab--active {
-        border: 0;
-        border-block-end-width: 2px;
-        border-style: solid;
         border-image: var(--purple-to-blue-horizontal-gradient) 1;
 
-        span {
+        .mdc-tab__text-label {
           background-image: var(--purple-to-blue-horizontal-gradient);
           background-clip: text;
           -webkit-background-clip: text;

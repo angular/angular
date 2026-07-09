@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {KeyValueArray} from '../../util/array_utils';
 import {TStylingRange} from '../interfaces/styling';
 import {AttributeMarker} from './attribute_marker';
+import {ForeignComponent} from '../../interface/foreign_component';
 
 import {TIcu} from './i18n';
 import {CssSelector} from './projection';
@@ -243,8 +244,9 @@ export type TAttributes = (string | AttributeMarker | CssSelector)[];
  * - Attribute arrays.
  * - Local definition arrays.
  * - Translated messages (i18n).
+ * - Foreign components.
  */
-export type TConstants = (TAttributes | string)[];
+export type TConstants = (TAttributes | string | ForeignComponent<any, any>)[];
 
 /**
  * Factory function that returns an array of consts. Consts can be represented as a function in
@@ -432,6 +434,11 @@ export interface TNode {
    *   `TNodeType.ICUContainer`: `TIcu`
    */
   value: any;
+
+  /**
+   * The namespace associated with this node.
+   */
+  namespace: string | null;
 
   /**
    * Attributes associated with an element. We need to store attributes to support various
@@ -947,7 +954,7 @@ export type HostDirectiveOutputs = Record<string, (number | string)[]>;
  * ```
  */
 export type DirectiveIndexMap = Map<
-  Type<unknown>,
+  Type<unknown> | AbstractType<unknown>,
   number | [directiveIndex: number, hostDirectivesStart: number, hostDirectivesEnd: number]
 >;
 

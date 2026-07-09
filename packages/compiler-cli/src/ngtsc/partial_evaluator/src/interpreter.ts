@@ -16,7 +16,7 @@ import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn, StringConcatBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
-import type {ForeignFunctionResolver} from './interface';
+import type {ForeignFunctionResolver, ForeignTypeResolver} from './interface';
 import {
   EnumValue,
   KnownFn,
@@ -61,6 +61,7 @@ interface Context {
   resolutionContext: string;
   scope: Scope;
   foreignFunctionResolver?: ForeignFunctionResolver;
+  foreignTypeResolver?: ForeignTypeResolver;
 }
 
 export class StaticInterpreter {
@@ -707,7 +708,7 @@ export class StaticInterpreter {
     return new Reference(node, owningModule(context));
   }
 
-  private visitType(node: ts.TypeNode, context: Context): ResolvedValue {
+  public visitType(node: ts.TypeNode, context: Context): ResolvedValue {
     if (ts.isLiteralTypeNode(node)) {
       return this.visitExpression(node.literal, context);
     } else if (ts.isTupleTypeNode(node)) {
@@ -718,6 +719,10 @@ export class StaticInterpreter {
       return this.visitType(node.type, context);
     } else if (ts.isTypeQueryNode(node)) {
       return this.visitTypeQuery(node, context);
+    } else if (ts.isTypeReferenceNode(node)) {
+      return this.visitTypeReference(node, context);
+    } else if (ts.isImportTypeNode(node)) {
+      return this.visitImportType(node, context);
     }
 
     return DynamicValue.fromDynamicType(node);
@@ -745,6 +750,83 @@ export class StaticInterpreter {
 
     const declContext: Context = {...context, ...joinModuleContext(context, node, decl)};
     return this.visitDeclaration(decl.node, declContext);
+  }
+
+  private visitImportType(node: ts.ImportTypeNode, context: Context): ResolvedValue {
+    // `import("./module").Foo` - resolve `Foo` to its declaration, using the literal argument as
+    // the module specifier if the resolved declaration doesn't already carry one.
+    if (node.qualifier === undefined) {
+      return DynamicValue.fromDynamicType(node);
+    }
+    const name = ts.isQualifiedName(node.qualifier) ? node.qualifier.right : node.qualifier;
+    if (!ts.isIdentifier(name)) {
+      return DynamicValue.fromUnknown(node);
+    }
+
+    const decl = this.host.getDeclarationOfIdentifier(name);
+    if (decl === null) {
+      return DynamicValue.fromUnknownIdentifier(name);
+    }
+
+    let declContext: Context = {...context, ...joinModuleContext(context, node, decl)};
+    if (
+      declContext.absoluteModuleName === context.absoluteModuleName &&
+      ts.isLiteralTypeNode(node.argument) &&
+      ts.isStringLiteral(node.argument.literal) &&
+      !node.argument.literal.text.startsWith('.')
+    ) {
+      declContext = {
+        ...declContext,
+        absoluteModuleName: node.argument.literal.text,
+        resolutionContext: node.getSourceFile().fileName,
+      };
+    }
+    return this.visitDeclaration(decl.node, declContext);
+  }
+
+  private visitTypeReference(node: ts.TypeReferenceNode, context: Context): ResolvedValue {
+    const typeName = ts.isQualifiedName(node.typeName) ? node.typeName.right : node.typeName;
+    if (!ts.isIdentifier(typeName)) {
+      return DynamicValue.fromUnknown(node);
+    }
+
+    // `ReturnType<typeof someFn>` - resolve `someFn` and, if it returns `ModuleWithProviders<T>`,
+    // resolve to `T`. This is how the isolated-declarations transform encodes `imports`/`exports`
+    // entries that were call expressions (e.g. `FooModule.forRoot()` or a bare `provideFoo()`).
+    if (
+      typeName.text === 'ReturnType' &&
+      node.typeArguments !== undefined &&
+      node.typeArguments.length === 1
+    ) {
+      const fn = this.visitType(node.typeArguments[0], context);
+      if (fn instanceof Reference) {
+        const decl = fn.node;
+        if (
+          ts.isFunctionDeclaration(decl) ||
+          ts.isMethodDeclaration(decl) ||
+          ts.isMethodSignature(decl)
+        ) {
+          if (decl.type !== undefined && context.foreignTypeResolver !== undefined) {
+            const moduleType = context.foreignTypeResolver(decl.type);
+            if (moduleType !== null) {
+              return this.visitType(moduleType, context);
+            }
+          }
+        }
+      }
+    }
+
+    // A bare reference to a class - e.g. a hand-written `[FooModule]` tuple element, or the `T` of
+    // `ModuleWithProviders<T>`.
+    const decl = this.host.getDeclarationOfIdentifier(typeName);
+    if (decl !== null && this.host.isClass(decl.node)) {
+      return this.getReference(decl.node, {
+        ...context,
+        ...joinModuleContext(context, typeName, decl),
+      });
+    }
+
+    return DynamicValue.fromDynamicType(node);
   }
 }
 

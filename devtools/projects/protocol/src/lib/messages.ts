@@ -7,25 +7,21 @@
  */
 
 import {
-  ɵFramework as Framework,
+  ɵAcxChangeDetectionStrategy as AcxChangeDetectionStrategy,
   ɵAcxViewEncapsulation as AcxViewEncapsulation,
+  ChangeDetectionStrategy as AngularChangeDetectionStrategy,
+  ViewEncapsulation as AngularViewEncapsulation,
+  ɵFramework as Framework,
   InjectionToken,
   InjectOptions,
   Injector,
   Type,
-  ViewEncapsulation as AngularViewEncapsulation,
 } from '@angular/core';
+import {ReactiveNodeKind} from '@angular/core/primitives/signals';
 
 export interface DebugSignalGraphNode {
   id: string;
-  kind:
-    | 'signal'
-    | 'computed'
-    | 'effect'
-    | 'template'
-    | 'linkedSignal'
-    | 'afterRenderEffectPhase'
-    | 'unknown';
+  kind: ReactiveNodeKind;
   epoch: number;
   label?: string;
   preview: Descriptor;
@@ -66,11 +62,11 @@ export interface ComponentType {
   name: string;
   isElement: boolean;
   id: number;
+  /** Angular framework instance ID assigned by the profiler. Only present when profiling is active. */
+  instanceId?: number;
 }
 
 export type HydrationStatus =
-  // null represent the absence of hydration status (a node created via CSR)
-  | null
   | {status: 'hydrated' | 'skipped' | 'dehydrated'}
   | {
       status: 'mismatched';
@@ -78,38 +74,56 @@ export type HydrationStatus =
       actualNodeDetails: string | null;
     };
 
-export type CurrentDeferBlock = 'placeholder' | 'loading' | 'error';
+export enum ControlFlowBlockType {
+  Defer,
+  For,
+}
 
-export interface DeferInfo {
+export interface ControlFlowBlock {
   id: string;
+  type: ControlFlowBlockType;
+}
+
+export interface DeferBlock extends ControlFlowBlock {
+  type: ControlFlowBlockType.Defer;
   state: 'placeholder' | 'loading' | 'complete' | 'error' | 'initial';
-  currentBlock: CurrentDeferBlock | null;
+  renderedBlock: RenderedDeferBlock | null;
   triggers: {
     defer: string[];
     hydrate: string[];
     prefetch: string[];
   };
-  blocks: BlockDetails;
+  blocks: DeferBlockDetails;
 }
 
-export interface BlockDetails {
+export type RenderedDeferBlock = 'defer' | 'placeholder' | 'loading' | 'error';
+
+export interface DeferBlockDetails {
   hasErrorBlock: boolean;
-  placeholderBlock: null | {minimumTime: number | null};
-  loadingBlock: null | {minimumTime: number | null; afterTime: number | null};
+  placeholderBlock: {exists: boolean; minimumTime: number | null};
+  loadingBlock: {exists: boolean; minimumTime: number | null; afterTime: number | null};
 }
 
-// TODO: refactor to remove nativeElement as it is not serializable
-// and only really exists on the ng-devtools-backend
+export interface ForLoopBlock extends ControlFlowBlock {
+  type: ControlFlowBlockType.For;
+  hasEmptyBlock: boolean;
+  items: Descriptor[];
+  trackExpression: string;
+}
+
+export type ChangeDetection = 'ng-on-push' | 'ng-eager' | 'acx-on-push' | 'acx-default';
+
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
-  element: string;
-  directives: DirType[];
+  tagName?: string;
+  directives?: DirType[];
   component: CmpType | null;
   children: DevToolsNode<DirType, CmpType>[];
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
-  hydration: HydrationStatus;
-  defer: DeferInfo | null;
-  onPush?: boolean;
+  hydration?: HydrationStatus;
+  controlFlowBlock: ControlFlowBlock | null;
+  changeDetection?: ChangeDetection;
+  injector?: Injector;
 }
 
 export interface SerializedInjector {
@@ -122,7 +136,7 @@ export interface SerializedInjector {
 
 export interface SerializedProviderRecord {
   token: string;
-  type: 'type' | 'existing' | 'class' | 'value' | 'factory' | 'multi';
+  type: 'type' | 'existing' | 'class' | 'value' | 'factory' | 'multi' | 'internal';
   multi: boolean;
   isViewProvider: boolean;
   index?: number | number[];
@@ -187,7 +201,7 @@ export interface AngularDirectiveMetadata extends BaseDirectiveMetadata {
   inputs: {[name: string]: string};
   outputs: {[name: string]: string};
   encapsulation?: AngularViewEncapsulation;
-  onPush?: boolean;
+  changeDetection?: AngularChangeDetectionStrategy;
   dependencies?: SerializedInjectedService[];
 }
 
@@ -197,7 +211,7 @@ export interface AcxDirectiveMetadata extends BaseDirectiveMetadata {
   inputs: {[name: string]: string};
   outputs: {[name: string]: string};
   encapsulation?: AcxViewEncapsulation;
-  onPush?: boolean;
+  changeDetection?: AcxChangeDetectionStrategy;
 }
 
 /** Directive metadata specific to Wiz. */
@@ -294,7 +308,7 @@ export interface DirectiveProfile {
 export interface ElementProfile {
   directives: DirectiveProfile[];
   children: ElementProfile[];
-  type: 'defer' | 'element';
+  type: 'element' | 'defer' | 'for';
 }
 
 export interface ProfilerFrame {
@@ -322,8 +336,8 @@ export interface Route {
   providers?: string[];
   title?: string;
   children?: Array<Route>;
-  data?: any;
-  resolvers?: any;
+  data?: {[key: string | symbol]: any};
+  resolvers?: {[key: string]: string};
   path: string;
   component: string;
   redirectTo?: string;
@@ -385,7 +399,7 @@ export interface Events {
     devMode: boolean;
     ivy: boolean;
     hydration: boolean;
-    supportedApis: SupportedApis;
+    supportedApis: SupportedApis | null;
   }) => void;
 
   inspectorStart: () => void;
@@ -447,6 +461,7 @@ export interface Events {
   enableFrameConnection: (frameId: number, tabId: number) => void;
   frameConnected: (frameId: number) => void;
   detectAngular: (detectionResult: AngularDetection) => void;
+  backendInstalled: (detectionResult: AngularDetection) => void;
   backendReady: () => void;
 
   log: (logEvent: {message: string; level: 'log' | 'warn' | 'debug' | 'error'}) => void;

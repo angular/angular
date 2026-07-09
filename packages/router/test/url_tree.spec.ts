@@ -33,6 +33,11 @@ describe('UrlTree', () => {
       expect(tree.queryParams).toEqual({'first': 'http://foo/bar?baz=true', 'second': '123'});
     });
 
+    it('should parse a query param named like an Object.prototype member', () => {
+      const tree = serializer.parse('/path/to?hasOwnProperty=foo&bar=baz');
+      expect(tree.queryParams).toEqual({'hasOwnProperty': 'foo', 'bar': 'baz'});
+    });
+
     it('create, serialize, parse, serialize results in same serialized tree with outlet and no primary children', () => {
       const router = TestBed.inject(Router);
       const th = router.createUrlTree(['/', {outlets: {a: ['a'], b: [{outlets: {a: ['b1']}}]}}]);

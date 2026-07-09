@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata, metadata, validate} from '../logic';
-import {MIN} from '../metadata';
-import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
-import {minError} from '../validation_errors';
-import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
+import {createMetadataKey, metadata, LimitKey, MIN, MIN_NUMBER} from '../metadata';
+import {BaseValidatorConfig, getOption} from './util';
+import {validate} from './validate';
+import {minError} from './validation_errors';
 
 /**
  * Binds a validator to the given path that requires the value to be greater than or equal to
  * the given `minValue`.
+ * This function can only be called on number paths.
  * This function can only be called on number paths.
  * In addition to binding a validator, this function adds `MIN` property to the field.
  *
@@ -26,32 +26,40 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @see [Signal Form Min Validation](guide/forms/signals/validation#min-and-max)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export function min<
-  TValue extends number | string | null,
-  TPathKind extends PathKind = PathKind.Root,
->(
+export function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   minValue: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
-) {
-  const MIN_MEMO = metadata(path, (ctx) =>
-    computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
-  );
-  aggregateMetadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
+): void {
+  const MIN_MEMO = createMetadataKey<number | undefined>();
+
+  // Memomize the minimum valid.
+  metadata(path, MIN_MEMO, (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return typeof minValue === 'function' ? minValue(ctx) : minValue;
+  });
+
+  // Publish the memoized mininum value for aggregation.
+  metadata(path, MIN_NUMBER, ({state}) => state.metadata(MIN_MEMO)!());
+
+  // Use `MIN_NUMBER` to define the `min` property of the field.
+  metadata(path, MIN, () => MIN_NUMBER as LimitKey<TValue>);
   validate(path, (ctx) => {
-    if (isEmpty(ctx.value())) {
+    const value = ctx.value();
+    if (value === null || Number.isNaN(value)) {
       return undefined;
     }
     const min = ctx.state.metadata(MIN_MEMO)!();
     if (min === undefined || Number.isNaN(min)) {
       return undefined;
     }
-    const value = ctx.value();
-    const numValue = !value && value !== 0 ? NaN : Number(value); // Treat `''` and `null` as `NaN`
-    if (numValue < min) {
+    if (value < min) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {

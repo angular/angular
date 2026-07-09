@@ -7,6 +7,9 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
+import {By} from '@angular/platform-browser';
+import {isTextNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -41,12 +44,9 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {ComponentFixture, fakeAsync, TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {isTextNode} from '@angular/private/testing';
-import {expect} from '@angular/private/testing/matchers';
 
-import {MockResourceLoader} from './resource_loader_mock';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {MockResourceLoader} from './resource_loader_mock';
 
 const TEST_COMPILER_PROVIDERS: Provider[] = [
   {provide: ResourceLoader, useClass: MockResourceLoader, deps: []},
@@ -62,7 +62,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     template: string,
     compType: Type<T> = <any>TestComponent,
   ): ComponentFixture<T> {
-    TestBed.overrideComponent(compType, {set: new Component({template})});
+    TestBed.overrideComponent(compType, {
+      set: new Component({template, changeDetection: ChangeDetectionStrategy.Eager}),
+    });
 
     initHelpers();
 
@@ -303,14 +305,14 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           const ctx = _bindSimpleValue('address?.city', Person);
           ctx.componentInstance.address = null!;
           ctx.detectChanges(false);
-          expect(renderLog.log).toEqual(['id=null']);
+          expect(renderLog.log).toEqual(['id=undefined']);
         }));
 
         it('should support calling methods on nulls', fakeAsync(() => {
           const ctx = _bindSimpleValue('address?.toString()', Person);
           ctx.componentInstance.address = null!;
           ctx.detectChanges(false);
-          expect(renderLog.log).toEqual(['id=null']);
+          expect(renderLog.log).toEqual(['id=undefined']);
         }));
 
         it('should support reading properties on non nulls', fakeAsync(() => {
@@ -331,26 +333,26 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
           ctx.componentInstance.value = null!;
           ctx.detectChanges(false);
-          expect(renderLog.log).toEqual(['id=null']);
+          expect(renderLog.log).toEqual(['id=undefined']);
         }));
 
         it('should support nested short-circuting safe navigation', fakeAsync(() => {
           const ctx = _bindSimpleValue('value.value?.address.city', PersonHolderHolder);
           ctx.componentInstance.value = new PersonHolder();
           ctx.detectChanges(false);
-          expect(renderLog.log).toEqual(['id=null']);
+          expect(renderLog.log).toEqual(['id=undefined']);
         }));
 
         it('should support chained short-circuting safe navigation', fakeAsync(() => {
           const ctx = _bindSimpleValue('value?.value?.address.city', PersonHolderHolder);
           ctx.detectChanges(false);
-          expect(renderLog.log).toEqual(['id=null']);
+          expect(renderLog.log).toEqual(['id=undefined']);
         }));
 
         it('should support short-circuting array index operations', fakeAsync(() => {
           const ctx = _bindSimpleValue('value?.phones[0]', PersonHolder);
           ctx.detectChanges(false);
-          expect(renderLog.log).toEqual(['id=null']);
+          expect(renderLog.log).toEqual(['id=undefined']);
         }));
 
         it('should still throw if right-side would throw', fakeAsync(() => {
@@ -1392,6 +1394,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           selector: 'main-cmp',
           template: `<span [i]="log('start')"></span><outer-cmp><ng-template><span [i]="log('tpl')"></span></ng-template></outer-cmp>`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MainComp {
           constructor(public cdRef: ChangeDetectorRef) {}
@@ -1404,6 +1407,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           selector: 'outer-cmp',
           template: `<span [i]="log('start')"></span><inner-cmp [outerTpl]="tpl"><ng-template><span [i]="log('tpl')"></span></ng-template></inner-cmp>`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class OuterComp {
           @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;
@@ -1418,6 +1422,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           selector: 'inner-cmp',
           template: `<span [i]="log('start')"></span>><ng-container [ngTemplateOutlet]="outerTpl"></ng-container><ng-container [ngTemplateOutlet]="tpl"></ng-container>`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class InnerComp {
           @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;

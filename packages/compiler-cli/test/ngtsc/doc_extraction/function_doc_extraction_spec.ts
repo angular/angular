@@ -126,6 +126,56 @@ runInEachFileSystem(() => {
       expect(numberOverloadEntry.returnType).toBe('number');
     });
 
+    it('should use overload docs when implementation has no docs', () => {
+      env.write(
+        'index.ts',
+        `
+        /**
+         * Overload docs.
+         *
+         * @publicApi
+         */
+        export function ident(value: boolean): boolean
+        export function ident(value: boolean|number): boolean|number {
+          return value;
+        }
+      `,
+      );
+
+      const docs = env.driveDocsExtraction('index.ts') as FunctionEntry[];
+      const [functionEntry] = docs;
+
+      expect(functionEntry.description).toContain('Overload docs.');
+      expect(functionEntry.rawComment).toContain('Overload docs.');
+      expect(functionEntry.jsdocTags.some((tag) => tag.name === 'publicApi')).toBeTrue();
+      expect(functionEntry.implementation.description).toBe('');
+    });
+
+    it('should prefer implementation docs over overload docs', () => {
+      env.write(
+        'index.ts',
+        `
+        /** Overload docs. */
+        export function ident(value: boolean): boolean
+        /**
+         * Implementation docs.
+         *
+         * @publicApi
+         */
+        export function ident(value: boolean|number): boolean|number {
+          return value;
+        }
+      `,
+      );
+
+      const docs = env.driveDocsExtraction('index.ts') as FunctionEntry[];
+      const [functionEntry] = docs;
+
+      expect(functionEntry.description).toContain('Implementation docs.');
+      expect(functionEntry.rawComment).toContain('Implementation docs.');
+      expect(functionEntry.jsdocTags.some((tag) => tag.name === 'publicApi')).toBeTrue();
+    });
+
     it('should extract function generics', () => {
       env.write(
         'index.ts',

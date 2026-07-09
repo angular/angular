@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Input, NgModule, provideZoneChangeDetection} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  NgModule,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {emptyTree, TreeNode} from '../util';
@@ -20,6 +26,7 @@ import {emptyTree, TreeNode} from '../util';
     ><tree *ngIf="data.left != null" [data]="data.left"></tree
   ></ng-container>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class TreeComponent {
   @Input() data: TreeNode = emptyTree;

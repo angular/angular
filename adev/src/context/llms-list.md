@@ -42,6 +42,7 @@ adev/src/content/guide/signals/resource.md
 adev/src/content/guide/di/dependency-injection.md
 adev/src/content/guide/di/creating-injectable-service.md
 adev/src/content/guide/di/dependency-injection-providers.md
+adev/src/content/guide/di/lazy-loading-services.md
 adev/src/content/guide/di/dependency-injection-context.md
 adev/src/content/guide/di/hierarchical-dependency-injection.md
 adev/src/content/guide/di/lightweight-injection-tokens.md

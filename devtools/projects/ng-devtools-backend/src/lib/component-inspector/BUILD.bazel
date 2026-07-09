@@ -1,6 +1,6 @@
 load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//devtools:__subpackages__"])
 
 ts_project(
     name = "component-inspector",
@@ -9,7 +9,8 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
         "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling",
         "//devtools/projects/protocol",
     ],
 )
@@ -21,13 +22,7 @@ ts_test_library(
     ],
     deps = [
         ":component-inspector",
-        "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
-        "//devtools/projects/protocol",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
     ],
 )
 

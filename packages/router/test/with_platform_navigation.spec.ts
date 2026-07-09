@@ -7,27 +7,48 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {provideRouter, Router} from '../src';
-import {withPlatformNavigation, withRouterConfig} from '../src/provide_router';
-import {withBody} from '@angular/private/testing';
+import {
+  NavigationStart,
+  provideRouter,
+  Event,
+  Router,
+  UrlSerializer,
+  DefaultUrlSerializer,
+  UrlTree,
+  Params,
+} from '../src';
+import {withExperimentalPlatformNavigation, withRouterConfig} from '../src/provide_router';
+import {withBody, useAutoTick, timeout} from '@angular/private/testing';
 import {
   PlatformLocation,
   Location,
   PlatformNavigation,
   BrowserPlatformLocation,
+  ɵPRECOMMIT_HANDLER_SUPPORTED as PRECOMMIT_HANDLER_SUPPORTED,
 } from '@angular/common';
 import {
   ɵFakeNavigation as FakeNavigation,
   ɵFakeNavigationPlatformLocation as FakeNavigationPlatformLocation,
   provideLocationMocks,
+  MOCK_PLATFORM_LOCATION_CONFIG,
 } from '@angular/common/testing';
-import {timeout, useAutoTick} from './helpers';
+import {inject} from '@angular/core';
 
 /// <reference types="dom-navigation" />
 
+function isFirefox() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  if (userAgent.indexOf('firefox') != -1) {
+    return true;
+  }
+  return false;
+}
+
 describe('withPlatformNavigation feature', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({providers: [provideRouter([], withPlatformNavigation())]});
+    TestBed.configureTestingModule({
+      providers: [provideRouter([], withExperimentalPlatformNavigation())],
+    });
   });
 
   it('provides FakeNavigation by default', () => {
@@ -82,7 +103,7 @@ describe('withPlatformNavigation feature', () => {
 
       location.go('/c');
       expect(changed).toBeFalse();
-      await new Promise((resolve) => setTimeout(resolve, 1));
+      await timeout(1);
       expect(changed).toBeTrue();
     });
   });
@@ -108,11 +129,8 @@ describe('withPlatformNavigation feature', () => {
           children: [],
         },
       ]);
-      const {finished} = navigation.navigate('/somepath');
+      navigation.navigate('/somepath');
       await timeout(5);
-      // note that this finished promise will be rejected because the Router will create a separate 'replace' navigate
-      // since we cannot redirect the original navigation without precommit handler support
-      await expectAsync(finished).not.toBeResolved();
       expect(navigation.transition).not.toBeNull();
       await timeout(10);
       expect(navigation.transition).toBeNull();
@@ -131,7 +149,8 @@ describe('withPlatformNavigation feature', () => {
       // set up navigation
       navigation.addEventListener(
         'navigate',
-        (e: any) => e.intercept({handler: () => new Promise((_, reject) => setTimeout(reject, 5))}),
+        (e: any) =>
+          e.intercept({precommitHandler: () => new Promise((_, reject) => setTimeout(reject, 5))}),
         {once: true},
       );
 
@@ -159,6 +178,26 @@ describe('withPlatformNavigation feature', () => {
       expect(navigateEvents.length).toBe(1);
       expect(navigateEvents[0].navigationType).toBe('traverse');
     });
+
+    it('retains a single NavigateEvent across redirects', async () => {
+      const navigateEvents: NavigateEvent[] = [];
+      navigation.addEventListener('navigate', (e: NavigateEvent) => navigateEvents.push(e));
+
+      router.resetConfig([
+        {path: 'first', canActivate: [() => inject(Router).parseUrl('/redirected')], children: []},
+        {path: '**', children: []},
+      ]);
+      const navPromise = router.navigateByUrl('/first');
+      if (TestBed.inject(PRECOMMIT_HANDLER_SUPPORTED)) {
+        router.events.subscribe((e) => {
+          if (e instanceof NavigationStart) {
+            expect(navigateEvents.length).toBe(1);
+          }
+        });
+      }
+      await navPromise;
+      expect(navigateEvents.length).toBe(1);
+    });
   });
 
   describe('eager url update', () => {
@@ -170,7 +209,7 @@ describe('withPlatformNavigation feature', () => {
         providers: [
           provideRouter(
             [{path: '**', children: []}],
-            withPlatformNavigation(),
+            withExperimentalPlatformNavigation(),
             withRouterConfig({urlUpdateStrategy: 'eager'}),
           ),
         ],
@@ -198,24 +237,170 @@ describe('withPlatformNavigation feature', () => {
       await expectAsync(finished).toBeResolved();
     });
   });
+
+  class TrailingSlashNormalizingUrlSerializer extends DefaultUrlSerializer {
+    override parse(url: string): UrlTree {
+      if (url !== '/' && url.endsWith('/')) {
+        url = url.slice(0, -1);
+      }
+      return super.parse(url);
+    }
+    override serialize(tree: UrlTree): string {
+      let url = super.serialize(tree);
+      if (url !== '/' && url.endsWith('/')) {
+        url = url.slice(0, -1);
+      }
+      return url;
+    }
+  }
+
+  class QueryParamSortingUrlSerializer extends DefaultUrlSerializer {
+    override parse(url: string): UrlTree {
+      const tree = super.parse(url);
+      const sorted: Params = {};
+      for (const key of Object.keys(tree.queryParams).sort()) {
+        sorted[key] = tree.queryParams[key];
+      }
+      tree.queryParams = sorted;
+      return tree;
+    }
+    override serialize(tree: UrlTree): string {
+      const sorted: Params = {};
+      for (const key of Object.keys(tree.queryParams).sort()) {
+        sorted[key] = tree.queryParams[key];
+      }
+      const newTree = new UrlTree(tree.root, sorted, tree.fragment);
+      return super.serialize(newTree);
+    }
+  }
+
+  describe('URL comparison and extraction bugs', () => {
+    useAutoTick();
+    let router: Router;
+    let navigation: PlatformNavigation;
+
+    it('should not trigger new navigation when traversing back to a URL with trailing slash mismatch (with custom serializer)', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: UrlSerializer, useClass: TrailingSlashNormalizingUrlSerializer},
+          {provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: false},
+          provideRouter(
+            [
+              {path: 'foo', children: []},
+              {path: 'bar', children: []},
+            ],
+            withExperimentalPlatformNavigation(),
+          ),
+        ],
+      });
+      navigation = TestBed.inject(PlatformNavigation);
+
+      navigation.navigate('/foo/');
+      await timeout();
+      navigation.navigate('/bar');
+      await timeout();
+
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+      await navigation.transition?.finished;
+
+      const navigateSpy = spyOn(navigation, 'navigate').and.callThrough();
+
+      await navigation.back().finished;
+      await timeout();
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not trigger new navigation when traversing back to a URL with query param order mismatch (with custom serializer)', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: UrlSerializer, useClass: QueryParamSortingUrlSerializer},
+          {provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: false},
+          provideRouter(
+            [
+              {path: 'foo', children: []},
+              {path: 'bar', children: []},
+            ],
+            withExperimentalPlatformNavigation(),
+          ),
+        ],
+      });
+      navigation = TestBed.inject(PlatformNavigation);
+
+      navigation.navigate('/foo?b=2&a=1');
+      await timeout();
+      navigation.navigate('/bar');
+      await timeout();
+
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+      await navigation.transition?.finished;
+
+      const navigateSpy = spyOn(navigation, 'navigate').and.callThrough();
+
+      await navigation.back().finished;
+      await timeout();
+
+      expect(navigateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not intercept navigations outside the app root', async () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          {
+            provide: MOCK_PLATFORM_LOCATION_CONFIG,
+            useValue: {
+              startUrl: 'http://localhost/my-app/',
+              appBaseHref: '/my-app/',
+            },
+          },
+          provideRouter([{path: '**', children: []}], withExperimentalPlatformNavigation()),
+        ],
+      });
+      navigation = TestBed.inject(PlatformNavigation);
+
+      let interceptCalled = false;
+      navigation.addEventListener('navigate', (e: any) => {
+        const originalIntercept = e.intercept;
+        e.intercept = function (...args: any[]) {
+          interceptCalled = true;
+          originalIntercept.apply(this, args);
+        };
+      });
+
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+      await navigation.transition?.finished;
+
+      interceptCalled = false;
+      navigation.navigate('http://localhost/other-app/foo');
+      await timeout();
+
+      expect(interceptCalled).toBeFalse();
+    });
+  });
 });
 
 describe('configuration error', () => {
   it('throws an error mentioning SpyLocation and the location mocks', () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter([], withPlatformNavigation()), provideLocationMocks()],
+      providers: [provideRouter([], withExperimentalPlatformNavigation()), provideLocationMocks()],
     });
     expect(() => TestBed.inject(Location)).toThrowError(/SpyLocation.*provideLocationMocks/);
   });
 });
 
-if (typeof window !== 'undefined' && 'navigation' in window) {
+if (typeof window !== 'undefined' && 'navigation' in window && !isFirefox()) {
   describe('real platform navigation', () => {
     const navigation = window.navigation as Navigation;
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
-          provideRouter([{path: '**', children: []}], withPlatformNavigation()),
+          provideRouter([{path: '**', children: []}], withExperimentalPlatformNavigation()),
           {provide: PlatformLocation, useClass: BrowserPlatformLocation},
           {provide: PlatformNavigation, useFactory: () => navigation},
         ],
@@ -239,5 +424,29 @@ if (typeof window !== 'undefined' && 'navigation' in window) {
         expect(router.url).toBe('/somewhere');
       }),
     );
+
+    it('should not convert reload events to SPA navigations', async () => {
+      const navigation = TestBed.inject(PlatformNavigation);
+      navigation.addEventListener(
+        'navigate',
+        (e: NavigateEvent) => {
+          e.intercept({
+            handler: () => new Promise((_, reject) => setTimeout(reject, 2)),
+          });
+        },
+        {once: true},
+      );
+      const routerEvents: Event[] = [];
+      router.events.subscribe((e) => routerEvents.push(e));
+      router.resetConfig([
+        {
+          path: '**',
+          children: [],
+        },
+      ]);
+      navigation.reload();
+      await timeout(3);
+      expect(routerEvents).toEqual([]);
+    });
   });
 }

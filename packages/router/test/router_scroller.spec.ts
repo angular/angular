@@ -21,10 +21,14 @@ import {filter, switchMap, take} from 'rxjs/operators';
 
 import {PrivateRouterEvents, Scroll} from '../src/events';
 import {ROUTER_SCROLLER, RouterScroller} from '../src/router_scroller';
-import {ɵWritable as Writable} from '@angular/core';
-import {timeout} from './helpers';
+import {
+  ApplicationRef,
+  ɵWritable as Writable,
+  ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
+} from '@angular/core';
 import {ViewportScroller} from '@angular/common';
 import {NavigationTransitions} from '../src/navigation_transition';
+import {timeout} from '@angular/private/testing';
 
 describe('RouterScroller', () => {
   it('defaults to disabled', () => {
@@ -151,6 +155,79 @@ describe('RouterScroller', () => {
     });
   });
 
+  describe('SSR hydration', () => {
+    it('should not scroll to top on initial navigation when hydrating', async () => {
+      const {events, viewportScroller} = createRouterScroller(
+        {scrollPositionRestoration: 'enabled', anchorScrolling: 'disabled'},
+        [{provide: IS_HYDRATION_DOM_REUSE_ENABLED, useValue: true}],
+      );
+
+      // Simulate the initial navigation that happens during SSR hydration.
+      // The user may have already scrolled down on the server-rendered page,
+      // so the scroller must not reset the position to [0, 0].
+      events.next(new NavigationStart(1, '/a'));
+      events.next(new NavigationEnd(1, '/a', '/a'));
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      expect(viewportScroller.scrollToPosition).not.toHaveBeenCalled();
+    });
+
+    it('should not scroll to top on initial navigation when hydrating (top mode)', async () => {
+      const {events, viewportScroller} = createRouterScroller(
+        {scrollPositionRestoration: 'top', anchorScrolling: 'disabled'},
+        [{provide: IS_HYDRATION_DOM_REUSE_ENABLED, useValue: true}],
+      );
+
+      events.next(new NavigationStart(1, '/a'));
+      events.next(new NavigationEnd(1, '/a', '/a'));
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      expect(viewportScroller.scrollToPosition).not.toHaveBeenCalled();
+    });
+
+    it('should scroll to top on subsequent navigations after hydration', async () => {
+      const {events, viewportScroller} = createRouterScroller(
+        {scrollPositionRestoration: 'top', anchorScrolling: 'disabled'},
+        [{provide: IS_HYDRATION_DOM_REUSE_ENABLED, useValue: true}],
+      );
+
+      // Skip the initial navigation — no scroll event is emitted during hydration.
+      events.next(new NavigationStart(1, '/a'));
+      events.next(new NavigationEnd(1, '/a', '/a'));
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      // A subsequent navigation should still scroll to top as normal.
+      events.next(new NavigationStart(2, '/b'));
+      events.next(new NavigationEnd(2, '/b', '/b'));
+      await nextScrollEvent(events);
+
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+    });
+
+    it('should not scroll on immediate follow-up navigations triggered during hydration', async () => {
+      const {events, viewportScroller} = createRouterScroller(
+        {scrollPositionRestoration: 'top', anchorScrolling: 'disabled'},
+        [{provide: IS_HYDRATION_DOM_REUSE_ENABLED, useValue: true}],
+      );
+
+      // Fire both navigations during hydration — no scroll events are emitted for either.
+      events.next(new NavigationStart(1, '/a'));
+      events.next(new NavigationEnd(1, '/a', '/a'));
+      events.next(new NavigationStart(2, '/a'));
+      events.next(new NavigationEnd(2, '/a?filter=active', '/a?filter=active'));
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      expect(viewportScroller.scrollToPosition).not.toHaveBeenCalled();
+
+      // A navigation after hydration settles should scroll normally.
+      events.next(new NavigationStart(3, '/b'));
+      events.next(new NavigationEnd(3, '/b', '/b'));
+      await nextScrollEvent(events);
+
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+    });
+  });
+
   describe('extending a scroll service', () => {
     it('work', async () => {
       const {events, viewportScroller} = createRouterScroller({
@@ -262,13 +339,20 @@ describe('RouterScroller', () => {
   });
 });
 
-function createRouterScroller({
-  scrollPositionRestoration,
-  anchorScrolling,
-}: {
-  scrollPositionRestoration: 'disabled' | 'enabled' | 'top';
-  anchorScrolling: 'disabled' | 'enabled';
-}) {
+function createRouterScroller(
+  {
+    scrollPositionRestoration,
+    anchorScrolling,
+  }: {
+    scrollPositionRestoration: 'disabled' | 'enabled' | 'top';
+    anchorScrolling: 'disabled' | 'enabled';
+  },
+  extraProviders: any[] = [],
+) {
+  if (extraProviders.length > 0) {
+    TestBed.configureTestingModule({providers: extraProviders});
+  }
+
   const events = new Subject<Event | PrivateRouterEvents>();
   (TestBed.inject(NavigationTransitions) as Writable<NavigationTransitions>).events = events;
 

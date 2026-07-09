@@ -5,7 +5,7 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
   },
   "exports": {
     "./schematics/*": {
@@ -17,6 +17,10 @@
   },
   "dependencies": {
     "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@mcp-b/webmcp-polyfill": "^4.0.0",
+    "@mcp-b/webmcp-types": "^4.0.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",

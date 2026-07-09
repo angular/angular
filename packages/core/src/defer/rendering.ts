@@ -7,7 +7,6 @@
  */
 
 import {CachedInjectorService} from '../cached_injector_service';
-import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {EnvironmentInjector, InjectionToken, Injector, Provider} from '../di';
 import {
   DehydratedContainerView,
@@ -27,6 +26,7 @@ import {assertDefined} from '../util/assert';
 
 import {
   DEFER_BLOCK_STATE,
+  DeferBlockBehavior,
   DeferBlockConfig,
   DeferBlockDependencyInterceptor,
   DeferBlockInternalState,
@@ -41,6 +41,7 @@ import {
   SSR_BLOCK_STATE,
   STATE_IS_FROZEN_UNTIL,
   TDeferBlockDetails,
+  TriggerType,
 } from './interfaces';
 import {scheduleTimerTrigger} from './timer_scheduler';
 import {
@@ -485,4 +486,22 @@ export function ɵɵdeferEnableTimerScheduling(
   if (applyDeferBlockStateWithSchedulingImpl === null) {
     applyDeferBlockStateWithSchedulingImpl = applyDeferBlockStateWithScheduling;
   }
+}
+
+/**
+ * Determines whether we should proceed with triggering a given defer block.
+ */
+export function shouldTriggerDeferBlock(triggerType: TriggerType, lView: LView): boolean {
+  // prevents triggering regular triggers when on the server.
+  if (triggerType === TriggerType.Regular && typeof ngServerMode !== 'undefined' && ngServerMode) {
+    return false;
+  }
+
+  // prevents triggering in the case of a test run with manual defer block configuration.
+  const injector = lView[INJECTOR];
+  const config = injector.get(DEFER_BLOCK_CONFIG, null, {optional: true});
+  if (config?.behavior === DeferBlockBehavior.Manual) {
+    return false;
+  }
+  return true;
 }

@@ -165,7 +165,11 @@ export class MockServerState {
     }
     const url = req.url.split('?')[0];
     if (this.resources.has(url)) {
-      return this.resources.get(url)!.clone();
+      const response = this.resources.get(url)!.clone();
+      if (response.redirected && req.redirect === 'error') {
+        throw new Error('Redirect disallowed by request policy.');
+      }
+      return response;
     }
     if (this.errors.has(url)) {
       throw new Error('Intentional failure!');

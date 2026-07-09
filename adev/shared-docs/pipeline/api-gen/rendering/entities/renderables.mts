@@ -100,6 +100,7 @@ export type FunctionEntryRenderable = FunctionEntry &
 export type FunctionSignatureMetadataRenderable = FunctionSignatureMetadata &
   DocEntryRenderable & {
     params: ParameterEntryRenderable[];
+    htmlReturnDescription?: string;
   };
 
 /** Sub-entry for a single class or enum member augmented with transformed content for rendering. */
@@ -137,6 +138,7 @@ export interface LinkEntryRenderable {
   label: string;
   url: string;
   title?: string;
+  target?: string;
 }
 
 export type CliOptionRenderable = CliOption & {

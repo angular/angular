@@ -21,7 +21,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({strictTemplates: true, _checkTwoWayBoundEvents: true});
+      env.tsconfig({strictTemplates: true});
     });
 
     it('should handle a basic, primitive valued input', () => {
@@ -255,9 +255,8 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(2);
+      expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
-      expect(diags[1].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
     });
 
     describe('type checking', () => {
@@ -319,6 +318,66 @@ runInEachFileSystem(() => {
         expect(diagnostics[0].messageText).toBe(
           `Type 'boolean' is not assignable to type 'string | number'.`,
         );
+      });
+
+      it('should allow text attributes for explicit signal inputs with booleanAttribute transform', () => {
+        env.write(
+          'test.ts',
+          `
+          import {booleanAttribute, Component, Directive, input} from '@angular/core';
+
+          @Directive({
+            selector: '[directiveName]',
+          })
+          export class TestDir {
+            dismissible = input<boolean>(true, {transform: booleanAttribute});
+          }
+
+          @Component({
+            template: \`
+              <div directiveName [dismissible]="true"></div>
+              <div directiveName dismissible="true"></div>
+              <div directiveName dismissible></div>
+            \`,
+            imports: [TestDir],
+          })
+          export class TestComp {
+          }
+        `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics).toEqual([]);
+      });
+
+      it('should allow text attributes for explicit signal inputs with numberAttribute transform', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, input, numberAttribute} from '@angular/core';
+
+          @Directive({
+            selector: '[directiveName]',
+          })
+          export class TestDir {
+            count = input<number>(0, {transform: numberAttribute});
+          }
+
+          @Component({
+            template: \`
+              <div directiveName [count]="1"></div>
+              <div directiveName count="1"></div>
+              <div directiveName count=""></div>
+            \`,
+            imports: [TestDir],
+          })
+          export class TestComp {
+          }
+        `,
+        );
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics).toEqual([]);
       });
 
       it('should report unset required inputs', () => {

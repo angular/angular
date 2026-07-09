@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {BoundTarget, DirectiveMeta, ParseSourceFile} from '@angular/compiler';
+import {DirectiveMeta, ParseSourceFile} from '@angular/compiler';
+import {DeclarationNode} from '../../reflection';
 
-import {Reference} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
+import {AbstractBoundTemplate} from './api.js';
 
-export interface ComponentMeta extends DirectiveMeta {
-  ref: Reference<ClassDeclaration>;
+/**
+ * Metadata about a component, extending DirectiveMeta to include a reference to the node.
+ */
+export interface ComponentMeta<T = DeclarationNode> extends DirectiveMeta {
+  ref: {key: string; node: T};
   /**
    * Unparsed selector of the directive, or null if the directive does not have a selector.
    */
@@ -22,9 +25,9 @@ export interface ComponentMeta extends DirectiveMeta {
 /**
  * An intermediate representation of a component.
  */
-export interface ComponentInfo {
+export interface ComponentInfo<T = DeclarationNode> {
   /** Component TypeScript class declaration */
-  declaration: ClassDeclaration;
+  declaration: T;
 
   /** Component template selector if it exists, otherwise null. */
   selector: string | null;
@@ -33,7 +36,7 @@ export interface ComponentInfo {
    * BoundTarget containing the parsed template. Can also be used to query for directives used in
    * the template.
    */
-  boundTemplate: BoundTarget<ComponentMeta>;
+  boundTemplate: AbstractBoundTemplate<T>;
 
   /** Metadata about the template */
   templateMeta: {
@@ -51,13 +54,13 @@ export interface ComponentInfo {
  * An `IndexingContext` collects component and template analysis information from
  * `DecoratorHandler`s and exposes them to be indexed.
  */
-export class IndexingContext {
-  readonly components = new Set<ComponentInfo>();
+export class IndexingContext<T = DeclarationNode> {
+  readonly components = new Set<ComponentInfo<T>>();
 
   /**
    * Adds a component to the context.
    */
-  addComponent(info: ComponentInfo) {
+  addComponent(info: ComponentInfo<T>) {
     this.components.add(info);
   }
 }

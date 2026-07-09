@@ -7,7 +7,11 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
+import {By} from '@angular/platform-browser';
+import {isNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 import {
+  ChangeDetectionStrategy,
   Component,
   ComponentRef,
   createComponent,
@@ -24,9 +28,6 @@ import {
   ViewEncapsulation,
 } from '../../src/core';
 import {ComponentFixture, TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {expect} from '@angular/private/testing/matchers';
-import {isNode} from '@angular/private/testing';
 
 describe('projection', () => {
   beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
@@ -274,6 +275,7 @@ describe('projection', () => {
       selector: 'child',
       template: `<ng-content></ng-content>(<ng-template [ngIf]="showing"><ng-content select="div"></ng-content></ng-template>)`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() showing!: boolean;
@@ -288,6 +290,7 @@ describe('projection', () => {
         <span>B</span>
       </child>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       showing = false;

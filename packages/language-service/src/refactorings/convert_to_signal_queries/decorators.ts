@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
-import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import type ts from 'typescript';
+import {ReflectionHost, getAngularDecorators} from '@angular/compiler-cli';
+
 import {isDirectiveOrComponent} from '../../utils/decorators';
 
 export function isDecoratorQueryClassField(

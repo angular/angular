@@ -73,6 +73,7 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | 
     }
   }
 
+  view.create.prepend(generateVariablesInScopeForView(view, scope, false));
   view.update.prepend(generateVariablesInScopeForView(view, scope, false));
 }
 
@@ -229,12 +230,12 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
  * This is a recursive process, as views inherit variables available from their parent view, which
  * itself may have inherited variables, etc.
  */
-function generateVariablesInScopeForView(
+function generateVariablesInScopeForView<OpT extends ir.Op<OpT>>(
   view: ViewCompilationUnit,
   scope: Scope,
   isCallback: boolean,
-): ir.VariableOp<ir.UpdateOp>[] {
-  const newOps: ir.VariableOp<ir.UpdateOp>[] = [];
+): ir.VariableOp<OpT>[] {
+  const newOps: ir.VariableOp<OpT>[] = [];
 
   if (scope.view !== view.xref) {
     // Before generating variables for a parent view, we need to switch to the context of the parent
@@ -255,7 +256,14 @@ function generateVariablesInScopeForView(
   for (const [name, value] of scopeView.contextVariables) {
     const context = new ir.ContextExpr(scope.view);
     // We either read the context, or, if the variable is CTX_REF, use the context directly.
-    const variable = value === ir.CTX_REF ? context : new o.ReadPropExpr(context, value);
+    let variable: o.Expression;
+    if (value === ir.CTX_REF) {
+      variable = context;
+    } else if (typeof value === 'number') {
+      variable = new o.ReadKeyExpr(context, o.literal(value));
+    } else {
+      variable = new o.ReadPropExpr(context, value);
+    }
     // Add the variable declaration.
     newOps.push(
       ir.createVariableOp(
@@ -293,7 +301,7 @@ function generateVariablesInScopeForView(
   if (scope.view !== view.xref || isCallback) {
     for (const decl of scope.letDeclarations) {
       newOps.push(
-        ir.createVariableOp<ir.UpdateOp>(
+        ir.createVariableOp<OpT>(
           view.job.allocateXrefId(),
           decl.variable,
           new ir.ContextLetReferenceExpr(decl.targetId, decl.targetSlot),
@@ -305,7 +313,7 @@ function generateVariablesInScopeForView(
 
   if (scope.parent !== null) {
     // Recursively add variables from the parent scope.
-    newOps.push(...generateVariablesInScopeForView(view, scope.parent, false));
+    newOps.push(...generateVariablesInScopeForView<OpT>(view, scope.parent, false));
   }
   return newOps;
 }

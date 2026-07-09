@@ -18,7 +18,7 @@
 
 ```ts
 // Add the computed import
-import {Injectable, signal, computed} from '@angular/core';
+import {Service, signal, computed} from '@angular/core';
 
 // Then add these signals to the class:
 

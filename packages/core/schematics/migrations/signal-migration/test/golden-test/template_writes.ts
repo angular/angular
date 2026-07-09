@@ -5,16 +5,19 @@ import {Component, Input} from '@angular/core';
 @Component({
   template: `
     <input [(ngModel)]="inputA" />
-    <div (click)="inputB = false">
-    </div>
+    <input [(ngModel)]="inputB.prop.prop" />
+    <input (ngModelChange)="inputC = $event" />
+    <input (ngModelChange)="inputD.prop = $event + inputF" />
   `,
   host: {
-    '(click)': 'inputC = true',
+    '(click)': 'inputE = true',
   },
 })
 class TwoWayBinding {
   @Input() inputA = '';
-  @Input() inputB = true;
-  @Input() inputC = false;
-  @Input() inputD = false;
+  @Input() inputB = {prop: {prop: ''}};
+  @Input() inputC = '';
+  @Input() inputD = {prop: ''};
+  @Input() inputE = false;
+  @Input() inputF = '';
 }

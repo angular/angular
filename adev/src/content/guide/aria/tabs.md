@@ -1,78 +1,14 @@
-<docs-decorative-header title="Вкладки">
+<docs-decorative-header title="Tabs">
 </docs-decorative-header>
 
 <docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" title="ARIA-паттерн вкладок"/>
-  <docs-pill href="/api/aria/tabs/Tabs" title="Справочник API вкладок"/>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" title="Tabs ARIA pattern"/>
+  <docs-pill href="/api/aria/tabs/Tabs" title="Tabs API Reference"/>
 </docs-pill-row>
 
-## Обзор
+## Overview
 
-Вкладки отображают многослойные разделы контента, где одновременно видна только одна панель. Пользователи переключаются
-между панелями, нажимая на кнопки вкладок или используя клавиши со стрелками для навигации по списку вкладок.
-
-<docs-tab-group>
-  <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/app/app.ts">
-      <docs-code header="app.ts" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/app/app.ts"/>
-      <docs-code header="app.html" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/app/app.html"/>
-      <docs-code header="app.css" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/app/app.css"/>
-    </docs-code-multifile>
-  </docs-tab>
-
-  <docs-tab label="Material">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/material/app/app.ts">
-      <docs-code header="app.ts" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/material/app/app.ts"/>
-      <docs-code header="app.html" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/material/app/app.html"/>
-      <docs-code header="app.css" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/material/app/app.css"/>
-    </docs-code-multifile>
-  </docs-tab>
-
-  <docs-tab label="Retro">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/retro/app/app.ts">
-      <docs-code header="app.ts" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/retro/app/app.ts"/>
-      <docs-code header="app.html" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/retro/app/app.html"/>
-      <docs-code header="app.css" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/retro/app/app.css"/>
-    </docs-code-multifile>
-  </docs-tab>
-</docs-tab-group>
-
-## Использование
-
-Вкладки хорошо подходят для организации связанного контента в отдельные разделы, где пользователи переключаются между
-различными видами или категориями.
-
-**Используйте вкладки при:**
-
-- Организации связанного контента в отдельные разделы
-- Создании панелей настроек с несколькими категориями
-- Создании документации с несколькими темами
-- Реализации дашбордов с различными видами
-- Отображении контента, где пользователям нужно переключать контекст
-
-**Избегайте вкладок при:**
-
-- Создании последовательных форм или мастеров (используйте паттерн stepper)
-- Навигации между страницами (используйте навигацию роутера)
-- Отображении одиночных разделов контента (вкладки не нужны)
-- Использовании более 7-8 вкладок (рассмотрите другой макет)
-
-## Возможности
-
-- **Режимы выбора** - Вкладки активируются автоматически при фокусе или требуют ручной активации
-- **Клавиатурная навигация** - Клавиши со стрелками, Home и End для эффективной навигации по вкладкам
-- **Ориентация** - Горизонтальное или вертикальное расположение списка вкладок
-- **Ленивый контент** - Панели вкладок рендерятся только при первой активации
-- **Отключенные вкладки** - Отключение отдельных вкладок с управлением фокусом
-- **Режимы фокуса** - Стратегии фокуса Roving tabindex или activedescendant
-- **Поддержка RTL** - Навигация для языков с письмом справа налево
-
-## Примеры
-
-### Выбор следует за фокусом
-
-Когда выбор следует за фокусом, вкладки активируются сразу же при навигации клавишами со стрелками. Это обеспечивает
-мгновенную обратную связь и хорошо подходит для легковесного контента.
+Tabs display layered content sections where only one panel is visible at a time. Users switch between panels by clicking tab buttons or using arrow keys to navigate the tab list.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -100,12 +36,72 @@
   </docs-tab>
 </docs-tab-group>
 
-Установите `[selectionMode]="'follow'"` в списке вкладок, чтобы включить это поведение.
+## Usage
 
-### Ручная активация
+Tabs work well for organizing related content into distinct sections where users switch between different views or categories.
 
-При ручной активации клавиши со стрелками перемещают фокус между вкладками без изменения выбранной вкладки. Пользователи
-нажимают Space или Enter для активации сфокусированной вкладки.
+**Use tabs when:**
+
+- Organizing related content into distinct sections
+- Creating settings panels with multiple categories
+- Building documentation with multiple topics
+- Implementing dashboards with different views
+- Showing content where users need to switch contexts
+
+**Avoid tabs when:**
+
+- Building sequential forms or wizards (use a stepper pattern)
+- Navigating between pages (use router navigation)
+- Showing single content sections (no need for tabs)
+- Having more than 7-8 tabs (consider a different layout)
+
+## Features
+
+- **Selection modes** - Tabs activate automatically on focus or require manual activation
+- **Keyboard navigation** - Arrow keys, Home, and End for efficient tab navigation
+- **Orientation** - Horizontal or vertical tab list layouts
+- **Lazy content** - Tab panels render only when first activated
+- **Disabled tabs** - Disable individual tabs with focus management
+- **Focus modes** - Roving tabindex or activedescendant focus strategies
+- **RTL support** - Right-to-left language navigation
+
+## Examples
+
+### Selection follows focus
+
+When selection follows focus, tabs activate immediately as you navigate with arrow keys. This provides instant feedback and works well for lightweight content.
+
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/material/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/material/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/material/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/material/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/retro/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/retro/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/retro/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/tabs/src/selection-follows-focus/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
+
+Set `[selectionMode]="'follow'"` on the tab list to enable this behavior.
+
+### Manual activation
+
+With manual activation, arrow keys move focus between tabs without changing the selected tab. Users press Space or Enter to activate the focused tab.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -133,11 +129,11 @@
   </docs-tab>
 </docs-tab-group>
 
-Используйте `[selectionMode]="'explicit'"` для панелей с тяжелым контентом, чтобы избежать ненужного рендеринга.
+Use `[selectionMode]="'explicit'"` for heavy content panels to avoid unnecessary rendering.
 
-### Вертикальные вкладки
+### Vertical tabs
 
-Располагайте вкладки вертикально для таких интерфейсов, как панели настроек или боковые панели навигации.
+Arrange tabs vertically for interfaces like settings panels or navigation sidebars.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -165,12 +161,11 @@
   </docs-tab>
 </docs-tab-group>
 
-Установите `[orientation]="'vertical'"` в списке вкладок. Навигация меняется на клавиши со стрелками Вверх/Вниз.
+Set `[orientation]="'vertical'"` on the tab list. Navigation changes to Up/Down arrow keys.
 
-### Ленивый рендеринг контента
+### Lazy content rendering
 
-Используйте директиву `ngTabContent` на `ng-template`, чтобы отложить рендеринг панелей вкладок до момента их первого
-показа.
+Use the `ngTabContent` directive on an `ng-template` to defer rendering tab panels until they're first shown.
 
 ```angular-html
 <div ngTabs>
@@ -195,13 +190,11 @@
 </div>
 ```
 
-По умолчанию контент остается в DOM после скрытия панели. Установите `[preserveContent]="false"`, чтобы удалять контент
-при деактивации панели.
+By default, content remains in the DOM after the panel is hidden. Set `[preserveContent]="false"` to remove content when the panel is deactivated.
 
-### Отключенные вкладки
+### Disabled tabs
 
-Отключайте определенные вкладки, чтобы предотвратить взаимодействие с пользователем. Управляйте тем, могут ли
-отключенные вкладки получать фокус клавиатуры.
+Disable specific tabs to prevent user interaction. Control whether disabled tabs can receive keyboard focus.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -229,78 +222,74 @@
   </docs-tab>
 </docs-tab-group>
 
-Когда `[softDisabled]="true"` в списке вкладок, отключенные вкладки могут получать фокус, но не могут быть активированы.
-Когда `[softDisabled]="false"`, отключенные вкладки пропускаются при навигации с клавиатуры.
+When `[softDisabled]="true"` on the tab list, disabled tabs can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled tabs are skipped during keyboard navigation.
 
-## API
+## Testing
 
-### Tabs
+Angular Aria provides component harnesses for testing tabs components.
+Here is an example of how to use the harnesses in a component test:
 
-Директива-контейнер, координирующая списки вкладок и панели.
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ComponentHarness, HarnessLoader} from '@angular/cdk/testing';
+import {TabsHarness} from '@angular/aria/tabs/testing';
+import {MyTabsComponent} from './my-tabs'; // Your component
 
-У этой директивы нет входных или выходных свойств. Она служит корневым контейнером для директив `ngTabList`, `ngTab` и
-`ngTabPanel`.
+// A simple harness to help query content inside the tab panel
+class TestContentHarness extends ComponentHarness {
+  static hostSelector = '.test-content';
+  async getText(): Promise<string> {
+    return (await this.host()).text();
+  }
+}
 
-### TabList
+describe('MyTabsComponent', () => {
+  let fixture: ComponentFixture<MyTabsComponent>;
+  let loader: HarnessLoader;
 
-Контейнер для кнопок вкладок, управляющий выбором и навигацией с клавиатуры.
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyTabsComponent],
+    });
 
-#### Inputs
+    fixture = TestBed.createComponent(MyTabsComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
-| Свойство        | Тип                          | По умолчанию   | Описание                                                                |
-| --------------- | ---------------------------- | -------------- | ----------------------------------------------------------------------- |
-| `orientation`   | `'horizontal' \| 'vertical'` | `'horizontal'` | Направление макета списка вкладок                                       |
-| `wrap`          | `boolean`                    | `false`        | Зацикливается ли навигация с клавиатуры с последней на первую вкладку   |
-| `softDisabled`  | `boolean`                    | `true`         | При `true` отключенные вкладки фокусируемые, но не активируемые         |
-| `selectionMode` | `'follow' \| 'explicit'`     | `'follow'`     | Активируются ли вкладки при фокусе или требуют явной активации          |
-| `selectedTab`   | `any`                        | —              | Значение текущей выбранной вкладки (поддерживает двустороннюю привязку) |
+  it('should switch tabs and scope panel queries', async () => {
+    const tabs = await loader.getHarness(TabsHarness);
 
-### Tab
+    // Get all tabs
+    const tabItems = await tabs.getTabs();
+    expect(tabItems.length).toBe(3);
 
-Отдельная кнопка вкладки.
+    // Verify initial selection
+    expect(await tabItems[0].isSelected()).toBe(true);
+    expect(await tabItems[1].isSelected()).toBe(false);
 
-#### Inputs
+    // Query content inside the active tab panel
+    // TabHarness automatically scopes queries to its associated panel
+    const content = await tabItems[0].getHarness(TestContentHarness);
+    expect(await content.getText()).toBe('Content 1');
 
-| Свойство   | Тип       | По умолчанию | Описание                                              |
-| ---------- | --------- | ------------ | ----------------------------------------------------- |
-| `value`    | `any`     | —            | **Обязательно.** Уникальное значение для этой вкладки |
-| `disabled` | `boolean` | `false`      | Отключает эту вкладку                                 |
+    // Switch to the second tab
+    await tabItems[1].select();
 
-#### Signals
-
-| Свойство   | Тип               | Описание                           |
-| ---------- | ----------------- | ---------------------------------- |
-| `selected` | `Signal<boolean>` | Выбрана ли вкладка в данный момент |
-| `active`   | `Signal<boolean>` | Находится ли вкладка в фокусе      |
-
-### TabPanel
-
-Панель контента, связанная с вкладкой.
-
-#### Inputs
-
-| Свойство          | Тип       | По умолчанию | Описание                                                      |
-| ----------------- | --------- | ------------ | ------------------------------------------------------------- |
-| `value`           | `any`     | —            | **Обязательно.** Должно совпадать с `value` связанной вкладки |
-| `preserveContent` | `boolean` | `true`       | Сохранять ли контент панели в DOM после деактивации           |
-
-#### Signals
-
-| Свойство  | Тип               | Описание                         |
-| --------- | ----------------- | -------------------------------- |
-| `visible` | `Signal<boolean>` | Видима ли панель в данный момент |
-
-### TabContent
-
-Структурная директива для ленивого рендеринга контента панели вкладки.
-
-У этой директивы нет входных свойств, выходных свойств или методов. Примените её к элементу `ng-template` внутри панели
-вкладки:
-
-```angular-html
-<div ngTabPanel value="tab1">
-  <ng-template ngTabContent>
-    <!-- Content here is lazily rendered -->
-  </ng-template>
-</div>
+    // Verify selection updated
+    expect(await tabItems[0].isSelected()).toBe(false);
+    expect(await tabItems[1].isSelected()).toBe(true);
+  });
+});
 ```
+
+## API reference
+
+For detailed API documentation, inspect the following API references:
+
+- [`Tabs`](/api/aria/tabs/Tabs)
+- [`TabList`](/api/aria/tabs/TabList)
+- [`Tab`](/api/aria/tabs/Tab)
+- [`TabPanel`](/api/aria/tabs/TabPanel)
+- [`TabContent`](/api/aria/tabs/TabContent)

@@ -1,41 +1,33 @@
-# Добавление пакета `@angular/localize`
+# Add the localize package
 
-Чтобы воспользоваться функциями локализации Angular, используйте [Angular CLI][CliMain] для добавления пакета
-`@angular/localize` в ваш проект.
+To take advantage of the localization features of Angular, use the [Angular CLI][CliMain] to add the `@angular/localize` package to your project.
 
-Для добавления пакета `@angular/localize` используйте следующую команду, которая обновит `package.json` и файлы
-конфигурации TypeScript в вашем проекте.
+To add the `@angular/localize` package, use the following command to update the `package.json` and TypeScript configuration files in your project.
 
-<docs-code path="adev/src/content/examples/i18n/doc-files/commands.sh" region="add-localize"/>
+<docs-code language="shell" path="adev/src/content/examples/i18n/doc-files/commands.sh" region="add-localize"/>
 
-Эта команда добавляет `types: ["@angular/localize"]` в файлы конфигурации TypeScript.
-Она также добавляет строку `/// <reference types="@angular/localize" />` в начало файла `main.ts`, которая является
-ссылкой на определение типов.
+It adds `types: ["@angular/localize"]` in the TypeScript configuration files.
+It also adds line `/// <reference types="@angular/localize" />` at the top of the `main.ts` file which is the reference to the type definition.
 
-HELPFUL: Для получения дополнительной информации о файлах `package.json` и `tsconfig.json`
-см. [npm-зависимости рабочего пространства][GuideNpmPackages] и [Конфигурация TypeScript][GuideTsConfig]. Чтобы узнать о
-директивах с тройным слэшем (Triple-slash Directives),
-посетите [Справочник по TypeScript](https://www.typescriptlang.org/docs/handbook/triple-slash-directives.html#-reference-types-).
+HELPFUL: For more information about `package.json` and `tsconfig.json` files, see [Workspace npm dependencies][GuideNpmPackages] and [TypeScript Configuration][GuideTsConfig]. To learn about Triple-slash Directives visit [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/triple-slash-directives.html#-reference-types-).
 
-Если пакет `@angular/localize` не установлен, и вы попытаетесь собрать локализованную версию вашего проекта (например,
-используя атрибуты `i18n` в шаблонах), [Angular CLI][CliMain] выдаст ошибку, содержащую инструкции по включению i18n для
-вашего проекта.
+If `@angular/localize` is not installed and you try to build a localized version of your project (for example, while using the `i18n` attributes in templates), the [Angular CLI][CliMain] will generate an error, which would contain the steps that you can take to enable i18n for your project.
 
-## Параметры
+## Options
 
-| ПАРАМЕТР           | ОПИСАНИЕ                                                                                                                                                                                                                       | ТИП ЗНАЧЕНИЯ | ЗНАЧЕНИЕ ПО УМОЛЧАНИЮ |
-| :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------- | :-------------------- |
-| `--project`        | Имя проекта.                                                                                                                                                                                                                   | `string`     |                       |
-| `--use-at-runtime` | Если установлено, то `$localize` можно использовать во время выполнения. Кроме того, `@angular/localize` будет добавлен в раздел `dependencies` файла `package.json`, а не в `devDependencies`, как это делается по умолчанию. | `boolean`    | `false`               |
+| OPTION             | DESCRIPTION                                                                                                                                                                                   | VALUE TYPE | DEFAULT VALUE |
+| :----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- | :------------ |
+| `--project`        | The name of the project.                                                                                                                                                                      | `string`   |
+| `--use-at-runtime` | If set, then `$localize` can be used at runtime. Also `@angular/localize` gets included in the `dependencies` section of `package.json`, rather than `devDependencies`, which is the default. | `boolean`  | `false`       |
 
-Информацию о других доступных параметрах см. в описании команды `ng add` в [Angular CLI][CliMain].
+For more available options, see `ng add` in [Angular CLI][CliMain].
 
-## Что дальше
+## What's next
 
 <docs-pill-row>
-  <docs-pill href="guide/i18n/locale-id" title="Обращение к локалям по ID"/>
+  <docs-pill href="guide/i18n/locale-id" title="Refer to locales by ID"/>
 </docs-pill-row>
 
-[CliMain]: cli 'Обзор CLI и справочник команд | Angular'
-[GuideNpmPackages]: reference/configs/npm-packages 'npm-зависимости рабочего пространства | Angular'
-[GuideTsConfig]: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html 'Конфигурация TypeScript'
+[CliMain]: cli 'CLI Overview and Command Reference | Angular'
+[GuideNpmPackages]: reference/configs/npm-packages 'Workspace npm dependencies | Angular'
+[GuideTsConfig]: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html 'TypeScript Configuration'

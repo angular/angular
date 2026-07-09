@@ -1,10 +1,9 @@
 <docs-decorative-header title="Multiselect">
 </docs-decorative-header>
 
-## Обзор
+## Overview
 
-Паттерн, объединяющий Combobox (только для чтения) и Listbox с поддержкой множественного выбора для создания выпадающих
-списков с навигацией с клавиатуры и поддержкой скринридеров.
+The multiselect pattern combines a read-only combobox trigger with a multi-select listbox popup to create highly accessible multiple-selection dropdowns with keyboard navigation and screen reader support.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -32,46 +31,41 @@
   </docs-tab>
 </docs-tab-group>
 
-## Использование
+## Usage
 
-Паттерн Multiselect лучше всего подходит, когда пользователям нужно выбрать несколько связанных элементов из знакомого
-набора опций.
+The multiselect pattern works best when users need to choose multiple related items from a familiar set of options.
 
-Рассмотрите использование этого паттерна, когда:
+Consider using this pattern when:
 
-- **Пользователям нужен множественный выбор** — теги, категории, фильтры или метки, где применимы несколько вариантов.
-- **Список опций фиксирован** (менее 20 элементов) — пользователи могут просмотреть опции без поиска.
-- **Фильтрация контента** — несколько критериев могут быть активны одновременно.
-- **Назначение атрибутов** — метки, права доступа или функции, где имеет смысл несколько значений.
-- **Связанные варианты** — опции, которые логически работают вместе (например, выбор нескольких членов команды).
+- **Users need multiple selections** - Tags, categories, filters, or labels where multiple choices apply
+- **The option list is fixed** (fewer than 20 items) - Users can scan options without search
+- **Filtering content** - Multiple criteria can be active simultaneously
+- **Assigning attributes** - Labels, permissions, or features where multiple values make sense
+- **Related choices** - Options that logically work together (such as selecting multiple team members)
 
-Избегайте этого паттерна, когда:
+Avoid this pattern when:
 
-- **Нужен только одиночный выбор** — используйте [паттерн Select](guide/aria/select) для более простых выпадающих
-  списков с одним вариантом.
-- **В списке более 20 элементов и нужен поиск** — используйте [паттерн Autocomplete](guide/aria/autocomplete) с
-  возможностью множественного выбора.
-- **Будет выбрано большинство или все опции** — паттерн чек-листа (списка с галочками) обеспечивает лучшую видимость.
-- **Варианты являются независимыми бинарными опциями** — отдельные чекбоксы (checkboxes) передают выбор более четко.
+- **Only single selection is needed** - Use the [Select pattern](guide/aria/select) for simpler single-choice dropdowns
+- **The list has more than 20 items with search needed** - Use the [Autocomplete pattern](guide/aria/autocomplete) with multiselect capability
+- **Most or all options will be selected** - A checklist pattern provides better visibility
+- **Choices are independent binary options** - Individual checkboxes communicate the choices more clearly
 
-## Возможности
+## Features
 
-Паттерн Multiselect объединяет директивы [Combobox](guide/aria/combobox) и [Listbox](guide/aria/listbox) для
-предоставления полностью доступного выпадающего списка с:
+The multiselect pattern combines [Combobox](guide/aria/combobox) and [Listbox](guide/aria/listbox) directives to provide a fully accessible dropdown with:
 
-- **Навигацией с клавиатуры** — перемещение по опциям стрелками, переключение пробелом, закрытие клавишей Escape.
-- **Поддержкой скринридеров** — встроенные ARIA-атрибуты, включая `aria-multiselectable`.
-- **Отображением количества выбранных** — показывает компактный вид "Элемент + еще 2" для множественного выбора.
-- **Реактивностью на основе Сигналов** — управление реактивным состоянием с использованием сигналов Angular.
-- **Умным позиционированием** — CDK Overlay обрабатывает границы вьюпорта и прокрутку.
-- **Сохранением выбора** — выбранные опции остаются видимыми с галочками после выбора.
+- **Keyboard Navigation** - Navigate options with arrow keys, toggle with Space, close with Escape
+- **Screen Reader Support** - Built-in ARIA attributes including aria-multiselectable
+- **Selection Count Display** - Shows compact "Item + 2 more" pattern for multiple selections
+- **Signal-Based Reactivity** - Reactive state management using Angular signals
+- **Smart Positioning** - CDK Overlay handles viewport edges and scrolling
+- **Persistent Selection** - Selected options remain visible with checkmarks after selection
 
-## Примеры
+## Examples
 
-### Базовый multiselect
+### Basic multiselect
 
-Пользователям нужно выбрать несколько элементов из списка опций. Combobox (только для чтения) в паре с Listbox (с
-множественным выбором) обеспечивает привычную функциональность мультиселекта с полной поддержкой доступности.
+Users need to select multiple items from a list of options. A readonly combobox paired with a multi-enabled listbox provides familiar multiselect functionality with full accessibility support.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -99,15 +93,11 @@
   </docs-tab>
 </docs-tab-group>
 
-Атрибут `multi` в `ngListbox` включает множественный выбор. Нажмите Пробел для переключения опций; всплывающее окно
-остается открытым для дополнительных выборов. Дисплей показывает первый выбранный элемент плюс количество оставшихся
-выбранных.
+The `multi` attribute on `ngListbox` enables multiple selection. Press Space to toggle options, and the popup remains open for additional selections. The display shows the first selected item plus a count of remaining selections.
 
-### Multiselect с пользовательским отображением
+### Multiselect with custom display
 
-Опциям часто требуются визуальные индикаторы, такие как иконки или цвета, чтобы помочь пользователям идентифицировать
-выбор. Пользовательские шаблоны внутри опций позволяют использовать расширенное форматирование, в то время как
-отображаемое значение показывает краткую сводку.
+Options often need visual indicators like icons or colors to help users identify choices. Custom templates within options allow rich formatting while the display value shows a compact summary.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -135,14 +125,11 @@
   </docs-tab>
 </docs-tab-group>
 
-Каждая опция отображает иконку рядом с меткой. Отображаемое значение обновляется, показывая иконку и текст первого
-выбора, за которыми следует количество дополнительных выбранных элементов. Выбранные опции показывают галочку для четкой
-визуальной обратной связи.
+Each option displays an icon alongside its label. The display value updates to show the first selection's icon and text, followed by a count of additional selections. Selected options show a checkmark for clear visual feedback.
 
-### Управляемый выбор
+### Controlled selection
 
-Формам иногда необходимо ограничить количество выбранных элементов или проверить выбор пользователя. Программное
-управление выбором позволяет реализовать эти ограничения, сохраняя при этом доступность.
+Forms sometimes need to limit the number of selections or validate user choices. Programmatic control over selection enables these constraints while maintaining accessibility.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -170,53 +157,70 @@
   </docs-tab>
 </docs-tab-group>
 
-Этот пример ограничивает выбор тремя элементами. Когда лимит достигнут, невыбранные опции становятся отключенными (
-disabled), предотвращая дальнейший выбор. Сообщение информирует пользователей об ограничении.
+This example limits selections to two items. When the limit is reached, unselected options are disabled to prevent further selections, and the combobox display updates to reflect the choices.
 
-## API
+## Testing
 
-Паттерн Multiselect использует следующие директивы из библиотеки Angular Aria. Полную документацию по API смотрите в
-связанных руководствах.
+The multiselect pattern can be tested using a combination of `ComboboxHarness` and `ListboxHarness` from `@angular/aria/combobox/testing` and `@angular/aria/listbox/testing`.
+Here is an example of how to use the harnesses to test a multiselect component:
 
-### Директивы Combobox
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {ComboboxHarness} from '@angular/aria/combobox/testing';
+import {ListboxHarness} from '@angular/aria/listbox/testing';
+import {MyMultiselectComponent} from './my-multiselect'; // Your component
 
-Паттерн Multiselect использует `ngCombobox` с атрибутом `readonly` для предотвращения ввода текста при сохранении
-навигации с клавиатуры.
+describe('MyMultiselectComponent', () => {
+  let fixture: ComponentFixture<MyMultiselectComponent>;
+  let loader: HarnessLoader;
 
-#### Входные параметры (Inputs)
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyMultiselectComponent],
+    });
 
-| Свойство   | Тип       | По умолчанию | Описание                                                      |
-| ---------- | --------- | ------------ | ------------------------------------------------------------- |
-| `readonly` | `boolean` | `false`      | Установите в `true` для создания поведения выпадающего списка |
-| `disabled` | `boolean` | `false`      | Отключает весь мультиселект                                   |
+    fixture = TestBed.createComponent(MyMultiselectComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
-См. [документацию по API Combobox](guide/aria/combobox#apis) для получения полной информации обо всех доступных входных
-параметрах и сигналах.
+  it('should allow selecting multiple options', async () => {
+    const select = await loader.getHarness(ComboboxHarness);
 
-### Директивы Listbox
+    // Open the dropdown
+    await select.open();
 
-Паттерн Multiselect использует `ngListbox` с атрибутом `multi` для множественного выбора и `ngOption` для каждого
-выбираемого элемента.
+    // Get the listbox harness from the popup
+    const listbox = await select.getPopupWidget(ListboxHarness);
+    expect(await listbox.isMulti()).toBe(true);
 
-#### Входные параметры (Inputs)
+    const options = await listbox.getOptions();
 
-| Свойство | Тип       | По умолчанию | Описание                                                |
-| -------- | --------- | ------------ | ------------------------------------------------------- |
-| `multi`  | `boolean` | `false`      | Установите в `true`, чтобы включить множественный выбор |
+    // Select first and second options
+    await options[0].click();
+    await options[1].click();
 
-#### Модель
+    // Verify both options are selected
+    expect(await options[0].isSelected()).toBe(true);
+    expect(await options[1].isSelected()).toBe(true);
 
-| Свойство | Тип     | Описание                                           |
-| -------- | ------- | -------------------------------------------------- |
-| `values` | `any[]` | Массив выбранных значений с двусторонней привязкой |
+    // Close the dropdown
+    await select.close();
 
-Когда `multi` имеет значение true, пользователи могут выбирать несколько опций, используя Пробел для переключения
-выбора. Всплывающее окно остается открытым после выбора, позволяя сделать дополнительные выборы.
+    // Verify value is updated (e.g., comma separated list or count)
+    expect(await (await select.host()).text()).toContain('Option 1, Option 2');
+  });
+});
+```
 
-См. [документацию по API Listbox](guide/aria/listbox#apis) для получения полной информации о конфигурации listbox,
-режимах выбора и свойствах опций.
+## API reference
 
-### Позиционирование
+For detailed API documentation, inspect the following API references:
 
-Паттерн Multiselect интегрируется с [CDK Overlay](api/cdk/overlay/CdkConnectedOverlay) для умного позиционирования.
-Используйте `cdkConnectedOverlay` для автоматической обработки границ вьюпорта и прокрутки.
+- [`Combobox`](/api/aria/combobox/Combobox)
+- [`ComboboxPopup`](/api/aria/combobox/ComboboxPopup)
+- [`ComboboxWidget`](/api/aria/combobox/ComboboxWidget)
+- [`Listbox`](/api/aria/listbox/Listbox)
+- [`Option`](/api/aria/listbox/Option)

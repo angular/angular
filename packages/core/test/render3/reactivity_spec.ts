@@ -10,6 +10,10 @@
 import type {} from 'zone.js';
 
 import {AsyncPipe} from '@angular/common';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {withBody} from '@angular/private/testing';
+import {SIGNAL} from '../../primitives/signals';
+import {toObservable} from '../../rxjs-interop';
 import {
   AfterViewInit,
   ApplicationRef,
@@ -39,12 +43,8 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '../../src/core';
-import {SIGNAL} from '../../primitives/signals';
-import {toObservable} from '../../rxjs-interop';
 import {EffectNode} from '../../src/render3/reactivity/effect';
 import {TestBed} from '../../testing';
-import {bootstrapApplication} from '@angular/platform-browser';
-import {withBody} from '@angular/private/testing';
 
 describe('reactivity', () => {
   describe('effects', () => {
@@ -91,6 +91,7 @@ describe('reactivity', () => {
       expect(isStable).toEqual([true, false]);
 
       appRef.tick();
+      await appRef.whenStable();
 
       expect(isStable).toEqual([true, false, true]);
     });
@@ -437,7 +438,7 @@ describe('reactivity', () => {
 
       @Component({
         imports: [Dir],
-        template: `<ng-template dir let-data>{{data}}</ng-template>`,
+        template: `<ng-template dir let-data>{{ data }}</ng-template>`,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class TestCmp {}
@@ -634,7 +635,7 @@ describe('reactivity', () => {
         imports: [WithInputSetter],
         template: `
           <with-input-setter [testInput]="'binding'" />|<with-input-setter testInput="static" />
-      `,
+        `,
       })
       class Cmp {}
 
@@ -814,6 +815,7 @@ describe('reactivity', () => {
         @Component({
           selector: 'test-cmp',
           template: '',
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestCmp {
           ngOnInitRan = false;
@@ -830,10 +832,11 @@ describe('reactivity', () => {
           selector: 'driver-cmp',
           imports: [TestCmp],
           template: `
-          @if (cond) {
-            <test-cmp />
-          }
-        `,
+            @if (cond) {
+              <test-cmp />
+            }
+          `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class DriverCmp {
           cond = false;
@@ -1005,6 +1008,39 @@ describe('reactivity', () => {
           /effect\(\) cannot be called from within a reactive context./,
         );
       });
+    });
+  });
+
+  describe('graph', () => {
+    it('should keep links alive in a dynamic graph', () => {
+      const source = signal('initial');
+
+      @Component({
+        selector: 'test-cmp',
+        template: `{{ dynamic() }}{{ source() }}`,
+      })
+      class TestCmp {
+        @Input()
+        nonreactive: unknown;
+
+        get dynamic() {
+          return signal('');
+        }
+
+        source = source;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      fixture.componentRef.setInput('nonreactive', 'force_check');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('initial');
+
+      source.set('updated');
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent.trim()).toBe('updated');
     });
   });
 });

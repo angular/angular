@@ -7,34 +7,27 @@
  */
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
+import {ConnectedPosition, ConnectionPositionPair} from '@angular/cdk/overlay';
 import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  PLATFORM_ID,
-  inject,
-  signal,
-} from '@angular/core';
+import {Component, PLATFORM_ID, inject, signal} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
-  NavigationState,
+  IS_SEARCH_DIALOG_OPEN,
   IconComponent,
+  NavigationState,
   getBaseUrlAfterRedirects,
   isApple,
-  IS_SEARCH_DIALOG_OPEN,
 } from '@angular/docs';
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routing/routes';
+import {PRIMARY_NAV_ID, SEARCH_DIALOG_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
+import {COMMAND, CONTROL, SEARCH_TRIGGER_KEY} from '../../constants/keys';
+import {ANGULAR_LINKS} from '../../constants/links';
+import {PAGE_PREFIX} from '../../constants/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
-import {ConnectionPositionPair} from '@angular/cdk/overlay';
-import {ANGULAR_LINKS} from '../../constants/links';
-import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
-import {COMMAND, CONTROL, SEARCH_TRIGGER_KEY} from '../../constants/keys';
-import {PAGE_PREFIX} from '../../constants/pages';
 
 type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
@@ -43,10 +36,8 @@ type MenuType = 'social' | 'theme-picker' | 'version-picker';
   imports: [RouterLink, ClickOutside, CdkMenu, CdkMenuItem, CdkMenuTrigger, IconComponent],
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss', './mini-menu.scss', './nav-item.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Navigation {
-  private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly navigationState = inject(NavigationState);
@@ -60,6 +51,7 @@ export class Navigation {
   protected ngLinks = ANGULAR_LINKS;
   protected readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   protected readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
+  protected readonly SEARCH_DIALOG_ID = SEARCH_DIALOG_ID;
 
   // We can't use the ActivatedRouter queryParams as we're outside the router outlet
   protected readonly isUwu = 'location' in globalThis ? location.search.includes('uwu') : false;
@@ -72,6 +64,12 @@ export class Navigation {
     new ConnectionPositionPair(
       {originX: 'end', originY: 'top'},
       {overlayX: 'start', overlayY: 'top'},
+    ),
+  ];
+  protected bottomMiniMenuPositions: ConnectedPosition[] = [
+    new ConnectionPositionPair(
+      {originX: 'end', originY: 'bottom'},
+      {overlayX: 'start', overlayY: 'bottom'},
     ),
   ];
 
@@ -142,7 +140,7 @@ export class Navigation {
   }
 
   private closeMobileNavOnPrimaryRouteChange(): void {
-    this.primaryRouteChanged$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.primaryRouteChanged$.pipe(takeUntilDestroyed()).subscribe(() => {
       this.closeMobileNav();
     });
   }
@@ -154,7 +152,7 @@ export class Navigation {
         map((event) => (event as NavigationEnd).urlAfterRedirects),
       )
       .pipe(
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(),
         //using location because router.url will only return "/" here
         startWith(this.location.path()),
       )
@@ -197,7 +195,7 @@ export class Navigation {
   }
 
   private preventToScrollContentWhenSecondaryNavIsOpened(): void {
-    this.isMobileNavigationOpened$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((opened) => {
+    this.isMobileNavigationOpened$.pipe(takeUntilDestroyed()).subscribe((opened) => {
       if (opened) {
         this.document.body.style.overflowY = 'hidden';
       } else {

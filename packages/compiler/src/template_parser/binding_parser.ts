@@ -32,12 +32,13 @@ import {
   VariableBinding,
 } from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
-import {mergeNsAndName} from '../ml_parser/tags';
+import {mergeNsAndName, splitNsName} from '../ml_parser/tags';
 import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../directive_matching';
-import {splitAtColon, splitAtPeriod} from '../util';
+import {namespaceCssVariable, splitAtColon, splitAtPeriod} from '../util';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../template/pipeline/src/namespaces';
 
 const PROPERTY_PARTS_SEPARATOR = '.';
 const ATTRIBUTE_PREFIX = 'attr';
@@ -594,7 +595,16 @@ export class BindingParser {
         securityContexts = [SecurityContext.NONE];
       } else if (parts[0] == STYLE_PREFIX) {
         unit = parts.length > 2 ? parts[2] : null;
-        boundPropertyName = parts[1];
+        const boundName = parts[1];
+        if (!boundName.startsWith('--')) {
+          boundPropertyName = boundName;
+        } else {
+          try {
+            boundPropertyName = namespaceCssVariable(boundName);
+          } catch (e) {
+            this._reportError((e as Error).message, boundProp.sourceSpan);
+          }
+        }
         bindingType = BindingType.Style;
         securityContexts = [SecurityContext.STYLE];
       } else if (parts[0] == ANIMATE_PREFIX) {
@@ -880,20 +890,42 @@ export function calcPossibleSecurityContexts(
   isAttribute: boolean,
 ): SecurityContext[] {
   let ctxs: SecurityContext[];
-  const nameToContext = (elName: string) => registry.securityContext(elName, propName, isAttribute);
+  const [namespaceKey, baseSelector] = selector ? splitNsName(selector, false) : [null, selector];
+  const nameToContext = (elName: string) => {
+    const [nsStr, name] = splitNsName(elName, false);
+    const ns = nsStr ?? namespaceKey;
+    const fullName = ns ? `:${ns}:${name}` : name;
+    return registry.securityContext(fullName, propName, isAttribute);
+  };
 
-  if (selector === null) {
-    ctxs = registry.allKnownElementNames().map(nameToContext);
+  const allKnownElements = registry.allKnownElementNames();
+  if (baseSelector === null) {
+    ctxs = allKnownElements.map(nameToContext);
   } else {
     ctxs = [];
-    CssSelector.parse(selector).forEach((selector) => {
-      const elementNames = selector.element ? [selector.element] : registry.allKnownElementNames();
+    CssSelector.parse(baseSelector).forEach((selector) => {
+      let elementNames = selector.element ? [selector.element] : allKnownElements;
+      if (selector.element && !registry.hasElement(selector.element, [])) {
+        const svgElement = `:${SVG_NAMESPACE}:${selector.element}`;
+        const mathElement = `:${MATH_ML_NAMESPACE}:${selector.element}`;
+        if (registry.hasElement(svgElement, [])) {
+          elementNames = [svgElement];
+        } else if (registry.hasElement(mathElement, [])) {
+          elementNames = [mathElement];
+        }
+      }
       const notElementNames = new Set(
         selector.notSelectors
           .filter((selector) => selector.isElementSelector())
-          .map((selector) => selector.element),
+          .map((selector) => selector.element?.toLowerCase()),
       );
-      const possibleElementNames = elementNames.filter((elName) => !notElementNames.has(elName));
+      const possibleElementNames = elementNames.filter((elName) => {
+        const elNameLowerCase = elName.toLowerCase();
+        return (
+          !notElementNames.has(elNameLowerCase) &&
+          !notElementNames.has(splitNsName(elNameLowerCase)[1])
+        );
+      });
 
       ctxs.push(...possibleElementNames.map(nameToContext));
     });

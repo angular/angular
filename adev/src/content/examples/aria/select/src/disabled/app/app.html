@@ -1,27 +1,50 @@
-<div ngCombobox readonly disabled>
-  <div #origin class="select">
-    <span class="combobox-label">
-      <span class="selected-label-text">{{ displayValue() }}</span>
-    </span>
-    <input aria-label="Label dropdown" placeholder="Select a label" ngComboboxInput />
-    <span class="example-arrow material-symbols-outlined" translate="no">arrow_drop_down</span>
-  </div>
-
-  <ng-template ngComboboxPopupContainer>
-    <ng-template
-      [cdkConnectedOverlay]="{origin, usePopover: 'inline', matchWidth: true}"
-      [cdkConnectedOverlayOpen]="true"
-    >
-      <div class="example-popup-container">
-        <div ngListbox>
-          @for (label of labels; track label) {
-          <div ngOption [value]="label" [label]="label">
-            <span class="example-option-text">{{label}}</span>
-            <span class="example-option-check material-symbols-outlined" translate="no">check</span>
-          </div>
-          }
-        </div>
-      </div>
-    </ng-template>
-  </ng-template>
+<div
+  ngCombobox
+  #combobox="ngCombobox"
+  [(expanded)]="popupExpanded"
+  [preserveContent]="true"
+  class="select"
+  disabled
+>
+  <span class="combobox-label">
+    <span class="selected-label-text">{{ displayValue() }}</span>
+  </span>
+  <span class="example-arrow material-symbols-outlined" translate="no" aria-hidden="true"
+    >arrow_drop_down</span
+  >
 </div>
+
+<ng-template
+  [cdkConnectedOverlay]="{origin: combobox.element, usePopover: 'inline', matchWidth: true}"
+  [cdkConnectedOverlayOpen]="popupExpanded()"
+>
+  <ng-template ngComboboxPopup [combobox]="combobox">
+    <div class="example-popup-container">
+      <div
+        #listbox="ngListbox"
+        ngListbox
+        ngComboboxWidget
+        [tabindex]="-1"
+        focusMode="activedescendant"
+        selectionMode="explicit"
+        [(value)]="selectedValues"
+        [activeDescendant]="listbox.activeDescendant()"
+        (click)="onCommit()"
+        (keydown.enter)="onCommit()"
+        (keydown.space)="onCommit()"
+      >
+        @for (label of labels; track label) {
+          <div ngOption [value]="label" [label]="label">
+            <span class="example-option-text">{{ label }}</span>
+            <span
+              class="example-option-check material-symbols-outlined"
+              translate="no"
+              aria-hidden="true"
+              >check</span
+            >
+          </div>
+        }
+      </div>
+    </div>
+  </ng-template>
+</ng-template>

@@ -7,20 +7,23 @@
  */
 
 import {NgIf} from '@angular/common';
+import {DomSanitizer} from '@angular/platform-browser';
 import {
   Component,
+  createComponent,
   Directive,
+  EnvironmentInjector,
   inject,
   provideZoneChangeDetection,
   TemplateRef,
   Type,
   ViewChild,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from '../../src/core';
 import {RuntimeErrorCode} from '../../src/errors';
 import {global} from '../../src/util/global';
 import {ComponentFixture, TestBed} from '../../testing';
-import {DomSanitizer} from '@angular/platform-browser';
 
 describe('comment node text escaping', () => {
   // see: https://html.spec.whatwg.org/multipage/syntax.html#comments
@@ -34,8 +37,13 @@ describe('comment node text escaping', () => {
       'should not be possible to do XSS through comment reflect data when writing: ' + xssValue,
       () => {
         @Component({
-          template: `<div><span *ngIf="xssValue"></span><div>`,
+          template: `<div>
+            <span *ngIf="xssValue"></span>
+            <div></div>
+          </div>`,
           standalone: false,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class XSSComp {
           // ngIf serializes the `xssValue` into a comment for debugging purposes.
@@ -115,6 +123,7 @@ describe('iframe processing', () => {
     'referrerPolicy',
     'csp',
     'fetchPriority',
+    'credentialless',
   ];
 
   const TEST_IFRAME_URL = 'https://angular.io/assets/images/logos/angular/angular.png';
@@ -143,15 +152,13 @@ describe('iframe processing', () => {
         ['src', 'srcdoc'].forEach((srcAttr: string) => {
           it(
             `should work when a security-sensitive attribute is set ` +
-              `as a static attribute (checking \`${securityAttr}\`)`,
+              `as a static attribute (checking \`${securityAttr}\` with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `
-                  <iframe
-                    ${srcAttr}="${TEST_IFRAME_URL}"
-                    ${securityAttr}="">
-                  </iframe>`,
+                template: ` <iframe ${srcAttr}="${TEST_IFRAME_URL}" ${securityAttr}=""> </iframe>`,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -162,15 +169,17 @@ describe('iframe processing', () => {
           it(
             `should work when a security-sensitive attribute is set ` +
               `as a static attribute (checking \`${securityAttr}\` and ` +
-              `making sure it's case-insensitive)`,
+              `making sure it's case-insensitive, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `
-                  <iframe
-                    ${srcAttr}="${TEST_IFRAME_URL}"
-                    ${securityAttr.toUpperCase()}="">
-                  </iframe>`,
+                template: ` <iframe
+                  ${srcAttr}="${TEST_IFRAME_URL}"
+                  ${securityAttr.toUpperCase()}=""
+                >
+                </iframe>`,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -180,11 +189,16 @@ describe('iframe processing', () => {
 
           it(
             `should error when a security-sensitive attribute is applied ` +
-              `using a property binding (checking \`${securityAttr}\`)`,
+              `using a property binding (checking \`${securityAttr}\`, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `<iframe ${srcAttr}="${TEST_IFRAME_URL}" [${securityAttr}]="''"></iframe>`,
+                template: `<iframe
+                  ${srcAttr}="${TEST_IFRAME_URL}"
+                  [${securityAttr}]="''"
+                ></iframe>`,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -194,50 +208,16 @@ describe('iframe processing', () => {
 
           it(
             `should error when a security-sensitive attribute is applied ` +
-              `using a property interpolation (checking \`${securityAttr}\`)`,
+              `using a property interpolation (checking \`${securityAttr}\`, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `<iframe ${srcAttr}="${TEST_IFRAME_URL}" ${securityAttr}="{{''}}"></iframe>`,
-              })
-              class IframeComp {}
+                template: `<iframe
+                  ${srcAttr}="${TEST_IFRAME_URL}"
+                  ${securityAttr}="{{ '' }}"
+                ></iframe>`,
 
-              expectIframeCreationToFail(IframeComp);
-            },
-          );
-
-          it(
-            `should error when a security-sensitive attribute is applied ` +
-              `using a property binding (checking \`${securityAttr}\`, making ` +
-              `sure it's case-insensitive)`,
-            () => {
-              @Component({
-                selector: 'my-comp',
-                template: `
-                    <iframe
-                      ${srcAttr}="${TEST_IFRAME_URL}"
-                      [${securityAttr.toUpperCase()}]="''"
-                    ></iframe>
-                  `,
-              })
-              class IframeComp {}
-
-              expectIframeCreationToFail(IframeComp);
-            },
-          );
-
-          it(
-            `should error when a security-sensitive attribute is applied ` +
-              `using a property binding (checking \`${securityAttr}\`)`,
-            () => {
-              @Component({
-                selector: 'my-comp',
-                template: `
-                    <iframe
-                      ${srcAttr}="${TEST_IFRAME_URL}"
-                      [attr.${securityAttr}]="''"
-                    ></iframe>
-                  `,
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -248,16 +228,18 @@ describe('iframe processing', () => {
           it(
             `should error when a security-sensitive attribute is applied ` +
               `using a property binding (checking \`${securityAttr}\`, making ` +
-              `sure it's case-insensitive)`,
+              `sure it's case-insensitive, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
                 template: `
-                    <iframe
-                      ${srcAttr}="${TEST_IFRAME_URL}"
-                      [attr.${securityAttr.toUpperCase()}]="''"
-                    ></iframe>
-                  `,
+                  <iframe
+                    ${srcAttr}="${TEST_IFRAME_URL}"
+                    [${securityAttr.toUpperCase()}]="''"
+                  ></iframe>
+                `,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -265,15 +247,68 @@ describe('iframe processing', () => {
             },
           );
 
-          it(`should allow changing \`${srcAttr}\` after initial render`, () => {
+          it(
+            `should error when a security-sensitive attribute is applied ` +
+              `using a property binding (checking \`${securityAttr}\` (attr.), with \`${srcAttr}\`)`,
+            () => {
+              @Component({
+                selector: 'my-comp',
+                template: `
+                  <iframe ${srcAttr}="${TEST_IFRAME_URL}" [attr.${securityAttr}]="''"></iframe>
+                `,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
+              })
+              class IframeComp {}
+
+              expectIframeCreationToFail(IframeComp);
+            },
+          );
+
+          it(
+            `should error when a security-sensitive attribute is applied ` +
+              `using a property binding (checking \`${securityAttr}\` (attr.) with null, with \`${srcAttr}\`)`,
+            () => {
+              @Component({
+                selector: 'my-comp',
+                template: `
+                  <iframe ${srcAttr}="${TEST_IFRAME_URL}" [attr.${securityAttr}]="null"></iframe>
+                `,
+              })
+              class IframeComp {}
+
+              expectIframeCreationToFail(IframeComp);
+            },
+          );
+
+          it(
+            `should error when a security-sensitive attribute is applied ` +
+              `using a property binding (checking \`${securityAttr}\` with [attr.], making ` +
+              `sure it's case-insensitive, with \`${srcAttr}\`)`,
+            () => {
+              @Component({
+                selector: 'my-comp',
+                template: `
+                  <iframe
+                    ${srcAttr}="${TEST_IFRAME_URL}"
+                    [attr.${securityAttr.toUpperCase()}]="''"
+                  ></iframe>
+                `,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
+              })
+              class IframeComp {}
+
+              expectIframeCreationToFail(IframeComp);
+            },
+          );
+
+          it(`should allow changing \`${srcAttr}\` after initial render with \`${securityAttr}\``, () => {
             @Component({
               selector: 'my-comp',
-              template: `
-                    <iframe
-                      ${securityAttr}="allow-forms"
-                      [${srcAttr}]="src">
-                    </iframe>
-                  `,
+              template: ` <iframe ${securityAttr}="allow-forms" [${srcAttr}]="src"> </iframe> `,
+
+              changeDetection: ChangeDetectionStrategy.Eager,
             })
             class IframeComp {
               private sanitizer = inject(DomSanitizer);
@@ -298,6 +333,27 @@ describe('iframe processing', () => {
         });
       });
 
+      it('should error when a translated security-sensitive attribute contains bindings', () => {
+        @Component({
+          selector: 'my-comp',
+          template: `
+            <iframe
+              src="${TEST_IFRAME_URL}"
+              i18n-sandbox
+              sandbox="allow-forms {{ extraPrivileges }}"
+            >
+            </iframe>
+          `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class IframeComp {
+          extraPrivileges = 'allow-scripts allow-same-origin';
+        }
+
+        expectIframeCreationToFail(IframeComp);
+      });
+
       it('should work when a directive sets a security-sensitive attribute as a static attribute', () => {
         @Directive({
           selector: '[dir]',
@@ -311,6 +367,8 @@ describe('iframe processing', () => {
           imports: [IframeDir],
           selector: 'my-comp',
           template: '<iframe dir></iframe>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class IframeComp {}
 
@@ -331,6 +389,8 @@ describe('iframe processing', () => {
           imports: [Dir],
           selector: 'my-comp',
           template: '<img dir>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class NonIframeComp {}
 
@@ -348,6 +408,8 @@ describe('iframe processing', () => {
             imports: [NgIf],
             selector: 'my-comp',
             template: `<iframe *ngIf="visible" src="${TEST_IFRAME_URL}" sandbox=""></iframe>`,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {
             visible = true;
@@ -361,6 +423,8 @@ describe('iframe processing', () => {
         @Component({
           selector: 'my-comp',
           template: `<iframe src="${TEST_IFRAME_URL}" sandbox srcdoc="Hi!"></iframe>`,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class IframeComp {}
 
@@ -381,6 +445,8 @@ describe('iframe processing', () => {
           imports: [IframeDir],
           selector: 'my-comp',
           template: '<iframe dir></iframe>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class IframeComp {}
 
@@ -404,6 +470,8 @@ describe('iframe processing', () => {
             imports: [IframeDir],
             selector: 'my-comp',
             template: '<iframe sandbox dir></iframe>',
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -427,6 +495,8 @@ describe('iframe processing', () => {
             imports: [IframeDir],
             selector: 'my-comp',
             template: `<IFRAME dir src="${TEST_IFRAME_URL}"></IFRAME>`,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -451,6 +521,8 @@ describe('iframe processing', () => {
             imports: [IframeDir],
             selector: 'my-comp',
             template: '<iframe dir sandbox></iframe>',
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -475,6 +547,8 @@ describe('iframe processing', () => {
             imports: [IframeDir],
             selector: 'my-comp',
             template: `<iframe src="${TEST_IFRAME_URL}" dir></iframe>`,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -485,9 +559,9 @@ describe('iframe processing', () => {
       it('should work when a security-sensitive attribute is set as a static attribute', () => {
         @Component({
           selector: 'my-comp',
-          template: `
-            <iframe referrerPolicy="no-referrer" src="${TEST_IFRAME_URL}"></iframe>
-          `,
+          template: ` <iframe referrerPolicy="no-referrer" src="${TEST_IFRAME_URL}"></iframe> `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class IframeComp {}
 
@@ -503,13 +577,11 @@ describe('iframe processing', () => {
         () => {
           @Component({
             selector: 'my-comp',
-            template: `
-                <section>
-                  <iframe
-                    src="${TEST_IFRAME_URL}"
-                    [referrerPolicy]="'no-referrer'"
-                  ></iframe>
-                </section>`,
+            template: ` <section>
+              <iframe src="${TEST_IFRAME_URL}" [referrerPolicy]="'no-referrer'"></iframe>
+            </section>`,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -534,6 +606,8 @@ describe('iframe processing', () => {
             imports: [IframeDir],
             selector: 'my-comp',
             template: `<iframe dir src="${TEST_IFRAME_URL}"></iframe>`,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -568,6 +642,8 @@ describe('iframe processing', () => {
             // the directive matching order (thus the order of host attributes) is
             // based on the imports order, so the `sandbox` gets set first and the `src` second.
             template: '<iframe set-src set-sandbox></iframe>',
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -600,6 +676,8 @@ describe('iframe processing', () => {
             imports: [DirThatSetsSandbox],
             selector: 'my-comp',
             template: '<iframe dir></iframe>',
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -632,6 +710,8 @@ describe('iframe processing', () => {
             imports: [DirThatSetsSrc],
             selector: 'my-comp',
             template: '<iframe dir></iframe>',
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -646,11 +726,13 @@ describe('iframe processing', () => {
           @Component({
             selector: 'my-comp',
             template: `
-                <ng-container #container></ng-container>
-                <ng-template #template>
-                  <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"></iframe>
-                </ng-template>
-              `,
+              <ng-container #container></ng-container>
+              <ng-template #template>
+                <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"></iframe>
+              </ng-template>
+            `,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {
             @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
@@ -681,11 +763,12 @@ describe('iframe processing', () => {
             @Component({
               selector: 'my-comp',
               template: `
-                  <section i18n>
-                    <iframe src="${TEST_IFRAME_URL}" [sandbox]="''">
-                    </iframe>
-                  </section>
-                `,
+                <section i18n>
+                  <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"> </iframe>
+                </section>
+              `,
+
+              changeDetection: ChangeDetectionStrategy.Eager,
             })
             class IframeComp {}
 
@@ -699,10 +782,9 @@ describe('iframe processing', () => {
           () => {
             @Component({
               selector: 'my-comp',
-              template: `
-                  <iframe i18n src="${TEST_IFRAME_URL}" [sandbox]="''">
-                  </iframe>
-                `,
+              template: ` <iframe i18n src="${TEST_IFRAME_URL}" [sandbox]="''"> </iframe> `,
+
+              changeDetection: ChangeDetectionStrategy.Eager,
             })
             class IframeComp {}
 
@@ -713,10 +795,9 @@ describe('iframe processing', () => {
         it('should work when a security-sensitive attributes are marked for translation', () => {
           @Component({
             selector: 'my-comp',
-            template: `
-              <iframe src="${TEST_IFRAME_URL}" i18n-sandbox sandbox="">
-              </iframe>
-            `,
+            template: ` <iframe src="${TEST_IFRAME_URL}" i18n-sandbox sandbox=""> </iframe> `,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -731,6 +812,8 @@ describe('SVG animation processing', () => {
   it('should error when `attributeName` is bound', () => {
     @Component({
       template: '<svg><animate [attr.attributeName]="attr"></animate></svg>',
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       attr = 'href';
@@ -757,6 +840,8 @@ describe('SVG animation processing', () => {
       imports: [animateAttrDir],
       selector: 'my-comp',
       template: '<svg><animate dir></animate></svg>',
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {}
 
@@ -766,5 +851,152 @@ describe('SVG animation processing', () => {
     }).toThrowError(
       /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
     );
+  });
+});
+
+describe('innerHTML processing', () => {
+  it('should drop risky attributes from elements created with innerHTML', () => {
+    @Component({
+      template: '<div [innerHTML]="html"></div>',
+
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class App {
+      html = '<div action="abc"></div>';
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).not.toContain('action');
+  });
+});
+
+describe('Component host element validation', () => {
+  it('should throw an error when dynamically creating a component with a script selector', () => {
+    @Component({
+      selector: 'script',
+      template: '',
+    })
+    class ScriptHost {}
+
+    const environmentInjector = TestBed.inject(EnvironmentInjector);
+    expect(() => {
+      createComponent(ScriptHost, {environmentInjector});
+    }).toThrowError(/"<script>" tag is not allowed as a component host element/);
+  });
+
+  it('should throw an error when dynamically mounting a component onto a script tag', () => {
+    @Component({
+      selector: 'my-sink',
+      template: '',
+    })
+    class MySink {}
+
+    const scriptHost = document.createElement('script');
+    document.head.appendChild(scriptHost);
+
+    try {
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      expect(() => {
+        createComponent(MySink, {
+          environmentInjector,
+          hostElement: scriptHost,
+        });
+      }).toThrowError(/"<script>" tag is not allowed as a component host element/);
+    } finally {
+      scriptHost.remove();
+    }
+  });
+
+  it('should throw an error when dynamically mounting a component onto an SVG script tag', () => {
+    @Component({
+      selector: 'my-svg-sink',
+      template: '',
+    })
+    class MySvgSink {}
+
+    const svgScriptHost = document.createElementNS('http://www.w3.org/2000/svg', 'script');
+    document.head.appendChild(svgScriptHost);
+
+    try {
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      expect(() => {
+        createComponent(MySvgSink, {
+          environmentInjector,
+          hostElement: svgScriptHost,
+        });
+      }).toThrowError(/"<script>" tag is not allowed as a component host element/);
+    } finally {
+      svgScriptHost.remove();
+    }
+  });
+});
+
+describe('SVG <script> bindings', () => {
+  it(`should remove svg <script> element`, () => {
+    @Component({
+      template: `<svg><script src="https://bad.com/script.js"></script></svg>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class TestCmp {}
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('script')).toBeFalsy();
+  });
+});
+
+describe('SVG <a> link sanitization', () => {
+  it('should sanitize dynamic `href` bindings on <svg:a>', () => {
+    @Component({
+      template: '<svg><a [attr.href]="url"></a></svg>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class TestCmp {
+      url = 'javascript:alert(1)';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('a');
+    expect(link.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
+  });
+
+  it('should sanitize dynamic `xlink:href` bindings on <svg:a>', () => {
+    @Component({
+      template: '<svg><a [attr.xlink:href]="url"></a></svg>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class TestCmp {
+      url = 'javascript:alert(1)';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('a');
+    expect(link.getAttribute('xlink:href')).toEqual('unsafe:javascript:alert(1)');
+  });
+
+  it('should allow static unsafe `href` and `xlink:href` on <svg:a>', () => {
+    @Component({
+      template: `
+        <svg>
+          <a href="javascript:alert(1)"></a>
+          <a xlink:href="javascript:alert(2)"></a>
+        </svg>
+      `,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class TestCmp {}
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    const links = fixture.nativeElement.querySelectorAll('a');
+    expect(links[0].getAttribute('href')).toEqual('javascript:alert(1)');
+    expect(links[1].getAttribute('xlink:href')).toEqual('javascript:alert(2)');
   });
 });

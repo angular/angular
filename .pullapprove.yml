@@ -36,8 +36,9 @@
 
 version: 3
 
-#availability:
-#  users_unavailable: []
+availability:
+  users_unavailable:
+    - devversion
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -99,14 +100,13 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - crisbeto
         - devversion
-        - thePunderWoman
+        - ~thePunderWoman
         - kirjs
         - JoostK
-        - mmalerba
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
@@ -146,15 +146,13 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - crisbeto
         - devversion
         - kirjs
-        - ~jelbourn
-        - thePunderWoman
+        - ~thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
         - JeanMeche
         - ~amishne
         - ~leonsenft
@@ -181,9 +179,9 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - jelbourn
         - josephperrott
         - ~pkozlowski-opensource
+        - alan-agius4
     reviews:
       request: -1 # request reviews from everyone
       required: 2 # require at least 2 approvals
@@ -202,16 +200,14 @@ groups:
     reviewers:
       users:
         - ~JiaLiPassion
-        - ~jelbourn
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - crisbeto
         - devversion
         - kirjs
-        - thePunderWoman
+        - ~thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
@@ -248,29 +244,31 @@ groups:
       - >
         contains_any_globs(files, [
           'adev/**/{*,.*}',
+          'tools/manual_api_docs/blocks/*.md',
+          'tools/manual_api_docs/elements/*.md',
         ])
     reviewers:
       users:
         - alan-agius4
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - bencodezen
         - crisbeto
         - kirjs
         - JeanMeche
-        - jelbourn
-        - thePunderWoman
+        - ~thePunderWoman
         - devversion
         - josephperrott
         - ~pkozlowski-opensource
         - ~mgechev
         - MarkTechson
-        - mmalerba
         - ~hawkgs
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
+        - ~clydin
+        - ~dgp1130
 
   # =========================================================
   #  Angular DevTools
@@ -285,13 +283,14 @@ groups:
     reviewers:
       users:
         - AleksanderBodurri
+        - csmick
         - ~devversion
         - dgp1130
+        - eduhmc
         - hawkgs
-        - hybrist
-        - ~josephperrott
         - JeanMeche
-        - milomg
+        - ~josephperrott
+        - ~milomg
 
   # =========================================================
   #  Dev-infra
@@ -300,8 +299,13 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude('.pullapprove.yml'), [
+        contains_any_globs(files
+            .exclude('.pullapprove.yml') 
+            .exclude('tools/manual_api_docs/blocks/*.md')
+            .exclude('tools/manual_api_docs/elements/*.md'),
+        [
           '{*,.*}',
+          '.agent/**/{*,.*}',
           '.devcontainer/**/{*,.*}',
           '.github/**/{*,.*}',
           '.husky/**/{*,.*}',
@@ -321,12 +325,9 @@ groups:
           'third_party/**/{*,.*}',
           'tools/contributing-stats/**/{*,.*}',
           'tools/gulp-tasks/**/{*,.*}',
-          'tools/legacy-saucelabs/**/{*,.*}',
           'tools/manual_api_docs/**/{*,.*}',
           'tools/pnpm-patches/**/{*,.*}',
           'tools/rxjs/**/{*,.*}',
-          'tools/saucelabs-daemon/**/{*,.*}',
-          'tools/saucelabs/**/{*,.*}',
           'tools/symbol-extractor/**/{*,.*}',
           'tools/testing/**/{*,.*}',
           'tools/tslint/**/{*,.*}',
@@ -338,6 +339,7 @@ groups:
       - author not in ["angular-robot"]
     reviewers:
       users:
+        - alan-agius4
         - devversion
         - josephperrott
 
@@ -369,14 +371,12 @@ groups:
         ])
     reviewers:
       users:
-        - AndrewKushnir
+        - ~AndrewKushnir
         - ~alxhub
         - atscott
-        - ~jelbourn
-        - thePunderWoman
+        - ~thePunderWoman
         - ~pkozlowski-opensource
         - kirjs
-        - mmalerba
         - crisbeto
         - devversion
         - JeanMeche
@@ -407,13 +407,12 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - atscott
         - kirjs
-        - ~jelbourn
-        - thePunderWoman
+        - JeanMeche
+        - ~thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
@@ -421,6 +420,24 @@ groups:
       request: 2 # Request reviews from 2 people
       required: 1 # Require that 1 person approve
       reviewed_for: required
+
+  # =========================================================
+  #  Agent Skills
+  # =========================================================
+  agent-skills:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'skills/{*,.*}',
+          'skills/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - MarkTechson
+        - kirjs
+        - ~JeanMeche
+        - ~dgp1130
 
   ####################################################################################
   #  Special Cases
@@ -439,11 +456,10 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - AndrewKushnir
+        - ~AndrewKushnir
         - andrewseguin
         - dgp1130
-        - ~jelbourn
-        - thePunderWoman
+        - ~thePunderWoman
         - josephperrott
 
   # =========================================================
@@ -462,20 +478,16 @@ groups:
       users:
         - ~pkozlowski-opensource # Pawel Kozlowski
         - ~alxhub # Alex Rickabaugh
-        - thePunderWoman # Jessica Janiuk
-        - AndrewKushnir # Andrew Kushnir
+        - ~thePunderWoman # Jessica Janiuk
+        - ~AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
-    labels:
-      pending: 'requires: TGP'
-      approved: 'requires: TGP'
-      rejected: 'requires: TGP'
 
   # External team required reviews
   primitives-shared:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude('packages/core/primitives/**/*spec.ts'), [
           'packages/core/primitives/**/{*,.*}',
         ])
     reviewers:
@@ -486,10 +498,6 @@ groups:
         - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
         - ENAML # Ethan Cline
-    labels:
-      pending: 'requires: TGP'
-      approved: 'requires: TGP'
-      rejected: 'requires: TGP'
 
   ####################################################################################
   # Override managed result groups
@@ -512,7 +520,6 @@ groups:
     reviewers:
       users:
         - alxhub
-        - jelbourn
         - josephperrott
     reviews:
       request: 0

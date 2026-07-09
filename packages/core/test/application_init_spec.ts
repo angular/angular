@@ -16,6 +16,7 @@ import {
 import {EMPTY, Observable, Subscriber} from 'rxjs';
 
 import {TestBed} from '../testing';
+import {timeout} from '@angular/private/testing';
 
 describe('ApplicationInitStatus', () => {
   let status: ApplicationInitStatus;
@@ -235,7 +236,7 @@ describe('ApplicationInitStatus', () => {
       TestBed.configureTestingModule({
         providers: [
           provideAppInitializer(async () => {
-            await new Promise((resolve) => setTimeout(resolve));
+            await timeout();
             isInitialized = true;
           }),
         ],

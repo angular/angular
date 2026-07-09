@@ -592,7 +592,7 @@ describe('without providers', () => {
     const backend = TestBed.inject(HttpBackend);
 
     expect(client).toBeInstanceOf(HttpClient);
-    expect(backend).toBeInstanceOf(HttpXhrBackend);
+    expect(backend).toBeInstanceOf(FetchBackend);
   });
 
   it('should not use legacy interceptors by default', () => {

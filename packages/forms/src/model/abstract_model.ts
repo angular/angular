@@ -7,12 +7,12 @@
  */
 
 import {
-  EventEmitter,
-  signal,
-  ɵRuntimeError as RuntimeError,
-  ɵWritable as Writable,
-  untracked,
   computed,
+  EventEmitter,
+  ɵRuntimeError as RuntimeError,
+  signal,
+  untracked,
+  ɵWritable as Writable,
 } from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 
@@ -264,7 +264,7 @@ export function isOptionsObj(
 }
 
 export function assertControlPresent(parent: any, isGroup: boolean, key: string | number): void {
-  const controls = parent.controls as {[key: string | number]: unknown};
+  const controls = parent.controls as {[key: string | number]: AbstractControl<any>};
   const collection = isGroup ? Object.keys(controls) : controls;
   if (!collection.length) {
     throw new RuntimeError(
@@ -272,7 +272,7 @@ export function assertControlPresent(parent: any, isGroup: boolean, key: string 
       typeof ngDevMode === 'undefined' || ngDevMode ? noControlsError(isGroup) : '',
     );
   }
-  if (!controls[key]) {
+  if (!hasOwnControl(controls, key)) {
     throw new RuntimeError(
       RuntimeErrorCode.MISSING_CONTROL,
       typeof ngDevMode === 'undefined' || ngDevMode ? missingControlError(isGroup, key) : '',
@@ -550,7 +550,8 @@ export abstract class AbstractControl<
    * with a key-value pair for each member of the group.
    * * For a disabled `FormGroup`, the values of all controls as an object
    * with a key-value pair for each member of the group.
-   * * For a `FormArray`, the values of enabled controls as an array.
+   * * For an enabled `FormArray`, the values of enabled controls as an array.
+   * * For a disabled `FormArray`, the values of all controls as an array.
    *
    */
   public readonly value!: TValue;
@@ -653,7 +654,7 @@ export abstract class AbstractControl<
    * false otherwise.
    */
   get pending(): boolean {
-    return this.status == PENDING;
+    return this.status === PENDING;
   }
 
   /**
@@ -1779,4 +1780,11 @@ export abstract class AbstractControl<
     this._rawAsyncValidators = Array.isArray(validators) ? validators.slice() : validators;
     this._composedAsyncValidatorFn = coerceToAsyncValidator(this._rawAsyncValidators);
   }
+}
+
+export function hasOwnControl(
+  controls: {[key: string]: AbstractControl<any>},
+  name: string | number | symbol,
+): boolean {
+  return Object.hasOwn(controls, name);
 }

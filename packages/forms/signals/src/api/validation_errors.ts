@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {StandardSchemaV1} from '@standard-schema/spec';
-import {FieldTree} from './types';
+import type {FormField} from '../../../directive/form_field';
+import type {ReadonlyFieldTree} from '../../types';
+import type {StandardSchemaValidationError} from './standard_schema';
 
 /**
  * Options used to create a `ValidationError`.
  */
-interface ValidationErrorOptions {
+export interface ValidationErrorOptions {
   /** Human readable error message. */
   message?: string;
 }
@@ -21,46 +22,60 @@ interface ValidationErrorOptions {
  * A type that requires the given type `T` to have a `field` property.
  * @template T The type to add a `field` to.
  *
- * @experimental 21.0.0
+ * @see [Validation errors](guide/forms/signals/validation#validation-errors)
+ *
+ * @publicApi 22.0
  */
-export type WithField<T> = T & {field: FieldTree<unknown>};
+export type WithFieldTree<T> = T & {fieldTree: ReadonlyFieldTree<unknown>};
 
 /**
  * A type that allows the given type `T` to optionally have a `field` property.
  * @template T The type to optionally add a `field` to.
  *
- * @experimental 21.0.0
+ * @see [Validation errors](guide/forms/signals/validation#validation-errors)
+ *
+ * @publicApi 22.0
  */
-export type WithOptionalField<T> = Omit<T, 'field'> & {field?: FieldTree<unknown>};
+export type WithOptionalFieldTree<T> = Omit<T, 'fieldTree'> & {
+  fieldTree?: ReadonlyFieldTree<unknown>;
+};
 
 /**
  * A type that ensures the given type `T` does not have a `field` property.
  * @template T The type to remove the `field` from.
  *
- * @experimental 21.0.0
+ * @see [Validation errors](guide/forms/signals/validation#validation-errors)
+ *
+ * @publicApi 22.0
  */
-export type WithoutField<T> = T & {field: never};
+export type WithoutFieldTree<T> = T & {fieldTree: never};
 
 /**
  * Create a required error associated with the target field
  * @param options The validation error options
  *
- * @experimental 21.0.0
+ * @see [Required validation](guide/forms/signals/validation#required)
+ *
+ * @publicApi 22.0
  */
-export function requiredError(options: WithField<ValidationErrorOptions>): RequiredValidationError;
+export function requiredError(
+  options: WithFieldTree<ValidationErrorOptions>,
+): RequiredValidationError;
 /**
  * Create a required error
  * @param options The optional validation error options
  *
+ * @see [Required validation](guide/forms/signals/validation#required)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function requiredError(
   options?: ValidationErrorOptions,
-): WithoutField<RequiredValidationError>;
+): WithoutFieldTree<RequiredValidationError>;
 export function requiredError(
   options?: ValidationErrorOptions,
-): WithOptionalField<RequiredValidationError> {
+): WithOptionalFieldTree<RequiredValidationError> {
   return new RequiredValidationError(options);
 }
 
@@ -69,30 +84,69 @@ export function requiredError(
  * @param min The min value constraint
  * @param options The validation error options
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function minError(
   min: number,
-  options: WithField<ValidationErrorOptions>,
+  options: WithFieldTree<ValidationErrorOptions>,
 ): MinValidationError;
 /**
  * Create a min value error
  * @param min The min value constraint
  * @param options The optional validation error options
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function minError(
   min: number,
   options?: ValidationErrorOptions,
-): WithoutField<MinValidationError>;
+): WithoutFieldTree<MinValidationError>;
 export function minError(
   min: number,
   options?: ValidationErrorOptions,
-): WithOptionalField<MinValidationError> {
+): WithOptionalFieldTree<MinValidationError> {
   return new MinValidationError(min, options);
+}
+
+/**
+ * Create a minDate error associated with the target field
+ * @param minDate The min date constraint
+ * @param options The validation error options
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function minDateError(
+  minDate: Date,
+  options: WithFieldTree<ValidationErrorOptions>,
+): MinDateValidationError;
+/**
+ * Create a minDate error
+ * @param minDate The min date constraint
+ * @param options The optional validation error options
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function minDateError(
+  minDate: Date,
+  options?: ValidationErrorOptions,
+): WithoutFieldTree<MinDateValidationError>;
+export function minDateError(
+  minDate: Date,
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<MinDateValidationError> {
+  return new MinDateValidationError(minDate, options);
 }
 
 /**
@@ -100,30 +154,69 @@ export function minError(
  * @param max The max value constraint
  * @param options The validation error options
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function maxError(
   max: number,
-  options: WithField<ValidationErrorOptions>,
+  options: WithFieldTree<ValidationErrorOptions>,
 ): MaxValidationError;
 /**
  * Create a max value error
  * @param max The max value constraint
  * @param options The optional validation error options
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function maxError(
   max: number,
   options?: ValidationErrorOptions,
-): WithoutField<MaxValidationError>;
+): WithoutFieldTree<MaxValidationError>;
 export function maxError(
   max: number,
   options?: ValidationErrorOptions,
-): WithOptionalField<MaxValidationError> {
+): WithOptionalFieldTree<MaxValidationError> {
   return new MaxValidationError(max, options);
+}
+
+/**
+ * Create a maxDate error associated with the target field
+ * @param maxDate The max date constraint
+ * @param options The validation error options
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function maxDateError(
+  maxDate: Date,
+  options: WithFieldTree<ValidationErrorOptions>,
+): MaxDateValidationError;
+/**
+ * Create a maxDate error
+ * @param maxDate The max date constraint
+ * @param options The optional validation error options
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function maxDateError(
+  maxDate: Date,
+  options?: ValidationErrorOptions,
+): WithoutFieldTree<MaxDateValidationError>;
+export function maxDateError(
+  maxDate: Date,
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<MaxDateValidationError> {
+  return new MaxDateValidationError(maxDate, options);
 }
 
 /**
@@ -131,29 +224,33 @@ export function maxError(
  * @param minLength The minLength constraint
  * @param options The validation error options
  *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function minLengthError(
   minLength: number,
-  options: WithField<ValidationErrorOptions>,
+  options: WithFieldTree<ValidationErrorOptions>,
 ): MinLengthValidationError;
 /**
  * Create a minLength error
  * @param minLength The minLength constraint
  * @param options The optional validation error options
  *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function minLengthError(
   minLength: number,
   options?: ValidationErrorOptions,
-): WithoutField<MinLengthValidationError>;
+): WithoutFieldTree<MinLengthValidationError>;
 export function minLengthError(
   minLength: number,
   options?: ValidationErrorOptions,
-): WithOptionalField<MinLengthValidationError> {
+): WithOptionalFieldTree<MinLengthValidationError> {
   return new MinLengthValidationError(minLength, options);
 }
 
@@ -162,29 +259,33 @@ export function minLengthError(
  * @param maxLength The maxLength constraint
  * @param options The validation error options
  *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function maxLengthError(
   maxLength: number,
-  options: WithField<ValidationErrorOptions>,
+  options: WithFieldTree<ValidationErrorOptions>,
 ): MaxLengthValidationError;
 /**
  * Create a maxLength error
  * @param maxLength The maxLength constraint
  * @param options The optional validation error options
  *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function maxLengthError(
   maxLength: number,
   options?: ValidationErrorOptions,
-): WithoutField<MaxLengthValidationError>;
+): WithoutFieldTree<MaxLengthValidationError>;
 export function maxLengthError(
   maxLength: number,
   options?: ValidationErrorOptions,
-): WithOptionalField<MaxLengthValidationError> {
+): WithOptionalFieldTree<MaxLengthValidationError> {
   return new MaxLengthValidationError(maxLength, options);
 }
 
@@ -193,29 +294,33 @@ export function maxLengthError(
  * @param pattern The violated pattern
  * @param options The validation error options
  *
+ * @see [Pattern validation](guide/forms/signals/validation#pattern)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function patternError(
   pattern: RegExp,
-  options: WithField<ValidationErrorOptions>,
+  options: WithFieldTree<ValidationErrorOptions>,
 ): PatternValidationError;
 /**
  * Create a pattern matching error
  * @param pattern The violated pattern
  * @param options The optional validation error options
  *
+ * @see [Pattern validation](guide/forms/signals/validation#pattern)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function patternError(
   pattern: RegExp,
   options?: ValidationErrorOptions,
-): WithoutField<PatternValidationError>;
+): WithoutFieldTree<PatternValidationError>;
 export function patternError(
   pattern: RegExp,
   options?: ValidationErrorOptions,
-): WithOptionalField<PatternValidationError> {
+): WithOptionalFieldTree<PatternValidationError> {
   return new PatternValidationError(pattern, options);
 }
 
@@ -223,79 +328,28 @@ export function patternError(
  * Create an email format error associated with the target field
  * @param options The validation error options
  *
+ * @see [Email validation](guide/forms/signals/validation#email)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export function emailError(options: WithField<ValidationErrorOptions>): EmailValidationError;
+export function emailError(options: WithFieldTree<ValidationErrorOptions>): EmailValidationError;
 /**
  * Create an email format error
  * @param options The optional validation error options
  *
+ * @see [Email validation](guide/forms/signals/validation#email)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export function emailError(options?: ValidationErrorOptions): WithoutField<EmailValidationError>;
 export function emailError(
   options?: ValidationErrorOptions,
-): WithOptionalField<EmailValidationError> {
+): WithoutFieldTree<EmailValidationError>;
+export function emailError(
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<EmailValidationError> {
   return new EmailValidationError(options);
-}
-
-/**
- * Create a standard schema issue error associated with the target field
- * @param issue The standard schema issue
- * @param options The validation error options
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function standardSchemaError(
-  issue: StandardSchemaV1.Issue,
-  options: WithField<ValidationErrorOptions>,
-): StandardSchemaValidationError;
-/**
- * Create a standard schema issue error
- * @param issue The standard schema issue
- * @param options The optional validation error options
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function standardSchemaError(
-  issue: StandardSchemaV1.Issue,
-  options?: ValidationErrorOptions,
-): WithoutField<StandardSchemaValidationError>;
-export function standardSchemaError(
-  issue: StandardSchemaV1.Issue,
-  options?: ValidationErrorOptions,
-): WithOptionalField<StandardSchemaValidationError> {
-  return new StandardSchemaValidationError(issue, options);
-}
-
-/**
- * Create a custom error associated with the target field
- * @param obj The object to create an error from
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function customError<E extends Partial<ValidationError.WithField>>(
-  obj: WithField<E>,
-): CustomValidationError;
-/**
- * Create a custom error
- * @param obj The object to create an error from
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function customError<E extends Partial<ValidationError.WithField>>(
-  obj?: E,
-): WithoutField<CustomValidationError>;
-export function customError<E extends Partial<ValidationError.WithField>>(
-  obj?: E,
-): WithOptionalField<CustomValidationError> {
-  return new CustomValidationError(obj);
 }
 
 /**
@@ -306,8 +360,10 @@ export function customError<E extends Partial<ValidationError.WithField>>(
  * It's also used by the creation functions to create an instance
  * (e.g. `requiredError`, `minError`, etc.).
  *
+ * @see [Signal Form Validation](guide/forms/signals/validation)
+ * @see [Signal Form Validation Errors](guide/forms/signals/validation#validation-errors)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export interface ValidationError {
   /** Identifies the kind of error. */
@@ -318,14 +374,24 @@ export interface ValidationError {
 
 export declare namespace ValidationError {
   /**
-   * Validation error with a field.
+   * Validation error with an associated field tree.
    *
    * This is returned from field state, e.g., catField.errors() would be of a list of errors with
    * `field: catField` bound to state.
    */
-  export interface WithField extends ValidationError {
+  export interface WithFieldTree extends ValidationError {
     /** The field associated with this error. */
-    readonly field: FieldTree<unknown>;
+    readonly fieldTree: ReadonlyFieldTree<unknown>;
+    readonly formField?: FormField<unknown>;
+  }
+  /** @deprecated Use `ValidationError.WithFieldTree` instead  */
+  export type WithField = WithFieldTree;
+
+  /**
+   * Validation error with an associated field tree and specific form field binding.
+   */
+  export interface WithFormField extends WithFieldTree {
+    readonly formField: FormField<unknown>;
   }
 
   /**
@@ -334,60 +400,36 @@ export declare namespace ValidationError {
    * This is generally used in places where the result might have a field.
    * e.g., as a result of a `validateTree`, or when handling form submission.
    */
-  export interface WithOptionalField extends ValidationError {
+  export interface WithOptionalFieldTree extends ValidationError {
     /** The field associated with this error. */
-    readonly field?: FieldTree<unknown>;
+    readonly fieldTree?: ReadonlyFieldTree<unknown>;
   }
+  /** @deprecated Use `ValidationError.WithOptionalFieldTree` instead  */
+  export type WithOptionalField = WithOptionalFieldTree;
 
   /**
    * Validation error with no field.
    *
    * This is used to strongly enforce that fields are not allowed in validation result.
    */
-  export interface WithoutField extends ValidationError {
+  export interface WithoutFieldTree extends ValidationError {
     /** The field associated with this error. */
-    readonly field?: never;
+    readonly fieldTree?: never;
+    readonly formField?: never;
   }
-}
-
-/**
- * A custom error that may contain additional properties
- *
- * @category validation
- * @experimental 21.0.0
- */
-export class CustomValidationError implements ValidationError {
-  /** Brand the class to avoid Typescript structural matching */
-  private __brand = undefined;
-
-  /**
-   * Allow the user to attach arbitrary other properties.
-   */
-  [key: PropertyKey]: unknown;
-
-  /** Identifies the kind of error. */
-  readonly kind: string = '';
-
-  /** The field associated with this error. */
-  readonly field!: FieldTree<unknown>;
-
-  /** Human readable error message. */
-  readonly message?: string;
-
-  constructor(options?: ValidationErrorOptions) {
-    if (options) {
-      Object.assign(this, options);
-    }
-  }
+  /** @deprecated Use `ValidationError.WithoutFieldTree` instead  */
+  export type WithoutField = WithoutFieldTree;
 }
 
 /**
  * Internal version of `NgValidationError`, we create this separately so we can change its type on
  * the exported version to a type union of the possible sub-classes.
  *
- * @experimental 21.0.0
+ * @see [Signal Form Validation Errors](guide/forms/signals/validation#validation-errors)
+ *
+ * @publicApi 22.0
  */
-abstract class _NgValidationError implements ValidationError {
+export abstract class BaseNgValidationError implements ValidationError {
   /** Brand the class to avoid Typescript structural matching */
   private __brand = undefined;
 
@@ -395,7 +437,7 @@ abstract class _NgValidationError implements ValidationError {
   readonly kind: string = '';
 
   /** The field associated with this error. */
-  readonly field!: FieldTree<unknown>;
+  readonly fieldTree!: ReadonlyFieldTree<unknown>;
 
   /** Human readable error message. */
   readonly message?: string;
@@ -410,20 +452,24 @@ abstract class _NgValidationError implements ValidationError {
 /**
  * An error used to indicate that a required field is empty.
  *
+ * @see [Required validation](guide/forms/signals/validation#required)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export class RequiredValidationError extends _NgValidationError {
+export class RequiredValidationError extends BaseNgValidationError {
   override readonly kind = 'required';
 }
 
 /**
  * An error used to indicate that a value is lower than the minimum allowed.
  *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export class MinValidationError extends _NgValidationError {
+export class MinValidationError extends BaseNgValidationError {
   override readonly kind = 'min';
 
   constructor(
@@ -435,12 +481,33 @@ export class MinValidationError extends _NgValidationError {
 }
 
 /**
- * An error used to indicate that a value is higher than the maximum allowed.
+ * An error used to indicate that a date value is earlier than the minimum allowed.
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export class MaxValidationError extends _NgValidationError {
+export class MinDateValidationError extends BaseNgValidationError {
+  override readonly kind = 'minDate';
+
+  constructor(
+    readonly minDate: Date,
+    options?: ValidationErrorOptions,
+  ) {
+    super(options);
+  }
+}
+
+/**
+ * An error used to indicate that a value is higher than the maximum allowed.
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export class MaxValidationError extends BaseNgValidationError {
   override readonly kind = 'max';
 
   constructor(
@@ -452,12 +519,33 @@ export class MaxValidationError extends _NgValidationError {
 }
 
 /**
- * An error used to indicate that a value is shorter than the minimum allowed length.
+ * An error used to indicate that a date value is later than the maximum allowed.
+ *
+ * @see [Minimum and maximum validation](guide/forms/signals/validation#min-and-max)
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export class MinLengthValidationError extends _NgValidationError {
+export class MaxDateValidationError extends BaseNgValidationError {
+  override readonly kind = 'maxDate';
+
+  constructor(
+    readonly maxDate: Date,
+    options?: ValidationErrorOptions,
+  ) {
+    super(options);
+  }
+}
+
+/**
+ * An error used to indicate that a value is shorter than the minimum allowed length.
+ *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export class MinLengthValidationError extends BaseNgValidationError {
   override readonly kind = 'minLength';
 
   constructor(
@@ -471,10 +559,12 @@ export class MinLengthValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value is longer than the maximum allowed length.
  *
+ * @see [Minimum and maximum length validation](guide/forms/signals/validation#minlength-and-maxlength)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export class MaxLengthValidationError extends _NgValidationError {
+export class MaxLengthValidationError extends BaseNgValidationError {
   override readonly kind = 'maxLength';
 
   constructor(
@@ -488,10 +578,12 @@ export class MaxLengthValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value does not match the required pattern.
  *
+ * @see [Pattern validation](guide/forms/signals/validation#pattern)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export class PatternValidationError extends _NgValidationError {
+export class PatternValidationError extends BaseNgValidationError {
   override readonly kind = 'pattern';
 
   constructor(
@@ -505,28 +597,25 @@ export class PatternValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value is not a valid email.
  *
+ * @see [Email validation](guide/forms/signals/validation#email)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export class EmailValidationError extends _NgValidationError {
+export class EmailValidationError extends BaseNgValidationError {
   override readonly kind = 'email';
 }
 
 /**
- * An error used to indicate an issue validating against a standard schema.
+ * An error used to indicate that a value entered in a native input does not parse.
+ *
+ * @see [Value transformation](guide/forms/signals/custom-controls#value-transformation)
  *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export class StandardSchemaValidationError extends _NgValidationError {
-  override readonly kind = 'standardSchema';
-
-  constructor(
-    readonly issue: StandardSchemaV1.Issue,
-    options?: ValidationErrorOptions,
-  ) {
-    super(options);
-  }
+export class NativeInputParseError extends BaseNgValidationError {
+  override readonly kind = 'parse';
 }
 
 /**
@@ -551,16 +640,21 @@ export class StandardSchemaValidationError extends _NgValidationError {
  * }
  * ```
  *
+ * @see [Signal Form Validation Errors](guide/forms/signals/validation#validation-errors)
+ *
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
-export const NgValidationError: abstract new () => NgValidationError = _NgValidationError as any;
+export const NgValidationError: abstract new () => NgValidationError = BaseNgValidationError as any;
 export type NgValidationError =
   | RequiredValidationError
   | MinValidationError
+  | MinDateValidationError
   | MaxValidationError
+  | MaxDateValidationError
   | MinLengthValidationError
   | MaxLengthValidationError
   | PatternValidationError
   | EmailValidationError
-  | StandardSchemaValidationError;
+  | StandardSchemaValidationError
+  | NativeInputParseError;

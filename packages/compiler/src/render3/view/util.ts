@@ -14,16 +14,7 @@ import {CssSelector} from '../../directive_matching';
 import * as t from '../r3_ast';
 
 import {isI18nAttribute} from './i18n/util';
-
-/**
- * Checks whether an object key contains potentially unsafe chars, thus the key should be wrapped in
- * quotes. Note: we do not wrap all keys into quotes, as it may have impact on minification and may
- * not work in some cases when object keys are mangled by a minifier.
- *
- * TODO(FW-1136): this is a temporary solution, we need to come up with a better way of working with
- * inputs that contain potentially unsafe chars.
- */
-export const UNSAFE_OBJECT_KEY_NAME_REGEXP = /[-.]/;
+import {isUnsafeObjectKey} from '../util';
 
 /** Name of the temporary to use during data binding */
 export const TEMPORARY_NAME = '_t';
@@ -147,7 +138,7 @@ export function conditionallyCreateDirectiveBindingLiteral(
       return {
         key: minifiedName,
         // put quotes around keys that contain potentially unsafe characters
-        quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
+        quoted: isUnsafeObjectKey(minifiedName),
         value: expressionValue,
       };
     }),

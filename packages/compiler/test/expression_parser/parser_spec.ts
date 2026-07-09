@@ -480,6 +480,9 @@ describe('parser', () => {
       });
 
       it('should report error if interpolation is empty', () => {
+        // Even though an empty interpolation should result in an error,
+        // we should retain the expression.
+        checkBinding('`hello ${}`');
         expectBindingError('`hello ${}`', 'Template literal interpolation cannot be empty');
       });
 

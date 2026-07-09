@@ -189,9 +189,12 @@ function openJsDocLinkCommand(): Command<OpenJsDocLinkCommand_Args> {
     id: OpenJsDocLinkCommandId,
     isTextEditorCommand: false,
     async execute(args) {
-      return await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(args.file), <
-        vscode.TextDocumentShowOptions
-      >{
+      if (!args?.file) {
+        return;
+      }
+      const uri = vscode.Uri.parse(args.file);
+      const document = await vscode.workspace.openTextDocument(uri);
+      return await vscode.window.showTextDocument(document, {
         selection: new vscode.Range(
           new vscode.Position(args.position?.start.line ?? 0, args.position?.start.character ?? 0),
           new vscode.Position(args.position?.end.line ?? 0, args.position?.end.character ?? 0),

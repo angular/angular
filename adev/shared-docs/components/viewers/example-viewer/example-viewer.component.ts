@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Clipboard} from '@angular/cdk/clipboard';
+import {DOCUMENT, NgComponentOutlet, NgTemplateOutlet} from '@angular/common';
 import {
   afterNextRender,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   computed,
   ElementRef,
@@ -19,14 +19,12 @@ import {
   signal,
   Type,
 } from '@angular/core';
-import {DOCUMENT, NgComponentOutlet, NgTemplateOutlet} from '@angular/common';
-import {MatTabsModule} from '@angular/material/tabs';
-import {Clipboard} from '@angular/cdk/clipboard';
-import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
-import {IconComponent} from '../../icon/icon.component';
+import {MatTab, MatTabGroup} from '@angular/material/tabs';
+import {MatTooltip} from '@angular/material/tooltip';
 import {ExampleMetadata, Snippet} from '../../../interfaces/index';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers/index';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
+import {IconComponent} from '../../icon/icon.component';
 
 export const CODE_LINE_NUMBER_CLASS_NAME = 'shiki-ln-number';
 export const CODE_LINE_CLASS_NAME = 'line';
@@ -37,15 +35,15 @@ export const HIDDEN_CLASS_NAME = 'hidden';
   selector: 'docs-example-viewer',
   imports: [
     CopySourceCodeButton,
-    MatTabsModule,
-    MatTooltipModule,
+    MatTabGroup,
+    MatTab,
+    MatTooltip,
     IconComponent,
     NgTemplateOutlet,
     NgComponentOutlet,
   ],
   templateUrl: './example-viewer.component.html',
   styleUrls: ['./example-viewer.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleViewer {
   readonly exampleMetadata = input<ExampleMetadata | null>(null, {alias: 'metadata'});

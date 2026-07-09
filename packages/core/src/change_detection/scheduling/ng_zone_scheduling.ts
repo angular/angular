@@ -13,9 +13,9 @@ import {
   ENVIRONMENT_INITIALIZER,
   EnvironmentProviders,
   inject,
-  Injectable,
   InjectionToken,
   makeEnvironmentProviders,
+  Service,
   StaticProvider,
 } from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
@@ -24,16 +24,17 @@ import {performanceMarkFeature} from '../../util/performance';
 import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {OnDestroy} from '../lifecycle_hooks';
+import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from './flags';
 import {
   ChangeDetectionScheduler,
-  ZONELESS_ENABLED,
   SCHEDULE_IN_ROOT_ZONE,
+  ZONELESS_ENABLED,
 } from './zoneless_scheduling';
-import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from './flags';
-import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 
-@Injectable({providedIn: 'root'})
-export class NgZoneChangeDetectionScheduler {
+@Service()
+export class NgZoneChangeDetectionScheduler implements OnDestroy {
   private readonly zone = inject(NgZone);
   private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler);
   private readonly applicationRef = inject(ApplicationRef);
@@ -133,10 +134,10 @@ export function internalProvideZoneChangeDetection({
  * Provides `NgZone`-based change detection for the application bootstrapped using
  * `bootstrapApplication`.
  *
- * `NgZone` is already provided in applications by default. This provider allows you to configure
- * options like `eventCoalescing` in the `NgZone`.
- * This provider is not available for `platformBrowser().bootstrapModule`, which uses
- * `BootstrapOptions` instead.
+ * Add this provider to use `NgZone`/ZoneJS-based change detection and configure options like
+ * `eventCoalescing` in the `NgZone`.
+ *
+ * If you need this provider function in an NgModule-based application, pass it as `applicationProviders` to `bootstrapModule()`.
  *
  * @usageNotes
  * ```ts
@@ -227,7 +228,7 @@ export function getNgZoneOptions(options?: NgZoneOptions): InternalNgZoneOptions
   };
 }
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class ZoneStablePendingTask {
   private readonly subscription = new Subscription();
   private initialized = false;

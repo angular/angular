@@ -1,12 +1,12 @@
 ## Intro
 
-This small benchmark suite is dedicated to mesure & describe how compute time is spent when rendering an application like in SSR.
+This small benchmark suite is dedicated to measure & describe how compute time is spent when rendering an application like in SSR.
 
-## Struture
+## Structure
 
 - `./main.ts` is the entry point to run the benchmark
 - `./src` contains a sample app that exports a `render` function.
-- This app render a table of variable size, which depends on data (`initData()`)
+- This app renders a table of variable size, which depends on data (`initData()`)
 - This app is then rendered X numbers of times
 
 - Individual function calls are measured with `startMeasuring()`/`stopMeasuring()` from the core package.
@@ -20,16 +20,16 @@ This small benchmark suite is dedicated to mesure & describe how compute time is
 
 `pnpm bazel run //modules/ssr-benchmarks:run_browser`
 
-This bazel target will build the benchmark, start a http-server with a html that will load the benckmark script.
+This bazel target will build the benchmark, start a http-server with a html that will load the benchmark script.
 The benchmark script with this target will have DOM Emulation disabled.
-The result will be visible in the devtools console.
+The result will be visible in the DevTools console.
 
 Note: Due to the CLI adding some polyfills, @angular/build is patched to disable DOM emulation and running server code inside a browser:
 
 1.  removing an import from `node:module` in `polyfills.server.mjs` (with `tail ...`)
 2.  removing the import of `platform-server/init`.
 
-To run create a usable flame chart, prepare a narrowed run (like `benchmarkRun(10000, 20);`).
+To create a usable flame chart, prepare a narrowed run (like `benchmarkRun(10000, 20);`).
 Then in the performance tab of the devtools, trigger "Record & Reload" to generate a profile.
 
 ### Deopt Explorer

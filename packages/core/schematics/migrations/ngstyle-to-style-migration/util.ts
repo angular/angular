@@ -164,14 +164,23 @@ function getPropertyRemovalRange(property: ts.ObjectLiteralElementLike): {
 
   const properties = parent.properties;
   const propertyIndex = properties.indexOf(property);
-  const end = property.getEnd();
 
-  if (propertyIndex < properties.length - 1) {
-    const nextProperty = properties[propertyIndex + 1];
-    return {start: property.getStart(), end: nextProperty.getStart()};
+  if (properties.length === 1) {
+    const sourceFile = property.getSourceFile();
+    let end = property.getEnd();
+    const textAfter = sourceFile.text.substring(end, parent.getEnd());
+    const commaIndex = textAfter.indexOf(',');
+    if (commaIndex !== -1) {
+      end += commaIndex + 1;
+    }
+    return {start: property.getFullStart(), end};
   }
 
-  return {start: property.getStart(), end};
+  if (propertyIndex === 0) {
+    return {start: property.getFullStart(), end: properties[1].getFullStart()};
+  }
+
+  return {start: properties[propertyIndex - 1].getEnd(), end: property.getEnd()};
 }
 
 export function calculateImportReplacements(

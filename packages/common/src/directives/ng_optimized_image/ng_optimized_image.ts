@@ -48,6 +48,7 @@ import {netlifyLoaderInfo} from './image_loaders/netlify_loader';
 import {LCPImageObserver} from './lcp_image_observer';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
 import {PreloadLinkCreator} from './preload-link-creator';
+import {escapeCssUrl} from './url';
 
 /**
  * When a Base64-encoded image is passed as an input to the `NgOptimizedImage` directive,
@@ -417,6 +418,15 @@ export class NgOptimizedImage implements OnInit, OnChanges {
         }
       });
     }
+
+    // Browsers might re-evaluate the image during DOM teardown when using `sizes="auto"`
+    // with `loading="lazy"`, potentially triggering an unnecessary image fetch.
+    // This is expected behavior per the HTML spec
+    // See: https://html.spec.whatwg.org/multipage/images.html#sizes-attributes
+    // See also: https://github.com/angular/angular/issues/67055#issuecomment-3898513831
+    this.destroyRef.onDestroy(() => {
+      this.renderer.removeAttribute(this.imgElement, 'loading');
+    });
   }
 
   /** @docs-private */
@@ -713,13 +723,15 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   protected generatePlaceholder(placeholderInput: string | boolean): string | boolean | null {
     const {placeholderResolution} = this.config;
     if (placeholderInput === true) {
-      return `url(${this.callImageLoader({
-        src: this.ngSrc,
-        width: placeholderResolution,
-        isPlaceholder: true,
-      })})`;
+      return `url("${escapeCssUrl(
+        this.callImageLoader({
+          src: this.ngSrc,
+          width: placeholderResolution,
+          isPlaceholder: true,
+        }),
+      )}")`;
     } else if (typeof placeholderInput === 'string') {
-      return `url(${placeholderInput})`;
+      return `url("${escapeCssUrl(placeholderInput)}")`;
     }
     return null;
   }

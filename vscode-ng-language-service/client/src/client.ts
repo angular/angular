@@ -1,9 +1,9 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as fs from 'node:fs';
@@ -24,9 +24,14 @@ import {
   GetTemplateLocationForComponent,
   IsInAngularProject,
 } from '../../common/requests';
-import {NodeModule, resolve} from '../../common/resolver';
+import {NodeModule, resolve, Version} from '../../common/resolver';
 
-import {isInsideStringLiteral, isNotTypescriptOrSupportedDecoratorField} from './embedded_support';
+import {
+  isInsideStringLiteral,
+  isNotTypescriptOrSupportedDecoratorField,
+  isNotTypescriptOrSupportedDecoratorRange,
+} from './embedded_support';
+import {OpenJsDocLinkCommandId} from '../../common/initialize';
 
 interface GetTcbResponse {
   uri: vscode.Uri;
@@ -37,6 +42,7 @@ interface GetTcbResponse {
 export class AngularLanguageClient implements vscode.Disposable {
   private client: lsp.LanguageClient | null = null;
   private readonly disposables: vscode.Disposable[] = [];
+  private readonly sessionDisposables: vscode.Disposable[] = [];
   private readonly outputChannel: vscode.OutputChannel;
   private readonly clientOptions: lsp.LanguageClientOptions;
   private readonly name = 'Angular Language Service';
@@ -45,11 +51,33 @@ export class AngularLanguageClient implements vscode.Disposable {
   private readonly fileToIsInAngularProjectMap = new Map<string, boolean>();
 
   constructor(private readonly context: vscode.ExtensionContext) {
-    vscode.workspace.registerTextDocumentContentProvider('angular-embedded-content', {
-      provideTextDocumentContent: (uri) => {
-        return this.virtualDocumentContents.get(uri.toString());
-      },
-    });
+    this.disposables.push(
+      vscode.workspace.registerTextDocumentContentProvider('angular-embedded-content', {
+        provideTextDocumentContent: (uri) => {
+          return this.virtualDocumentContents.get(uri.toString());
+        },
+      }),
+    );
+
+    this.disposables.push(
+      vscode.workspace.onDidChangeConfiguration(() => {
+        this.fileToIsInAngularProjectMap.clear();
+      }),
+    );
+
+    const config = vscode.workspace.getConfiguration();
+    const useClientSideWatching = config.get('angular.server.useClientSideFileWatcher');
+    const fileEvents = [
+      // Notify the server about file changes to tsconfig.json contained in the workspace
+      vscode.workspace.createFileSystemWatcher('**/tsconfig.json'),
+    ];
+    if (useClientSideWatching) {
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/*.ts'));
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/*.html'));
+      // While we don't need general JSON watching, TypeScript relies on package.json for module resolution, type acquisition, and auto-imports.
+      // If we don't watch it, npm install changes or dependency updates might be missed by the Language Service
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/package.json'));
+    }
 
     this.outputChannel = vscode.window.createOutputChannel(this.name);
     // Options to control the language client
@@ -62,16 +90,16 @@ export class AngularLanguageClient implements vscode.Disposable {
         {scheme: 'file', language: 'typescript'},
       ],
       synchronize: {
-        fileEvents: [
-          // Notify the server about file changes to tsconfig.json contained in the workspace
-          vscode.workspace.createFileSystemWatcher('**/tsconfig.json'),
-        ],
+        configurationSection: ['angular', 'typescript', 'editor.inlayHints'],
+        fileEvents,
       },
       // Don't let our output console pop open
       revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
       outputChannel: this.outputChannel,
       markdown: {
-        isTrusted: true,
+        isTrusted: {
+          enabledCommands: [OpenJsDocLinkCommandId],
+        },
       },
       middleware: {
         provideCodeActions: async (
@@ -219,6 +247,15 @@ export class AngularLanguageClient implements vscode.Disposable {
 
           return angularCompletionsPromise;
         },
+        provideDocumentSymbols: async (
+          document: vscode.TextDocument,
+          token: vscode.CancellationToken,
+          next: lsp.ProvideDocumentSymbolsSignature,
+        ) => {
+          if (await this.isInAngularProject(document)) {
+            return next(document, token);
+          }
+        },
         provideFoldingRanges: async (
           document: vscode.TextDocument,
           context: vscode.FoldingContext,
@@ -230,13 +267,46 @@ export class AngularLanguageClient implements vscode.Disposable {
           }
           return next(document, context, token);
         },
+        provideLinkedEditingRange: async (
+          document: vscode.TextDocument,
+          position: vscode.Position,
+          token: vscode.CancellationToken,
+          next: lsp.ProvideLinkedEditingRangeSignature,
+        ) => {
+          if (
+            (await this.isInAngularProject(document)) &&
+            isNotTypescriptOrSupportedDecoratorField(document, position)
+          ) {
+            return next(document, position, token);
+          }
+        },
+        provideInlayHints: async (
+          document: vscode.TextDocument,
+          range: vscode.Range,
+          token: vscode.CancellationToken,
+          next,
+        ) => {
+          if (!(await this.isInAngularProject(document))) {
+            return null;
+          }
+
+          // For TypeScript files, only request Angular inlay hints when the
+          // visible range intersects supported decorator fields (e.g. inline
+          // template/style metadata). This matches the guarding strategy used
+          // by other Angular LSP features and avoids work on unsupported TS regions.
+          if (!isNotTypescriptOrSupportedDecoratorRange(document, range)) {
+            return null;
+          }
+
+          return next(document, range, token);
+        },
       },
     };
   }
 
   async applyWorkspaceEdits(workspaceEdits: lsp.WorkspaceEdit[]) {
     for (const edit of workspaceEdits) {
-      const workspaceEdit = this.client?.protocol2CodeConverter.asWorkspaceEdit(edit);
+      const workspaceEdit = await this.client?.protocol2CodeConverter.asWorkspaceEdit(edit);
       if (workspaceEdit === undefined) {
         continue;
       }
@@ -262,7 +332,9 @@ export class AngularLanguageClient implements vscode.Disposable {
         // but do not cache the result so we can try to get the real answer on follow-up requests.
         return false;
       }
-      this.fileToIsInAngularProjectMap.set(uri, response);
+      if (response) {
+        this.fileToIsInAngularProjectMap.set(uri, true);
+      }
       return response;
     } catch {
       return false;
@@ -341,11 +413,14 @@ export class AngularLanguageClient implements vscode.Disposable {
       this.clientOptions,
       forceDebug,
     );
-    this.disposables.push(this.client.start());
-    await this.client.onReady();
+    await this.client.start();
     // Must wait for the client to be ready before registering notification
     // handlers.
-    this.disposables.push(registerNotificationHandlers(this.client));
+    this.sessionDisposables.push(
+      registerNotificationHandlers(this.client, () => {
+        this.fileToIsInAngularProjectMap.clear();
+      }),
+    );
   }
 
   /**
@@ -364,8 +439,7 @@ export class AngularLanguageClient implements vscode.Disposable {
       args.push('--logVerbosity', ngLog);
     }
 
-    const ngProbeLocations = getProbeLocations(this.context.extensionPath);
-    args.push('--ngProbeLocations', ngProbeLocations.join(','));
+    args.push('--ngProbeLocations', this.context.extensionPath);
 
     const includeAutomaticOptionalChainCompletions = config.get<boolean>(
       'angular.suggest.includeAutomaticOptionalChainCompletions',
@@ -419,13 +493,7 @@ export class AngularLanguageClient implements vscode.Disposable {
       }
     }
 
-    // Pass the earliest Angular version along to the compiler for maximum compatibility.
-    if (angularVersions.length > 0) {
-      args.push('--angularCoreVersion', angularVersions[0].version.toString());
-      this.outputChannel.appendLine(
-        `Using Angular version ${angularVersions[0].version.toString()}.`,
-      );
-    }
+    setAngularVersionAndShowMultipleVersionsWarning(angularVersions, args, this.outputChannel);
 
     const forceStrictTemplates = config.get<boolean>('angular.forceStrictTemplates');
     if (forceStrictTemplates) {
@@ -439,12 +507,22 @@ export class AngularLanguageClient implements vscode.Disposable {
       args.push('--suppressAngularDiagnosticCodes', suppressAngularDiagnosticCodes);
     }
 
-    const tsdk = config.get('typescript.tsdk', '');
+    // Note: Document symbols settings (angular.documentSymbols.enabled,
+    // angular.documentSymbols.showImplicitForVariables) are now fetched
+    // dynamically via workspace/configuration request by the server.
+    // This allows users to change these settings without restarting.
+
+    const tsdk = await this.getTsdkPath();
     if (tsdk.trim().length > 0) {
       args.push('--tsdk', tsdk);
     }
-    const tsProbeLocations = [...getProbeLocations(this.context.extensionPath)];
-    args.push('--tsProbeLocations', tsProbeLocations.join(','));
+    args.push('--tsProbeLocations', this.context.extensionPath);
+
+    const supportClientSide = config.get('angular.server.useClientSideFileWatcher');
+
+    if (supportClientSide) {
+      args.push('--useClientSideFileWatcher');
+    }
 
     return args;
   }
@@ -458,7 +536,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     }
     await this.client.stop();
     this.outputChannel.clear();
-    this.dispose();
+    this.disposeSessionDisposables();
     this.client = null;
     this.fileToIsInAngularProjectMap.clear();
     this.virtualDocumentContents.clear();
@@ -487,7 +565,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     return {
       uri: p2cConverter.asUri(response.uri),
       content: response.content,
-      selections: p2cConverter.asRanges(response.selections),
+      selections: await p2cConverter.asRanges(response.selections),
     };
   }
 
@@ -540,17 +618,101 @@ export class AngularLanguageClient implements vscode.Disposable {
     );
   }
 
+  private disposeSessionDisposables(): void {
+    for (
+      let disposable = this.sessionDisposables.pop();
+      disposable !== undefined;
+      disposable = this.sessionDisposables.pop()
+    ) {
+      disposable.dispose();
+    }
+  }
+
+  private async getTsdkPath(): Promise<string> {
+    const config = vscode.workspace.getConfiguration();
+    const jsTsTsdkInspect = config.inspect<string>('js/ts.tsdk.path');
+    const tsTsdkInspect = config.inspect<string>('typescript.tsdk');
+
+    // 1. Check workspace/folder settings first (highest priority)
+    // ONLY check or load workspace-level settings if the workspace is trusted
+    if (vscode.workspace.isTrusted) {
+      const jsTsWorkspaceTsdk = (
+        jsTsTsdkInspect?.workspaceValue ?? jsTsTsdkInspect?.workspaceFolderValue
+      )?.trim();
+      const tsWorkspaceTsdk = (
+        tsTsdkInspect?.workspaceValue ?? tsTsdkInspect?.workspaceFolderValue
+      )?.trim();
+      const workspaceTsdk = jsTsWorkspaceTsdk || tsWorkspaceTsdk;
+
+      if (workspaceTsdk) {
+        const stateKey = `approvedTsdk:${workspaceTsdk}`;
+        const isApproved = this.context.workspaceState.get<boolean>(stateKey);
+
+        if (isApproved) {
+          if (!path.isAbsolute(workspaceTsdk)) {
+            const workspaceFolders = vscode.workspace.workspaceFolders || [];
+            for (const folder of workspaceFolders) {
+              const absolutePath = path.join(folder.uri.fsPath, workspaceTsdk);
+              if (fs.existsSync(path.join(absolutePath, 'tsserverlibrary.js'))) {
+                return absolutePath;
+              }
+            }
+            if (workspaceFolders.length > 0) {
+              return path.join(workspaceFolders[0].uri.fsPath, workspaceTsdk);
+            }
+          }
+          return workspaceTsdk;
+        }
+
+        if (isApproved === undefined) {
+          // Prompt the user asynchronously, without blocking current server initialization
+          this.promptForTsdkApproval(workspaceTsdk, stateKey);
+        }
+
+        // Fall back to globalValue (or bundled) while waiting for approval or if rejected
+      }
+    }
+
+    return jsTsTsdkInspect?.globalValue?.trim() ?? tsTsdkInspect?.globalValue?.trim() ?? '';
+  }
+
+  private async promptForTsdkApproval(workspaceTsdk: string, stateKey: string): Promise<void> {
+    const allowOption = 'Allow';
+    const disallowOption = 'Disallow';
+
+    const choice = await vscode.window.showWarningMessage(
+      `This workspace configures a custom TypeScript compiler path (${workspaceTsdk}) via 'js/ts.tsdk.path' or 'typescript.tsdk'. ` +
+        `Do you want to allow the Angular Language Service to load the TypeScript compiler from this path?`,
+      allowOption,
+      disallowOption,
+    );
+
+    if (choice === allowOption) {
+      await this.context.workspaceState.update(stateKey, true);
+      // Restart the language server so it launches with the newly authorized compiler path
+      await vscode.commands.executeCommand('angular.restartNgServer');
+    } else {
+      // Remember rejection to avoid repeatedly prompting on startup/activation
+      await this.context.workspaceState.update(stateKey, false);
+    }
+  }
+
   dispose() {
+    this.disposeSessionDisposables();
     for (let d = this.disposables.pop(); d !== undefined; d = this.disposables.pop()) {
       d.dispose();
     }
   }
 }
 
-function registerNotificationHandlers(client: lsp.LanguageClient): vscode.Disposable {
+function registerNotificationHandlers(
+  client: lsp.LanguageClient,
+  onProjectStateChange: () => void,
+): vscode.Disposable {
   const disposables: vscode.Disposable[] = [];
   disposables.push(
     client.onNotification(ProjectLoadingStart, () => {
+      onProjectStateChange();
       vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Window,
@@ -558,7 +720,10 @@ function registerNotificationHandlers(client: lsp.LanguageClient): vscode.Dispos
         },
         () =>
           new Promise<void>((resolve) => {
-            client.onNotification(ProjectLoadingFinish, resolve);
+            client.onNotification(ProjectLoadingFinish, () => {
+              onProjectStateChange();
+              resolve();
+            });
           }),
       );
     }),
@@ -581,8 +746,8 @@ function registerNotificationHandlers(client: lsp.LanguageClient): vscode.Dispos
       const doNotPromptAgain = 'Do not show again for this workspace';
       const selection = await vscode.window.showInformationMessage(
         'Some language features are not available. To access all features, enable ' +
-          '[strictTemplates](https://angular.io/guide/angular-compiler-options#stricttemplates) in ' +
-          '[angularCompilerOptions](https://angular.io/guide/angular-compiler-options).',
+          '[strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) in ' +
+          '[angularCompilerOptions](https://angular.dev/reference/configs/angular-compiler-options).',
         openTsConfig,
         doNotPromptAgain,
       );
@@ -606,24 +771,6 @@ function registerNotificationHandlers(client: lsp.LanguageClient): vscode.Dispos
   );
 
   return vscode.Disposable.from(...disposables);
-}
-
-/**
- * Return the paths for the module that corresponds to the specified `configValue`,
- * and use the specified `bundled` as fallback if none is provided.
- * @param configName
- * @param bundled
- */
-function getProbeLocations(bundled: string): string[] {
-  const locations = [];
-  // Prioritize the bundled version
-  locations.push(bundled);
-  // Look in workspaces currently open
-  const workspaceFolders = vscode.workspace.workspaceFolders || [];
-  for (const folder of workspaceFolders) {
-    locations.push(folder.uri.fsPath);
-  }
-  return locations;
 }
 
 function extensionVersionCompatibleWithAllProjects(serverModuleLocation: string): boolean {
@@ -673,4 +820,44 @@ async function getAngularVersionsInWorkspace(
     angularCoreModules.add(angularCore);
   }
   return Array.from(angularCoreModules);
+}
+
+// TODO(atscott): Now that language service resolves the version of Angular local to the project, do we need this?
+function setAngularVersionAndShowMultipleVersionsWarning(
+  angularVersions: NodeModule[],
+  args: string[],
+  outputChannel: vscode.OutputChannel,
+) {
+  if (angularVersions.length === 0) {
+    return;
+  }
+  if (angularVersions[0].version.toString() === '0.0.0') {
+    // If only version 0.x is found, update it to 999 instead (0.0.0 is used for the version when building locally)
+    angularVersions[0].version = new Version('999.999.999');
+  }
+  // Pass the earliest Angular version along to the compiler for maximum compatibility.
+  // For example, if we tell the v21 compiler that we're using v21 but there's a v13 project,
+  // the compiler may attempt to import and use APIs from angular core that don't exist in v13.
+  args.push('--angularCoreVersion', angularVersions[0].version.toString());
+  outputChannel.appendLine(
+    `Using Angular version ${angularVersions[0].version.toString()} by default. If ` +
+      `the project-specific version cannot be resolved, this version will be used.`,
+  );
+
+  let minorVersions = new Map<string, NodeModule>();
+  for (const v of angularVersions) {
+    minorVersions.set(`${v.version.major}.${v.version.minor}`, v);
+  }
+  if (minorVersions.size > 1) {
+    vscode.window.showWarningMessage(
+      `Multiple versions of Angular detected in the workspace. This can lead to compatibility issues for the language service. ` +
+        `See the output panel for more details.`,
+    );
+    outputChannel.appendLine(`Multiple Angular versions detected in the workspace:`);
+    for (const v of minorVersions.values()) {
+      outputChannel.appendLine(
+        `  Angular version ${v.version.toString()} detected at ${v.resolvedPath}`,
+      );
+    }
+  }
 }

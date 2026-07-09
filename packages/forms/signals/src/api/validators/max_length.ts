@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata, metadata, validate} from '../logic';
-import {MAX_LENGTH} from '../metadata';
-import {SchemaPath, SchemaPathRules, LogicFn, PathKind} from '../types';
-import {maxLengthError} from '../validation_errors';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
+import {createMetadataKey, MAX_LENGTH, metadata} from '../metadata';
 import {
   BaseValidatorConfig,
   getLengthOrSize,
@@ -18,6 +15,8 @@ import {
   isEmpty,
   ValueWithLengthOrSize,
 } from './util';
+import {validate} from './validate';
+import {maxLengthError} from './validation_errors';
 
 /**
  * Binds a validator to the given path that requires the length of the value to be less than or
@@ -33,8 +32,9 @@ import {
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @see [Signal Form Max Length Validation](guide/forms/signals/validation#minlength-and-maxlength)
  * @category validation
- * @experimental 21.0.0
+ * @publicApi 22.0
  */
 export function maxLength<
   TValue extends ValueWithLengthOrSize,
@@ -44,10 +44,13 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MAX_LENGTH_MEMO = metadata(path, (ctx) =>
-    computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx))),
-  );
-  aggregateMetadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
+  const MAX_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) => {
+    if (config?.when && !config.when(ctx)) {
+      return undefined;
+    }
+    return typeof maxLength === 'number' ? maxLength : maxLength(ctx);
+  });
+  metadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

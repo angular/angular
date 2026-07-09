@@ -1,30 +1,22 @@
-# Изучение Angular Signal Forms
+# Learn Angular Signal Forms
 
-Это интерактивное руководство научит вас создавать реактивные формы, используя экспериментальный API Angular Signal
-Forms.
+This interactive tutorial will teach you how to build reactive forms using Angular's Signal Forms API.
 
-ВАЖНО: Функциональность Signal Forms в настоящее время является [экспериментальной](reference/releases#experimental).
-API может измениться до момента стабилизации. Обратитесь к [официальной документации](guide/forms/signal-forms) для
-получения актуальной информации.
+## How to use this tutorial
 
-## Как пользоваться этим руководством
+This tutorial assumes you understand Angular's core concepts and have basic familiarity with signals. If you're new to Angular, read our [essentials guide](/essentials). If you're new to signals, complete the [signals tutorial](/tutorials/signals) first.
 
-Это руководство предполагает, что вы понимаете основные концепции Angular и знакомы с основами сигналов. Если вы новичок
-в Angular, прочитайте наше [руководство по основам](/essentials). Если вы еще не работали с сигналами, сначала
-пройдите [руководство по сигналам](/tutorials/signals).
+Each step represents a concept in Signal Forms. You'll build a complete login form from scratch, learning the fundamentals step by step.
 
-Каждый шаг представляет собой отдельную концепцию в Signal Forms. Вы создадите полноценную форму входа с нуля, шаг за
-шагом изучая фундаментальные принципы.
+**Your learning path:**
 
-**Ваш путь обучения:**
+1. Set up the form model with TypeScript and signals
+2. Connect the form to your template
+3. Add validation rules
+4. Display validation errors to users
+5. Handle form submission
+6. Explore advanced topics and next steps
 
-1. Настройка модели формы с помощью TypeScript и сигналов
-2. Подключение формы к шаблону
-3. Добавление правил валидации
-4. Отображение ошибок валидации пользователям
-5. Обработка отправки формы
-6. Изучение продвинутых тем и следующие шаги
+If you get stuck, click "Reveal answer" at the top.
 
-Если вы застряли, нажмите кнопку "Reveal answer" (Показать ответ) в верхней части страницы.
-
-Итак, давайте [начнем](/tutorials/signal-forms/1-set-up-form-model)!
+Alright, let's [get started](/tutorials/signal-forms/1-set-up-form-model)!

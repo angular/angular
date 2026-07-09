@@ -19,23 +19,25 @@ import {
   APP_BOOTSTRAP_LISTENER,
   APP_INITIALIZER,
   ChangeDetectionStrategy,
-  Compiler,
   Component,
   DestroyRef,
+  Directive,
   EnvironmentInjector,
-  InjectionToken,
   Injector,
+  Input,
+  inputBinding,
   LOCALE_ID,
   NgModule,
   NgZone,
   PlatformRef,
+  provideZoneChangeDetection,
   RendererFactory2,
   TemplateRef,
   Type,
   ViewChild,
   ViewContainerRef,
-  provideZoneChangeDetection,
 } from '../src/core';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../src/error_details_base_url';
 import {ErrorHandler} from '../src/error_handler';
 import {ComponentRef} from '../src/linker/component_factory';
 import {createEnvironmentInjector, getLocaleId} from '../src/render3';
@@ -114,62 +116,6 @@ describe('bootstrap', () => {
     }
     return MyModule;
   }
-
-  it('should bootstrap a component from a child module', waitForAsync(
-    inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-      @Component({
-        selector: 'bootstrap-app',
-        template: '',
-        standalone: false,
-      })
-      class SomeComponent {}
-
-      const helloToken = new InjectionToken<string>('hello');
-
-      @NgModule({
-        providers: [{provide: helloToken, useValue: 'component'}],
-        declarations: [SomeComponent],
-      })
-      class SomeModule {}
-
-      createRootEl();
-      const modFactory = compiler.compileModuleSync(SomeModule);
-      const module = modFactory.create(TestBed.inject(Injector));
-      const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent);
-      const component = app.bootstrap(cmpFactory);
-
-      // The component should see the child module providers
-      expect(component.injector.get(helloToken)).toEqual('component');
-    }),
-  ));
-
-  it('should bootstrap a component with a custom selector', waitForAsync(
-    inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-      @Component({
-        selector: 'bootstrap-app',
-        template: '',
-        standalone: false,
-      })
-      class SomeComponent {}
-
-      const helloToken = new InjectionToken<string>('hello');
-
-      @NgModule({
-        providers: [{provide: helloToken, useValue: 'component'}],
-        declarations: [SomeComponent],
-      })
-      class SomeModule {}
-
-      createRootEl('custom-selector');
-      const modFactory = compiler.compileModuleSync(SomeModule);
-      const module = modFactory.create(TestBed.inject(Injector));
-      const cmpFactory = module.componentFactoryResolver.resolveComponentFactory(SomeComponent);
-      const component = app.bootstrap(cmpFactory, 'custom-selector');
-
-      // The component should see the child module providers
-      expect(component.injector.get(helloToken)).toEqual('component');
-    }),
-  ));
 
   describe('ApplicationRef', () => {
     beforeEach(async () => {
@@ -272,6 +218,38 @@ describe('bootstrap', () => {
         const comp = ref.bootstrap(ZoneComp);
         expect(comp.instance.inNgZone).toBeTrue();
       }));
+
+      it('supports passing bootstrap options object', inject(
+        [ApplicationRef],
+        (ref: ApplicationRef) => {
+          @Directive({
+            host: {'[attr.data-dir]': 'value'},
+          })
+          class HostDir {
+            @Input()
+            value = 'unset';
+          }
+
+          @Component({
+            selector: 'bootstrap-app',
+            template: `{{ name }}`,
+          })
+          class StandaloneBootComp {
+            @Input()
+            name = 'default';
+          }
+
+          createRootEl('custom-selector');
+          const comp = ref.bootstrap(StandaloneBootComp, {
+            hostElement: 'custom-selector',
+            directives: [{type: HostDir, bindings: [inputBinding('value', () => 'bound')]}],
+            bindings: [inputBinding('name', () => 'hello from binding')],
+          });
+
+          expect(comp.location.nativeElement.getAttribute('data-dir')).toBe('bound');
+          expect(comp.location.nativeElement.textContent.trim()).toBe('hello from binding');
+        },
+      ));
     });
 
     describe('bootstrapImpl', () => {
@@ -295,7 +273,7 @@ describe('bootstrap', () => {
         const appRef = ref as unknown as {bootstrapImpl: ApplicationRef['bootstrapImpl']};
         const compRef = appRef.bootstrapImpl(
           InjectingComponent,
-          /* rootSelectorOrNode */ undefined,
+          /* hostElement */ undefined,
           injector,
         );
         expect(compRef.instance.myService).toBe(myService);
@@ -880,6 +858,7 @@ describe('AppRef', () => {
       selector: 'micro-task-comp',
       template: `<span>{{text}}</span>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MicroTaskComp {
       text: string = '1';
@@ -895,6 +874,7 @@ describe('AppRef', () => {
       selector: 'macro-task-comp',
       template: `<span>{{text}}</span>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MacroTaskComp {
       text: string = '1';
@@ -910,6 +890,7 @@ describe('AppRef', () => {
       selector: 'micro-macro-task-comp',
       template: `<span>{{text}}</span>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MicroMacroTaskComp {
       text: string = '1';
@@ -928,6 +909,7 @@ describe('AppRef', () => {
       selector: 'macro-micro-task-comp',
       template: `<span>{{text}}</span>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MacroMicroTaskComp {
       text: string = '1';

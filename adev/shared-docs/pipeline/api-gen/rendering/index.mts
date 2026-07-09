@@ -13,7 +13,8 @@ import {DocEntry} from './entities.mjs';
 import {isCliEntry, isHiddenEntry} from './entities/categorization.mjs';
 import {getRenderable} from './processing.mjs';
 import {renderEntry} from './rendering.mjs';
-import {setCurrentSymbol, setSymbols} from './symbol-context.mjs';
+import {setCurrentSymbol, setSymbolMembers, setSymbols} from './symbol-context.mjs';
+import {setDefinedRoutes} from './defined-routes-context.mjs';
 import {CliCommandRenderable, DocEntryRenderable} from './entities/renderables.mjs';
 import {initHighlighter} from '../../shared/shiki.mjs';
 import {setHighlighterInstance} from './shiki/shiki.mjs';
@@ -94,6 +95,35 @@ function getNormalizedFilename(normalizedModuleName: string, entry: DocEntry | C
   return `${normalizedModuleName}_${entry.name}_${entry.entryType.toLowerCase()}.html`;
 }
 
+/**
+ * Build an index of `<symbol> -> Set<member name>` from a package's entries. Used to validate
+ * `#member` fragments in `{@link /api/<module>/<Symbol>#<member>}` tags at build time.
+ *
+ * Walks any entry that has a `members` array (classes, interfaces, enums, decorators, namespaces,
+ * directives, pipes), without committing to a particular concrete entry shape.
+ */
+function buildSymbolMembersIndex(entries: (DocEntry | CliCommand)[]): Map<string, Set<string>> {
+  const index = new Map<string, Set<string>>();
+  for (const entry of entries) {
+    const members = (entry as {members?: {name: string}[]}).members;
+    if (!Array.isArray(members) || members.length === 0) {
+      continue;
+    }
+    const name = (entry as {name?: string}).name;
+    if (!name) {
+      continue;
+    }
+    const set = index.get(name) ?? new Set<string>();
+    for (const member of members) {
+      if (member?.name) {
+        set.add(member.name);
+      }
+    }
+    index.set(name, set);
+  }
+  return index;
+}
+
 async function main() {
   // Shiki highlighter needs to be setup in an async context
   setHighlighterInstance(await initHighlighter());
@@ -101,7 +131,9 @@ async function main() {
   const [paramFilePath] = process.argv.slice(2);
   const rawParamLines = readFileSync(paramFilePath, {encoding: 'utf8'}).split('\n');
 
-  const [srcs, outputFilenameExecRootRelativePath] = rawParamLines;
+  const [srcs, outputFilenameExecRootRelativePath, definedRoutesPath] = rawParamLines;
+
+  setDefinedRoutes(JSON.parse(readFileSync(definedRoutesPath, {encoding: 'utf8'})) as string[]);
 
   // Docs rendering happens in three phases that occur here:
   // 1) Aggregate all the raw extracted doc info.
@@ -120,6 +152,7 @@ async function main() {
 
     // Setting the symbols are a global context for the rendering templates of this entry
     setSymbols(collection.symbols);
+    setSymbolMembers(buildSymbolMembersIndex(collection.entries));
 
     const renderableEntries: (DocEntryRenderable | CliCommandRenderable)[] = [];
     for (const entry of extractedEntries) {

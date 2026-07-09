@@ -7,6 +7,7 @@
  */
 
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   contentChild,
@@ -16,13 +17,14 @@ import {
   ElementRef,
   EnvironmentInjector,
   QueryList,
+  ViewChild,
   viewChild,
   ViewChildren,
   viewChildren,
 } from '@angular/core';
+import {By} from '@angular/platform-browser';
 import {SIGNAL} from '../../../primitives/signals';
 import {TestBed} from '../../../testing';
-import {By} from '@angular/platform-browser';
 
 describe('queries as signals', () => {
   describe('view', () => {
@@ -91,6 +93,7 @@ describe('queries as signals', () => {
             <div #el></div>
           }
         `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         show = false;
@@ -161,11 +164,11 @@ describe('queries as signals', () => {
 
       @Component({
         template: `
+          <div #el></div>
+          @if (show) {
             <div #el></div>
-            @if (show) {
-              <div #el></div>
-            }
-          `,
+          }
+        `,
       })
       class AppComponent {
         divEl = viewChild.required<ElementRef<HTMLDivElement>>('el');
@@ -190,11 +193,11 @@ describe('queries as signals', () => {
     it('should return the same array instance when there were no changes in results after view manipulation', () => {
       @Component({
         template: `
-            <div #el></div>
-            @if (show) {
-              <div></div>
-            }
-          `,
+          <div #el></div>
+          @if (show) {
+            <div></div>
+          }
+        `,
       })
       class AppComponent {
         divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
@@ -273,7 +276,7 @@ describe('queries as signals', () => {
     it('should run content queries defined on components', () => {
       @Component({
         selector: 'query-cmp',
-        template: `{{noOfEls()}}`,
+        template: `{{ noOfEls() }}`,
       })
       class QueryComponent {
         elements = contentChildren('el');
@@ -292,12 +295,13 @@ describe('queries as signals', () => {
         imports: [QueryComponent],
         template: `
           <query-cmp>
-            <div #el></div >
+            <div #el></div>
             @if (show) {
               <div #el></div>
             }
           </query-cmp>
         `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         show = false;
@@ -346,6 +350,7 @@ describe('queries as signals', () => {
             }
           </div>
         `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         show = false;
@@ -388,12 +393,12 @@ describe('queries as signals', () => {
       @Component({
         imports: [MarkerForResults, InspectsQueryResults, DeclareQuery],
         template: `
-                <div declare>
-                  <div marker></div>
-                  <div inspect></div>
-                  <div marker></div>
-                </div>
-             `,
+          <div declare>
+            <div marker></div>
+            <div inspect></div>
+            <div marker></div>
+          </div>
+        `,
       })
       class AppComponent {}
 
@@ -589,6 +594,7 @@ describe('queries as signals', () => {
             <div #el></div>
           }
         `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         show = false;
@@ -619,11 +625,12 @@ describe('queries as signals', () => {
     it('should allow combination via inheritance of both types of queries in one component', () => {
       @Component({
         template: `
+          <div #el></div>
+          @if (show) {
             <div #el></div>
-            @if (show) {
-              <div #el></div>
-            }
-          `,
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class BaseComponent {
         show = false;
@@ -632,11 +639,12 @@ describe('queries as signals', () => {
 
       @Component({
         template: `
+          <div #el></div>
+          @if (show) {
             <div #el></div>
-            @if (show) {
-              <div #el></div>
-            }
-          `,
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent extends BaseComponent {
         @ViewChildren('el') divElsDecorator!: QueryList<ElementRef<HTMLDivElement>>;
@@ -659,5 +667,43 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.divElsSignal().length).toBe(1);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
     });
+  });
+
+  it('should resolve static decorator queries when mixed with signal queries', () => {
+    @Directive({
+      selector: 'div',
+    })
+    class DivDirective {}
+
+    @Component({
+      imports: [DivDirective],
+      template: `
+        <div #templateA>Content A</div>
+        <div #templateB>Content B</div>
+        <div #templateC>Content C</div>
+      `,
+    })
+    class App {
+      @ViewChildren(DivDirective) divs!: QueryList<ElementRef<HTMLDivElement>>;
+      @ViewChild('templateA') elRefA!: ElementRef<HTMLDivElement>;
+      readonly elRefB = viewChild<ElementRef<HTMLDivElement>>('templateB');
+      @ViewChild('templateC') elRefC!: ElementRef<HTMLDivElement>;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const componentInstance = fixture.componentInstance;
+
+    expect(fixture.componentInstance.divs).withContext('divs').toBeDefined();
+    expect(componentInstance.divs.length).toBe(3);
+
+    expect(componentInstance.elRefA).withContext('A').toBeDefined();
+    expect(componentInstance.elRefA.nativeElement.textContent).toBe('Content A');
+
+    expect(fixture.componentInstance.elRefB()).withContext('B').toBeDefined();
+    expect(componentInstance.elRefB()?.nativeElement.textContent).toBe('Content B');
+
+    expect(fixture.componentInstance.elRefC).withContext('C').toBeDefined();
+    expect(componentInstance.elRefC.nativeElement.textContent).toBe('Content C');
   });
 });

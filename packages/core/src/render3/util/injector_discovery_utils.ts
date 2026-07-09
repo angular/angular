@@ -16,7 +16,7 @@ import {INJECTOR_DEF_TYPES} from '../../di/internal_tokens';
 import {NullInjector} from '../../di/null_injector';
 import {SingleProvider, walkProviderTree} from '../../di/provider_collection';
 import {EnvironmentInjector, R3Injector} from '../../di/r3_injector';
-import {Type} from '../../interface/type';
+import {AbstractType, Type} from '../../interface/type';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../../linker/ng_module_factory';
 import {deepForEach} from '../../util/array_utils';
 import {throwError} from '../../util/assert';
@@ -38,6 +38,7 @@ import {INJECTOR, LView, TVIEW} from '../interfaces/view';
 
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './injector_utils';
 import {getNativeByTNode} from './view_utils';
+import {getAllSpecialProviders} from '../debug/special_providers';
 
 /**
  * Discovers the dependencies of an injectable instance. Provides DI information about each
@@ -218,7 +219,15 @@ function getProviderImportsContainer(injector: Injector): Type<unknown> | null {
 function getNodeInjectorProviders(injector: NodeInjector): ProviderRecord[] {
   const diResolver = getNodeInjectorTNode(injector);
   const {resolverToProviders} = getFrameworkDIDebugData();
-  return resolverToProviders.get(diResolver as TNode) ?? [];
+  const existingProviders = resolverToProviders.get(diResolver as TNode) ?? [];
+
+  const specialProviders: ProviderRecord[] = Array.from(getAllSpecialProviders()).map((token) => ({
+    token: token as any,
+    isViewProvider: false,
+    provider: token as any,
+  }));
+
+  return [...existingProviders, ...specialProviders];
 }
 
 /**
@@ -242,10 +251,13 @@ function getNodeInjectorProviders(injector: NodeInjector): ProviderRecord[] {
  *
  */
 function getProviderImportPaths(
-  providerImportsContainer: Type<unknown>,
-): Map<SingleProvider, (Type<unknown> | InjectorType<unknown>)[]> {
-  const providerToPath = new Map<SingleProvider, (Type<unknown> | InjectorType<unknown>)[]>();
-  const visitedContainers = new Set<Type<unknown>>();
+  providerImportsContainer: Type<unknown> | AbstractType<unknown>,
+): Map<SingleProvider, (Type<unknown> | AbstractType<unknown> | InjectorType<unknown>)[]> {
+  const providerToPath = new Map<
+    SingleProvider,
+    (Type<unknown> | AbstractType<unknown> | InjectorType<unknown>)[]
+  >();
+  const visitedContainers = new Set<Type<unknown> | AbstractType<unknown>>();
   const visitor = walkProviderTreeToDiscoverImportPaths(providerToPath, visitedContainers);
 
   walkProviderTree(providerImportsContainer, visitor, [], new Set());
@@ -346,10 +358,19 @@ function getProviderImportPaths(
  *     void
  */
 function walkProviderTreeToDiscoverImportPaths(
-  providerToPath: Map<SingleProvider, (Type<unknown> | InjectorType<unknown>)[]>,
-  visitedContainers: Set<Type<unknown>>,
-): (provider: SingleProvider, container: Type<unknown> | InjectorType<unknown>) => void {
-  return (provider: SingleProvider, container: Type<unknown> | InjectorType<unknown>) => {
+  providerToPath: Map<
+    SingleProvider,
+    (Type<unknown> | AbstractType<unknown> | InjectorType<unknown>)[]
+  >,
+  visitedContainers: Set<Type<unknown> | AbstractType<unknown>>,
+): (
+  provider: SingleProvider,
+  container: Type<unknown> | AbstractType<unknown> | InjectorType<unknown>,
+) => void {
+  return (
+    provider: SingleProvider,
+    container: Type<unknown> | AbstractType<unknown> | InjectorType<unknown>,
+  ) => {
     // If the provider is not already in the providerToPath map,
     // add an entry with the provider as the key and an array containing the current container as
     // the value

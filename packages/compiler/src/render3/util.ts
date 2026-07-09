@@ -11,6 +11,15 @@ import * as o from '../output/output_ast';
 
 import {Identifiers} from './r3_identifiers';
 
+/** Regex that includes unsafe characters in an object literal property name. */
+const UNSAFE_OBJECT_KEY_NAME_REGEXP = /[-.]/;
+
+/** Pattern used to validate a JavaScript identifier. */
+export const IDENTIFIER_PATTERN = /^[$A-Z_][0-9A-Z_$]*$/i;
+
+/** Pattern used to identify a `let` parameter. */
+export const LET_PATTERN = /^let\s+([\S\s]*)/;
+
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
   if (numParams === 0) {
     return o.expressionType(type);
@@ -46,7 +55,7 @@ export function prepareSyntheticListenerName(name: string, phase: string) {
 }
 
 export function getSafePropertyAccessString(accessor: string, name: string): string {
-  const escapedName = escapeIdentifier(name, false, false);
+  const escapedName = escapeIdentifier(name, false);
   return escapedName !== name ? `${accessor}[${escapedName}]` : `${accessor}.${name}`;
 }
 
@@ -87,6 +96,14 @@ export function wrapReference(value: any): R3Reference {
 export function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean): o.Expression {
   const values = o.literalArr(refs.map((ref) => ref.value));
   return shouldForwardDeclare ? o.arrowFn([], values) : values;
+}
+
+export function tsIgnoreComment(): o.LeadingComment {
+  return o.leadingComment('@ts-ignore', true, true);
+}
+
+export function isUnsafeObjectKey(key: string): boolean {
+  return UNSAFE_OBJECT_KEY_NAME_REGEXP.test(key);
 }
 
 /**

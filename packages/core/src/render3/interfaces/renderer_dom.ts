@@ -52,6 +52,16 @@ export interface RNode {
    * Used exclusively for building up DOM which are static (ie not View roots)
    */
   appendChild(newChild: RNode): RNode;
+
+  /**
+   * Returns the root node containing this node. This is either:
+   * 1. The `Document` containing the node, if attached in light DOM.
+   * 2. The `ShadowRoot` containing the node, if attached in shadow DOM.
+   * 3. The root node of a detached tree.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode
+   */
+  getRootNode?(options?: {composed?: boolean}): RNode;
 }
 
 /**

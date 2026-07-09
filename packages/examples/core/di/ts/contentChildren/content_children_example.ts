@@ -7,7 +7,15 @@
  */
 
 // #docregion Component
-import {Component, ContentChildren, Directive, input, QueryList, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ContentChildren,
+  Directive,
+  input,
+  QueryList,
+  signal,
+} from '@angular/core';
 
 @Directive({
   selector: 'pane',
@@ -22,6 +30,7 @@ export class Pane {
     <div class="top-level">Top level panes: {{ serializedPanes }}</div>
     <div class="nested">Arbitrary nested panes: {{ serializedNestedPanes }}</div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class Tab {
   @ContentChildren(Pane) topLevelPanes!: QueryList<Pane>;
@@ -54,6 +63,7 @@ export class Tab {
 
     <button (click)="show()">Show 3</button>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class ContentChildrenComp {
   shouldShow = signal(false);

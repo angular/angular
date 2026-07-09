@@ -6,20 +6,35 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, linkedSignal, type Signal, untracked, type WritableSignal} from '@angular/core';
-import type {Field} from '../api/field_directive';
 import {
-  AggregateMetadataKey,
+  computed,
+  linkedSignal,
+  type Signal,
+  untracked,
+  type WritableSignal,
+  type Resource,
+  type WritableResource,
+} from '@angular/core';
+import {
   MAX,
   MAX_LENGTH,
-  MetadataKey,
+  type MetadataKey,
   MIN,
   MIN_LENGTH,
   PATTERN,
   REQUIRED,
-} from '../api/metadata';
-import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
-import type {ValidationError} from '../api/validation_errors';
+  IS_ASYNC_VALIDATION_RESOURCE,
+} from '../api/rules/metadata';
+import type {NgValidationError, ValidationError} from '../api/rules/validation/validation_errors';
+import type {
+  DisabledReason,
+  FieldContext,
+  FieldState,
+  FieldTree,
+  MarkAsTouchedOptions,
+} from '../api/types';
+import type {FormField} from '../directive/form_field';
+import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
 import {FieldNodeContext} from './context';
@@ -29,14 +44,18 @@ import {FieldMetadataState} from './metadata';
 import {FIELD_PROXY_HANDLER} from './proxy';
 import {FieldNodeState} from './state';
 import {
-  type ChildFieldNodeOptions,
   ChildFieldNodeStructure,
   type FieldNodeOptions,
   type FieldNodeStructure,
   RootFieldNodeStructure,
+  type TrackingKey,
 } from './structure';
 import {FieldSubmitState} from './submit';
 import {ValidationState} from './validation';
+
+export interface ControlValueSignal<T> extends WritableSignal<T> {
+  rawSet(value: T): void;
+}
 
 /**
  * Internal node in the form tree for a given field.
@@ -58,6 +77,7 @@ export class FieldNode implements FieldState<unknown> {
   readonly nodeState: FieldNodeState;
   readonly submitState: FieldSubmitState;
   readonly fieldAdapter: FieldAdapter;
+  readonly controlValue: ControlValueSignal<unknown>;
 
   private _context: FieldContext<unknown> | undefined = undefined;
   get context(): FieldContext<unknown> {
@@ -68,14 +88,53 @@ export class FieldNode implements FieldState<unknown> {
    * Proxy to this node which allows navigation of the form graph below it.
    */
   readonly fieldProxy = new Proxy(() => this, FIELD_PROXY_HANDLER) as unknown as FieldTree<any>;
+  private readonly pathNode: FieldPathNode;
 
   constructor(options: FieldNodeOptions) {
+    this.pathNode = options.pathNode;
     this.fieldAdapter = options.fieldAdapter;
     this.structure = this.fieldAdapter.createStructure(this, options);
     this.validationState = this.fieldAdapter.createValidationState(this, options);
     this.nodeState = this.fieldAdapter.createNodeState(this, options);
     this.metadataState = new FieldMetadataState(this);
     this.submitState = new FieldSubmitState(this);
+    this.controlValue = this.controlValueSignal();
+    // We eagerly create metadata at the end of construction so that the node is fully constructed
+    // before metadata creation logic runs (which may access other states on the node).
+    this.metadataState.runMetadataCreateLifecycle();
+  }
+
+  focusBoundControl(options?: FocusOptions): void {
+    this.getBindingForFocus()?.focus(options);
+  }
+
+  /**
+   * Gets the Field directive binding that should be focused when the developer calls
+   * `focusBoundControl` on this node.
+   *
+   * This will prioritize focusable bindings to this node, and if multiple exist, it will return
+   * the first one in the DOM. If no focusable bindings exist on this node, it will return the
+   * first focusable binding in the DOM for any descendant node of this one.
+   */
+  private getBindingForFocus():
+    | (FormField<unknown> & {focus: (options?: FocusOptions) => void})
+    | undefined {
+    // First try to focus one of our own bindings.
+    const own = this.formFieldBindings()
+      .filter(
+        (b): b is FormField<unknown> & {focus: (options?: FocusOptions) => void} =>
+          b.focus !== undefined,
+      )
+      .reduce(
+        firstInDom<FormField<unknown> & {focus: (options?: FocusOptions) => void}>,
+        undefined,
+      );
+    if (own) return own;
+    // Fallback to focusing the bound control for one of our children.
+    return this.structure
+      .children()
+      .map((child) => child.getBindingForFocus())
+      .reduce(firstInDom, undefined);
   }
 
   /**
@@ -93,6 +152,10 @@ export class FieldNode implements FieldState<unknown> {
     },
   });
 
+  get fieldTree(): FieldTree<unknown> {
+    return this.fieldProxy;
+  }
+
   get logicNode(): LogicNode {
     return this.structure.logic;
   }
@@ -101,20 +164,19 @@ export class FieldNode implements FieldState<unknown> {
     return this.structure.value;
   }
 
-  private _controlValue = linkedSignal(() => this.value());
-  get controlValue(): Signal<unknown> {
-    return this._controlValue.asReadonly();
-  }
-
   get keyInParent(): Signal<string | number> {
     return this.structure.keyInParent;
   }
 
-  get errors(): Signal<ValidationError.WithField[]> {
+  get errors(): Signal<ValidationError.WithFieldTree[]> {
     return this.validationState.errors;
   }
 
-  get errorSummary(): Signal<ValidationError.WithField[]> {
+  get parseErrors(): Signal<ValidationError.WithFormField[]> {
+    return this.validationState.parseErrors;
+  }
+
+  get errorSummary(): Signal<ValidationError.WithFieldTree[]> {
     return this.validationState.errorSummary;
   }
 
@@ -154,8 +216,8 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.readonly;
   }
 
-  get fieldBindings(): Signal<readonly Field<unknown>[]> {
-    return this.nodeState.fieldBindings;
+  get formFieldBindings(): Signal<readonly FormField<unknown>[]> {
+    return this.nodeState.formFieldBindings;
   }
 
   get submitting(): Signal<boolean> {
@@ -166,50 +228,72 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  private metadataOrUndefined<M>(key: AggregateMetadataKey<M, any>): Signal<M> | undefined {
-    return this.hasMetadata(key) ? this.metadata(key) : undefined;
-  }
-
-  get max(): Signal<number | undefined> | undefined {
-    return this.metadataOrUndefined(MAX);
+  get max(): Signal<{} | undefined> | undefined {
+    const maxKey = this.metadata(MAX)?.();
+    return maxKey ? this.metadata(maxKey) : undefined;
   }
 
   get maxLength(): Signal<number | undefined> | undefined {
-    return this.metadataOrUndefined(MAX_LENGTH);
+    return this.metadata(MAX_LENGTH);
   }
 
-  get min(): Signal<number | undefined> | undefined {
-    return this.metadataOrUndefined(MIN);
+  get min(): Signal<{} | undefined> | undefined {
+    const minKey = this.metadata(MIN)?.();
+    return minKey ? this.metadata(minKey) : undefined;
   }
 
   get minLength(): Signal<number | undefined> | undefined {
-    return this.metadataOrUndefined(MIN_LENGTH);
+    return this.metadata(MIN_LENGTH);
   }
 
   get pattern(): Signal<readonly RegExp[]> {
-    return this.metadataOrUndefined(PATTERN) ?? EMPTY;
+    return this.metadata(PATTERN) ?? EMPTY;
   }
 
   get required(): Signal<boolean> {
-    return this.metadataOrUndefined(REQUIRED) ?? FALSE;
+    return this.metadata(REQUIRED) ?? FALSE;
   }
 
-  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
-  metadata<M>(key: MetadataKey<M>): M | undefined;
-  metadata<M>(key: MetadataKey<M> | AggregateMetadataKey<M, any>): Signal<M> | M | undefined {
+  metadata<M>(key: MetadataKey<M, any, any>): M | undefined {
     return this.metadataState.get(key);
   }
-  hasMetadata(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean {
+
+  getError<K extends NgValidationError['kind']>(
+    kind: K,
+  ): (Extract<NgValidationError, {kind: K}> & ValidationError.WithFieldTree) | undefined;
+  getError(kind: string): ValidationError.WithFieldTree | undefined;
+  getError(kind: string): ValidationError.WithFieldTree | undefined {
+    return this.errors().find((e) => e.kind === kind);
+  }
+
+  hasMetadata(key: MetadataKey<any, any, any>): boolean {
     return this.metadataState.has(key);
   }
 
-  /**
-   * Marks this specific field as touched.
-   */
-  markAsTouched(): void {
+  markAsTouched(options?: MarkAsTouchedOptions): void {
+    if (this.structure.isOrphaned()) {
+      return;
+    }
+    untracked(() => {
+      this.markAsTouchedInternal(options);
+      this.flushSync();
+    });
+  }
+
+  markAsTouchedInternal(options?: MarkAsTouchedOptions): void {
+    if (this.structure.isOrphaned()) {
+      return;
+    }
+    if (this.validationState.shouldSkipValidation()) {
+      return;
+    }
     this.nodeState.markAsTouched();
-    this.pendingSync()?.abort();
-    this.sync();
+    if (options?.skipDescendants) {
+      return;
+    }
+    for (const child of this.structure.children()) {
+      child.markAsTouchedInternal();
+    }
   }
 
   /**
@@ -217,6 +301,20 @@ export class FieldNode implements FieldState<unknown> {
    */
   markAsDirty(): void {
     this.nodeState.markAsDirty();
+  }
+
+  /**
+   * Marks this specific field as pristine.
+   */
+  markAsPristine(): void {
+    this.nodeState.markAsPristine();
+  }
+
+  /**
+   * Marks this specific field as untouched.
+   */
+  markAsUntouched(): void {
+    this.nodeState.markAsUntouched();
   }
 
   /**
@@ -231,26 +329,76 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   private _reset(value?: unknown) {
-    if (value) {
+    this.pendingSync()?.abort();
+
+    if (value !== undefined) {
       this.value.set(value);
     }
+
+    // controlValue is a linkedSignal that only auto-resets when value *changes*.
+    // When the reset value equals the current value (or no value was passed),
+    // controlValue retains the typed text. Force it to match value by setting
+    // directly via the raw interface, which doesn't trigger a sync.
+    this.controlValue.rawSet(this.value());
 
     this.nodeState.markAsUntouched();
     this.nodeState.markAsPristine();
 
-    for (const child of this.structure.children()) {
+    for (const binding of this.formFieldBindings()) {
+      binding.reset();
+    }
+
+    for (const child of this.structure.materializedChildren()) {
       child._reset();
     }
   }
 
   /**
-   * Sets the control value of the field. This value may be debounced before it is synchronized with
-   * the field's {@link value} signal, depending on the debounce configuration.
+   * Reloads all asynchronous validators for this field and its descendants.
    */
-  setControlValue(newValue: unknown): void {
-    this._controlValue.set(newValue);
-    this.markAsDirty();
-    this.debounceSync();
+  reloadValidation(): void {
+    untracked(() => this._reloadValidation());
+  }
+
+  private _reloadValidation(): void {
+    const keys = this.logicNode.logic.getMetadataKeys();
+    for (const key of keys) {
+      if (key[IS_ASYNC_VALIDATION_RESOURCE]) {
+        const resource = this.metadata(key)! as Resource<unknown> &
+          Partial<Pick<WritableResource<unknown>, 'reload'>>;
+        resource.reload?.();
+      }
+    }
+
+    for (const child of this.structure.children()) {
+      child._reloadValidation();
+    }
+  }
+
+  /**
+   * Creates a linked signal that initiates a {@link debounceSync} when set.
+   */
+  private controlValueSignal(): ControlValueSignal<unknown> {
+    const controlValue = linkedSignal(this.value) as ControlValueSignal<unknown>;
+
+    controlValue.rawSet = controlValue.set;
+    controlValue.set = (newValue) => {
+      // We intentionally allow same-value updates here to ensure that setting the control value
+      // (even to the same value) still marks the control as dirty.
+      controlValue.rawSet(newValue);
+      this.markAsDirty();
+      this.debounceSync();
+    };
+    const rawUpdate = controlValue.update;
+    controlValue.update = (updateFn) => {
+      // We intentionally allow same-value updates here to ensure that updating the control value
+      // (even to the same value) still marks the control as dirty.
+      rawUpdate(updateFn);
+      this.markAsDirty();
+      this.debounceSync();
+    };
+
+    return controlValue;
   }
 
   /**
@@ -261,17 +409,30 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
+   * If there is a pending sync, abort it and sync immediately.
+   */
+  private flushSync() {
+    const pending = this.pendingSync();
+    if (pending && !pending.signal.aborted) {
+      pending.abort();
+      this.sync();
+    }
+  }
+
+  /**
    * Initiates a debounced {@link sync}.
    *
    * If a debouncer is configured, the synchronization will occur after the debouncer resolves. If
-   * no debouncer is configured, the synchronization happens immediately. If {@link setControlValue}
-   * is called again while a debounce is pending, the previous debounce operation is aborted in
-   * favor of the new one.
+   * no debouncer is configured, the synchronization happens immediately. If {@link controlValue} is
+   * updated again while a debounce is pending, the previous debounce operation is aborted in favor
+   * of the new one.
    */
   private async debounceSync() {
-    this.pendingSync()?.abort();
+    const debouncer = untracked(() => {
+      this.pendingSync()?.abort();
+      return this.nodeState.debouncer();
+    });
 
-    const debouncer = this.nodeState.debouncer();
     if (debouncer) {
       const controller = new AbortController();
       const promise = debouncer(controller.signal);
@@ -282,6 +443,10 @@ export class FieldNode implements FieldState<unknown> {
           return; // Do not sync if the debounce was aborted.
         }
       }
+    }
+
+    if (this.structure.isOrphaned()) {
+      return;
     }
 
     this.sync();
@@ -299,34 +464,49 @@ export class FieldNode implements FieldState<unknown> {
     return adapter.newRoot(fieldManager, value, pathNode, adapter);
   }
 
-  /**
-   * Creates a child field node based on the given options.
-   */
-  private static newChild(options: ChildFieldNodeOptions): FieldNode {
-    return options.fieldAdapter.newChild(options);
-  }
-
   createStructure(options: FieldNodeOptions) {
     return options.kind === 'root'
       ? new RootFieldNodeStructure(
           this,
-          options.pathNode,
           options.logic,
           options.fieldManager,
           options.value,
-          options.fieldAdapter,
-          FieldNode.newChild,
+          this.newChild.bind(this),
         )
       : new ChildFieldNodeStructure(
           this,
-          options.pathNode,
           options.logic,
           options.parent,
           options.identityInParent,
           options.initialKeyInParent,
-          options.fieldAdapter,
-          FieldNode.newChild,
+          this.newChild.bind(this),
         );
+  }
+
+  private newChild(key: string, trackingId: TrackingKey | undefined, isArray: boolean): FieldNode {
+    // Determine the logic for the field that we're defining.
+    let childPath: FieldPathNode | undefined;
+    let childLogic: LogicNode;
+    if (isArray) {
+      // Fields for array elements have their logic defined by the `element` mechanism.
+      // TODO: other dynamic data
+      childPath = this.pathNode.getChild(DYNAMIC);
+      childLogic = this.structure.logic.getChild(DYNAMIC);
+    } else {
+      // Fields for plain properties exist in our logic node's child map.
+      childPath = this.pathNode.getChild(key);
+      childLogic = this.structure.logic.getChild(key);
+    }
+
+    return this.fieldAdapter.newChild({
+      kind: 'child',
+      parent: this as ParentFieldNode,
+      pathNode: childPath,
+      logic: childLogic,
+      initialKeyInParent: key,
+      identityInParent: trackingId,
+      fieldAdapter: this.fieldAdapter,
+    });
   }
 }
 
@@ -340,4 +520,15 @@ const FALSE = computed(() => false);
 export interface ParentFieldNode extends FieldNode {
   readonly value: WritableSignal<Record<string, unknown>>;
   readonly structure: FieldNodeStructure & {value: WritableSignal<Record<string, unknown>>};
+}
+
+/** Given two elements, returns the one that appears earlier in the DOM. */
+function firstInDom<T extends FormField<unknown>>(
+  a: T | undefined,
+  b: T | undefined,
+): T | undefined {
+  if (!a) return b;
+  if (!b) return a;
+  const position = a.element.compareDocumentPosition(b.element);
+  return position & Node.DOCUMENT_POSITION_PRECEDING ? b : a;
 }

@@ -131,6 +131,31 @@ describe('Preview', () => {
     }
   });
 
+  it('should show the matching Angie pose for each loading step', async () => {
+    const {fixture, fakeNodeRuntimeState} = beforeEach();
+
+    const poseByStep: Record<number, string> = {
+      [LoadingStep.NOT_STARTED]: 'greeting',
+      [LoadingStep.BOOT]: 'greeting',
+      [LoadingStep.LOAD_FILES]: 'greeting',
+      [LoadingStep.INSTALL]: 'coding-01',
+      [LoadingStep.START_DEV_SERVER]: 'superhero',
+    };
+
+    for (const step of Object.keys(poseByStep).map(Number)) {
+      fakeNodeRuntimeState.loadingStep.set(step);
+      await fixture.whenStable();
+
+      const angie = fixture.debugElement.query(
+        By.css('.adev-embedded-editor-preview-loading-angie'),
+      );
+      expect(angie).not.toBeNull();
+      expect(angie.nativeElement.getAttribute('src')).toBe(
+        `assets/images/angie/${poseByStep[step]}.svg`,
+      );
+    }
+  });
+
   it('should render the error component and hide the iframe and loading element if loadingStep is ERROR', async () => {
     const {fixture, fakeNodeRuntimeState, iframeElement, getLoadingElementsWrapper} = beforeEach();
 

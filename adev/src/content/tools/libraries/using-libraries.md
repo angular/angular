@@ -1,33 +1,27 @@
-# Использование библиотек Angular из npm
+# Usage of Angular libraries published to npm
 
-При создании приложения Angular используйте преимущества продвинутых библиотек от разработчиков фреймворка (
-first-party), а также богатую экосистему сторонних библиотек.
-[Angular Material][AngularMaterialMain] — пример такой библиотеки от команды Angular.
+When you build your Angular application, take advantage of sophisticated first-party libraries, as well as a rich ecosystem of third-party libraries.
+[Angular Material][AngularMaterialMain] is an example of a sophisticated first-party library.
 
-## Установка библиотек
+## Install libraries
 
-Библиотеки публикуются как [npm-пакеты][GuideNpmPackages], обычно вместе со схематиками (schematics), которые
-интегрируют их с Angular CLI.
-Чтобы интегрировать переиспользуемый код библиотеки в приложение, необходимо установить пакет и импортировать
-предоставляемую функциональность там, где вы её используете.
-Для большинства опубликованных библиотек Angular используйте команду Angular CLI `ng add <lib_name>`.
+Libraries are published as [npm packages][GuideNpmPackages], usually together with schematics that integrate them with the Angular CLI.
+To integrate reusable library code into an application, you need to install the package and import the provided functionality in the location you use it.
+For most published Angular libraries, use the `ng add <lib_name>` Angular CLI command.
 
-Команда `ng add` использует менеджер пакетов для установки библиотеки и запускает включенные в пакет схематики для
-настройки кода проекта.
-Примеры менеджеров пакетов: [npm][NpmjsMain] или [yarn][YarnpkgMain].
-Дополнительная настройка кода проекта может включать добавление операторов импорта, шрифтов и тем.
+The `ng add` Angular CLI command uses a package manager to install the library package and invokes schematics that are included in the package to other scaffolding within the project code.
+Examples of package managers include [npm][NpmjsMain] or [yarn][YarnpkgMain].
+Additional scaffolding within the project code includes import statements, fonts, and themes.
 
-Опубликованная библиотека обычно содержит файл `README` или другую документацию о том, как добавить эту библиотеку в
-приложение.
-Пример см. в документации [Angular Material][AngularMaterialMain].
+A published library typically provides a `README` file or other documentation on how to add that library to your application.
+For an example, see the [Angular Material][AngularMaterialMain] documentation.
 
-### Типизация библиотек
+### Library typings
 
-Обычно пакеты библиотек включают файлы типизации `.d.ts`; см. примеры в `node_modules/@angular/material`.
-Если пакет вашей библиотеки не содержит типизации и IDE выдает ошибку, возможно, потребуется установить пакет
-`@types/<lib_name>` вместе с библиотекой.
+Typically, library packages include typings in `.d.ts` files; see examples in `node_modules/@angular/material`.
+If the package of your library does not include typings and your IDE complains, you might need to install the `@types/<lib_name>` package with the library.
 
-Например, предположим, что у вас есть библиотека с именем `d3`:
+For example, suppose you have a library named `d3`:
 
 ```shell
 
@@ -36,151 +30,127 @@ npm install @types/d3 --save-dev
 
 ```
 
-Типы, определенные в пакете `@types/` для установленной в рабочем пространстве библиотеки, автоматически добавляются в
-конфигурацию TypeScript проекта, использующего эту библиотеку.
-TypeScript по умолчанию ищет типы в каталоге `node_modules/@types`, поэтому вам не нужно добавлять каждый пакет типов
-отдельно.
+Types defined in a `@types/` package for a library installed into the workspace are automatically added to the TypeScript configuration for the project that uses that library.
+TypeScript looks for types in the `node_modules/@types` directory by default, so you do not have to add each type package individually.
 
-Если для библиотеки нет доступных типов в `@types/`, вы можете использовать её, добавив типизацию вручную.
-Для этого:
+If a library does not have typings available at `@types/`, you may use it by manually adding typings for it.
+To do this:
 
-1. Создайте файл `typings.d.ts` в каталоге `src/`.
-   Этот файл автоматически включается как глобальное определение типов.
+1. Create a `typings.d.ts` file in your `src/` directory.
+   This file is automatically included as global type definition.
 
-1. Добавьте следующий код в `src/typings.d.ts`:
+1. Add the following code in `src/typings.d.ts`:
 
-```ts
-declare module 'host' {
-  export interface Host {
-    protocol?: string;
-    hostname?: string;
-    pathname?: string;
-  }
-  export function parse(url: string, queryString?: string): Host;
-}
+   ```ts
+   declare module 'host' {
+     export interface Host {
+       protocol?: string;
+       hostname?: string;
+       pathname?: string;
+     }
+     export function parse(url: string, queryString?: string): Host;
+   }
+   ```
 
-```
+1. In the component or file that uses the library, add the following code:
 
-1. В компоненте или файле, использующем библиотеку, добавьте следующий код:
+   ```ts
+   import * as host from 'host';
+   const parsedUrl = host.parse('https://angular.dev');
+   console.log(parsedUrl.hostname);
+   ```
 
-```ts
-import * as host from 'host';
-const parsedUrl = host.parse('https://angular.dev');
-console.log(parsedUrl.hostname);
+Define more typings as needed.
 
-```
+## Updating libraries
 
-Определите больше типов по мере необходимости.
+A library is able to be updated by the publisher, and also has individual dependencies which need to be kept current.
+To check for updates to your installed libraries, use the [`ng update`][CliUpdate] Angular CLI command.
 
-## Обновление библиотек
+Use `ng update <lib_name>` Angular CLI command to update individual library versions.
+The Angular CLI checks the latest published release of the library, and if the latest version is newer than your installed version, downloads it and updates your `package.json` to match the latest version.
 
-Библиотека может обновляться издателем, а также имеет собственные зависимости, которые необходимо поддерживать в
-актуальном состоянии.
-Для проверки обновлений установленных библиотек используйте команду Angular CLI [`ng update`][CliUpdate].
+When you update Angular to a new version, you need to make sure that any libraries you are using are current.
+If libraries have interdependencies, you might have to update them in a particular order.
+See the [Angular Update Guide][AngularUpdateMain] for help.
 
-Используйте команду `ng update <lib_name>` для обновления версий отдельных библиотек.
-Angular CLI проверяет последний опубликованный релиз библиотеки и, если он новее установленной версии, загружает его и
-обновляет `package.json` в соответствии с последней версией.
+## Adding a library to the runtime global scope
 
-При обновлении Angular до новой версии необходимо убедиться, что все используемые библиотеки актуальны.
-Если библиотеки имеют взаимозависимости, возможно, придется обновлять их в определенном порядке.
-См. [Angular Update Guide][AngularUpdateMain] для получения помощи.
+If a legacy JavaScript library is not imported into an application, you may add it to the runtime global scope and load it as if it was added in a script tag.
+Configure the Angular CLI to do this at build time using the `scripts` and `styles` options of the build target in the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file.
 
-## Добавление библиотеки в глобальную область видимости (runtime global scope)
+For example, to use the [Bootstrap 4][GetbootstrapDocs40GettingStartedIntroduction] library
 
-Если устаревшая JavaScript-библиотека не импортируется в приложение, её можно добавить в глобальную область видимости и
-загрузить так, как если бы она была добавлена через тег script.
-Настройте Angular CLI для этого на этапе сборки, используя опции `scripts` и `styles` целевой сборки (build target) в
-файле конфигурации рабочего пространства [`angular.json`][GuideWorkspaceConfig].
+1. Install the library and the associated dependencies using the npm package manager:
 
-Например, чтобы использовать библиотеку [Bootstrap 4][GetbootstrapDocs40GettingStartedIntroduction]:
+   ```shell
+     npm install jquery --save
+     npm install popper.js --save
+     npm install bootstrap --save
+   ```
 
-1. Установите библиотеку и связанные зависимости с помощью менеджера пакетов npm:
+1. In the `angular.json` configuration file, add the associated script files to the `scripts` array:
 
-```shell
-npm install jquery --save
-npm install popper.js --save
-npm install bootstrap --save
+   ```json
+     "scripts": [
+         "node_modules/jquery/dist/jquery.slim.js",
+         "node_modules/popper.js/dist/umd/popper.js",
+         "node_modules/bootstrap/dist/js/bootstrap.js"
+       ],
+   ```
 
-```
+1. Add the `bootstrap.css` CSS file to the `styles` array:
 
-1. В конфигурационном файле `angular.json` добавьте соответствующие файлы скриптов в массив `scripts`:
+   ```json
+     "styles": [
+         "node_modules/bootstrap/dist/css/bootstrap.css",
+         "src/styles.css"
+     ],
+   ```
 
-```json
-"scripts": [
-  "node_modules/jquery/dist/jquery.slim.js",
-  "node_modules/popper.js/dist/umd/popper.js",
-  "node_modules/bootstrap/dist/js/bootstrap.js"
-],
+1. Run or restart the `ng serve` Angular CLI command to see Bootstrap 4 work in your application.
 
-```
+### Using runtime-global libraries inside your app
 
-1. Добавьте CSS-файл `bootstrap.css` в массив `styles`:
-
-```json
-"styles": [
-  "node_modules/bootstrap/dist/css/bootstrap.css",
-  "src/styles.css"
-],
-
-```
-
-1. Запустите или перезапустите команду `ng serve`, чтобы увидеть работу Bootstrap 4 в вашем приложении.
-
-### Использование глобальных библиотек внутри приложения
-
-После импорта библиотеки с использованием массива "scripts", **не** импортируйте её с помощью оператора `import` в коде
-TypeScript.
-Следующий фрагмент кода является примером (неправильного) оператора импорта.
+After you import a library using the "scripts" array, do **not** import it using an import statement in your TypeScript code.
+The following code snippet is an example import statement.
 
 ```ts
-
 import * as $ from 'jquery';
-
 ```
 
-Если вы импортируете её через `import`, у вас будет две разные копии библиотеки: одна импортирована как глобальная
-библиотека, а другая — как модуль.
-Это особенно плохо для библиотек с плагинами, таких как JQuery, поскольку каждая копия включает разные плагины.
+If you import it using import statements, you have two different copies of the library: one imported as a global library, and one imported as a module.
+This is especially bad for libraries with plugins, like jQuery, because each copy includes different plugins.
 
-Вместо этого выполните команду `npm install @types/jquery`, чтобы загрузить типизацию для вашей библиотеки, а затем
-следуйте шагам установки библиотеки.
-Это даст вам доступ к глобальным переменным, предоставляемым этой библиотекой.
+Instead, run the `npm install @types/jquery` Angular CLI command to download typings for your library and then follow the library installation steps.
+This gives you access to the global variables exposed by that library.
 
-### Определение типизации для глобальных библиотек
+### Defining typings for runtime-global libraries
 
-Если глобальная библиотека, которую нужно использовать, не имеет глобальной типизации, вы можете объявить её вручную как
-`any` в файле `src/typings.d.ts`.
+If the global library you need to use does not have global typings, you can declare them manually as `any` in `src/typings.d.ts`.
 
-Например:
+For example:
 
 ```ts
-
 declare var libraryName: any;
-
 ```
 
-Некоторые скрипты расширяют другие библиотеки; например, плагины JQuery:
+Some scripts extend other libraries; for instance with jQuery plugins:
 
 ```ts
-
 $('.test').myPlugin();
-
 ```
 
-В этом случае установленный `@types/jquery` не включает `myPlugin`, поэтому нужно добавить интерфейс в
-`src/typings.d.ts`.
-Например:
+In this case, the installed `@types/jquery` does not include `myPlugin`, so you need to add an interface in `src/typings.d.ts`.
+For example:
 
 ```ts
-
 interface JQuery {
   myPlugin(options?: any): any;
 }
-
 ```
 
-Если не добавить интерфейс для расширения, определенного в скрипте, IDE покажет ошибку:
+If you do not add the interface for the script-defined extension, your IDE shows an error:
 
 ```text
 
@@ -193,7 +163,7 @@ interface JQuery {
 [GuideWorkspaceConfig]: reference/configs/workspace-config 'Angular workspace configuration | Angular'
 [Resources]: resources 'Explore Angular Resources | Angular'
 [AngularMaterialMain]: https://material.angular.dev 'Angular Material | Angular'
-[AngularUpdateMain]: https://angular.dev/update-guide 'Angular Update Guide | Angular'
+[AngularUpdateMain]: /update-guide 'Angular Update Guide | Angular'
 [GetbootstrapDocs40GettingStartedIntroduction]: https://getbootstrap.com/docs/4.0/getting-started/introduction 'Introduction | Bootstrap'
 [NpmjsMain]: https://www.npmjs.com 'npm'
 [YarnpkgMain]: https://yarnpkg.com ' Yarn'

@@ -58,6 +58,8 @@ describe('pipe', () => {
     @Component({
       template: '{{person.name | countingPipe}}',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       person = {name: 'bob'};
@@ -92,6 +94,8 @@ describe('pipe', () => {
     @Component({
       template: `<div my-dir [dirProp]="'a'|double"></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(Dir) directive!: Dir;
@@ -108,6 +112,8 @@ describe('pipe', () => {
     @Component({
       template: `{{person.name | multiArgPipe:'one':person.address.city}}`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       person = {name: 'value', address: {city: 'two'}};
@@ -124,6 +130,8 @@ describe('pipe', () => {
     @Component({
       template: `{{person.name | multiArgPipe:'a':'b'}} {{0 | multiArgPipe:1:2:3}}`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       person = {name: 'value'};
@@ -167,6 +175,8 @@ describe('pipe', () => {
       selector: 'app',
       template: '{{ count | number }}',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       count = 10;
@@ -219,6 +229,8 @@ describe('pipe', () => {
       selector: 'app',
       template: '{{ count | number }}',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       count = 10;
@@ -251,6 +263,8 @@ describe('pipe', () => {
     @Component({
       template: `{{person.name | identityPipe}}`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       person = {name: 'Megatron'};
@@ -291,6 +305,8 @@ describe('pipe', () => {
     @Component({
       template: '{{person.name | duplicatePipe}}',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       person = {name: 'bob'};
@@ -317,6 +333,8 @@ describe('pipe', () => {
     @Component({
       template: `{{ condition ? 'a' : 'b' | pipe }}`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       condition = false;
@@ -374,6 +392,8 @@ describe('pipe', () => {
       selector: 'app',
       template: '{{ value | sayHello }}',
       imports: [SayHelloPipe],
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class AppComponent {
       value = 'test';
@@ -389,6 +409,8 @@ describe('pipe', () => {
       @Component({
         template: '{{person.name | countingPipe}}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         person = {name: null as string | null};
@@ -454,6 +476,8 @@ describe('pipe', () => {
       @Component({
         template: '{{person.name | countingImpurePipe}}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         person = {name: 'bob'};
@@ -483,6 +507,8 @@ describe('pipe', () => {
           <div [id]="2 | countingImpurePipe">{{3 | countingImpurePipe}}</div>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
@@ -520,6 +546,8 @@ describe('pipe', () => {
       @Component({
         template: '{{1 | pipeWithOnDestroy}}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
 
@@ -553,6 +581,8 @@ describe('pipe', () => {
       @Component({
         template: '{{title | myConcatPipe}}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         title = 'MyComponent Title';
@@ -586,6 +616,8 @@ describe('pipe', () => {
       @Component({
         template: '{{title | myConcatPipe}}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         title = 'MyComponent Title';
@@ -624,6 +656,8 @@ describe('pipe', () => {
       @Component({
         template: '{{title | myConcatPipe}}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         title = 'MyComponent Title';
@@ -771,6 +805,8 @@ describe('pipe', () => {
       @Component({
         template: `{{val | throwPipe}}`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         val = 'anything';
@@ -806,6 +842,8 @@ describe('pipe', () => {
       @Component({
         template: `{{val | throwPipe}}`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         val = 'anything';
@@ -850,6 +888,8 @@ describe('pipe', () => {
           @Component({
             template: `{{val | throw${args.slice(0, numberOfPipeArgs).join('')}}}`,
             standalone: false,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class App {
             val = 'anything';
@@ -895,6 +935,8 @@ describe('pipe', () => {
         @Component({
           template: '{{ 1 | testMissingPipe }}',
           standalone: componentIsStandalone,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComponent {}
 
@@ -916,6 +958,8 @@ describe('pipe', () => {
             </ng-container>`,
           standalone: componentIsStandalone,
           ...(componentIsStandalone ? {imports: [CommonModule]} : {}),
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComponent {
           value: string = 'test';
@@ -936,6 +980,8 @@ describe('pipe', () => {
           selector: 'app-test-child',
           template: '<ng-content></ng-content>',
           standalone: componentIsStandalone,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestChildComponent {}
 
@@ -946,6 +992,8 @@ describe('pipe', () => {
             </app-test-child>`,
           standalone: componentIsStandalone,
           ...(componentIsStandalone ? {imports: [TestChildComponent]} : {}),
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComponent {
           value: string = 'test';
@@ -966,6 +1014,8 @@ describe('pipe', () => {
           selector: 'app-test-child',
           template: '<ng-content></ng-content>',
           standalone: componentIsStandalone,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestChildComponent {}
 
@@ -978,6 +1028,8 @@ describe('pipe', () => {
               </app-test-child>`,
           standalone: componentIsStandalone,
           ...(componentIsStandalone ? {imports: [TestChildComponent, CommonModule]} : {}),
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComponent {
           value: string = 'test';
@@ -997,6 +1049,8 @@ describe('pipe', () => {
         @Component({
           template: '<div [title]="value | testMissingPipe"></div>',
           standalone: componentIsStandalone,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComponent {
           value: string = 'test';
@@ -1017,6 +1071,8 @@ describe('pipe', () => {
           template: '<div *ngIf="isVisible | testMissingPipe"></div>',
           standalone: componentIsStandalone,
           ...(componentIsStandalone ? {imports: [CommonModule]} : {}),
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComponent {
           isVisible: boolean = true;

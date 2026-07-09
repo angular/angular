@@ -519,6 +519,31 @@ describe('NgClass migration', () => {
       expect(content).not.toContain('imports: [NgFor, NgIf,]'); // No trailing comma
     });
 
+    it('should handle multiline imports array formatting with NgClass at the end', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+
+        @Component({
+        template: \`<div [ngClass]="{'admin': isAdmin}"></div>\`,
+        imports: [NgClass],
+        })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`@Component({
+        template: \`<div [class.admin]="isAdmin"></div>\`,
+        })
+        export class Cmp {}`);
+    });
+
     it('should handle multiline imports array formatting', async () => {
       writeFile(
         '/app.component.ts',

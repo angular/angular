@@ -7,7 +7,7 @@
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import {isSignal} from './utils';
+import {isSignal} from './utils/general';
 
 /** Represents a property access operation. */
 interface PropertyAccess {
@@ -121,6 +121,11 @@ function* getNestedProps(
   const keys = Array.from(keyPath);
   while (keys.length !== 0) {
     const key = keys.shift()!;
+
+    // Prevent Prototype Pollution
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+      throw new Error(`Access to property \`${key}\` is blocked for security reasons.`);
+    }
 
     if (Array.isArray(receiver) && parseInt(key) >= receiver.length) {
       throw new Error(`Cannot access index ${key} for array of length ${receiver.length}.`);

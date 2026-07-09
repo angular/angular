@@ -1,169 +1,125 @@
-# Настройка сервера Angular CLI MCP
+# Angular CLI MCP Server
 
-Angular CLI включает экспериментальный [сервер Model Context Protocol (MCP)](https://modelcontextprotocol.io/),
-позволяющий ИИ-ассистентам в вашей среде разработки взаимодействовать с Angular CLI. Мы включили поддержку генерации
-кода с помощью CLI, добавления пакетов и многое другое.
+The Angular CLI includes a Model Context Protocol (MCP) server that enables AI assistants (like Cursor, Antigravity, JetBrains AI, etc.) to interact directly with the Angular CLI. It provides tools for code generation, workspace analysis, and running builds/tests.
 
-## Доступные инструменты
+<docs-callout title="Integration with Angular AI Agent Skills">
+  If your host environment supports custom Agent Skills (such as Antigravity), you can combine the Angular CLI MCP server with the official [Angular AI Skills](https://angular.dev/ai/skills). While the skills provide the agent with deep instruction-level guidance and coding standards, the MCP server provides the action tools (like compiling, running tests, and analyzing workspaces) to execute those guidelines, resulting in a complete and powerful development agent.
+</docs-callout>
 
-Сервер Angular CLI MCP предоставляет несколько инструментов для помощи в рабочем процессе разработки. По умолчанию
-включены следующие инструменты:
+## Get Started
 
-| Имя                         | Описание                                                                                                                                                                                                                                        | `local-only` | `read-only` |
-| :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
-| `ai_tutor`                  | Запускает интерактивного ИИ-репетитора по Angular. Рекомендуется запускать в новом проекте Angular версии v20 или новее. [Подробнее](ai/ai-tutor).                                                                                              |      ✅      |     ✅      |
-| `find_examples`             | Находит авторитетные примеры кода из курируемой базы данных официальных примеров и лучших практик, фокусируясь на **современных, новых и недавно обновленных** возможностях Angular.                                                            |      ✅      |     ✅      |
-| `get_best_practices`        | Получает руководство по лучшим практикам Angular. Это руководство необходимо для обеспечения соответствия всего кода современным стандартам, включая standalone-компоненты, типизированные формы и современный поток управления (control flow). |      ✅      |     ✅      |
-| `list_projects`             | Перечисляет имена всех приложений и библиотек, определенных в рабочей области Angular. Считывает конфигурационный файл `angular.json` для идентификации проектов.                                                                               |      ✅      |     ✅      |
-| `onpush_zoneless_migration` | Анализирует код Angular и предоставляет пошаговый итеративный план миграции на стратегию обнаружения изменений `OnPush`, что является предварительным условием для приложения без зон (zoneless).                                               |      ✅      |     ✅      |
-| `search_documentation`      | Выполняет поиск по официальной документации Angular на <https://angular.dev>. Этот инструмент следует использовать для ответа на любые вопросы об Angular, например, об API, учебных пособиях и лучших практиках.                               |      ❌      |     ✅      |
+To use the MCP server, you configure your host environment (IDE or CLI) to run `npx @angular/cli mcp`.
 
-### Экспериментальные инструменты {#experimental-tools}
+<docs-tab-group>
+  <docs-tab label="Antigravity IDE">
+    Create a file named `.antigravity/mcp.json` in your project's root:
 
-Некоторые инструменты предоставляются в экспериментальном / предварительном статусе, так как они новые или не полностью
-протестированы. Включайте их по отдельности с помощью опции [`--experimental-tool`](#command-options) и используйте с
-осторожностью.
+    ```json
+    {
+      "mcpServers": {
+        "angular-cli": {
+          "command": "npx",
+          "args": ["-y", "@angular/cli", "mcp"]
+        }
+      }
+    }
+    ```
 
-| Имя         | Описание                                                                                                                                                                                                   | `local-only` | `read-only` |
-| :---------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
-| `modernize` | Выполняет миграции кода и предоставляет дальнейшие инструкции по модернизации кода Angular для соответствия последним лучшим практикам и синтаксису. [Подробнее](https://angular.dev/reference/migrations) |      ✅      |     ❌      |
+  </docs-tab>
 
-## Начало работы {#get-started}
+  <docs-tab label="Cursor">
+    Create `.cursor/mcp.json` in the project root (or globally at `~/.cursor/mcp.json`):
 
-Чтобы начать, выполните следующую команду в терминале:
+    ```json
+    {
+      "mcpServers": {
+        "angular-cli": {
+          "command": "npx",
+          "args": ["-y", "@angular/cli", "mcp"]
+        }
+      }
+    }
+    ```
 
-```bash
-ng mcp
-```
+  </docs-tab>
 
-При запуске из интерактивного терминала эта команда отображает инструкции по настройке хост-среды для использования
-сервера MCP. В следующих разделах приведены примеры конфигураций для нескольких популярных редакторов и инструментов.
+  <docs-tab label="VS Code">
+    Create `.vscode/mcp.json`:
 
-### Cursor
+    ```json
+    {
+      "servers": {
+        "angular-cli": {
+          "command": "npx",
+          "args": ["-y", "@angular/cli", "mcp"]
+        }
+      }
+    }
+    ```
 
-Создайте файл с именем `.cursor/mcp.json` в корне вашего проекта и добавьте следующую конфигурацию. Вы также можете
-настроить его глобально в `~/.cursor/mcp.json`.
+  </docs-tab>
+</docs-tab-group>
+
+## Available Tools (Default)
+
+When the MCP server is enabled, AI agents have access to the following tools:
+
+| Name                        | Description                                                                                               |
+| :-------------------------- | :-------------------------------------------------------------------------------------------------------- |
+| `ai_tutor`                  | Launches an interactive AI-powered Angular tutor.                                                         |
+| `devserver.start`           | Asynchronously starts a dev server (`ng serve`). Returns immediately.                                     |
+| `devserver.stop`            | Stops the dev server.                                                                                     |
+| `devserver.wait_for_build`  | Returns the logs of the most recent build in a running dev server.                                        |
+| `get_best_practices`        | Retrieves the Angular Best Practices Guide (crucial for standalone components, typed forms, etc.).        |
+| `list_projects`             | Lists all applications and libraries in the workspace by reading `angular.json`.                          |
+| `onpush_zoneless_migration` | Analyzes code and provides a plan to migrate it to `OnPush` change detection (prerequisite for zoneless). |
+| `run_target`                | Executes a configured target (e.g., build, test, lint, e2e, deploy).                                      |
+| `search_documentation`      | Searches the official documentation at `https://angular.dev`.                                             |
+
+## Common Workflows
+
+These workflows demonstrate how AI assistants coordinate different MCP tools to automatically achieve complex developer stories.
+
+### 1. Performance Tuning: Zoneless & OnPush Migration
+
+The AI agent optimizes change detection performance and migrates components to a zoneless-ready state.
+
+1. **Discover Workspace**: The AI agent calls `list_projects` to locate components, projects, and style/test configurations in the workspace.
+2. **Schematic Modernization (Prerequisite)**: The AI agent runs any prerequisite signal migrations using standard `ng generate` commands (e.g., Signal Inputs, Signal Queries).
+3. **Plan Migration**: The AI agent calls `onpush_zoneless_migration` with the absolute path of the directory or component file.
+4. **Apply Changes**: The AI agent automatically applies the single actionable change returned by the tool to the codebase.
+5. **Verify Changes**: The AI agent runs unit tests by calling `run_target` with the target parameter set to `"test"`.
+6. **Repeat**: The AI agent calls `onpush_zoneless_migration` again to retrieve the next step, repeating until the tool indicates the migration is complete.
+
+### 2. Feature Development & TDD Loop
+
+The AI agent automates research, implementation, and verification when developing new features.
+
+1. **API & Syntax Research**: The AI agent uses `search_documentation` to look up Angular APIs or syntax rules (e.g., `@defer` block options).
+2. **Load Coding Standards**: The AI agent calls `get_best_practices` with the workspace path to load Angular version-aligned coding rules.
+3. **Start Local Dev Server**: The AI agent starts a background server by calling `devserver.start`.
+4. **Monitor Build**: The AI agent uses `devserver.wait_for_build` to watch build logs and ensure compilation succeeds as it edits the code.
+5. **Write and Execute Tests**: The AI agent identifies the project's test framework (e.g., Jasmine, Jest, Vitest) via `list_projects`, writes the corresponding test file, and runs the tests using `run_target` with `"test"`.
+6. **Stop Dev Server**: When finished, the AI agent stops the active dev server by calling `devserver.stop`.
+
+### 3. Developer Onboarding and Learning
+
+The AI agent guides the developer through Angular concepts in an interactive sandbox.
+
+1. **Discover Projects**: The AI agent calls `list_projects` to scan the workspace and identify the codebase structure.
+2. **Launch Tutor**: The AI agent runs `ai_tutor` to load the curriculum instructions, persona, and tutoring guidelines.
+3. **Follow the Curriculum**: The AI agent guides the user through the curriculum, explaining concepts and instructing them on what components to build or modify.
+4. **Implement & Verify**: The AI agent helps implement the sandbox code and verifies changes using `run_target` with `"test"` or `"build"`.
+
+## Command Options
+
+You can pass arguments to the MCP server in the `args` array of your configuration:
+
+- `--read-only`: Only registers tools that do not modify the project.
+- `--local-only`: Only registers tools that do not require an internet connection.
+
+Example for read-only mode:
 
 ```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
+"args": ["-y", "@angular/cli", "mcp", "--read-only"]
 ```
-
-### Firebase Studio
-
-Создайте файл с именем `.idx/mcp.json` в корне вашего проекта и добавьте следующую конфигурацию:
-
-```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
-```
-
-### Gemini CLI
-
-Создайте файл с именем `.gemini/settings.json` в корне вашего проекта и добавьте следующую конфигурацию:
-
-```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
-```
-
-### JetBrains IDEs
-
-В IDE от JetBrains (таких как IntelliJ IDEA или WebStorm), после установки плагина JetBrains AI Assistant, перейдите в
-`Settings | Tools | AI Assistant | Model Context Protocol (MCP)`. Добавьте новый сервер (`+`) и выберите `As JSON`.
-Затем вставьте следующую конфигурацию:
-
-```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
-```
-
-Для получения наиболее актуальных инструкций по настройке серверов MCP, пожалуйста, обратитесь к документации
-JetBrains: [Подключение к серверу MCP](https://www.jetbrains.com/help/ai-assistant/mcp.html#connect-to-an-mcp-server).
-
-### VS Code
-
-В корне вашего проекта создайте файл с именем `.vscode/mcp.json` и добавьте следующую конфигурацию. Обратите внимание на
-использование свойства `servers`.
-
-```json
-{
-  "servers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
-```
-
-### Другие IDE
-
-Для других IDE проверьте документацию вашей среды разработки, чтобы узнать правильное расположение конфигурационного
-файла MCP (часто `mcp.json`). Конфигурация должна содержать следующий фрагмент.
-
-```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
-```
-
-## Опции команды {#command-options}
-
-Команду `mcp` можно настроить с помощью следующих опций, передаваемых в качестве аргументов в конфигурации MCP вашей
-IDE:
-
-| Опция                         | Тип       | Описание                                                                                                                                                      | По умолчанию |
-| :---------------------------- | :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------- |
-| `--read-only`                 | `boolean` | Регистрирует только те инструменты, которые не вносят изменений в проект. Ваш редактор или агент кодирования все равно могут выполнять правки.                | `false`      |
-| `--local-only`                | `boolean` | Регистрирует только те инструменты, которые не требуют подключения к интернету. Ваш редактор или агент кодирования все равно могут отправлять данные по сети. | `false`      |
-| `--experimental-tool`<br>`-E` | `string`  | Включает [экспериментальный инструмент](#experimental-tools). Разделяйте несколько опций пробелами, например, `-E tool_a tool_b`.                             |              |
-
-Например, чтобы запустить сервер в режиме только для чтения в VS Code, вы должны обновить ваш `mcp.json` следующим
-образом:
-
-```json
-{
-  "servers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp", "--read-only"]
-    }
-  }
-}
-```
-
-## Обратная связь и новые идеи
-
-Команда Angular приветствует ваши отзывы о существующих возможностях MCP и любые идеи по новым инструментам или
-функциям. Пожалуйста, поделитесь своими мыслями, открыв issue
-в [репозитории angular/angular на GitHub](https://github.com/angular/angular/issues).

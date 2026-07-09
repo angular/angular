@@ -21,12 +21,24 @@ export enum ChangeDetectionStrategy {
    * until reactivated by setting the strategy to `Default` (`CheckAlways`).
    * Change detection can still be explicitly invoked.
    * This strategy applies to all child directives and cannot be overridden.
+   *
+   * NOTE: OnPush is enabled by default.
    */
   OnPush = 0,
 
   /**
-   * Use the default `CheckAlways` strategy, in which change detection is automatic until
-   * explicitly deactivated.
+   * Use the `Eager` strategy, meaning that the component is checked eagerly when the change
+   * detection traversal reaches it, rather than only checking under certain circumstances (e.g.
+   * `markForCheck`, a signal in the template changed, etc).
    */
+  Eager = 1,
+
+  /**
+   * This value is equivalent to setting `Eager` and is due to be removed.
+   * @deprecated Use `Eager` instead.
+   */
+  // 3p-only-start
+  // tslint:disable-next-line:no-duplicate-enum-values
   Default = 1,
+  // 3p-only-end
 }

@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {Injectable, PLATFORM_ID, inject, signal} from '@angular/core';
+import {PLATFORM_ID, Service, inject, signal} from '@angular/core';
 import {LOCAL_STORAGE} from '@angular/docs';
 
 // Keep these constants in sync with the code in index.html
@@ -19,9 +19,7 @@ export const PREFERS_COLOR_SCHEME_DARK = '(prefers-color-scheme: dark)';
 
 export type Theme = 'dark' | 'light' | 'auto';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class ThemeManager {
   private readonly document = inject(DOCUMENT);
   private readonly localStorage = inject(LOCAL_STORAGE);

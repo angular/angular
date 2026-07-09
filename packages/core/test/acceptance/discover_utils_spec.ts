@@ -77,6 +77,8 @@ describe('discovery utils', () => {
     template: '<p></p>',
     providers: [{provide: String, useValue: 'Child'}],
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class Child {
     constructor() {
@@ -109,6 +111,8 @@ describe('discovery utils', () => {
       <b *ngIf="visible">Bold</b>
     `,
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class MyApp {
     text: string = 'INIT';
@@ -411,6 +415,8 @@ describe('discovery utils deprecated', () => {
         selector: 'inner-comp',
         template: '<div></div>',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class InnerComp {}
 
@@ -418,6 +424,8 @@ describe('discovery utils deprecated', () => {
         selector: 'comp',
         template: '<inner-comp></inner-comp>',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {}
 
@@ -463,6 +471,8 @@ describe('discovery utils deprecated', () => {
           <div my-dir-3></div>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         @ViewChild(MyDir1) myDir1Instance!: MyDir1;
@@ -503,6 +513,8 @@ describe('discovery utils deprecated', () => {
       @Component({
         template: '',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {}
 
@@ -516,6 +528,8 @@ describe('discovery utils deprecated', () => {
       @Component({
         template: '',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {}
 
@@ -544,6 +558,8 @@ describe('discovery utils deprecated', () => {
       @Component({
         template: '<div myDir #elRef #dirRef="myDir"></div>',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {}
 
@@ -562,6 +578,8 @@ describe('discovery utils deprecated', () => {
       @Component({
         template: '<div #elRef class="fooClass" [style.color]="color"></div>',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
         color = 'red';

@@ -15,6 +15,7 @@ import {
   OnDestroy,
   Optional,
   PLATFORM_ID,
+  ɵSharedStylesHost,
 } from '@angular/core';
 
 /** The style elements attribute name used to set value of `APP_ID` token. */
@@ -59,32 +60,35 @@ function createStyleElement(style: string, doc: Document): HTMLStyleElement {
  * @param appId A string containing an Angular application identifer.
  * @param inline A Map object for tracking inline (defined via `styles` in component decorator) style usage.
  * @param external A Map object for tracking external (defined via `styleUrls` in component decorator) style usage.
+ * @returns Whether or not styles were added.
  */
 function addServerStyles(
   doc: Document,
   appId: string,
   inline: Map<string, UsageRecord<HTMLStyleElement>>,
   external: Map<string, UsageRecord<HTMLLinkElement>>,
-): void {
+): boolean {
   const elements = doc.head?.querySelectorAll<HTMLStyleElement | HTMLLinkElement>(
     `style[${APP_ID_ATTRIBUTE_NAME}="${appId}"],link[${APP_ID_ATTRIBUTE_NAME}="${appId}"]`,
   );
 
-  if (elements) {
-    for (const styleElement of elements) {
-      styleElement.removeAttribute(APP_ID_ATTRIBUTE_NAME);
-      if (styleElement instanceof HTMLLinkElement) {
-        // Only use filename from href
-        // The href is build time generated with a unique value to prevent duplicates.
-        external.set(styleElement.href.slice(styleElement.href.lastIndexOf('/') + 1), {
-          usage: 0,
-          elements: [styleElement],
-        });
-      } else if (styleElement.textContent) {
-        inline.set(styleElement.textContent, {usage: 0, elements: [styleElement]});
-      }
+  if (!elements || elements.length === 0) return false;
+
+  for (const styleElement of elements) {
+    styleElement.removeAttribute(APP_ID_ATTRIBUTE_NAME);
+    if (styleElement instanceof HTMLLinkElement) {
+      // Only use filename from href
+      // The href is build time generated with a unique value to prevent duplicates.
+      external.set(styleElement.href.slice(styleElement.href.lastIndexOf('/') + 1), {
+        usage: 0,
+        elements: [styleElement],
+      });
+    } else if (styleElement.textContent) {
+      inline.set(styleElement.textContent, {usage: 0, elements: [styleElement]});
     }
   }
+
+  return true;
 }
 
 /**
@@ -102,7 +106,7 @@ export function createLinkElement(url: string, doc: Document): HTMLLinkElement {
 }
 
 @Injectable()
-export class SharedStylesHost implements OnDestroy {
+export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
   /**
    * Provides usage information for active inline style content and associated HTML <style> elements.
    * Embedded styles typically originate from the `styles` metadata of a rendered component.
@@ -128,14 +132,10 @@ export class SharedStylesHost implements OnDestroy {
     // (it seems some TGP targets might be calling this constructor directly).
     @Inject(PLATFORM_ID) platformId: object = {},
   ) {
-    addServerStyles(doc, appId, this.inline, this.external);
-    this.hosts.add(doc.head);
+    const added = addServerStyles(doc, appId, this.inline, this.external);
+    if (added) this.hosts.add(doc.head);
   }
 
-  /**
-   * Adds embedded styles to the DOM via HTML `style` elements.
-   * @param styles An array of style content strings.
-   */
   addStyles(styles: string[], urls?: string[]): void {
     for (const value of styles) {
       this.addUsage(value, this.inline, createStyleElement);
@@ -206,13 +206,9 @@ export class SharedStylesHost implements OnDestroy {
     this.hosts.clear();
   }
 
-  /**
-   * Adds a host node to the set of style hosts and adds all existing style usage to
-   * the newly added host node.
-   *
-   * This is currently only used for Shadow DOM encapsulation mode.
-   */
   addHost(hostNode: Node): void {
+    if (this.hosts.has(hostNode)) return;
+
     this.hosts.add(hostNode);
 
     // Add existing styles to new host
@@ -226,6 +222,18 @@ export class SharedStylesHost implements OnDestroy {
 
   removeHost(hostNode: Node): void {
     this.hosts.delete(hostNode);
+
+    for (const record of [...this.inline.values(), ...this.external.values()]) {
+      const remaining: Array<HTMLStyleElement | HTMLLinkElement> = [];
+      for (const element of record.elements) {
+        if (element.parentNode === hostNode) {
+          element.remove();
+        } else {
+          remaining.push(element);
+        }
+      }
+      record.elements = remaining;
+    }
   }
 
   private addElement<T extends HTMLElement>(host: Node, element: T): T {

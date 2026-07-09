@@ -4,6 +4,7 @@ set -x -u -e -o pipefail
 
 # Setup environment
 readonly thisDir=$(cd $(dirname $0); pwd)
+cd "$thisDir/../.."
 
 function getBuildVersion {
   # Example of `STABLE_PROJECT_VERSION` for snapshots is: `21.0.0-next.7+sha-7134dfe`
@@ -24,8 +25,8 @@ function getBuildVersion {
 function publishRepo {
   COMPONENT=$1
   ARTIFACTS_DIR=$2
+  BUILD_REPO=${3:-"${COMPONENT}-builds"}
 
-  BUILD_REPO="${COMPONENT}-builds"
   REPO_DIR="$(pwd)/tmp/${BUILD_REPO}"
   REPO_URL="https://github.com/${ORG}/${BUILD_REPO}.git"
 
@@ -121,6 +122,32 @@ function publishPackages {
   echo "Finished publishing build artifacts"
 }
 
+# Packaging and publishing dev-skills.
+function publishDevSkills {
+  GIT_SCHEME=$1
+  BRANCH=$2
+  BUILD_VER=$3
+
+  echo "Publishing dev-skills..."
+
+  # Create a temporary tree-ish that includes uncommitted changes.
+  # If no changes exist, git stash create returns empty, so we fall back to HEAD.
+  tree_ish=$(git stash create)
+  if [ -z "$tree_ish" ]; then
+    tree_ish="HEAD"
+  fi
+
+  SKILLS_DIST="$(pwd)/dist/dev-skills-dist"
+  echo "Packaging dev-skills into $SKILLS_DIST..."
+  rm -rf "$SKILLS_DIST"
+  mkdir -p "$SKILLS_DIST"
+  
+  # This ensures that individual skills (like angular-developer) are at the root of the destination repo.
+  git archive "$tree_ish":"skills/dev-skills" | tar -x -C "$SKILLS_DIST"
+
+  publishRepo "skills" "${SKILLS_DIST}" "skills"
+}
+
 function publishAllBuilds() {
   GIT_SCHEME="$1"
 
@@ -133,6 +160,7 @@ function publishAllBuilds() {
   local buildVersion=`getBuildVersion`
 
   publishPackages $GIT_SCHEME $PACKAGES_DIST $CUR_BRANCH $buildVersion
+  publishDevSkills $GIT_SCHEME $CUR_BRANCH $buildVersion
 }
 
 # See docs/DEVELOPER.md for help

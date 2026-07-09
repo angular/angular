@@ -18,8 +18,11 @@
       padding-block: 0.4rem;
       padding-inline-end: 1.5rem;
       border-block: 1px solid var(--senary-contrast);
-      font-size: 0.75rem;
       font-weight: 600;
+
+      code {
+        white-space: nowrap;
+      }
     }
 
     tr {
@@ -34,6 +37,9 @@
         padding-inline-end: 1.62rem;
         vertical-align: top;
         min-width: 10ch;
+      }
+      td:has(code) {
+        min-width: 8ch;
       }
       &:not(:last-child) {
         border-block-end: 1px solid var(--senary-contrast);

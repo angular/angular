@@ -8,28 +8,27 @@
 
 import {Observable} from 'rxjs';
 
-import {HttpRequest} from './request';
-import {HttpEvent} from './response';
-import {FetchBackend} from './fetch';
-import {HttpXhrBackend} from './xhr';
 import {
+  ɵConsole as Console,
   EnvironmentInjector,
+  ɵformatRuntimeError as formatRuntimeError,
   inject,
   Injectable,
-  ɵConsole as Console,
-  ɵformatRuntimeError as formatRuntimeError,
   PendingTasks,
 } from '@angular/core';
 import {finalize} from 'rxjs/operators';
+import {FetchBackend} from './fetch';
+import {HttpRequest} from './request';
+import {HttpEvent} from './response';
 
 import {RuntimeErrorCode} from './errors';
 import {
   ChainedInterceptorFn,
+  chainedInterceptorFn,
   HTTP_INTERCEPTOR_FNS,
   HTTP_ROOT_INTERCEPTOR_FNS,
-  REQUESTS_CONTRIBUTE_TO_STABILITY,
-  chainedInterceptorFn,
   interceptorChainEndFn,
+  REQUESTS_CONTRIBUTE_TO_STABILITY,
 } from './interceptor';
 
 /**
@@ -42,7 +41,7 @@ import {
  *
  * @publicApi
  */
-@Injectable({providedIn: 'root', useExisting: HttpXhrBackend})
+@Injectable({providedIn: 'root', useExisting: FetchBackend})
 export abstract class HttpBackend implements HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
@@ -90,8 +89,7 @@ export class HttpInterceptorHandler implements HttpHandler {
                 "to use `fetch` APIs. It's strongly recommended to " +
                 'enable `fetch` for applications that use Server-Side Rendering ' +
                 'for better performance and compatibility. ' +
-                'To enable `fetch`, add the `withFetch()` to the `provideHttpClient()` ' +
-                'call at the root of the application.',
+                'To enable `fetch`, remove the `withXhr()` feature from the `provideHttpClient()` call',
             ),
           );
       }

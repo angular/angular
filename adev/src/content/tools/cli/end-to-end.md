@@ -1,14 +1,10 @@
-# E2E-тестирование
+# End to End Testing
 
-End-to-end (или E2E) тестирование — это вид тестирования, используемый для проверки того, что все приложение работает
-так, как ожидается, от начала до конца (сквозное тестирование). E2E-тестирование отличается от модульного (unit)
-тестирования тем, что оно полностью отвязано от деталей реализации вашего кода. Обычно оно используется для валидации
-приложения способом, имитирующим взаимодействие пользователя с ним. Эта страница служит руководством по началу работы с
-E2E-тестированием в Angular с использованием Angular CLI.
+End-to-end or (E2E) testing is a form of testing used to assert your entire application works as expected from start to finish or _"end-to-end"_. E2E testing differs from unit testing in that it is completely decoupled from the underlying implementation details of your code. It is typically used to validate an application in a way that mimics the way a user would interact with it. This page serves as a guide to getting started with end-to-end testing in Angular using the Angular CLI.
 
-## Настройка E2E-тестирования
+## Set Up E2E Testing
 
-Angular CLI загружает и устанавливает все необходимое для запуска E2E-тестов для вашего Angular-приложения.
+The Angular CLI downloads and installs everything you need to run end-to-end tests for your Angular application.
 
 ```shell
 
@@ -16,8 +12,7 @@ ng e2e
 
 ```
 
-Команда `ng e2e` сначала проверит наличие цели "e2e" в вашем проекте. Если она не будет найдена, CLI предложит выбрать
-пакет для E2E-тестирования, который вы хотите использовать, и поможет выполнить настройку.
+The `ng e2e` command will first check your project for the "e2e" target. If it can't locate it, the CLI will then prompt you which e2e package you would like to use and walk you through the setup.
 
 ```text
 
@@ -41,12 +36,11 @@ Puppeteer
 
 ```
 
-Если вы не нашли в приведенном выше списке нужный вам инструмент для запуска тестов, вы можете добавить пакет вручную,
-используя `ng add`.
+If you don't find the test runner you would like to use from the list above, you can manually add a package using `ng add`.
 
-## Запуск E2E-тестов
+## Running E2E Tests
 
-Теперь, когда ваше приложение настроено для сквозного тестирования, можно запустить ту же команду для выполнения тестов.
+Now that your application is configured for end-to-end testing we can now run the same command to execute your tests.
 
 ```shell
 
@@ -54,17 +48,14 @@ ng e2e
 
 ```
 
-Обратите внимание, что в запуске тестов с помощью любого из интегрированных E2E-пакетов нет ничего "особенного". Команда
-`ng e2e` на самом деле просто запускает билдер `e2e` "под капотом". Вы всегда
-можете [создать свой собственный билдер](tools/cli/cli-builder#creating-a-builder) с именем `e2e` и запускать его с
-помощью `ng e2e`.
+Note, there isn't anything "special" about running your tests with any of the integrated e2e packages. The `ng e2e` command is really just running the `e2e` builder under the hood. You can always [create your own custom builder](tools/cli/cli-builder#creating-a-builder) named `e2e` and run it using `ng e2e`.
 
-## Дополнительная информация об инструментах для E2E-тестирования
+## More information on end-to-end testing tools
 
-| Инструмент тестирования | Подробности                                                                                                     |
-| :---------------------- | :-------------------------------------------------------------------------------------------------------------- |
-| Cypress                 | [Начало работы с Cypress](https://docs.cypress.io/guides/end-to-end-testing/writing-your-first-end-to-end-test) |
-| Nightwatch              | [Начало работы с Nightwatch](https://nightwatchjs.org/guide/writing-tests/introduction.html)                    |
-| WebdriverIO             | [Начало работы с Webdriver.io](https://webdriver.io/docs/gettingstarted)                                        |
-| Playwright              | [Начало работы с Playwright](https://playwright.dev/docs/writing-tests)                                         |
-| Puppeteer               | [Начало работы с Puppeteer](https://pptr.dev)                                                                   |
+| Testing Tool | Details                                                                                                              |
+| :----------- | :------------------------------------------------------------------------------------------------------------------- |
+| Cypress      | [Getting started with Cypress](https://docs.cypress.io/guides/end-to-end-testing/writing-your-first-end-to-end-test) |
+| Nightwatch   | [Getting started with Nightwatch](https://nightwatchjs.org/guide/writing-tests/introduction.html)                    |
+| WebdriverIO  | [Getting started with Webdriver.io](https://webdriver.io/docs/gettingstarted)                                        |
+| Playwright   | [Getting started with Playwright](https://playwright.dev/docs/writing-tests)                                         |
+| Puppeteer    | [Getting started with Puppeteer](https://pptr.dev)                                                                   |

@@ -1,4 +1,4 @@
-import {Component, Directive, EventEmitter, Input, NgModule, Output} from '@angular/core';
+import { Component, Directive, EventEmitter, Input, NgModule, Output } from '@angular/core';
 
 @Component({
     selector: 'test-cmp',
@@ -15,7 +15,7 @@ export class TestCmp {
 })
 export class NgModelDirective {
   @Input() ngModel: string = '';
-  @Output() ngModelChanges: EventEmitter<string> = new EventEmitter();
+  @Output() ngModelChange: EventEmitter<string> = new EventEmitter();
 }
 
 @NgModule({declarations: [TestCmp, NgModelDirective]})

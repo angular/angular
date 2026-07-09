@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {PathManipulation} from '@angular/compiler-cli/private/localize';
+import {NodePath, PluginObject, types as t} from '@babel/core';
 import {ɵParsedMessage, ɵparseMessage} from '../../../../index';
-import {NodePath, PluginObj, types as t} from '@babel/core';
 
 import {
   getLocation,
@@ -21,7 +21,7 @@ export function makeEs2015ExtractPlugin(
   fs: PathManipulation,
   messages: ɵParsedMessage[],
   localizeName = '$localize',
-): PluginObj {
+): PluginObject {
   return {
     visitor: {
       TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {

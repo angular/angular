@@ -8,7 +8,6 @@
 
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -25,7 +24,13 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {FlatTreeControl} from '@angular/cdk/tree';
 
 import {FlatNode} from '../component-data-source';
-import {getDirectivesArrayString, getFullNodeNameString} from '../directive-forest-utils';
+import {
+  getDirectivesArrayString,
+  getFullNodeNameString,
+  matchesDirectiveOrComponentId,
+} from '../directive-forest-utils';
+import {BlockType} from '../../../../shared/utils/control-flow';
+import {APP_DATA} from '../../../../application-providers/app_data';
 
 const PADDING_LEFT_STEP = 15; // px
 
@@ -38,7 +43,6 @@ export type NodeTextMatch = {
   selector: 'ng-tree-node',
   templateUrl: './tree-node.component.html',
   styleUrls: ['./tree-node.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatIcon, MatTooltip],
   host: {
     '[style.padding-left]': 'paddingLeft()',
@@ -54,6 +58,9 @@ export type NodeTextMatch = {
 export class TreeNodeComponent {
   private readonly renderer = inject(Renderer2);
   private readonly doc = inject(DOCUMENT);
+  private readonly appData = inject(APP_DATA);
+
+  protected readonly BlockType = BlockType;
 
   protected readonly nodeName = viewChild.required<ElementRef>('nodeName');
 
@@ -76,11 +83,29 @@ export class TreeNodeComponent {
     return cmp && cmp.isElement;
   });
   protected readonly directivesArrayString = computed(() => getDirectivesArrayString(this.node()));
+
+  protected readonly changeDetection = computed(() => {
+    const cd = this.node().changeDetection;
+    const majorVer = this.appData().majorVersion;
+
+    // Based on the client app framework and version, we show the non-default
+    // change detection strategy:
+    // - Show "OnPush" or ACX
+    // - Show "OnPush" for Angular pre-v22
+    // - Show "Eager" for Angular v22+ (or v0)
+    if (cd === 'acx-on-push' || (0 < majorVer && majorVer < 22 && cd === 'ng-on-push')) {
+      return 'OnPush';
+    }
+    if ((majorVer >= 22 || majorVer === 0) && cd === 'ng-eager') {
+      return 'Eager';
+    }
+
+    return undefined;
+  });
+
   private readonly nodeNameString = computed(() => getFullNodeNameString(this.node()));
 
   private matchedText: HTMLElement | null = null;
-
-  protected readonly PADDING_LEFT_STEP = PADDING_LEFT_STEP;
 
   constructor() {
     afterRenderEffect({write: () => this.handleMatchedText()});
@@ -92,7 +117,7 @@ export class TreeNodeComponent {
   }
 
   protected get isHighlighted(): boolean {
-    return !!this.highlightedId() && this.highlightedId() === this.node().original.component?.id;
+    return matchesDirectiveOrComponentId(this.node(), this.highlightedId());
   }
 
   private handleMatchedText() {

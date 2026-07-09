@@ -10,10 +10,10 @@ import {
   Directive,
   EmbeddedViewRef,
   Input,
+  ɵRuntimeError as RuntimeError,
   TemplateRef,
   ViewContainerRef,
   ɵstringify as stringify,
-  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -26,7 +26,7 @@ import {RuntimeErrorCode} from '../errors';
  * Angular renders the template provided in an optional `else` clause. The default
  * template for the `else` clause is blank.
  *
- * A [shorthand form](guide/directives/structural-directives#asterisk) of the directive,
+ * A [shorthand form](guide/directives/structural-directives#structural-directive-shorthand) of the directive,
  * `*ngIf="condition"`, is generally used, provided
  * as an attribute of the anchor element for the inserted template.
  * Angular expands this into a more explicit version, in which the anchor element
@@ -152,13 +152,13 @@ import {RuntimeErrorCode} from '../errors';
  *
  * The presence of the implicit template object has implications for the nesting of
  * structural directives. For more on this subject, see
- * [Structural Directives](guide/directives/structural-directives#one-per-element).
+ * [Structural Directives](guide/directives/structural-directives#one-structural-directive-per-element).
  *
  * @ngModule CommonModule
  * @publicApi
  *
  * @deprecated 20.0
- * Use the `@if` block instead. Intent to remove in v22
+ * Use the `@if` block instead. Intent to remove in a future major release
  */
 @Directive({
   selector: '[ngIf]',
@@ -179,7 +179,7 @@ export class NgIf<T = unknown> {
 
   /**
    * The Boolean expression to evaluate as the condition for showing a template.
-   * @deprecated Use the `@if` block instead. Intent to remove in v22
+   * @deprecated Use the `@if` block instead. Intent to remove in a future major release
    */
   @Input()
   set ngIf(condition: T) {
@@ -189,7 +189,7 @@ export class NgIf<T = unknown> {
 
   /**
    * A template to show if the condition expression evaluates to true.
-   * @deprecated Use the `@if` block instead. Intent to remove in v22
+   * @deprecated Use the `@if` block instead. Intent to remove in a future major release
    */
   @Input()
   set ngIfThen(templateRef: TemplateRef<NgIfContext<T>> | null) {
@@ -201,7 +201,7 @@ export class NgIf<T = unknown> {
 
   /**
    * A template to show if the condition expression evaluates to false.
-   * @deprecated Use the `@if` block instead. Intent to remove in v22
+   * @deprecated Use the `@if` block instead. Intent to remove in a future major release
    */
   @Input()
   set ngIfElse(templateRef: TemplateRef<NgIfContext<T>> | null) {

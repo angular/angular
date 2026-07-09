@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, inject, input, output} from '@angular/core';
-import {NavigationItem} from '../../interfaces/index';
-import {NavigationState} from '../../services/index';
+import {NgTemplateOutlet} from '@angular/common';
+import {Component, inject, input, output} from '@angular/core';
+import {MatTooltip} from '@angular/material/tooltip';
 import {RouterLink, RouterLinkActive} from '@angular/router';
-import {IconComponent} from '../icon/icon.component';
+import {NavigationItem} from '../../interfaces/index';
 import {IsActiveNavigationItem} from '../../pipes';
-import {NgTemplateOutlet, TitleCasePipe} from '@angular/common';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {ReactiveFormsModule} from '@angular/forms';
+import {NavigationState} from '../../services/index';
+import {isMobile} from '../../utils';
+import {IconComponent} from '../icon/icon.component';
 
 @Component({
   selector: 'docs-navigation-list',
@@ -24,16 +24,14 @@ import {ReactiveFormsModule} from '@angular/forms';
     IconComponent,
     IsActiveNavigationItem,
     NgTemplateOutlet,
-    MatTooltipModule,
-    ReactiveFormsModule,
-    TitleCasePipe,
+    MatTooltip,
   ],
   templateUrl: './navigation-list.component.html',
   styleUrls: ['./navigation-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationList {
   readonly navigationItems = input.required<NavigationItem[]>();
+  readonly preserveOtherCategoryOrder = input.required<boolean>();
   readonly displayItemsToLevel = input(2);
   readonly collapsableLevel = input<number | undefined>();
   readonly expandableLevel = input(2);
@@ -41,9 +39,14 @@ export class NavigationList {
 
   readonly linkClicked = output<void>();
 
+  protected readonly labelTruncationThreshold = 27;
+
   private readonly navigationState = inject(NavigationState);
+  private readonly crossCategoryOrigin = this.navigationState.crossCategoryOrigin;
 
   readonly activeItem = this.navigationState.activeNavigationItem;
+
+  protected readonly isMobile = isMobile;
 
   toggle(item: NavigationItem): void {
     if (
@@ -53,10 +56,19 @@ export class NavigationList {
     ) {
       return;
     }
+    const prevParentItem = this.crossCategoryOrigin();
+    if (prevParentItem) {
+      this.crossCategoryOrigin.set(undefined);
+      this.navigationState.toggleItem(prevParentItem);
+      return;
+    }
     this.navigationState.toggleItem(item);
   }
 
-  emitClickOnLink(): void {
+  emitClickOnLink(item: NavigationItem): void {
+    if (item.isCrossReferenced) {
+      this.crossCategoryOrigin.set(item.parent);
+    }
     this.linkClicked.emit();
   }
 
@@ -64,28 +76,48 @@ export class NavigationList {
     return items.some((item) => !!item.category);
   }
 
-  protected groupItems(items: NavigationItem[]): Map<string, NavigationItem[]> {
+  private getCategoryStatus(item: NavigationItem, category: string): 'new' | 'updated' | undefined {
+    const categoriesStatus = item.parent?.categoriesStatus;
+
+    if (!categoriesStatus) {
+      return undefined;
+    }
+
+    return categoriesStatus.find((status) => status[category])?.[category];
+  }
+
+  protected groupItems(
+    items: NavigationItem[],
+    preserveOtherCategoryOrder: boolean,
+  ): Map<string, {items: NavigationItem[]; status: 'new' | 'updated' | undefined}> {
     const hasCategories = this.hasCategories(items);
     if (hasCategories) {
       const others: NavigationItem[] = [];
-      const categorizedItems = new Map<string, NavigationItem[]>();
+      const categorizedItems = new Map<
+        string,
+        {items: NavigationItem[]; status: 'new' | 'updated' | undefined}
+      >();
       for (const item of items) {
         const category = item.category || 'Other';
-        if (category === 'Other') {
+        if (!preserveOtherCategoryOrder && category === 'Other') {
           others.push(item);
           continue;
         }
         if (!categorizedItems.has(category)) {
-          categorizedItems.set(category, []);
+          categorizedItems.set(category, {
+            items: [],
+            status: this.getCategoryStatus(item, category),
+          });
         }
-        categorizedItems.get(category)!.push(item);
+        categorizedItems.get(category)!.items.push(item);
       }
       if (others.length) {
-        categorizedItems.set('Other', others);
+        categorizedItems.set('Other', {items: others, status: undefined});
       }
+
       return categorizedItems;
     } else {
-      return new Map([['', items]]);
+      return new Map([['', {items, status: undefined}]]);
     }
   }
 }

@@ -1,22 +1,19 @@
-# Настройка локальной среды и рабочего пространства
+# Setting up the local environment and workspace
 
-В этом руководстве объясняется, как настроить среду для разработки на Angular с
-использованием [Angular CLI](cli 'Справочник команд CLI').
-Оно включает информацию об установке CLI, создании начального рабочего пространства и стартового приложения, а также о
-локальном запуске этого приложения для проверки настройки.
+This guide explains how to set up your environment for Angular development using the [Angular CLI](cli 'CLI command reference').
+It includes information about installing the CLI, creating an initial workspace and starter app, and running that app locally to verify your setup.
 
-<docs-callout title="Попробуйте Angular без локальной настройки">
+<docs-callout title="Try Angular without local setup">
 
-Если вы новичок в Angular, возможно, вы захотите начать с [Попробуйте сейчас!](tutorials/learn-angular), где
-представлены основы Angular прямо в браузере.
-Это автономное руководство использует интерактивную среду [StackBlitz](https://stackblitz.com) для онлайн-разработки.
-Вам не нужно настраивать локальную среду, пока вы не будете готовы.
+If you are new to Angular, you might want to start with [Try it now!](tutorials/learn-angular), which introduces the essentials of Angular in your browser.
+This standalone tutorial takes advantage of the interactive [StackBlitz](https://stackblitz.com) environment for online development.
+You don't need to set up your local environment until you're ready.
 
 </docs-callout>
 
-## Перед началом работы
+## Before you start
 
-Чтобы использовать Angular CLI, вы должны быть знакомы со следующим:
+To use Angular CLI, you should be familiar with the following:
 
 <docs-pill-row>
   <docs-pill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" title="JavaScript"/>
@@ -24,23 +21,21 @@
   <docs-pill href="https://developer.mozilla.org/en-US/docs/Web/CSS" title="CSS"/>
 </docs-pill-row>
 
-Вы также должны быть знакомы с использованием инструментов командной строки (CLI) и иметь общее представление о
-командных оболочках.
-Знание [TypeScript](https://www.typescriptlang.org) полезно, но не обязательно.
+You should also be familiar with usage of command line interface (CLI) tools and have a general understanding of command shells.
+Knowledge of [TypeScript](https://www.typescriptlang.org) is helpful, but not required.
 
-## Зависимости
+## Dependencies
 
-Чтобы установить Angular CLI на локальную систему, необходимо установить [Node.js](https://nodejs.org/).
-Angular CLI использует Node и связанный с ним менеджер пакетов npm для установки и запуска JavaScript-инструментов вне
-браузера.
+To install Angular CLI on your local system, you need to install [Node.js](https://nodejs.org/).
+Angular CLI uses Node and its associated package manager, npm, to install and run JavaScript tools outside the browser.
 
-[Скачайте и установите Node.js](https://nodejs.org/en/download), который также включает `npm` CLI.
-Angular требует версию Node.js [active LTS или maintenance LTS](https://nodejs.org/en/about/previous-releases).
-См. руководство по [совместимости версий Angular](reference/versions) для получения дополнительной информации.
+[Download and install Node.js](https://nodejs.org/en/download), which will include the `npm` CLI as well.
+Angular requires an [active LTS or maintenance LTS](https://nodejs.org/en/about/previous-releases) version of Node.js.
+See [Angular's version compatibility](reference/versions) guide for more information.
 
-## Установка Angular CLI
+## Install the Angular CLI
 
-Чтобы установить Angular CLI, откройте окно терминала и выполните следующую команду:
+To install the Angular CLI, open a terminal window and run the following command:
 
 <docs-code-multifile>
    <docs-code
@@ -70,13 +65,10 @@ Angular требует версию Node.js [active LTS или maintenance LTS](
 
  </docs-code-multifile>
 
-### Политика выполнения Powershell
+### Powershell execution policy
 
-На клиентских компьютерах Windows выполнение скриптов PowerShell по умолчанию отключено, поэтому приведенная выше
-команда может завершиться ошибкой.
-Чтобы разрешить выполнение скриптов PowerShell, что необходимо для глобальных бинарных файлов npm, вы должны установить
-следующую <a href="https://docs.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies">
-политику выполнения</a>:
+On Windows client computers, the execution of PowerShell scripts is disabled by default, so the above command may fail with an error.
+To allow the execution of PowerShell scripts, which is needed for npm global binaries, you must set the following <a href="https://docs.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies" target="_blank">execution policy</a>:
 
 ```sh
 
@@ -84,15 +76,12 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 ```
 
-Внимательно прочитайте сообщение, отображаемое после выполнения команды, и следуйте инструкциям. Убедитесь, что вы
-понимаете последствия установки политики выполнения.
+Carefully read the message displayed after executing the command and follow the instructions. Make sure you understand the implications of setting an execution policy.
 
-### Права доступа в Unix
+### Unix permissions
 
-В некоторых Unix-подобных системах глобальные скрипты могут принадлежать пользователю root, поэтому приведенная выше
-команда может завершиться ошибкой прав доступа.
-Запустите команду с `sudo`, чтобы выполнить её от имени суперпользователя (root), и введите пароль при появлении
-запроса:
+On some Unix-like setups, global scripts may be owned by the root user, so to the above command may fail with a permission error.
+Run with `sudo` to execute the command as the root user and enter your password when prompted:
 
 <docs-code-multifile>
    <docs-code
@@ -122,14 +111,13 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
  </docs-code-multifile>
 
-Убедитесь, что вы понимаете последствия запуска команд от имени root.
+Make sure you understand the implications of running commands as root.
 
-## Создание рабочего пространства и начального приложения
+## Create a workspace and initial application
 
-Вы разрабатываете приложения в контексте **рабочего пространства** (workspace) Angular.
+You develop apps in the context of an Angular **workspace**.
 
-Чтобы создать новое рабочее пространство и начальное стартовое приложение, запустите команду CLI `ng new` и укажите имя
-`my-app`, как показано здесь, затем ответьте на вопросы о включаемых функциях:
+To create a new workspace and initial starter app, run the CLI command `ng new` and provide the name `my-app`, as shown here, then answer prompts about features to include:
 
 ```shell
 
@@ -137,12 +125,11 @@ ng new my-app
 
 ```
 
-Angular CLI устанавливает необходимые npm-пакеты Angular и другие зависимости.
-Это может занять несколько минут.
+The Angular CLI installs the necessary Angular npm packages and other dependencies.
+This can take a few minutes.
 
-CLI создает новое рабочее пространство и небольшое приветственное приложение в новой директории с тем же именем, что и
-рабочее пространство, готовое к запуску.
-Перейдите в новую директорию, чтобы последующие команды использовали это рабочее пространство.
+The CLI creates a new workspace and a small welcome app in a new directory with the same name as the workspace, ready to run.
+Navigate to the new directory so subsequent commands use this workspace.
 
 ```shell
 
@@ -150,10 +137,9 @@ cd my-app
 
 ```
 
-## Запуск приложения
+## Run the application
 
-Angular CLI включает сервер разработки для сборки и обслуживания вашего приложения локально. Выполните следующую
-команду:
+The Angular CLI includes a development server, for you to build and serve your app locally. Run the following command:
 
 ```shell
 
@@ -161,41 +147,33 @@ ng serve --open
 
 ```
 
-Команда `ng serve` запускает сервер, отслеживает ваши файлы, а также пересобирает приложение и перезагружает браузер при
-внесении изменений в эти файлы.
+The `ng serve` command launches the server, watches your files, as well as rebuilds the app and reloads the browser as you make changes to those files.
 
-Опция `--open` (или просто `-o`) автоматически открывает браузер по адресу `http://localhost:4200/` для просмотра
-созданного приложения.
+The `--open` (or just `-o`) option automatically opens your browser to `http://localhost:4200/` to view the generated application.
 
-## Рабочие пространства и файлы проекта
+## Workspaces and project files
 
-Команда [`ng new`](cli/new) создает папку [рабочего пространства Angular](reference/configs/workspace-config) и
-генерирует внутри неё новое приложение.
-Рабочее пространство может содержать несколько приложений и библиотек.
-Начальное приложение, созданное командой [`ng new`](cli/new), находится в корневой директории рабочего пространства.
-Когда вы генерируете дополнительное приложение или библиотеку в существующем рабочем пространстве, оно по умолчанию
-помещается в подпапку `projects/`.
+The [`ng new`](cli/new) command creates an [Angular workspace](reference/configs/workspace-config) folder and generates a new application inside it.
+A workspace can contain multiple applications and libraries.
+The initial application created by the [`ng new`](cli/new) command is at the root directory of the workspace.
+When you generate an additional application or library in an existing workspace, it goes into a `projects/` subfolder by default.
 
-Вновь созданное приложение содержит исходные файлы для корневого компонента и шаблона.
-Каждое приложение имеет папку `src`, которая содержит его компоненты, данные и ассеты.
+A newly generated application contains the source files for a root component and template.
+Each application has a `src` folder that contains its components, data, and assets.
 
-Вы можете редактировать сгенерированные файлы напрямую или добавлять и изменять их с помощью команд CLI.
-Используйте команду [`ng generate`](cli/generate) для добавления новых файлов для дополнительных компонентов, директив,
-пайпов, сервисов и многого другого.
-Команды, такие как [`ng add`](cli/add) и [`ng generate`](cli/generate), которые создают или работают с приложениями и
-библиотеками, должны выполняться _внутри_ рабочего пространства. В отличие от них, команды, такие как `ng new`, должны
-выполняться _вне_ рабочего пространства, так как они создают новое.
+You can edit the generated files directly, or add to and modify them using CLI commands.
+Use the [`ng generate`](cli/generate) command to add new files for additional components, directives, pipes, services, and more.
+Commands such as [`ng add`](cli/add) and [`ng generate`](cli/generate), which create or operate on applications and libraries, must be executed
+from within a workspace. By contrast, commands such as `ng new` must be executed _outside_ a workspace because they will create a new one.
 
-## Следующие шаги
+## Next steps
 
-- Узнайте больше о [структуре файлов](reference/configs/file-structure)
-  и [конфигурации](reference/configs/workspace-config) сгенерированного рабочего пространства.
+- Learn more about the [file structure](reference/configs/file-structure) and [configuration](reference/configs/workspace-config) of the generated workspace.
 
-- Протестируйте ваше новое приложение с помощью [`ng test`](cli/test).
+- Test your new application with [`ng test`](cli/test).
 
-- Сгенерируйте заготовки, такие как компоненты, директивы и пайпы, с помощью [`ng generate`](cli/generate).
+- Generate boilerplate like components, directives, and pipes with [`ng generate`](cli/generate).
 
-- Разверните ваше новое приложение и сделайте его доступным для реальных пользователей с помощью [
-  `ng deploy`](cli/deploy).
+- Deploy your new application and make it available to real users with [`ng deploy`](cli/deploy).
 
-- Настройте и запустите сквозные (e2e) тесты вашего приложения с помощью [`ng e2e`](cli/e2e).
+- Set up and run end-to-end tests of your application with [`ng e2e`](cli/e2e).

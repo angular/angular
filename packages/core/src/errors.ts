@@ -25,6 +25,8 @@ import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
  *  - animations: 3000-3999
  *  - router: 4000-4999
  *  - platform-browser: 5000-5500
+ *  - service-worker: 5600-5699
+ *  - platform-server: 5700-5800
  */
 export const enum RuntimeErrorCode {
   // Change Detection Errors
@@ -121,18 +123,13 @@ export const enum RuntimeErrorCode {
   MISSING_ZONEJS = 908,
   UNEXPECTED_ZONE_STATE = 909,
   UNSAFE_ATTRIBUTE_BINDING = -910,
-  /**
-   * @deprecated use `UNSAFE_ATTRIBUTE_BINDING` instead.
-   */
-  // tslint:disable-next-line:no-duplicate-enum-values
-  UNSAFE_IFRAME_ATTRS = -910,
   VIEW_ALREADY_DESTROYED = 911,
   COMPONENT_ID_COLLISION = -912,
   IMAGE_PERFORMANCE_WARNING = -913,
   UNEXPECTED_ZONEJS_PRESENT_IN_ZONELESS_MODE = 914,
   MISSING_NG_MODULE_DEFINITION = 915,
   MISSING_DIRECTIVE_DEFINITION = 916,
-  NO_COMPONENT_FACTORY_FOUND = 917,
+  /* 917 - Removed */
   EXTERNAL_RESOURCE_LOADING_FAILED = 918,
 
   // Signal integration errors

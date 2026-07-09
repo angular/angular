@@ -6,27 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ɵFramework as Framework,
-  computed,
-  input,
-  output,
-  signal,
-} from '@angular/core';
-import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../../protocol';
+import {Component, ɵFramework as Framework, computed, input, output, signal} from '@angular/core';
+import {MatExpansionModule} from '@angular/material/expansion';
 
+import {DirectivePosition} from '../../../../../../../../protocol';
 import {
   DirectivePropertyResolver,
   DirectiveTreeData,
 } from '../../../property-resolver/directive-property-resolver';
-import {FlatNode} from '../../../property-resolver/element-property-resolver';
-import {PropertyViewTreeComponent} from './property-view-tree/property-view-tree.component';
-import {MatExpansionModule} from '@angular/material/expansion';
 import {DependencyViewerComponent} from './dependency-viewer/dependency-viewer.component';
 import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs-ref-button.component';
+import {ObjectTreeExplorerComponent} from '../../../../../shared/object-tree-explorer/object-tree-explorer.component';
+import {DevtoolsSignalGraphNode} from '../../../../../shared/signal-graph';
+import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-types';
+import {PropActionsMenuComponent} from './prop-actions-menu/prop-actions-menu.component';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -34,11 +27,11 @@ import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs
   styleUrls: ['./property-view-body.component.scss'],
   imports: [
     MatExpansionModule,
-    PropertyViewTreeComponent,
     DocsRefButtonComponent,
     DependencyViewerComponent,
+    ObjectTreeExplorerComponent,
+    PropActionsMenuComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewBodyComponent {
   readonly controller = input.required<DirectivePropertyResolver>();
@@ -48,7 +41,7 @@ export class PropertyViewBodyComponent {
   readonly directiveStateControls = input.required<DirectiveTreeData>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
-  readonly showSignalGraph = output<DebugSignalGraphNode>();
+  readonly showSignalGraph = output<DevtoolsSignalGraphNode>();
 
   protected readonly dependencies = computed(() => {
     const metadata = this.controller().directiveMetadata;
@@ -87,10 +80,6 @@ export class PropertyViewBodyComponent {
 
   updateValue({node, newValue}: {node: FlatNode; newValue: unknown}): void {
     this.controller().updateValue(node, newValue);
-  }
-
-  logValue(node: FlatNode): void {
-    this.controller().logValue(node);
   }
 
   handleInspect(node: FlatNode): void {

@@ -1,16 +1,14 @@
----
-
 <docs-decorative-header title="Grid">
 </docs-decorative-header>
 
 <docs-pill-row>
-<docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/" title="ARIA-паттерн Grid"/>
-<docs-pill href="/api?query=grid#angular_aria_grid" title="Справочник API Grid"/>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/" title="Grid ARIA pattern"/>
+  <docs-pill href="/api?query=grid#angular_aria_grid" title="Grid API Reference"/>
 </docs-pill-row>
 
-## Обзор
+## Overview
 
-Grid (сетка) позволяет пользователям перемещаться по двумерным данным или интерактивным элементам, используя клавиши со стрелками, Home, End и Page Up/Down. Grid подходит для таблиц данных, календарей, электронных таблиц и шаблонов макета, группирующих связанные интерактивные элементы.
+A grid enables users to navigate two-dimensional data or interactive elements using directional arrow keys, Home, End, and Page Up/Down. Grids work for data tables, calendars, spreadsheets, and layout patterns that group related interactive elements.
 
 <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.ts">
   <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.ts"/>
@@ -18,40 +16,40 @@ Grid (сетка) позволяет пользователям перемеща
   <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.css"/>
 </docs-code-multifile>
 
-## Использование
+## Usage
 
-Grid хорошо подходит для данных или интерактивных элементов, организованных в строки и столбцы, где пользователям необходима навигация с клавиатуры в нескольких направлениях.
+Grids work well for data or interactive elements organized in rows and columns where users need keyboard navigation in multiple directions.
 
-**Используйте Grid, когда:**
+**Use grids when:**
 
-- Создаете интерактивные таблицы данных с редактируемыми или выбираемыми ячейками
-- Создаете календари или элементы выбора даты
-- Реализуете интерфейсы, подобные электронным таблицам
-- Группируете интерактивные элементы (кнопки, чекбоксы) для уменьшения количества остановок табуляции на странице
-- Создаете интерфейсы, требующие двумерной навигации с клавиатуры
+- Building interactive data tables with editable or selectable cells
+- Creating calendars or date pickers
+- Implementing spreadsheet-like interfaces
+- Grouping interactive elements (buttons, checkboxes) to reduce tab stops on a page
+- Building interfaces requiring two-dimensional keyboard navigation
 
-**Избегайте использования Grid, когда:**
+**Avoid grids when:**
 
-- Отображаете простые таблицы только для чтения (используйте семантический HTML `<table>`)
-- Показываете одноколоночные списки (используйте [Listbox](guide/aria/listbox))
-- Отображаете иерархические данные (используйте [Tree](guide/aria/tree))
-- Создаете формы без табличной структуры (используйте стандартные элементы управления форм)
+- Displaying simple read-only tables (use semantic HTML `<table>` instead)
+- Showing single-column lists (use [Listbox](guide/aria/listbox) instead)
+- Displaying hierarchical data (use [Tree](guide/aria/tree) instead)
+- Building forms without tabular layout (use standard form controls)
 
-## Возможности
+## Features
 
-- **Двумерная навигация** — Клавиши со стрелками перемещают фокус между ячейками во всех направлениях
-- **Режимы фокуса** — Выбор между стратегиями фокуса `roving tabindex` или `activedescendant`
-- **Поддержка выбора** — Опциональный выбор ячеек с режимами одиночного или множественного выбора
-- **Поведение переноса** — Настройка того, как навигация переносится на краях сетки (непрерывная, зацикленная или без переноса)
-- **Выбор диапазона** — Выбор нескольких ячеек с помощью клавиш-модификаторов или перетаскивания
-- **Отключенные состояния** — Отключение всей сетки или отдельных ячеек
-- **Поддержка RTL** — Автоматическая навигация для языков с письмом справа налево
+- **Two-dimensional navigation** - Arrow keys move between cells in all directions
+- **Focus modes** - Choose between roving tabindex or activedescendant focus strategies
+- **Selection support** - Optional cell selection with single or multi-select modes
+- **Wrapping behavior** - Configure how navigation wraps at grid edges (continuous, loop, or nowrap)
+- **Range selection** - Select multiple cells with modifier keys or dragging
+- **Disabled states** - Disable the entire grid or individual cells
+- **RTL support** - Automatic right-to-left language navigation
 
-## Примеры
+## Examples
 
-### Сетка таблицы данных
+### Data table grid
 
-Используйте Grid для интерактивных таблиц, где пользователям нужно перемещаться между ячейками с помощью стрелок. Этот пример показывает базовую таблицу данных с навигацией с клавиатуры.
+Use a grid for interactive tables where users need to navigate between cells using arrow keys. This example shows a basic data table with keyboard navigation.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -70,11 +68,11 @@ Grid хорошо подходит для данных или интеракти
   </docs-tab>
 </docs-tab-group>
 
-Примените директиву `ngGrid` к элементу таблицы, `ngGridRow` к каждой строке и `ngGridCell` к каждой ячейке.
+Apply the `ngGrid` directive to the table element, `ngGridRow` to each row, and `ngGridCell` to each cell.
 
-### Сетка календаря
+### Calendar grid
 
-Календари — частый случай использования Grid. Этот пример показывает вид месяца, где пользователи перемещаются по датам с помощью стрелок.
+Calendars are a common use case for grids. This example shows a month view where users navigate dates using arrow keys.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -100,11 +98,11 @@ Grid хорошо подходит для данных или интеракти
   </docs-tab>
 </docs-tab-group>
 
-Пользователи могут активировать дату, нажав Enter или Пробел, когда фокус находится на ячейке.
+Users can activate a date by pressing Enter or Space when focused on a cell.
 
-### Сетка макета
+### Layout grid
 
-Используйте сетку макета для группировки интерактивных элементов и сокращения количества остановок табуляции. Этот пример показывает сетку кнопок-pill.
+Use a layout grid to group interactive elements and reduce tab stops. This example shows a grid of pill buttons.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -130,18 +128,20 @@ Grid хорошо подходит для данных или интеракти
   </docs-tab>
 </docs-tab-group>
 
-Вместо переключения табуляцией по каждой кнопке, пользователи перемещаются с помощью стрелок, и только одна кнопка получает фокус табуляции.
+Instead of tabbing through each button, users navigate with arrow keys and only one button receives tab focus.
 
-### Режимы выбора и фокуса
+### Selection and focus modes
 
-Включите выбор с помощью `[enableSelection]="true"` и настройте взаимодействие фокуса и выбора.
+Enable selection with `[enableSelection]="true"` and configure how focus and selection interact.
 
 ```angular-html
-<table ngGrid
-       [enableSelection]="true"
-       [selectionMode]="'explicit'"
-       [multi]="true"
-       [focusMode]="'roving'">
+<table
+  ngGrid
+  [enableSelection]="true"
+  [selectionMode]="'explicit'"
+  [multi]="true"
+  [focusMode]="'roving'"
+>
   <tr ngGridRow>
     <td ngGridCell>Cell 1</td>
     <td ngGridCell>Cell 2</td>
@@ -149,68 +149,73 @@ Grid хорошо подходит для данных или интеракти
 </table>
 ```
 
-**Режимы выбора:**
+**Selection modes:**
 
-- `follow`: Сфокусированная ячейка выбирается автоматически
-- `explicit`: Пользователи выбирают ячейки нажатием Пробела или кликом
+- `follow`: Focused cell is automatically selected
+- `explicit`: Users select cells with Space or click
 
-**Режимы фокуса:**
+**Focus modes:**
 
-- `roving`: Фокус перемещается к ячейкам с использованием `tabindex` (лучше для простых сеток)
-- `activedescendant`: Фокус остается на контейнере сетки, `aria-activedescendant` указывает на активную ячейку (лучше для виртуального скроллинга)
+- `roving`: Focus moves to cells using `tabindex` (better for simple grids)
+- `activedescendant`: Focus stays on grid container, `aria-activedescendant` indicates active cell (better for virtual scrolling)
 
-## API
+## Testing
 
-### Grid
+Angular Aria provides component harnesses for testing grid components.
+Here is an example of how to use the harnesses in a component test:
 
-Контейнерная директива, обеспечивающая навигацию с клавиатуры и управление фокусом для строк и ячеек.
+```typescript
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {GridHarness} from '@angular/aria/grid/testing';
+import {MyGridComponent} from './my-grid'; // Your component
 
-#### Входные свойства (Inputs)
+describe('MyGridComponent', () => {
+  let fixture: ComponentFixture<MyGridComponent>;
+  let loader: HarnessLoader;
 
-| Свойство               | Тип                                  | По умолчанию | Описание                                                                   |
-| ---------------------- | ------------------------------------ | ------------ | -------------------------------------------------------------------------- |
-| `enableSelection`      | `boolean`                            | `false`      | Включен ли выбор для сетки                                                 |
-| `disabled`             | `boolean`                            | `false`      | Отключает всю сетку                                                        |
-| `softDisabled`         | `boolean`                            | `true`       | Если `true`, отключенные ячейки могут получать фокус, но не интерактивны   |
-| `focusMode`            | `'roving' \| 'activedescendant'`     | `'roving'`   | Стратегия фокуса, используемая сеткой                                      |
-| `rowWrap`              | `'continuous' \| 'loop' \| 'nowrap'` | `'loop'`     | Поведение переноса навигации вдоль строк                                   |
-| `colWrap`              | `'continuous' \| 'loop' \| 'nowrap'` | `'loop'`     | Поведение переноса навигации вдоль столбцов                                |
-| `multi`                | `boolean`                            | `false`      | Можно ли выбирать несколько ячеек                                          |
-| `selectionMode`        | `'follow' \| 'explicit'`             | `'follow'`   | Следует ли выбор за фокусом или требует явного действия                    |
-| `enableRangeSelection` | `boolean`                            | `false`      | Включить выбор диапазона с помощью клавиш-модификаторов или перетаскивания |
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [MyGridComponent],
+    });
 
-### GridRow
+    fixture = TestBed.createComponent(MyGridComponent);
+    await fixture.whenStable();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
-Представляет строку внутри сетки и служит контейнером для ячеек сетки.
+  it('should read cell values and focus cells', async () => {
+    const grid = await loader.getHarness(GridHarness);
 
-#### Входные свойства (Inputs)
+    // Get all cells text in a 2D array organized by rows
+    const cellTexts = await grid.getCellTextByIndex();
+    expect(cellTexts).toEqual([
+      ['Cell 1.1', 'Cell 1.2'],
+      ['Cell 2.1', 'Cell 2.2'],
+    ]);
 
-| Свойство   | Тип      | По умолчанию | Описание                        |
-| ---------- | -------- | ------------ | ------------------------------- |
-| `rowIndex` | `number` | auto         | Индекс этой строки внутри сетки |
+    // Get a specific cell by text
+    const cells = await grid.getCells({text: 'Cell 1.1'});
+    expect(cells.length).toBe(1);
+    const cell = cells[0];
 
-### GridCell
+    // Verify cell state
+    expect(await cell.isSelected()).toBe(true);
+    expect(await cell.isActive()).toBe(true);
 
-Представляет отдельную ячейку внутри строки сетки.
+    // Focus the cell
+    await cell.focus();
+    expect(await cell.isFocused()).toBe(true);
+  });
+});
+```
 
-#### Входные свойства (Inputs)
+## API reference
 
-| Свойство      | Тип                          | По умолчанию   | Описание                                                |
-| ------------- | ---------------------------- | -------------- | ------------------------------------------------------- |
-| `id`          | `string`                     | auto           | Уникальный идентификатор ячейки                         |
-| `role`        | `string`                     | `'gridcell'`   | Роль ячейки: `gridcell`, `columnheader` или `rowheader` |
-| `disabled`    | `boolean`                    | `false`        | Отключает эту ячейку                                    |
-| `selected`    | `boolean`                    | `false`        | Выбрана ли ячейка (поддерживает двустороннюю привязку)  |
-| `selectable`  | `boolean`                    | `true`         | Можно ли выбрать ячейку                                 |
-| `rowSpan`     | `number`                     | —              | Количество строк, которые занимает ячейка               |
-| `colSpan`     | `number`                     | —              | Количество столбцов, которые занимает ячейка            |
-| `rowIndex`    | `number`                     | —              | Индекс строки ячейки                                    |
-| `colIndex`    | `number`                     | —              | Индекс столбца ячейки                                   |
-| `orientation` | `'vertical' \| 'horizontal'` | `'horizontal'` | Ориентация виджетов внутри ячейки                       |
-| `wrap`        | `boolean`                    | `true`         | Переносится ли навигация по виджетам внутри ячейки      |
+For detailed API documentation, inspect the following API references:
 
-#### Сигналы (Signals)
-
-| Свойство | Тип               | Описание                                     |
-| -------- | ----------------- | -------------------------------------------- |
-| `active` | `Signal<boolean>` | Находится ли фокус в данный момент на ячейке |
+- [`Grid`](/api/aria/grid/Grid)
+- [`GridRow`](/api/aria/grid/GridRow)
+- [`GridCell`](/api/aria/grid/GridCell)
+- [`GridCellWidget`](/api/aria/grid/GridCellWidget)

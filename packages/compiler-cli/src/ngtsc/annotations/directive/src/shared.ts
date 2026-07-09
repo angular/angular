@@ -7,13 +7,21 @@
  */
 
 import {
+  ArrowFunctionExpr,
+  ClassPropertyMapping,
   createMayBeForwardRefExpression,
   emitDistinctChangesOnlyDefaultValue,
   Expression,
+  ExpressionType,
   ExternalExpr,
   ExternalReference,
   ForwardRefHandling,
   getSafePropertyAccessString,
+  HostBindingDecorator,
+  HostListenerDecorator,
+  HostObjectLiteralBinding,
+  InputOrOutput,
+  literal,
   LiteralArrayExpr,
   literalMap,
   MaybeForwardRefExpression,
@@ -22,14 +30,13 @@ import {
   parseHostBindings,
   R3DirectiveMetadata,
   R3HostDirectiveMetadata,
+  R3Identifiers,
   R3InputMetadata,
   R3QueryMetadata,
   R3Reference,
+  SourceNode,
   verifyHostBindings,
-  R3Identifiers,
-  ArrowFunctionExpr,
   WrappedNodeExpr,
-  literal,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -42,11 +49,9 @@ import {
   ReferenceEmitter,
 } from '../../../imports';
 import {
-  ClassPropertyMapping,
   DecoratorInputTransform,
   HostDirectiveMeta,
   InputMapping,
-  InputOrOutput,
   isHostDirectiveMetaForGlobalMode,
   Resource,
 } from '../../../metadata';
@@ -56,7 +61,6 @@ import {
   ForeignFunctionResolver,
   PartialEvaluator,
   ResolvedValue,
-  traceDynamicValue,
 } from '../../../partial_evaluator';
 import {
   AmbientImport,
@@ -105,9 +109,10 @@ export const queryDecoratorNames: QueryDecoratorName[] = [
 ];
 
 export interface HostBindingNodes {
-  literal: ts.ObjectLiteralExpression | null;
-  bindingDecorators: Set<ts.Decorator>;
-  listenerDecorators: Set<ts.Decorator>;
+  hostObjectLiteralBindings: HostObjectLiteralBinding[];
+  hostBindingDecorators: HostBindingDecorator[];
+  hostListenerDecorators: HostListenerDecorator[];
+  rawNodes: ts.Node[];
 }
 
 const QUERY_TYPES = new Set<string>(queryDecoratorNames);
@@ -133,6 +138,7 @@ export function extractDirectiveMetadata(
   strictStandalone: boolean,
   implicitStandaloneValue: boolean,
   emitDeclarationOnly: boolean,
+  legacyOptionalChaining: boolean,
 ):
   | {
       jitForced: false;
@@ -290,9 +296,10 @@ export function extractDirectiveMetadata(
   }
 
   const hostBindingNodes: HostBindingNodes = {
-    literal: null,
-    bindingDecorators: new Set<ts.Decorator>(),
-    listenerDecorators: new Set<ts.Decorator>(),
+    hostObjectLiteralBindings: [],
+    hostBindingDecorators: [],
+    hostListenerDecorators: [],
+    rawNodes: [],
   };
 
   const host = extractHostBindings(
@@ -449,6 +456,7 @@ export function extractDirectiveMetadata(
     hostDirectives:
       hostDirectives?.map((hostDir) => toHostDirectiveMetadata(hostDir, sourceFile, refEmitter)) ||
       null,
+    legacyOptionalChaining,
   };
   return {
     jitForced: false,
@@ -597,7 +605,17 @@ function extractHostBindings(
     const hostExpression = metadata.get('host')!;
     bindings = evaluateHostExpressionBindings(hostExpression, evaluator);
     if (ts.isObjectLiteralExpression(hostExpression)) {
-      hostBindingNodes.literal = hostExpression;
+      hostBindingNodes.rawNodes.push(hostExpression);
+
+      for (const prop of hostExpression.properties) {
+        if (ts.isPropertyAssignment(prop)) {
+          hostBindingNodes.hostObjectLiteralBindings.push({
+            key: sourceNodeFromTs(prop.name),
+            value: sourceNodeFromTs(prop.initializer),
+            sourceSpan: createSourceSpan(prop),
+          });
+        }
+      }
     }
   } else {
     bindings = parseHostBindings({});
@@ -642,7 +660,23 @@ function extractHostBindings(
         }
 
         if (ts.isDecorator(decorator.node)) {
-          hostBindingNodes.bindingDecorators.add(decorator.node);
+          const member = decorator.node.parent;
+
+          hostBindingNodes.rawNodes.push(decorator.node.expression);
+
+          // TODO(crisbeto): this doesn't cover getters which is likely hiding some errors.
+          if (member && ts.isPropertyDeclaration(member) && member.name) {
+            const memberName = sourceNodeFromTs(member.name);
+
+            if (memberName.kind === 'string' || memberName.kind === 'identifier') {
+              hostBindingNodes.hostBindingDecorators.push({
+                memberName,
+                memberSpan: createSourceSpan(member),
+                arguments: decorator.args === null ? [] : decorator.args.map(sourceNodeFromTs),
+                decoratorSpan: createSourceSpan(decorator.node),
+              });
+            }
+          }
         }
 
         // Since this is a decorator, we know that the value is a class member. Always access it
@@ -707,7 +741,33 @@ function extractHostBindings(
         }
 
         if (ts.isDecorator(decorator.node)) {
-          hostBindingNodes.listenerDecorators.add(decorator.node);
+          const member = decorator.node.parent;
+          hostBindingNodes.rawNodes.push(decorator.node.expression);
+
+          if (member && ts.isMethodDeclaration(member) && member.name) {
+            const memberName = sourceNodeFromTs(member.name);
+
+            if (memberName.kind === 'string' || memberName.kind === 'identifier') {
+              let eventName: SourceNode | null = null;
+              let args: SourceNode[] | undefined;
+
+              if (decorator.args !== null && decorator.args.length > 0) {
+                eventName = sourceNodeFromTs(decorator.args[0]);
+                args =
+                  decorator.args.length > 1 && ts.isArrayLiteralExpression(decorator.args[1])
+                    ? decorator.args[1].elements.map(sourceNodeFromTs)
+                    : [];
+              }
+
+              hostBindingNodes.hostListenerDecorators.push({
+                eventName,
+                memberName,
+                memberSpan: createSourceSpan(member),
+                arguments: args ?? [],
+                decoratorSpan: createSourceSpan(decorator.node),
+              });
+            }
+          }
         }
 
         bindings.listeners[eventName] = `${member.name}(${args.join(',')})`;
@@ -715,6 +775,28 @@ function extractHostBindings(
     },
   );
   return bindings;
+}
+
+function sourceNodeFromTs(node: ts.Node): SourceNode {
+  const sourceSpan = createSourceSpan(node);
+
+  if (ts.isStringLiteralLike(node) || ts.isIdentifier(node)) {
+    // Offset by one on both sides to skip over the quotes.
+    if (ts.isStringLiteralLike(node)) {
+      sourceSpan.fullStart = sourceSpan.fullStart.moveBy(1);
+      sourceSpan.start = sourceSpan.start.moveBy(1);
+      sourceSpan.end = sourceSpan.end.moveBy(-1);
+    }
+
+    return {
+      kind: ts.isIdentifier(node) ? 'identifier' : 'string',
+      sourceSpan,
+      source: node.getText(),
+      text: node.text,
+    };
+  }
+
+  return {kind: 'unspecified', sourceSpan};
 }
 
 function extractQueriesFromDecorator(
@@ -1405,20 +1487,71 @@ export function parseDecoratorInputTransformFunction(
   emitDeclarationOnly: boolean,
 ): DecoratorInputTransform {
   if (emitDeclarationOnly) {
-    const chain: ts.DiagnosticMessageChain = {
-      messageText:
-        '@Input decorators with a transform function are not supported in experimental declaration-only emission mode',
-      category: ts.DiagnosticCategory.Error,
-      code: 0,
-      next: [
-        {
-          messageText: `Consider converting '${clazz.name.text}.${classPropertyName}' to an input signal`,
-          category: ts.DiagnosticCategory.Message,
-          code: 0,
-        },
-      ],
-    };
-    throw new FatalDiagnosticError(ErrorCode.DECORATOR_UNEXPECTED, value.node, chain);
+    if (ts.isArrowFunction(value.node) || ts.isFunctionExpression(value.node)) {
+      const firstParamName = value.node.parameters[0]?.name;
+      const firstParam =
+        firstParamName !== undefined &&
+        ts.isIdentifier(firstParamName) &&
+        firstParamName.text === 'this'
+          ? value.node.parameters[1]
+          : value.node.parameters[0];
+
+      if (!firstParam) {
+        const ref = new Reference(ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword));
+        ref.synthetic = true;
+        return {
+          node: value.node,
+          type: ref,
+        };
+      }
+
+      if (!firstParam.type) {
+        throw createValueHasWrongTypeError(
+          value.node,
+          value,
+          'Input transform function first parameter must have a type',
+        );
+      }
+
+      if (firstParam.dotDotDotToken) {
+        throw createValueHasWrongTypeError(
+          value.node,
+          value,
+          'Input transform function first parameter cannot be a spread parameter',
+        );
+      }
+
+      const ref = new Reference(firstParam.type);
+      ref.synthetic = true;
+      return {
+        node: value.node,
+        type: ref,
+      };
+    }
+
+    const node =
+      value instanceof Reference ? value.getIdentityIn(clazz.getSourceFile()) : value.node;
+    const entityName = node ? expressionToEntityName(node as ts.Expression) : null;
+    if (entityName !== null) {
+      const typeQuery = ts.factory.createTypeQueryNode(entityName);
+      const parametersType = ts.factory.createTypeReferenceNode('Parameters', [typeQuery]);
+      const indexedAccess = ts.factory.createIndexedAccessTypeNode(
+        parametersType,
+        ts.factory.createLiteralTypeNode(ts.factory.createNumericLiteral('0')),
+      );
+      const ref = new Reference(indexedAccess);
+      ref.synthetic = true;
+      return {
+        node: value.node,
+        type: ref,
+      };
+    }
+
+    throw createValueHasWrongTypeError(
+      value.node,
+      value,
+      'Input transform function could not be referenced',
+    );
   }
   // In local compilation mode we can skip type checking the function args. This is because usually
   // the type check is done in a separate build which runs in full compilation mode. So here we skip
@@ -1827,7 +1960,16 @@ function evaluateHostExpressionBindings(
     }
   });
 
-  const bindings = parseHostBindings(hostMetadata);
+  let bindings: ParsedHostBindings;
+  try {
+    bindings = parseHostBindings(hostMetadata);
+  } catch (e) {
+    throw new FatalDiagnosticError(
+      ErrorCode.HOST_BINDING_PARSE_ERROR,
+      hostExpr,
+      (e as Error).message,
+    );
+  }
 
   const errors = verifyHostBindings(bindings, createSourceSpan(hostExpr));
   if (errors.length > 0) {
@@ -1930,29 +2072,7 @@ function extractHostDirectives(
           `In ${compilationModeName} mode, host directive cannot be an expression. Use an identifier instead`,
         );
       }
-
-      if (emitDeclarationOnly) {
-        if (ts.isIdentifier(hostReference.node)) {
-          const importInfo = reflector.getImportOfIdentifier(hostReference.node);
-          if (importInfo) {
-            directive = new ExternalReference(importInfo.from, importInfo.name);
-          } else {
-            throw new FatalDiagnosticError(
-              ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
-              hostReference.node,
-              `In experimental declaration-only emission mode, host directive cannot use indirect external indentifiers. Use a direct external identifier instead`,
-            );
-          }
-        } else {
-          throw new FatalDiagnosticError(
-            ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION,
-            hostReference.node,
-            `In experimental declaration-only emission mode, host directive cannot be an expression. Use an identifier instead`,
-          );
-        }
-      } else {
-        directive = new WrappedNodeExpr(hostReference.node);
-      }
+      directive = new WrappedNodeExpr(hostReference.node);
     } else if (hostReference instanceof Reference) {
       directive = hostReference as Reference<ClassDeclaration>;
       nameForErrors = (fieldName: string) =>
@@ -2057,17 +2177,20 @@ function toR3InputMetadata(mapping: InputMapping): R3InputMetadata {
 export function extractHostBindingResources(nodes: HostBindingNodes): ReadonlySet<Resource> {
   const result = new Set<Resource>();
 
-  if (nodes.literal !== null) {
-    result.add({path: null, node: nodes.literal});
-  }
-
-  for (const current of nodes.bindingDecorators) {
-    result.add({path: null, node: current.expression});
-  }
-
-  for (const current of nodes.listenerDecorators) {
-    result.add({path: null, node: current.expression});
+  for (const node of nodes.rawNodes) {
+    result.add({path: null, node});
   }
 
   return result;
+}
+
+function expressionToEntityName(expr: ts.Expression): ts.EntityName | null {
+  if (ts.isIdentifier(expr)) {
+    return expr;
+  }
+  if (ts.isPropertyAccessExpression(expr) && ts.isIdentifier(expr.name)) {
+    const left = expressionToEntityName(expr.expression);
+    return left === null ? null : ts.factory.createQualifiedName(left, expr.name);
+  }
+  return null;
 }

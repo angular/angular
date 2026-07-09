@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, NgModule, provideZoneChangeDetection} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  NgModule,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 
@@ -65,6 +70,7 @@ import {BrowserModule} from '@angular/platform-browser';
     <input type="text" [(ngModel)]="values[49]" name="value49" />
   </form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class AppComponent {
   copies: number[] = [];

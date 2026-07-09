@@ -26,7 +26,7 @@ pnpm ng-dev pr merge <pr number>
 Some directories in the Angular codebase have additional protections or rules. For example, code
 under `//packages/core/primitives` must be merged and synced into Google separately from other
 changes. Attempting to combine changes in `primitives` with other changes results in an error. This
-practices makes it significantly easier to rollback or revert changes in the event of a breakage or
+practice makes it significantly easier to rollback or revert changes in the event of a breakage or
 outage.
 
 ## PRs that require global presubmits

@@ -6,18 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  ElementRef,
-  inject,
-  input,
-  linkedSignal,
-  signal,
-  viewChild,
-} from '@angular/core';
+import {Component, computed, inject, input, linkedSignal, signal, viewChild} from '@angular/core';
 import {TreeVisualizerComponent} from '../../shared/tree-visualizer/tree-visualizer.component';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
@@ -30,15 +19,14 @@ import {
   RouterTreeD3Node,
   transformRoutesIntoVisTree,
   RouterTreeNode,
-  findNodesByLabel,
   RouterTreeVisualizer,
 } from './router-tree-fns';
 import {ButtonComponent} from '../../shared/button/button.component';
 import {SplitComponent} from '../../shared/split/split.component';
 import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
-import {Debouncer} from '../../shared/utils/debouncer';
+import {FilterComponent, FilterFn} from '../../shared/filter/filter.component';
 
-const SEARCH_DEBOUNCE = 250;
+const NODE_SNAP_SCALE = 0.6;
 const RUN_GUARDS_AND_RESOLVERS_OPTIONS: RunGuardsAndResolvers[] = [
   'pathParamsChange',
   'pathParamsOrQueryParamsChange',
@@ -59,11 +47,11 @@ const RUN_GUARDS_AND_RESOLVERS_OPTIONS: RunGuardsAndResolvers[] = [
     MatSnackBarModule,
     RouteDetailsRowComponent,
     ButtonComponent,
+    FilterComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RouterTreeComponent {
-  private readonly searchInput = viewChild.required<ElementRef>('searchInput');
+  private readonly filter = viewChild.required<FilterComponent>('filter');
   private readonly routerTree = viewChild.required<RouterTreeVisualizer>('routerTree');
 
   private readonly messageBus = inject(MessageBus) as MessageBus<Events>;
@@ -82,6 +70,9 @@ export class RouterTreeComponent {
     ),
   );
 
+  protected readonly currentSearchMatchIdx = signal<number>(-1);
+  protected readonly searchMatches = signal<RouterTreeNode[]>([]);
+
   routes = input.required<Route[]>();
   routerDebugApiSupport = input<boolean>(false);
 
@@ -94,36 +85,13 @@ export class RouterTreeComponent {
     return null;
   });
 
-  private searchMatches: Set<RouterTreeNode> = new Set();
-
-  private readonly searchDebouncer = new Debouncer();
-
-  protected readonly searchRoutes = this.searchDebouncer.debounce((inputValue: string) => {
-    const d3RootNode = this.d3RootNode();
-    if (!d3RootNode) {
-      return;
-    }
-    this.searchMatches = findNodesByLabel(d3RootNode, inputValue.toLowerCase());
-    // Since `searchMatches` is used in the D3 node modifier, reset the root to trigger a re-render.
-    // Consider: Ideally, we could perform the search visual changes via direct DOM manipulations
-    // that won't require re-rendering the whole tree.
-    this.d3RootNode.set({...d3RootNode});
-  }, SEARCH_DEBOUNCE);
-
   protected readonly routerTreeConfig: Partial<TreeVisualizerConfig<RouterTreeNode>> = {
     nodeSeparation: () => 1,
     d3NodeModifier: (n) => this.d3NodeModifier(n),
   };
 
-  constructor() {
-    inject(DestroyRef).onDestroy(() => {
-      this.searchDebouncer.cancel();
-    });
-  }
-
   togglePathSettings(): void {
-    this.searchInput().nativeElement.value = '';
-    this.searchMatches = new Set();
+    this.filter().clearFilter();
     this.showFullPath.update((v) => !v);
   }
 
@@ -183,13 +151,57 @@ export class RouterTreeComponent {
 
   onRouterTreeRender({initial}: {initial: boolean}) {
     if (initial) {
-      this.routerTree().snapToRoot(0.6);
+      this.routerTree().snapToRoot(NODE_SNAP_SCALE);
     }
   }
 
   nodeClick(node: RouterTreeD3Node) {
     this.selectedRoute.set(node);
     this.routerTree().snapToNode(node.data, 0.7);
+  }
+
+  navigateMatchedRoute(dir: 'prev' | 'next') {
+    const dirIdx = dir === 'next' ? 1 : -1;
+    const matches = Array.from(this.searchMatches());
+
+    const newMatchedIdx = (this.currentSearchMatchIdx() + dirIdx + matches.length) % matches.length;
+    const newMatchedNode = matches[newMatchedIdx];
+
+    this.routerTree().snapToNode(newMatchedNode, NODE_SNAP_SCALE);
+    this.routerTree().highlightNode(newMatchedNode);
+    this.currentSearchMatchIdx.set(newMatchedIdx);
+  }
+
+  handleFilter(filterFn: FilterFn): void {
+    this.currentSearchMatchIdx.set(-1);
+    this.searchMatches.set([]);
+    const d3RootNode = this.d3RootNode();
+
+    if (!d3RootNode) {
+      return;
+    }
+    const matches: RouterTreeNode[] = [];
+    const traverse = (node: RouterTreeNode) => {
+      if (filterFn(node.label.toLowerCase()).length) {
+        matches.push(node);
+      }
+
+      if (node.children) {
+        for (const child of node.children) {
+          traverse(child);
+        }
+      }
+    };
+    traverse(d3RootNode);
+
+    this.searchMatches.update((curr) => curr.concat(matches));
+
+    // Select the first match, if there are any.
+    if (this.searchMatches().length) {
+      this.navigateMatchedRoute('next');
+    } else {
+      this.routerTree().highlightNode(null);
+    }
   }
 
   private d3NodeModifier(d3Node: SvgD3Node<RouterTreeNode>) {
@@ -210,12 +222,6 @@ export class RouterTreeComponent {
 
       if (node.data.isActive) {
         nodeClasses.push('node-element');
-      }
-
-      if (this.searchMatches.has(node.data)) {
-        nodeClasses.push('node-search');
-      } else if (this.searchMatches.size) {
-        nodeClasses.push('node-faded');
       }
 
       return nodeClasses.join(' ');
