@@ -14,6 +14,7 @@
   box-sizing: border-box;
   border: 1px solid var(--quinary-contrast);
   overflow: hidden;
+  z-index: 999999;
 
   .wrapper {
     overflow-y: auto;
