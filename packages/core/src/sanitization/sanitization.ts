@@ -16,7 +16,7 @@ import {ENVIRONMENT} from '../render3/interfaces/view';
 import {getLView, getSelectedIndex, getSelectedTNode} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getNativeByTNode} from '../render3/util/view_utils';
-import {NAMESPACE_URIS, SVG_NAMESPACE} from '../render3/namespaces';
+import {NAMESPACE_URIS} from '../render3/namespaces';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
 import {
@@ -29,7 +29,7 @@ import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './by
 import {_sanitizeHtml} from './html_sanitizer';
 import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
-import {checkSecurityContext, SecurityContext} from './dom_security_schema';
+import {checkSecurityContext, SecurityContext, SVG_NAMESPACE} from './dom_security_schema';
 import {_sanitizeUrl} from './url_sanitizer';
 import {splitNsName} from '../render3/util/tags';
 
