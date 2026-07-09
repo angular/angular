@@ -89,7 +89,7 @@ export interface ModelContext {
   registerTool<const InputSchema extends JsonSchemaForInference>(
     tool: ToolDescriptor<InputSchema>,
     options?: ToolRegistrationOptions,
-  ): void;
+  ): Promise<void>;
 
   /**
    * Unregister a tool.

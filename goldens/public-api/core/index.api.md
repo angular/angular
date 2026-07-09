@@ -541,7 +541,7 @@ export class DebugNode {
 }
 
 // @public
-export function declareExperimentalWebMcpTool<const InputSchema extends JsonSchemaForInference>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): void;
+export function declareExperimentalWebMcpTool<const InputSchema extends JsonSchemaForInference>(tool: WebMcpToolDescriptor<InputSchema>, injector?: Injector): Promise<void>;
 
 // @public
 export const DEFAULT_CURRENCY_CODE: InjectionToken<string>;

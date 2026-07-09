@@ -21,19 +21,21 @@ import {FieldTree} from '../api/types';
 import {FieldNode} from '../field/node';
 import {REGISTER_WEBMCP_FORM, RegisterWebMcpForm} from './tokens';
 
-const registerWebMcpForm: RegisterWebMcpForm = async (formTree, options) => {
+const registerWebMcpForm: RegisterWebMcpForm = (formTree, options) => {
   const injector = inject(Injector);
 
   // we want to defer the registration until the context is fully initialized,
   // This is especially useful if the form model is a derivation of a required input
-  effect(() => {
-    untracked(() => {
-      initWebMcpForm(formTree, options, injector);
+  return new Promise<void>((resolve, reject) => {
+    effect(() => {
+      untracked(() => {
+        initWebMcpForm(formTree, options, injector).then(resolve, reject);
+      });
     });
   });
 };
 
-function initWebMcpForm(
+async function initWebMcpForm(
   formTree: FieldTree<unknown>,
   options: {name: string; description: string},
   injector: Injector,
@@ -48,7 +50,7 @@ function initWebMcpForm(
     );
   }
 
-  declareExperimentalWebMcpTool(
+  await declareExperimentalWebMcpTool(
     {
       name: options.name,
       description: options.description,

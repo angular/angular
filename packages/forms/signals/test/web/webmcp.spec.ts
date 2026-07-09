@@ -10,6 +10,7 @@ import {ApplicationRef, Component, input, linkedSignal, signal} from '@angular/c
 import {TestBed} from '@angular/core/testing';
 import {form, provideExperimentalWebMcpForms, required} from '@angular/forms/signals';
 import {cleanupWebMCPPolyfill, initializeWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
+import {REGISTER_WEBMCP_FORM, RegisterWebMcpForm} from '../../src/webmcp/tokens';
 
 describe('Signal Forms WebMCP Integration', () => {
   beforeEach(() => {
@@ -266,35 +267,34 @@ describe('Signal Forms WebMCP Integration', () => {
       ).toBeRejectedWithError(/Database connection lost/);
     });
 
-    it('should throw an error if schema cannot be inferred accurately', () => {
+    it('should throw an error if schema cannot be inferred accurately', async () => {
+      const registerWebMcpForm = TestBed.inject<RegisterWebMcpForm>(REGISTER_WEBMCP_FORM);
       // 1. Null value
-      TestBed.runInInjectionContext(() => {
-        expect(() => {
-          form(signal({value: null}), {
-            experimentalWebMcpTool: {
-              name: 'nullTool',
-              description: 'A null tool',
-            },
+      await expectAsync(
+        TestBed.runInInjectionContext(() => {
+          const promise = registerWebMcpForm(form(signal({value: null})), {
+            name: 'nullTool',
+            description: 'A null tool',
           });
           TestBed.inject(ApplicationRef).tick();
-        }).toThrowError(/Could not accurately infer WebMCP schema/);
-      });
+          return promise;
+        }),
+      ).toBeRejectedWithError(/Could not accurately infer WebMCP schema/);
       expect(
         globalThis.navigator.modelContextTesting!.listTools().some((t) => t.name === 'nullTool'),
       ).toBeFalse();
 
       // 2. Empty array value
-      TestBed.runInInjectionContext(() => {
-        expect(() => {
-          form(signal({value: [] as string[]}), {
-            experimentalWebMcpTool: {
-              name: 'emptyArrayTool',
-              description: 'An empty array tool',
-            },
+      await expectAsync(
+        TestBed.runInInjectionContext(() => {
+          const promise = registerWebMcpForm(form(signal({value: [] as string[]})), {
+            name: 'emptyArrayTool',
+            description: 'An empty array tool',
           });
           TestBed.inject(ApplicationRef).tick();
-        }).toThrowError(/Could not accurately infer WebMCP schema/);
-      });
+          return promise;
+        }),
+      ).toBeRejectedWithError(/Could not accurately infer WebMCP schema/);
       expect(
         globalThis.navigator
           .modelContextTesting!.listTools()
@@ -302,17 +302,16 @@ describe('Signal Forms WebMCP Integration', () => {
       ).toBeFalse();
 
       // 3. Unsupported type (symbol)
-      TestBed.runInInjectionContext(() => {
-        expect(() => {
-          form(signal({value: Symbol('test')}), {
-            experimentalWebMcpTool: {
-              name: 'symbolTool',
-              description: 'A symbol tool',
-            },
+      await expectAsync(
+        TestBed.runInInjectionContext(() => {
+          const promise = registerWebMcpForm(form(signal({value: Symbol('test')})), {
+            name: 'symbolTool',
+            description: 'A symbol tool',
           });
           TestBed.inject(ApplicationRef).tick();
-        }).toThrowError(/Could not accurately infer WebMCP schema/);
-      });
+          return promise;
+        }),
+      ).toBeRejectedWithError(/Could not accurately infer WebMCP schema/);
       expect(
         globalThis.navigator.modelContextTesting!.listTools().some((t) => t.name === 'symbolTool'),
       ).toBeFalse();
