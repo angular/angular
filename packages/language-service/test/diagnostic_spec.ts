@@ -194,6 +194,30 @@ describe('getSemanticDiagnostics', () => {
     );
   });
 
+  it('should report a parse error for an empty template literal interpolation', () => {
+    const files = {
+      'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<p>{{ \`Hello, $\{\}!\` }}</p>',
+      })
+      export class AppComponent {}
+    `,
+    };
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const diags = project.getDiagnosticsForFile('app.ts');
+
+    expect(
+      diags.some((diag) =>
+        ts
+          .flattenDiagnosticMessageText(diag.messageText, '')
+          .includes('Parser Error: Template literal interpolation cannot be empty'),
+      ),
+    ).toBe(true);
+  });
+
   it('reports html parse errors along with typecheck errors as diagnostics', () => {
     const files = {
       'app.ts': `
