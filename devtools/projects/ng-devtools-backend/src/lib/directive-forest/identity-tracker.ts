@@ -195,7 +195,8 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
     hydration: node.hydration,
     controlFlowBlock: node.controlFlowBlock,
     injector: node.injector,
-  } as IndexedNode;
+    static: node.static,
+  } satisfies IndexedNode;
 };
 
 export const indexForest = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType>>(

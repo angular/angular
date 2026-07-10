@@ -192,4 +192,50 @@ describe('render tree extraction', () => {
       }),
     );
   });
+
+  it('should add an `<html_content>` static node for a control flow block with HTML-only content', () => {
+    // Represent:
+    //
+    // <app>
+    //   @for (...) {
+    //     <div>plain HTML, no component/directive</div>
+    //   }
+    // </app>
+
+    const appNode = document.createElement('app');
+    const forHostNode = document.createElement('comment');
+    const htmlContentNode = document.createElement('div');
+
+    appNode.appendChild(forHostNode);
+    appNode.appendChild(htmlContentNode);
+
+    componentMap.set(appNode, {});
+
+    controlFlowBlocksMap.set(appNode, [
+      {
+        type: ControlFlowBlockType.For,
+        hostNode: forHostNode,
+        rootNodes: [htmlContentNode],
+        items: [],
+      },
+    ]);
+
+    const rtree = treeStrategy.build(appNode);
+
+    expect(rtree[0].children.length).toBe(1);
+
+    const deferNode = rtree[0].children[0];
+
+    expect(deferNode.tagName).toBe('@for');
+    expect(deferNode.children.length).toBe(1);
+    expect(deferNode.children[0]).toEqual(
+      jasmine.objectContaining({
+        tagName: '<html_content>',
+        static: true,
+        controlFlowBlock: null,
+        component: null,
+        children: [],
+      }),
+    );
+  });
 });

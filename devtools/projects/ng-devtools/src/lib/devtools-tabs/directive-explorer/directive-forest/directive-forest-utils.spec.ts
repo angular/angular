@@ -35,9 +35,12 @@ describe('directive-forest-utils', () => {
         directives,
         controlFlowBlock: null,
         hasNativeElement: true,
+        static: false,
       },
       controlFlowBlock: null,
       hasNativeElement: true,
+      collapsedByDefault: false,
+      static: false,
     };
   }
 

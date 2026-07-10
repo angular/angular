@@ -442,6 +442,7 @@ const prepareForestForSerialization = (
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
       controlFlowBlock: node.controlFlowBlock,
+      static: node.static,
       changeDetection: node.component ? getDirectiveCdStrategy(node.component) : undefined,
 
       // native elements are not serializable

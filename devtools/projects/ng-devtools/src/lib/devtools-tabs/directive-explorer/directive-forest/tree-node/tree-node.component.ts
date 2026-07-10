@@ -49,6 +49,7 @@ export type NodeTextMatch = {
     '[class.selected]': 'isSelected',
     '[class.highlighted]': 'isHighlighted',
     '[class.new-node]': 'node().newItem',
+    '[class.static]': 'node().static',
     '(click)': 'selectNode.emit(this.node())',
     '(dblclick)': 'selectDomElement.emit(this.node())',
     '(mouseenter)': 'highlightNode.emit(this.node())',
