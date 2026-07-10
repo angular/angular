@@ -468,10 +468,12 @@
           type="button"
           [cdkMenuTriggerFor]="themeMiniMenu"
           [cdkMenuPosition]="bottomMiniMenuPositions"
+          [disabled]="showAngryAngie()"
           [aria-label]="'Change theme. Current theme: ' + theme()"
           aria-controls="theme-mini-menu"
           [aria-expanded]="openedMenu() === 'theme-picker'"
           aria-haspopup="menu"
+          (click)="registerThemeTap()"
           (cdkMenuClosed)="closeMenu()"
           (cdkMenuOpened)="openMenu('theme-picker')"
         >
