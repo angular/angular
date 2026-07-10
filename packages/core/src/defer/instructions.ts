@@ -38,6 +38,7 @@ import {
   DependencyResolverFn,
   DeferBlockTrigger,
   LDeferBlockDetails,
+  ON_COMPLETE_FNS,
   TDeferBlockDetails,
   TriggerType,
   SSR_UNIQUE_ID,
@@ -883,4 +884,22 @@ export function ɵɵdeferHydrateOnViewport(options?: IntersectionObserverInit) {
   }
   // The actual triggering of hydration on viewport happens in triggering.ts,
   // since these instructions won't exist for dehydrated content.
+}
+
+
+/**
+ * Registers a callback to be invoked when the defer block
+ * transitions to the Complete state.
+ * @codeGenApi
+ */
+export function ɵɵdeferOnLoaded(fn: () => void) {
+  const lView = getLView();
+  const tNode = getSelectedTNode();
+  const lDetails = getLDeferBlockDetails(lView, tNode);
+
+  if (!Array.isArray(lDetails[ON_COMPLETE_FNS])) {
+    lDetails[ON_COMPLETE_FNS] = [];
+  }
+
+  lDetails[ON_COMPLETE_FNS].push(fn);
 }
