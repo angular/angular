@@ -59,6 +59,20 @@ export class Search {
     computation: (next, prev) => (!next && this.searchQuery() ? prev?.value : next) ?? [],
   });
 
+  readonly emptyState = linkedSignal<{query: string; pending: boolean}, 'start' | 'no-results'>({
+    source: () => ({
+      query: this.searchQuery(),
+      pending:
+        this.searchQuery() !== this.debounceParams.value() || this.resultsResource.isLoading(),
+    }),
+    computation: ({query, pending}, prev) => {
+      if (!query) {
+        return 'start';
+      }
+      return pending ? (prev?.value ?? 'start') : 'no-results';
+    },
+  });
+
   private getUniqueSearchResultItems(items: SearchResult[]): SearchResult[] {
     const uniqueUrls = new Set<string>();
 

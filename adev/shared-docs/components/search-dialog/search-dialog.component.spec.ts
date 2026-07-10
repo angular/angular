@@ -113,6 +113,35 @@ describe('SearchDialog', () => {
     expect(startTypingContainer).toBeTruthy();
   });
 
+  it('should keep the `No results found` message while re-querying instead of flickering back to `Start typing`', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+
+    // Settle on an empty result set so `No results found` is shown.
+    search.searchQuery.set('foobarbaz');
+    searchResults.and.returnValue(Promise.resolve({results: [{hits: []}]}));
+    appRef.tick();
+    await timeout(300);
+    await appRef.whenStable();
+
+    expect(fixture.debugElement.query(By.css('.docs-search-results__no-results'))).toBeTruthy();
+
+    // Edit the query so a new search goes in flight and stays pending.
+    let resolveReload!: (value: unknown) => void;
+    searchResults.and.returnValue(new Promise((resolve) => (resolveReload = resolve)));
+    search.searchQuery.set('foobarba');
+    appRef.tick();
+
+    // The delay from debounced (200ms), after which the pending request is loading.
+    await timeout(300);
+
+    // While the re-query is loading it must not revert to the `Start typing` state.
+    expect(fixture.debugElement.query(By.css('.docs-search-results__start-typing'))).toBeNull();
+    expect(fixture.debugElement.query(By.css('.docs-search-results__no-results'))).toBeTruthy();
+
+    resolveReload({results: [{hits: []}]});
+    await appRef.whenStable();
+  });
+
   it('should display list of the search results when results exist', async () => {
     search.searchQuery.set('fakeQuery');
     searchResults.and.returnValue(Promise.resolve({results: [{hits: fakeSearchResults}]}));
