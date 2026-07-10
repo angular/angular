@@ -320,66 +320,6 @@ runInEachFileSystem(() => {
         );
       });
 
-      it('should allow text attributes for explicit signal inputs with booleanAttribute transform', () => {
-        env.write(
-          'test.ts',
-          `
-          import {booleanAttribute, Component, Directive, input} from '@angular/core';
-
-          @Directive({
-            selector: '[directiveName]',
-          })
-          export class TestDir {
-            dismissible = input<boolean>(true, {transform: booleanAttribute});
-          }
-
-          @Component({
-            template: \`
-              <div directiveName [dismissible]="true"></div>
-              <div directiveName dismissible="true"></div>
-              <div directiveName dismissible></div>
-            \`,
-            imports: [TestDir],
-          })
-          export class TestComp {
-          }
-        `,
-        );
-
-        const diagnostics = env.driveDiagnostics();
-        expect(diagnostics).toEqual([]);
-      });
-
-      it('should allow text attributes for explicit signal inputs with numberAttribute transform', () => {
-        env.write(
-          'test.ts',
-          `
-          import {Component, Directive, input, numberAttribute} from '@angular/core';
-
-          @Directive({
-            selector: '[directiveName]',
-          })
-          export class TestDir {
-            count = input<number>(0, {transform: numberAttribute});
-          }
-
-          @Component({
-            template: \`
-              <div directiveName [count]="1"></div>
-              <div directiveName count="1"></div>
-              <div directiveName count=""></div>
-            \`,
-            imports: [TestDir],
-          })
-          export class TestComp {
-          }
-        `,
-        );
-
-        const diagnostics = env.driveDiagnostics();
-        expect(diagnostics).toEqual([]);
-      });
-
       it('should report unset required inputs', () => {
         env.write(
           'test.ts',
