@@ -1576,4 +1576,40 @@ class TestComponent {
       );
     });
   });
+
+  describe('defer loaded callback', () => {
+    it('should report an error when loaded callback method does not exist', () => {
+      const messages = diagnose(
+        `
+          @defer (on timer(500ms); loaded nonExistentMethod()) {
+            <div></div>
+          }
+        `,
+        `
+          export class TestComponent {
+          }
+        `,
+      );
+
+      expect(messages.length).toBe(1);
+      expect(messages[0]).toContain(`Property 'nonExistentMethod' does not exist on type 'TestComponent'`);
+    });
+
+    it('should not report an error when loaded callback method exists', () => {
+      const messages = diagnose(
+        `
+          @defer (on timer(500ms); loaded onDeferredLoaded()) {
+            <div></div>
+          }
+        `,
+        `
+          export class TestComponent {
+            onDeferredLoaded(): void {}
+          }
+        `,
+      );
+
+      expect(messages).toEqual([]);
+    });
+  });
 });

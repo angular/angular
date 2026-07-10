@@ -933,6 +933,11 @@ export class Scope {
       this.opQueue.push(new TcbConditionOp(this.tcb, this, block.hydrateTriggers.when.value));
     }
 
+    // Type-check the `loaded` callback expression to validate the method exists and is callable.
+    if (block.loaded !== null) {
+      this.opQueue.push(new TcbExpressionOp(this.tcb, this, block.loaded));
+    }
+
     this.appendChildren(block);
 
     if (block.placeholder !== null) {

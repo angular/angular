@@ -1747,6 +1747,12 @@ describe('R3 template transform', () => {
         );
       });
 
+      it('should report an error when `loaded` has no expression', () => {
+        expect(() => parse('@defer (loaded){hello}')).toThrowError(
+          /Expected an expression after "loaded" keyword/,
+        );
+      });
+
       it('should report multiple `loaded` parameters', () => {
         expect(() =>
           parse('@defer (loaded onLoaded(); loaded onOtherLoaded()) {hello}'),

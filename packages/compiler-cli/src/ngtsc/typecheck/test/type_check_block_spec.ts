@@ -1960,6 +1960,32 @@ describe('type check blocks', () => {
         'new IntersectionObserver(null!, ({ "rootMargin": "123px" })); "" + ((this).main()); "" + ((this).placeholder());',
       );
     });
+
+    it('should generate `loaded` callback expression', () => {
+      const TEMPLATE = `
+        @defer (on timer(500ms); loaded onDeferredLoaded()) {
+          {{main()}}
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain('(this).onDeferredLoaded()');
+    });
+
+    it('should produce a diagnostic when loaded method does not exist on the component', () => {
+      const TEMPLATE = `
+        @defer (on timer(500ms); loaded onNonExistentMethod()) {
+          {{main()}}
+        }
+      `;
+      const SOURCE = `
+        export class TestComponent {
+          main(): string { return ''; }
+        }
+      `;
+      expect(diagnose(TEMPLATE, SOURCE)).toEqual([
+        jasmine.stringContaining(`Property 'onNonExistentMethod' does not exist on type 'TestComponent'`),
+      ]);
+    });
   });
 
   describe('conditional blocks', () => {

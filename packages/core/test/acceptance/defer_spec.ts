@@ -5185,6 +5185,358 @@ describe('@defer', () => {
       expect(app.nativeElement.innerHTML).toContain('another child: b | token: nested');
     });
   });
+
+  describe('`loaded` callback', () => {
+    it('should invoke the loaded callback after defer block renders', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Deferred content',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (on immediate; loaded onDeferredLoaded()) {
+            <nested-cmp />
+          } @placeholder {
+            Placeholder
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        loadedCallCount = 0;
+        onDeferredLoaded() {
+          this.loadedCallCount++;
+        }
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [dynamicImportOf(NestedCmp)];
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(0);
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toContain('Deferred content');
+    });
+
+    it('should NOT invoke the loaded callback if block is destroyed before completion', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Deferred content',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @if (show) {
+            @defer (on immediate; loaded onDeferredLoaded()) {
+              <nested-cmp />
+            } @placeholder {
+              Placeholder
+            }
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        show = true;
+        loadedCallCount = 0;
+        onDeferredLoaded() {
+          this.loadedCallCount++;
+        }
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [dynamicImportOf(NestedCmp, 100)];
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(0);
+
+      // Destroy the block before it completes loading
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(0);
+    });
+
+    it('should work with `on timer` trigger', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Timer deferred',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (on timer(500ms); loaded onDeferredLoaded()) {
+            <nested-cmp />
+          } @placeholder {
+            Placeholder
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        loadedCallCount = 0;
+        onDeferredLoaded() {
+          this.loadedCallCount++;
+        }
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [dynamicImportOf(NestedCmp)];
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          {provide: TimerScheduler, useClass: FakeTimerScheduler},
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fakeScheduler = TestBed.inject(TimerScheduler) as unknown as FakeTimerScheduler;
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(0);
+
+      fakeScheduler.invoke();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toContain('Timer deferred');
+    });
+
+    it('should work with `when` trigger', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'When deferred',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when shouldLoad; loaded onDeferredLoaded()) {
+            <nested-cmp />
+          } @placeholder {
+            Placeholder
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        shouldLoad = false;
+        loadedCallCount = 0;
+        onDeferredLoaded() {
+          this.loadedCallCount++;
+        }
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [dynamicImportOf(NestedCmp)];
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(0);
+
+      // Trigger the when condition
+      fixture.componentInstance.shouldLoad = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toContain('When deferred');
+    });
+
+    it('should fire callbacks independently for multiple defer blocks', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Deferred {{ id }}',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {
+        @Input() id!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (on immediate; loaded onFirstLoaded()) {
+            <nested-cmp id="first" />
+          } @placeholder {
+            Placeholder 1
+          }
+          @defer (on immediate; loaded onSecondLoaded()) {
+            <nested-cmp id="second" />
+          } @placeholder {
+            Placeholder 2
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        firstCallCount = 0;
+        secondCallCount = 0;
+        onFirstLoaded() {
+          this.firstCallCount++;
+        }
+        onSecondLoaded() {
+          this.secondCallCount++;
+        }
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [dynamicImportOf(NestedCmp)];
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.firstCallCount).toBe(1);
+      expect(fixture.componentInstance.secondCallCount).toBe(1);
+    });
+
+    it('should fire the loaded callback only once (one-shot behavior)', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Deferred content',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (on immediate; loaded onDeferredLoaded()) {
+            <nested-cmp />
+          } @placeholder {
+            Placeholder
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        loadedCallCount = 0;
+        onDeferredLoaded() {
+          this.loadedCallCount++;
+        }
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [dynamicImportOf(NestedCmp)];
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(1);
+
+      // Trigger additional change detection cycles — callback should not fire again
+      fixture.detectChanges();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(1);
+    });
+  });
 });
 
 describe('IdleScheduler', () => {
