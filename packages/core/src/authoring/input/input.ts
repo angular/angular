@@ -79,20 +79,17 @@ export interface InputFunction {
   ): InputSignalWithTransform<T | undefined, TransformT>;
   /**
    * Declares an input of type `T` with an initial value and a transform function
-   * that accepts values of the same type, or string values from static attributes.
+   * that accepts values of the same type.
    */
-  <T>(
-    initialValue: T,
-    opts: InputOptionsWithTransform<T, unknown>,
-  ): InputSignalWithTransform<T, T | string>;
+  <T>(initialValue: T, opts: InputOptionsWithTransform<T, unknown>): InputSignalWithTransform<T, T>;
   /**
    * Declares an input of type `T|undefined` without an initial value and with a transform
-   * function that accepts values of the same type, or string values from static attributes.
+   * function that accepts values of the same type.
    */
   <T>(
     initialValue: undefined,
     opts: InputOptionsWithTransform<T | undefined, unknown>,
-  ): InputSignalWithTransform<T | undefined, T | undefined | string>;
+  ): InputSignalWithTransform<T | undefined, T | undefined>;
 
   /**
    * Initializes a required input.
