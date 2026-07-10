@@ -37,16 +37,18 @@
     </li>
   </ul>
 
-  <h3>Profiler</h3>
+  <h3>Profiling</h3>
   <ul>
     <li>
       <input
-        id="enable-timing-api"
+        id="enable-performance-track"
         type="checkbox"
-        (change)="settings.timingAPIEnabled.set($event.target.checked)"
-        [checked]="settings.timingAPIEnabled()"
+        (change)="settings.performanceTrack.set($event.target.checked)"
+        [checked]="settings.performanceTrack()"
       />
-      <label for="enable-timing-api">Enable timing API</label>
+      <label for="enable-performance-track"
+        >Enable Angular’s performance track in the Chrome DevTools profiler</label
+      >
     </li>
   </ul>
 </div>

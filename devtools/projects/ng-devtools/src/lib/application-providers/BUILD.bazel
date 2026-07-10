@@ -51,8 +51,10 @@ ts_test_library(
     srcs = glob(["*_spec.ts"]),
     deps = [
         ":app_data",
+        ":settings",
         ":supported_apis",
         "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
     ],
 )
 

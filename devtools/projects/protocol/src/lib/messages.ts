@@ -442,8 +442,8 @@ export interface Events {
   selectComponent: (id: number) => void;
   removeComponentHighlight: () => void;
 
-  enableTimingAPI: () => void;
-  disableTimingAPI: () => void;
+  enablePerformanceTrack: () => void;
+  disablePerformanceTrack: () => void;
 
   // todo: type properly
   getInjectorProviders: (injector: SerializedInjector) => void;

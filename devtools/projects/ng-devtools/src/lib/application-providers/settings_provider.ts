@@ -11,11 +11,11 @@ import {SETTINGS_STORE_KEY, SettingsStore} from '../application-services/setting
 import {ApplicationOperations} from '../application-operations';
 import {Settings} from '../application-services/settings';
 
-const DATA_VERSION_KEY = '__v';
+export const DATA_VERSION_KEY = '__v';
 
 // Note: Any changes to the settings items should be accompanied
 // by a migration along with a version bump.
-const LATEST_DATA_VERSION = 1;
+const LATEST_DATA_VERSION = 2;
 
 export function provideSettings(): (Provider | EnvironmentProviders)[] {
   let savedSettings: {[key: string]: unknown};
@@ -43,13 +43,14 @@ export function provideSettings(): (Provider | EnvironmentProviders)[] {
  * @param appOperations
  * @returns New migrated data object
  */
-function applyMigrations(
+export function applyMigrations(
   data: {[key: string]: unknown},
   appOperations: ApplicationOperations,
 ): {[key: string]: unknown} {
   const dataCopy = structuredClone(data);
+  const dataVer = dataCopy[DATA_VERSION_KEY];
 
-  if (dataCopy[DATA_VERSION_KEY] === LATEST_DATA_VERSION) {
+  if (dataVer === LATEST_DATA_VERSION) {
     return dataCopy;
   }
 
@@ -91,6 +92,30 @@ function applyMigrations(
    */
 
   // APPLY ANY MIGRATIONS TO THE DATA HERE.
+
+  // V1 -> V2 migration
+  if (dataVer === 1) {
+    const newData = dataCopy;
+    // Convert `timing_api_enabled` (cat: `general`) key to `performance_track` (cat: `profiling`).
+    newData['performance_track@profiling'] = dataCopy['timing_api_enabled@general'];
+    delete dataCopy['timing_api_enabled@general'];
+
+    // Convert `activeTab` (cat: `general`) key to `active_tab` (cat: `general`).
+    dataCopy['active_tab@general'] = dataCopy['activeTab@general'];
+    delete dataCopy['activeTab@general'];
+
+    // Flag no logner needed. The feature has been promoted to stable.
+    delete dataCopy['router_graph_enabled@general'];
+
+    // Flag no logner needed. The feature has been promoted to stable.
+    delete dataCopy['signal_graph_enabled@general'];
+
+    // Flag no logner needed. The feature has been promoted to stable.
+    delete dataCopy['transfer_state_enabled@general'];
+
+    // Update the data instance version to V2.
+    dataCopy[DATA_VERSION_KEY] = 2;
+  }
 
   dataCopy[DATA_VERSION_KEY] = LATEST_DATA_VERSION;
   appOperations.setStorageItems({[SETTINGS_STORE_KEY]: dataCopy});
