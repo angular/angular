@@ -10,8 +10,9 @@ import {inject} from '@angular/core';
 import {SettingsStore} from './settings_store';
 import {ThemePreference} from './theme_types';
 
-// Note: Any changes to the settings items should be accompanied by a migration.
+// WARNING: Any changes to the settings items should be accompanied by a migration.
 // Check settings_provider.ts
+// Please keep in sync the validation tests in settings_provider_spec.ts as well.
 export class Settings {
   private readonly settingsStore = inject(SettingsStore);
 
@@ -21,9 +22,9 @@ export class Settings {
     initialValue: false,
   });
 
-  readonly timingAPIEnabled = this.settingsStore.create({
-    key: 'timing_api_enabled',
-    category: 'general', // Good candidate for migration to `profiler`
+  readonly performanceTrack = this.settingsStore.create({
+    key: 'performance_track',
+    category: 'profiling',
     initialValue: false,
   });
 
@@ -34,7 +35,7 @@ export class Settings {
   });
 
   readonly activeTab = this.settingsStore.create({
-    key: 'activeTab',
+    key: 'active_tab',
     category: 'general',
     initialValue: 'Components',
   });
