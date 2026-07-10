@@ -197,26 +197,26 @@ describe('render tree extraction', () => {
     // Represent:
     //
     // <app>
-    //   @defer {
+    //   @for (...) {
     //     <div>plain HTML, no component/directive</div>
     //   }
     // </app>
 
     const appNode = document.createElement('app');
-    const deferHostNode = document.createElement('comment');
+    const forHostNode = document.createElement('comment');
     const htmlContentNode = document.createElement('div');
 
-    appNode.appendChild(deferHostNode);
+    appNode.appendChild(forHostNode);
     appNode.appendChild(htmlContentNode);
 
     componentMap.set(appNode, {});
 
     controlFlowBlocksMap.set(appNode, [
       {
-        type: ControlFlowBlockType.Defer,
-        hostNode: deferHostNode,
+        type: ControlFlowBlockType.For,
+        hostNode: forHostNode,
         rootNodes: [htmlContentNode],
-        triggers: [],
+        items: [],
       },
     ]);
 
@@ -226,7 +226,7 @@ describe('render tree extraction', () => {
 
     const deferNode = rtree[0].children[0];
 
-    expect(deferNode.tagName).toBe('@defer');
+    expect(deferNode.tagName).toBe('@for');
     expect(deferNode.children.length).toBe(1);
     expect(deferNode.children[0]).toEqual(
       jasmine.objectContaining({
