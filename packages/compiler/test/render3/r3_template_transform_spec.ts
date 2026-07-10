@@ -97,7 +97,11 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
-    this.result.push(['DeferredBlock']);
+    const result: (string | null)[] = ['DeferredBlock'];
+    if (deferred.loaded !== null) {
+      result.push(`loaded ${unparse(deferred.loaded)}`);
+    }
+    this.result.push(result);
     deferred.visitAll(this);
   }
 
@@ -1405,6 +1409,32 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse a deferred block with a `loaded` parameter', () => {
+      expectFromHtml('@defer (on idle; loaded onDeferredLoaded()){hello}').toEqual([
+        ['DeferredBlock', 'loaded onDeferredLoaded()'],
+        ['IdleDeferredTrigger'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with `loaded` and `when` triggers', () => {
+      expectFromHtml(
+        '@defer (when isVisible(); on timer(100ms); loaded onLoaded()){hello}',
+      ).toEqual([
+        ['DeferredBlock', 'loaded onLoaded()'],
+        ['BoundDeferredTrigger', 'isVisible()'],
+        ['TimerDeferredTrigger', 100],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a deferred block with `loaded` as the only parameter', () => {
+      expectFromHtml('@defer (loaded onLoaded()){hello}').toEqual([
+        ['DeferredBlock', 'loaded onLoaded()'],
+        ['Text', 'hello'],
+      ]);
+    });
+
     describe('block validations', () => {
       it('should report syntax error in `when` trigger', () => {
         expect(() => parse('@defer (when isVisible#){hello}')).toThrowError(
@@ -1715,6 +1745,12 @@ describe('R3 template transform', () => {
         ).toThrowError(
           /Cannot specify additional `hydrate` triggers if `hydrate never` is present/,
         );
+      });
+
+      it('should report multiple `loaded` parameters', () => {
+        expect(() =>
+          parse('@defer (loaded onLoaded(); loaded onOtherLoaded()) {hello}'),
+        ).toThrowError(/@defer block can only have one "loaded" parameter/);
       });
     });
   });

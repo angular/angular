@@ -385,6 +385,7 @@ export class DeferredBlock extends BlockNode implements Node {
     public placeholder: DeferredBlockPlaceholder | null,
     public loading: DeferredBlockLoading | null,
     public error: DeferredBlockError | null,
+    public loaded: AST | null,
     nameSpan: ParseSourceSpan,
     sourceSpan: ParseSourceSpan,
     public mainBlockSpan: ParseSourceSpan,

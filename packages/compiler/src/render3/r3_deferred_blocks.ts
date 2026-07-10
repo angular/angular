@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ASTWithSource} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
@@ -46,6 +47,9 @@ const WHEN_PARAMETER_PATTERN = /^when\s/;
 /** Pattern to identify a `on` parameter in a block. */
 const ON_PARAMETER_PATTERN = /^on\s/;
 
+/** Pattern to identify a `loaded` parameter in a block. */
+const LOADED_PARAMETER_PATTERN = /^loaded\s/;
+
 /**
  * Predicate function that determines if a block with
  * a specific name cam be connected to a `defer` block.
@@ -63,7 +67,7 @@ export function createDeferredBlock(
 ): {node: t.DeferredBlock; errors: ParseError[]} {
   const errors: ParseError[] = [];
   const {placeholder, loading, error} = parseConnectedBlocks(connectedBlocks, errors, visitor);
-  const {triggers, prefetchTriggers, hydrateTriggers} = parsePrimaryTriggers(
+  const {triggers, prefetchTriggers, hydrateTriggers, loadedExpression} = parsePrimaryTriggers(
     ast,
     bindingParser,
     errors,
@@ -92,6 +96,7 @@ export function createDeferredBlock(
     placeholder,
     loading,
     error,
+    loadedExpression,
     ast.nameSpan,
     sourceSpanWithConnectedBlocks,
     ast.sourceSpan,
@@ -272,6 +277,7 @@ function parsePrimaryTriggers(
   const triggers: t.DeferredBlockTriggers = {};
   const prefetchTriggers: t.DeferredBlockTriggers = {};
   const hydrateTriggers: t.DeferredBlockTriggers = {};
+  let loadedExpression: ASTWithSource | null = null;
 
   for (const param of ast.parameters) {
     // The lexer ignores the leading spaces so we can assume
@@ -290,6 +296,32 @@ function parsePrimaryTriggers(
       parseOnTrigger(param, bindingParser, hydrateTriggers, errors, placeholder);
     } else if (HYDRATE_NEVER_PATTERN.test(param.expression)) {
       parseNeverTrigger(param, hydrateTriggers, errors);
+    } else if (LOADED_PARAMETER_PATTERN.test(param.expression)) {
+      if (loadedExpression !== null) {
+        errors.push(
+          new ParseError(
+            param.sourceSpan,
+            '@defer block can only have one "loaded" parameter',
+          ),
+        );
+      } else {
+        const start = getTriggerParametersStart(param.expression, 'loaded'.length);
+        if (start === -1) {
+          errors.push(
+            new ParseError(
+              param.sourceSpan,
+              'Expected an expression after "loaded" keyword',
+            ),
+          );
+        } else {
+          loadedExpression = bindingParser.parseBinding(
+            param.expression.slice(start),
+            false,
+            param.sourceSpan,
+            param.sourceSpan.start.offset + start,
+          );
+        }
+      }
     } else {
       errors.push(new ParseError(param.sourceSpan, 'Unrecognized trigger'));
     }
@@ -304,5 +336,5 @@ function parsePrimaryTriggers(
     );
   }
 
-  return {triggers, prefetchTriggers, hydrateTriggers};
+  return {triggers, prefetchTriggers, hydrateTriggers, loadedExpression};
 }
