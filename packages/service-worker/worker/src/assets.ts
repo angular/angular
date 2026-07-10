@@ -209,6 +209,11 @@ export abstract class AssetGroup {
       }
       try {
         const maxAge = 1000 * parseInt(cacheAge);
+        if (isNaN(maxAge)) {
+          // The max-age value is not a number, so its freshness cannot be determined. Assume the
+          // response is stale.
+          return true;
+        }
 
         // Determine the origin time of this request. If the SW has metadata on the request (which
         // it
@@ -228,6 +233,10 @@ export abstract class AssetGroup {
             return true;
           }
           ts = Date.parse(date);
+          if (isNaN(ts)) {
+            // The Date header could not be parsed. Assume that it's stale, and revalidate it.
+            return true;
+          }
         }
         const age = this.adapter.time - ts;
         return age < 0 || age > maxAge;
@@ -238,14 +247,13 @@ export abstract class AssetGroup {
     } else if (res.headers.has('Expires')) {
       // Determine if the expiration time has passed.
       const expiresStr = res.headers.get('Expires')!;
-      try {
-        // The request needs to be revalidated if the current time is later than the expiration
-        // time, if it parses correctly.
-        return this.adapter.time > Date.parse(expiresStr);
-      } catch {
+      const expires = Date.parse(expiresStr);
+      if (isNaN(expires)) {
         // The expiration date failed to parse, so revalidate as a precaution.
         return true;
       }
+      // The request needs to be revalidated if the current time is later than the expiration time.
+      return this.adapter.time > expires;
     } else {
       // No way to evaluate staleness, so assume the response is already stale.
       return true;

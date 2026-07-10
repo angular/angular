@@ -43,6 +43,7 @@ import {envIsSupported} from '../testing/utils';
     .addFile('/lazy/redirect-target.txt', 'this was a redirect too')
     .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
     .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
+    .addUnhashedFile('/unhashed/c.txt', 'this is unhashed c', {'Cache-Control': 'max-age=invalid'})
     .addUnhashedFile('/api/foo', 'this is api foo', {'Cache-Control': 'no-cache'})
     .addUnhashedFile('/api-static/bar', 'this is static api bar', {'Cache-Control': 'no-cache'})
     .build();
@@ -58,6 +59,7 @@ import {envIsSupported} from '../testing/utils';
     .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
     .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
     .addUnhashedFile('/unhashed/a.txt', 'this is unhashed v2', {'Cache-Control': 'max-age=10'})
+    .addUnhashedFile('/unhashed/c.txt', 'this is unhashed c v2', {'Cache-Control': 'max-age=invalid'})
     .addUnhashedFile('/ignored/file1', 'this is not handled by the SW')
     .addUnhashedFile('/ignored/dir/file2', 'this is not handled by the SW either')
     .build();
@@ -1889,6 +1891,26 @@ import {envIsSupported} from '../testing/utils';
         // Now the new version of the resource should be served.
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed v2');
         server.assertNoOtherRequests();
+      });
+
+      it('revalidate when Cache-Control max-age cannot be parsed', async () => {
+        expect(await makeRequest(scope, '/unhashed/c.txt')).toEqual('this is unhashed c');
+        server.clearRequests();
+
+        // Update the resource on the server.
+        scope.updateServerState(serverUpdate);
+
+        // Move far ahead in time. A malformed max-age carries no usable TTL, so the cached
+        // response must be treated as stale and revalidated rather than served forever.
+        scope.advance(10 * 60 * 60 * 1000);
+
+        expect(await makeRequest(scope, '/unhashed/c.txt')).toEqual('this is unhashed c');
+        await driver.idle.empty;
+        await new Promise((resolve) => setTimeout(resolve)); // Wait for async operations to complete.
+        serverUpdate.assertSawRequestFor('/unhashed/c.txt');
+
+        // Now the new version of the resource should be served.
+        expect(await makeRequest(scope, '/unhashed/c.txt')).toEqual('this is unhashed c v2');
       });
 
       it('survive serialization', async () => {
