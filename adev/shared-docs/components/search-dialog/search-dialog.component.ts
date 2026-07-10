@@ -67,6 +67,7 @@ export class SearchDialog {
 
   readonly resultsResource = this.search.resultsResource;
   readonly searchResults = this.search.searchResults;
+  readonly emptyState = this.search.emptyState;
 
   searchForm = form(this.search.searchQuery);
 
