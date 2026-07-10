@@ -1595,6 +1595,89 @@ describe('redirects', () => {
       );
     });
 
+    it('should limit absolute strings returned by a function', async () => {
+      const firstRedirectOverLimit = 32;
+      let redirects = 0;
+
+      await checkRedirect(
+        [
+          {
+            path: 'loop',
+            redirectTo: () => {
+              redirects++;
+              return redirects <= firstRedirectOverLimit ? '/loop' : '/done';
+            },
+          },
+          {path: 'done', component: ComponentC},
+        ],
+        '/loop',
+        () => fail('expected recognition to reject'),
+        'emptyOnly',
+        (e) => {
+          expect((e as Error).message).toMatch(/NG04016: Detected possible infinite redirect/);
+        },
+      );
+
+      expect(redirects).toBe(firstRedirectOverLimit);
+    });
+
+    it('should limit UrlTrees returned by a function', async () => {
+      const firstRedirectOverLimit = 32;
+      let redirects = 0;
+
+      await checkRedirect(
+        [
+          {
+            path: 'loop',
+            redirectTo: () => {
+              redirects++;
+              const target = redirects <= firstRedirectOverLimit ? '/loop' : '/done';
+              return createUrlTree(target);
+            },
+          },
+          {path: 'done', component: ComponentC},
+        ],
+        '/loop',
+        () => fail('expected recognition to reject'),
+        'emptyOnly',
+        (e) => {
+          expect((e as Error).message).toMatch(/NG04016: Detected possible infinite redirect/);
+        },
+      );
+
+      expect(redirects).toBe(firstRedirectOverLimit);
+    });
+
+    it('should stop applying redirects over the limit in production mode', async () => {
+      const firstRedirectOverLimit = 32;
+      const previousNgDevMode = (globalThis as any).ngDevMode;
+      let redirects = 0;
+
+      try {
+        (globalThis as any).ngDevMode = false;
+        await checkRedirect(
+          [
+            {
+              path: 'loop',
+              redirectTo: () => {
+                redirects++;
+                return redirects <= firstRedirectOverLimit ? '/loop' : '/done';
+              },
+            },
+            {path: 'loop', component: ComponentC},
+            {path: 'done', component: ComponentC},
+          ],
+          '/loop',
+          (t: UrlTree) => expectTreeToBe(t, '/loop'),
+          'emptyOnly',
+        );
+
+        expect(redirects).toBe(firstRedirectOverLimit);
+      } finally {
+        (globalThis as any).ngDevMode = previousNgDevMode;
+      }
+    });
+
     it('with a simple function returning a UrlTree', async () => {
       await checkRedirect(
         [
