@@ -6,9 +6,9 @@
   <docs-pill href="/api?query=accordion#angular_aria_accordion" title="Accordion API Reference"/>
 </docs-pill-row>
 
-## Overview
+## Обзор {#overview}
 
-An accordion organizes related content into expandable and collapsible sections, reducing page scrolling and helping users focus on relevant information. Each section has a trigger button and a content panel. Clicking a trigger toggles the visibility of its associated panel.
+Accordion организует связанный контент в раскрываемые и сворачиваемые секции, уменьшая прокрутку страницы и помогая пользователям сосредоточиться на релевантной информации. У каждой секции есть кнопка-trigger и панель контента. Клик по trigger переключает видимость связанной панели.
 
 <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.ts">
   <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.ts"/>
@@ -16,39 +16,39 @@ An accordion organizes related content into expandable and collapsible sections,
   <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.css"/>
 </docs-code-multifile>
 
-## Usage
+## Использование {#usage}
 
-Accordions work well for organizing content into logical groups where users typically need to view one section at a time.
+Accordions хорошо подходят для организации контента в логические группы, где пользователям обычно нужно просматривать одну секцию за раз.
 
-**Use accordions when:**
+**Используйте accordions, когда:**
 
-- Displaying FAQs with multiple questions and answers
-- Organizing long forms into manageable sections
-- Reducing scrolling on content-heavy pages
-- Progressively disclosing related information
+- Показываете FAQ с несколькими вопросами и ответами
+- Организуете длинные формы в управляемые секции
+- Уменьшаете прокрутку на страницах с большим объёмом контента
+- Постепенно раскрываете связанную информацию
 
-**Avoid accordions when:**
+**Избегайте accordions, когда:**
 
-- Building navigation menus (use the [Menu](guide/aria/menu) component instead)
-- Creating tabbed interfaces (use the [Tabs](guide/aria/tabs) component instead)
-- Showing a single collapsible section (use a disclosure pattern instead)
-- Users need to see multiple sections simultaneously (consider a different layout)
+- Строите навигационные меню (вместо этого используйте компонент [Menu](guide/aria/menu))
+- Создаёте интерфейсы с вкладками (вместо этого используйте компонент [Tabs](guide/aria/tabs))
+- Показываете одну сворачиваемую секцию (вместо этого используйте паттерн disclosure)
+- Пользователям нужно видеть несколько секций одновременно (рассмотрите другой layout)
 
-## Features
+## Возможности {#features}
 
-- **Expansion modes** - Control whether one or multiple panels can be open at the same time
-- **Keyboard navigation** - Navigate between triggers using arrow keys, Home, and End
-- **Lazy rendering** - Content is only created when a panel first expands, improving initial load performance
-- **Disabled states** - Disable the entire group or individual triggers
-- **Focus management** - Control whether disabled items can receive keyboard focus
-- **Programmatic control** - Expand, collapse, or toggle panels from your component code
-- **RTL support** - Automatic support for right-to-left languages
+- **Режимы раскрытия** — контроль, может ли быть открыта одна или несколько панелей одновременно
+- **Клавиатурная навигация** — перемещение между triggers стрелками, Home и End
+- **Ленивый рендеринг** — контент создаётся только при первом раскрытии панели, улучшая производительность начальной загрузки
+- **Состояния disabled** — отключение всей группы или отдельных triggers
+- **Управление фокусом** — контроль, могут ли disabled-элементы получать клавиатурный фокус
+- **Программное управление** — раскрытие, сворачивание или переключение панелей из кода компонента
+- **Поддержка RTL** — автоматическая поддержка языков справа налево
 
-## Examples
+## Примеры {#examples}
 
-### Single expansion mode
+### Режим одиночного раскрытия {#single-expansion-mode}
 
-Set `[multiExpandable]="false"` to allow only one panel to be open at a time. Opening a new panel automatically closes any previously open panel.
+Задайте `[multiExpandable]="false"`, чтобы одновременно могла быть открыта только одна панель. Открытие новой панели автоматически закрывает любую ранее открытую.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -74,11 +74,11 @@ Set `[multiExpandable]="false"` to allow only one panel to be open at a time. Op
   </docs-tab>
 </docs-tab-group>
 
-This mode works well for FAQs or situations where you want users to focus on one answer at a time.
+Этот режим хорошо подходит для FAQ или ситуаций, когда нужно, чтобы пользователи сосредоточились на одном ответе за раз.
 
-### Multiple expansion mode
+### Режим множественного раскрытия {#multiple-expansion-mode}
 
-Set `[multiExpandable]="true"` to allow multiple panels to be open simultaneously. Users can expand as many panels as needed without closing others.
+Задайте `[multiExpandable]="true"`, чтобы несколько панелей могли быть открыты одновременно. Пользователи могут раскрывать столько панелей, сколько нужно, не закрывая другие.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -104,13 +104,13 @@ Set `[multiExpandable]="true"` to allow multiple panels to be open simultaneousl
   </docs-tab>
 </docs-tab-group>
 
-This mode is useful for form sections or when users need to compare content across multiple panels.
+Этот режим полезен для секций форм или когда пользователям нужно сравнивать контент в нескольких панелях.
 
-NOTE: The `multiExpandable` input defaults to `true`. Set it to `false` explicitly if you want single expansion behavior.
+NOTE: Input `multiExpandable` по умолчанию равен `true`. Задайте `false` явно, если нужно поведение одиночного раскрытия.
 
-### Disabled accordion items
+### Отключённые элементы accordion {#disabled-accordion-items}
 
-Disable specific triggers using the `disabled` input. Control how disabled items behave during keyboard navigation using the `softDisabled` input on the accordion group.
+Отключайте конкретные triggers через input `disabled`. Поведение disabled-элементов при клавиатурной навигации контролируйте через input `softDisabled` на группе accordion.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -136,11 +136,11 @@ Disable specific triggers using the `disabled` input. Control how disabled items
   </docs-tab>
 </docs-tab-group>
 
-When `[softDisabled]="true"` (the default), disabled items can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled items are skipped entirely during keyboard navigation.
+Когда `[softDisabled]="true"` (значение по умолчанию), disabled-элементы могут получать фокус, но не могут быть активированы. Когда `[softDisabled]="false"`, disabled-элементы полностью пропускаются при клавиатурной навигации.
 
-### Lazy content rendering
+### Ленивый рендеринг контента {#lazy-content-rendering}
 
-Use the `ngAccordionContent` directive on an `ng-template` to defer rendering content until the panel first expands. This improves performance for accordions with heavy content like images, charts, or complex components.
+Используйте директиву `ngAccordionContent` на `ng-template`, чтобы отложить рендеринг контента до первого раскрытия панели. Это улучшает производительность для accordion с тяжёлым контентом — изображениями, графиками или сложными компонентами.
 
 ```angular-html
 <div ngAccordionGroup>
@@ -157,12 +157,12 @@ Use the `ngAccordionContent` directive on an `ng-template` to defer rendering co
 </div>
 ```
 
-By default, content remains in the DOM after the panel collapses. Set `[preserveContent]="false"` to remove the content from the DOM when the panel closes.
+По умолчанию контент остаётся в DOM после сворачивания панели. Задайте `[preserveContent]="false"`, чтобы удалять контент из DOM при закрытии панели.
 
-## Testing
+## Тестирование {#testing}
 
-Angular Aria provides component harnesses for testing accordion components.
-Here is an example of how to use the harnesses in a component test:
+Angular Aria предоставляет component harnesses для тестирования компонентов accordion.
+Пример использования harnesses в тесте компонента:
 
 ```typescript
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -208,9 +208,9 @@ describe('MyAccordionComponent', () => {
 });
 ```
 
-## API reference
+## API reference {#api-reference}
 
-For detailed API documentation, inspect the following API references:
+Подробную API-документацию смотрите в следующих API reference:
 
 - [`AccordionGroup`](/api/aria/accordion/AccordionGroup)
 - [`AccordionTrigger`](/api/aria/accordion/AccordionTrigger)

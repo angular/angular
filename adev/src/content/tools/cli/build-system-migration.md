@@ -1,40 +1,40 @@
-# Angular application build system
+# Система сборки Angular-приложений
 
-In v17 and higher, the new build system provides an improved way to build Angular applications. This new build system includes:
+В v17 и выше новая система сборки предоставляет улучшенный способ сборки Angular-приложений. Эта новая система сборки включает:
 
-- A modern output format using ESM, with dynamic import expressions to support lazy module loading.
-- Faster build-time performance for both initial builds and incremental rebuilds.
-- Newer JavaScript ecosystem tools such as [esbuild](https://esbuild.github.io/) and [Vite](https://vitejs.dev/).
-- Integrated SSR and prerendering capabilities.
-- Automatic global and component stylesheet hot replacement.
+- Современный формат вывода с использованием ESM с выражениями динамического импорта для поддержки ленивой загрузки модулей.
+- Более быструю производительность сборки как для начальных сборок, так и для инкрементальных пересборок.
+- Более новые инструменты экосистемы JavaScript, такие как [esbuild](https://esbuild.github.io/) и [Vite](https://vitejs.dev/).
+- Интегрированные возможности SSR и prerendering.
+- Автоматическую горячую замену глобальных и компонентных таблиц стилей.
 
-This new build system is stable and fully supported for use with Angular applications.
-You can migrate to the new build system with applications that use the `browser` builder.
-If using a custom builder, please refer to the documentation for that builder on possible migration options.
+Эта новая система сборки стабильна и полностью поддерживается для использования с Angular-приложениями.
+Можно мигрировать на новую систему сборки приложения, использующие builder `browser`.
+Если используется пользовательский builder, обратитесь к документации этого builder о возможных вариантах миграции.
 
-IMPORTANT: The existing webpack-based build system and `browser` builder are deprecated.
-Applications can temporarily continue to use the `browser` builder and projects can opt-out of migrating during an update, but the Angular team recommends migrating to the new build system.
+IMPORTANT: Существующая система сборки на базе webpack и builder `browser` устарели.
+Приложения могут временно продолжать использовать builder `browser`, а проекты могут отказаться от миграции во время обновления, но команда Angular рекомендует мигрировать на новую систему сборки.
 
-## For new applications
+## Для новых приложений {#for-new-applications}
 
-New applications will use this new build system by default via the `application` builder.
+Новые приложения по умолчанию используют эту новую систему сборки через builder `application`.
 
-## For existing applications
+## Для существующих приложений {#for-existing-applications}
 
-Both automated and manual procedures are available depending on the requirements of the project.
-Starting with v18, the update process will ask if you would like to migrate existing applications to use the new build system via the automated migration.
-Prior to migrating, please consider reviewing the [Known Issues](#known-issues) section as it may contain relevant information for your project.
+В зависимости от требований проекта доступны как автоматизированные, так и ручные процедуры.
+Начиная с v18, процесс обновления спросит, хотите ли вы мигрировать существующие приложения на новую систему сборки через автоматизированную миграцию.
+Перед миграцией рассмотрите просмотр раздела [Известные проблемы](#known-issues), так как он может содержать релевантную информацию для вашего проекта.
 
-HELPFUL: Remember to remove any CommonJS assumptions in the application server code if using SSR such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope). All application code should be ESM compatible. This does not apply to third-party dependencies.
+HELPFUL: Не забудьте удалить любые предположения CommonJS в серверном коде приложения при использовании SSR, такие как `require`, `__filename`, `__dirname` или другие конструкции из [области модуля CommonJS](https://nodejs.org/api/modules.html#the-module-scope). Весь код приложения должен быть совместим с ESM. Это не относится к сторонним зависимостям.
 
-### Automated migration (Recommended)
+### Автоматизированная миграция (рекомендуется) {#automated-migration-recommended}
 
-The automated migration will adjust both the application configuration within `angular.json` as well as code and stylesheets to remove previous webpack-specific feature usage.
-While many changes can be automated and most applications will not require any further changes, each application is unique and there may be some manual changes required.
-After the migration, please attempt a build of the application as there could be new errors that will require adjustments within the code.
-The errors will attempt to provide solutions to the problem when possible and the later sections of this guide describe some of the more common situations that you may encounter.
-When updating to Angular v18 via `ng update`, you will be asked to execute the migration.
-This migration is entirely optional for v18 and can also be run manually at anytime after an update via the following command:
+Автоматизированная миграция скорректирует и конфигурацию приложения в `angular.json`, и код со стилями, чтобы удалить предыдущее использование webpack-specific возможностей.
+Хотя многие изменения можно автоматизировать и большинству приложений дальнейшие изменения не потребуются, каждое приложение уникально, и могут потребоваться некоторые ручные изменения.
+После миграции попробуйте собрать приложение, так как могут появиться новые ошибки, требующие корректировок в коде.
+Ошибки по возможности попытаются предоставить решения проблемы, а более поздние разделы этого руководства описывают некоторые из более распространённых ситуаций, с которыми вы можете столкнуться.
+При обновлении до Angular v18 через `ng update` вам предложат выполнить миграцию.
+Эта миграция полностью необязательна для v18 и также может быть запущена вручную в любое время после обновления следующей командой:
 
 ```shell
 
@@ -42,41 +42,41 @@ ng update @angular/cli --name use-application-builder
 
 ```
 
-The migration does the following:
+Миграция делает следующее:
 
-- Converts existing `browser` or `browser-esbuild` target to `application`
-- Removes any previous SSR builders (because `application` does that now).
-- Updates configuration accordingly.
-- Merges `tsconfig.server.json` with `tsconfig.app.json` and adds the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
-- Updates application server code to use new bootstrapping and output directory structure.
-- Removes any webpack-specific builder stylesheet usage such as the tilde or caret in `@import`/`url()` and updates the configuration to provide equivalent behavior
-- Converts to use the new lower dependency `@angular/build` Node.js package if no other `@angular-devkit/build-angular` usage is found.
+- Преобразует существующую цель `browser` или `browser-esbuild` в `application`
+- Удаляет любые предыдущие SSR builders (потому что `application` теперь делает это).
+- Соответствующим образом обновляет конфигурацию.
+- Объединяет `tsconfig.server.json` с `tsconfig.app.json` и добавляет опцию TypeScript `"esModuleInterop": true`, чтобы импорты `express` были [совместимы с ESM](#esm-default-imports-vs-namespace-imports).
+- Обновляет серверный код приложения для использования новой структуры bootstrap и выходного каталога.
+- Удаляет любое webpack-specific использование таблиц стилей builder, такое как tilde или caret в `@import`/`url()`, и обновляет конфигурацию для предоставления эквивалентного поведения
+- Переходит на использование нового пакета Node.js с меньшей зависимостью `@angular/build`, если не найдено другого использования `@angular-devkit/build-angular`.
 
-### Manual migration
+### Ручная миграция {#manual-migration}
 
-Additionally for existing projects, you can manually opt-in to use the new builder on a per-application basis with two different options.
-Both options are considered stable and fully supported by the Angular team.
-The choice of which option to use is a factor of how many changes you will need to make to migrate and what new features you would like to use in the project.
+Кроме того, для существующих проектов можно вручную включить новый builder на основе каждого приложения с двумя разными вариантами.
+Оба варианта считаются стабильными и полностью поддерживаются командой Angular.
+Выбор варианта зависит от того, сколько изменений потребуется для миграции и какие новые возможности вы хотите использовать в проекте.
 
-- The `browser-esbuild` builder builds only the client-side bundle of an application designed to be compatible with the existing `browser` builder that provides the preexisting build system.
-  This builder provides equivalent build options, and in many cases, it serves as a drop-in replacement for existing `browser` applications.
-- The `application` builder covers an entire application, such as the client-side bundle, as well as optionally building a server for server-side rendering and performing build-time prerendering of static pages.
+- Builder `browser-esbuild` собирает только клиентский бандл приложения, спроектированный совместимым с существующим builder `browser`, предоставляющим прежнюю систему сборки.
+  Этот builder предоставляет эквивалентные опции сборки и во многих случаях служит drop-in заменой для существующих приложений `browser`.
+- Builder `application` охватывает всё приложение, например клиентский бандл, а также опционально собирает сервер для SSR и выполняет prerendering статических страниц на этапе сборки.
 
-The `application` builder is generally preferred as it improves server-side rendered (SSR) builds, and makes it easier for client-side rendered projects to adopt SSR in the future.
-However it requires a little more migration effort, particularly for existing SSR applications if performed manually.
-If the `application` builder is difficult for your project to adopt, `browser-esbuild` can be an easier solution which gives most of the build performance benefits with fewer breaking changes.
+Builder `application` обычно предпочтителен, так как улучшает сборки с SSR и упрощает будущий переход клиентских проектов на SSR.
+Однако он требует немного больше усилий по миграции, особенно для существующих SSR-приложений при ручном выполнении.
+Если builder `application` сложно принять для вашего проекта, `browser-esbuild` может быть более простым решением, дающим большую часть преимуществ производительности сборки с меньшим числом breaking changes.
 
-#### Manual migration to the compatibility builder
+#### Ручная миграция на compatibility builder {#manual-migration-to-the-compatibility-builder}
 
-A builder named `browser-esbuild` is available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application.
-You can try out the new build system for applications that use the `browser` builder.
-If using a custom builder, please refer to the documentation for that builder on possible migration options.
+Builder с именем `browser-esbuild` доступен в пакете `@angular-devkit/build-angular`, присутствующем в приложении, сгенерированном Angular CLI.
+Можно попробовать новую систему сборки для приложений, использующих builder `browser`.
+Если используется пользовательский builder, обратитесь к документации этого builder о возможных вариантах миграции.
 
-The compatibility option was implemented to minimize the amount of changes necessary to initially migrate your applications.
-This is provided via an alternate builder (`browser-esbuild`).
-You can update the `build` target for any application target to migrate to the new build system.
+Вариант совместимости был реализован, чтобы минимизировать объём изменений, необходимых для начальной миграции приложений.
+Это предоставляется через альтернативный builder (`browser-esbuild`).
+Можно обновить цель `build` для любой цели приложения, чтобы мигрировать на новую систему сборки.
 
-The following is what you would typically find in `angular.json` for an application:
+Ниже то, что обычно находится в `angular.json` для приложения:
 
 ```json
 ...
@@ -86,7 +86,7 @@ The following is what you would typically find in `angular.json` for an applicat
 ...
 ```
 
-Changing the `builder` field is the only change you will need to make.
+Изменение поля `builder` — единственное изменение, которое нужно сделать.
 
 ```json
 ...
@@ -96,12 +96,12 @@ Changing the `builder` field is the only change you will need to make.
 ...
 ```
 
-#### Manual migration to the new `application` builder
+#### Ручная миграция на новый builder `application` {#manual-migration-to-the-new-application-builder}
 
-A builder named `application` is also available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application.
-This builder is the default for all new applications created via `ng new`.
+Builder с именем `application` также доступен в пакете `@angular-devkit/build-angular`, присутствующем в приложении, сгенерированном Angular CLI.
+Этот builder — значение по умолчанию для всех новых приложений, создаваемых через `ng new`.
 
-The following is what you would typically find in `angular.json` for an application:
+Ниже то, что обычно находится в `angular.json` для приложения:
 
 ```json
 ...
@@ -111,7 +111,7 @@ The following is what you would typically find in `angular.json` for an applicat
 ...
 ```
 
-Changing the `builder` field is the first change you will need to make.
+Изменение поля `builder` — первое изменение, которое нужно сделать.
 
 ```json
 ...
@@ -121,44 +121,44 @@ Changing the `builder` field is the first change you will need to make.
 ...
 ```
 
-Once the builder name has been changed, options within the `build` target will need to be updated.
-The following list discusses all the `browser` builder options that will need to be adjusted.
+После изменения имени builder нужно обновить опции внутри цели `build`.
+Следующий список обсуждает все опции builder `browser`, которые нужно скорректировать.
 
-- `main` should be renamed to `browser`.
-- `polyfills` should be an array, rather than a single file.
-- `buildOptimizer` should be removed, as this is covered by the `optimization` option.
-- `resourcesOutputPath` should be removed, this is now always `media`.
-- `vendorChunk` should be removed, as this was a performance optimization which is no longer needed.
-- `commonChunk` should be removed, as this was a performance optimization which is no longer needed.
-- `deployUrl` should be removed and is not supported. Prefer [`<base href>`](guide/routing/router-reference#base-href) instead. See [deployment documentation](tools/cli/deployment#--deploy-url) for more information.
-- `ngswConfigPath` should be renamed to `serviceWorker`.
+- `main` следует переименовать в `browser`.
+- `polyfills` должен быть массивом, а не одним файлом.
+- `buildOptimizer` следует удалить, так как это покрывается опцией `optimization`.
+- `resourcesOutputPath` следует удалить, теперь это всегда `media`.
+- `vendorChunk` следует удалить, так как это была оптимизация производительности, которая больше не нужна.
+- `commonChunk` следует удалить, так как это была оптимизация производительности, которая больше не нужна.
+- `deployUrl` следует удалить и не поддерживается. Предпочитайте [`<base href>`](guide/routing/router-reference#base-href). См. [документацию по развёртыванию](tools/cli/deployment#--deploy-url) для дополнительной информации.
+- `ngswConfigPath` следует переименовать в `serviceWorker`.
 
-If the application is not using SSR currently, this should be the final step to allow `ng build` to function.
-After executing `ng build` for the first time, there may be new warnings or errors based on behavioral differences or application usage of webpack-specific features.
-Many of the warnings will provide suggestions on how to remedy that problem.
-If it appears that a warning is incorrect or the solution is not apparent, please open an issue on [GitHub](https://github.com/angular/angular-cli/issues).
-Also, the later sections of this guide provide additional information on several specific cases as well as current known issues.
+Если приложение сейчас не использует SSR, это должен быть финальный шаг, позволяющий `ng build` работать.
+После первого выполнения `ng build` могут появиться новые предупреждения или ошибки на основе поведенческих различий или использования приложением webpack-specific возможностей.
+Многие предупреждения предоставят предложения по устранению проблемы.
+Если кажется, что предупреждение некорректно или решение неочевидно, откройте issue на [GitHub](https://github.com/angular/angular-cli/issues).
+Также более поздние разделы этого руководства предоставляют дополнительную информацию о нескольких конкретных случаях, а также о текущих известных проблемах.
 
-For applications new to SSR, the [Angular SSR Guide](guide/ssr) provides additional information regarding the setup process for adding SSR to an application.
+Для приложений, новых для SSR, [руководство Angular SSR](guide/ssr) предоставляет дополнительную информацию о процессе настройки добавления SSR в приложение.
 
-For applications that are already using SSR, additional adjustments will be needed to update the application server to support the new integrated SSR capabilities.
-The `application` builder now provides the integrated functionality for all of the following preexisting builders:
+Для приложений, уже использующих SSR, потребуются дополнительные корректировки для обновления сервера приложения для поддержки новых интегрированных возможностей SSR.
+Builder `application` теперь предоставляет интегрированную функциональность для всех следующих ранее существовавших builders:
 
 - `app-shell`
 - `prerender`
 - `server`
 - `ssr-dev-server`
 
-The `ng update` process will automatically remove usages of the `@nguniversal` scope packages where some of these builders were previously located.
-The new `@angular/ssr` package will also be automatically added and used with configuration and code being adjusted during the update.
-The `@angular/ssr` package supports the `browser` builder as well as the `application` builder.
+Процесс `ng update` автоматически удалит использования пакетов области `@nguniversal`, где ранее располагались некоторые из этих builders.
+Новый пакет `@angular/ssr` также будет автоматически добавлен и использован с корректировкой конфигурации и кода во время обновления.
+Пакет `@angular/ssr` поддерживает и builder `browser`, и builder `application`.
 
-## Executing a build
+## Выполнение сборки {#executing-a-build}
 
-Once you have updated the application configuration, builds can be performed using `ng build` as was previously done.
-Depending on the choice of builder migration, some of the command line options may be different.
-If the build command is contained in any `npm` or other scripts, ensure they are reviewed and updated.
-For applications that have migrated to the `application` builder and that use SSR and/or prererending, you also may be able to remove extra `ng run` commands from scripts now that `ng build` has integrated SSR support.
+После обновления конфигурации приложения сборки можно выполнять с помощью `ng build`, как и раньше.
+В зависимости от выбора миграции builder некоторые опции командной строки могут отличаться.
+Если команда сборки содержится в каких-либо скриптах `npm` или других, убедитесь, что они просмотрены и обновлены.
+Для приложений, мигрировавших на builder `application` и использующих SSR и/или prerendering, также можно удалить лишние команды `ng run` из скриптов, теперь когда `ng build` имеет интегрированную поддержку SSR.
 
 ```shell
 
@@ -166,10 +166,10 @@ ng build
 
 ```
 
-## Starting the development server
+## Запуск development-сервера {#starting-the-development-server}
 
-The development server will automatically detect the new build system and use it to build the application.
-To start the development server no changes are necessary to the `dev-server` builder configuration or command line.
+Development-сервер автоматически обнаружит новую систему сборки и использует её для сборки приложения.
+Для запуска development-сервера изменения в конфигурации builder `dev-server` или командной строке не нужны.
 
 ```shell
 
@@ -177,28 +177,28 @@ ng serve
 
 ```
 
-You can continue to use the [command line options](/cli/serve) you have used in the past with the development server.
+Можно продолжать использовать [опции командной строки](/cli/serve), которые использовали раньше с development-сервером.
 
-HELPFUL: With the development server, you may see a small Flash of Unstyled Content (FOUC) on startup as the server initializes.
-The development server attempts to defer processing of stylesheets until first use to improve rebuild times.
-This will not occur in builds outside the development server.
+HELPFUL: С development-сервером при запуске можно увидеть небольшой Flash of Unstyled Content (FOUC), пока сервер инициализируется.
+Development-сервер пытается отложить обработку таблиц стилей до первого использования, чтобы улучшить время пересборки.
+Это не происходит в сборках вне development-сервера.
 
-### Hot module replacement
+### Hot module replacement {#hot-module-replacement}
 
-Hot Module Replacement (HMR) is a technique used by development servers to avoid reloading the entire page when only part of an application is changed.
-The changes in many cases can be immediately shown in the browser which allows for an improved edit/refresh cycle while developing an application.
-While general JavaScript-based hot module replacement (HMR) is currently not supported, several more specific forms of HMR are available:
+Hot Module Replacement (HMR) — техника, используемая development-серверами, чтобы избежать перезагрузки всей страницы, когда изменена только часть приложения.
+Изменения во многих случаях могут сразу отображаться в браузере, что позволяет улучшить цикл edit/refresh при разработке приложения.
+Хотя общий JavaScript-based hot module replacement (HMR) сейчас не поддерживается, доступны несколько более специфичных форм HMR:
 
-- **global stylesheet** (`styles` build option)
-- **component stylesheet** (inline and file-based)
-- **component template** (inline and file-based)
+- **глобальная таблица стилей** (опция сборки `styles`)
+- **таблица стилей компонента** (inline и file-based)
+- **шаблон компонента** (inline и file-based)
 
-The HMR capabilities are automatically enabled and require no code or configuration changes to use.
-Angular provides HMR support for both file-based (`templateUrl`/`styleUrl`/`styleUrls`) and inline (`template`/`styles`) component styles and templates.
-The build system will attempt to compile and process the minimal amount of application code when it detects a stylesheet only change.
+Возможности HMR включаются автоматически и не требуют изменений кода или конфигурации для использования.
+Angular предоставляет поддержку HMR и для file-based (`templateUrl`/`styleUrl`/`styleUrls`), и для inline (`template`/`styles`) стилей и шаблонов компонентов.
+Система сборки попытается скомпилировать и обработать минимальный объём кода приложения при обнаружении изменения только таблицы стилей.
 
-If preferred, the HMR capabilities can be disabled by setting the `hmr` development server option to `false`.
-This can also be changed on the command line via:
+При желании возможности HMR можно отключить, установив опцию development-сервера `hmr` в `false`.
+Это также можно изменить в командной строке через:
 
 ```shell
 
@@ -206,26 +206,26 @@ ng serve --no-hmr
 
 ```
 
-### Vite as a development server
+### Vite как development-сервер {#vite-as-a-development-server}
 
-The usage of Vite in the Angular CLI is currently within a _development server capacity only_. Even without using the underlying Vite build system, Vite provides a full-featured development server with client side support that has been bundled into a low dependency npm package. This makes it an ideal candidate to provide comprehensive development server functionality. The current development server process uses the new build system to generate a development build of the application in memory and passes the results to Vite to serve the application. The usage of Vite, much like the Webpack-based development server, is encapsulated within the Angular CLI `dev-server` builder and currently cannot be directly configured.
+Использование Vite в Angular CLI сейчас находится _только в качестве development-сервера_. Даже без использования базовой системы сборки Vite, Vite предоставляет полнофункциональный development-сервер с клиентской поддержкой, упакованный в npm-пакет с низкой зависимостью. Это делает его идеальным кандидатом для предоставления комплексной функциональности development-сервера. Текущий процесс development-сервера использует новую систему сборки для генерации development-сборки приложения в памяти и передаёт результаты Vite для раздачи приложения. Использование Vite, как и development-сервер на базе Webpack, инкапсулировано внутри builder Angular CLI `dev-server` и сейчас не может быть напрямую настроено.
 
-### Prebundling
+### Prebundling {#prebundling}
 
-Prebundling provides improved build and rebuild times when using the development server.
-Vite provides [prebundling capabilities](https://vite.dev/guide/dep-pre-bundling) that are enabled by default when using the Angular CLI.
-The prebundling process analyzes all the third-party project dependencies within a project and processes them the first time the development server is executed.
-This process removes the need to rebuild and bundle the project's dependencies each time a rebuild occurs or the development server is executed.
+Prebundling обеспечивает улучшенное время сборки и пересборки при использовании development-сервера.
+Vite предоставляет [возможности prebundling](https://vite.dev/guide/dep-pre-bundling), которые включены по умолчанию при использовании Angular CLI.
+Процесс prebundling анализирует все сторонние зависимости проекта и обрабатывает их при первом запуске development-сервера.
+Этот процесс устраняет необходимость пересобирать и бандлить зависимости проекта при каждой пересборке или запуске development-сервера.
 
-In most cases, no additional customization is required. However, some situations where it may be needed include:
+В большинстве случаев дополнительная кастомизация не требуется. Однако некоторые ситуации, где она может понадобиться, включают:
 
-- Customizing loader behavior for imports within the dependency such as the [`loader` option](#file-extension-loader-customization)
-- Symlinking a dependency to local code for development such as [`npm link`](https://docs.npmjs.com/cli/v10/commands/npm-link)
-- Working around an error encountered during prebundling of a dependency
+- Настройку поведения loader для импортов внутри зависимости, например [опция `loader`](#file-extension-loader-customization)
+- Symlink зависимости на локальный код для разработки, например [`npm link`](https://docs.npmjs.com/cli/v10/commands/npm-link)
+- Обход ошибки, возникшей во время prebundling зависимости
 
-The prebundling process can be fully disabled or individual dependencies can be excluded if needed by a project.
-The `dev-server` builder's `prebundle` option can be used for these customizations.
-To exclude specific dependencies, the `prebundle.exclude` option is available:
+Процесс prebundling можно полностью отключить или исключить отдельные зависимости, если это нужно проекту.
+Для этих кастомизаций можно использовать опцию `prebundle` builder `dev-server`.
+Чтобы исключить конкретные зависимости, доступна опция `prebundle.exclude`:
 
 ```json
     "serve": {
@@ -237,8 +237,8 @@ To exclude specific dependencies, the `prebundle.exclude` option is available:
       },
 ```
 
-By default, `prebundle` is set to `true` but can be set to `false` to fully disable prebundling.
-However, excluding specific dependencies is recommended instead since rebuild times will increase with prebundling disabled.
+По умолчанию `prebundle` установлен в `true`, но может быть установлен в `false` для полного отключения prebundling.
+Однако рекомендуется исключать конкретные зависимости, так как время пересборки увеличится при отключённом prebundling.
 
 ```json
     "serve": {
@@ -248,26 +248,26 @@ However, excluding specific dependencies is recommended instead since rebuild ti
       },
 ```
 
-## New features
+## Новые возможности {#new-features}
 
-One of the main benefits of the application build system is the improved build and rebuild speed.
-However, the new application build system also provides additional features not present in the `browser` builder.
+Одно из главных преимуществ системы сборки приложений — улучшенная скорость сборки и пересборки.
+Однако новая система сборки приложений также предоставляет дополнительные возможности, отсутствующие в builder `browser`.
 
-IMPORTANT: The new features of the `application` builder described here are incompatible with the `karma` test builder by default because it is using the `browser` builder internally.
-Users can opt-in to use the `application` builder by setting the `builderMode` option to `application` for the `karma` builder.
-This option is currently in developer preview.
-If you notice any issues, please report them [here](https://github.com/angular/angular-cli/issues).
+IMPORTANT: Новые возможности builder `application`, описанные здесь, по умолчанию несовместимы с test builder `karma`, потому что он внутренне использует builder `browser`.
+Пользователи могут включить использование builder `application`, установив опцию `builderMode` в `application` для builder `karma`.
+Эта опция сейчас в developer preview.
+Если заметите какие-либо проблемы, сообщите о них [здесь](https://github.com/angular/angular-cli/issues).
 
-### Build-time value replacement with `define`
+### Замена значений на этапе сборки с `define` {#build-time-value-replacement-with-define}
 
-The `define` option allows identifiers present in the code to be replaced with another value at build time.
-This is similar to the behavior of Webpack's `DefinePlugin` which was previously used with some custom Webpack configurations that used third-party builders.
-The option can either be used within the `angular.json` configuration file or on the command line.
-Configuring `define` within `angular.json` is useful for cases where the values are constant and able to be checked in to source control.
+Опция `define` позволяет заменять идентификаторы, присутствующие в коде, другим значением на этапе сборки.
+Это похоже на поведение Webpack `DefinePlugin`, который ранее использовался с некоторыми пользовательскими конфигурациями Webpack, использовавшими сторонние builders.
+Опцию можно использовать либо в файле конфигурации `angular.json`, либо в командной строке.
+Настройка `define` в `angular.json` полезна для случаев, когда значения постоянны и могут быть закоммичены в систему контроля версий.
 
-Within the configuration file, the option is in the form of an object.
-The keys of the object represent the identifier to replace and the values of the object represent the corresponding replacement value for the identifier.
-An example is as follows:
+В файле конфигурации опция имеет форму объекта.
+Ключи объекта представляют идентификатор для замены, а значения объекта — соответствующее значение замены для идентификатора.
+Пример:
 
 ```json
   "build": {
@@ -283,22 +283,22 @@ An example is as follows:
   }
 ```
 
-HELPFUL: All replacement values are defined as strings within the configuration file.
-If the replacement is intended to be an actual string literal, it should be enclosed in single quote marks.
-This allows the flexibility of using any valid JSON type as well as a different identifier as a replacement.
+HELPFUL: Все значения замены определяются как строки в файле конфигурации.
+Если замена должна быть фактическим строковым литералом, её следует заключить в одинарные кавычки.
+Это позволяет гибко использовать любой допустимый тип JSON, а также другой идентификатор как замену.
 
-The command line usage is preferred for values that may change per build execution such as the git commit hash or an environment variable.
-The CLI will merge `--define` values from the command line with `define` values from `angular.json`, including both in a build.
-Command line usage takes precedence if the same identifier is present for both.
-For command line usage, the `--define` option uses the format of `IDENTIFIER=VALUE`.
+Использование командной строки предпочтительно для значений, которые могут меняться при каждом выполнении сборки, например hash коммита git или переменная окружения.
+CLI объединит значения `--define` из командной строки со значениями `define` из `angular.json`, включая оба в сборку.
+Использование командной строки имеет приоритет, если один и тот же идентификатор присутствует в обоих.
+Для использования командной строки опция `--define` использует формат `IDENTIFIER=VALUE`.
 
 ```shell
 ng build --define SOME_NUMBER=5 --define "ANOTHER='these will overwrite existing'"
 ```
 
-Environment variables can also be selectively included in a build.
-For non-Windows shells, the quotes around the hash literal can be escaped directly if preferred.
-This example assumes a bash-like shell but similar behavior is available for other shells as well.
+Переменные окружения также можно выборочно включать в сборку.
+Для оболочек не-Windows кавычки вокруг литерала hash можно экранировать напрямую, если предпочтительно.
+Этот пример предполагает bash-like оболочку, но похожее поведение доступно и для других оболочек.
 
 ```shell
 export MY_APP_API_HOST="http://example.com"
@@ -306,8 +306,8 @@ export API_RETRY=3
 ng build --define API_HOST=\'$MY_APP_API_HOST\' --define API_RETRY=$API_RETRY
 ```
 
-For either usage, TypeScript needs to be aware of the types for the identifiers to prevent type-checking errors during the build.
-This can be accomplished with an additional type definition file within the application source code (`src/types.d.ts`, for example) with similar content:
+Для любого использования TypeScript должен знать типы идентификаторов, чтобы предотвратить ошибки проверки типов во время сборки.
+Это можно сделать с помощью дополнительного файла определения типов в исходном коде приложения (например, `src/types.d.ts`) с похожим содержимым:
 
 ```ts
 declare const SOME_NUMBER: number;
@@ -317,35 +317,35 @@ declare const API_HOST: string;
 declare const API_RETRY: number;
 ```
 
-The default project configuration is already setup to use any type definition files present in the project source directories.
-If the TypeScript configuration for the project has been altered, it may need to be adjusted to reference this newly added type definition file.
+Конфигурация проекта по умолчанию уже настроена на использование любых файлов определения типов, присутствующих в исходных каталогах проекта.
+Если конфигурация TypeScript проекта была изменена, может потребоваться скорректировать её, чтобы ссылаться на этот вновь добавленный файл определения типов.
 
-IMPORTANT: This option will not replace identifiers contained within Angular metadata such as a Component or Directive decorator.
+IMPORTANT: Эта опция не заменит идентификаторы, содержащиеся в метаданных Angular, таких как декоратор Component или Directive.
 
-### File extension loader customization
+### Кастомизация loader по расширению файла {#file-extension-loader-customization}
 
-IMPORTANT: This feature is only available with the `application` builder.
+IMPORTANT: Эта возможность доступна только с builder `application`.
 
-Some projects may need to control how all files with a specific file extension are loaded and bundled into an application.
-When using the `application` builder, the `loader` option can be used to handle these cases.
-The option allows a project to define the type of loader to use with a specified file extension.
-A file with the defined extension can then be used within the application code via an import statement or dynamic import expression.
-The available loaders that can be used are:
+Некоторым проектам может потребоваться контролировать, как все файлы с конкретным расширением загружаются и включаются в бандл приложения.
+При использовании builder `application` для обработки этих случаев можно использовать опцию `loader`.
+Опция позволяет проекту определить тип loader для использования с указанным расширением файла.
+Файл с определённым расширением затем можно использовать в коде приложения через оператор import или выражение динамического импорта.
+Доступные loaders:
 
-- `text` - inlines the content as a `string` available as the default export
-- `binary` - inlines the content as a `Uint8Array` available as the default export
-- `file` - emits the file at the application output path and provides the runtime location of the file as the default export
-- `dataurl` - inlines the content as a [data URL](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).
-- `base64` - inlines the content as a Base64-encoded string.
-- `empty` - considers the content to be empty and will not include it in bundles
+- `text` — встраивает содержимое как `string`, доступный как default export
+- `binary` — встраивает содержимое как `Uint8Array`, доступный как default export
+- `file` — эмитит файл по выходному пути приложения и предоставляет runtime-расположение файла как default export
+- `dataurl` — встраивает содержимое как [data URL](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).
+- `base64` — встраивает содержимое как строку в кодировке Base64.
+- `empty` — считает содержимое пустым и не включит его в бандлы
 
-The `empty` value, while less common, can be useful for compatibility of third-party libraries that may contain bundler-specific import usage that needs to be removed.
-One case for this is side-effect imports (`import 'my.css';`) of CSS files which has no effect in a browser.
-Instead, the project can use `empty` and then the CSS files can be added to the `styles` build option or use some other injection method.
+Значение `empty`, хотя и менее распространено, может быть полезно для совместимости сторонних библиотек, которые могут содержать bundler-specific использование импортов, которое нужно удалить.
+Один случай для этого — side-effect импорты (`import 'my.css';`) CSS-файлов, которые не имеют эффекта в браузере.
+Вместо этого проект может использовать `empty`, а затем CSS-файлы можно добавить в опцию сборки `styles` или использовать другой метод внедрения.
 
-The loader option is an object-based option with the keys used to define the file extension and the values used to define the loader type.
+Опция loader — объектная опция, где ключи определяют расширение файла, а значения — тип loader.
 
-An example of the build option usage to inline the content of SVG files into the bundled application would be as follows:
+Пример использования опции сборки для встраивания содержимого SVG-файлов в бандл приложения:
 
 ```json
   "build": {
@@ -359,7 +359,7 @@ An example of the build option usage to inline the content of SVG files into the
   }
 ```
 
-An SVG file can then be imported:
+Затем SVG-файл можно импортировать:
 
 ```ts
 import contents from './some-file.svg';
@@ -367,7 +367,7 @@ import contents from './some-file.svg';
 console.log(contents); // <svg>...</svg>
 ```
 
-Additionally, TypeScript needs to be aware of the module type for the import to prevent type-checking errors during the build. This can be accomplished with an additional type definition file within the application source code (`src/types.d.ts`, for example) with the following or similar content:
+Кроме того, TypeScript должен знать тип модуля для импорта, чтобы предотвратить ошибки проверки типов во время сборки. Это можно сделать с помощью дополнительного файла определения типов в исходном коде приложения (например, `src/types.d.ts`) со следующим или похожим содержимым:
 
 ```ts
 declare module '*.svg' {
@@ -376,36 +376,36 @@ declare module '*.svg' {
 }
 ```
 
-The default project configuration is already setup to use any type definition files (`.d.ts` files) present in the project source directories. If the TypeScript configuration for the project has been altered, the tsconfig may need to be adjusted to reference this newly added type definition file.
+Конфигурация проекта по умолчанию уже настроена на использование любых файлов определения типов (файлы `.d.ts`), присутствующих в исходных каталогах проекта. Если конфигурация TypeScript проекта была изменена, tsconfig может потребоваться скорректировать, чтобы ссылаться на этот вновь добавленный файл определения типов.
 
-### Import attribute loader customization
+### Кастомизация loader через import attribute {#import-attribute-loader-customization}
 
-For cases where only certain files should be loaded in a specific way, per file control over loading behavior is available.
-This is accomplished with a `loader` [import attribute](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import/with) that can be used with both import statements and expressions.
-The presence of the import attribute takes precedence over all other loading behavior including JS/TS and any `loader` build option values.
-For general loading for all files of an otherwise unsupported file type, the [`loader`](#file-extension-loader-customization) build option is recommended.
+Для случаев, когда только определённые файлы должны загружаться конкретным способом, доступен контроль загрузки на уровне файла.
+Это достигается с помощью [import attribute](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import/with) `loader`, который можно использовать и с операторами import, и с выражениями.
+Наличие import attribute имеет приоритет над всем другим поведением загрузки, включая JS/TS и любые значения опции сборки `loader`.
+Для общей загрузки всех файлов иначе неподдерживаемого типа файла рекомендуется опция сборки [`loader`](#file-extension-loader-customization).
 
-For the import attribute, the following loader values are supported:
+Для import attribute поддерживаются следующие значения loader:
 
-- `text` - inlines the content as a `string` available as the default export
-- `binary` - inlines the content as a `Uint8Array` available as the default export
-- `file` - emits the file at the application output path and provides the runtime location of the file as the default export
-- `dataurl` - inlines the content as a [data URL](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).
-- `base64` - inlines the content as a Base64-encoded string.
+- `text` — встраивает содержимое как `string`, доступный как default export
+- `binary` — встраивает содержимое как `Uint8Array`, доступный как default export
+- `file` — эмитит файл по выходному пути приложения и предоставляет runtime-расположение файла как default export
+- `dataurl` — встраивает содержимое как [data URL](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).
+- `base64` — встраивает содержимое как строку в кодировке Base64.
 
-An additional requirement to use import attributes is that the TypeScript `module` option must be set to `esnext` to allow TypeScript to successfully build the application code.
-Once `ES2025` is available within TypeScript, this change will no longer be needed.
+Дополнительное требование для использования import attributes — опция TypeScript `module` должна быть установлена в `esnext`, чтобы TypeScript успешно собрал код приложения.
+Как только `ES2025` станет доступен в TypeScript, это изменение больше не понадобится.
 
-At this time, TypeScript does not support type definitions that are based on import attribute values.
-The use of `@ts-expect-error`/`@ts-ignore` or the use of individual type definition files (assuming the file is only imported with the same loader attribute) is currently required.
-As an example, an SVG file can be imported as text via:
+На данный момент TypeScript не поддерживает определения типов на основе значений import attribute.
+Сейчас требуется использование `@ts-expect-error`/`@ts-ignore` или использование отдельных файлов определения типов (при условии, что файл импортируется только с тем же атрибутом loader).
+Как пример, SVG-файл можно импортировать как текст через:
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
 import contents from './some-file.svg' with {loader: 'text'};
 ```
 
-The same can be accomplished with an import expression inside an async function.
+То же можно сделать с выражением import внутри async-функции.
 
 ```ts
 async function loadSvg(): Promise<string> {
@@ -414,10 +414,10 @@ async function loadSvg(): Promise<string> {
 }
 ```
 
-For the import expression, the `loader` value must be a string literal to be statically analyzed.
-A warning will be issued if the value is not a string literal.
+Для выражения import значение `loader` должно быть строковым литералом для статического анализа.
+Если значение не является строковым литералом, будет выдано предупреждение.
 
-The `file` loader is useful when a file will be loaded at runtime through either a `fetch()`, setting to an image elements `src`, or other similar method.
+Loader `file` полезен, когда файл будет загружаться во время выполнения через `fetch()`, установку в `src` элемента изображения или другой похожий метод.
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
@@ -426,7 +426,7 @@ import imagePath from './image.webp' with {loader: 'file'};
 console.log(imagePath); // media/image-ULK2SIIB.webp
 ```
 
-The `base64` loader is useful when a file needs to be embedded directly into the bundle as an encoded string that can later be used to construct a Data URL.
+Loader `base64` полезен, когда файл нужно встроить напрямую в бандл как закодированную строку, которую позже можно использовать для построения Data URL.
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
@@ -435,7 +435,7 @@ import logo from './logo.png' with {loader: 'base64'};
 console.log(logo); // "iVBORw0KGgoAAAANSUhEUgAA..."
 ```
 
-The `dataurl` loader to inline assets as complete Data URLs.
+Loader `dataurl` для встраивания ресурсов как полных Data URL.
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
@@ -444,33 +444,33 @@ import icon from './icon.svg' with {loader: 'dataurl'};
 console.log(icon); // "data:image/svg+xml;..."
 ```
 
-For production builds as shown in the code comment above, hashing will be automatically added to the path for long-term caching.
+Для production-сборок, как показано в комментарии к коду выше, hashing будет автоматически добавлен к пути для долгосрочного кэширования.
 
-HELPFUL: When using the development server and using a `loader` attribute to import a file from a Node.js package, that package must be excluded from prebundling via the development server `prebundle` option.
+HELPFUL: При использовании development-сервера и атрибута `loader` для импорта файла из пакета Node.js этот пакет должен быть исключён из prebundling через опцию development-сервера `prebundle`.
 
-### Import/export conditions
+### Условия import/export {#importexport-conditions}
 
-Projects may need to map certain import paths to different files based on the type of build.
-This can be particularly useful for cases such as `ng serve` needing to use debug/development specific code but `ng build` needing to use code without any development features/information.
-Several import/export [conditions](https://nodejs.org/api/packages.html#community-conditions-definitions) are automatically applied to support these project needs:
+Проектам может потребоваться сопоставлять определённые пути импорта с разными файлами в зависимости от типа сборки.
+Это особенно полезно для случаев, когда `ng serve` нужно использовать debug/development-specific код, а `ng build` — код без каких-либо development-возможностей/информации.
+Несколько [условий](https://nodejs.org/api/packages.html#community-conditions-definitions) import/export применяются автоматически для поддержки этих потребностей проекта:
 
-- For optimized builds, the `production` condition is enabled.
-- For non-optimized builds, the `development` condition is enabled.
-- For browser output code, the `browser` condition is enabled.
+- Для оптимизированных сборок включается условие `production`.
+- Для неоптимизированных сборок включается условие `development`.
+- Для browser-выходного кода включается условие `browser`.
 
-An optimized build is determined by the value of the `optimization` option.
-When `optimization` is set to `true` or more specifically if `optimization.scripts` is set to `true`, then the build is considered optimized.
-This classification applies to both `ng build` and `ng serve`.
-In a new project, `ng build` defaults to optimized and `ng serve` defaults to non-optimized.
+Оптимизированная сборка определяется значением опции `optimization`.
+Когда `optimization` установлен в `true` или, более конкретно, если `optimization.scripts` установлен в `true`, сборка считается оптимизированной.
+Эта классификация применяется и к `ng build`, и к `ng serve`.
+В новом проекте `ng build` по умолчанию оптимизирован, а `ng serve` — неоптимизирован.
 
-A useful method to leverage these conditions within application code is to combine them with [subpath imports](https://nodejs.org/api/packages.html#subpath-imports).
-By using the following import statement:
+Полезный метод использования этих условий в коде приложения — комбинировать их с [subpath imports](https://nodejs.org/api/packages.html#subpath-imports).
+Используя следующий оператор import:
 
 ```ts
 import {verboseLogging} from '#logger';
 ```
 
-The file can be switched in the `imports` field in `package.json`:
+Файл можно переключать в поле `imports` в `package.json`:
 
 ```json
 {
@@ -484,7 +484,7 @@ The file can be switched in the `imports` field in `package.json`:
 }
 ```
 
-For applications that are also using SSR, browser and server code can be switched by using the `browser` condition:
+Для приложений, также использующих SSR, browser и server код можно переключать с помощью условия `browser`:
 
 ```json
 {
@@ -498,31 +498,31 @@ For applications that are also using SSR, browser and server code can be switche
 }
 ```
 
-These conditions also apply to Node.js packages and any defined [`exports`](https://nodejs.org/api/packages.html#conditional-exports) within the packages.
+Эти условия также применяются к пакетам Node.js и любым определённым [`exports`](https://nodejs.org/api/packages.html#conditional-exports) внутри пакетов.
 
-HELPFUL: If currently using the `fileReplacements` build option, this feature may be able to replace its usage.
+HELPFUL: Если сейчас используется опция сборки `fileReplacements`, эта возможность может заменить её использование.
 
-## Known Issues
+## Известные проблемы {#known-issues}
 
-There are currently several known issues that you may encounter when trying the new build system. This list will be updated to stay current. If any of these issues are currently blocking you from trying out the new build system, please check back in the future as it may have been solved.
+Сейчас есть несколько известных проблем, с которыми вы можете столкнуться при опробовании новой системы сборки. Этот список будет обновляться, чтобы оставаться актуальным. Если какая-либо из этих проблем сейчас блокирует вас от опробования новой системы сборки, проверьте позже — она могла быть решена.
 
-### Type-checking of Web Worker code and processing of nested Web Workers
+### Проверка типов кода Web Worker и обработка вложенных Web Workers {#type-checking-of-web-worker-code-and-processing-of-nested-web-workers}
 
-Web Workers can be used within application code using the same syntax (`new Worker(new URL('<workerfile>', import.meta.url))`) that is supported with the `browser` builder.
-However, the code within the Worker will not currently be type-checked by the TypeScript compiler. TypeScript code is supported just not type-checked.
-Additionally, any nested workers will not be processed by the build system. A nested worker is a Worker instantiation within another Worker file.
+Web Workers можно использовать в коде приложения с тем же синтаксисом (`new Worker(new URL('<workerfile>', import.meta.url))`), который поддерживается с builder `browser`.
+Однако код внутри Worker сейчас не будет проверяться на типы компилятором TypeScript. Код TypeScript поддерживается, просто не проверяется на типы.
+Кроме того, любые вложенные workers не будут обрабатываться системой сборки. Вложенный worker — это создание экземпляра Worker внутри другого файла Worker.
 
-### ESM default imports vs. namespace imports
+### ESM default imports vs. namespace imports {#esm-default-imports-vs-namespace-imports}
 
-TypeScript by default allows default exports to be imported as namespace imports and then used in call expressions.
-This is unfortunately a divergence from the ECMAScript specification.
-The underlying bundler (`esbuild`) within the new build system expects ESM code that conforms to the specification.
-The build system will now generate a warning if your application uses an incorrect type of import of a package.
-However, to allow TypeScript to accept the correct usage, a TypeScript option must be enabled within the application's `tsconfig` file.
-When enabled, the [`esModuleInterop`](https://www.typescriptlang.org/tsconfig#esModuleInterop) option provides better alignment with the ECMAScript specification and is also recommended by the TypeScript team.
-Once enabled, you can update package imports where applicable to an ECMAScript conformant form.
+TypeScript по умолчанию позволяет импортировать default exports как namespace imports, а затем использовать их в call expressions.
+К сожалению, это расхождение со спецификацией ECMAScript.
+Базовый bundler (`esbuild`) в новой системе сборки ожидает код ESM, соответствующий спецификации.
+Система сборки теперь будет генерировать предупреждение, если приложение использует некорректный тип импорта пакета.
+Однако, чтобы TypeScript принял корректное использование, в файле `tsconfig` приложения должна быть включена опция TypeScript.
+Когда включена, опция [`esModuleInterop`](https://www.typescriptlang.org/tsconfig#esModuleInterop) обеспечивает лучшее выравнивание со спецификацией ECMAScript и также рекомендуется командой TypeScript.
+После включения можно обновить импорты пакетов там, где применимо, до формы, соответствующей ECMAScript.
 
-Using the [`moment`](https://npmjs.com/package/moment) package as an example, the following application code will cause runtime errors:
+Используя пакет [`moment`](https://npmjs.com/package/moment) как пример, следующий код приложения вызовет runtime-ошибки:
 
 ```ts
 import * as moment from 'moment';
@@ -530,7 +530,7 @@ import * as moment from 'moment';
 console.log(moment().format());
 ```
 
-The build will generate a warning to notify you that there is a potential problem. The warning will be similar to:
+Сборка сгенерирует предупреждение, уведомляющее о потенциальной проблеме. Предупреждение будет похоже на:
 
 ```text
 ▲ [WARNING] Calling "moment" will crash at run-time because it's an import namespace object, not a function [call-import-namespace]
@@ -548,7 +548,7 @@ Consider changing "moment" to a default import instead:
 
 ```
 
-However, you can avoid the runtime errors and the warning by enabling the `esModuleInterop` TypeScript option for the application and changing the import to the following:
+Однако можно избежать runtime-ошибок и предупреждения, включив опцию TypeScript `esModuleInterop` для приложения и изменив импорт на следующий:
 
 ```ts
 import moment from 'moment';
@@ -556,21 +556,21 @@ import moment from 'moment';
 console.log(moment().format());
 ```
 
-### Order-dependent side-effectful imports in lazy modules
+### Order-dependent side-effectful imports в ленивых модулях {#order-dependent-side-effectful-imports-in-lazy-modules}
 
-Import statements that are dependent on a specific ordering and are also used in multiple lazy modules can cause top-level statements to be executed out of order.
-This is not common as it depends on the usage of side-effectful modules and does not apply to the `polyfills` option.
-This is caused by a [defect](https://github.com/evanw/esbuild/issues/399) in the underlying bundler but will be addressed in a future update.
+Операторы import, зависящие от конкретного порядка и также используемые в нескольких ленивых модулях, могут привести к выполнению top-level операторов не по порядку.
+Это нетипично, так как зависит от использования side-effectful модулей и не применяется к опции `polyfills`.
+Это вызвано [дефектом](https://github.com/evanw/esbuild/issues/399) в базовом bundler, но будет устранено в будущем обновлении.
 
-IMPORTANT: Avoiding the use of modules with non-local side effects (outside of polyfills) is recommended whenever possible regardless of the build system being used and avoids this particular issue. Modules with non-local side effects can have a negative effect on both application size and runtime performance as well.
+IMPORTANT: Избегание использования модулей с нелокальными side effects (вне polyfills) рекомендуется всегда, когда возможно, независимо от используемой системы сборки, и избегает этой конкретной проблемы. Модули с нелокальными side effects могут отрицательно влиять и на размер приложения, и на runtime-производительность.
 
-### Output location changes
+### Изменения расположения вывода {#output-location-changes}
 
-By default, after a successful build by the application builder the bundle is located in a `dist/<project-name>/browser` directory (instead of `dist/<project-name>` for the browser builder).
-This might break some of the toolchains that rely the previous location. In this case, you can [configure the output path](reference/configs/workspace-config#output-path-configuration) to suit your needs.
+По умолчанию после успешной сборки builder application бандл располагается в каталоге `dist/<project-name>/browser` (вместо `dist/<project-name>` для browser builder).
+Это может сломать некоторые toolchain, опирающиеся на предыдущее расположение. В этом случае можно [настроить выходной путь](reference/configs/workspace-config#output-path-configuration) под свои нужды.
 
-## Bug reports
+## Отчёты об ошибках {#bug-reports}
 
-Report issues and feature requests on [GitHub](https://github.com/angular/angular-cli/issues).
+Сообщайте о проблемах и запросах возможностей на [GitHub](https://github.com/angular/angular-cli/issues).
 
-Please provide a minimal reproduction where possible to aid the team in addressing issues.
+По возможности предоставляйте минимальное воспроизведение, чтобы помочь команде устранять проблемы.

@@ -1,20 +1,20 @@
-# Custom Controls
+# Пользовательские контролы
 
-NOTE: This guide assumes familiarity with [Signal Forms essentials](essentials/signal-forms).
+NOTE: Это руководство предполагает знакомство с [основами Signal Forms](essentials/signal-forms).
 
-The browser's built-in form controls (like input, select, textarea) handle common cases, but applications often need specialized inputs. A date picker with calendar UI, a rich text editor with formatting toolbar, or a tag selector with autocomplete all require custom implementations.
+Встроенные контролы форм браузера (вроде input, select, textarea) покрывают распространённые случаи, но приложениям часто нужны специализированные inputs. Date picker с календарным UI, rich text editor с панелью форматирования или селектор тегов с автодополнением требуют пользовательских реализаций.
 
-Signal Forms works with any component that implements specific interfaces. A **control interface** defines the properties and signals that allow your component to communicate with the form system. When your component implements one of these interfaces, the `[formField]` directive automatically connects your control to form state, validation, and data binding.
+Signal Forms работают с любым компонентом, реализующим определённые интерфейсы. **Интерфейс контрола** определяет свойства и сигналы, позволяющие компоненту общаться с системой форм. Когда компонент реализует один из этих интерфейсов, директива `[formField]` автоматически подключает контрол к состоянию формы, валидации и привязке данных.
 
-HELPFUL: Custom Signal Form Controls [can be used](guide/forms/signals/migration#custom-controls) with Signal, Reactive and Template-Driven Forms without any extra compatibility code.
+HELPFUL: Пользовательские контролы Signal Form [можно использовать](guide/forms/signals/migration#custom-controls) с Signal, Reactive и Template-Driven Forms без дополнительного кода совместимости.
 
-## Creating a basic custom control
+## Создание базового пользовательского контрола {#creating-a-basic-custom-control}
 
-Let's start with a minimal implementation and add features as needed.
+Начнём с минимальной реализации и будем добавлять возможности по мере необходимости.
 
-### Minimal input control
+### Минимальный input-контрол {#minimal-input-control}
 
-A basic custom input only needs to implement the `FormValueControl` interface and define the required `value` model signal.
+Базовому пользовательскому input достаточно реализовать интерфейс `FormValueControl` и определить обязательный model-сигнал `value`.
 
 ```angular-ts
 import {Component, model} from '@angular/core';
@@ -39,12 +39,12 @@ export class BasicInput implements FormValueControl<string> {
 }
 ```
 
-### Minimal checkbox control
+### Минимальный checkbox-контрол {#minimal-checkbox-control}
 
-A checkbox-style control needs two things:
+Контролу в стиле checkbox нужно два условия:
 
-1. Implement the `FormCheckboxControl` interface so the `FormField` directive will recognize it as a form control
-2. Provide a `checked` model signal
+1. Реализовать интерфейс `FormCheckboxControl`, чтобы директива `FormField` распознала его как контрол формы
+2. Предоставить model-сигнал `checked`
 
 ```angular-ts
 import {Component, model, ChangeDetectionStrategy} from '@angular/core';
@@ -68,9 +68,9 @@ export class BasicToggle implements FormCheckboxControl {
 }
 ```
 
-### Using your custom control
+### Использование пользовательского контрола {#using-your-custom-control}
 
-Once you've created a control, you can use it anywhere you would use a built-in input by adding the `FormField` directive to it:
+Создав контрол, его можно использовать везде, где использовали бы встроенный input, добавив директиву `FormField`:
 
 ```angular-ts
 import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
@@ -109,99 +109,99 @@ export class Registration {
 }
 ```
 
-NOTE: The schema callback parameter (`schemaPath` in these examples) is a `SchemaPathTree` object that provides paths to all fields in your form. You can name this parameter anything you like.
+NOTE: Параметр callback схемы (`schemaPath` в этих примерах) — объект `SchemaPathTree`, предоставляющий пути ко всем полям формы. Этот параметр можно назвать как угодно.
 
-The `[formField]` directive works identically for custom controls and built-in inputs. Signal Forms treats them the same - validation runs, state updates, and data binding works automatically.
+Директива `[formField]` работает одинаково для пользовательских контролов и встроенных inputs. Signal Forms относятся к ним одинаково — валидация запускается, состояние обновляется, привязка данных работает автоматически.
 
-## Understanding control interfaces
+## Понимание интерфейсов контролов {#understanding-control-interfaces}
 
-Now that you've seen custom controls in action, let's explore how they integrate with Signal Forms.
+Теперь, когда пользовательские контролы показаны в действии, разберём, как они интегрируются с Signal Forms.
 
-### Control interfaces
+### Интерфейсы контролов {#control-interfaces}
 
-The `BasicInput` and `BasicToggle` components you created implement specific control interfaces that tell Signal Forms how to interact with them.
+Компоненты `BasicInput` и `BasicToggle`, которые вы создали, реализуют конкретные интерфейсы контролов, сообщающие Signal Forms, как с ними взаимодействовать.
 
-#### FormValueControl
+#### FormValueControl {#formvaluecontrol}
 
-`FormValueControl` is the interface for most input types - text inputs, number inputs, date pickers, select dropdowns, and any control that edits a single value. When your component implements this interface:
+`FormValueControl` — интерфейс для большинства типов input: текстовых, числовых, date picker, select и любого контрола, редактирующего одно значение. Когда компонент реализует этот интерфейс:
 
-- **Required property**: Your component must provide a `value` model signal
-- **What the FormField directive does**: Binds the form field's value to your control's `value` signal
+- **Обязательное свойство**: компонент должен предоставить model-сигнал `value`
+- **Что делает директива FormField**: привязывает значение поля формы к сигналу `value` контрола
 
-IMPORTANT: Controls implementing `FormValueControl` must NOT have a `checked` property
+IMPORTANT: Контролы, реализующие `FormValueControl`, НЕ должны иметь свойство `checked`
 
-#### FormCheckboxControl
+#### FormCheckboxControl {#formcheckboxcontrol}
 
-`FormCheckboxControl` is the interface for checkbox-like controls - toggles, switches, and any control that represents a boolean on/off state. When your component implements this interface:
+`FormCheckboxControl` — интерфейс для checkbox-подобных контролов: toggles, switches и любого контрола, представляющего булево состояние вкл/выкл. Когда компонент реализует этот интерфейс:
 
-- **Required property**: Your component must provide a `checked` model signal
-- **What the FormField directive does**: Binds the form field's value to your control's `checked` signal
+- **Обязательное свойство**: компонент должен предоставить model-сигнал `checked`
+- **Что делает директива FormField**: привязывает значение поля формы к сигналу `checked` контрола
 
-IMPORTANT: Controls implementing `FormCheckboxControl` must NOT have a `value` property
+IMPORTANT: Контролы, реализующие `FormCheckboxControl`, НЕ должны иметь свойство `value`
 
-### Optional state properties
+### Опциональные свойства состояния {#optional-state-properties}
 
-Both `FormValueControl` and `FormCheckboxControl` extend `FormUiControl` - a base interface that provides optional properties for integrating with form state.
+И `FormValueControl`, и `FormCheckboxControl` расширяют `FormUiControl` — базовый интерфейс, предоставляющий опциональные свойства для интеграции с состоянием формы.
 
-All properties are optional. Implement only what your control needs.
+Все свойства опциональны. Реализуйте только то, что нужно контролу.
 
-#### Interaction state
+#### Состояние взаимодействия {#interaction-state}
 
-Track when users interact with your control:
+Отслеживайте, когда пользователи взаимодействуют с контролом:
 
-| Property  | Purpose                                          |
+| Свойство  | Назначение                                          |
 | --------- | ------------------------------------------------ |
-| `touched` | Whether the user has interacted with the field   |
-| `dirty`   | Whether the value differs from its initial state |
+| `touched` | Взаимодействовал ли пользователь с полем   |
+| `dirty`   | Отличается ли значение от начального состояния |
 
-#### Validation state
+#### Состояние валидации {#validation-state}
 
-Display validation feedback to users:
+Показывайте пользователям обратную связь по валидации:
 
-| Property  | Purpose                                 |
+| Свойство  | Назначение                                 |
 | --------- | --------------------------------------- |
-| `errors`  | Array of current validation errors      |
-| `valid`   | Whether the field is valid              |
-| `invalid` | Whether the field has validation errors |
-| `pending` | Whether async validation is in progress |
+| `errors`  | Массив текущих ошибок валидации      |
+| `valid`   | Валидно ли поле              |
+| `invalid` | Есть ли у поля ошибки валидации |
+| `pending` | Выполняется ли async-валидация |
 
-#### Availability state
+#### Состояние доступности {#availability-state}
 
-Control whether users can interact with your field:
+Управляйте тем, могут ли пользователи взаимодействовать с полем:
 
-| Property          | Purpose                                                  |
+| Свойство          | Назначение                                                  |
 | ----------------- | -------------------------------------------------------- |
-| `disabled`        | Whether the field is disabled                            |
-| `disabledReasons` | Reasons why the field is disabled                        |
-| `readonly`        | Whether the field is readonly (visible but not editable) |
-| `hidden`          | Whether the field is hidden from view                    |
+| `disabled`        | Отключено ли поле                            |
+| `disabledReasons` | Причины, почему поле отключено                        |
+| `readonly`        | Только для чтения ли поле (видимо, но не редактируемо) |
+| `hidden`          | Скрыто ли поле от просмотра                    |
 
-NOTE: `disabledReasons` is an array of `DisabledReason` objects. Each object has a `field` property (reference to the field tree) and an optional `message` property. Access the message via `reason.message`.
+NOTE: `disabledReasons` — массив объектов `DisabledReason`. У каждого объекта есть свойство `field` (ссылка на дерево полей) и опциональное свойство `message`. К сообщению обращайтесь через `reason.message`.
 
-#### Validation constraints
+#### Ограничения валидации {#validation-constraints}
 
-Receive validation constraint values from the form:
+Получайте значения ограничений валидации из формы:
 
-| Property    | Purpose                                              |
+| Свойство    | Назначение                                              |
 | ----------- | ---------------------------------------------------- |
-| `required`  | Whether the field is required                        |
-| `min`       | Minimum numeric value (`undefined` if no constraint) |
-| `max`       | Maximum numeric value (`undefined` if no constraint) |
-| `minLength` | Minimum string length (undefined if no constraint)   |
-| `maxLength` | Maximum string length (undefined if no constraint)   |
-| `pattern`   | Array of regular expression patterns to match        |
+| `required`  | Обязательно ли поле                        |
+| `min`       | Минимальное числовое значение (`undefined`, если нет ограничения) |
+| `max`       | Максимальное числовое значение (`undefined`, если нет ограничения) |
+| `minLength` | Минимальная длина строки (undefined, если нет ограничения)   |
+| `maxLength` | Максимальная длина строки (undefined, если нет ограничения)   |
+| `pattern`   | Массив регулярных выражений для совпадения        |
 
-#### Field metadata
+#### Метаданные поля {#field-metadata}
 
-| Property | Purpose                                                            |
+| Свойство | Назначение                                                            |
 | -------- | ------------------------------------------------------------------ |
-| `name`   | The field's name attribute (which is unique across forms and apps) |
+| `name`   | Атрибут name поля (уникальный среди форм и приложений) |
 
-The "[Adding state signals](#adding-state-signals)" section below shows how to implement these properties in your controls.
+Раздел «[Добавление сигналов состояния](#adding-state-signals)» ниже показывает, как реализовать эти свойства в контролах.
 
-### How the FormField directive works
+### Как работает директива FormField {#how-the-formfield-directive-works}
 
-The `[formField]` directive detects which interface your control implements and automatically binds the appropriate signals:
+Директива `[formField]` определяет, какой интерфейс реализует контрол, и автоматически привязывает соответствующие сигналы:
 
 ```angular-ts
 import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
@@ -231,20 +231,20 @@ export class MyForm {
 }
 ```
 
-TIP: For complete coverage of creating and managing form models, see the [Form Models guide](guide/forms/signals/models).
+TIP: Полное покрытие создания и управления моделями форм см. в [руководстве по моделям форм](guide/forms/signals/models).
 
-When you bind `[formField]="userForm.username"`, the FormField directive:
+Когда вы привязываете `[formField]="userForm.username"`, директива FormField:
 
-1. Detects your control implements `FormValueControl`
-2. Internally accesses `userForm.username().value()` and binds it to your control's `value` model signal
-3. Binds form state signals (`disabled()`, `errors()`, etc.) to your control's optional input signals
-4. Updates occur automatically through signal reactivity
+1. Определяет, что контрол реализует `FormValueControl`
+2. Внутри обращается к `userForm.username().value()` и привязывает его к model-сигналу `value` контрола
+3. Привязывает сигналы состояния формы (`disabled()`, `errors()` и т.д.) к опциональным input-сигналам контрола
+4. Обновления происходят автоматически через реактивность сигналов
 
-## Adding state signals
+## Добавление сигналов состояния {#adding-state-signals}
 
-The minimal controls shown above work, but they don't respond to form state. You can add optional input signals to make your controls react to disabled state, display validation errors, and track user interaction.
+Минимальные контролы выше работают, но не реагируют на состояние формы. Можно добавить опциональные input-сигналы, чтобы контролы реагировали на disabled-состояние, показывали ошибки валидации и отслеживали взаимодействие пользователя.
 
-Here's a comprehensive example that implements common state properties:
+Вот полный пример, реализующий распространённые свойства состояния:
 
 ```angular-ts
 import {Component, model, input, output, ChangeDetectionStrategy} from '@angular/core';
@@ -308,7 +308,7 @@ export class StatefulInput implements FormValueControl<string> {
 }
 ```
 
-As a result, you can use the control with validation and state management:
+В результате контрол можно использовать с валидацией и управлением состоянием:
 
 ```angular-ts
 import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
@@ -336,15 +336,15 @@ export class Login {
 }
 ```
 
-When the user types an invalid email, the FormField directive automatically updates `invalid()` and `errors()`. Your control can display the validation feedback.
+Когда пользователь вводит невалидный email, директива FormField автоматически обновляет `invalid()` и `errors()`. Контрол может показать обратную связь по валидации.
 
-### Signal types for state properties
+### Типы сигналов для свойств состояния {#signal-types-for-state-properties}
 
-Most state properties use `input()` (read-only from the form). Use `model()` for `touched` when your control updates it on user interaction. The `touched` property uniquely supports `model()`, `input()`, or `OutputRef` depending on your needs.
+Большинство свойств состояния используют `input()` (только чтение из формы). Используйте `model()` для `touched`, когда контрол обновляет его при взаимодействии пользователя. Свойство `touched` уникально поддерживает `model()`, `input()` или `OutputRef` в зависимости от потребностей.
 
-### Working with `debounce('blur')`
+### Работа с `debounce('blur')` {#working-with-debounceblur}
 
-The [`debounce('blur')`](api/forms/signals/debounce) rule delays updates from the UI to the form model until the field is blurred, instead of applying them on every keystroke. Built-in controls report a blur to the form automatically. A custom control only participates if it emits its `touch` output in response to the native [`blur` event](https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event):
+Правило [`debounce('blur')`](api/forms/signals/debounce) откладывает обновления из UI в модель формы до потери фокуса полем, вместо применения при каждом нажатии клавиши. Встроенные контролы сообщают форме о blur автоматически. Пользовательский контрол участвует только если эмитит свой output `touch` в ответ на нативное [событие `blur`](https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event):
 
 ```angular-ts
 import {Component, model, output} from '@angular/core';
@@ -367,7 +367,7 @@ export class CustomInput implements FormValueControl<string> {
 }
 ```
 
-With the `touch` output in place, `debounce('blur')` behaves the same for your control as it does for built-in inputs:
+С output `touch` на месте `debounce('blur')` ведёт себя для контрола так же, как для встроенных inputs:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -388,13 +388,13 @@ export class App {
 }
 ```
 
-IMPORTANT: Emit `touch` on `blur` (when focus leaves the control), not on `focus`. Without the `touch` output the field never registers as blurred, so `debounce('blur')` has no effect on your control.
+IMPORTANT: Эмитьте `touch` на `blur` (когда фокус покидает контрол), а не на `focus`. Без output `touch` поле никогда не регистрируется как blurred, поэтому `debounce('blur')` не влияет на контрол.
 
-## Value transformation
+## Преобразование значений {#value-transformation}
 
-Controls sometimes display values differently than the form model stores them - a date picker might display "January 15, 2024" while storing "2024-01-15", or a currency input might show "$1,234.56" while storing 1234.56.
+Контролы иногда отображают значения иначе, чем модель формы их хранит — date picker может показывать "January 15, 2024", храня "2024-01-15", а currency input — "$1,234.56", храня 1234.56.
 
-Use `linkedSignal()` (from `@angular/core`) to transform the model value for display, and handle input events to parse user input back to the storage format:
+Используйте `linkedSignal()` (из `@angular/core`), чтобы преобразовать значение модели для отображения, и обрабатывайте события input, чтобы разобрать ввод пользователя обратно в формат хранения:
 
 ```angular-ts
 import {formatCurrency} from '@angular/common';
@@ -431,11 +431,11 @@ function parseCurrency(value: string): number {
 }
 ```
 
-## Validation integration
+## Интеграция валидации {#validation-integration}
 
-Controls display validation state but don't perform validation. Validation happens in the form schema - your control receives `invalid()` and `errors()` signals from the FormField directive and displays them (as shown in the StatefulInput example above).
+Контролы отображают состояние валидации, но не выполняют валидацию. Валидация происходит в схеме формы — контрол получает сигналы `invalid()` и `errors()` от директивы FormField и отображает их (как показано в примере StatefulInput выше).
 
-The FormField directive also passes validation constraint values like `required`, `min`, `max`, `minLength`, `maxLength`, and `pattern`. Your control can use these to enhance the UI:
+Директива FormField также передаёт значения ограничений валидации вроде `required`, `min`, `max`, `minLength`, `maxLength` и `pattern`. Контрол может использовать их для улучшения UI:
 
 ```ts
 export class NumberInput implements FormValueControl<number> {
@@ -448,9 +448,9 @@ export class NumberInput implements FormValueControl<number> {
 }
 ```
 
-When you add `min()` and `max()` validation rules to the schema, the FormField directive passes these values to your control. Use them to apply HTML5 attributes or show constraint hints in your template.
+Когда в схему добавляются правила валидации `min()` и `max()`, директива FormField передаёт эти значения контролу. Используйте их для применения HTML5-атрибутов или показа подсказок об ограничениях в шаблоне.
 
-IMPORTANT: Don't implement validation logic in your control. Define validation rules in the form schema and let your control display the results:
+IMPORTANT: Не реализуйте логику валидации в контроле. Определяйте правила валидации в схеме формы и пусть контрол отображает результаты:
 
 ```ts {avoid}
 // Avoid: Validation in control
@@ -469,9 +469,9 @@ accountForm = form(this.accountModel, (schemaPath) => {
 });
 ```
 
-## Making controls reusable
+## Создание переиспользуемых контролов {#making-controls-reusable}
 
-A custom control often carries implicit expectations about validation. An email input needs `required` and `email` rules in every form that uses it. Instead of relying on each consumer to redeclare those rules, package a companion schema alongside the control and export both from the same module:
+У пользовательского контрола часто есть неявные ожидания по валидации. Email-input нуждается в правилах `required` и `email` в каждой форме, где используется. Вместо того чтобы полагаться на то, что каждый потребитель заново объявит эти правила, упакуйте сопутствующую схему рядом с контролом и экспортируйте оба из одного модуля:
 
 ```ts {header: 'email-input.ts'}
 import {schema, required, email} from '@angular/forms/signals';
@@ -482,7 +482,7 @@ export const emailFieldSchema = schema<string>((path) => {
 });
 ```
 
-A consumer imports the companion schema and composes it into their form with `apply()`:
+Потребитель импортирует сопутствующую схему и включает её в форму через `apply()`:
 
 ```ts {header: 'registration.ts'}
 import {form, apply} from '@angular/forms/signals';
@@ -493,17 +493,17 @@ registrationForm = form(this.registrationModel, (path) => {
 });
 ```
 
-`apply()` merges the companion schema's rules into the parent form at the specified path. The consumer can still add more rules to the same field because `apply()` composes with other rules rather than replacing them. See the [Schemas guide](guide/forms/signals/schemas) for complete coverage of `schema()`, `apply()`, and conditional composition with `applyWhen()`.
+`apply()` объединяет правила сопутствующей схемы в родительскую форму по указанному пути. Потребитель всё ещё может добавить больше правил к тому же полю, потому что `apply()` компонуется с другими правилами, а не заменяет их. Полное покрытие `schema()`, `apply()` и условной композиции с `applyWhen()` см. в [руководстве по схемам](guide/forms/signals/schemas).
 
-### Design considerations
+### Соображения проектирования {#design-considerations}
 
-The consumer's model must initialize every field with a defined value. In Signal Forms, `undefined` signifies the absence of a field and not an empty value. For a reusable email control, that means the consumer should use `''` as the initial value, and not leave the property undefined. See the [Form Models guide](guide/forms/signals/models) for details on choosing initial values.
+Модель потребителя должна инициализировать каждое поле определённым значением. В Signal Forms `undefined` означает отсутствие поля, а не пустое значение. Для переиспользуемого email-контрола это значит, что потребитель должен использовать `''` как начальное значение, а не оставлять свойство undefined. Подробнее о выборе начальных значений см. в [руководстве по моделям форм](guide/forms/signals/models).
 
-In addition, controls should not register their own effects for state management. The form system manages field state through internal effects. This means that your control receives state updates through input signals. If a control needs to transform values, use `linkedSignal()` as shown in the "[Value transformation](#value-transformation)" section rather than an `effect()`.
+Кроме того, контролы не должны регистрировать собственные effects для управления состоянием. Система форм управляет состоянием полей через внутренние effects. Это значит, что контрол получает обновления состояния через input-сигналы. Если контролу нужно преобразовывать значения, используйте `linkedSignal()`, как показано в разделе «[Преобразование значений](#value-transformation)», а не `effect()`.
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-This guide covered building custom controls that integrate with Signal Forms. Related guides explore other aspects of Signal Forms:
+В этом руководстве рассмотрено создание пользовательских контролов, интегрирующихся с Signal Forms. Связанные руководства исследуют другие аспекты Signal Forms:
 
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/models" title="Form models" />

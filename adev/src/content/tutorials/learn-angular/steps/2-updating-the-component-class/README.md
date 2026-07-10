@@ -2,7 +2,7 @@
 
 В Angular логика и поведение компонента определяются в TypeScript-классе компонента.
 
-Note: Узнайте больше
+NOTE: Узнайте больше
 об [отображении динамического текста в руководстве по основам](/essentials/templates#showing-dynamic-text).
 
 В этом задании вы узнаете, как обновлять класс компонента и как
@@ -12,7 +12,7 @@ Note: Узнайте больше
 
 <docs-workflow>
 
-<docs-step title="Добавьте свойство city">
+<docs-step title="Add a property called `city`">
 Обновите класс компонента, добавив свойство `city` в класс `App`.
 
 ```ts
@@ -30,7 +30,7 @@ export class App {
 Чтобы использовать свойство класса в шаблоне, необходимо использовать синтаксис `{{ }}`.
 </docs-step>
 
-<docs-step title="Обновите шаблон компонента">
+<docs-step title="Update the component template">
 Обновите свойство `template`, чтобы оно соответствовало следующему HTML:
 
 ```ts
@@ -42,7 +42,7 @@ template: `Hello {{ city }}`,
 выражений и многого другого.
 </docs-step>
 
-<docs-step title="Больше практики с интерполяцией">
+<docs-step title="More practice with interpolation">
 Попробуйте следующее — добавьте еще одну конструкцию `{{ }}` с содержимым `1 + 1`:
 
 ```ts

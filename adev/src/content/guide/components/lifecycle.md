@@ -1,114 +1,113 @@
-# Component Lifecycle
+# Жизненный цикл компонента
 
-TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: Это руководство предполагает, что вы уже прочитали [Essentials Guide](essentials). Прочитайте его сначала, если вы новичок в Angular.
 
-A component's **lifecycle** is the sequence of steps that happen between the component's creation
-and its destruction. Each step represents a different part of Angular's process for rendering
-components and checking them for updates over time.
+**Жизненный цикл** компонента — последовательность шагов между созданием компонента
+и его уничтожением. Каждый шаг представляет разную часть процесса Angular по отрисовке
+компонентов и проверке их на обновления со временем.
 
-In your components, you can implement **lifecycle hooks** to run code during these steps.
-Lifecycle hooks that relate to a specific component instance are implemented as methods on your
-component class. Lifecycle hooks that relate the Angular application as a whole are implemented
-as functions that accept a callback.
+В компонентах можно реализовать **lifecycle hooks** для выполнения кода во время этих шагов.
+Lifecycle hooks, относящиеся к конкретному экземпляру компонента, реализуются как методы на
+классе компонента. Lifecycle hooks, относящиеся к приложению Angular в целом, реализуются
+как функции, принимающие callback.
 
-A component's lifecycle is tightly connected to how Angular checks your components for changes over
-time. For the purposes of understanding this lifecycle, you only need to know that Angular walks
-your application tree from top to bottom, checking template bindings for changes. The lifecycle
-hooks described below run while Angular is doing this traversal. This traversal visits each
-component exactly once, so you should always avoid making further state changes in the middle of the
-process.
+Жизненный цикл компонента тесно связан с тем, как Angular проверяет компоненты на изменения со
+временем. Для понимания этого жизненного цикла достаточно знать, что Angular обходит
+дерево приложения сверху вниз, проверяя template bindings на изменения. Lifecycle
+hooks, описанные ниже, выполняются, пока Angular делает этот обход. Этот обход посещает каждый
+компонент ровно один раз, поэтому всегда следует избегать дальнейших изменений состояния в середине
+процесса.
 
-## Summary
+## Сводка {#summary}
 
 <div class="docs-table docs-scroll-track-transparent">
   <table>
     <tr>
-      <td><strong>Phase</strong></td>
-      <td><strong>Method</strong></td>
-      <td><strong>Summary</strong></td>
+      <td><strong>Фаза</strong></td>
+      <td><strong>Метод</strong></td>
+      <td><strong>Сводка</strong></td>
     </tr>
     <tr>
       <td>Creation</td>
       <td><code>constructor</code></td>
       <td>
         <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Classes/constructor" target="_blank">
-          Standard JavaScript class constructor
-        </a>. Runs when Angular instantiates the component.
+          Стандартный конструктор класса JavaScript
+        </a>. Выполняется, когда Angular создаёт экземпляр компонента.
       </td>
     </tr>
     <tr>
       <td rowspan="7">Change<p>Detection</td>
       <td><code>ngOnInit</code>
       </td>
-      <td>Runs once after Angular has initialized all the component's inputs.</td>
+      <td>Выполняется один раз после того, как Angular инициализировал все inputs компонента.</td>
     </tr>
     <tr>
       <td><code>ngOnChanges</code></td>
-      <td>Runs every time the component's inputs have changed.</td>
+      <td>Выполняется каждый раз, когда inputs компонента изменились.</td>
     </tr>
     <tr>
       <td><code>ngDoCheck</code></td>
-      <td>Runs every time this component is checked for changes.</td>
+      <td>Выполняется каждый раз, когда этот компонент проверяется на изменения.</td>
     </tr>
     <tr>
       <td><code>ngAfterContentInit</code></td>
-      <td>Runs once after the component's <em>content</em> has been initialized.</td>
+      <td>Выполняется один раз после инициализации <em>content</em> компонента.</td>
     </tr>
     <tr>
       <td><code>ngAfterContentChecked</code></td>
-      <td>Runs every time this component content has been checked for changes.</td>
+      <td>Выполняется каждый раз, когда content этого компонента проверен на изменения.</td>
     </tr>
     <tr>
       <td><code>ngAfterViewInit</code></td>
-      <td>Runs once after the component's <em>view</em> has been initialized.</td>
+      <td>Выполняется один раз после инициализации <em>view</em> компонента.</td>
     </tr>
     <tr>
       <td><code>ngAfterViewChecked</code></td>
-      <td>Runs every time the component's view has been checked for changes.</td>
+      <td>Выполняется каждый раз, когда view компонента проверен на изменения.</td>
     </tr>
     <tr>
       <td rowspan="2">Rendering</td>
       <td><code>afterNextRender</code></td>
-      <td>Runs once the next time that <strong>all</strong> components have been rendered to the DOM.</td>
+      <td>Выполняется один раз в следующий раз, когда <strong>все</strong> компоненты отрисованы в DOM.</td>
     </tr>
     <tr>
       <td><code>afterEveryRender</code></td>
-      <td>Runs every time <strong>all</strong> components have been rendered to the DOM.</td>
+      <td>Выполняется каждый раз, когда <strong>все</strong> компоненты отрисованы в DOM.</td>
     </tr>
     <tr>
       <td>Destruction</td>
       <td><code>ngOnDestroy</code></td>
-      <td>Runs once before the component is destroyed.</td>
+      <td>Выполняется один раз перед уничтожением компонента.</td>
     </tr>
   </table>
 </div>
 
-### ngOnInit
+### ngOnInit {#ngoninit}
 
-The `ngOnInit` method runs after Angular has initialized all the components inputs with their
-initial values. A component's `ngOnInit` runs exactly once.
+Метод `ngOnInit` выполняется после того, как Angular инициализировал все inputs компонента их
+начальными значениями. `ngOnInit` компонента выполняется ровно один раз.
 
-This step happens _before_ the component's own template is initialized. This means that you can
-update the component's state based on its initial input values.
+Этот шаг происходит _до_ инициализации собственного шаблона компонента. Это значит, что можно
+обновить состояние компонента на основе его начальных значений inputs.
 
-### ngOnChanges
+### ngOnChanges {#ngonchanges}
 
-The `ngOnChanges` method runs after any component inputs have changed.
+Метод `ngOnChanges` выполняется после изменения любых inputs компонента.
 
-This step happens _before_ the component's own template is checked. This means that you can update
-the component's state based on its initial input values.
+Этот шаг происходит _до_ проверки собственного шаблона компонента. Это значит, что можно обновить
+состояние компонента на основе его начальных значений inputs.
 
-During initialization, the first `ngOnChanges` runs before `ngOnInit`.
+Во время инициализации первый `ngOnChanges` выполняется до `ngOnInit`.
 
-#### Inspecting changes
+#### Просмотр изменений {#inspecting-changes}
 
-The `ngOnChanges` method accepts one `SimpleChanges` argument. This object is
-a [`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)
-mapping each component input name to a `SimpleChange` object. Each `SimpleChange` contains the
-input's previous value, its current value, and a flag for whether this is the first time the input
-has changed.
+Метод `ngOnChanges` принимает один аргумент `SimpleChanges`. Этот объект —
+[`Record`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type),
+сопоставляющий каждое имя input компонента с объектом `SimpleChange`. Каждый `SimpleChange` содержит
+предыдущее значение input, его текущее значение и флаг, является ли это первым изменением input.
 
-You can optionally pass the current class or this as the first generic argument for stronger type checking.
+Можно опционально передать текущий класс или this как первый generic-аргумент для более строгой проверки типов.
 
 ```ts
 @Component({
@@ -127,20 +126,20 @@ export class UserProfile {
 }
 ```
 
-If you provide an `alias` for any input properties, the `SimpleChanges` Record still uses the
-TypeScript property name as a key, rather than the alias.
+Если предоставить `alias` для любых input-свойств, `SimpleChanges` Record всё равно использует
+имя свойства TypeScript как ключ, а не алиас.
 
-### ngOnDestroy
+### ngOnDestroy {#ngondestroy}
 
-The `ngOnDestroy` method runs once just before a component is destroyed. Angular destroys a
-component when it is no longer shown on the page, such as being hidden by `@if` or upon navigating
-to another page.
+Метод `ngOnDestroy` выполняется один раз непосредственно перед уничтожением компонента. Angular уничтожает
+компонент, когда он больше не показывается на странице — например, скрыт `@if` или при навигации
+на другую страницу.
 
-#### DestroyRef
+#### DestroyRef {#destroyref}
 
-As an alternative to the `ngOnDestroy` method, you can inject an instance of `DestroyRef`. You can
-register a callback to be invoked upon the component's destruction by calling the `onDestroy` method
-of `DestroyRef`.
+Как альтернативу методу `ngOnDestroy` можно внедрить экземпляр `DestroyRef`. Можно
+зарегистрировать callback для вызова при уничтожении компонента, вызвав метод `onDestroy`
+у `DestroyRef`.
 
 ```ts
 @Component({
@@ -155,103 +154,103 @@ export class UserProfile {
 }
 ```
 
-You can pass the `DestroyRef` instance to functions or classes outside your component. Use this
-pattern if you have other code that should run some cleanup behavior when the component is
-destroyed.
+Можно передать экземпляр `DestroyRef` функциям или классам вне компонента. Используйте этот
+паттерн, если есть другой код, который должен выполнить cleanup-поведение при уничтожении
+компонента.
 
-You can also use `DestroyRef` to keep setup code close to cleanup code, rather than putting
-all cleanup code in the `ngOnDestroy` method.
+Также можно использовать `DestroyRef`, чтобы держать setup-код рядом с cleanup-кодом, вместо того чтобы помещать
+весь cleanup-код в метод `ngOnDestroy`.
 
-##### Detecting instance destruction
+##### Обнаружение уничтожения экземпляра {#detecting-instance-destruction}
 
-`DestroyRef` provides a `destroyed` property that allows checking whether a given instance has already been destroyed. This is useful for avoiding operations on destroyed components, especially when dealing with delayed or asynchronous logic.
+`DestroyRef` предоставляет свойство `destroyed`, позволяющее проверить, был ли данный экземпляр уже уничтожен. Это полезно для избежания операций на уничтоженных компонентах, особенно при работе с отложенной или асинхронной логикой.
 
-By checking `destroyRef.destroyed`, you can prevent executing code after the instance has been cleaned up, avoiding potential errors such as `NG0911: View has already been destroyed.`.
+Проверяя `destroyRef.destroyed`, можно предотвратить выполнение кода после очистки экземпляра, избегая потенциальных ошибок вроде `NG0911: View has already been destroyed.`.
 
-### ngDoCheck
+### ngDoCheck {#ngdocheck}
 
-The `ngDoCheck` method runs before every time Angular checks a component's template for changes.
+Метод `ngDoCheck` выполняется перед каждым разом, когда Angular проверяет шаблон компонента на изменения.
 
-You can use this lifecycle hook to manually check for state changes outside of Angular's normal
-change detection, manually updating the component's state.
+Можно использовать этот lifecycle hook для ручной проверки изменений состояния вне обычного
+change detection Angular, вручную обновляя состояние компонента.
 
-This method runs very frequently and can significantly impact your page's performance. Avoid
-defining this hook whenever possible, only using it when you have no alternative.
+Этот метод выполняется очень часто и может существенно влиять на производительность страницы. Избегайте
+определения этого hook, когда возможно, используя его только когда нет альтернативы.
 
-During initialization, the first `ngDoCheck` runs after `ngOnInit`.
+Во время инициализации первый `ngDoCheck` выполняется после `ngOnInit`.
 
-### ngAfterContentInit
+### ngAfterContentInit {#ngaftercontentinit}
 
-The `ngAfterContentInit` method runs once after all the children nested inside the component (its
-_content_) have been initialized.
+Метод `ngAfterContentInit` выполняется один раз после инициализации всех детей, вложенных внутрь компонента (его
+_content_).
 
-You can use this lifecycle hook to read the results of
-[content queries](guide/components/queries#content-queries). While you can access the initialized
-state of these queries, attempting to change any state in this method results in an
+Можно использовать этот lifecycle hook для чтения результатов
+[content queries](guide/components/queries#content-queries). Хотя можно получить доступ к инициализированному
+состоянию этих queries, попытка изменить любое состояние в этом методе приводит к
 [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100)
 
-### ngAfterContentChecked
+### ngAfterContentChecked {#ngaftercontentchecked}
 
-The `ngAfterContentChecked` method runs every time the children nested inside the component (its
-_content_) have been checked for changes.
+Метод `ngAfterContentChecked` выполняется каждый раз, когда дети, вложенные внутрь компонента (его
+_content_), проверены на изменения.
 
-This method runs very frequently and can significantly impact your page's performance. Avoid
-defining this hook whenever possible, only using it when you have no alternative.
+Этот метод выполняется очень часто и может существенно влиять на производительность страницы. Избегайте
+определения этого hook, когда возможно, используя его только когда нет альтернативы.
 
-While you can access the updated state
-of [content queries](guide/components/queries#content-queries) here, attempting to
-change any state in this method results in
-an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
+Хотя здесь можно получить доступ к обновлённому состоянию
+[content queries](guide/components/queries#content-queries), попытка
+изменить любое состояние в этом методе приводит к
+[ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
-### ngAfterViewInit
+### ngAfterViewInit {#ngafterviewinit}
 
-The `ngAfterViewInit` method runs once after all the children in the component's template (its
-_view_) have been initialized.
+Метод `ngAfterViewInit` выполняется один раз после инициализации всех детей в шаблоне компонента (его
+_view_).
 
-You can use this lifecycle hook to read the results of
-[view queries](guide/components/queries#view-queries). While you can access the initialized state of
-these queries, attempting to change any state in this method results in an
+Можно использовать этот lifecycle hook для чтения результатов
+[view queries](guide/components/queries#view-queries). Хотя можно получить доступ к инициализированному состоянию
+этих queries, попытка изменить любое состояние в этом методе приводит к
 [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100)
 
-### ngAfterViewChecked
+### ngAfterViewChecked {#ngafterviewchecked}
 
-The `ngAfterViewChecked` method runs every time the children in the component's template (its
-_view_) have been checked for changes.
+Метод `ngAfterViewChecked` выполняется каждый раз, когда дети в шаблоне компонента (его
+_view_) проверены на изменения.
 
-This method runs very frequently and can significantly impact your page's performance. Avoid
-defining this hook whenever possible, only using it when you have no alternative.
+Этот метод выполняется очень часто и может существенно влиять на производительность страницы. Избегайте
+определения этого hook, когда возможно, используя его только когда нет альтернативы.
 
-While you can access the updated state of [view queries](guide/components/queries#view-queries)
-here, attempting to
-change any state in this method results in
-an [ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
+Хотя здесь можно получить доступ к обновлённому состоянию [view queries](guide/components/queries#view-queries),
+попытка
+изменить любое состояние в этом методе приводит к
+[ExpressionChangedAfterItHasBeenCheckedError](errors/NG0100).
 
-### afterEveryRender and afterNextRender
+### afterEveryRender и afterNextRender {#aftereveryrender-and-afternextrender}
 
-The `afterEveryRender` and `afterNextRender` functions let you register a **render callback** to be
-invoked after Angular has finished rendering _all components_ on the page into the DOM.
+Функции `afterEveryRender` и `afterNextRender` позволяют зарегистрировать **render callback** для
+вызова после того, как Angular закончил отрисовку _всех компонентов_ на странице в DOM.
 
-These functions are different from the other lifecycle hooks described in this guide. Rather than a
-class method, they are standalone functions that accept a callback. The execution of render
-callbacks are not tied to any specific component instance, but instead an application-wide hook.
+Эти функции отличаются от других lifecycle hooks, описанных в этом руководстве. Вместо метода
+класса это standalone-функции, принимающие callback. Выполнение render
+callbacks не привязано к какому-либо конкретному экземпляру компонента, а является application-wide hook.
 
-`afterEveryRender` and `afterNextRender` must be called in
-an [injection context](guide/di/dependency-injection-context), typically a
-component's constructor.
+`afterEveryRender` и `afterNextRender` должны вызываться в
+[injection context](guide/di/dependency-injection-context), обычно в
+конструкторе компонента.
 
-You can use render callbacks to perform manual DOM operations.
-See [Using DOM APIs](guide/components/dom-apis) for guidance on working with the DOM in Angular.
+Можно использовать render callbacks для выполнения ручных DOM-операций.
+См. [Using DOM APIs](guide/components/dom-apis) для указаний по работе с DOM в Angular.
 
-Render callbacks do not run during server-side rendering or during build-time pre-rendering.
+Render callbacks не выполняются во время server-side rendering или во время build-time pre-rendering.
 
-#### after\*Render phases
+#### Фазы after\*Render {#afterrender-phases}
 
-When using `afterEveryRender` or `afterNextRender`, you can optionally split the work into phases. The
-phase gives you control over the sequencing of DOM operations, letting you sequence _write_
-operations before _read_ operations in order to minimize
-[layout thrashing](https://web.dev/avoid-large-complex-layouts-and-layout-thrashing). In order to
-communicate across phases, a phase function may return a result value that can be accessed in the
-next phase.
+При использовании `afterEveryRender` или `afterNextRender` можно опционально разделить работу на фазы. Фаза
+даёт контроль над последовательностью DOM-операций, позволяя упорядочить операции _write_
+перед операциями _read_, чтобы минимизировать
+[layout thrashing](https://web.dev/avoid-large-complex-layouts-and-layout-thrashing). Чтобы
+общаться между фазами, функция фазы может вернуть значение результата, доступное в
+следующей фазе.
 
 ```ts
 import {Component, ElementRef, afterNextRender} from '@angular/core';
@@ -287,23 +286,23 @@ export class UserProfile {
 }
 ```
 
-There are four phases, run in the following order:
+Есть четыре фазы, выполняемые в следующем порядке:
 
-| Phase            | Description                                                                                                                                                                                           |
+| Фаза             | Описание                                                                                                                                                                                              |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `earlyRead`      | Use this phase to read any layout-affecting DOM properties and styles that are strictly necessary for subsequent calculation. Avoid this phase if possible, preferring the `write` and `read` phases. |
-| `write`          | Use this phase to write layout-affecting DOM properties and styles.                                                                                                                                   |
-| `mixedReadWrite` | Default phase. Use for any operations need to both read and write layout-affecting properties and styles. Avoid this phase if possible, preferring the explicit `write` and `read` phases.            |
-| `read`           | Use this phase to read any layout-affecting DOM properties.                                                                                                                                           |
+| `earlyRead`      | Используйте эту фазу для чтения любых layout-affecting DOM-свойств и стилей, строго необходимых для последующих вычислений. Избегайте этой фазы, если возможно, предпочитая фазы `write` и `read`. |
+| `write`          | Используйте эту фазу для записи layout-affecting DOM-свойств и стилей.                                                                                                                                |
+| `mixedReadWrite` | Фаза по умолчанию. Используйте для любых операций, которым нужно и читать, и писать layout-affecting свойства и стили. Избегайте этой фазы, если возможно, предпочитая явные фазы `write` и `read`. |
+| `read`           | Используйте эту фазу для чтения любых layout-affecting DOM-свойств.                                                                                                                                   |
 
-## Lifecycle interfaces
+## Интерфейсы жизненного цикла {#lifecycle-interfaces}
 
-Angular provides a TypeScript interface for each lifecycle method. You can optionally import
-and `implement` these interfaces to ensure that your implementation does not have any typos or
-misspellings.
+Angular предоставляет TypeScript-интерфейс для каждого метода жизненного цикла. Можно опционально импортировать
+и `implement` эти интерфейсы, чтобы гарантировать, что реализация не содержит опечаток или
+ошибок написания.
 
-Each interface has the same name as the corresponding method without the `ng` prefix. For example,
-the interface for `ngOnInit` is `OnInit`.
+Каждый интерфейс имеет то же имя, что и соответствующий метод без префикса `ng`. Например,
+интерфейс для `ngOnInit` — `OnInit`.
 
 ```ts
 @Component({
@@ -316,11 +315,11 @@ export class UserProfile implements OnInit {
 }
 ```
 
-## Execution order
+## Порядок выполнения {#execution-order}
 
-The following diagrams show the execution order of Angular's lifecycle hooks.
+Следующие диаграммы показывают порядок выполнения lifecycle hooks Angular.
 
-### During initialization
+### Во время инициализации {#during-initialization}
 
 ```mermaid
 graph TD;
@@ -337,7 +336,7 @@ end
 CHANGE--Rendering-->afterNextRender-->afterEveryRender
 ```
 
-### Subsequent updates
+### Последующие обновления {#subsequent-updates}
 
 ```mermaid
 graph TD;
@@ -350,9 +349,9 @@ end
 CHANGE--Rendering-->afterEveryRender
 ```
 
-### Ordering with directives
+### Упорядочивание с директивами {#ordering-with-directives}
 
-When you put one or more directives on the same element as a component, either in a template or with
-the `hostDirectives` property, the framework does not guarantee any ordering of a given lifecycle
-hook between the component and the directives on a single element. Never depend on an observed
-ordering, as this may change in later versions of Angular.
+Когда вы помещаете одну или несколько директив на тот же элемент, что и компонент — либо в шаблоне, либо через
+свойство `hostDirectives` — фреймворк не гарантирует какой-либо порядок данного lifecycle
+hook между компонентом и директивами на одном элементе. Никогда не полагайтесь на наблюдаемый
+порядок, так как это может измениться в более поздних версиях Angular.

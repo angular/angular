@@ -4,9 +4,9 @@
       [autofocus]="true"
       [hideIcon]="true"
       [formField]="searchForm"
-      [resetLabel]="'Clear the search'"
+      [resetLabel]="'Очистить поиск'"
       class="docs-search-input"
-      placeholder="Search docs"
+      placeholder="Поиск по документации"
     />
 
     @if (searchResults().length) {
@@ -72,7 +72,7 @@
               class="docs-search-angie"
               aria-hidden="true"
             />
-            <span>Start typing to see results</span>
+            <span>Начните вводить запрос, чтобы увидеть результаты</span>
           </div>
         } @else if (searchResults().length === 0) {
           <div class="docs-search-results__no-results">
@@ -81,7 +81,7 @@
               class="docs-search-angie"
               aria-hidden="true"
             />
-            <span>No results found</span>
+            <span>Ничего не найдено</span>
           </div>
         }
       </div>
@@ -91,7 +91,7 @@
       <ul class="docs-search-commands">
         <li>
           <kbd class="docs-search-commands-key">
-            <svg width="15" height="15" aria-label="Enter key" role="img">
+            <svg width="15" height="15" aria-label="Клавиша Enter" role="img">
               <g
                 fill="none"
                 stroke="currentColor"
@@ -103,11 +103,11 @@
               </g>
             </svg>
           </kbd>
-          <span>to select</span>
+          <span>выбрать</span>
         </li>
         <li>
           <kbd class="docs-search-commands-key">
-            <svg width="15" height="15" aria-label="Arrow down" role="img">
+            <svg width="15" height="15" aria-label="Стрелка вниз" role="img">
               <g
                 fill="none"
                 stroke="currentColor"
@@ -120,7 +120,7 @@
             </svg>
           </kbd>
           <kbd class="docs-search-commands-key">
-            <svg width="15" height="15" aria-label="Arrow up" role="img">
+            <svg width="15" height="15" aria-label="Стрелка вверх" role="img">
               <g
                 fill="none"
                 stroke="currentColor"
@@ -132,11 +132,11 @@
               </g>
             </svg>
           </kbd>
-          <span>to navigate</span>
+          <span>навигация</span>
         </li>
         <li>
           <kbd class="docs-search-commands-key"
-            ><svg width="15" height="15" aria-label="Escape key" role="img">
+            ><svg width="15" height="15" aria-label="Клавиша Escape" role="img">
               <g
                 fill="none"
                 stroke="currentColor"
@@ -150,11 +150,11 @@
               </g>
             </svg>
           </kbd>
-          <span>to close</span>
+          <span>закрыть</span>
         </li>
       </ul>
       <div class="docs-algolia">
-        <span>Search by</span>
+        <span>Поиск от</span>
         <a
           target="_blank"
           rel="noopener"

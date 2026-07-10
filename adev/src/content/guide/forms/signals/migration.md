@@ -1,23 +1,23 @@
-# Migrating existing forms to Signal Forms
+# Миграция существующих форм на Signal Forms
 
-This guide provides strategies for migrating existing codebases to Signal Forms, focusing on interoperability with
-existing Reactive Forms.
+Это руководство описывает стратегии миграции существующих кодовых баз на Signal Forms с упором на совместимость с
+существующими Reactive Forms.
 
-## Top-down migration using `compatForm`
+## Миграция сверху вниз через `compatForm` {#top-down-migration-using-compatform}
 
-Sometimes you may want to use existing reactive `FormControl` instances within a Signal Form. This is useful for
-controls that involve:
+Иногда нужно использовать существующие экземпляры reactive `FormControl` внутри Signal Form. Это полезно для
+контролов, которые включают:
 
-- Complex asynchronous logic.
-- Intricate RxJS operators that are not yet ported.
-- Integration with existing third-party libraries.
+- Сложную асинхронную логику.
+- Замысловатые операторы RxJS, которые ещё не портированы.
+- Интеграцию с существующими сторонними библиотеками.
 
-### Integrating a `FormControl` into a signal form
+### Интеграция `FormControl` в signal form {#integrating-a-formcontrol-into-a-signal-form}
 
-Consider an existing `passwordControl` that uses a specialized `enterprisePasswordValidator`. Instead of rewriting the
-validator, you can bridge the control into your signal state.
+Рассмотрим существующий `passwordControl` со специализированным `enterprisePasswordValidator`. Вместо переписывания
+валидатора можно встроить контрол в signal-состояние.
 
-We can do it using `compatForm`:
+Это делается через `compatForm`:
 
 ```typescript
 import {signal} from '@angular/core';
@@ -48,7 +48,7 @@ const isPasswordValid = f.password().valid();
 const passwordErrors = f.password().errors(); // Returns CompatValidationError if the existing validator fails
 ```
 
-In the template, use standard reactive syntax by binding the underlying control:
+В шаблоне используйте стандартный reactive-синтаксис, привязывая лежащий в основе контрол:
 
 ```angular-html
 <form novalidate>
@@ -81,10 +81,10 @@ In the template, use standard reactive syntax by binding the underlying control:
   <docs-code header="app.html" path="adev/src/content/examples/signal-forms/src/compat-form-control-integration/app/app.html"/>
 </docs-code-multifile>
 
-### Integrating a `FormGroup` into a signal form
+### Интеграция `FormGroup` в signal form {#integrating-a-formgroup-into-a-signal-form}
 
-You can also wrap an entire `FormGroup`. This is common when a reusable sub-section of a form—such as an
-**Address Block**—is still managed by existing Reactive Forms.
+Можно также обернуть целую `FormGroup`. Это часто нужно, когда переиспользуемая подсекция формы — например,
+**Address Block** — всё ещё управляется существующими Reactive Forms.
 
 ```typescript
 import {signal} from '@angular/core';
@@ -109,8 +109,8 @@ const f = compatForm(checkoutModel, (p) => {
 });
 ```
 
-The `shippingAddress` field acts as a branch in your Signal Form tree. You can bind these nested controls in your
-template by accessing the underlying existing controls via `.control()`:
+Поле `shippingAddress` действует как ветвь в дереве Signal Form. Эти вложенные контролы можно привязать в
+шаблоне, обращаясь к лежащим в основе существующим контролам через `.control()`:
 
 ```angular-html
 <form novalidate>
@@ -179,9 +179,9 @@ template by accessing the underlying existing controls via `.control()`:
   <docs-code header="app.html" path="adev/src/content/examples/signal-forms/src/compat-form-group-integration/app/app.html"/>
 </docs-code-multifile>
 
-### Accessing values
+### Доступ к значениям {#accessing-values}
 
-While `compatForm` proxies value access on the `FormControl` level, the full form value preserves the control:
+Хотя `compatForm` проксирует доступ к значению на уровне `FormControl`, полное значение формы сохраняет контрол:
 
 ```typescript
 const passwordControl = new FormControl('password' /** ... */);
@@ -196,7 +196,7 @@ form.password().value(); // 'password'
 form().value(); // { email: '', password: FormControl}
 ```
 
-If you need the whole form value, you'd have to build it manually:
+Если нужно значение всей формы, его придётся собрать вручную:
 
 ```typescript
 const formValue = computed(() => ({
@@ -205,12 +205,12 @@ const formValue = computed(() => ({
 })); // {email: '', password: ''}
 ```
 
-## Bottom-up migration
+## Миграция снизу вверх {#bottom-up-migration}
 
-### Integrating a Signal Form into a `FormGroup`
+### Интеграция Signal Form в `FormGroup` {#integrating-a-signal-form-into-a-formgroup}
 
-You can use `SignalFormControl` to expose a signal-based form as a standard `FormControl`. This is useful when you want
-to migrate leaf nodes of a form to Signals while keeping the parent `FormGroup` structure.
+Можно использовать `SignalFormControl`, чтобы представить signal-based форму как стандартный `FormControl`. Это полезно, когда нужно
+мигрировать листовые узлы формы на Signals, сохраняя родительскую структуру `FormGroup`.
 
 ```typescript
 import {Component, signal} from '@angular/core';
@@ -235,9 +235,9 @@ export class UserProfile {
 }
 ```
 
-The `SignalFormControl` synchronizes values bi-directionally between the **Signal Forms** system and the **Reactive Forms** system:
+`SignalFormControl` синхронизирует значения двунаправленно между системами **Signal Forms** и **Reactive Forms**:
 
-- **Signal -> Reactive**: Updating the value via Signal Forms updates the Reactive Form control immediately.
+- **Signal -> Reactive**: обновление значения через Signal Forms сразу обновляет контрол Reactive Form.
 
 ```typescript
 // Signal Forms update
@@ -247,7 +247,7 @@ this.emailControl.fieldTree().value.set('new@example.com');
 console.log(this.form.value); // {email: 'new@example.com'}
 ```
 
-- **Reactive -> Signal**: Updating the value via the parent `FormGroup` updates the Signal Forms state.
+- **Reactive -> Signal**: обновление значения через родительский `FormGroup` обновляет состояние Signal Forms.
 
 ```typescript
 // Reactive Forms update
@@ -257,9 +257,9 @@ this.form.patchValue({email: 'other@example.com'});
 console.log(this.emailControl.fieldTree().value()); // 'other@example.com'
 ```
 
-### Binding `SignalFormControl`
+### Привязка `SignalFormControl` {#binding-signalformcontrol}
 
-To use `SignalFormControl` in a `FormGroup`, pass it as a control and bind it in the template using `.fieldTree`:
+Чтобы использовать `SignalFormControl` в `FormGroup`, передайте его как контрол и привяжите в шаблоне через `.fieldTree`:
 
 ```typescript
 readonly emailControl = new SignalFormControl('', (p) => { required(p); });
@@ -286,11 +286,11 @@ readonly form = new FormGroup({
 <input [formControl]="emailControl" />
 ```
 
-### Why `SignalFormControl` takes a value instead of a signal
+### Почему `SignalFormControl` принимает значение, а не сигнал {#why-signalformcontrol-takes-a-value-instead-of-a-signal}
 
-In standard Signal Forms, you create a form by passing a signal: `form(mySignal)`.
+В стандартных Signal Forms форму создают, передавая сигнал: `form(mySignal)`.
 
-However, `SignalFormControl` takes a **raw value** (like a string or object) as its first argument:
+Однако `SignalFormControl` принимает **сырое значение** (строку или объект) как первый аргумент:
 
 ```typescript
 // Takes a raw value, not a signal
@@ -299,20 +299,20 @@ const userControl = new SignalFormControl({
 });
 ```
 
-`SignalFormControl` creates the signal internally to intercept writes and trigger the **synchronous updates** expected by Reactive Forms.
+`SignalFormControl` создаёт сигнал внутри, чтобы перехватывать записи и запускать **синхронные обновления**, ожидаемые Reactive Forms.
 
-You can still access the internal signal via `.sourceValue`:
+К внутреннему сигналу по-прежнему можно обратиться через `.sourceValue`:
 
 ```typescript
 const value = userControl.sourceValue();
 ```
 
-### Disabling/Enabling control
+### Отключение/включение контрола {#disablingenabling-control}
 
-Imperative APIs for changing the enabled/disabled state (like `enable()`, `disable()`) are intentionally not supported
-in `SignalFormControl`. This is because the state of the control should be derived from the signal state and rules.
+Императивные API для изменения состояния enabled/disabled (вроде `enable()`, `disable()`) намеренно не поддерживаются
+в `SignalFormControl`. Состояние контрола должно выводиться из signal-состояния и правил.
 
-Attempting to call disable/enable would throw an error.
+Попытка вызвать disable/enable выбросит ошибку.
 
 ```typescript {avoid}
 import {signal, effect} from '@angular/core';
@@ -335,7 +335,7 @@ export class UserProfile {
 }
 ```
 
-Instead, use disabled rule:
+Вместо этого используйте правило disabled:
 
 ```typescript {prefer}
 import {signal} from '@angular/core';
@@ -358,12 +358,12 @@ export class UserProfile {
 }
 ```
 
-### Dynamic manipulation
+### Динамическое управление {#dynamic-manipulation}
 
-Imperative APIs for adding or removing validators (like `addValidators()`, `removeValidators()`, `setValidators()`) are
-intentionally not supported in `SignalFormControl`.
+Императивные API для добавления или удаления валидаторов (вроде `addValidators()`, `removeValidators()`, `setValidators()`)
+намеренно не поддерживаются в `SignalFormControl`.
 
-Attempting to call these methods will throw an error.
+Попытка вызвать эти методы выбросит ошибку.
 
 ```typescript {avoid}
 export class UserProfile {
@@ -382,7 +382,7 @@ export class UserProfile {
 }
 ```
 
-Instead, use `applyWhen` rule to conditionally apply validators:
+Вместо этого используйте правило `applyWhen`, чтобы условно применять валидаторы:
 
 ```typescript {prefer}
 import {signal} from '@angular/core';
@@ -405,18 +405,18 @@ export class UserProfile {
 }
 ```
 
-### Manual Error Selection
+### Ручной выбор ошибок {#manual-error-selection}
 
-The `setErrors()` and `markAsPending()` methods are not supported. In Signal Forms, errors are derived from validation
-rules and async validation status. If you need to report an error, it should be done declaratively via a validation rule
-in the schema.
+Методы `setErrors()` и `markAsPending()` не поддерживаются. В Signal Forms ошибки выводятся из правил валидации
+и статуса async-валидации. Если нужно сообщить об ошибке, это следует делать декларативно через правило валидации
+в схеме.
 
-## Automatic status classes
+## Автоматические классы статуса {#automatic-status-classes}
 
-Reactive/Template Forms automatically adds [class attributes](/guide/forms/template-driven-forms#track-control-states) (
-such as `.ng-valid` or `.ng-dirty`) to facilitate styling control states. Signal Forms does not do that.
+Reactive/Template Forms автоматически добавляют [атрибуты class](/guide/forms/template-driven-forms#track-control-states) (
+такие как `.ng-valid` или `.ng-dirty`) для стилизации состояний контрола. Signal Forms этого не делают.
 
-If you want to preserve this behavior, you can provide the `NG_STATUS_CLASSES` preset:
+Чтобы сохранить это поведение, можно предоставить пресет `NG_STATUS_CLASSES`:
 
 ```typescript
 import {provideSignalFormsConfig} from '@angular/forms/signals';
@@ -431,7 +431,7 @@ bootstrapApplication(App, {
 });
 ```
 
-You can also provide your own custom configuration to apply whatever classes you wish based on you custom logic:
+Можно также предоставить собственную конфигурацию, чтобы применять любые классы на основе своей логики:
 
 ```typescript
 import {provideSignalFormsConfig} from '@angular/forms/signals';
@@ -450,18 +450,18 @@ bootstrapApplication(App, {
 });
 ```
 
-## Custom Controls
+## Пользовательские контролы {#custom-controls}
 
-Any [custom Signal Form Control](guide/forms/signals/custom-controls) can be
-used with Reactive (and Template-Driven) Forms as-is. This allows you to
-migrate existing `ControlValueAccessor` implementations to
-`FormValueControl`/`FormCheckboxControl` without breaking existing usages.
+Любой [пользовательский контрол Signal Form](guide/forms/signals/custom-controls) можно
+использовать с Reactive (и Template-Driven) Forms как есть. Это позволяет
+мигрировать существующие реализации `ControlValueAccessor` на
+`FormValueControl`/`FormCheckboxControl` без поломки существующих использований.
 
-IMPORTANT: Do **not** implement both `ControlValueAccessor` and
-`FormValueControl`/`FormCheckboxControl` on the same component. Implement one or
-the other.
+IMPORTANT: **Не** реализуйте одновременно `ControlValueAccessor` и
+`FormValueControl`/`FormCheckboxControl` на одном компоненте. Реализуйте одно или
+другое.
 
-Given the following custom control:
+Дан следующий пользовательский контрол:
 
 ```angular-ts
 import {Component, model} from '@angular/core';
@@ -486,9 +486,9 @@ export class BasicInput implements FormValueControl<string> {
 }
 ```
 
-You can use this custom control with reactive forms as you would a native input
-or a custom control based on `ControlValueAccessor`. For example, consider this
-simple component with a Reactive Form.
+Этот пользовательский контрол можно использовать с reactive forms так же, как нативный input
+или пользовательский контрол на основе `ControlValueAccessor`. Например, рассмотрим этот
+простой компонент с Reactive Form.
 
 ```angular-ts
 import {Component} from '@angular/core';
@@ -512,5 +512,5 @@ export class ExampleComponent {
 }
 ```
 
-Any change to the custom `app-basic-input` control will be reflected in the
+Любое изменение пользовательского контрола `app-basic-input` отразится в
 reactive `FormControl`.

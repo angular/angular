@@ -7,7 +7,7 @@
 
 <docs-video src="https://www.youtube.com/embed/5K10oYJ5Y-E?si=TiuNKx_teR9baO7k&amp;start=457"/>
 
-ВАЖНО: Для этого этапа руководства рекомендуется использовать локальную среду разработки.
+IMPORTANT: Для этого этапа руководства рекомендуется использовать локальную среду разработки.
 
 ## Чему вы научитесь
 
@@ -16,7 +16,7 @@
 
 <docs-workflow>
 
-<docs-step title="Обновление свойств компонента home">
+<docs-step title="Update the home component properties">
 В этом шаге вы обновите класс `Home`, чтобы хранить данные в новом свойстве-массиве, которое будет использоваться для фильтрации.
 
 1. В `src/app/home/home.ts` добавьте в класс новое свойство с именем `filteredLocationList`.
@@ -32,7 +32,7 @@
 
 </docs-step>
 
-<docs-step title="Обновление шаблона компонента home">
+<docs-step title="Update the home component template">
 Компонент `Home` уже содержит поле ввода, которое вы будете использовать для получения данных от пользователя. Этот текст будет использоваться для фильтрации результатов.
 
 1. Обновите шаблон `Home`, добавив в элемент `input` переменную шаблона с именем `#filter`.
@@ -54,7 +54,7 @@
 
 </docs-step>
 
-<docs-step title="Реализация функции обработчика событий">
+<docs-step title="Implement the event handler function">
 Шаблон был обновлен для привязки функции `filterResults` к событию `click`. Теперь ваша задача — реализовать функцию `filterResults` в классе `Home`.
 
 1. Обновите класс `Home`, добавив реализацию функции `filterResults`.

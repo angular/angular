@@ -43,11 +43,11 @@ export class App {}
 
 <docs-workflow>
 
-<docs-step title="Определите свойство `input()`">
+<docs-step title="Define an `input()` property">
 Обновите код в `user.ts`, чтобы определить свойство `input` в классе `User` с именем `name` и укажите тип `string`. Пока не задавайте начальное значение и вызовите `input()` без аргументов. Не забудьте обновить шаблон, чтобы вызвать и интерполировать свойство `name` в конце предложения.
 </docs-step>
 
-<docs-step title="Передайте значение во входное свойство `input`">
+<docs-step title="Pass a value to the `input` property">
 Обновите код в `app.ts`, чтобы передать свойство `name` со значением `"Simran"`.
 <br>
 

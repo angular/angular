@@ -1,72 +1,72 @@
-# Migrating away from Angular's Animations package
+# Миграция с пакета Angular Animations
 
-The `@angular/animations` package is deprecated as of v20.2, which also introduced the new `animate.enter` and `animate.leave` feature to add animations to your application. Using these new features, you can replace all animations based on `@angular/animations` with plain CSS or JS animation libraries. Removing `@angular/animations` from your application can significantly reduce the size of your JavaScript bundle. Native CSS animations generally offer superior performance, as they can benefit from hardware acceleration. This guide walks through the process of refactoring your code from `@angular/animations` to native CSS animations.
+Пакет `@angular/animations` устарел начиная с v20.2, которая также представила новые возможности `animate.enter` и `animate.leave` для добавления анимаций в приложение. Используя эти новые возможности, можно заменить все анимации на основе `@angular/animations` обычным CSS или JS-библиотеками анимаций. Удаление `@angular/animations` из приложения может значительно уменьшить размер JavaScript-бандла. Нативные CSS-анимации обычно дают лучшую производительность, так как могут использовать аппаратное ускорение. Это руководство проводит через процесс рефакторинга кода с `@angular/animations` на нативные CSS-анимации.
 
-## How to write animations in native CSS
+## Как писать анимации на нативном CSS {#how-to-write-animations-in-native-css}
 
-If you've never written any native CSS animations, there are a number of excellent guides to get you started. Here are a few of them:  
+Если вы никогда не писали нативные CSS-анимации, есть ряд отличных руководств для старта. Вот некоторые из них:  
 [MDN's CSS Animations guide](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations)  
 [W3Schools CSS3 Animations guide](https://www.w3schools.com/css/css3_animations.asp)  
 [The Complete CSS Animations Tutorial](https://www.lambdatest.com/blog/css-animations-tutorial/)  
 [CSS Animation for Beginners](https://thoughtbot.com/blog/css-animation-for-beginners)
 
-and a couple of videos:  
+и пара видео:  
 [Learn CSS Animation in 9 Minutes](https://www.youtube.com/watch?v=z2LQYsZhsFw)  
 [Net Ninja CSS Animation Tutorial Playlist](https://www.youtube.com/watch?v=jgw82b5Y2MU&list=PL4cUxeGkcC9iGYgmEd2dm3zAKzyCGDtM5)
 
-Check out some of these guides and tutorials, then come back to this guide.
+Ознакомьтесь с этими руководствами и туториалами, затем вернитесь к этому гайду.
 
-## Creating Reusable Animations
+## Создание переиспользуемых анимаций {#creating-reusable-animations}
 
-Just like with the animations package, you can create reusable animations that can be shared across your application. The animations package version of this had you using the `animation()` function in a shared typescript file. The native CSS version of this is similar, but lives in a shared CSS file.
+Как и с пакетом animations, можно создавать переиспользуемые анимации, которыми можно делиться по всему приложению. Версия пакета animations требовала использования функции `animation()` в общем typescript-файле. Нативная CSS-версия похожа, но живёт в общем CSS-файле.
 
-#### With Animations Package
+#### С пакетом Animations {#with-animations-package}
 
 <docs-code header="animations.ts" path="adev/src/content/examples/animations/src/app/animations.1.ts" region="animation-example"/>
 
-#### With Native CSS
+#### С нативным CSS {#with-native-css}
 
 <docs-code header="animations.css" path="adev/src/content/examples/animations/src/app/animations.css" region="animation-shared"/>
 
-Adding the class `animated-class` to an element would trigger the animation on that element.
+Добавление класса `animated-class` к элементу запускает анимацию на этом элементе.
 
-## Animating a Transition
+## Анимация перехода {#animating-a-transition}
 
-### Animating State and Styles
+### Анимация состояний и стилей {#animating-state-and-styles}
 
-The animations package allowed you to define various states using the [`state()`](api/animations/state) function within a component. Examples might be an `open` or `closed` state containing the styles for each respective state within the definition. For example:
+Пакет animations позволял определять различные состояния с помощью функции [`state()`](api/animations/state) внутри компонента. Примеры — состояния `open` или `closed`, содержащие стили для каждого соответствующего состояния в определении. Например:
 
-#### With Animations Package
+#### С пакетом Animations {#with-animations-package-1}
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="state1"/>
 
-This same behavior can be accomplished natively by using CSS classes, either with a keyframe animation or transition styling.
+То же поведение можно реализовать нативно с помощью CSS-классов — либо с keyframe-анимацией, либо с transition-стилями.
 
-#### With Native CSS
+#### С нативным CSS {#with-native-css-1}
 
 <docs-code header="animations.css" path="adev/src/content/examples/animations/src/app/animations.css" region="animation-states"/>
 
-Triggering the `open` or `closed` state is done by toggling classes on the element in your component. You can find examples of how to do this in our [template guide](guide/templates/binding#css-class-and-style-property-bindings).
+Запуск состояния `open` или `closed` выполняется переключением классов на элементе в компоненте. Примеры того, как это сделать, есть в нашем [руководстве по шаблонам](guide/templates/binding#css-class-and-style-property-bindings).
 
-You can see similar examples in the template guide for [animating styles directly](guide/templates/binding#css-style-properties).
+Похожие примеры есть в руководстве по шаблонам для [прямой анимации стилей](guide/templates/binding#css-style-properties).
 
-### Transitions, Timing, and Easing
+### Transitions, timing и easing {#transitions-timing-and-easing}
 
-The animations package `animate()` function allows for providing timing, like duration, delays and easing. This can be done natively with CSS using several css properties or shorthand properties.
+Функция `animate()` пакета animations позволяет задавать timing — duration, delays и easing. Это можно сделать нативно в CSS с помощью нескольких CSS-свойств или shorthand-свойств.
 
-Specify `animation-duration`, `animation-delay`, and `animation-timing-function` for a keyframe animation in CSS, or alternatively use the `animation` shorthand property.
+Укажите `animation-duration`, `animation-delay` и `animation-timing-function` для keyframe-анимации в CSS, либо используйте shorthand-свойство `animation`.
 
 <docs-code header="animations.css" path="adev/src/content/examples/animations/src/app/animations.css" region="animation-timing"/>
 
-Similarly, you can use `transition-duration`, `transition-delay`, and `transition-timing-function` and the `transition` shorthand for animations that are not using `@keyframes`.
+Аналогично можно использовать `transition-duration`, `transition-delay` и `transition-timing-function` и shorthand `transition` для анимаций, не использующих `@keyframes`.
 
 <docs-code header="animations.css" path="adev/src/content/examples/animations/src/app/animations.css" region="transition-timing"/>
 
-### Triggering an Animation
+### Запуск анимации {#triggering-an-animation}
 
-The animations package required specifying triggers using the `trigger()` function and nesting all of your states within it. With native CSS, this is unnecessary. Animations can be triggered by toggling CSS styles or classes. Once a class is present on an element, the animation will occur. Removing the class will revert the element back to whatever CSS is defined for that element. This results in significantly less code to do the same animation. Here's an example:
+Пакет animations требовал указывать triggers с помощью функции `trigger()` и вкладывать все состояния внутрь. С нативным CSS это не нужно. Анимации можно запускать переключением CSS-стилей или классов. Как только класс присутствует на элементе, анимация произойдёт. Удаление класса вернёт элемент к тому CSS, который определён для этого элемента. В результате значительно меньше кода для той же анимации. Вот пример:
 
-#### With Animations Package
+#### С пакетом Animations {#with-animations-package-2}
 
 <docs-code-multifile>
     <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/animations-package/open-close.ts" />
@@ -74,7 +74,7 @@ The animations package required specifying triggers using the `trigger()` functi
     <docs-code header="open-close.css" path="adev/src/content/examples/animations/src/app/animations-package/open-close.css"/>
 </docs-code-multifile>
 
-#### With Native CSS
+#### С нативным CSS {#with-native-css-2}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/open-close.ts">
     <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/native-css/open-close.ts" />
@@ -82,19 +82,19 @@ The animations package required specifying triggers using the `trigger()` functi
     <docs-code header="open-close.css" path="adev/src/content/examples/animations/src/app/native-css/open-close.css"/>
 </docs-code-multifile>
 
-## Transition and Triggers
+## Transition и triggers {#transition-and-triggers}
 
-### Predefined State and wildcard matching
+### Предопределённые состояния и wildcard matching {#predefined-state-and-wildcard-matching}
 
-The animations package offers the ability to match your defined states to a transition via strings. For example, animating from open to closed would be `open => closed`. You can use wildcards to match any state to a target state, like `* => closed` and the `void` keyword can be used for entering and exiting states. For example: `* => void` for when an element leaves a view or `void => *` for when the element enters a view.
+Пакет animations предлагает возможность сопоставлять определённые состояния с transition через строки. Например, анимация из open в closed была бы `open => closed`. Можно использовать wildcards для сопоставления любого состояния с целевым, например `* => closed`, а ключевое слово `void` можно использовать для состояний входа и выхода. Например: `* => void` когда элемент покидает view, или `void => *` когда элемент входит в view.
 
-These state matching patterns are not needed at all when animating with CSS directly. You can manage what transitions and `@keyframes` animations apply based on whatever classes you set and / or styles you set on the elements. You can also add `@starting-style` to control how the element looks upon immediately entering the DOM.
+Эти паттерны сопоставления состояний вообще не нужны при анимации напрямую через CSS. Можно управлять тем, какие transitions и `@keyframes`-анимации применяются, на основе классов и/или стилей, которые вы задаёте на элементах. Также можно добавить `@starting-style`, чтобы контролировать, как элемент выглядит сразу при входе в DOM.
 
-### Automatic Property Calculation with Wildcards
+### Автоматический расчёт свойств с wildcards {#automatic-property-calculation-with-wildcards}
 
-The animations package offers the ability to animate things that have been historically difficult to animate, like animating a set height to `height: auto`. You can now do this with pure CSS as well.
+Пакет animations предлагает возможность анимировать то, что исторически было сложно анимировать — например, анимацию заданной высоты до `height: auto`. Теперь это можно сделать и на чистом CSS.
 
-#### With Animations Package
+#### С пакетом Animations {#with-animations-package-3}
 
 <docs-code-multifile>
     <docs-code header="auto-height.ts" path="adev/src/content/examples/animations/src/app/animations-package/auto-height.ts" />
@@ -102,9 +102,9 @@ The animations package offers the ability to animate things that have been histo
     <docs-code header="auto-height.css" path="adev/src/content/examples/animations/src/app/animations-package/auto-height.css" />
 </docs-code-multifile>
 
-You can use CSS Grid to animate to auto height.
+Можно использовать CSS Grid для анимации до auto height.
 
-#### With Native CSS
+#### С нативным CSS {#with-native-css-3}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/auto-height.ts">
     <docs-code header="auto-height.ts" path="adev/src/content/examples/animations/src/app/native-css/auto-height.ts" />
@@ -112,13 +112,13 @@ You can use CSS Grid to animate to auto height.
     <docs-code header="auto-height.css" path="adev/src/content/examples/animations/src/app/native-css/auto-height.css"  />
 </docs-code-multifile>
 
-If you don't have to worry about supporting all browsers, you can also check out `calc-size()`, which is the true solution to animating auto height. See [MDN's docs](https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size) and (this tutorial)[https://frontendmasters.com/blog/one-of-the-boss-battles-of-css-is-almost-won-transitioning-to-auto/] for more information.
+Если не нужно поддерживать все браузеры, также можно посмотреть `calc-size()` — настоящее решение для анимации auto height. См. [документацию MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size) и [этот туториал](https://frontendmasters.com/blog/one-of-the-boss-battles-of-css-is-almost-won-transitioning-to-auto/) для дополнительной информации.
 
-### Animate entering and leaving a view
+### Анимация входа и выхода из view {#animate-entering-and-leaving-a-view}
 
-The animations package offered the previously mentioned pattern matching for entering and leaving but also included the shorthand aliases of `:enter` and `:leave`.
+Пакет animations предлагал упомянутое выше сопоставление паттернов для входа и выхода, а также включал shorthand-алиасы `:enter` и `:leave`.
 
-#### With Animations Package
+#### С пакетом Animations {#with-animations-package-4}
 
 <docs-code-multifile>
     <docs-code header="insert-remove.ts" path="adev/src/content/examples/animations/src/app/animations-package/insert-remove.ts" />
@@ -126,7 +126,7 @@ The animations package offered the previously mentioned pattern matching for ent
     <docs-code header="insert-remove.css" path="adev/src/content/examples/animations/src/app/animations-package/insert-remove.css" />
 </docs-code-multifile>
 
-#### With Native CSS
+#### С нативным CSS {#with-native-css-4}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/insert.ts">
     <docs-code header="insert.ts" path="adev/src/content/examples/animations/src/app/native-css/insert.ts" />
@@ -134,7 +134,7 @@ The animations package offered the previously mentioned pattern matching for ent
     <docs-code header="insert.css" path="adev/src/content/examples/animations/src/app/native-css/insert.css"  />
 </docs-code-multifile>
 
-#### With Native CSS
+#### С нативным CSS {#with-native-css-5}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/remove.ts">
     <docs-code header="remove.ts" path="adev/src/content/examples/animations/src/app/native-css/remove.ts" />
@@ -142,13 +142,13 @@ The animations package offered the previously mentioned pattern matching for ent
     <docs-code header="remove.css" path="adev/src/content/examples/animations/src/app/native-css/remove.css"  />
 </docs-code-multifile>
 
-For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations).
+Подробнее о `animate.enter` и `animate.leave` см. в [руководстве Enter and Leave animations](guide/animations).
 
-### Animating increment and decrement
+### Анимация increment и decrement {#animating-increment-and-decrement}
 
-Along with the aforementioned `:enter` and `:leave`, there's also `:increment` and `:decrement`. You can animate these also by adding and removing classes. Unlike the animation package built-in aliases, there is no automatic application of classes when the values go up or down. You can apply the appropriate classes programmatically. Here's an example:
+Наряду с упомянутыми `:enter` и `:leave` есть также `:increment` и `:decrement`. Их тоже можно анимировать добавлением и удалением классов. В отличие от встроенных алиасов пакета animations, нет автоматического применения классов при увеличении или уменьшении значений. Можно применять соответствующие классы программно. Вот пример:
 
-#### With Animations Package
+#### С пакетом Animations {#with-animations-package-5}
 
 <docs-code-multifile>
     <docs-code header="increment-decrement.ts" path="adev/src/content/examples/animations/src/app/animations-package/increment-decrement.ts" />
@@ -156,7 +156,7 @@ Along with the aforementioned `:enter` and `:leave`, there's also `:increment` a
     <docs-code header="increment-decrement.css" path="adev/src/content/examples/animations/src/app/animations-package/increment-decrement.css" />
 </docs-code-multifile>
 
-#### With Native CSS
+#### С нативным CSS {#with-native-css-6}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/increment-decrement.ts">
     <docs-code header="increment-decrement.ts" path="adev/src/content/examples/animations/src/app/native-css/increment-decrement.ts" />
@@ -164,15 +164,15 @@ Along with the aforementioned `:enter` and `:leave`, there's also `:increment` a
     <docs-code header="increment-decrement.css" path="adev/src/content/examples/animations/src/app/native-css/increment-decrement.css" />
 </docs-code-multifile>
 
-### Parent / Child Animations
+### Parent / Child анимации {#parent-child-animations}
 
-Unlike the animations package, when multiple animations are specified within a given component, no animation has priority over another and nothing blocks any animation from firing. Any sequencing of animations would have to be handled by your definition of your CSS animation, using animation / transition delay, and / or using `animationend` or `transitionend` to handle adding the next css to be animated.
+В отличие от пакета animations, когда в компоненте указано несколько анимаций, ни одна анимация не имеет приоритета над другой и ничто не блокирует запуск любой анимации. Любая последовательность анимаций должна обрабатываться определением вашей CSS-анимации — через animation / transition delay и/или используя `animationend` или `transitionend` для добавления следующего CSS для анимации.
 
-### Disabling an animation or all animations
+### Отключение анимации или всех анимаций {#disabling-an-animation-or-all-animations}
 
-With native CSS animations, if you'd like to disable the animations that you've specified, you have multiple options.
+С нативными CSS-анимациями, если нужно отключить указанные анимации, есть несколько вариантов.
 
-1. Create a custom class that forces animation and transition to `none`.
+1. Создайте пользовательский класс, который принудительно задаёт animation и transition в `none`.
 
 ```css
 .no-animation {
@@ -181,15 +181,15 @@ With native CSS animations, if you'd like to disable the animations that you've 
 }
 ```
 
-Applying this class to an element prevents any animation from firing on that element. You could alternatively scope this to your entire DOM or section of your DOM to enforce this behavior. However, this prevents animation events from firing. If you are awaiting animation events for element removal, this solution won't work. A workaround is to set durations to 1 millisecond instead.
+Применение этого класса к элементу предотвращает запуск любой анимации на этом элементе. Можно также ограничить область действия всем DOM или секцией DOM, чтобы обеспечить это поведение. Однако это предотвращает срабатывание animation events. Если вы ждёте animation events для удаления элемента, это решение не сработает. Обходной путь — задать duration в 1 миллисекунду.
 
-2. Use the [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) media query to ensure no animations play for users that prefer less animation.
+2. Используйте media query [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion), чтобы гарантировать, что анимации не воспроизводятся для пользователей, предпочитающих меньше анимации.
 
-3. Prevent adding animation classes programatically
+3. Не добавляйте animation-классы программно
 
-### Animation Callbacks
+### Callbacks анимаций {#animation-callbacks}
 
-The animations package exposed callbacks for you to use in the case that you want to do something when the animation has finished. Native CSS animations also have these callbacks.
+Пакет animations предоставлял callbacks на случай, если нужно что-то сделать, когда анимация завершилась. У нативных CSS-анимаций тоже есть эти callbacks.
 
 [`OnAnimationStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationstart_event)  
 [`OnAnimationEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationend_event)  
@@ -201,25 +201,25 @@ The animations package exposed callbacks for you to use in the case that you wan
 [`OnTransitionEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionend_event)  
 [`OnTransitionCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitioncancel_event)
 
-The Web Animations API has a lot of additional functionality. [Take a look at the documentation](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) to see all the available animation APIs.
+Web Animations API имеет много дополнительной функциональности. [Посмотрите документацию](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API), чтобы увидеть все доступные animation API.
 
-NOTE: Be aware of bubbling issues with these callbacks. If you are animating children and parents, the events bubble up from children to parents. Consider stopping propagation or looking at more details within the event to determine if you're responding to the desired event target rather than an event bubbling up from a child node. You can examine the `animationname` property or the properties being transitioned to verify you have the right nodes.
+NOTE: Учитывайте проблемы bubbling с этими callbacks. Если анимируете детей и родителей, события всплывают от детей к родителям. Рассмотрите остановку propagation или просмотр деталей события, чтобы определить, что вы реагируете на желаемый event target, а не на событие, всплывающее от дочернего узла. Можно проверить свойство `animationname` или свойства, которые transition'ятся, чтобы убедиться, что у вас правильные узлы.
 
-## Complex Sequences
+## Сложные последовательности {#complex-sequences}
 
-The animations package has built-in functionality for creating complex sequences. These sequences are all entirely possible without the animations package.
+Пакет animations имеет встроенную функциональность для создания сложных последовательностей. Все эти последовательности полностью возможны и без пакета animations.
 
-### Targeting specific elements
+### Таргетинг конкретных элементов {#targeting-specific-elements}
 
-In the animations package, you could target specific elements by using the `query()` function to find specific elements by a CSS class name, similar to [`document.querySelector()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector). This is unnecessary in a native CSS animation world. Instead, you can use your CSS selectors to target sub-classes and apply any desired `transform` or `animation`.
+В пакете animations можно было таргетировать конкретные элементы с помощью функции `query()`, чтобы находить элементы по имени CSS-класса, аналогично [`document.querySelector()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector). В мире нативных CSS-анимаций это не нужно. Вместо этого можно использовать CSS-селекторы для таргетинга подклассов и применять любой желаемый `transform` или `animation`.
 
-To toggle classes for child nodes within a template, you can use class and style bindings to add the animations at the right points.
+Чтобы переключать классы для дочерних узлов в шаблоне, можно использовать class и style bindings для добавления анимаций в нужных точках.
 
-### Stagger()
+### Stagger() {#stagger}
 
-The `stagger()` function allowed you to delay the animation of each item in a list of items by a specified time to create a cascade effect. You can replicate this behavior in native CSS by utilizing `animation-delay` or `transition-delay`. Here is an example of what that CSS might look like.
+Функция `stagger()` позволяла задерживать анимацию каждого элемента в списке на указанное время, чтобы создать cascade-эффект. Это поведение можно воспроизвести в нативном CSS, используя `animation-delay` или `transition-delay`. Вот пример того, как может выглядеть такой CSS.
 
-#### With Animations Package
+#### С пакетом Animations {#with-animations-package-6}
 
 <docs-code-multifile>
     <docs-code header="stagger.ts" path="adev/src/content/examples/animations/src/app/animations-package/stagger.ts" />
@@ -227,7 +227,7 @@ The `stagger()` function allowed you to delay the animation of each item in a li
     <docs-code header="stagger.css" path="adev/src/content/examples/animations/src/app/animations-package/stagger.css" />
 </docs-code-multifile>
 
-#### With Native CSS
+#### С нативным CSS {#with-native-css-7}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/stagger.ts">
     <docs-code header="stagger.ts" path="adev/src/content/examples/animations/src/app/native-css/stagger.ts" />
@@ -235,9 +235,9 @@ The `stagger()` function allowed you to delay the animation of each item in a li
     <docs-code header="stagger.css" path="adev/src/content/examples/animations/src/app/native-css/stagger.css" />
 </docs-code-multifile>
 
-### Parallel Animations
+### Параллельные анимации {#parallel-animations}
 
-The animations package has a `group()` function to play multiple animations at the same time. In CSS, you have full control over animation timing. If you have multiple animations defined, you can apply all of them at once.
+Пакет animations имеет функцию `group()` для одновременного воспроизведения нескольких анимаций. В CSS у вас полный контроль над timing анимации. Если определено несколько анимаций, можно применить их все сразу.
 
 ```css
 .target-element {
@@ -247,13 +247,13 @@ The animations package has a `group()` function to play multiple animations at t
 }
 ```
 
-In this example, the `rotate` and `fade-in` animations fire at the same time.
+В этом примере анимации `rotate` и `fade-in` запускаются одновременно.
 
-### Animating the items of a reordering list
+### Анимация элементов переупорядочиваемого списка {#animating-the-items-of-a-reordering-list}
 
-Items reordering in a list works out of the box using the previously described techniques. No additional special work is required. Items in a `@for` loop will be removed and re-added properly, which will fire off animations using `@starting-styles` for entry animations. Alternatively, you can use `animate.enter` for this same behavior. Use `animate.leave` to animate elements as they are removed, as seen in the example above.
+Переупорядочивание элементов в списке работает из коробки с помощью ранее описанных техник. Дополнительная специальная работа не требуется. Элементы в цикле `@for` будут корректно удаляться и добавляться заново, что запустит анимации с использованием `@starting-styles` для entry-анимаций. Альтернативно можно использовать `animate.enter` для того же поведения. Используйте `animate.leave` для анимации элементов при удалении, как видно в примере выше.
 
-#### With Animations Package
+#### С пакетом Animations {#with-animations-package-7}
 
 <docs-code-multifile>
     <docs-code header="reorder.ts" path="adev/src/content/examples/animations/src/app/animations-package/reorder.ts" />
@@ -261,7 +261,7 @@ Items reordering in a list works out of the box using the previously described t
     <docs-code header="reorder.css" path="adev/src/content/examples/animations/src/app/animations-package/reorder.css" />
 </docs-code-multifile>
 
-#### With Native CSS
+#### С нативным CSS {#with-native-css-8}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/reorder.ts">
     <docs-code header="reorder.ts" path="adev/src/content/examples/animations/src/app/native-css/reorder.ts" />
@@ -269,12 +269,12 @@ Items reordering in a list works out of the box using the previously described t
     <docs-code header="reorder.css" path="adev/src/content/examples/animations/src/app/native-css/reorder.css" />
 </docs-code-multifile>
 
-## Migrating usages of AnimationPlayer
+## Миграция использований AnimationPlayer {#migrating-usages-of-animationplayer}
 
-The `AnimationPlayer` class allows access to an animation to do more advanced things like pause, play, restart, and finish an animation through code. All of these things can be handled natively as well.
+Класс `AnimationPlayer` позволяет получать доступ к анимации для более продвинутых вещей — pause, play, restart и finish анимации через код. Всё это также можно обработать нативно.
 
-You can retrieve animations off an element directly using [`Element.getAnimations()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations). This returns an array of every [`Animation`](https://developer.mozilla.org/en-US/docs/Web/API/Animation) on that element. You can use the `Animation` API to do much more than you could with what the `AnimationPlayer` from the animations package offered. From here you can `cancel()`, `play()`, `pause()`, `reverse()` and much more. This native API should provide everything you need to control your animations.
+Можно получить анимации с элемента напрямую через [`Element.getAnimations()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations). Это возвращает массив каждого [`Animation`](https://developer.mozilla.org/en-US/docs/Web/API/Animation) на этом элементе. API `Animation` позволяет делать гораздо больше, чем предлагал `AnimationPlayer` из пакета animations. Отсюда можно `cancel()`, `play()`, `pause()`, `reverse()` и многое другое. Этот нативный API должен предоставить всё необходимое для управления анимациями.
 
-## Route Transitions
+## Route Transitions {#route-transitions}
 
-You can use view transitions to animate between routes. See the [Route Transition Animations Guide](guide/routing/route-transition-animations) to get started.
+Можно использовать view transitions для анимации между маршрутами. См. [Route Transition Animations Guide](guide/routing/route-transition-animations), чтобы начать.

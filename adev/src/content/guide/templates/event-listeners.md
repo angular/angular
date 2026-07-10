@@ -1,10 +1,10 @@
-# Adding event listeners
+# Добавление слушателей событий
 
-Angular supports defining event listeners on an element in your template by specifying the event name inside parentheses along with a statement that runs every time the event occurs.
+Angular поддерживает определение слушателей событий на элементе в шаблоне: укажите имя события в круглых скобках вместе со statement, который выполняется каждый раз при возникновении события.
 
-## Listening to native events
+## Прослушивание нативных событий {#listening-to-native-events}
 
-When you want to add event listeners to an HTML element, you wrap the event with parentheses, `()`, which allows you to specify a listener statement.
+Когда нужно добавить слушатели событий к HTML-элементу, оберните событие в круглые скобки `()` — это позволяет указать listener statement.
 
 ```angular-ts
 @Component({
@@ -20,13 +20,13 @@ export class App{
 }
 ```
 
-In this example, Angular calls `updateField` every time the `<input>` element emits a `keyup` event.
+В этом примере Angular вызывает `updateField` каждый раз, когда элемент `<input>` эмитит событие `keyup`.
 
-You can add listeners for any native events, such as: `click`, `keydown`, `mouseover`, etc. To learn more, check out the [all available events on elements on MDN](https://developer.mozilla.org/en-US/docs/Web/API/Element#events).
+Можно добавлять слушатели для любых нативных событий, например: `click`, `keydown`, `mouseover` и т.д. Подробнее — [все доступные события на элементах на MDN](https://developer.mozilla.org/en-US/docs/Web/API/Element#events).
 
-## Accessing the event argument
+## Доступ к аргументу события {#accessing-the-event-argument}
 
-In every template event listener, Angular provides a variable named `$event` that contains a reference to the event object.
+В каждом слушателе события шаблона Angular предоставляет переменную `$event`, содержащую ссылку на объект события.
 
 ```angular-ts
 @Component({
@@ -42,9 +42,9 @@ export class App {
 }
 ```
 
-## Using key modifiers
+## Использование key modifiers {#using-key-modifiers}
 
-When you want to capture specific keyboard events for a specific key, you might write some code like the following:
+Когда нужно перехватить конкретные клавиатурные события для конкретной клавиши, можно написать код вроде следующего:
 
 ```angular-ts
 @Component({
@@ -62,7 +62,7 @@ export class App {
 }
 ```
 
-However, since this is a common scenario, Angular lets you filter the events by specifying a specific key using the period (`.`) character. By doing so, code can be simplified to:
+Однако, поскольку это распространённый сценарий, Angular позволяет фильтровать события, указав конкретную клавишу через символ точки (`.`). Тогда код упрощается до:
 
 ```angular-ts
 @Component({
@@ -78,29 +78,29 @@ export class App{
 }
 ```
 
-You can also add additional key modifiers:
+Также можно добавить дополнительные key modifiers:
 
 ```angular-html
 <!-- Matches shift and enter -->
 <input type="text" (keyup.shift.enter)="updateField($event)" />
 ```
 
-Angular supports the modifiers `alt`, `control`, `meta`, and `shift`.
+Angular поддерживает модификаторы `alt`, `control`, `meta` и `shift`.
 
-You can specify the key or code that you would like to bind to keyboard events. The key and code fields are a native part of the browser keyboard event object. By default, event binding assumes you want to use the [Key values for keyboard events](https://developer.mozilla.org/docs/Web/API/UI_Events/Keyboard_event_key_values).
+Можно указать key или code, к которым нужно привязать клавиатурные события. Поля key и code — нативная часть объекта keyboard event браузера. По умолчанию event binding предполагает использование [Key values for keyboard events](https://developer.mozilla.org/docs/Web/API/UI_Events/Keyboard_event_key_values).
 
-Angular also allows you to specify [Code values for keyboard events](https://developer.mozilla.org/docs/Web/API/UI_Events/Keyboard_event_code_values) by providing a built-in `code` suffix.
+Angular также позволяет указать [Code values for keyboard events](https://developer.mozilla.org/docs/Web/API/UI_Events/Keyboard_event_code_values), предоставив встроенный суффикс `code`.
 
 ```angular-html
 <!-- Matches alt and left shift -->
 <input type="text" (keydown.code.alt.shiftleft)="updateField($event)" />
 ```
 
-This can be useful for handling keyboard events consistently across different operating systems. For example, when using the Alt key on macOS devices, the `key` property reports the key based on the character already modified by the Alt key. This means that a combination like Alt + S reports a `key` value of `'ß'`. The `code` property, however, corresponds to the physical or virtual button pressed rather than the character produced.
+Это полезно для согласованной обработки клавиатурных событий на разных операционных системах. Например, при использовании клавиши Alt на устройствах macOS свойство `key` сообщает клавишу на основе символа, уже изменённого Alt. Это значит, что комбинация вроде Alt + S сообщает значение `key` `'ß'`. Свойство `code`, однако, соответствует нажатой физической или виртуальной кнопке, а не произведённому символу.
 
-## Listening on global targets
+## Прослушивание на глобальных targets {#listening-on-global-targets}
 
-Global target names can be used to prefix an event. The 3 supported global targets are `window`, `document` and `body`.
+Глобальные имена target можно использовать как префикс события. Поддерживаются 3 глобальных target: `window`, `document` и `body`.
 
 ```angular-ts
 @Component({
@@ -114,9 +114,9 @@ Global target names can be used to prefix an event. The 3 supported global targe
 export class MyView {}
 ```
 
-## Preventing event default behavior
+## Предотвращение поведения события по умолчанию {#preventing-event-default-behavior}
 
-If your event handler should replace the native browser behavior, you can use the event object's [`preventDefault` method](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault):
+Если обработчик события должен заменить нативное поведение браузера, можно использовать метод объекта события [`preventDefault`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault):
 
 ```angular-ts
 @Component({
@@ -133,15 +133,15 @@ export class App{
 }
 ```
 
-If the event handler statement evaluates to `false`, Angular automatically calls `preventDefault()`, similar to [native event handler attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes#event_handler_attributes). _Always prefer explicitly calling `preventDefault`_, as this approach makes the code's intent obvious.
+Если statement обработчика события вычисляется в `false`, Angular автоматически вызывает `preventDefault()`, подобно [нативным атрибутам обработчиков событий](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes#event_handler_attributes). _Всегда предпочитайте явный вызов `preventDefault`_ — так намерение кода очевидно.
 
-## Extend event handling
+## Расширение обработки событий {#extend-event-handling}
 
-Angular’s event system is extensible via custom event plugins registered with the `EVENT_MANAGER_PLUGINS` injection token.
+Система событий Angular расширяема через кастомные event plugins, зарегистрированные с injection token `EVENT_MANAGER_PLUGINS`.
 
-### Implementing Event Plugin
+### Реализация Event Plugin {#implementing-event-plugin}
 
-To create a custom event plugin, extend the `EventManagerPlugin` class and implement the required methods.
+Чтобы создать кастомный event plugin, расширьте класс `EventManagerPlugin` и реализуйте необходимые методы.
 
 ```ts
 import {Injectable} from '@angular/core';
@@ -184,7 +184,7 @@ export class DebounceEventPlugin extends EventManagerPlugin {
 }
 ```
 
-Register your custom plugin using the `EVENT_MANAGER_PLUGINS` token in your application's providers:
+Зарегистрируйте кастомный plugin через токен `EVENT_MANAGER_PLUGINS` в провайдерах приложения:
 
 ```ts
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -203,7 +203,7 @@ bootstrapApplication(App, {
 });
 ```
 
-Once registered, you can use your custom event syntax in templates, as well as with the `host` property:
+После регистрации можно использовать кастомный синтаксис событий в шаблонах, а также со свойством `host`:
 
 ```angular-ts
 @Component({

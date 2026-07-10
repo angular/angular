@@ -3,7 +3,7 @@
 Создание внедряемого сервиса — это первая часть системы внедрения зависимостей (DI) в Angular. Как внедрить сервис в
 компонент? В Angular есть удобная функция `inject()`, которую можно использовать в соответствующем контексте.
 
-ПРИМЕЧАНИЕ: Контексты внедрения выходят за рамки этого руководства, но вы можете узнать больше
+NOTE: Контексты внедрения выходят за рамки этого руководства, но вы можете узнать больше
 в [руководстве по основам внедрения зависимостей (DI)](/essentials/dependency-injection)
 и [руководстве по контексту DI](guide/di/dependency-injection-context).
 
@@ -22,15 +22,15 @@ class PetCareDashboard {
 
 <docs-workflow>
 
-<docs-step title="Внедрите `CarService`">
+<docs-step title="Inject the `CarService`">
 
 В файле `app.ts`, используя функцию `inject()`, внедрите `CarService` и присвойте его свойству с именем `carService`.
 
-ПРИМЕЧАНИЕ: Обратите внимание на разницу между свойством `carService` и классом `CarService`.
+NOTE: Обратите внимание на разницу между свойством `carService` и классом `CarService`.
 
 </docs-step>
 
-<docs-step title="Используйте экземпляр `carService`">
+<docs-step title="Use the `carService` instance">
 
 Вызов `inject(CarService)` предоставил вам экземпляр `CarService`, который вы можете использовать в своем приложении,
 сохраненный в свойстве `carService`.
@@ -43,7 +43,7 @@ display = this.carService.getCars().join(' ⭐️ ');
 
 </docs-step>
 
-<docs-step title="Обновите шаблон `App`">
+<docs-step title="Update the `App` template">
 
 Обновите шаблон компонента в `app.ts` следующим кодом:
 

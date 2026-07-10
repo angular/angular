@@ -1,39 +1,39 @@
-<docs-decorative-header title="Forms with Angular Signals" imgSrc="adev/src/assets/images/signals.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Формы с Angular Signals" imgSrc="adev/src/assets/images/signals.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
-Signal Forms is a library that allows you to manage form state in Angular applications by building on the reactive foundation of signals. With automatic two-way binding, type-safe field access, and schema-based validation, Signal Forms help you create robust forms.
+Signal Forms — библиотека для управления состоянием форм в приложениях Angular на реактивной основе сигналов. С автоматической двусторонней привязкой, типобезопасным доступом к полям и валидацией на основе схем Signal Forms помогают создавать надёжные формы.
 
-TIP: For a quick introduction to Signal Forms, see the [Signal Forms essentials guide](essentials/signal-forms).
+TIP: Краткое введение в Signal Forms см. в [руководстве по основам Signal Forms](essentials/signal-forms).
 
-## Why Signal Forms?
+## Зачем Signal Forms? {#why-signal-forms}
 
-Building forms in web applications involves managing several interconnected concerns: tracking field values, validating user input, handling error states, and keeping the UI synchronized with your data model. Managing these concerns separately creates boilerplate code and complexity.
+Создание форм в веб-приложениях включает управление несколькими взаимосвязанными задачами: отслеживание значений полей, валидация ввода, обработка состояний ошибок и синхронизация UI с моделью данных. Управление этими задачами по отдельности создаёт шаблонный код и сложность.
 
-Signal Forms address these challenges by:
+Signal Forms решают эти задачи за счёт:
 
-- **Synchronizing state automatically** - Automatically syncs the form data model with bound form fields
-- **Providing type safety** - Supports fully type safe schemas & bindings between your UI controls and data model
-- **Centralizing validation logic** - Define all validation rules in one place using a validation schema
+- **Автоматической синхронизации состояния** — автоматически синхронизируют модель данных формы с привязанными полями
+- **Типобезопасности** — поддерживают полностью типобезопасные схемы и привязки между UI-контролами и моделью данных
+- **Централизации логики валидации** — все правила валидации определяются в одном месте с помощью схемы валидации
 
-Signal Forms work best in new applications built with signals. If you're working with an existing application that uses reactive forms, or if you need production stability guarantees, reactive forms remain a solid choice.
+Signal Forms лучше всего подходят для новых приложений, построенных на сигналах. Если вы работаете с существующим приложением на reactive forms или вам нужны гарантии production-стабильности, reactive forms остаются надёжным выбором.
 
-NOTE: If you're coming from template or reactive forms, you may be interested in the [comparison guide](guide/forms/signals/comparison).
+NOTE: Если вы пришли из template-driven или reactive forms, вам может быть интересно [руководство по сравнению](guide/forms/signals/comparison).
 
-## Prerequisites
+## Предварительные требования {#prerequisites}
 
-Signal Forms require:
+Signal Forms требуют:
 
-- Angular v21 or higher
+- Angular v21 или выше
 
-## Setup
+## Настройка {#setup}
 
-Signal Forms are already included in the `@angular/forms` package. Import the necessary functions and directives from `@angular/forms/signals`:
+Signal Forms уже включены в пакет `@angular/forms`. Импортируйте необходимые функции и директивы из `@angular/forms/signals`:
 
 ```ts
 import {form, FormField, required, email} from '@angular/forms/signals';
 ```
 
-The `FormField` directive must be imported into any component that binds form fields to HTML inputs:
+Директиву `FormField` нужно импортировать в любой компонент, который привязывает поля формы к HTML-inputs:
 
 ```ts
 @Component({
@@ -42,9 +42,9 @@ The `FormField` directive must be imported into any component that binds form fi
 })
 ```
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-To learn more about how Signal Forms work, check out the following guides:
+Чтобы узнать больше о том, как работают Signal Forms, см. следующие руководства:
 
 <docs-pill-row>
   <docs-pill href="essentials/signal-forms" title="Signal forms essentials" />

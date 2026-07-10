@@ -12,7 +12,7 @@
 
 <docs-workflow>
 
-<docs-step title="Настройка сигналов так же, как в компоненте">
+<docs-step title="Set up signals just like in a component">
 Импортируйте функции сигналов и создайте свое реактивное состояние. Это работает точно так же, как и в компонентах:
 
 ```ts
@@ -50,7 +50,7 @@ export class HighlightDirective {
 `@Directive`, а не в `@Component`.
 </docs-step>
 
-<docs-step title="Использование сигналов в привязках к хосту">
+<docs-step title="Use signals in host bindings">
 Поскольку у директив нет шаблонов, вы будете использовать сигналы в **привязках к хосту** для реактивного обновления хост-элемента. Добавьте конфигурацию `host` и обработчики событий:
 
 ```ts
@@ -80,7 +80,7 @@ export class HighlightDirective {
 обновляет стиль элемента.
 </docs-step>
 
-<docs-step title="Использование директивы в шаблоне">
+<docs-step title="Use the directive in your template">
 Обновите шаблон приложения, чтобы продемонстрировать реактивную директиву:
 
 ```angular-ts

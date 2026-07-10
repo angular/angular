@@ -22,7 +22,7 @@
 
 <docs-workflow>
 
-<docs-step title="Обновите шаблон Home">
+<docs-step title="Update the `Home` template">
 На этом шаге добавляется привязка свойств к тегу `<app-housing-location>`.
 
 В редакторе кода:
@@ -37,7 +37,7 @@
 
    </docs-step>
 
-<docs-step title="Убедитесь, что код по-прежнему работает">
+<docs-step title="Confirm the code still works">
 1.  Сохраните изменения и убедитесь, что в приложении нет ошибок.
 1.  Исправьте все ошибки, прежде чем переходить к следующему шагу.
 </docs-step>

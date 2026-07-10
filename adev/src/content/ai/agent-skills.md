@@ -1,23 +1,23 @@
 # Agent Skills
 
-Agent Skills are specialized, domain-specific instructions and capabilities designed for AI agents like Gemini CLI. These skills provide architectural guidance, generate idiomatic Angular code, and help scaffold new projects using modern best practices.
+Agent Skills — это специализированные инструкции и возможности для конкретной предметной области, предназначенные для ИИ-агентов вроде Gemini CLI. Эти навыки дают архитектурные рекомендации, помогают генерировать идиоматичный код Angular и создавать новые проекты с учётом современных практик.
 
-By using Agent Skills, you can ensure that the AI agent you are working with has the most up-to-date information about Angular's conventions, reactivity models (like Signals), and project structure.
+Используя Agent Skills, вы можете быть уверены, что ИИ-агент, с которым вы работаете, располагает самой актуальной информацией о соглашениях Angular, моделях реактивности (например, Сигналах) и структуре проекта.
 
-## Available Skills
+## Доступные навыки {#available-skills}
 
-The Angular team maintains a collection of official skills that are regularly updated to stay in sync with the latest framework improvements.
+Команда Angular поддерживает набор официальных навыков, которые регулярно обновляются в соответствии с последними улучшениями фреймворка.
 
-| Skill                   | Description                                                                                                                                                                                                                                                                                       |
+| Навык                   | Описание                                                                                                                                                                                                                                                                                       |
 | :---------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`angular-developer`** | Generates Angular code and provides architectural guidance. Useful for creating components, services, or obtaining best practices on reactivity (signals, linkedSignal, resource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling, testing, or CLI tooling. |
-| **`angular-new-app`**   | Creates a new Angular app using the Angular CLI. Provides important guidelines for effectively setting up and structuring a modern Angular application.                                                                                                                                           |
+| **`angular-developer`** | Генерирует код Angular и даёт архитектурные рекомендации. Полезен для создания компонентов, сервисов или получения лучших практик по реактивности (сигналы, linkedSignal, resource), формам, внедрению зависимостей, маршрутизации, SSR, доступности (ARIA), анимациям, стилям, тестированию или инструментам CLI. |
+| **`angular-new-app`**   | Создаёт новое Angular-приложение с помощью Angular CLI. Содержит важные рекомендации по эффективной настройке и структуре современного Angular-приложения.                                                                                                                                           |
 
-## Using Agent Skills
+## Использование Agent Skills {#using-agent-skills}
 
-Agent Skills are designed to be used with agentic coding tools like [Gemini CLI](https://geminicli.com/docs/cli/skills/), [Antigravity](https://antigravity.google/docs/skills) and more. Activating a skill loads the specific instructions and resources needed for that task.
+Agent Skills рассчитаны на работу с агентными инструментами разработки вроде [Gemini CLI](https://geminicli.com/docs/cli/skills/), [Antigravity](https://antigravity.google/docs/skills) и другими. Активация навыка загружает инструкции и ресурсы, нужные для конкретной задачи.
 
-To use these skills in your own environment you may follow the instructions for your specific tool or use a community tool like [skills.sh](https://skills.sh/).
+Чтобы использовать эти навыки в своей среде, следуйте инструкциям для вашего инструмента или воспользуйтесь сообщественным инструментом вроде [skills.sh](https://skills.sh/).
 
 ```bash
 npx skills add https://github.com/angular/skills

@@ -6,71 +6,9 @@
   <docs-pill href="/api/aria/menu/MenuBar" title="Menubar API Reference"/>
 </docs-pill-row>
 
-## Overview
+## Обзор {#overview}
 
-The menubar is a horizontal navigation bar that provides persistent access to application menus. Menubars organize commands into logical categories like File, Edit, and View, helping users discover and execute application features through keyboard or mouse interaction.
-
-<docs-tab-group>
-  <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menubar/src/basic/app/app.ts">
-      <docs-code header="app.ts" path="adev/src/content/examples/aria/menubar/src/basic/app/app.ts"/>
-      <docs-code header="app.html" path="adev/src/content/examples/aria/menubar/src/basic/app/app.html"/>
-      <docs-code header="app.css" path="adev/src/content/examples/aria/menubar/src/basic/app/app.css"/>
-    </docs-code-multifile>
-  </docs-tab>
-
-  <docs-tab label="Material">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menubar/src/basic/material/app/app.ts">
-      <docs-code header="app.ts" path="adev/src/content/examples/aria/menubar/src/basic/material/app/app.ts"/>
-      <docs-code header="app.html" path="adev/src/content/examples/aria/menubar/src/basic/material/app/app.html"/>
-      <docs-code header="app.css" path="adev/src/content/examples/aria/menubar/src/basic/material/app/app.css"/>
-    </docs-code-multifile>
-  </docs-tab>
-
-  <docs-tab label="Retro">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menubar/src/basic/retro/app/app.ts">
-      <docs-code header="app.ts" path="adev/src/content/examples/aria/menubar/src/basic/retro/app/app.ts"/>
-      <docs-code header="app.html" path="adev/src/content/examples/aria/menubar/src/basic/retro/app/app.html"/>
-      <docs-code header="app.css" path="adev/src/content/examples/aria/menubar/src/basic/retro/app/app.css"/>
-    </docs-code-multifile>
-  </docs-tab>
-</docs-tab-group>
-
-## Usage
-
-Menubars work well for organizing application commands into persistent, discoverable navigation.
-
-**Use menubars when:**
-
-- Building application command bars (such as File, Edit, View, Insert, Format)
-- Creating persistent navigation that stays visible across the interface
-- Organizing commands into logical top-level categories
-- Need horizontal menu navigation with keyboard support
-- Building desktop-style application interfaces
-
-**Avoid menubars when:**
-
-- Building dropdown menus for individual actions (use [Menu with trigger](guide/aria/menu) instead)
-- Creating context menus (use [Menu](guide/aria/menu) guide pattern)
-- Simple standalone action lists (use [Menu](guide/aria/menu) instead)
-- Mobile interfaces where horizontal space is limited
-- Navigation belongs in a sidebar or header navigation pattern
-
-## Features
-
-- **Horizontal navigation** - Left/Right arrow keys move between top-level categories
-- **Persistent visibility** - Always visible, not modal or dismissable
-- **Hover-to-open** - Submenus open on hover after first keyboard or click interaction
-- **Nested submenus** - Support multiple levels of menu depth
-- **Keyboard navigation** - Arrow keys, Enter/Space, Escape, and typeahead search
-- **Disabled states** - Disable entire menubar or individual items
-- **RTL support** - Automatic right-to-left language navigation
-
-## Examples
-
-### Basic menubar
-
-A menubar provides persistent access to application commands organized into top-level categories. Users navigate between categories with Left/Right arrows and open menus with Enter or Down arrow.
+Menubar — горизонтальная панель навигации, обеспечивающая постоянный доступ к меню приложения. Menubars организуют команды в логические категории вроде File, Edit и View, помогая пользователям находить и выполнять функции приложения через клавиатуру или мышь.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -98,11 +36,73 @@ A menubar provides persistent access to application commands organized into top-
   </docs-tab>
 </docs-tab-group>
 
-Press Right arrow to move between File, Edit, and View. Press Enter or Down arrow to open a menu and navigate submenu items with Up/Down arrows.
+## Использование {#usage}
 
-### Disabled menubar items
+Menubars хорошо подходят для организации команд приложения в постоянную, discoverable-навигацию.
 
-Disable specific menu items or the entire menubar to prevent interaction. Control whether disabled items can receive keyboard focus with the `softDisabled` input.
+**Используйте menubars, когда:**
+
+- Строите командные панели приложения (File, Edit, View, Insert, Format)
+- Создаёте постоянную навигацию, видимую по всему интерфейсу
+- Организуете команды в логические top-level категории
+- Нужна горизонтальная навигация по меню с поддержкой клавиатуры
+- Строите интерфейсы приложений в стиле desktop
+
+**Избегайте menubars, когда:**
+
+- Строите dropdown-меню для отдельных действий (вместо этого используйте [Menu with trigger](guide/aria/menu))
+- Создаёте context menus (используйте паттерн из руководства [Menu](guide/aria/menu))
+- Нужны простые standalone-списки действий (вместо этого используйте [Menu](guide/aria/menu))
+- Мобильные интерфейсы с ограниченным горизонтальным пространством
+- Навигация относится к sidebar или header navigation
+
+## Возможности {#features}
+
+- **Горизонтальная навигация** — стрелки влево/вправо перемещают между top-level категориями
+- **Постоянная видимость** — всегда видима, не modal и не dismissable
+- **Hover-to-open** — подменю открываются при наведении после первого взаимодействия с клавиатурой или клика
+- **Вложенные подменю** — поддержка нескольких уровней глубины меню
+- **Клавиатурная навигация** — стрелки, Enter/Space, Escape и typeahead-поиск
+- **Состояния disabled** — отключение всего menubar или отдельных элементов
+- **Поддержка RTL** — автоматическая навигация для языков справа налево
+
+## Примеры {#examples}
+
+### Базовый menubar {#basic-menubar}
+
+Menubar обеспечивает постоянный доступ к командам приложения, организованным в top-level категории. Пользователи перемещаются между категориями стрелками влево/вправо и открывают меню Enter или стрелкой вниз.
+
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menubar/src/basic/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/menubar/src/basic/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/menubar/src/basic/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/menubar/src/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menubar/src/basic/material/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/menubar/src/basic/material/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/menubar/src/basic/material/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/menubar/src/basic/material/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menubar/src/basic/retro/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/menubar/src/basic/retro/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/menubar/src/basic/retro/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/menubar/src/basic/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
+
+Нажмите стрелку вправо, чтобы перемещаться между File, Edit и View. Нажмите Enter или стрелку вниз, чтобы открыть меню и перемещаться по пунктам подменю стрелками вверх/вниз.
+
+### Отключённые элементы menubar {#disabled-menubar-items}
+
+Отключайте конкретные пункты меню или весь menubar, чтобы предотвратить взаимодействие. Контролируйте, могут ли disabled-элементы получать клавиатурный фокус, через input `softDisabled`.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -130,11 +130,11 @@ Disable specific menu items or the entire menubar to prevent interaction. Contro
   </docs-tab>
 </docs-tab-group>
 
-When `[softDisabled]="true"` on the menubar, disabled items can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled items are skipped during keyboard navigation.
+Когда `[softDisabled]="true"` на menubar, disabled-элементы могут получать фокус, но не могут быть активированы. Когда `[softDisabled]="false"`, disabled-элементы пропускаются при клавиатурной навигации.
 
-### RTL support
+### Поддержка RTL {#rtl-support}
 
-Menubars automatically adapt to right-to-left (RTL) languages. Arrow key navigation reverses direction, and submenus position on the left side.
+Menubars автоматически адаптируются к языкам справа налево (RTL). Навигация стрелками меняет направление, а подменю позиционируются слева.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -162,12 +162,12 @@ Menubars automatically adapt to right-to-left (RTL) languages. Arrow key navigat
   </docs-tab>
 </docs-tab-group>
 
-The `dir="rtl"` attribute enables RTL mode. Left arrow moves right, Right arrow moves left, maintaining natural navigation for RTL language users.
+Атрибут `dir="rtl"` включает режим RTL. Стрелка влево двигает вправо, стрелка вправо — влево, сохраняя естественную навигацию для пользователей RTL-языков.
 
-## Testing
+## Тестирование {#testing}
 
-Angular Aria provides component harnesses for testing menubar components.
-Here is an example of how to use the harnesses in a component test:
+Angular Aria предоставляет component harnesses для тестирования компонентов menubar.
+Пример использования harnesses в тесте компонента:
 
 ```typescript
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -214,9 +214,9 @@ describe('MyMenubarComponent', () => {
 });
 ```
 
-## API reference
+## API reference {#api-reference}
 
-For detailed API documentation, inspect the following API references:
+Подробную API-документацию смотрите в следующих API reference:
 
 - [`MenuBar`](/api/aria/menu/MenuBar)
 - [`MenuItem`](/api/aria/menu/MenuItem)

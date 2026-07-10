@@ -15,7 +15,7 @@
 
 <docs-workflow>
 
-<docs-step title="Импорт функции computed">
+<docs-step title="Import computed function">
 Добавьте `computed` в существующие импорты.
 
 ```ts
@@ -25,7 +25,7 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
 
 </docs-step>
 
-<docs-step title="Создание computed-сигнала для уведомлений">
+<docs-step title="Create a computed signal for notifications">
 Добавьте computed-сигнал, который определяет, должны ли быть включены уведомления, основываясь на статусе пользователя.
 
 ```ts
@@ -36,7 +36,7 @@ notificationsEnabled = computed(() => this.userStatus() === 'online');
 внимание, как мы вызываем `this.userStatus()` внутри функции computed для чтения значения сигнала.
 </docs-step>
 
-<docs-step title="Создание computed-сигнала для описательного сообщения">
+<docs-step title="Create a computed signal for a descriptive message">
 Добавьте computed-сигнал, который создает описательное сообщение на основе статуса пользователя.
 
 ```ts
@@ -55,7 +55,7 @@ statusMessage = computed(() => {
 преобразований строк.
 </docs-step>
 
-<docs-step title="Создание computed-сигнала, вычисляющего доступность в рабочее время">
+<docs-step title="Create a computed signal that calculates working hours availability">
 Добавьте computed-сигнал, который вычисляет, находится ли пользователь в рамках своего рабочего времени.
 
 ```ts
@@ -71,7 +71,7 @@ isWithinWorkingHours = computed(() => {
 обновляется автоматически при изменении `userStatus`.
 </docs-step>
 
-<docs-step title="Отображение вычисляемых значений в шаблоне">
+<docs-step title="Display the computed values in the template">
 В шаблоне уже есть заполнители, показывающие "Loading...". Замените их вашими computed-сигналами:
 
 1. Для уведомлений замените `Loading...` на блок @if:

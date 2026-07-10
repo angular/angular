@@ -1,20 +1,20 @@
 <docs-decorative-header title="Angular Signals" imgSrc="adev/src/assets/images/signals.svg"> <!-- markdownlint-disable-line -->
-Angular Signals is a system that granularly tracks how and where your state is used throughout an application, allowing the framework to optimize rendering updates.
+Angular Signals — система, которая гранулярно отслеживает, как и где состояние используется в приложении, позволяя фреймворку оптимизировать обновления рендеринга.
 </docs-decorative-header>
 
-TIP: Check out Angular's [Essentials](essentials/signals) before diving into this comprehensive guide.
+TIP: Перед этим подробным руководством ознакомьтесь с [Essentials](essentials/signals) по Angular.
 
-## What are signals?
+## Что такое сигналы? {#what-are-signals}
 
-A **signal** is a wrapper around a value that notifies interested consumers when that value changes. Signals can contain any value, from primitives to complex data structures.
+**Сигнал** — обёртка вокруг значения, которая уведомляет заинтересованных потребителей при изменении этого значения. Сигналы могут содержать любое значение — от примитивов до сложных структур данных.
 
-You read a signal's value by calling its getter function, which allows Angular to track where the signal is used.
+Значение сигнала читается вызовом его getter-функции, что позволяет Angular отслеживать, где сигнал используется.
 
-Signals may be either _writable_ or _read-only_.
+Сигналы могут быть _writable_ или _read-only_.
 
-### Writable signals
+### Writable-сигналы {#writable-signals}
 
-Writable signals provide an API for updating their values directly. You create writable signals by calling the `signal` function with the signal's initial value:
+Writable-сигналы предоставляют API для прямого обновления своих значений. Создавайте writable-сигналы вызовом функции `signal` с начальным значением:
 
 ```ts
 const count = signal(0);
@@ -23,24 +23,24 @@ const count = signal(0);
 console.log('The count is: ' + count());
 ```
 
-To change the value of a writable signal, either `.set()` it directly:
+Чтобы изменить значение writable-сигнала, либо задайте его напрямую через `.set()`:
 
 ```ts
 count.set(3);
 ```
 
-or use the `.update()` operation to compute a new value from the previous one:
+либо используйте операцию `.update()`, чтобы вычислить новое значение из предыдущего:
 
 ```ts
 // Increment the count by 1.
 count.update((value) => value + 1);
 ```
 
-Writable signals have the type `WritableSignal`.
+Writable-сигналы имеют тип `WritableSignal`.
 
-#### Converting writable signals to readonly
+#### Преобразование writable-сигналов в readonly {#converting-writable-signals-to-readonly}
 
-`WritableSignal` provides an `asReadonly()` method that returns a readonly version of the signal. This is useful when you want to expose a signal's value to consumers without allowing them to modify it directly:
+`WritableSignal` предоставляет метод `asReadonly()`, который возвращает readonly-версию сигнала. Это полезно, когда нужно предоставить значение сигнала потребителям без возможности изменять его напрямую:
 
 ```ts
 @Service()
@@ -69,42 +69,42 @@ export class AwesomeCounter {
 }
 ```
 
-The readonly signal reflects any changes made to the original writable signal, but cannot be modified using `set()` or `update()` methods.
+Readonly-сигнал отражает любые изменения исходного writable-сигнала, но не может быть изменён методами `set()` или `update()`.
 
-IMPORTANT: The readonly signals do **not** have any built-in mechanism that would prevent deep-mutation of their value.
+IMPORTANT: У readonly-сигналов **нет** встроенного механизма, который предотвращал бы глубокую мутацию их значения.
 
-### Computed signals
+### Computed-сигналы {#computed-signals}
 
-**Computed signals** are read-only signals that derive their value from other signals. You define computed signals using the `computed` function and specifying a derivation:
+**Computed-сигналы** — read-only сигналы, которые выводят своё значение из других сигналов. Определяйте computed-сигналы с помощью функции `computed` и указания derivation:
 
 ```typescript
 const count: WritableSignal<number> = signal(0);
 const doubleCount: Signal<number> = computed(() => count() * 2);
 ```
 
-The `doubleCount` signal depends on the `count` signal. Whenever `count` updates, Angular knows that `doubleCount` needs to update as well.
+Сигнал `doubleCount` зависит от сигнала `count`. Когда `count` обновляется, Angular знает, что `doubleCount` тоже нужно обновить.
 
-#### Computed signals are both lazily evaluated and memoized
+#### Computed-сигналы лениво вычисляются и мемоизируются {#computed-signals-are-both-lazily-evaluated-and-memoized}
 
-`doubleCount`'s derivation function does not run to calculate its value until the first time you read `doubleCount`. The calculated value is then cached, and if you read `doubleCount` again, it will return the cached value without recalculating.
+Функция derivation у `doubleCount` не выполняется для расчёта значения, пока вы впервые не прочитаете `doubleCount`. Вычисленное значение затем кэшируется, и при повторном чтении `doubleCount` возвращается кэшированное значение без пересчёта.
 
-If you then change `count`, Angular knows that `doubleCount`'s cached value is no longer valid, and the next time you read `doubleCount` its new value will be calculated.
+Если затем изменить `count`, Angular знает, что кэшированное значение `doubleCount` больше недействительно, и при следующем чтении `doubleCount` будет вычислено новое значение.
 
-As a result, you can safely perform computationally expensive derivations in computed signals, such as filtering arrays.
+В результате в computed-сигналах можно безопасно выполнять вычислительно дорогие derivation — например, фильтрацию массивов.
 
-#### Computed signals are not writable signals
+#### Computed-сигналы не являются writable {#computed-signals-are-not-writable-signals}
 
-You cannot directly assign values to a computed signal. That is,
+Нельзя напрямую присваивать значения computed-сигналу. То есть
 
 ```ts
 doubleCount.set(3);
 ```
 
-produces a compilation error, because `doubleCount` is not a `WritableSignal`.
+вызывает ошибку компиляции, потому что `doubleCount` не является `WritableSignal`.
 
-#### Computed signal dependencies are dynamic
+#### Зависимости computed-сигналов динамичны {#computed-signal-dependencies-are-dynamic}
 
-Only the signals actually read during the derivation are tracked. For example, in this `computed` the `count` signal is only read if the `showCount` signal is true:
+Отслеживаются только сигналы, реально прочитанные во время derivation. Например, в этом `computed` сигнал `count` читается только если сигнал `showCount` равен true:
 
 ```ts
 const showCount = signal(false);
@@ -118,29 +118,29 @@ const conditionalCount = computed(() => {
 });
 ```
 
-When you read `conditionalCount`, if `showCount` is `false` the "Nothing to see here!" message is returned _without_ reading the `count` signal. This means that if you later update `count` it will _not_ result in a recomputation of `conditionalCount`.
+Когда вы читаете `conditionalCount`, если `showCount` равен `false`, возвращается сообщение «Nothing to see here!» _без_ чтения сигнала `count`. Это значит, что последующее обновление `count` _не_ приведёт к пересчёту `conditionalCount`.
 
-If you set `showCount` to `true` and then read `conditionalCount` again, the derivation will re-execute and take the branch where `showCount` is `true`, returning the message which shows the value of `count`. Changing `count` will then invalidate `conditionalCount`'s cached value.
+Если задать `showCount` в `true` и снова прочитать `conditionalCount`, derivation выполнится заново и пойдёт по ветке, где `showCount` равен `true`, вернув сообщение со значением `count`. Изменение `count` тогда инвалидирует кэшированное значение `conditionalCount`.
 
-Note that dependencies can be removed during a derivation as well as added. If you later set `showCount` back to `false`, then `count` will no longer be considered a dependency of `conditionalCount`.
+Зависимости могут удаляться во время derivation так же, как и добавляться. Если позже вернуть `showCount` в `false`, то `count` больше не будет считаться зависимостью `conditionalCount`.
 
-## Reactive contexts
+## Реактивные контексты {#reactive-contexts}
 
-A **reactive context** is a runtime state where Angular monitors signal reads to establish a dependency. The code reading the signal is the _consumer_, and the signal being read is the _producer_.
+**Реактивный контекст** — runtime-состояние, в котором Angular отслеживает чтения сигналов, чтобы установить зависимость. Код, читающий сигнал, — _consumer_, а читаемый сигнал — _producer_.
 
-Angular automatically enters a reactive context when:
+Angular автоматически входит в реактивный контекст при:
 
-- Executing an `effect`, `afterRenderEffect` callback.
-- Evaluating a `computed` signal.
-- Evaluating a `linkedSignal`.
-- Evaluating a `resource`'s params or loader function.
-- Rendering a component template (including bindings in the [host property](guide/components/host-elements#binding-to-the-host-element)).
+- Выполнении callback `effect`, `afterRenderEffect`.
+- Вычислении `computed`-сигнала.
+- Вычислении `linkedSignal`.
+- Вычислении params или loader-функции `resource`.
+- Рендеринге шаблона компонента (включая bindings в [свойстве host](guide/components/host-elements#binding-to-the-host-element)).
 
-During these operations, Angular creates a _live_ connection. If a tracked signal changes, Angular will _eventually_ re-run the consumer.
+Во время этих операций Angular создаёт _живое_ соединение. Если отслеживаемый сигнал изменится, Angular _в итоге_ повторно выполнит consumer.
 
-### Asserts the reactive context
+### Проверка реактивного контекста {#asserts-the-reactive-context}
 
-Angular provides the `assertNotInReactiveContext` helper function to assert that code is not executing within a reactive context. Pass a reference to the calling function so the error message points to the correct API entry point if the assertion fails. This produces a clearer, more actionable error message than a generic reactive context error.
+Angular предоставляет вспомогательную функцию `assertNotInReactiveContext`, чтобы утверждать, что код не выполняется внутри реактивного контекста. Передайте ссылку на вызывающую функцию, чтобы сообщение об ошибке указывало на правильную точку входа API при сбое assertion. Это даёт более ясное и actionable сообщение об ошибке, чем общая ошибка реактивного контекста.
 
 ```ts
 import {assertNotInReactiveContext} from '@angular/core';
@@ -151,11 +151,11 @@ function subscribeToEvents() {
 }
 ```
 
-### Reading without tracking dependencies
+### Чтение без отслеживания зависимостей {#reading-without-tracking-dependencies}
 
-Rarely, you may want to execute code which may read signals within a reactive function such as `computed` or `effect` _without_ creating a dependency.
+Иногда нужно выполнить код, который может читать сигналы внутри реактивной функции вроде `computed` или `effect`, _не_ создавая зависимость.
 
-For example, suppose that when `currentUser` changes, the value of a `counter` should be logged. You could create an `effect` which reads both signals:
+Например, предположим, что при изменении `currentUser` нужно залогировать значение `counter`. Можно создать `effect`, который читает оба сигнала:
 
 ```ts
 effect(() => {
@@ -163,9 +163,9 @@ effect(() => {
 });
 ```
 
-This example will log a message when _either_ `currentUser` or `counter` changes. However, if the effect should only run when `currentUser` changes, then the read of `counter` is only incidental and changes to `counter` shouldn't log a new message.
+Этот пример залогирует сообщение при изменении _либо_ `currentUser`, _либо_ `counter`. Однако если effect должен выполняться только при изменении `currentUser`, то чтение `counter` случайно, и изменения `counter` не должны логировать новое сообщение.
 
-You can prevent a signal read from being tracked by calling its getter with `untracked`:
+Можно предотвратить отслеживание чтения сигнала, вызвав его getter через `untracked`:
 
 ```ts
 effect(() => {
@@ -173,7 +173,7 @@ effect(() => {
 });
 ```
 
-`untracked` is also useful when an effect needs to invoke some external code which shouldn't be treated as a dependency:
+`untracked` также полезен, когда effect нужно вызвать внешний код, который не должен считаться зависимостью:
 
 ```ts
 effect(() => {
@@ -186,9 +186,9 @@ effect(() => {
 });
 ```
 
-### Reactive context and async operations
+### Реактивный контекст и асинхронные операции {#reactive-context-and-async-operations}
 
-The reactive context is only active for synchronous code. Any signal reads that occur after an asynchronous boundary will not be tracked as dependencies.
+Реактивный контекст активен только для синхронного кода. Любые чтения сигналов после асинхронной границы не отслеживаются как зависимости.
 
 ```ts {avoid}
 effect(async () => {
@@ -198,7 +198,7 @@ effect(async () => {
 });
 ```
 
-To ensure all signal reads are tracked, read signals before the `await`. This includes passing them as arguments to the awaited function, since arguments are evaluated synchronously:
+Чтобы все чтения сигналов отслеживались, читайте сигналы до `await`. Это включает передачу их как аргументов в awaited-функцию, поскольку аргументы вычисляются синхронно:
 
 ```ts {prefer}
 effect(async () => {
@@ -215,26 +215,26 @@ effect(async () => {
 });
 ```
 
-## Advanced derivations
+## Продвинутые derivation {#advanced-derivations}
 
-While `computed` handles simple readonly derivations, you might find yourself needing a writable state that is dependent on other signals.
-For more information see the [Dependent state with linkedSignal](/guide/signals/linked-signal) guide.
+Пока `computed` обрабатывает простые readonly derivation, иногда нужен writable state, зависящий от других сигналов.
+Подробнее см. руководство [Dependent state with linkedSignal](/guide/signals/linked-signal).
 
-All signal APIs are synchronous— `signal`, `computed`, `input`, etc. However, applications often need to deal with data that is available asynchronously. A `Resource` gives you a way to incorporate async data into your application's signal-based code and still allow you to access its data synchronously. For more information see the [Async reactivity with resources](/guide/signals/resource) guide.
+Все API сигналов синхронны — `signal`, `computed`, `input` и т.д. Однако приложениям часто нужно работать с данными, доступными асинхронно. `Resource` даёт способ включить async-данные в signal-based код приложения и при этом читать их синхронно. Подробнее см. руководство [Async reactivity with resources](/guide/signals/resource).
 
-## Executing side effects on non-reactive APIs
+## Выполнение side effects на нереактивных API {#executing-side-effects-on-non-reactive-apis}
 
-Synchronous or asynchronous derivations are recommended when we want to react to state changes. However, this doesn't cover all the possible use cases, and you'll sometimes find yourself in a situation where you need to react to signal changes on non-reactive APIs. Use `effect` or `afterRenderEffect` for those specific use cases. For more information see [Side effects for non-reactive APIs](/guide/signals/effect) guide.
+Синхронные или асинхронные derivation рекомендуются, когда нужно реагировать на изменения состояния. Однако это покрывает не все сценарии, и иногда нужно реагировать на изменения сигналов на нереактивных API. Используйте `effect` или `afterRenderEffect` для таких случаев. Подробнее см. руководство [Side effects for non-reactive APIs](/guide/signals/effect).
 
-## Reading signals in `OnPush` components
+## Чтение сигналов в компонентах `OnPush` {#reading-signals-in-onpush-components}
 
-When you read a signal within an `OnPush` component's template, Angular tracks the signal as a dependency of that component. When the value of that signal changes, Angular automatically [marks](api/core/ChangeDetectorRef#markforcheck) the component to ensure it gets updated the next time change detection runs. Refer to the [Skipping component subtrees](best-practices/skipping-subtrees) guide for more information about `OnPush` components.
+Когда вы читаете сигнал в шаблоне компонента `OnPush`, Angular отслеживает сигнал как зависимость этого компонента. Когда значение сигнала меняется, Angular автоматически [помечает](api/core/ChangeDetectorRef#markforcheck) компонент, чтобы он обновился при следующем запуске change detection. См. руководство [Skipping component subtrees](best-practices/skipping-subtrees) для дополнительной информации о компонентах `OnPush`.
 
-## Advanced topics
+## Продвинутые темы {#advanced-topics}
 
-### Signal equality functions
+### Функции равенства сигналов {#signal-equality-functions}
 
-When creating a signal, you can optionally provide an equality function, which will be used to check whether the new value is actually different than the previous one.
+При создании сигнала можно опционально предоставить функцию равенства, которая будет проверять, действительно ли новое значение отличается от предыдущего.
 
 ```ts
 import isEqual from 'lodash/isEqual';
@@ -247,13 +247,13 @@ const data = signal(['test'], {equal: isEqual});
 data.set(['test']);
 ```
 
-Equality functions can be provided to both writable and computed signals.
+Функции равенства можно предоставлять и writable, и computed-сигналам.
 
-HELPFUL: By default, signals use referential equality ([`Object.is()`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/is) comparison).
+HELPFUL: По умолчанию сигналы используют ссылочное равенство (сравнение [`Object.is()`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/is)).
 
-### Type checking signals
+### Проверка типов сигналов {#type-checking-signals}
 
-You can use `isSignal` to check if a value is a `Signal`:
+Можно использовать `isSignal`, чтобы проверить, является ли значение `Signal`:
 
 ```ts
 const count = signal(0);
@@ -264,7 +264,7 @@ isSignal(doubled); // true
 isSignal(42); // false
 ```
 
-To specifically check if a signal is writable, use `isWritableSignal`:
+Чтобы специально проверить, является ли сигнал writable, используйте `isWritableSignal`:
 
 ```ts
 const count = signal(0);
@@ -274,6 +274,6 @@ isWritableSignal(count); // true
 isWritableSignal(doubled); // false
 ```
 
-## Using signals with RxJS
+## Использование сигналов с RxJS {#using-signals-with-rxjs}
 
-See [RxJS interop with Angular signals](ecosystem/rxjs-interop) for details on interoperability between signals and RxJS.
+См. [RxJS interop with Angular signals](ecosystem/rxjs-interop) для деталей о взаимодействии сигналов и RxJS.

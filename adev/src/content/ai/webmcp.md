@@ -1,18 +1,18 @@
 # WebMCP
 
-Web Model Context Protocol (WebMCP) is an [emerging web standard](https://github.com/webmachinelearning/webmcp/) that allows web applications to expose structured tools directly to AI agents running natively in the browser. Tools defined by an application allow AI assistants to interact with it directly, providing additional capabilities to the agent and reducing the need for DOM interactions.
+Web Model Context Protocol (WebMCP) — [формирующийся веб-стандарт](https://github.com/webmachinelearning/webmcp/), который позволяет веб-приложениям предоставлять структурированные инструменты напрямую ИИ-агентам, работающим нативно в браузере. Инструменты, определённые приложением, дают ИИ-ассистентам возможность взаимодействовать с ним напрямую, расширяя возможности агента и снижая потребность во взаимодействии с DOM.
 
-For example, an application to register a new user might provide a WebMCP tool for a browser's AI agent to create the user directly rather than requiring the agent to go through a complex wizard UI via DOM interactions.
+Например, приложение регистрации нового пользователя может предоставить инструмент WebMCP, чтобы ИИ-агент браузера создал пользователя напрямую, а не проходил сложный мастер через DOM.
 
-Angular provides experimental support for WebMCP, allowing you to easily register tools tied to your application's dependency injection lifecycle and automatically turn your Signal Forms into AI-ready tools.
+Angular предоставляет экспериментальную поддержку WebMCP: можно легко регистрировать инструменты, привязанные к жизненному циклу внедрения зависимостей приложения, и автоматически превращать Signal Forms в инструменты, готовые для ИИ.
 
-IMPORTANT: The WebMCP spec is very early in its lifecycle and is undergoing frequent changes. As such, WebMCP support in Angular is currently [**experimental**](reference/releases#experimental). APIs are subject to change even outside of major versions.
+IMPORTANT: Спецификация WebMCP находится на очень ранней стадии и часто меняется. Поэтому поддержка WebMCP в Angular сейчас [**экспериментальная**](reference/releases#experimental). API могут меняться даже вне major-версий.
 
-## Provide tools for the application
+## Предоставление инструментов для приложения {#provide-tools-for-the-application}
 
-Use [`provideExperimentalWebMcpTools`](api/core/provideExperimentalWebMcpTools) in your application config to register tools for the entire lifecycle of the application. Tools provided this way are automatically registered when the application initializes and unregistered when the application is destroyed.
+Используйте [`provideExperimentalWebMcpTools`](api/core/provideExperimentalWebMcpTools) в конфигурации приложения, чтобы зарегистрировать инструменты на весь жизненный цикл приложения. Такие инструменты автоматически регистрируются при инициализации и снимаются с регистрации при уничтожении приложения.
 
-The `execute` callback is invoked in the injection context of the associated `Injector`, meaning you can [`inject`](api/core/inject) services directly.
+Колбэк `execute` вызывается в контексте внедрения связанного `Injector`, то есть сервисы можно [`inject`](api/core/inject) напрямую.
 
 ```ts {header:"main.ts"}
 import {Service, inject, provideExperimentalWebMcpTools} from '@angular/core';
@@ -44,9 +44,9 @@ bootstrapApplication(AppRoot, {
 });
 ```
 
-### Define tool parameters
+### Определение параметров инструмента {#define-tool-parameters}
 
-When a tool requires input from the AI assistant, define the expected arguments inside `inputSchema` using [JSON Schema](https://json-schema.org/) syntax. Angular automatically infers the parameter types passed into your `execute` callback based on the schema definition.
+Если инструменту нужен ввод от ИИ-ассистента, опишите ожидаемые аргументы в `inputSchema` синтаксисом [JSON Schema](https://json-schema.org/). Angular автоматически выводит типы параметров, передаваемых в колбэк `execute`, на основе схемы.
 
 ```ts {header:"main.ts"}
 import {provideExperimentalWebMcpTools} from '@angular/core';
@@ -94,11 +94,11 @@ bootstrapApplication(AppRoot, {
 });
 ```
 
-TIP: Use `required: ['param1', 'param2', ...]` to remove `undefined` from the types of those parameters and use `additionalProperties: false` to restrict the argument object's type to only these parameters.
+TIP: Используйте `required: ['param1', 'param2', ...]`, чтобы убрать `undefined` из типов этих параметров, и `additionalProperties: false`, чтобы ограничить тип объекта аргументов только этими параметрами.
 
-## Provide tools for a route
+## Предоставление инструментов для маршрута {#provide-tools-for-a-route}
 
-When building complex applications, you may only want certain tools available when the user is viewing specific routes. You can achieve this by providing tools directly in route definitions.
+В сложных приложениях некоторые инструменты могут быть нужны только на определённых маршрутах. Это достигается предоставлением инструментов прямо в определениях маршрутов.
 
 ```ts {header:"routes.ts"}
 import {provideExperimentalWebMcpTools} from '@angular/core';
@@ -124,7 +124,7 @@ export const routes: Routes = [
 ];
 ```
 
-NOTE: When registering tools to a particular route, consider configuring the router to use [`withExperimentalAutoCleanupInjectors`](api/router/withExperimentalAutoCleanupInjectors) to ensure tools are automatically _unregistered_ when the user navigates away from the route. Without this option, WebMCP tools declared on routes will remain accessible to AI agents even after the user has navigated to a different route.
+NOTE: При регистрации инструментов на конкретном маршруте рассмотрите настройку роутера с [`withExperimentalAutoCleanupInjectors`](api/router/withExperimentalAutoCleanupInjectors), чтобы инструменты автоматически _снимались с регистрации_, когда пользователь уходит с маршрута. Без этой опции инструменты WebMCP, объявленные на маршрутах, останутся доступны ИИ-агентам даже после перехода на другой маршрут.
 
 ```ts {header:"app.config.ts"}
 import {ApplicationConfig} from '@angular/core';
@@ -136,9 +136,9 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-## Provide tools within services
+## Предоставление инструментов в сервисах {#provide-tools-within-services}
 
-For dynamic use cases, the [`declareExperimentalWebMcpTool`](api/core/declareExperimentalWebMcpTool) function registers a tool directly within an injection context and automatically unregisters it when that context is destroyed.
+Для динамических сценариев функция [`declareExperimentalWebMcpTool`](api/core/declareExperimentalWebMcpTool) регистрирует инструмент прямо в контексте внедрения и автоматически снимает его с регистрации при уничтожении этого контекста.
 
 ```ts {header:"counter.ts"}
 import {Service, declareExperimentalWebMcpTool, signal, inject} from '@angular/core';
@@ -160,15 +160,15 @@ export class Counter {
 }
 ```
 
-While `declareExperimentalWebMcpTool` works in any injection context, watch out for [name collisions](#name-collisions) and prefer using it in root services.
+Хотя `declareExperimentalWebMcpTool` работает в любом контексте внедрения, следите за [коллизиями имён](#name-collisions) и предпочтительно используйте его в root-сервисах.
 
-## Implicit tools in Signal Forms
+## Неявные инструменты в Signal Forms {#implicit-tools-in-signal-forms}
 
-You can create a WebMCP tool implicitly from an existing Angular [Signal Form](essentials/signal-forms) with minimal configuration. Angular converts your form models into rich WebMCP tools, effectively supporting highly dynamic forms without requiring you to manually write JSON schemas or event handlers.
+Инструмент WebMCP можно создать неявно из существующей Angular [Signal Form](essentials/signal-forms) с минимальной конфигурацией. Angular преобразует модели форм в богатые инструменты WebMCP, эффективно поддерживая высокодинамичные формы без ручного написания JSON-схем или обработчиков событий.
 
-### Enable the WebMCP forms feature
+### Включение функции WebMCP forms {#enable-the-webmcp-forms-feature}
 
-First, add [`provideExperimentalWebMcpForms`](api/forms/signals/provideExperimentalWebMcpForms) to your root application providers:
+Сначала добавьте [`provideExperimentalWebMcpForms`](api/forms/signals/provideExperimentalWebMcpForms) в корневые провайдеры приложения:
 
 ```ts {header:"main.ts"}
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -180,9 +180,9 @@ bootstrapApplication(AppRoot, {
 });
 ```
 
-### Opt in a Signal Form
+### Подключение Signal Form {#opt-in-a-signal-form}
 
-Second, when defining a Signal Form using [`form`](api/forms/signals/form), pass the `experimentalWebMcpTool` configuration option to opt-in to an implicit WebMCP tool. Angular will inspect your form's data model and automatically generate a JSON schema for connected AI agents.
+Затем при определении Signal Form через [`form`](api/forms/signals/form) передайте опцию конфигурации `experimentalWebMcpTool`, чтобы включить неявный инструмент WebMCP. Angular проинспектирует модель данных формы и автоматически сгенерирует JSON-схему для подключённых ИИ-агентов.
 
 ```ts {header:"user-registration.ts"}
 import {Component, signal} from '@angular/core';
@@ -223,37 +223,37 @@ export class UserRegistration {
 }
 ```
 
-In this example, Angular generates a WebMCP tool with a JSON schema which:
+В этом примере Angular генерирует инструмент WebMCP с JSON-схемой, которая:
 
-1. includes `firstName`, `lastName`, `age`, and `hobbies` as parameters inferred from the initial value of the `model` signal.
-2. defines `firstName` and `lastName` as _required_ fields as inferred from the [`required`](api/forms/signals/required) validator.
-3. defines `hobbies` as an array of strings, allowing the agent to provide an arbitrary amount of hobbies.
+1. включает `firstName`, `lastName`, `age` и `hobbies` как параметры, выведенные из начального значения сигнала `model`;
+2. определяет `firstName` и `lastName` как _обязательные_ поля на основе валидатора [`required`](api/forms/signals/required);
+3. определяет `hobbies` как массив строк, позволяя агенту передать произвольное число хобби.
 
-Beyond inferring the input schema, Angular also connects the WebMCP tool to the form's validation logic and submission handler. This means the agent will observe any validation errors triggered by its inputs or any failures which happen during submission, allowing it to self-correct and potentially retry.
+Помимо вывода схемы ввода, Angular также связывает инструмент WebMCP с логикой валидации формы и обработчиком отправки. Агент увидит ошибки валидации от своих входных данных или сбои при отправке и сможет скорректироваться и повторить попытку.
 
-NOTE: Async validators are _not_ triggered and should be handled by the submission action.
+NOTE: Асинхронные валидаторы _не_ запускаются и должны обрабатываться в action отправки.
 
-#### Constraints
+#### Ограничения {#constraints}
 
-Angular infers the WebMCP schema from the initial value of your form model. This requires:
+Angular выводит схему WebMCP из начального значения модели формы. Для этого нужны:
 
-- Concrete initial values (`''`, `0`, `false`): Angular cannot infer data types from `null` or `undefined`.
-- Non-empty arrays (`['Hello!']`): Angular cannot infer data types from an empty array and requires at least one initial value.
+- Конкретные начальные значения (`''`, `0`, `false`): типы данных нельзя вывести из `null` или `undefined`.
+- Непустые массивы (`['Hello!']`): тип нельзя вывести из пустого массива — нужно хотя бы одно начальное значение.
 
-## Best practices
+## Лучшие практики {#best-practices}
 
-Keep the following best practices in mind:
+Учитывайте следующие рекомендации:
 
-### Name collisions
+### Коллизии имён {#name-collisions}
 
-WebMCP requires each tool to have a unique name and will throw an error if the same tool name is registered multiple times. This means calling `declareExperimentalWebMcpTool` or `provideExperimentalWebMcpTools` in a context where they might be registered multiple times (such as a component constructor) may lead to errors at runtime.
+WebMCP требует уникального имени у каждого инструмента и выбросит ошибку, если одно и то же имя зарегистрировано несколько раз. Поэтому вызов `declareExperimentalWebMcpTool` или `provideExperimentalWebMcpTools` в контексте, где регистрация может произойти повторно (например, в конструкторе компонента), может привести к ошибкам во время выполнения.
 
-Prefer placing tools on application providers, route providers, or root services where possible. When putting tools on a component, including [implicit tools in Signal Forms](#implicit-tools-in-signal-forms), ensure that component is only ever rendered on the page at most _once_ at any given time.
+Предпочтительно размещать инструменты на провайдерах приложения, маршрута или root-сервисах. Если инструменты на компоненте, включая [неявные инструменты в Signal Forms](#implicit-tools-in-signal-forms), убедитесь, что компонент одновременно отображается на странице не более _одного_ раза.
 
-### Validate tool inputs
+### Валидация входных данных инструментов {#validate-tool-inputs}
 
-Angular does not provide any implicit validation that the inputs provided by an agent actually match the defined JSON schema. Consider explicitly validating arguments to the `execute` function before using them to ensure reliability.
+Angular не выполняет неявную проверку того, что входные данные агента действительно соответствуют определённой JSON-схеме. Явно валидируйте аргументы функции `execute` перед использованием, чтобы обеспечить надёжность.
 
-### Testing
+### Тестирование {#testing}
 
-Consider using a mock WebMCP implementation like [`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill) to effectively unit test your tools.
+Для unit-тестов инструментов рассмотрите mock-реализацию WebMCP вроде [`@mcp-b/webmcp-polyfill`](https://www.npmjs.com/package/@mcp-b/webmcp-polyfill).

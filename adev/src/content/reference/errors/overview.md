@@ -1,15 +1,15 @@
-# Error Encyclopedia
+# Энциклопедия ошибок
 
-## Runtime errors
+## Runtime-ошибки {#runtime-errors}
 
-| Code      | Name                                                                                 |
+| Код      | Имя                                                                                 |
 | :-------- | :----------------------------------------------------------------------------------- |
 | `NG0100`  | [Expression Changed After Checked](errors/NG0100)                                    |
 | `NG0200`  | [Circular Dependency in DI](errors/NG0200)                                           |
-| `NG0201`  | [No Provider Found](errors/NG0201)                                                   |
+| `NG0201`  | [Provider не найден](errors/NG0201)                                                   |
 | `NG0203`  | [`inject()` must be called from an injection context](errors/NG0203)                 |
-| `NG0204`  | [Invalid Injection Token](errors/NG0204)                                             |
-| `NG0205`  | [Injector has already been destroyed](errors/NG0205)                                 |
+| `NG0204`  | [Некорректный Injection Token](errors/NG0204)                                             |
+| `NG0205`  | [Injector уже уничтожен](errors/NG0205)                                 |
 | `NG0207`  | [EnvironmentProviders in wrong context](errors/NG0207)                               |
 | `NG0209`  | [Invalid multi provider](errors/NG0209)                                              |
 | `NG0300`  | [Selector Collision](errors/NG0300)                                                  |
@@ -29,28 +29,28 @@
 | `NG0750`  | [@defer dependencies failed to load](errors/NG0750)                                  |
 | `NG0751`  | [@defer behavior when HMR is enabled](errors/NG0751)                                 |
 | `NG0910`  | [Unsafe bindings on an iframe element](errors/NG0910)                                |
-| `NG0912`  | [Component ID generation collision](errors/NG0912)                                   |
+| `NG0912`  | [Коллизия генерации ID компонента](errors/NG0912)                                   |
 | `NG0913`  | [Runtime Performance Warnings](errors/NG0913)                                        |
-| `NG0919`  | [Circular Dependency Detected](errors/NG0919)                                        |
+| `NG0919`  | [Обнаружена циклическая зависимость](errors/NG0919)                                        |
 | `NG0950`  | [Required input is accessed before a value is set](errors/NG0950)                    |
 | `NG0951`  | [Child query result is required but no value is available](errors/NG0951)            |
-| `NG0955`  | [Track expression resulted in duplicated keys for a given collection](errors/NG0955) |
+| `NG0955`  | [Выражение track привело к дублирующимся ключам для данной коллекции](errors/NG0955) |
 | `NG0956`  | [Tracking expression caused re-creation of the DOM structure](errors/NG0956)         |
-| `NG01002` | [Missing Control Value](errors/NG01002)                                              |
+| `NG01002` | [Отсутствует значение Control](errors/NG01002)                                              |
 | `NG01101` | [Wrong Async Validator Return Type](errors/NG01101)                                  |
 | `NG01203` | [Missing value accessor](errors/NG01203)                                             |
-| `NG01902` | [Orphan field in signal forms](errors/NG01902)                                       |
+| `NG01902` | [Orphan field в signal forms](errors/NG01902)                                       |
 | `NG02200` | [Missing Iterable Differ](errors/NG02200)                                            |
 | `NG02800` | [JSONP support in HttpClient configuration](errors/NG02800)                          |
 | `NG02802` | [Headers not transferred by HttpTransferCache](errors/NG02802)                       |
-| `NG02825` | [Fetch response body exceeds the configured limit](errors/NG02825)                   |
+| `NG02825` | [Тело ответа Fetch превышает настроенный лимит](errors/NG02825)                   |
 | `NG05000` | [Hydration with unsupported Zone.js instance.](errors/NG05000)                       |
 | `NG05104` | [Root element was not found.](errors/NG05104)                                        |
-| `NG05703` | [Suspicious URL origin change during SSR](errors/NG05703)                            |
+| `NG05703` | [Подозрительное изменение origin URL во время SSR](errors/NG05703)                            |
 
-## Compiler errors
+## Ошибки компилятора {#compiler-errors}
 
-| Code     | Name                                                       |
+| Код     | Имя                                                       |
 | :------- | :--------------------------------------------------------- |
 | `NG1001` | [Argument Not Literal](errors/NG1001)                      |
 | `NG2003` | [Missing Token](errors/NG2003)                             |
@@ -60,5 +60,5 @@
 | `NG8001` | [Invalid Element](errors/NG8001)                           |
 | `NG8002` | [Invalid Attribute](errors/NG8002)                         |
 | `NG8003` | [Missing Reference Target](errors/NG8003)                  |
-| `NG8023` | [Multiple Components Match Same Element](errors/NG8023)    |
-| `NG8024` | [Conflicting Host Directive Binding](errors/NG8024)        |
+| `NG8023` | [Несколько компонентов соответствуют одному элементу](errors/NG8023)    |
+| `NG8024` | [Конфликт привязки Host Directive](errors/NG8024)        |

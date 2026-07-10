@@ -1,31 +1,31 @@
-# Congratulations!
+# Поздравляем!
 
-You've completed the Signal Forms tutorial and built a complete login form from scratch!
+Вы завершили туториал Signal Forms и создали полноценную форму входа с нуля!
 
-## What you learned
+## Чему вы научились {#what-you-learned}
 
-Throughout this tutorial, you learned the fundamentals of Angular Signal Forms:
+В этом туториале вы освоили основы Angular Signal Forms:
 
-1. **Form Models** - Creating type-safe form data with signals and the `form()` function
-2. **Field Binding** - Using the `[formField]` directive for two-way data binding and displaying the field with `value()`
-3. **Validation** - Applying built-in validators (such as `required()`, `email()`) with custom messages
-4. **Error Display** - Showing validation errors conditionally based on field state
-5. **Form Submission** - Handling form submission with the `submit()` function
+1. **Модели форм** — создание типобезопасных данных формы с сигналами и функцией `form()`
+2. **Привязка полей** — использование директивы `[formField]` для двусторонней привязки и отображение поля через `value()`
+3. **Валидация** — применение встроенных валидаторов (например, `required()`, `email()`) с пользовательскими сообщениями
+4. **Отображение ошибок** — показ ошибок валидации по состоянию поля
+5. **Отправка формы** — обработка отправки с функцией `submit()`
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-Ready to learn more? Here are recommended next steps:
+Готовы узнать больше? Рекомендуемые следующие шаги:
 
-### Explore the documentation
+### Изучите документацию {#explore-the-documentation}
 
-- **[Signal Forms Overview](guide/forms/signals/overview)** - Introduction to Signal Forms and when to use them
-- **[Form Models Guide](guide/forms/signals/models)** - Deep dive into form models and data management
-- **[Validation Guide](guide/forms/signals/validation)** - Comprehensive validation reference
-- **[Field State Management Guide](guide/forms/signals/field-state-management)** - Advanced state patterns
-- **[Custom Controls Guide](guide/forms/signals/custom-controls)** - Building reusable form components
+- **[Обзор Signal Forms](guide/forms/signals/overview)** — введение в Signal Forms и когда их использовать
+- **[Руководство по моделям форм](guide/forms/signals/models)** — углублённый разбор моделей форм и управления данными
+- **[Руководство по валидации](guide/forms/signals/validation)** — полный справочник по валидации
+- **[Руководство по управлению состоянием полей](guide/forms/signals/field-state-management)** — продвинутые паттерны состояния
+- **[Руководство по пользовательским контролам](guide/forms/signals/custom-controls)** — создание переиспользуемых компонентов форм
 
-## Keep learning
+## Продолжайте учиться {#keep-learning}
 
-IMPORTANT: Signal Forms is experimental, so check the [official documentation](guide/forms/signals/overview) for updates to the API.
+IMPORTANT: Signal Forms экспериментальны — следите за обновлениями API в [официальной документации](guide/forms/signals/overview).
 
-Happy coding!
+Удачного кодирования!

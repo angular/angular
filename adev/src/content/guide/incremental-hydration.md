@@ -1,18 +1,18 @@
-# Incremental Hydration
+# Инкрементальная гидратация
 
-**Incremental hydration** is an advanced type of [hydration](guide/hydration) that can leave sections of your application dehydrated and _incrementally_ trigger hydration of those sections as they are needed.
+**Инкрементальная гидратация** — продвинутый тип [гидратации](guide/hydration), при котором части приложения могут оставаться дегидратированными и _постепенно_ гидратироваться по мере необходимости.
 
-## Why use incremental hydration?
+## Зачем использовать инкрементальную гидратацию? {#why-use-incremental-hydration}
 
-Incremental hydration is a performance improvement that builds on top of full application hydration. It can produce smaller initial bundles while still providing an end-user experience that is comparable to a full application hydration experience. Smaller bundles improve initial load times, reducing [First Input Delay (FID)](https://web.dev/fid) and [Cumulative Layout Shift (CLS)](https://web.dev/cls).
+Инкрементальная гидратация — улучшение производительности поверх полной гидратации приложения. Она может давать меньшие начальные бандлы при UX, сопоставимом с полной гидратацией. Меньшие бандлы ускоряют начальную загрузку, снижая [First Input Delay (FID)](https://web.dev/fid) и [Cumulative Layout Shift (CLS)](https://web.dev/cls).
 
-Incremental hydration also lets you use deferrable views (`@defer`) for content that may not have been deferrable before. Specifically, you can now use deferrable views for content that is above the fold. Prior to incremental hydration, putting a `@defer` block above the fold would result in placeholder content rendering and then being replaced by the `@defer` block's main template content. This would result in a layout shift. Incremental hydration means the main template of the `@defer` block will render with no layout shift on hydration.
+Инкрементальная гидратация также позволяет использовать откладываемые views (`@defer`) для контента, который раньше нельзя было откладывать. В частности, теперь можно использовать `@defer` для контента above the fold. До инкрементальной гидратации размещение `@defer` above the fold приводило к рендеру placeholder и последующей замене основным шаблоном блока `@defer` — это вызывало сдвиг макета. С инкрементальной гидратацией основной шаблон блока `@defer` рендерится без сдвига макета при гидратации.
 
-## How do you enable incremental hydration in Angular?
+## Как включить инкрементальную гидратацию в Angular? {#how-do-you-enable-incremental-hydration-in-angular}
 
-You can enable incremental hydration for applications that already use server-side rendering (SSR) with hydration. Follow the [Angular SSR Guide](guide/ssr) to enable server-side rendering and the [Angular Hydration Guide](guide/hydration) to enable hydration first.
+Инкрементальную гидратацию можно включить для приложений, которые уже используют SSR с гидратацией. Сначала следуйте [руководству по Angular SSR](guide/ssr) для включения серверного рендеринга и [руководству по гидратации](guide/hydration) для включения гидратации.
 
-Incremental hydration is enabled by default when you use `provideClientHydration()`.
+Инкрементальная гидратация включена по умолчанию при использовании `provideClientHydration()`.
 
 ```ts
 import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
@@ -22,9 +22,9 @@ bootstrapApplication(App, {
 });
 ```
 
-NOTE: Incremental Hydration depends on and enables [event replay](guide/hydration#capturing-and-replaying-events) automatically. If you already have `withEventReplay()` in your list, you can safely remove it.
+NOTE: Инкрементальная гидратация зависит от [повтора событий](guide/hydration#capturing-and-replaying-events) и включает его автоматически. Если у вас уже есть `withEventReplay()` в списке, его можно безопасно удалить.
 
-To opt out of incremental hydration, use `withNoIncrementalHydration()`:
+Чтобы отказаться от инкрементальной гидратации, используйте `withNoIncrementalHydration()`:
 
 ```ts
 import {
@@ -38,38 +38,38 @@ bootstrapApplication(App, {
 });
 ```
 
-## How does incremental hydration work?
+## Как работает инкрементальная гидратация? {#how-does-incremental-hydration-work}
 
-Incremental hydration builds on top of full-application [hydration](guide/hydration), [deferrable views](/guide/templates/defer), and [event replay](guide/hydration#capturing-and-replaying-events). With incremental hydration, you can add additional triggers to `@defer` blocks that define incremental hydration boundaries. Adding a `hydrate` trigger to a defer block tells Angular that it should load that defer block's dependencies during server-side rendering and render the main template rather than the `@placeholder`. When client-side rendering, the dependencies are still deferred, and the defer block content stays dehydrated until its `hydrate` trigger fires. That trigger tells the defer block to fetch its dependencies and hydrate the content. Any browser events, specifically those that match listeners registered in your component, that are triggered by the user prior to hydration are queued up and replayed once the hydration process is complete.
+Инкрементальная гидратация строится поверх полной [гидратации](guide/hydration) приложения, [откладываемых views](/guide/templates/defer) и [повтора событий](guide/hydration#capturing-and-replaying-events). С инкрементальной гидратацией к блокам `@defer` можно добавлять дополнительные триггеры, задающие границы инкрементальной гидратации. Добавление триггера `hydrate` к defer-блоку говорит Angular загрузить зависимости этого блока при SSR и отрендерить основной шаблон вместо `@placeholder`. При клиентском рендеринге зависимости по-прежнему откладываются, а контент defer-блока остаётся дегидратированным, пока не сработает триггер `hydrate`. Этот триггер заставляет defer-блок загрузить зависимости и гидратировать контент. Любые события браузера — в частности те, что соответствуют слушателям, зарегистрированным в компоненте, — вызванные пользователем до гидратации, ставятся в очередь и воспроизводятся после завершения гидратации.
 
-## Controlling hydration of content with triggers
+## Управление гидратацией контента с помощью триггеров {#controlling-hydration-of-content-with-triggers}
 
-You can specify **hydrate triggers** that control when Angular loads and hydrates deferred content. These are additional triggers that can be used alongside regular `@defer` triggers.
+Можно задать **hydrate-триггеры**, которые контролируют, когда Angular загружает и гидратирует отложенный контент. Это дополнительные триггеры наряду с обычными триггерами `@defer`.
 
-Each `@defer` block may have multiple hydrate event triggers, separated with a semicolon (`;`). Angular triggers hydration when _any_ of the triggers fire.
+У каждого блока `@defer` может быть несколько hydrate-триггеров, разделённых точкой с запятой (`;`). Angular запускает гидратацию, когда срабатывает _любой_ из триггеров.
 
-There are three types of hydrate triggers: `hydrate on`, `hydrate when`, and `hydrate never`.
+Есть три типа hydrate-триггеров: `hydrate on`, `hydrate when` и `hydrate never`.
 
-### `hydrate on`
+### `hydrate on` {#hydrate-on}
 
-`hydrate on` specifies a condition for when hydration is triggered for the `@defer` block.
+`hydrate on` задаёт условие, при котором запускается гидратация блока `@defer`.
 
-The available triggers are as follows:
+Доступные триггеры:
 
-| Trigger                                             | Description                                                            |
-| --------------------------------------------------- | ---------------------------------------------------------------------- |
-| [`hydrate on idle`](#hydrate-on-idle)               | Triggers when the browser is idle. Supports an optional timeout.       |
-| [`hydrate on viewport`](#hydrate-on-viewport)       | Triggers when specified content enters the viewport                    |
-| [`hydrate on interaction`](#hydrate-on-interaction) | Triggers when the user interacts with specified element                |
-| [`hydrate on hover`](#hydrate-on-hover)             | Triggers when the mouse hovers over specified area                     |
-| [`hydrate on immediate`](#hydrate-on-immediate)     | Triggers immediately after non-deferred content has finished rendering |
-| [`hydrate on timer`](#hydrate-on-timer)             | Triggers after a specific duration                                     |
+| Триггер                                             | Описание                                                                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`hydrate on idle`](#hydrate-on-idle)               | Срабатывает, когда браузер простаивает. Поддерживает опциональный timeout. |
+| [`hydrate on viewport`](#hydrate-on-viewport)       | Срабатывает, когда указанный контент попадает во viewport                |
+| [`hydrate on interaction`](#hydrate-on-interaction) | Срабатывает при взаимодействии пользователя с указанным элементом        |
+| [`hydrate on hover`](#hydrate-on-hover)             | Срабатывает при наведении мыши на указанную область                      |
+| [`hydrate on immediate`](#hydrate-on-immediate)     | Срабатывает сразу после рендера не-отложенного контента                  |
+| [`hydrate on timer`](#hydrate-on-timer)             | Срабатывает через заданный интервал                                      |
 
-#### `hydrate on idle`
+#### `hydrate on idle` {#hydrate-on-idle}
 
-The `hydrate on idle` trigger loads the deferrable view's dependencies and hydrates the content once the browser has reached an idle state, based on `requestIdleCallback`.
+Триггер `hydrate on idle` загружает зависимости откладываемого view и гидратирует контент, когда браузер переходит в idle-состояние на основе `requestIdleCallback`.
 
-You can optionally specify a timeout in milliseconds that is passed to [`requestIdleCallback`](https://developer.mozilla.org/docs/Web/API/Window/requestIdleCallback). If the browser doesn't schedule the callback soon enough, the work will run no later than the specified timeout.
+Опционально можно указать timeout в миллисекундах, который передаётся в [`requestIdleCallback`](https://developer.mozilla.org/docs/Web/API/Window/requestIdleCallback). Если браузер не запланирует callback достаточно быстро, работа выполнится не позже указанного timeout.
 
 ```angular-html
 @defer (hydrate on idle) {
@@ -84,9 +84,9 @@ You can optionally specify a timeout in milliseconds that is passed to [`request
 }
 ```
 
-#### `hydrate on viewport`
+#### `hydrate on viewport` {#hydrate-on-viewport}
 
-The `hydrate on viewport` trigger loads the deferrable view's dependencies and hydrates the corresponding page of the app when the specified content enters the viewport using the
+Триггер `hydrate on viewport` загружает зависимости откладываемого view и гидратирует соответствующую часть приложения, когда указанный контент попадает во viewport, используя
 [Intersection Observer API](https://developer.mozilla.org/docs/Web/API/Intersection_Observer_API).
 
 ```angular-html
@@ -97,10 +97,9 @@ The `hydrate on viewport` trigger loads the deferrable view's dependencies and h
 }
 ```
 
-#### `hydrate on interaction`
+#### `hydrate on interaction` {#hydrate-on-interaction}
 
-The `hydrate on interaction` trigger loads the deferrable view's dependencies and hydrates the content when the user interacts with the specified element through
-`click` or `keydown` events.
+Триггер `hydrate on interaction` загружает зависимости откладываемого view и гидратирует контент, когда пользователь взаимодействует с указанным элементом через события `click` или `keydown`.
 
 ```angular-html
 @defer (hydrate on interaction) {
@@ -110,10 +109,9 @@ The `hydrate on interaction` trigger loads the deferrable view's dependencies an
 }
 ```
 
-#### `hydrate on hover`
+#### `hydrate on hover` {#hydrate-on-hover}
 
-The `hydrate on hover` trigger loads the deferrable view's dependencies and hydrates the content when the mouse has hovered over the triggered area through the
-`mouseover` and `focusin` events.
+Триггер `hydrate on hover` загружает зависимости откладываемого view и гидратирует контент, когда мышь наведена на область триггера через события `mouseover` и `focusin`.
 
 ```angular-html
 @defer (hydrate on hover) {
@@ -123,10 +121,9 @@ The `hydrate on hover` trigger loads the deferrable view's dependencies and hydr
 }
 ```
 
-#### `hydrate on immediate`
+#### `hydrate on immediate` {#hydrate-on-immediate}
 
-The `hydrate on immediate` trigger loads the deferrable view's dependencies and hydrates the content immediately. This means that the deferred block loads as soon
-as all other non-deferred content has finished rendering.
+Триггер `hydrate on immediate` загружает зависимости откладываемого view и гидратирует контент немедленно. То есть отложенный блок загружается сразу после того, как весь остальной не-отложенный контент закончил рендериться.
 
 ```angular-html
 @defer (hydrate on immediate) {
@@ -136,9 +133,9 @@ as all other non-deferred content has finished rendering.
 }
 ```
 
-#### `hydrate on timer`
+#### `hydrate on timer` {#hydrate-on-timer}
 
-The `hydrate on timer` trigger loads the deferrable view's dependencies and hydrates the content after a specified duration.
+Триггер `hydrate on timer` загружает зависимости откладываемого view и гидратирует контент через заданный интервал.
 
 ```angular-html
 @defer (hydrate on timer(500ms)) {
@@ -148,12 +145,11 @@ The `hydrate on timer` trigger loads the deferrable view's dependencies and hydr
 }
 ```
 
-The duration parameter must be specified in milliseconds (`ms`) or seconds (`s`).
+Параметр длительности должен быть указан в миллисекундах (`ms`) или секундах (`s`).
 
-### `hydrate when`
+### `hydrate when` {#hydrate-when}
 
-The `hydrate when` trigger accepts a custom conditional expression and loads the deferrable view's dependencies and hydrates the content when the
-condition becomes truthy.
+Триггер `hydrate when` принимает пользовательское условное выражение и загружает зависимости откладываемого view и гидратирует контент, когда условие становится truthy.
 
 ```angular-html
 @defer (hydrate when condition) {
@@ -163,16 +159,11 @@ condition becomes truthy.
 }
 ```
 
-NOTE: `hydrate when` conditions only trigger when they are the top-most dehydrated `@defer` block. The condition provided for the trigger is
-specified in the parent component, which needs to exist before it can be triggered. If the parent block is dehydrated, that expression will not yet
-be resolvable by Angular.
+NOTE: Условия `hydrate when` срабатывают только для самого верхнего дегидратированного блока `@defer`. Условие триггера задаётся в родительском компоненте, который должен существовать до срабатывания. Если родительский блок дегидратирован, Angular ещё не сможет разрешить это выражение.
 
-### `hydrate never`
+### `hydrate never` {#hydrate-never}
 
-The `hydrate never` allows users to specify that the content in the defer block should remain dehydrated indefinitely, effectively becoming static
-content. Note that this applies to the initial render only. During a subsequent client-side render, a `@defer` block with `hydrate never` would
-still fetch dependencies, as hydration only applies to initial load of server-side rendered content. In the example below, subsequent client-side
-renders would load the `@defer` block dependencies on viewport.
+`hydrate never` позволяет указать, что контент в defer-блоке должен оставаться дегидратированным бесконечно, фактически становясь статическим контентом. Это относится только к начальному рендеру. При последующем клиентском рендере блок `@defer` с `hydrate never` всё равно загрузит зависимости, так как гидратация применяется только к начальной загрузке SSR-контента. В примере ниже при последующих клиентских рендерах зависимости блока `@defer` загрузятся по viewport.
 
 ```angular-html
 @defer (on viewport; hydrate never) {
@@ -182,11 +173,11 @@ renders would load the `@defer` block dependencies on viewport.
 }
 ```
 
-NOTE: Using `hydrate never` prevents hydration of the entire nested subtree of a given `@defer` block. No other `hydrate` triggers fire for content nested underneath that block.
+NOTE: Использование `hydrate never` предотвращает гидратацию всего вложенного поддерева данного блока `@defer`. Другие `hydrate`-триггеры для контента внутри этого блока не сработают.
 
-## Hydrate triggers alongside regular triggers
+## Hydrate-триггеры вместе с обычными триггерами {#hydrate-triggers-alongside-regular-triggers}
 
-Hydrate triggers are additional triggers that are used alongside regular triggers on a `@defer` block. Hydration is an initial load optimization, and that means hydrate triggers only apply to that initial load. Any subsequent client side render will still use the regular trigger.
+Hydrate-триггеры — дополнительные триггеры наряду с обычными триггерами блока `@defer`. Гидратация — оптимизация начальной загрузки, поэтому hydrate-триггеры применяются только к ней. Любой последующий клиентский рендер по-прежнему использует обычный триггер.
 
 ```angular-html
 @defer (on idle; hydrate on interaction) {
@@ -196,11 +187,11 @@ Hydrate triggers are additional triggers that are used alongside regular trigger
 }
 ```
 
-In this example, on the initial load, the `hydrate on interaction` applies. Hydration will be triggered on interaction with the `<example-cmp />` component. On any subsequent page load that is client-side rendered, for example when a user clicks a routerLink that loads a page with this component, the `on idle` will apply.
+В этом примере при начальной загрузке применяется `hydrate on interaction`. Гидратация запустится при взаимодействии с компонентом `<example-cmp />`. При любой последующей загрузке страницы с клиентским рендерингом — например, когда пользователь кликает по routerLink, загружающему страницу с этим компонентом, — применится `on idle`.
 
-## How does incremental hydration work with nested `@defer` blocks?
+## Как инкрементальная гидратация работает со вложенными блоками `@defer`? {#how-does-incremental-hydration-work-with-nested-defer-blocks}
 
-Angular's component and dependency system is hierarchical, which means hydrating any component requires all of its parents also be hydrated. So if hydration is triggered for a child `@defer` block of a nested set of dehydrated `@defer` blocks, hydration is triggered from the top-most dehydrated `@defer` block down to the triggered child and fire in that order.
+Система компонентов и зависимостей Angular иерархична: для гидратации любого компонента нужно гидратировать и всех его родителей. Поэтому если гидратация запускается для дочернего блока `@defer` во вложенном наборе дегидратированных блоков `@defer`, гидратация идёт сверху вниз — от самого верхнего дегидратированного блока `@defer` к сработавшему дочернему — в этом порядке.
 
 ```angular-html
 @defer (hydrate on interaction) {
@@ -215,12 +206,12 @@ Angular's component and dependency system is hierarchical, which means hydrating
 }
 ```
 
-In the above example, hovering over the nested `@defer` block triggers hydration. The parent `@defer` block with the `<parent-block-cmp />` hydrates first, then the child `@defer` block with `<child-block-cmp />` hydrates after.
+В примере выше наведение на вложенный блок `@defer` запускает гидратацию. Сначала гидратируется родительский блок `@defer` с `<parent-block-cmp />`, затем — дочерний блок `@defer` с `<child-block-cmp />`.
 
-## Constraints
+## Ограничения {#constraints}
 
-Incremental hydration has the same constraints as full-application hydration, including limits on direct DOM manipulation and requiring valid HTML structure. Visit the [Hydration guide constraints](guide/hydration#constraints) section for more details.
+У инкрементальной гидратации те же ограничения, что и у полной гидратации приложения, включая ограничения на прямую манипуляцию DOM и требование валидной HTML-структуры. Подробнее — в разделе [Ограничения руководства по гидратации](guide/hydration#constraints).
 
-## Do I still need to specify `@placeholder` blocks?
+## Нужно ли по-прежнему указывать блоки `@placeholder`? {#do-i-still-need-to-specify-placeholder-blocks}
 
-Yes. `@placeholder` block content is not used for incremental hydration, but a `@placeholder` is still necessary for subsequent client-side rendering cases. If your content was not on the route that was part of the initial load, then any navigation to the route that has your `@defer` block content renders like a regular `@defer` block. So the `@placeholder` is rendered in those client-side rendering cases.
+Да. Контент блока `@placeholder` не используется для инкрементальной гидратации, но `@placeholder` всё равно нужен для последующих случаев клиентского рендеринга. Если контент не был на маршруте начальной загрузки, любая навигация к маршруту с вашим блоком `@defer` отрендерит его как обычный блок `@defer`. Поэтому в таких случаях клиентского рендеринга рендерится `@placeholder`.

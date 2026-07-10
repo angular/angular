@@ -89,7 +89,7 @@ ng serve
 
 <div class="alert is-helpful">
 
-**ПРИМЕЧАНИЕ**: <br />
+NOTE: <br />
 Имена опций в файле конфигурации должны использовать [camelCase](guide/glossary#case-types), в то время как имена опций,
 передаваемые командам, должны быть в dash-case.
 

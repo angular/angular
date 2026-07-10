@@ -1,36 +1,36 @@
-# Introduction to Angular animations
+# Введение в анимации Angular
 
-IMPORTANT: The `@angular/animations` package is now deprecated. The Angular team recommends using native CSS with `animate.enter` and `animate.leave` for animations for all new code. Learn more at the new enter and leave [animation guide](guide/animations). Also see [Migrating away from Angular's Animations package](guide/animations/migration) to learn how you can start migrating to pure CSS animations in your apps.
+IMPORTANT: Пакет `@angular/animations` теперь устарел. Команда Angular рекомендует использовать нативный CSS с `animate.enter` и `animate.leave` для анимаций во всём новом коде. Подробнее в новом руководстве по enter и leave [анимациям](guide/animations). Также см. [Migrating away from Angular's Animations package](guide/animations/migration), чтобы узнать, как начать миграцию на чистые CSS-анимации в приложениях.
 
-Animation provides the illusion of motion: HTML elements change styles over time.
-Well-designed animations can make your application more intuitive and engaging, but they aren't just cosmetic.
-Animations can improve your application and the user experience in a number of ways:
+Анимация создаёт иллюзию движения: HTML-элементы меняют стили со временем.
+Хорошо спроектированные анимации могут сделать приложение более интуитивным и engaging, но они не только косметика.
+Анимации могут улучшить приложение и пользовательский опыт несколькими способами:
 
-- Without animations, web page transitions can seem abrupt and jarring
-- Motion greatly enhances the user experience, so animations give users a chance to detect the application's response to their actions
-- Good animations intuitively call the user's attention to where it is needed
+- Без анимаций переходы веб-страниц могут казаться резкими и jarring
+- Движение сильно улучшает пользовательский опыт, поэтому анимации дают пользователям шанс заметить реакцию приложения на их действия
+- Хорошие анимации интуитивно привлекают внимание пользователя туда, где оно нужно
 
-Typically, animations involve multiple style _transformations_ over time.
-An HTML element can move, change color, grow or shrink, fade, or slide off the page.
-These changes can occur simultaneously or sequentially. You can control the timing of each transformation.
+Обычно анимации включают несколько _преобразований_ стилей со временем.
+HTML-элемент может перемещаться, менять цвет, расти или уменьшаться, затухать или ускользать со страницы.
+Эти изменения могут происходить одновременно или последовательно. Можно контролировать timing каждого преобразования.
 
-Angular's animation system is built on CSS functionality, which means you can animate any property that the browser considers animatable.
-This includes positions, sizes, transforms, colors, borders, and more.
-The W3C maintains a list of animatable properties on its [CSS Transitions](https://www.w3.org/TR/css-transitions-1) page.
+Система анимаций Angular построена на функциональности CSS, что означает, что можно анимировать любое свойство, которое браузер считает animatable.
+Это включает позиции, размеры, transforms, цвета, borders и многое другое.
+W3C поддерживает список animatable-свойств на странице [CSS Transitions](https://www.w3.org/TR/css-transitions-1).
 
-## About this guide
+## Об этом руководстве {#about-this-guide}
 
-This guide covers the basic Angular animation features to get you started on adding Angular animations to your project.
+Это руководство охватывает базовые возможности анимаций Angular, чтобы помочь начать добавлять анимации Angular в проект.
 
-## Getting started
+## Начало работы {#getting-started}
 
-The main Angular modules for animations are `@angular/animations` and `@angular/platform-browser`.
+Основные модули Angular для анимаций — `@angular/animations` и `@angular/platform-browser`.
 
-To get started with adding Angular animations to your project, import the animation-specific modules along with standard Angular functionality.
+Чтобы начать добавлять анимации Angular в проект, импортируйте animation-специфичные модули вместе со стандартной функциональностью Angular.
 
 <docs-workflow>
 <docs-step title="Enabling the animations module">
-Import `provideAnimationsAsync` from `@angular/platform-browser/animations/async` and add it to the providers list in the `bootstrapApplication` function call.
+Импортируйте `provideAnimationsAsync` из `@angular/platform-browser/animations/async` и добавьте его в список providers в вызове функции `bootstrapApplication`.
 
 ```ts {header: "Enabling Animations", linenums}
 bootstrapApplication(AppComponent, {
@@ -39,207 +39,207 @@ bootstrapApplication(AppComponent, {
 ```
 
 <docs-callout important title="If you need immediate animations in your application">
-  If you need to have an animation happen immediately when your application is loaded,
-  you will want to switch to the eagerly loaded animations module. Import `provideAnimations`
-  from `@angular/platform-browser/animations` instead, and use `provideAnimations` **in place of**
-  `provideAnimationsAsync` in the `bootstrapApplication` function call.
+  Если нужно, чтобы анимация произошла сразу при загрузке приложения,
+  переключитесь на eagerly loaded модуль анимаций. Импортируйте `provideAnimations`
+  из `@angular/platform-browser/animations` вместо этого и используйте `provideAnimations` **вместо**
+  `provideAnimationsAsync` в вызове функции `bootstrapApplication`.
 </docs-callout>
 
-For `NgModule` based applications import `BrowserAnimationsModule`, which introduces the animation capabilities into your Angular root application module.
+Для приложений на основе `NgModule` импортируйте `BrowserAnimationsModule`, который вводит возможности анимации в корневой модуль приложения Angular.
 
 <docs-code header="app.module.ts" path="adev/src/content/examples/animations/src/app/app.module.1.ts"/>
 </docs-step>
 <docs-step title="Importing animation functions into component files">
-If you plan to use specific animation functions in component files, import those functions from `@angular/animations`.
+Если планируете использовать конкретные функции анимации в файлах компонентов, импортируйте эти функции из `@angular/animations`.
 
 <docs-code header="app.ts" path="adev/src/content/examples/animations/src/app/app.ts" region="imports"/>
 
-See all [available animation functions](guide/legacy-animations#animations-api-summary) at the end of this guide.
+См. все [доступные функции анимации](guide/legacy-animations#animations-api-summary) в конце этого руководства.
 
 </docs-step>
 <docs-step title="Adding the animation metadata property">
-In the component file, add a metadata property called `animations:` within the `@Component()` decorator.
-You put the trigger that defines an animation within the `animations` metadata property.
+В файле компонента добавьте свойство метаданных `animations:` внутри декоратора `@Component()`.
+Trigger, определяющий анимацию, помещается в свойство метаданных `animations`.
 
 <docs-code header="app.ts" path="adev/src/content/examples/animations/src/app/app.ts" region="decorator"/>
 </docs-step>
 </docs-workflow>
 
-## Animating a transition
+## Анимация перехода {#animating-a-transition}
 
-Let's animate a transition that changes a single HTML element from one state to another.
-For example, you can specify that a button displays either **Open** or **Closed** based on the user's last action.
-When the button is in the `open` state, it's visible and yellow.
-When it's in the `closed` state, it's translucent and blue.
+Давайте анимируем переход, который меняет один HTML-элемент из одного состояния в другое.
+Например, можно указать, что кнопка отображает либо **Open**, либо **Closed** на основе последнего действия пользователя.
+Когда кнопка в состоянии `open`, она видима и жёлтая.
+Когда в состоянии `closed`, она полупрозрачная и синяя.
 
-In HTML, these attributes are set using ordinary CSS styles such as color and opacity.
-In Angular, use the `style()` function to specify a set of CSS styles for use with animations.
-Collect a set of styles in an animation state, and give the state a name, such as `open` or `closed`.
+В HTML эти атрибуты задаются обычными CSS-стилями, такими как color и opacity.
+В Angular используйте функцию `style()`, чтобы указать набор CSS-стилей для использования с анимациями.
+Соберите набор стилей в состоянии анимации и дайте состоянию имя, например `open` или `closed`.
 
-HELPFUL: Let's create a new `open-close` component to animate with simple transitions.
+HELPFUL: Создадим новый компонент `open-close` для анимации с простыми переходами.
 
-Run the following command in terminal to generate the component:
+Выполните следующую команду в терминале для генерации компонента:
 
 ```shell
 ng g component open-close
 ```
 
-This will create the component at `src/app/open-close.ts`.
+Это создаст компонент в `src/app/open-close.ts`.
 
-### Animation state and styles
+### Состояние анимации и стили {#animation-state-and-styles}
 
-Use Angular's [`state()`](api/animations/state) function to define different states to call at the end of each transition.
-This function takes two arguments:
-A unique name like `open` or `closed` and a `style()` function.
+Используйте функцию Angular [`state()`](api/animations/state), чтобы определить разные состояния для вызова в конце каждого перехода.
+Эта функция принимает два аргумента:
+Уникальное имя вроде `open` или `closed` и функцию `style()`.
 
-Use the `style()` function to define a set of styles to associate with a given state name.
-You must use _camelCase_ for style attributes that contain dashes, such as `backgroundColor` or wrap them in quotes, such as `'background-color'`.
+Используйте функцию `style()`, чтобы определить набор стилей, ассоциированных с данным именем состояния.
+Нужно использовать _camelCase_ для атрибутов стиля, содержащих дефисы, например `backgroundColor`, или обернуть их в кавычки, например `'background-color'`.
 
-Let's see how Angular's [`state()`](api/animations/state) function works with the `style⁣­(⁠)` function to set CSS style attributes.
-In this code snippet, multiple style attributes are set at the same time for the state.
-In the `open` state, the button has a height of 200 pixels, an opacity of 1, and a yellow background color.
+Посмотрим, как функция Angular [`state()`](api/animations/state) работает с функцией `style⁣­(⁠)` для установки CSS-атрибутов стиля.
+В этом фрагменте кода несколько атрибутов стиля задаются одновременно для состояния.
+В состоянии `open` у кнопки высота 200 пикселей, opacity 1 и жёлтый цвет фона.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="state1"/>
 
-In the following `closed` state, the button has a height of 100 pixels, an opacity of 0.8, and a background color of blue.
+В следующем состоянии `closed` у кнопки высота 100 пикселей, opacity 0.8 и синий цвет фона.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="state2"/>
 
-### Transitions and timing
+### Transitions и timing {#transitions-and-timing}
 
-In Angular, you can set multiple styles without any animation.
-However, without further refinement, the button instantly transforms with no fade, no shrinkage, or other visible indicator that a change is occurring.
+В Angular можно задать несколько стилей без какой-либо анимации.
+Однако без дальнейшей доработки кнопка мгновенно преобразуется без fade, без уменьшения или другого видимого индикатора, что происходит изменение.
 
-To make the change less abrupt, you need to define an animation _transition_ to specify the changes that occur between one state and another over a period of time.
-The `transition()` function accepts two arguments:
-The first argument accepts an expression that defines the direction between two transition states, and the second argument accepts one or a series of `animate()` steps.
+Чтобы сделать изменение менее резким, нужно определить _transition_ анимации, чтобы указать изменения, происходящие между одним состоянием и другим за период времени.
+Функция `transition()` принимает два аргумента:
+Первый аргумент принимает выражение, определяющее направление между двумя состояниями перехода, а второй принимает один или серию шагов `animate()`.
 
-Use the `animate()` function to define the length, delay, and easing of a transition, and to designate the style function for defining styles while transitions are taking place.
-Use the `animate()` function to define the `keyframes()` function for multi-step animations.
-These definitions are placed in the second argument of the `animate()` function.
+Используйте функцию `animate()`, чтобы определить length, delay и easing перехода, и чтобы назначить функцию style для определения стилей во время переходов.
+Используйте функцию `animate()`, чтобы определить функцию `keyframes()` для многошаговых анимаций.
+Эти определения помещаются во второй аргумент функции `animate()`.
 
-#### Animation metadata: duration, delay, and easing
+#### Метаданные анимации: duration, delay и easing {#animation-metadata-duration-delay-and-easing}
 
-The `animate()` function \(second argument of the transition function\) accepts the `timings` and `styles` input parameters.
+Функция `animate()` \(второй аргумент функции transition\) принимает входные параметры `timings` и `styles`.
 
-The `timings` parameter takes either a number or a string defined in three parts.
+Параметр `timings` принимает либо число, либо строку, определённую в трёх частях.
 
 ```ts
 animate(duration);
 ```
 
-or
+или
 
 ```ts
 animate('duration delay easing');
 ```
 
-The first part, `duration`, is required.
-The duration can be expressed in milliseconds as a number without quotes, or in seconds with quotes and a time specifier.
-For example, a duration of a tenth of a second can be expressed as follows:
+Первая часть, `duration`, обязательна.
+Duration можно выразить в миллисекундах как число без кавычек или в секундах с кавычками и спецификатором времени.
+Например, duration в одну десятую секунды можно выразить так:
 
-- As a plain number, in milliseconds:
+- Как обычное число, в миллисекундах:
   `100`
 
-- In a string, as milliseconds:
+- В строке, как миллисекунды:
   `'100ms'`
 
-- In a string, as seconds:
+- В строке, как секунды:
   `'0.1s'`
 
-The second argument, `delay`, has the same syntax as `duration`.
-For example:
+Второй аргумент, `delay`, имеет тот же синтаксис, что и `duration`.
+Например:
 
-- Wait for 100ms and then run for 200ms: `'0.2s 100ms'`
+- Подождать 100ms, затем выполнить 200ms: `'0.2s 100ms'`
 
-The third argument, `easing`, controls how the animation [accelerates and decelerates](https://easings.net) during its runtime.
-For example, `ease-in` causes the animation to begin slowly, and to pick up speed as it progresses.
+Третий аргумент, `easing`, контролирует, как анимация [ускоряется и замедляется](https://easings.net) во время выполнения.
+Например, `ease-in` заставляет анимацию начинаться медленно и набирать скорость по мере прогресса.
 
-- Wait for 100ms, run for 200ms.
-  Use a deceleration curve to start out fast and slowly decelerate to a resting point:
+- Подождать 100ms, выполнить 200ms.
+  Использовать кривую deceleration, чтобы начать быстро и медленно замедлиться до точки покоя:
   `'0.2s 100ms ease-out'`
 
-- Run for 200ms, with no delay.
-  Use a standard curve to start slow, accelerate in the middle, and then decelerate slowly at the end:
+- Выполнить 200ms без delay.
+  Использовать стандартную кривую, чтобы начать медленно, ускориться в середине, затем медленно замедлиться в конце:
   `'0.2s ease-in-out'`
 
-- Start immediately, run for 200ms.
-  Use an acceleration curve to start slow and end at full velocity:
+- Начать сразу, выполнить 200ms.
+  Использовать кривую acceleration, чтобы начать медленно и закончить на полной скорости:
   `'0.2s ease-in'`
 
-HELPFUL: See the Material Design website's topic on [Natural easing curves](https://material.io/design/motion/speed.html#easing) for general information on easing curves.
+HELPFUL: См. тему сайта Material Design о [Natural easing curves](https://material.io/design/motion/speed.html#easing) для общей информации о кривых easing.
 
-This example provides a state transition from `open` to `closed` with a 1-second transition between states.
+Этот пример предоставляет переход состояния из `open` в `closed` с 1-секундным переходом между состояниями.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="transition1"/>
 
-In the preceding code snippet, the `=>` operator indicates unidirectional transitions, and `<=>` is bidirectional.
-Within the transition, `animate()` specifies how long the transition takes.
-In this case, the state change from `open` to `closed` takes 1 second, expressed here as `1s`.
+В предыдущем фрагменте кода оператор `=>` указывает однонаправленные переходы, а `<=>` — двунаправленные.
+Внутри перехода `animate()` указывает, сколько времени занимает переход.
+В этом случае изменение состояния из `open` в `closed` занимает 1 секунду, выраженную здесь как `1s`.
 
-This example adds a state transition from the `closed` state to the `open` state with a 0.5-second transition animation arc.
+Этот пример добавляет переход состояния из `closed` в `open` с 0.5-секундной дугой анимации перехода.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="transition2"/>
 
-HELPFUL: Some additional notes on using styles within [`state`](api/animations/state) and `transition` functions.
+HELPFUL: Некоторые дополнительные заметки об использовании стилей внутри функций [`state`](api/animations/state) и `transition`.
 
-- Use [`state()`](api/animations/state) to define styles that are applied at the end of each transition, they persist after the animation completes
-- Use `transition()` to define intermediate styles, which create the illusion of motion during the animation
-- When animations are disabled, `transition()` styles can be skipped, but [`state()`](api/animations/state) styles can't
-- Include multiple state pairs within the same `transition()` argument:
+- Используйте [`state()`](api/animations/state) для определения стилей, применяемых в конце каждого перехода — они сохраняются после завершения анимации
+- Используйте `transition()` для определения промежуточных стилей, которые создают иллюзию движения во время анимации
+- Когда анимации отключены, стили `transition()` можно пропустить, но стили [`state()`](api/animations/state) — нельзя
+- Включайте несколько пар состояний в один аргумент `transition()`:
 
   ```ts
   transition('on => off, off => void');
   ```
 
-### Triggering the animation
+### Запуск анимации {#triggering-the-animation}
 
-An animation requires a _trigger_, so that it knows when to start.
-The `trigger()` function collects the states and transitions, and gives the animation a name, so that you can attach it to the triggering element in the HTML template.
+Анимации нужен _trigger_, чтобы знать, когда начинать.
+Функция `trigger()` собирает состояния и переходы и даёт анимации имя, чтобы можно было прикрепить её к triggering-элементу в HTML-шаблоне.
 
-The `trigger()` function describes the property name to watch for changes.
-When a change occurs, the trigger initiates the actions included in its definition.
-These actions can be transitions or other functions, as we'll see later on.
+Функция `trigger()` описывает имя свойства для отслеживания изменений.
+Когда происходит изменение, trigger инициирует действия, включённые в его определение.
+Эти действия могут быть переходами или другими функциями, как увидим позже.
 
-In this example, we'll name the trigger `openClose`, and attach it to the `button` element.
-The trigger describes the open and closed states, and the timings for the two transitions.
+В этом примере назовём trigger `openClose` и прикрепим его к элементу `button`.
+Trigger описывает состояния open и closed и timings для двух переходов.
 
-HELPFUL: Within each `trigger()` function call, an element can only be in one state at any given time.
-However, it's possible for multiple triggers to be active at once.
+HELPFUL: Внутри каждого вызова функции `trigger()` элемент может быть только в одном состоянии в любой момент времени.
+Однако возможно, что несколько triggers активны одновременно.
 
-### Defining animations and attaching them to the HTML template
+### Определение анимаций и прикрепление их к HTML-шаблону {#defining-animations-and-attaching-them-to-the-html-template}
 
-Animations are defined in the metadata of the component that controls the HTML element to be animated.
-Put the code that defines your animations under the `animations:` property within the `@Component()` decorator.
+Анимации определяются в метаданных компонента, который контролирует HTML-элемент для анимации.
+Поместите код, определяющий анимации, в свойство `animations:` внутри декоратора `@Component()`.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="component"/>
 
-When you've defined an animation trigger for a component, attach it to an element in that component's template by wrapping the trigger name in brackets and preceding it with an `@` symbol.
-Then, you can bind the trigger to a template expression using standard Angular property binding syntax as shown below, where `triggerName` is the name of the trigger, and `expression` evaluates to a defined animation state.
+Когда определён animation trigger для компонента, прикрепите его к элементу в шаблоне этого компонента, обернув имя trigger в скобки и предварив символом `@`.
+Затем можно привязать trigger к выражению шаблона, используя стандартный синтаксис property binding Angular, как показано ниже, где `triggerName` — имя trigger, а `expression` вычисляется в определённое состояние анимации.
 
 ```angular-html
 <div [@triggerName]="expression">…</div>
 ```
 
-The animation is executed or triggered when the expression value changes to a new state.
+Анимация выполняется или запускается, когда значение выражения меняется на новое состояние.
 
-The following code snippet binds the trigger to the value of the `isOpen` property.
+Следующий фрагмент кода привязывает trigger к значению свойства `isOpen`.
 
 <docs-code header="open-close.html" path="adev/src/content/examples/animations/src/app/open-close.1.html" region="trigger"/>
 
-In this example, when the `isOpen` expression evaluates to a defined state of `open` or `closed`, it notifies the trigger `openClose` of a state change.
-Then it's up to the `openClose` code to handle the state change and kick off a state change animation.
+В этом примере, когда выражение `isOpen` вычисляется в определённое состояние `open` или `closed`, оно уведомляет trigger `openClose` об изменении состояния.
+Затем код `openClose` обрабатывает изменение состояния и запускает анимацию изменения состояния.
 
-For elements entering or leaving a page \(inserted or removed from the DOM\), you can make the animations conditional.
-For example, use `*ngIf` with the animation trigger in the HTML template.
+Для элементов, входящих на страницу или покидающих её \(вставленных или удалённых из DOM\), можно сделать анимации условными.
+Например, используйте `*ngIf` с animation trigger в HTML-шаблоне.
 
-HELPFUL: In the component file, set the trigger that defines the animations as the value of the `animations:` property in the `@Component()` decorator.
+HELPFUL: В файле компонента задайте trigger, определяющий анимации, как значение свойства `animations:` в декораторе `@Component()`.
 
-In the HTML template file, use the trigger name to attach the defined animations to the HTML element to be animated.
+В файле HTML-шаблона используйте имя trigger, чтобы прикрепить определённые анимации к HTML-элементу для анимации.
 
-### Code review
+### Обзор кода {#code-review}
 
-Here are the code files discussed in the transition example.
+Вот файлы кода, обсуждавшиеся в примере перехода.
 
 <docs-code-multifile>
     <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="component"/>
@@ -247,40 +247,40 @@ Here are the code files discussed in the transition example.
     <docs-code header="open-close.css" path="adev/src/content/examples/animations/src/app/open-close.css"/>
 </docs-code-multifile>
 
-### Summary
+### Итог {#summary}
 
-You learned to add animation to a transition between two states, using `style()` and [`state()`](api/animations/state) along with `animate()` for the timing.
+Вы научились добавлять анимацию к переходу между двумя состояниями, используя `style()` и [`state()`](api/animations/state) вместе с `animate()` для timing.
 
-Learn about more advanced features in Angular animations under the Animation section, beginning with advanced techniques in [transition and triggers](guide/legacy-animations/transition-and-triggers).
+Узнайте о более продвинутых возможностях анимаций Angular в разделе Animation, начиная с продвинутых техник в [transition and triggers](guide/legacy-animations/transition-and-triggers).
 
-## Animations API summary
+## Сводка Animations API {#animations-api-summary}
 
-The functional API provided by the `@angular/animations` module provides a domain-specific language \(DSL\) for creating and controlling animations in Angular applications.
-See the [API reference](api#animations) for a complete listing and syntax details of the core functions and related data structures.
+Функциональный API, предоставляемый модулем `@angular/animations`, предоставляет domain-specific language \(DSL\) для создания и управления анимациями в приложениях Angular.
+См. [API reference](api#animations) для полного списка и деталей синтаксиса основных функций и связанных структур данных.
 
-| Function name                     | What it does                                                                                                                                                                                                |
+| Имя функции                       | Что делает                                                                                                                                                                                                  |
 | :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `trigger()`                       | Kicks off the animation and serves as a container for all other animation function calls. HTML template binds to `triggerName`. Use the first argument to declare a unique trigger name. Uses array syntax. |
-| `style()`                         | Defines one or more CSS styles to use in animations. Controls the visual appearance of HTML elements during animations. Uses object syntax.                                                                 |
-| [`state()`](api/animations/state) | Creates a named set of CSS styles that should be applied on successful transition to a given state. The state can then be referenced by name within other animation functions.                              |
-| `animate()`                       | Specifies the timing information for a transition. Optional values for `delay` and `easing`. Can contain `style()` calls within.                                                                            |
-| `transition()`                    | Defines the animation sequence between two named states. Uses array syntax.                                                                                                                                 |
-| `keyframes()`                     | Allows a sequential change between styles within a specified time interval. Use within `animate()`. Can include multiple `style()` calls within each `keyframe()`. Uses array syntax.                       |
-| [`group()`](api/animations/group) | Specifies a group of animation steps \(_inner animations_\) to be run in parallel. Animation continues only after all inner animation steps have completed. Used within `sequence()` or `transition()`.     |
-| `query()`                         | Finds one or more inner HTML elements within the current element.                                                                                                                                           |
-| `sequence()`                      | Specifies a list of animation steps that are run sequentially, one by one.                                                                                                                                  |
-| `stagger()`                       | Staggers the starting time for animations for multiple elements.                                                                                                                                            |
-| `animation()`                     | Produces a reusable animation that can be invoked from elsewhere. Used together with `useAnimation()`.                                                                                                      |
-| `useAnimation()`                  | Activates a reusable animation. Used with `animation()`.                                                                                                                                                    |
-| `animateChild()`                  | Allows animations on child components to be run within the same timeframe as the parent.                                                                                                                    |
+| `trigger()`                       | Запускает анимацию и служит контейнером для всех других вызовов функций анимации. HTML-шаблон привязывается к `triggerName`. Используйте первый аргумент для объявления уникального имени trigger. Использует синтаксис массива. |
+| `style()`                         | Определяет один или несколько CSS-стилей для использования в анимациях. Контролирует визуальный вид HTML-элементов во время анимаций. Использует синтаксис объекта.                                         |
+| [`state()`](api/animations/state) | Создаёт именованный набор CSS-стилей, которые должны применяться при успешном переходе в данное состояние. Состояние затем можно ссылать по имени в других функциях анимации.                               |
+| `animate()`                       | Указывает информацию о timing для перехода. Опциональные значения для `delay` и `easing`. Может содержать вызовы `style()` внутри.                                                                          |
+| `transition()`                    | Определяет последовательность анимации между двумя именованными состояниями. Использует синтаксис массива.                                                                                                  |
+| `keyframes()`                     | Позволяет последовательное изменение между стилями в указанном временном интервале. Используйте внутри `animate()`. Может включать несколько вызовов `style()` внутри каждого `keyframe()`. Использует синтаксис массива. |
+| [`group()`](api/animations/group) | Указывает группу шагов анимации \(_inner animations_\), выполняемых параллельно. Анимация продолжается только после завершения всех внутренних шагов анимации. Используется внутри `sequence()` или `transition()`. |
+| `query()`                         | Находит один или несколько внутренних HTML-элементов внутри текущего элемента.                                                                                                                              |
+| `sequence()`                      | Указывает список шагов анимации, выполняемых последовательно, один за другим.                                                                                                                               |
+| `stagger()`                       | Смещает время старта анимаций для нескольких элементов.                                                                                                                                                     |
+| `animation()`                     | Создаёт переиспользуемую анимацию, которую можно вызвать из другого места. Используется вместе с `useAnimation()`.                                                                                          |
+| `useAnimation()`                  | Активирует переиспользуемую анимацию. Используется с `animation()`.                                                                                                                                         |
+| `animateChild()`                  | Позволяет анимациям на дочерних компонентах выполняться в том же временном окне, что и у родителя.                                                                                                            |
 
 </table>
 
-## More on Angular animations
+## Ещё об анимациях Angular {#more-on-angular-animations}
 
-HELPFUL: Check out this [presentation](https://www.youtube.com/watch?v=rnTK9meY5us), shown at the AngularConnect conference in November 2017, and the accompanying [source code](https://github.com/matsko/animationsftw.in).
+HELPFUL: Посмотрите эту [презентацию](https://www.youtube.com/watch?v=rnTK9meY5us), показанную на конференции AngularConnect в ноябре 2017, и сопровождающий [исходный код](https://github.com/matsko/animationsftw.in).
 
-You might also be interested in the following:
+Вас также могут заинтересовать:
 
 <docs-pill-row>
   <docs-pill href="guide/legacy-animations/transition-and-triggers" title="Transition and triggers"/>

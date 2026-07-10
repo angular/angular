@@ -11,7 +11,7 @@
 
 <docs-workflow>
 
-<docs-step title="Создание файла app.routes.ts">
+<docs-step title="Create an app.routes.ts file">
 
 Внутри `app.routes.ts` внесите следующие изменения:
 
@@ -26,7 +26,7 @@ export const routes: Routes = [];
 
 </docs-step>
 
-<docs-step title="Добавление маршрутизации в провайдер">
+<docs-step title="Add routing to provider">
 
 В `app.config.ts` настройте приложение для Angular Router, выполнив следующие шаги:
 
@@ -46,7 +46,7 @@ providers: [provideRouter(routes)],
 
 </docs-step>
 
-<docs-step title="Импорт `RouterOutlet` в компонент">
+<docs-step title="Import `RouterOutlet` in the component">
 
 Наконец, чтобы убедиться, что ваше приложение готово к использованию Angular Router, нужно сообщить приложению, где
 роутер должен отображать желаемый контент. Сделайте это с помощью директивы `RouterOutlet` из `@angular/router`.

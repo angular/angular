@@ -185,7 +185,7 @@ Language Service и tsserver. Это связано с тем, что COC пор
    }
    ```
 
-ПОЛЕЗНО: `/usr/local/lib/node_modules/typescript/lib` и `/usr/local/lib/node_modules/@angular/language-server/bin` выше
+HELPFUL: `/usr/local/lib/node_modules/typescript/lib` и `/usr/local/lib/node_modules/@angular/language-server/bin` выше
 должны указывать на расположение ваших глобальных модулей node, которое может отличаться.
 
 #### Встроенный LSP в Neovim

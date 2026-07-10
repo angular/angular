@@ -1,8 +1,8 @@
-# Render templates from a parent component with `ng-content`
+# Рендер шаблонов из родительского компонента с `ng-content`
 
-`<ng-content>` is a special element that accepts markup or a template fragment and controls how components render content. It does not render a real DOM element.
+`<ng-content>` — специальный элемент, который принимает разметку или фрагмент шаблона и управляет тем, как компоненты рендерят контент. Он не создаёт реальный DOM-элемент.
 
-Here is an example of a `BaseButton` component that accepts any markup from its parent.
+Ниже пример компонента `BaseButton`, который принимает любую разметку от родителя.
 
 ```angular-ts {header:'base-button/base-button.ts'}
 import {Component} from '@angular/core';
@@ -26,4 +26,4 @@ import {BaseButton} from './base-button';
 export class App {}
 ```
 
-For more detail, check out the [`<ng-content>` in-depth guide](/guide/components/content-projection) for other ways you can leverage this pattern.
+Подробнее см. [подробное руководство по `<ng-content>`](/guide/components/content-projection) — там описаны и другие способы использования этого паттерна.

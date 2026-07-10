@@ -1,28 +1,28 @@
-# Creating harnesses for your components
+# Создание harnesses для ваших компонентов
 
-## Before you start
+## Перед началом {#before-you-start}
 
-TIP: This guide assumes you've already read the [component harnesses overview guide](guide/testing/component-harnesses-overview). Read that first if you're new to using component harnesses.
+TIP: Это руководство предполагает, что вы уже прочитали [обзорное руководство по component harnesses](guide/testing/component-harnesses-overview). Прочитайте его сначала, если вы новичок в использовании component harnesses.
 
-### When does creating a test harness make sense?
+### Когда имеет смысл создавать test harness? {#when-does-creating-a-test-harness-make-sense}
 
-The Angular team recommends creating component test harnesses for shared components that are used in many places and have some user interactivity. This most commonly applies to widget libraries and similar reusable components. Harnesses are valuable for these cases because they provide the consumers of these shared components a well- supported API for interacting with a component. Tests that use harnesses can avoid depending on unreliable implementation details of these shared components, such as DOM structure and specific event listeners.
+Команда Angular рекомендует создавать component test harnesses для shared-компонентов, которые используются во многих местах и имеют некоторую пользовательскую интерактивность. Чаще всего это относится к библиотекам виджетов и похожим переиспользуемым компонентам. Harnesses ценны в этих случаях, потому что они предоставляют потребителям этих shared-компонентов хорошо поддерживаемый API для взаимодействия с компонентом. Тесты, использующие harnesses, могут избежать зависимости от ненадёжных деталей реализации этих shared-компонентов, таких как структура DOM и конкретные event listeners.
 
-For components that appear in only one place, such as a page in an application, harnesses don't provide as much benefit. In these situations, a component's tests can reasonably depend on the implementation details of this component, as the tests and components are updated at the same time. However, harnesses still provide some value if you would use the harness in both unit and end-to-end tests.
+Для компонентов, которые появляются только в одном месте, например страницы в приложении, harnesses не дают столько пользы. В этих ситуациях тесты компонента могут разумно зависеть от деталей реализации этого компонента, поскольку тесты и компоненты обновляются одновременно. Однако harnesses всё ещё дают некоторую ценность, если вы будете использовать harness и в unit-, и в end-to-end тестах.
 
-### CDK Installation
+### Установка CDK {#cdk-installation}
 
-The [Component Dev Kit (CDK)](https://material.angular.dev/cdk/categories) is a set of behavior primitives for building components. To use the component harnesses, first install `@angular/cdk` from npm. You can do this from your terminal using the Angular CLI:
+[Component Dev Kit (CDK)](https://material.angular.dev/cdk/categories) — это набор примитивов поведения для построения компонентов. Чтобы использовать component harnesses, сначала установите `@angular/cdk` из npm. Это можно сделать из терминала с помощью Angular CLI:
 
 ```shell
 ng add @angular/cdk
 ```
 
-## Extending `ComponentHarness`
+## Расширение `ComponentHarness` {#extending-componentharness}
 
-The abstract `ComponentHarness` class is the base class for all component harnesses. To create a custom component harness, extend `ComponentHarness` and implement the static property `hostSelector`.
+Абстрактный класс `ComponentHarness` — базовый класс для всех component harnesses. Чтобы создать пользовательский component harness, расширьте `ComponentHarness` и реализуйте статическое свойство `hostSelector`.
 
-The `hostSelector` property identifies elements in the DOM that match this harness subclass. In most cases, the `hostSelector` should be the same as the selector of the corresponding `Component` or `Directive`. For example, consider a simple popup component:
+Свойство `hostSelector` идентифицирует элементы в DOM, которые соответствуют этому подклассу harness. В большинстве случаев `hostSelector` должен совпадать с селектором соответствующего `Component` или `Directive`. Например, рассмотрим простой popup-компонент:
 
 ```ts
 @Component({
@@ -45,7 +45,7 @@ class MyPopup {
 }
 ```
 
-In this case, a minimal harness for the component would look like the following:
+В этом случае минимальный harness для компонента выглядел бы так:
 
 ```ts
 class MyPopupHarness extends ComponentHarness {
@@ -53,17 +53,17 @@ class MyPopupHarness extends ComponentHarness {
 }
 ```
 
-While `ComponentHarness` subclasses require only the `hostSelector` property, most harnesses should also implement a static `with` method to generate `HarnessPredicate` instances. The [filtering harnesses section](guide/testing/using-component-harnesses#filtering-harnesses) covers this in more detail.
+Хотя подклассам `ComponentHarness` требуется только свойство `hostSelector`, большинство harnesses также должны реализовывать статический метод `with` для генерации экземпляров `HarnessPredicate`. Раздел [фильтрация harnesses](guide/testing/using-component-harnesses#filtering-harnesses) охватывает это подробнее.
 
-## Finding elements in the component's DOM
+## Поиск элементов в DOM компонента {#finding-elements-in-the-components-dom}
 
-Each instance of a `ComponentHarness` subclass represents a particular instance of the corresponding component. You can access the component's host element via the `host() `method from the `ComponentHarness` base class.
+Каждый экземпляр подкласса `ComponentHarness` представляет конкретный экземпляр соответствующего компонента. Вы можете получить доступ к host-элементу компонента через метод `host()` базового класса `ComponentHarness`.
 
-`ComponentHarness` also offers several methods for locating elements within the component's DOM. These methods are `locatorFor()`, `locatorForOptional()`, and `locatorForAll()`. These methods create functions that find elements, they do not directly find elements. This approach safeguards against caching references to out-of-date elements. For example, when an `@if` block hides and then shows an element, the result is a new DOM element; using functions ensures that tests always reference the current state of the DOM.
+`ComponentHarness` также предлагает несколько методов для поиска элементов внутри DOM компонента. Эти методы — `locatorFor()`, `locatorForOptional()` и `locatorForAll()`. Эти методы создают функции, которые находят элементы; они не находят элементы напрямую. Такой подход защищает от кэширования ссылок на устаревшие элементы. Например, когда блок `@if` скрывает, а затем показывает элемент, результатом является новый DOM-элемент; использование функций гарантирует, что тесты всегда ссылаются на текущее состояние DOM.
 
-See the [ComponentHarness API reference page](/api/cdk/testing/ComponentHarness) for the full list details of the different `locatorFor` methods.
+См. [страницу API reference ComponentHarness](/api/cdk/testing/ComponentHarness) для полного списка деталей различных методов `locatorFor`.
 
-For example, the `MyPopupHarness` example discussed above could provide methods to get the trigger and content elements as follows:
+Например, `MyPopupHarness` из примера выше мог бы предоставить методы для получения элементов trigger и content следующим образом:
 
 ```ts
 class MyPopupHarness extends ComponentHarness {
@@ -77,15 +77,15 @@ class MyPopupHarness extends ComponentHarness {
 }
 ```
 
-## Working with `TestElement` instances
+## Работа с экземплярами `TestElement` {#working-with-testelement-instances}
 
-`TestElement` is an abstraction designed to work across different test environments (Unit tests, WebDriver, etc). When using harnesses, you should perform all DOM interaction via this interface. Other means of accessing DOM elements, such as `document.querySelector()`, do not work in all test environments.
+`TestElement` — это абстракция, разработанная для работы в разных тестовых окружениях (unit-тесты, WebDriver и т.д.). При использовании harnesses все взаимодействие с DOM следует выполнять через этот интерфейс. Другие способы доступа к DOM-элементам, такие как `document.querySelector()`, работают не во всех тестовых окружениях.
 
-`TestElement` has a number of methods to interact with the underlying DOM, such as `blur()`, `click()`, `getAttribute()`, and more. See the [TestElement API reference page](/api/cdk/testing/TestElement) for the full list of methods.
+У `TestElement` есть ряд методов для взаимодействия с нижележащим DOM, таких как `blur()`, `click()`, `getAttribute()` и другие. См. [страницу API reference TestElement](/api/cdk/testing/TestElement) для полного списка методов.
 
-Do not expose `TestElement` instances to harness users unless it's an element the component consumer defines directly, such as the component's host element. Exposing `TestElement` instances for internal elements leads users to depend on a component's internal DOM structure.
+Не раскрывайте экземпляры `TestElement` пользователям harness, если это не элемент, который потребитель компонента определяет напрямую, например host-элемент компонента. Раскрытие экземпляров `TestElement` для внутренних элементов приводит к тому, что пользователи зависят от внутренней структуры DOM компонента.
 
-Instead, provide more narrow-focused methods for specific actions the end-user may take or particular state they may observe. For example, `MyPopupHarness` from previous sections could provide methods like `toggle` and `isOpen`:
+Вместо этого предоставляйте более узкоспециализированные методы для конкретных действий, которые может выполнить конечный пользователь, или конкретного состояния, которое он может наблюдать. Например, `MyPopupHarness` из предыдущих разделов мог бы предоставить методы вроде `toggle` и `isOpen`:
 
 ```ts
 class MyPopupHarness extends ComponentHarness {
@@ -108,13 +108,13 @@ class MyPopupHarness extends ComponentHarness {
 }
 ```
 
-## Loading harnesses for subcomponents
+## Загрузка harnesses для подкомпонентов {#loading-harnesses-for-subcomponents}
 
-Larger components often compose sub-components. You can reflect this structure in a component's harness as well. Each of the `locatorFor` methods on `ComponentHarness` has an alternate signature that can be used for locating sub-harnesses rather than elements.
+Крупные компоненты часто композируют подкомпоненты. Эту структуру можно отразить и в harness компонента. У каждого из методов `locatorFor` на `ComponentHarness` есть альтернативная сигнатура, которую можно использовать для поиска sub-harnesses вместо элементов.
 
-See the [ComponentHarness API reference page](/api/cdk/testing/ComponentHarness) for the full list of the different locatorFor methods.
+См. [страницу API reference ComponentHarness](/api/cdk/testing/ComponentHarness) для полного списка различных методов locatorFor.
 
-For example, consider a menu build using the popup from above:
+Например, рассмотрим меню, построенное с использованием popup из выше:
 
 ```ts
 @Directive({
@@ -137,7 +137,7 @@ class MyMenu {
 }
 ```
 
-The harness for `MyMenu` can then take advantage of other harnesses for `MyPopup` and `MyMenuItem`:
+Harness для `MyMenu` затем может использовать другие harnesses для `MyPopup` и `MyMenuItem`:
 
 ```ts
 class MyMenuHarness extends ComponentHarness {
@@ -160,15 +160,15 @@ class MyMenuItemHarness extends ComponentHarness {
 }
 ```
 
-## Filtering harness instances with `HarnessPredicate`
+## Фильтрация экземпляров harness с `HarnessPredicate` {#filtering-harness-instances-with-harnesspredicate}
 
-When a page contains multiple instances of a particular component, you may want to filter based on some property of the component to get a particular component instance. For example, you may want a button with some specific text, or a menu with a specific ID. The `HarnessPredicate` class can capture criteria like this for a `ComponentHarness` subclass. While the test author is able to construct `HarnessPredicate` instances manually, it's easier when the `ComponentHarness` subclass provides a helper method to construct predicates for common filters.
+Когда на странице несколько экземпляров конкретного компонента, может понадобиться фильтровать по некоторому свойству компонента, чтобы получить конкретный экземпляр. Например, может понадобиться кнопка с определённым текстом или меню с определённым ID. Класс `HarnessPredicate` может зафиксировать такие критерии для подкласса `ComponentHarness`. Хотя автор теста может конструировать экземпляры `HarnessPredicate` вручную, проще, когда подкласс `ComponentHarness` предоставляет вспомогательный метод для построения предикатов для распространённых фильтров.
 
-You should create a static `with()` method on each `ComponentHarness` subclass that returns a `HarnessPredicate` for that class. This allows test authors to write easily understandable code, e.g. `loader.getHarness(MyMenuHarness.with({selector: '#menu1'}))`. In addition to the standard selector and ancestor options, the `with` method should add any other options that make sense for the particular subclass.
+Следует создать статический метод `with()` на каждом подклассе `ComponentHarness`, который возвращает `HarnessPredicate` для этого класса. Это позволяет авторам тестов писать легко понятный код, например `loader.getHarness(MyMenuHarness.with({selector: '#menu1'}))`. В дополнение к стандартным опциям selector и ancestor метод `with` должен добавлять любые другие опции, имеющие смысл для конкретного подкласса.
 
-Harnesses that need to add additional options should extend the `BaseHarnessFilters` interface and additional optional properties as needed. `HarnessPredicate` provides several convenience methods for adding options: `stringMatches()`, `addOption()`, and `add()`. See the [HarnessPredicate API page](/api/cdk/testing/HarnessPredicate) for the full description.
+Harnesses, которым нужно добавить дополнительные опции, должны расширять интерфейс `BaseHarnessFilters` и дополнительные опциональные свойства по необходимости. `HarnessPredicate` предоставляет несколько удобных методов для добавления опций: `stringMatches()`, `addOption()` и `add()`. См. [страницу API HarnessPredicate](/api/cdk/testing/HarnessPredicate) для полного описания.
 
-For example, when working with a menu it is useful to filter based on trigger text and to filter menu items based on their text:
+Например, при работе с меню полезно фильтровать по тексту trigger и фильтровать пункты меню по их тексту:
 
 ```ts
 interface MyMenuHarnessFilters extends BaseHarnessFilters {
@@ -222,7 +222,7 @@ class MyMenuItemHarness extends ComponentHarness {
 }
 ```
 
-You can pass a `HarnessPredicate` instead of a `ComponentHarness` class to any of the APIs on `HarnessLoader`, `LocatorFactory`, or `ComponentHarness`. This allows test authors to easily target a particular component instance when creating a harness instance. It also allows the harness author to leverage the same `HarnessPredicate` to enable more powerful APIs on their harness class. For example, consider the `getItems` method on the `MyMenuHarness` shown above. Adding a filtering API allows users of the harness to search for particular menu items:
+Можно передать `HarnessPredicate` вместо класса `ComponentHarness` в любой из API на `HarnessLoader`, `LocatorFactory` или `ComponentHarness`. Это позволяет авторам тестов легко нацеливаться на конкретный экземпляр компонента при создании экземпляра harness. Это также позволяет автору harness использовать тот же `HarnessPredicate` для включения более мощных API в своём классе harness. Например, рассмотрим метод `getItems` на `MyMenuHarness`, показанный выше. Добавление API фильтрации позволяет пользователям harness искать конкретные пункты меню:
 
 ```ts
 class MyMenuHarness extends ComponentHarness {
@@ -237,13 +237,13 @@ class MyMenuHarness extends ComponentHarness {
 }
 ```
 
-## Creating `HarnessLoader` for elements that use content projection
+## Создание `HarnessLoader` для элементов, использующих content projection {#creating-harnessloader-for-elements-that-use-content-projection}
 
-Some components project additional content into the component's template. See the [content projection guide](guide/components/content-projection) for more information.
+Некоторые компоненты проецируют дополнительное содержимое в шаблон компонента. См. [руководство по content projection](guide/components/content-projection) для дополнительной информации.
 
-Add a `HarnessLoader` instance scoped to the element containing the `<ng-content>` when you create a harness for a component that uses content projection. This allows the user of the harness to load additional harnesses for whatever components were passed in as content. `ComponentHarness` has several methods that can be used to create HarnessLoader instances for cases like this: `harnessLoaderFor()`, `harnessLoaderForOptional()`, `harnessLoaderForAll()`. See the [HarnessLoader interface API reference page](/api/cdk/testing/HarnessLoader) for more details.
+Добавьте экземпляр `HarnessLoader`, ограниченный элементом, содержащим `<ng-content>`, когда создаёте harness для компонента, использующего content projection. Это позволяет пользователю harness загружать дополнительные harnesses для любых компонентов, переданных как содержимое. У `ComponentHarness` есть несколько методов, которые можно использовать для создания экземпляров HarnessLoader в таких случаях: `harnessLoaderFor()`, `harnessLoaderForOptional()`, `harnessLoaderForAll()`. См. [страницу API reference интерфейса HarnessLoader](/api/cdk/testing/HarnessLoader) для дополнительных деталей.
 
-For example, the `MyPopupHarness` example from above can extend `ContentContainerComponentHarness` to add support to load harnesses within the `<ng-content>` of the component.
+Например, `MyPopupHarness` из примера выше может расширить `ContentContainerComponentHarness`, чтобы добавить поддержку загрузки harnesses внутри `<ng-content>` компонента.
 
 ```ts
 class MyPopupHarness extends ContentContainerComponentHarness<string> {
@@ -251,13 +251,13 @@ class MyPopupHarness extends ContentContainerComponentHarness<string> {
 }
 ```
 
-## Accessing elements outside of the component's host element
+## Доступ к элементам вне host-элемента компонента {#accessing-elements-outside-of-the-components-host-element}
 
-There are times when a component harness might need to access elements outside of its corresponding component's host element. For example, code that displays a floating element or pop-up often attaches DOM elements directly to the document body, such as the `Overlay` service in Angular CDK.
+Бывают случаи, когда component harness может потребовать доступ к элементам вне host-элемента соответствующего компонента. Например, код, отображающий плавающий элемент или pop-up, часто прикрепляет DOM-элементы напрямую к document body, как сервис `Overlay` в Angular CDK.
 
-In this case, `ComponentHarness` provides a method that can be used to get a `LocatorFactory` for the root element of the document. The `LocatorFactory` supports most of the same APIs as the `ComponentHarness` base class, and can then be used to query relative to the document's root element.
+В этом случае `ComponentHarness` предоставляет метод, который можно использовать для получения `LocatorFactory` для корневого элемента документа. `LocatorFactory` поддерживает большинство тех же API, что и базовый класс `ComponentHarness`, и затем может использоваться для запросов относительно корневого элемента документа.
 
-Consider if the `MyPopup` component above used the CDK overlay for the popup content, rather than an element in its own template. In this case, `MyPopupHarness` would have to access the content element via `documentRootLocatorFactory()` method that gets a locator factory rooted at the document root.
+Представьте, что компонент `MyPopup` выше использовал CDK overlay для содержимого popup, а не элемент в своём собственном шаблоне. В этом случае `MyPopupHarness` должен был бы получить доступ к элементу content через метод `documentRootLocatorFactory()`, который получает locator factory с корнем в корне документа.
 
 ```ts
 class MyPopupHarness extends ComponentHarness {
@@ -271,10 +271,10 @@ class MyPopupHarness extends ComponentHarness {
 }
 ```
 
-## Waiting for asynchronous tasks
+## Ожидание асинхронных задач {#waiting-for-asynchronous-tasks}
 
-The methods on `TestElement` automatically trigger Angular's change detection and wait for tasks inside the `NgZone`. In most cases no special effort is required for harness authors to wait on asynchronous tasks. However, there are some edge cases where this may not be sufficient.
+Методы на `TestElement` автоматически запускают change detection Angular и ждут задач внутри `NgZone`. В большинстве случаев авторам harness не требуется специальных усилий для ожидания асинхронных задач. Однако есть некоторые крайние случаи, когда этого может быть недостаточно.
 
-Under some circumstances, Angular animations may require a second cycle of change detection and subsequent `NgZone` stabilization before animation events are fully flushed. In cases where this is needed, the `ComponentHarness` offers a `forceStabilize()` method that can be called to do the second round.
+При некоторых обстоятельствах анимации Angular могут потребовать второго цикла change detection и последующей стабилизации `NgZone`, прежде чем события анимации будут полностью сброшены. В случаях, когда это нужно, `ComponentHarness` предлагает метод `forceStabilize()`, который можно вызвать для второго раунда.
 
-You can use `NgZone.runOutsideAngular()` to schedule tasks outside of NgZone. Call the `waitForTasksOutsideAngular()` method on the corresponding harness if you need to explicitly wait for tasks outside `NgZone` since this does not happen automatically.
+Можно использовать `NgZone.runOutsideAngular()` для планирования задач вне NgZone. Вызовите метод `waitForTasksOutsideAngular()` на соответствующем harness, если нужно явно дождаться задач вне `NgZone`, поскольку это не происходит автоматически.

@@ -1,141 +1,141 @@
-# Merge translations into the application
+# Объединение переводов с приложением
 
-To merge the completed translations into your project, complete the following actions
+Чтобы объединить готовые переводы с проектом, выполните следующие действия
 
-1. Use the [Angular CLI][CliMain] to build a copy of the distributable files of your project
-1. Use the `"localize"` option to replace all of the i18n messages with the valid translations and build a localized variant application.
-   A variant application is a complete copy of the distributable files of your application translated for a single locale.
+1. Используйте [Angular CLI][CliMain], чтобы собрать копию дистрибутивных файлов проекта
+1. Используйте опцию `"localize"`, чтобы заменить все i18n-сообщения корректными переводами и собрать локализованный вариант приложения.
+   Вариант приложения — полная копия дистрибутивных файлов приложения, переведённая для одной локали.
 
-After you merge the translations, serve each distributable copy of the application using server-side language detection or different subdirectories.
+После объединения переводов обслуживайте каждую дистрибутивную копию приложения с помощью определения языка на стороне сервера или разных подкаталогов.
 
-HELPFUL: For more information about how to serve each distributable copy of the application, see [deploying multiple locales](guide/i18n/deploy).
+HELPFUL: Подробнее о том, как обслуживать каждую дистрибутивную копию приложения, см. [развёртывание нескольких локалей](guide/i18n/deploy).
 
-For a compile-time translation of the application, the build process uses ahead-of-time (AOT) compilation to produce a small, fast, ready-to-run application.
+Для compile-time перевода приложения процесс сборки использует ahead-of-time (AOT) компиляцию, чтобы получить небольшое, быстрое, готовое к запуску приложение.
 
-HELPFUL: For a detailed explanation of the build process, see [Building and serving Angular apps][GuideBuild].
-The build process works for translation files in the `.xlf` format or in another format that Angular understands, such as `.xtb`.
-For more information about translation file formats used by Angular, see [Change the source language file format][GuideI18nCommonTranslationFilesChangeTheSourceLanguageFileFormat]
+HELPFUL: Подробное объяснение процесса сборки см. в [Сборка и обслуживание приложений Angular][GuideBuild].
+Процесс сборки работает для файлов перевода в формате `.xlf` или в другом формате, который понимает Angular, например `.xtb`.
+Подробнее о форматах файлов перевода, используемых Angular, см. [Изменение формата файла исходного языка][GuideI18nCommonTranslationFilesChangeTheSourceLanguageFileFormat]
 
-To build a separate distributable copy of the application for each locale, [define the locales in the build configuration][GuideI18nCommonMergeDefineLocalesInTheBuildConfiguration] in the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file of your project.
+Чтобы собрать отдельную дистрибутивную копию приложения для каждой локали, [определите локали в конфигурации сборки][GuideI18nCommonMergeDefineLocalesInTheBuildConfiguration] в файле конфигурации сборки рабочей области [`angular.json`][GuideWorkspaceConfig] вашего проекта.
 
-This method shortens the build process by removing the requirement to perform a full application build for each locale.
+Этот метод сокращает процесс сборки, убирая требование выполнять полную сборку приложения для каждой локали.
 
-To [generate application variants for each locale][GuideI18nCommonMergeGenerateApplicationVariantsForEachLocale], use the `"localize"` option in the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file.
-Also, to [build from the command line][GuideI18nCommonMergeBuildFromTheCommandLine], use the [`build`][CliBuild] [Angular CLI][CliMain] command with the `--localize` option.
+Чтобы [генерировать варианты приложения для каждой локали][GuideI18nCommonMergeGenerateApplicationVariantsForEachLocale], используйте опцию `"localize"` в файле конфигурации сборки рабочей области [`angular.json`][GuideWorkspaceConfig].
+Также, чтобы [собирать из командной строки][GuideI18nCommonMergeBuildFromTheCommandLine], используйте команду [`build`][CliBuild] [Angular CLI][CliMain] с опцией `--localize`.
 
-HELPFUL: Optionally, [apply specific build options for just one locale][GuideI18nCommonMergeApplySpecificBuildOptionsForJustOneLocale] for a custom locale configuration.
+HELPFUL: Опционально [примените специфичные опции сборки только для одной локали][GuideI18nCommonMergeApplySpecificBuildOptionsForJustOneLocale] для пользовательской конфигурации локали.
 
-## Define locales in the build configuration
+## Определение локалей в конфигурации сборки {#define-locales-in-the-build-configuration}
 
-Use the `i18n` project option in the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file of your project to define locales for a project.
+Используйте опцию проекта `i18n` в файле конфигурации сборки рабочей области [`angular.json`][GuideWorkspaceConfig], чтобы определить локали для проекта.
 
-The following sub-options identify the source language and tell the compiler where to find supported translations for the project.
+Следующие подопции идентифицируют исходный язык и сообщают компилятору, где найти поддерживаемые переводы для проекта.
 
-| Suboption      | Details                                                                                                                                                |
-| :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sourceLocale` | The locale you use within the application source code \(`en-US` by default\). Can also be an object with `code`, `baseHref`, and `subPath` properties. |
-| `locales`      | A map of locale identifiers to translation files. Each entry can also be an object with `translation`, `baseHref`, and `subPath` properties.           |
+| Подопция       | Подробности                                                                                                                                                |
+| :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sourceLocale` | Локаль, которую вы используете в исходном коде приложения \(`en-US` по умолчанию\). Также может быть объектом со свойствами `code`, `baseHref` и `subPath`. |
+| `locales`      | Карта идентификаторов локалей на файлы перевода. Каждая запись также может быть объектом со свойствами `translation`, `baseHref` и `subPath`.              |
 
-For the full list of `i18n` properties and their types, see [i18n options][GuideWorkspaceConfigI18n].
+Полный список свойств `i18n` и их типов см. в [опциях i18n][GuideWorkspaceConfigI18n].
 
-### `angular.json` for `en-US` and `fr` example
+### Пример `angular.json` для `en-US` и `fr` {#angularjson-for-en-us-and-fr-example}
 
-For example, the following excerpt of an [`angular.json`][GuideWorkspaceConfig] workspace build configuration file sets the source locale to `en-US` and provides the path to the French \(`fr`\) locale translation file.
+Например, следующий фрагмент файла конфигурации сборки рабочей области [`angular.json`][GuideWorkspaceConfig] задаёт исходную локаль как `en-US` и предоставляет путь к файлу перевода французской \(`fr`\) локали.
 
 <docs-code header="angular.json" path="adev/src/content/examples/i18n/angular.json" region="locale-config"/>
 
-## Generate application variants for each locale
+## Генерация вариантов приложения для каждой локали {#generate-application-variants-for-each-locale}
 
-To use your locale definition in the build configuration, use the `"localize"` option in the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file to tell the CLI which locales to generate for the build configuration.
+Чтобы использовать определение локалей в конфигурации сборки, используйте опцию `"localize"` в файле конфигурации сборки рабочей области [`angular.json`][GuideWorkspaceConfig], чтобы сообщить CLI, для каких локалей генерировать сборку.
 
-- Set `"localize"` to `true` for all the locales previously defined in the build configuration.
-- Set `"localize"` to an array of a subset of the previously defined locale identifiers to build only those locale versions.
-- Set `"localize"` to `false` to disable localization and not generate any locale-specific versions.
+- Установите `"localize"` в `true` для всех локалей, ранее определённых в конфигурации сборки.
+- Установите `"localize"` в массив подмножества ранее определённых идентификаторов локалей, чтобы собрать только эти версии локалей.
+- Установите `"localize"` в `false`, чтобы отключить локализацию и не генерировать версии, специфичные для локали.
 
-HELPFUL: Ahead-of-time (AOT) compilation is required to localize component templates.
+HELPFUL: Для локализации шаблонов компонентов требуется ahead-of-time (AOT) компиляция.
 
-If you changed this setting, set `"aot"` to `true` in order to use AOT.
+Если вы изменили эту настройку, установите `"aot"` в `true`, чтобы использовать AOT.
 
-HELPFUL: Due to the deployment complexities of i18n and the need to minimize rebuild time, the development server only supports localizing a single locale at a time.
-If you set the `"localize"` option to `true`, define more than one locale, and use `ng serve`; then an error occurs.
-If you want to develop against a specific locale, set the `"localize"` option to a specific locale.
-For example, for French \(`fr`\), specify `"localize": ["fr"]`.
+HELPFUL: Из-за сложностей развёртывания i18n и необходимости минимизировать время пересборки сервер разработки поддерживает локализацию только одной локали за раз.
+Если установить `"localize"` в `true`, определить более одной локали и использовать `ng serve`, произойдёт ошибка.
+Если нужно разрабатывать против конкретной локали, установите `"localize"` в конкретную локаль.
+Например, для французского \(`fr`\) укажите `"localize": ["fr"]`.
 
-The CLI loads and registers the locale data, places each generated version in a locale-specific directory to keep it separate from other locale versions, and puts the directories within the configured `outputPath` for the project.
-For each application variant the `lang` attribute of the `html` element is set to the locale.
-The CLI also adjusts the HTML base HREF for each version of the application by adding the locale to the configured `baseHref`.
+CLI загружает и регистрирует данные локали, размещает каждую сгенерированную версию в каталоге, специфичном для локали, чтобы отделить её от других версий локалей, и помещает файлы в настроенный `outputPath` проекта.
+Для каждого варианта приложения атрибут `lang` элемента `html` устанавливается в локаль.
+CLI также корректирует HTML base HREF для каждой версии приложения, добавляя локаль к настроенному `baseHref`.
 
-Set the `"localize"` property as a shared configuration to effectively inherit for all the configurations.
-Also, set the property to override other configurations.
+Задайте свойство `"localize"` как общую конфигурацию, чтобы эффективно наследовать его для всех конфигураций.
+Также задайте свойство для переопределения других конфигураций.
 
-### `angular.json` include all locales from build example
+### Пример `angular.json` со всеми локалями из сборки {#angularjson-include-all-locales-from-build-example}
 
-The following example displays the `"localize"` option set to `true` in the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file, so that all locales defined in the build configuration are built.
+Следующий пример показывает опцию `"localize"`, установленную в `true` в файле конфигурации сборки рабочей области [`angular.json`][GuideWorkspaceConfig], чтобы собирались все локали, определённые в конфигурации сборки.
 
 <docs-code header="angular.json" path="adev/src/content/examples/i18n/angular.json" region="build-localize-true"/>
 
-## Build from the command line
+## Сборка из командной строки {#build-from-the-command-line}
 
-Also, use the `--localize` option with the [`ng build`][CliBuild] command and your existing `production` configuration.
-The CLI builds all locales defined in the build configuration.
-If you set the locales in build configuration, it is similar to when you set the `"localize"` option to `true`.
+Также используйте опцию `--localize` с командой [`ng build`][CliBuild] и существующей конфигурацией `production`.
+CLI собирает все локали, определённые в конфигурации сборки.
+Если локали заданы в конфигурации сборки, это аналогично установке `"localize"` в `true`.
 
-HELPFUL: For more information about how to set the locales, see [Generate application variants for each locale][GuideI18nCommonMergeGenerateApplicationVariantsForEachLocale].
+HELPFUL: Подробнее о том, как задать локали, см. [Генерация вариантов приложения для каждой локали][GuideI18nCommonMergeGenerateApplicationVariantsForEachLocale].
 
 <docs-code path="adev/src/content/examples/i18n/doc-files/commands.sh" region="build-localize"/>
 
-## Apply specific build options for just one locale
+## Применение специфичных опций сборки только для одной локали {#apply-specific-build-options-for-just-one-locale}
 
-To apply specific build options to only one locale, specify a single locale to create a custom locale-specific configuration.
+Чтобы применить специфичные опции сборки только к одной локали, укажите одну локаль для создания пользовательской конфигурации, специфичной для локали.
 
-IMPORTANT: Use the [Angular CLI][CliMain] development server \(`ng serve`\) with only a single locale.
+IMPORTANT: Используйте сервер разработки [Angular CLI][CliMain] \(`ng serve`\) только с одной локалью.
 
-### build for French example
+### Пример сборки для французского {#build-for-french-example}
 
-The following example displays a custom locale-specific configuration using a single locale.
+Следующий пример показывает пользовательскую конфигурацию, специфичную для локали, с использованием одной локали.
 
 <docs-code header="angular.json" path="adev/src/content/examples/i18n/angular.json" region="build-single-locale"/>
 
-Pass this configuration to the `ng serve` or `ng build` commands.
-The following code example displays how to serve the French language file.
+Передайте эту конфигурацию командам `ng serve` или `ng build`.
+Следующий пример кода показывает, как обслуживать файл французского языка.
 
 <docs-code path="adev/src/content/examples/i18n/doc-files/commands.sh" region="serve-french"/>
 
-For production builds, use configuration composition to run both configurations.
+Для production-сборок используйте композицию конфигураций, чтобы запустить обе конфигурации.
 
 <docs-code path="adev/src/content/examples/i18n/doc-files/commands.sh" region="build-production-french"/>
 
 <docs-code header="angular.json" path="adev/src/content/examples/i18n/angular.json" region="build-production-french" />
 
-## Report missing translations
+## Сообщение об отсутствующих переводах {#report-missing-translations}
 
-When a translation is missing, the build succeeds but generates a warning such as `Missing translation for message "{translation_text}"`.
-To configure the level of warning that is generated by the Angular compiler, specify one of the following levels.
+Когда перевод отсутствует, сборка завершается успешно, но генерирует предупреждение вроде `Missing translation for message "{translation_text}"`.
+Чтобы настроить уровень предупреждения, генерируемого компилятором Angular, укажите один из следующих уровней.
 
-| Warning level | Details                                              | Output                                                 |
-| :------------ | :--------------------------------------------------- | :----------------------------------------------------- |
-| `error`       | Throw an error and the build fails                   | n/a                                                    |
-| `ignore`      | Do nothing                                           | n/a                                                    |
-| `warning`     | Displays the default warning in the console or shell | `Missing translation for message "{translation_text}"` |
+| Уровень предупреждения | Подробности                                          | Вывод                                                  |
+| :--------------------- | :--------------------------------------------------- | :----------------------------------------------------- |
+| `error`                | Выбросить ошибку, сборка завершается неудачей        | n/a                                                    |
+| `ignore`               | Ничего не делать                                     | n/a                                                    |
+| `warning`              | Показать предупреждение по умолчанию в консоли или shell | `Missing translation for message "{translation_text}"` |
 
-Specify the warning level in the `options` section for the `build` target of your [`angular.json`][GuideWorkspaceConfig] workspace build configuration file.
+Укажите уровень предупреждения в секции `options` для цели `build` файла конфигурации сборки рабочей области [`angular.json`][GuideWorkspaceConfig].
 
-### `angular.json` `error` warning example
+### Пример предупреждения `error` в `angular.json` {#angularjson-error-warning-example}
 
-The following example displays how to set the warning level to `error`.
+Следующий пример показывает, как установить уровень предупреждения в `error`.
 
 <docs-code header="angular.json" path="adev/src/content/examples/i18n/angular.json" region="missing-translation-error" />
 
-HELPFUL: When you compile your Angular project into an Angular application, the instances of the `i18n` attribute are replaced with instances of the [`$localize`][ApiLocalizeInitLocalize] tagged message string.
-This means that your Angular application is translated after compilation.
-This also means that you can create localized versions of your Angular application without re-compiling your entire Angular project for each locale.
+HELPFUL: Когда вы компилируете проект Angular в приложение Angular, экземпляры атрибута `i18n` заменяются экземплярами tagged message string [`$localize`][ApiLocalizeInitLocalize].
+Это значит, что приложение Angular переводится после компиляции.
+Это также значит, что можно создавать локализованные версии приложения Angular без повторной компиляции всего проекта Angular для каждой локали.
 
-When you translate your Angular application, the _translation transformation_ replaces and reorders the parts \(static strings and expressions\) of the template literal string with strings from a collection of translations.
-For more information, see [`$localize`][ApiLocalizeInitLocalize].
+Когда вы переводите приложение Angular, _преобразование перевода_ заменяет и переупорядочивает части \(статические строки и выражения\) строки template literal строками из коллекции переводов.
+Подробнее см. [`$localize`][ApiLocalizeInitLocalize].
 
-TLDR: Compile once, then translate for each locale.
+TLDR: Скомпилируйте один раз, затем переводите для каждой локали.
 
-## What's next
+## Что дальше {#whats-next}
 
 <docs-pill-row>
   <docs-pill href="guide/i18n/deploy" title="Deploy multiple locales"/>

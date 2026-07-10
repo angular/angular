@@ -1,8 +1,8 @@
-# Styling components
+# Стилизация компонентов
 
-TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: Это руководство предполагает, что вы уже прочитали [Essentials Guide](essentials). Если вы новичок в Angular, начните с него.
 
-Components can optionally include CSS styles that apply to that component's DOM:
+Компоненты опционально могут включать CSS-стили, применяемые к DOM этого компонента:
 
 ```angular-ts {highlight:[4]}
 @Component({
@@ -17,7 +17,7 @@ Components can optionally include CSS styles that apply to that component's DOM:
 export class ProfilePhoto {}
 ```
 
-You can also choose to write your styles in separate files:
+Также можно писать стили в отдельных файлах:
 
 ```angular-ts {highlight:[4]}
 @Component({
@@ -28,20 +28,20 @@ You can also choose to write your styles in separate files:
 export class ProfilePhoto {}
 ```
 
-When Angular compiles your component, these styles are emitted with your component's JavaScript
-output. This means that component styles participate in the JavaScript module system. When you
-render an Angular component, the framework automatically includes its associated styles, even when
-lazy-loading a component.
+Когда Angular компилирует компонент, эти стили эмитятся вместе с JavaScript-выводом компонента.
+Это значит, что стили компонента участвуют в системе модулей JavaScript. Когда вы
+рендерите Angular-компонент, фреймворк автоматически включает связанные стили, даже при
+ленивой загрузке компонента.
 
-Angular works with any tool that outputs CSS,
-including [Sass](https://sass-lang.com), [Less](https://lesscss.org),
-and [Stylus](https://stylus-lang.com).
+Angular работает с любым инструментом, который выводит CSS,
+включая [Sass](https://sass-lang.com), [Less](https://lesscss.org)
+и [Stylus](https://stylus-lang.com).
 
-## Style scoping
+## Scope стилей {#style-scoping}
 
-Every component has a **view encapsulation** setting that determines how the framework scopes a
-component's styles. There are four view encapsulation modes: `Emulated`, `ShadowDom`, `ExperimentalIsolatedShadowDom`, and `None`.
-You can specify the mode in the `@Component` decorator:
+У каждого компонента есть настройка **view encapsulation**, определяющая, как фреймворк ограничивает
+стили компонента. Есть четыре режима view encapsulation: `Emulated`, `ShadowDom`, `ExperimentalIsolatedShadowDom` и `None`.
+Режим можно указать в декораторе `@Component`:
 
 ```angular-ts {highlight:[3]}
 @Component({
@@ -51,94 +51,94 @@ You can specify the mode in the `@Component` decorator:
 export class ProfilePhoto { }
 ```
 
-### ViewEncapsulation.Emulated
+### ViewEncapsulation.Emulated {#viewencapsulationemulated}
 
-By default, Angular uses emulated encapsulation so that a component's styles only apply to elements
-defined in that component's template. In this mode, the framework generates a unique HTML attribute
-for each component instance, adds that attribute to elements in the component's template, and
-inserts that attribute into the CSS selectors defined in your component's styles.
+По умолчанию Angular использует emulated encapsulation, чтобы стили компонента применялись только к элементам,
+определённым в шаблоне этого компонента. В этом режиме фреймворк генерирует уникальный HTML-атрибут
+для каждого экземпляра компонента, добавляет этот атрибут к элементам в шаблоне компонента и
+вставляет этот атрибут в CSS-селекторы, определённые в стилях компонента.
 
-This mode ensures that a component's styles do not leak out and affect other components. However,
-global styles defined outside of a component may still affect elements inside a component with
+Этот режим гарантирует, что стили компонента не «утекут» наружу и не повлияют на другие компоненты. Однако
+глобальные стили, определённые вне компонента, всё ещё могут влиять на элементы внутри компонента с
 emulated encapsulation.
 
-In emulated mode, Angular supports
-the [`:host`](https://developer.mozilla.org/docs/Web/CSS/:host) pseudo-class.
-While the [`:host-context()`](https://developer.mozilla.org/docs/Web/CSS/:host-context) pseudo-class
-is deprecated in modern browsers, Angular's compiler provides full support for it. Both pseudo-classes
-can be used without relying on native
+В emulated-режиме Angular поддерживает
+псевдокласс [`:host`](https://developer.mozilla.org/docs/Web/CSS/:host).
+Хотя псевдокласс [`:host-context()`](https://developer.mozilla.org/docs/Web/CSS/:host-context)
+устарел в современных браузерах, компилятор Angular полностью его поддерживает. Оба псевдокласса
+можно использовать без опоры на нативный
 [Shadow DOM](https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM).
-During compilation, the framework transforms these pseudo classes into attributes so it doesn't
-comply with these native pseudo classes' rules at runtime (e.g. browser compatibility, specificity). Angular's
-emulated encapsulation mode does not support any other pseudo classes related to Shadow DOM, such
-as `::shadow` or `::part`.
+Во время компиляции фреймворк преобразует эти псевдоклассы в атрибуты, поэтому во время выполнения он не
+следует правилам этих нативных псевдоклассов (например, совместимость браузеров, specificity). Режим
+emulated encapsulation Angular не поддерживает другие псевдоклассы, связанные с Shadow DOM, такие
+как `::shadow` или `::part`.
 
-#### `::ng-deep`
+#### `::ng-deep` {#ng-deep}
 
-Angular's emulated encapsulation mode supports a custom pseudo class, `::ng-deep`.
-**The Angular team strongly discourages new use of `::ng-deep`**. These APIs remain
-exclusively for backwards compatibility.
+Режим emulated encapsulation Angular поддерживает кастомный псевдокласс `::ng-deep`.
+**Команда Angular настоятельно не рекомендует новое использование `::ng-deep`**. Эти API остаются
+исключительно для обратной совместимости.
 
-When a selector contains `::ng-deep`, Angular stops applying view-encapsulation boundaries after that point in the selector. Any part of the selector that follows `::ng-deep` can match elements outside the component’s template.
+Когда селектор содержит `::ng-deep`, Angular перестаёт применять границы view-encapsulation после этой точки в селекторе. Любая часть селектора после `::ng-deep` может совпадать с элементами вне шаблона компонента.
 
-For example:
+Например:
 
-- a CSS rule selector like `p a`, using the emulated encapsulation, will match `<a>` elements that are descendants of a `<p>` element,
-  both being within the component's own template.
+- CSS-правило с селектором вроде `p a` при emulated encapsulation совпадёт с элементами `<a>`, которые являются потомками элемента `<p>`,
+  оба — внутри собственного шаблона компонента.
 
-- A selector like `::ng-deep p a` will match `<a>` elements anywhere in the application, descendants of a `<p>` element anywhere in the application.
+- Селектор вроде `::ng-deep p a` совпадёт с элементами `<a>` где угодно в приложении, потомками элемента `<p>` где угодно в приложении.
 
-  That effectively makes it behave like a global style.
+  По сути это делает его похожим на глобальный стиль.
 
-- In `p ::ng-deep a`, Angular requires the `<p>` element to come from the component's own template, but the `<a>` element may be anywhere in the application.
+- В `p ::ng-deep a` Angular требует, чтобы элемент `<p>` происходил из собственного шаблона компонента, но элемент `<a>` может быть где угодно в приложении.
 
-  So, in effect, the `<a>` element may be in the component's template, or in any of its projected or child content.
+  Таким образом, элемент `<a>` может быть в шаблоне компонента или в любом его projected или child content.
 
-- With `:host ::ng-deep p a`, both the `<a>` and `<p>` elements must be descendants of the component's host element.
+- С `:host ::ng-deep p a` и `<a>`, и `<p>` должны быть потомками host-элемента компонента.
 
-  They can come from the component's template or the views of its child components, but not elsewhere in the app.
+  Они могут происходить из шаблона компонента или views его дочерних компонентов, но не из других мест приложения.
 
-### ViewEncapsulation.ShadowDom
+### ViewEncapsulation.ShadowDom {#viewencapsulationshadowdom}
 
-This mode scopes styles within a component by
-using [the web standard Shadow DOM API](https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM).
-When enabling this mode, Angular attaches a shadow root to the component's host element and renders
-the component's template and styles into the corresponding shadow tree.
+Этот режим ограничивает стили внутри компонента, используя
+[стандартный веб API Shadow DOM](https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM).
+При включении этого режима Angular присоединяет shadow root к host-элементу компонента и рендерит
+шаблон и стили компонента в соответствующее shadow tree.
 
-Styles inside the shadow tree cannot affect elements outside of that shadow tree.
+Стили внутри shadow tree не могут влиять на элементы вне этого shadow tree.
 
-Enabling `ShadowDom` encapsulation, however, impacts more than style scoping. Rendering the
-component in a shadow tree affects event propagation, interaction
-with [the `<slot>` API](https://developer.mozilla.org/docs/Web/Web_Components/Using_templates_and_slots),
-and how browser developer tools show elements. Always understand the full implications of using
-Shadow DOM in your application before enabling this option.
+Включение encapsulation `ShadowDom`, однако, влияет не только на scope стилей. Рендер
+компонента в shadow tree влияет на распространение событий, взаимодействие
+с [API `<slot>`](https://developer.mozilla.org/docs/Web/Web_Components/Using_templates_and_slots)
+и то, как browser developer tools показывают элементы. Всегда понимайте полные последствия использования
+Shadow DOM в приложении, прежде чем включать эту опцию.
 
-### ViewEncapsulation.ExperimentalIsolatedShadowDom
+### ViewEncapsulation.ExperimentalIsolatedShadowDom {#viewencapsulationexperimentalisolatedshadowdom}
 
-Behaves as above, except this mode strictly guarantees that _only_ that component's styles apply to elements in the
-component's template. Global styles cannot affect elements in a shadow tree and styles inside the
-shadow tree cannot affect elements outside of that shadow tree.
+Ведёт себя как выше, за исключением того, что этот режим строго гарантирует: к элементам в
+шаблоне компонента применяются _только_ стили этого компонента. Глобальные стили не могут влиять на элементы в shadow tree, а стили внутри
+shadow tree не могут влиять на элементы вне этого shadow tree.
 
-### ViewEncapsulation.None
+### ViewEncapsulation.None {#viewencapsulationnone}
 
-This mode disables all style encapsulation for the component. Any styles associated with the
-component behave as global styles.
+Этот режим отключает всю инкапсуляцию стилей для компонента. Любые стили, связанные с
+компонентом, ведут себя как глобальные стили.
 
-NOTE: In `Emulated` and `ShadowDom` modes, Angular doesn't 100% guarantee that your component's styles will always override styles coming from outside it.
-It is assumed that these styles have the same specificity as your component's styles in case of collision.
+NOTE: В режимах `Emulated` и `ShadowDom` Angular не гарантирует на 100%, что стили компонента всегда переопределят стили извне.
+Предполагается, что эти стили имеют ту же specificity, что и стили компонента, в случае коллизии.
 
-## Defining styles in templates
+## Определение стилей в шаблонах {#defining-styles-in-templates}
 
-You can use the `<style>` element in a component's template to define additional styles. The
-component's view encapsulation mode applies to styles defined this way.
+Можно использовать элемент `<style>` в шаблоне компонента для определения дополнительных стилей. Режим
+view encapsulation компонента применяется к стилям, определённым таким образом.
 
-Angular does not support bindings inside of style elements.
+Angular не поддерживает привязки внутри элементов style.
 
-## Referencing external style files
+## Ссылки на внешние файлы стилей {#referencing-external-style-files}
 
-Component templates can
-use [the `<link>` element](https://developer.mozilla.org/docs/Web/HTML/Element/link) to
-reference CSS files. Additionally, your CSS may
-use [the `@import`at-rule](https://developer.mozilla.org/docs/Web/CSS/@import) to reference
-CSS files. Angular treats these references as _external_ styles. External styles are not affected by
+Шаблоны компонентов могут
+использовать [элемент `<link>`](https://developer.mozilla.org/docs/Web/HTML/Element/link) для
+ссылок на CSS-файлы. Кроме того, ваш CSS может
+использовать [at-rule `@import`](https://developer.mozilla.org/docs/Web/CSS/@import) для ссылок на
+CSS-файлы. Angular считает эти ссылки _внешними_ стилями. Внешние стили не затрагиваются
 emulated view encapsulation.

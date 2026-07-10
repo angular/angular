@@ -15,7 +15,7 @@
 
 <docs-workflow>
 
-<docs-step title="Импорт валидаторов">
+<docs-step title="Import the validators">
 Импортируйте валидаторы `required` и `email` из `@angular/forms/signals`:
 
 ```ts
@@ -24,7 +24,7 @@ import { form, Field, required, email } from '@angular/forms/signals';
 
 </docs-step>
 
-<docs-step title="Добавление функции схемы в форму">
+<docs-step title="Add a schema function to your form">
 Обновите вызов `form()`, добавив функцию схемы в качестве второго параметра. Функция схемы принимает параметр `fieldPath`, который позволяет получить доступ к каждому полю:
 
 ```ts
@@ -35,7 +35,7 @@ loginForm = form(this.loginModel, (fieldPath) => {
 
 </docs-step>
 
-<docs-step title="Добавление валидации для поля email">
+<docs-step title="Add validation to the email field">
 Внутри функции схемы добавьте валидацию для поля email. Используйте валидаторы `required()` и `email()`:
 
 ```ts
@@ -48,7 +48,7 @@ loginForm = form(this.loginModel, (fieldPath) => {
 Опция `message` предоставляет пользовательские сообщения об ошибках.
 </docs-step>
 
-<docs-step title="Добавление валидации для поля пароля">
+<docs-step title="Add validation to the password field">
 Добавьте валидацию для поля пароля, используя валидатор `required()`:
 
 ```ts

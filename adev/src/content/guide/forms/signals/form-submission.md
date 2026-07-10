@@ -1,37 +1,37 @@
-# Form submission
+# Отправка формы
 
-When a user submits a form, your application typically needs to handle multiple concerns at once: surfacing validation errors, preventing duplicate submission, sending data to a server, and much more. Handling each of these manually can be tedious and prone to error.
+Когда пользователь отправляет форму, приложению обычно нужно обработать сразу несколько задач: показать ошибки валидации, предотвратить повторную отправку, отправить данные на сервер и многое другое. Обрабатывать каждую вручную утомительно и чревато ошибками.
 
-Signal Forms provides a `submit()` function that helps you manage the form submission lifecycle. This guide walks through how to use it.
+Signal Forms предоставляют функцию `submit()`, которая помогает управлять жизненным циклом отправки формы. Это руководство показывает, как её использовать.
 
-## What does `submit()` do?
+## Что делает `submit()`? {#what-does-submit-do}
 
-The `submit()` function runs through a specific sequence:
+Функция `submit()` проходит определённую последовательность:
 
-1. **Mark interactive fields as touched** — Fields that display errors only after being touched will now show their validation errors. Hidden, disabled, and readonly fields are skipped.
-1. **Check validation** — If any validation rules have failed, submission stops and the `action` function does not run.
-1. **Run the action** — The `action` function executes with the form's current value. While it runs, `submitting()` returns `true`.
-1. **Handle the result** — If the action returns errors, they are routed to their target fields. If it returns nothing, the submission is treated as successful.
+1. **Пометить интерактивные поля как touched** — поля, которые показывают ошибки только после touched, теперь покажут ошибки валидации. Скрытые, отключённые и readonly поля пропускаются.
+1. **Проверить валидацию** — если какие-либо правила валидации не прошли, отправка останавливается и функция `action` не выполняется.
+1. **Выполнить action** — функция `action` выполняется с текущим значением формы. Пока она выполняется, `submitting()` возвращает `true`.
+1. **Обработать результат** — если action возвращает ошибки, они направляются к целевым полям. Если ничего не возвращает, отправка считается успешной.
 
-The `submit()` function returns a `Promise<boolean>` that resolves to `true` when the action completes without errors, and `false` when validation fails or the action returns errors.
+Функция `submit()` возвращает `Promise<boolean>`, который разрешается в `true`, когда action завершается без ошибок, и в `false`, когда валидация не проходит или action возвращает ошибки.
 
-## Setting up form submission with `FormRoot`
+## Настройка отправки формы с `FormRoot` {#setting-up-form-submission-with-formroot}
 
-The most common way to use the `submit()` function is through the `FormRoot` directive.
+Самый распространённый способ использовать функцию `submit()` — через директиву `FormRoot`.
 
-The `FormRoot` directive handles three things automatically when bound to a `<form>` element:
+Директива `FormRoot` автоматически обрабатывает три вещи при привязке к элементу `<form>`:
 
-1. **Sets [`novalidate`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#novalidate)** — Disables the browser's built-in validation so Signal Forms manages validation instead
-1. **Prevents default** — Stops the browser from navigating on form submission
-1. **Calls `submit()`** — Triggers the submission flow when the user submits the form
+1. **Устанавливает [`novalidate`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#novalidate)** — отключает встроенную валидацию браузера, чтобы Signal Forms управляли валидацией
+1. **Предотвращает default** — останавливает навигацию браузера при отправке формы
+1. **Вызывает `submit()`** — запускает поток отправки, когда пользователь отправляет форму
 
-NOTE: The `FormRoot` directive sets the `novalidate` attribute on the `form` element automatically. You do not need to add it manually when using `FormRoot`.
+NOTE: Директива `FormRoot` автоматически устанавливает атрибут `novalidate` на элементе `form`. Не нужно добавлять его вручную при использовании `FormRoot`.
 
-`FormRoot` handles the submission event, but you still need to tell it _what to do_ with the form data. That requires three things:
+`FormRoot` обрабатывает событие отправки, но всё равно нужно сказать ему, _что делать_ с данными формы. Для этого нужны три вещи:
 
-1. Bind your form to the `FormRoot` directive
-1. Pass a `submission` option to the `form()` function
-1. Define an `action` function within the `submission` option that manages the submitted data
+1. Привязать форму к директиве `FormRoot`
+1. Передать опцию `submission` в функцию `form()`
+1. Определить функцию `action` внутри опции `submission`, которая управляет отправленными данными
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -82,13 +82,13 @@ export class Contact {
 }
 ```
 
-The `action` function runs only when no validation rules have failed. By default, pending async validators do not block submission (see [Controlling validation gating](#controlling-validation-gating-with-ignorevalidators) for more details). The action receives the field tree and a `detail` object with `root` and `submitted` field trees, which is useful when submitting a sub-form.
+Функция `action` выполняется только когда ни одно правило валидации не провалилось. По умолчанию ожидающие async-валидаторы не блокируют отправку (см. [Управление gating валидации](#controlling-validation-gating-with-ignorevalidators)). Action получает дерево полей и объект `detail` с деревьями полей `root` и `submitted`, что полезно при отправке подформы.
 
-After validation passes, the action itself may still fail due to scenarios such as a network error or duplicate entry. In those cases, you can surface the failure by returning the error(s). On the other hand, to indicate success, you only need to return `null` or `undefined`, or call an empty `return`.
+После прохождения валидации сам action всё ещё может завершиться неудачей из-за сценариев вроде сетевой ошибки или дублирующей записи. В этих случаях можно показать сбой, вернув ошибку(и). С другой стороны, чтобы указать успех, достаточно вернуть `null` или `undefined`, или вызвать пустой `return`.
 
-## Showing submission state with `submitting()`
+## Показ состояния отправки с `submitting()` {#showing-submission-state-with-submitting}
 
-When you need to track whether the form is in the process of submitting, Signal Forms provides a `submitting()` signal that returns `true` while the `action` function is running. Use it to show loading indicators or disable the submit button to prevent duplicate submissions.
+Когда нужно отслеживать, находится ли форма в процессе отправки, Signal Forms предоставляют сигнал `submitting()`, который возвращает `true`, пока выполняется функция `action`. Используйте его для показа индикаторов загрузки или отключения кнопки submit, чтобы предотвратить повторные отправки.
 
 ```angular-html
 <button type="submit" [disabled]="contactForm().submitting()">
@@ -100,17 +100,17 @@ When you need to track whether the form is in the process of submitting, Signal 
 </button>
 ```
 
-Once the `action` function succeeds or returns an error, the `submitting()` signal automatically resets back to `false`.
+Как только функция `action` успешно завершается или возвращает ошибку, сигнал `submitting()` автоматически сбрасывается обратно в `false`.
 
-## Managing submission errors
+## Управление ошибками отправки {#managing-submission-errors}
 
-### Server errors
+### Ошибки сервера {#server-errors}
 
-When your `action` function communicates with a server, the server may return errors that need to appear on specific fields. Return these errors from the `action` to route them to their target fields.
+Когда функция `action` общается с сервером, сервер может вернуть ошибки, которые нужно показать на конкретных полях. Верните эти ошибки из `action`, чтобы направить их к целевым полям.
 
-#### Errors on the submitted field
+#### Ошибки на отправленном поле {#errors-on-the-submitted-field}
 
-By default, errors returned from the `action` are assigned to the submitted field (the field tree you passed to `submit()`):
+По умолчанию ошибки, возвращённые из `action`, назначаются отправленному полю (дереву полей, которое вы передали в `submit()`):
 
 ```ts
 action: async (field) => {
@@ -121,9 +121,9 @@ action: async (field) => {
 };
 ```
 
-#### Errors on specific fields
+#### Ошибки на конкретных полях {#errors-on-specific-fields}
 
-When you want to route an error to a specific field, include a `fieldTree` property pointing to that field:
+Когда нужно направить ошибку к конкретному полю, включите свойство `fieldTree`, указывающее на это поле:
 
 ```ts
 action: async (field) => {
@@ -134,9 +134,9 @@ action: async (field) => {
 };
 ```
 
-#### Multiple errors
+#### Несколько ошибок {#multiple-errors}
 
-When you want to report errors on multiple fields, return an array:
+Когда нужно сообщить об ошибках на нескольких полях, верните массив:
 
 ```ts
 action: async (field) => {
@@ -151,17 +151,17 @@ action: async (field) => {
 };
 ```
 
-### Auto-clearing submission errors
+### Автоочистка ошибок отправки {#auto-clearing-submission-errors}
 
-Submission errors clear automatically when the user edits the field. If the `action` returns an error on the email field, that error disappears as soon as the user changes the email value.
+Ошибки отправки очищаются автоматически, когда пользователь редактирует поле. Если `action` возвращает ошибку на поле email, эта ошибка исчезает, как только пользователь меняет значение email.
 
-This differs from validation errors, which recompute reactively. Validation rules run again on each change and may produce the same error. Submission errors are one-time results from the server — once cleared, they do not reappear unless the form is submitted again.
+Это отличается от ошибок валидации, которые пересчитываются реактивно. Правила валидации запускаются снова при каждом изменении и могут произвести ту же ошибку. Ошибки отправки — одноразовые результаты с сервера: после очистки они не появляются снова, пока форма не будет отправлена снова.
 
-TIP: Submission errors appear alongside validation errors in the field's `errors()` signal. For guidance on displaying errors in your template, see the [Field State Management guide](guide/forms/signals/field-state-management).
+TIP: Ошибки отправки появляются рядом с ошибками валидации в сигнале `errors()` поля. Указания по отображению ошибок в шаблоне см. в [руководстве по управлению состоянием полей](guide/forms/signals/field-state-management).
 
-## Handling invalid submissions with `onInvalid`
+## Обработка невалидных отправок с `onInvalid` {#handling-invalid-submissions-with-oninvalid}
 
-When validation fails, the `action` function does not run. If you need to respond to a failed submission attempt — such as scrolling to the first error, showing a toast, or focusing an invalid field — use the `onInvalid` callback.
+Когда валидация не проходит, функция `action` не выполняется. Если нужно отреагировать на неудачную попытку отправки — например, прокрутить к первой ошибке, показать toast или сфокусировать невалидное поле — используйте колбэк `onInvalid`.
 
 ```ts
 contactForm = form(
@@ -184,17 +184,17 @@ contactForm = form(
 );
 ```
 
-The `onInvalid` callback receives the same `(field, detail)` parameters as `action`. It runs after all interactive fields are marked as touched, so validation errors are already visible in the UI when it executes.
+Колбэк `onInvalid` получает те же параметры `(field, detail)`, что и `action`. Он выполняется после того, как все интерактивные поля помечены как touched, поэтому ошибки валидации уже видны в UI, когда он выполняется.
 
-## Controlling validation gating with `ignoreValidators`
+## Управление gating валидации с `ignoreValidators` {#controlling-validation-gating-with-ignorevalidators}
 
-By default, `submit()` ignores pending validators. If no validators have failed, the action runs even if some async validators are still in progress. The `ignoreValidators` option gives you control over this behavior.
+По умолчанию `submit()` игнорирует ожидающие валидаторы. Если ни один валидатор не провалился, action выполняется, даже если некоторые async-валидаторы ещё выполняются. Опция `ignoreValidators` даёт контроль над этим поведением.
 
-| Value       | Behavior                                                                 |
-| ----------- | ------------------------------------------------------------------------ |
-| `'pending'` | Submit if no validators have failed, even if some are pending (default)  |
-| `'none'`    | Submit only if all validators pass — pending validators block submission |
-| `'all'`     | Always submit regardless of validation state                             |
+| Значение    | Поведение                                                                            |
+| ----------- | ------------------------------------------------------------------------------------ |
+| `'pending'` | Отправлять, если ни один валидатор не провалился, даже если некоторые ожидают (по умолчанию) |
+| `'none'`    | Отправлять только если все валидаторы проходят — ожидающие валидаторы блокируют отправку |
+| `'all'`     | Всегда отправлять независимо от состояния валидации                                  |
 
 ```ts
 contactForm = form(
@@ -214,11 +214,11 @@ contactForm = form(
 );
 ```
 
-Use `'none'` when your form has async validators (such as checking username availability) and you need all validation to complete before submitting. Use `'all'` for draft-saving scenarios where you want to persist data regardless of validation state.
+Используйте `'none'`, когда у формы есть async-валидаторы (например, проверка доступности имени пользователя) и нужно, чтобы вся валидация завершилась перед отправкой. Используйте `'all'` для сценариев сохранения черновика, где нужно сохранять данные независимо от состояния валидации.
 
-## Manual submission with `submit()`
+## Ручная отправка с `submit()` {#manual-submission-with-submit}
 
-The `FormRoot` directive is the most common way to trigger submission, but you can also call `submit()` directly. This is useful for multi-step wizards, auto-save, or triggering submission from outside the form element.
+Директива `FormRoot` — самый распространённый способ запустить отправку, но можно также вызвать `submit()` напрямую. Это полезно для многошаговых мастеров, автосохранения или запуска отправки извне элемента формы.
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -269,9 +269,9 @@ export class Contact {
 }
 ```
 
-## Handling side effects
+## Обработка побочных эффектов {#handling-side-effects}
 
-The `submit()` function returns a `Promise<boolean>` — `true` when the action completes without errors, `false` when validation fails or the action returns errors. Use this to trigger side effects like navigation or notifications.
+Функция `submit()` возвращает `Promise<boolean>` — `true`, когда action завершается без ошибок, `false`, когда валидация не проходит или action возвращает ошибки. Используйте это для запуска побочных эффектов вроде навигации или уведомлений.
 
 ```ts
 async onSave() {
@@ -285,7 +285,7 @@ async onSave() {
 }
 ```
 
-When the action produces data that a side effect needs, such as a server-generated ID, handle the side effect inside the action:
+Когда action производит данные, нужные побочному эффекту, например ID, сгенерированный сервером, обрабатывайте побочный эффект внутри action:
 
 ```ts
 async onSave() {
@@ -296,7 +296,7 @@ async onSave() {
 }
 ```
 
-When using `FormRoot`, side effects also go inside the `action` since `FormRoot` calls `submit()` internally:
+При использовании `FormRoot` побочные эффекты также идут внутри `action`, поскольку `FormRoot` вызывает `submit()` внутренне:
 
 ```ts
 submission: {
@@ -312,13 +312,13 @@ submission: {
 }
 ```
 
-## Concurrent submissions
+## Параллельные отправки {#concurrent-submissions}
 
-When a submission is in progress, subsequent calls to `submit()` for the same form or any of its parents return `false` immediately without running the action. This prevents duplicate submissions and side effects if a user triggers the submit action multiple times quickly.
+Когда отправка выполняется, последующие вызовы `submit()` для той же формы или любого из её родителей сразу возвращают `false` без выполнения action. Это предотвращает повторные отправки и побочные эффекты, если пользователь быстро запускает действие submit несколько раз.
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-This guide covered submitting forms and handling form submission errors. Related guides explore other aspects of Signal Forms:
+Это руководство охватило отправку форм и обработку ошибок отправки. Связанные руководства исследуют другие аспекты Signal Forms:
 
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/validation" title="Validation" />

@@ -1,20 +1,20 @@
-# Adding form logic
+# Добавление логики формы
 
-Signal Forms allow you to add logic to your form using schemas. Validation logic is covered in the [Validation guide](guide/forms/signals/validation), and this guide discusses other rules available in schemas. You can disable fields conditionally, hide them based on other values, make them readonly, debounce user input, and attach metadata for custom controls.
+Signal Forms позволяют добавлять логику к форме с помощью схем. Логика валидации рассматривается в [руководстве по валидации](guide/forms/signals/validation), а это руководство обсуждает другие правила, доступные в схемах. Можно условно отключать поля, скрывать их на основе других значений, делать их readonly, debounce пользовательский ввод и прикреплять метаданные для пользовательских controls.
 
-This guide shows you how to use rules like `disabled()`, `hidden()`, `readonly()`, `debounce()`, and `metadata()` to control field behavior.
+В этом руководстве показано, как использовать правила вроде `disabled()`, `hidden()`, `readonly()`, `debounce()` и `metadata()` для управления поведением полей.
 
-## When to add form logic
+## Когда добавлять логику формы {#when-to-add-form-logic}
 
-Use rules when field behavior depends on other field values or needs to update reactively. For example:
+Используйте правила, когда поведение поля зависит от значений других полей или должно обновляться реактивно. Например:
 
-- A coupon code field that's disabled when the order total is too low
-- An address field that's hidden unless shipping is required
-- A search field that debounces to reduce API calls
+- Поле кода купона, которое отключено, когда сумма заказа слишком мала
+- Поле адреса, которое скрыто, пока доставка не требуется
+- Поле поиска с debounce для снижения числа API-вызовов
 
-## How rules work
+## Как работают правила {#how-rules-work}
 
-Rules bind reactive logic to specific fields in your form. Most conditional rules accept an options object with a `when` function. The `when` function automatically recomputes whenever the signals it references change, just like a `computed`.
+Правила привязывают реактивную логику к конкретным полям формы. Большинство условных правил принимают объект options с функцией `when`. Функция `when` автоматически пересчитывается при изменении сигналов, на которые она ссылается, как и `computed`.
 
 ```ts
 const orderForm = form(this.orderModel, (schemaPath) => {
@@ -24,23 +24,23 @@ const orderForm = form(this.orderModel, (schemaPath) => {
 });
 ```
 
-Reactive logic functions receive a `FieldContext` object that provides access to field values and state through helper functions like `valueOf()` and `stateOf()`. It is often destructured to access these helpers directly.
+Функции реактивной логики получают объект `FieldContext`, который предоставляет доступ к значениям и состоянию полей через helper-функции вроде `valueOf()` и `stateOf()`. Часто его деструктурируют, чтобы обращаться к этим helpers напрямую.
 
-NOTE: The schema callback parameter (`schemaPath` in these examples) is a `SchemaPathTree` object that provides paths to all fields in your form. You can name this parameter anything you like.
+NOTE: Параметр callback схемы (`schemaPath` в этих примерах) — объект `SchemaPathTree`, предоставляющий пути ко всем полям формы. Этот параметр можно назвать как угодно.
 
-For complete details on `FieldContext` properties and methods, see the [Validation guide](guide/forms/signals/validation).
+Полные детали свойств и методов `FieldContext` см. в [руководстве по валидации](guide/forms/signals/validation).
 
-## Prevent field updates with `disabled()`
+## Предотвращение обновлений поля с помощью `disabled()` {#prevent-field-updates-with-disabled}
 
-The `disabled()` rule configures a field's disabled state.
+Правило `disabled()` настраивает состояние disabled поля.
 
-It works with the `[formField]` directive to automatically bind the `disabled` attribute based on the field's state, so you don't need to manually add `[disabled]="yourForm.fieldName().disabled()"` to your template.
+Оно работает с директивой `[formField]`, чтобы автоматически привязывать атрибут `disabled` на основе состояния поля, поэтому не нужно вручную добавлять `[disabled]="yourForm.fieldName().disabled()"` в шаблон.
 
-NOTE: Disabled fields skip validation - they don't participate in form validation checks. The field's value is preserved but not validated. For details on validation behavior, see the [Validation guide](guide/forms/signals/validation).
+NOTE: Отключённые поля пропускают валидацию — они не участвуют в проверках валидации формы. Значение поля сохраняется, но не валидируется. Подробности о поведении валидации см. в [руководстве по валидации](guide/forms/signals/validation).
 
-### Always disabled
+### Всегда отключено {#always-disabled}
 
-To disable a field permanently, call `disabled()` with just the field path:
+Чтобы отключить поле навсегда, вызовите `disabled()` только с путём поля:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -68,9 +68,9 @@ export class Settings {
 }
 ```
 
-### Conditional disabling
+### Условное отключение {#conditional-disabling}
 
-To disable a field based on conditions, provide a `when` function that returns `true` (disabled) or `false` (enabled):
+Чтобы отключить поле на основе условий, предоставьте функцию `when`, которая возвращает `true` (отключено) или `false` (включено):
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -103,11 +103,11 @@ export class Order {
 }
 ```
 
-In this example, when the order total is less than $50, the coupon code field is disabled.
+В этом примере, когда сумма заказа меньше $50, поле кода купона отключено.
 
-### Disabled reasons
+### Причины отключения {#disabled-reasons}
 
-When you disable a field, provide user-facing explanations by returning a string instead of `true`:
+При отключении поля предоставьте объяснения для пользователя, возвращая строку вместо `true`:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -151,16 +151,16 @@ export class Order {
 }
 ```
 
-The `when` function returns:
+Функция `when` возвращает:
 
-- A **string** to disable the field with a reason
-- `false` to enable the field (not just any falsy value - use `false` explicitly)
+- **Строку**, чтобы отключить поле с причиной
+- `false`, чтобы включить поле (не любое falsy-значение — используйте `false` явно)
 
-Access the reasons through the `disabledReasons()` signal on the field state. Each reason has a `message` property containing the string you returned.
+Доступ к причинам — через сигнал `disabledReasons()` на состоянии поля. У каждой причины есть свойство `message`, содержащее возвращённую строку.
 
-#### Multiple disabled reasons
+#### Несколько причин отключения {#multiple-disabled-reasons}
 
-You can also call `disabled()` multiple times on the same field, and all of the returned reasons accumulate:
+Также можно вызвать `disabled()` несколько раз для одного и того же поля, и все возвращённые причины накапливаются:
 
 ```angular-ts
 orderForm = form(this.orderModel, (schemaPath) => {
@@ -174,19 +174,19 @@ orderForm = form(this.orderModel, (schemaPath) => {
 });
 ```
 
-If both conditions are true, the field shows both disabled reasons. This pattern is useful for complex availability rules that you want to keep separate.
+Если оба условия истинны, поле показывает обе причины отключения. Этот паттерн полезен для сложных правил доступности, которые хочется держать отдельно.
 
-## Configuring `hidden()` state on fields
+## Настройка состояния `hidden()` на полях {#configuring-hidden-state-on-fields}
 
-The `hidden()` rule configures a field's hidden state. However, this only sets a programmatic state. **You control whether the field appears in the UI**.
+Правило `hidden()` настраивает состояние hidden поля. Однако это только задаёт программное состояние. **Вы контролируете, появляется ли поле в UI**.
 
-IMPORTANT: Unlike `disabled` and `readonly`, there is no native DOM property for `hidden` state. The `[formField]` directive does not apply a `hidden` attribute to elements. You must use `@if` or CSS in your template to conditionally render fields based on the `hidden()` state.
+IMPORTANT: В отличие от `disabled` и `readonly`, для состояния `hidden` нет нативного DOM-свойства. Директива `[formField]` не применяет атрибут `hidden` к элементам. Нужно использовать `@if` или CSS в шаблоне, чтобы условно отрисовывать поля на основе состояния `hidden()`.
 
-NOTE: Like disabled fields, hidden fields also skip validation. See the [Validation guide](guide/forms/signals/validation) for details.
+NOTE: Как и отключённые поля, скрытые поля также пропускают валидацию. См. [руководство по валидации](guide/forms/signals/validation) для подробностей.
 
-### Basic field hiding
+### Базовое скрытие поля {#basic-field-hiding}
 
-Use `hidden()` with a `when` function that returns `true` (hidden) or `false` (visible):
+Используйте `hidden()` с функцией `when`, которая возвращает `true` (скрыто) или `false` (видимо):
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -221,15 +221,15 @@ export class Profile {
 }
 ```
 
-## Display uneditable fields with `readonly()`
+## Отображение нередактируемых полей с помощью `readonly()` {#display-uneditable-fields-with-readonly}
 
-The `readonly()` rule prevents users from updating a field. The `[FormField]` directive automatically binds this state to the HTML `readonly` attribute, which prevents editing while still allowing users to focus and select text.
+Правило `readonly()` не позволяет пользователям обновлять поле. Директива `[FormField]` автоматически привязывает это состояние к HTML-атрибуту `readonly`, который предотвращает редактирование, но всё ещё позволяет пользователям фокусироваться и выделять текст.
 
-NOTE: Readonly fields skip [validation](guide/forms/signals/validation).
+NOTE: Readonly-поля пропускают [валидацию](guide/forms/signals/validation).
 
-### Always readonly
+### Всегда readonly {#always-readonly}
 
-To make a field permanently readonly, call `readonly()` with just the field path:
+Чтобы сделать поле постоянно readonly, вызовите `readonly()` только с путём поля:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -262,11 +262,11 @@ export class Account {
 }
 ```
 
-The `[FormField]` directive automatically binds the `readonly` attribute based on the field's state.
+Директива `[FormField]` автоматически привязывает атрибут `readonly` на основе состояния поля.
 
-### Conditional readonly
+### Условный readonly {#conditional-readonly}
 
-To make a field readonly based on conditions, provide a `when` function:
+Чтобы сделать поле readonly на основе условий, предоставьте функцию `when`:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -299,57 +299,57 @@ export class Document {
 }
 ```
 
-When `isLocked` is true, the title field becomes readonly.
+Когда `isLocked` равно true, поле title становится readonly.
 
-## Choose between hidden, disabled, and readonly
+## Выбор между hidden, disabled и readonly {#choose-between-hidden-disabled-and-readonly}
 
-These three configuration functions control field availability in different ways:
+Эти три функции конфигурации по-разному управляют доступностью поля:
 
-Choose `hidden()` when the field:
+Выбирайте `hidden()`, когда поле:
 
-- Should not appear in the UI at all
-- Is irrelevant to the current form state
-- Example: Shipping address fields when "same as billing" is checked
+- Вообще не должно появляться в UI
+- Нерелевантно текущему состоянию формы
+- Пример: поля адреса доставки, когда отмечено «тот же, что и billing»
 
-Choose `disabled()` when the field:
+Выбирайте `disabled()`, когда поле:
 
-- Should be visible but not editable
-- Needs to show why it's unavailable (using disabled reasons)
-- Should be excluded from HTML form submission
-- Example: Submit button disabled until form is valid, approval fields disabled for non-admin users
+- Должно быть видимым, но не редактируемым
+- Нужно показать, почему оно недоступно (через причины отключения)
+- Должно быть исключено из HTML form submission
+- Пример: кнопка Submit отключена, пока форма невалидна; поля одобрения отключены для не-admin пользователей
 
-Choose `readonly()` when the field:
+Выбирайте `readonly()`, когда поле:
 
-- Should be visible but not editable
-- Contains data users need to see, select, or copy
-- Should be included in HTML form submission
-- Example: Order confirmation number, system-generated reference codes
+- Должно быть видимым, но не редактируемым
+- Содержит данные, которые пользователям нужно видеть, выделять или копировать
+- Должно быть включено в HTML form submission
+- Пример: номер подтверждения заказа, системные reference-коды
 
-All three skip validation and prevent user editing while active. The key differences:
+Все три пропускают валидацию и предотвращают редактирование пользователем, пока активны. Ключевые различия:
 
-| Feature                          | `hidden()` | `disabled()` | `readonly()` |
+| Возможность                          | `hidden()` | `disabled()` | `readonly()` |
 | -------------------------------- | ---------- | ------------ | ------------ |
-| Visible in UI                    | No         | Yes          | Yes          |
-| Users can focus/select           | No         | No           | Yes          |
-| Included in HTML form submission | No         | No           | Yes          |
+| Видимо в UI                    | Нет         | Да          | Да          |
+| Пользователи могут фокусироваться/выделять           | Нет         | Нет           | Да          |
+| Включено в HTML form submission | Нет         | Нет           | Да          |
 
-## Delay input operations with `debounce()`
+## Задержка операций ввода с помощью `debounce()` {#delay-input-operations-with-debounce}
 
-The `debounce()` rule delays updating the form model. This is useful for performance optimization and reducing unnecessary operations during rapid input.
+Правило `debounce()` задерживает обновление модели формы. Это полезно для оптимизации производительности и снижения ненужных операций при быстром вводе.
 
-### What debouncing does
+### Что делает debouncing {#what-debouncing-does}
 
-Without debouncing, every keystroke immediately updates the form model. This can trigger:
+Без debouncing каждое нажатие клавиши сразу обновляет модель формы. Это может запускать:
 
-- Expensive computed signals that recalculate on every change
-- Validation checks after each character
-- API calls or other side effects tied to the model value
+- Дорогие computed-сигналы, которые пересчитываются при каждом изменении
+- Проверки валидации после каждого символа
+- API-вызовы или другие побочные эффекты, связанные со значением модели
 
-Debouncing delays these updates and reduces unnecessary work.
+Debouncing задерживает эти обновления и снижает ненужную работу.
 
-### Basic debouncing
+### Базовый debouncing {#basic-debouncing}
 
-You can debounce a field by specifying a delay in milliseconds:
+Можно применить debounce к полю, указав задержку в миллисекундах:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -378,25 +378,25 @@ export class Search {
 }
 ```
 
-With a 300ms debounce:
+С debounce 300 мс:
 
-- User types in the input field
-- Form model updates only after 300ms of typing inactivity
-- If user keeps typing, the timer resets with each keystroke
-- Once user pauses for 300ms, the model updates with the final value
+- Пользователь вводит в поле ввода
+- Модель формы обновляется только после 300 мс бездействия при вводе
+- Если пользователь продолжает печатать, таймер сбрасывается с каждым нажатием клавиши
+- Как только пользователь делает паузу на 300 мс, модель обновляется финальным значением
 
-### Timing guarantees
+### Гарантии по времени {#timing-guarantees}
 
-The `debounce()` function ensures users don't lose data through these mechanisms:
+Функция `debounce()` гарантирует, что пользователи не потеряют данные, через эти механизмы:
 
-- **When marked as touched:** The value syncs immediately, aborting any pending debounce delay. This happens when the field loses focus (blur) or when explicitly marked as touched.
-- **On form submission:** All fields are marked as touched before validation, which ensures all debounced values sync immediately.
+- **При пометке как touched:** Значение синхронизируется сразу, прерывая любую ожидающую задержку debounce. Это происходит, когда поле теряет фокус (blur) или когда явно помечается как touched.
+- **При отправке формы:** Все поля помечаются как touched перед валидацией, что гарантирует немедленную синхронизацию всех debounced-значений.
 
-This means users can type quickly, tab away, or submit the form without waiting for debounce delays to expire.
+Это означает, что пользователи могут быстро печатать, уходить Tab'ом или отправлять форму, не дожидаясь истечения задержек debounce.
 
-### Custom debounce logic
+### Пользовательская логика debounce {#custom-debounce-logic}
 
-For advanced control, provide a debouncer function that controls when to synchronize the value. This function is called every time the control value is updated and can return either `undefined` to synchronize immediately, or a Promise that prevents synchronization until it resolves:
+Для расширенного контроля предоставьте функцию-debouncer, которая управляет, когда синхронизировать значение. Эта функция вызывается каждый раз при обновлении значения control и может вернуть либо `undefined` для немедленной синхронизации, либо Promise, который предотвращает синхронизацию до своего разрешения:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -428,39 +428,39 @@ export class Search {
 }
 ```
 
-The debouncer function can return:
+Функция-debouncer может вернуть:
 
-- `undefined` to synchronize the value immediately
-- A `Promise<void>` that prevents synchronization until it resolves
+- `undefined`, чтобы синхронизировать значение сразу
+- `Promise<void>`, который предотвращает синхронизацию до своего разрешения
 
-Use cases for custom debounce logic:
+Сценарии использования пользовательской логики debounce:
 
-- Implementing custom timing logic beyond simple delays
-- Coordinating synchronization with external events
-- Conditional debouncing based on application state
+- Реализация пользовательской логики времени за пределами простых задержек
+- Координация синхронизации с внешними событиями
+- Условный debouncing на основе состояния приложения
 
-### When to use debouncing
+### Когда использовать debouncing {#when-to-use-debouncing}
 
-Debouncing is most useful when:
+Debouncing наиболее полезен, когда:
 
-- You have expensive computed signals that depend on the field value
-- The field triggers API calls or other side effects
-- You want to reduce validation overhead during rapid typing
-- Performance profiling shows model updates are causing slowdowns
+- Есть дорогие computed-сигналы, зависящие от значения поля
+- Поле запускает API-вызовы или другие побочные эффекты
+- Нужно снизить накладные расходы валидации при быстром вводе
+- Профилирование производительности показывает, что обновления модели вызывают замедления
 
-Don't use debouncing if:
+Не используйте debouncing, если:
 
-- The field needs immediate updates for good UX (such as calculator inputs)
-- The performance benefit is negligible
-- Users expect real-time feedback
+- Полю нужны немедленные обновления для хорошего UX (например, ввод калькулятора)
+- Выигрыш в производительности незначителен
+- Пользователи ожидают обратную связь в реальном времени
 
-## Associate data with a field using `metadata()`
+## Связывание данных с полем с помощью `metadata()` {#associate-data-with-a-field-using-metadata}
 
-Metadata attaches reactive data to a field. Validation rules use this system internally, and you can publish your own keys for application-specific information like help text, configuration, or computed display values.
+Метаданные прикрепляют реактивные данные к полю. Правила валидации используют эту систему внутренне, и вы можете публиковать собственные ключи для информации, специфичной для приложения: текст помощи, конфигурация или вычисляемые отображаемые значения.
 
-Signal Forms provides pre-defined metadata keys that built-in validators populate automatically:
+Signal Forms предоставляет предопределённые ключи метаданных, которые встроенные валидаторы заполняют автоматически:
 
-| Key          | Populated by         | Read via              |
+| Ключ          | Заполняется         | Читается через              |
 | ------------ | -------------------- | --------------------- |
 | `REQUIRED`   | `required()`         | `field().required()`  |
 | `MIN`        | `min()`, `minDate()` | `field().min()`       |
@@ -469,7 +469,7 @@ Signal Forms provides pre-defined metadata keys that built-in validators populat
 | `MAX_LENGTH` | `maxLength()`        | `field().maxLength()` |
 | `PATTERN`    | `pattern()`          | `field().pattern()`   |
 
-The `[formField]` directive automatically binds five of these (`REQUIRED`, `MIN`, `MAX`, `MIN_LENGTH`, and `MAX_LENGTH`) to the corresponding HTML attribute on a native form control. `PATTERN` is the exception, because Signal Forms supports multiple patterns per field but the HTML `pattern` attribute accepts only a single regular expression.
+Директива `[formField]` автоматически привязывает пять из них (`REQUIRED`, `MIN`, `MAX`, `MIN_LENGTH` и `MAX_LENGTH`) к соответствующему HTML-атрибуту на нативном form control. `PATTERN` — исключение, потому что Signal Forms поддерживает несколько паттернов на поле, а HTML-атрибут `pattern` принимает только одно регулярное выражение.
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -500,9 +500,9 @@ export class Age {
 }
 ```
 
-### Reactive metadata
+### Реактивные метаданные {#reactive-metadata}
 
-Validation rules can derive their constraints from other fields, making the published metadata reactive:
+Правила валидации могут выводить свои ограничения из других полей, делая опубликованные метаданные реактивными:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -541,17 +541,17 @@ export class Inventory {
 }
 ```
 
-The `max()` validation rule sets the `MAX` metadata reactively based on the selected item, so any template or control reading `field().max()` updates whenever the item changes.
+Правило валидации `max()` задаёт метаданные `MAX` реактивно на основе выбранного item, поэтому любой шаблон или control, читающий `field().max()`, обновляется при изменении item.
 
-For deeper coverage, including how to define custom keys, combine contributions with reducers, and use managed metadata for lifecycle-aware objects, see the [Field metadata guide](guide/forms/signals/field-metadata).
+Более глубокое покрытие, включая определение пользовательских ключей, объединение вкладов с reducers и использование managed metadata для объектов с учётом жизненного цикла, см. в [руководстве по метаданным полей](guide/forms/signals/field-metadata).
 
-## Combining rules
+## Комбинирование правил {#combining-rules}
 
-You can apply multiple rules to the same field, and you can use conditional logic to apply entire groups of rules based on form state.
+Можно применять несколько правил к одному полю и использовать условную логику для применения целых групп правил на основе состояния формы.
 
-### Multiple rules on one field
+### Несколько правил на одном поле {#multiple-rules-on-one-field}
 
-Apply multiple rules to configure all aspects of a field's behavior:
+Применяйте несколько правил, чтобы настроить все аспекты поведения поля:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -590,16 +590,16 @@ export class Promo {
 }
 ```
 
-These rules work together:
+Эти правила работают вместе:
 
-- Hidden takes precedence - if the field is hidden, disabled state doesn't matter
-- Disabled prevents editing regardless of readonly state
-- Debouncing affects model updates regardless of other state
-- Metadata is independent and always available
+- Hidden имеет приоритет — если поле скрыто, состояние disabled не важно
+- Disabled предотвращает редактирование независимо от состояния readonly
+- Debouncing влияет на обновления модели независимо от другого состояния
+- Метаданные независимы и всегда доступны
 
-### Conditional logic with applyWhen
+### Условная логика с applyWhen {#conditional-logic-with-applywhen}
 
-Use `applyWhen()` to conditionally apply entire groups of rules:
+Используйте `applyWhen()`, чтобы условно применять целые группы правил:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -643,17 +643,17 @@ export class Address {
 }
 ```
 
-The `applyWhen()` function receives:
+Функция `applyWhen()` получает:
 
-1. A path to apply logic to (often the root form path)
-2. A reactive logic function that returns `true` (apply) or `false` (don't apply)
-3. A schema function that defines the conditional rules
+1. Путь, к которому применяется логика (часто корневой путь формы)
+2. Функцию реактивной логики, которая возвращает `true` (применять) или `false` (не применять)
+3. Функцию схемы, определяющую условные правила
 
-The conditional rules only run when the condition is true. This is useful for complex forms where validation rules or behavior changes based on user choices.
+Условные правила выполняются только когда условие истинно. Это полезно для сложных форм, где правила валидации или поведение меняются на основе выбора пользователя.
 
-### Reusable schema functions
+### Переиспользуемые функции схем {#reusable-schema-functions}
 
-Extract common rule configurations into reusable functions:
+Вынесите общие конфигурации правил в переиспользуемые функции:
 
 ```ts
 import {SchemaPath, debounce, metadata, maxLength} from '@angular/forms/signals';
@@ -676,12 +676,12 @@ const registrationForm = form(registrationModel, (schemaPath) => {
 });
 ```
 
-This pattern is useful when you have standard field configurations that you use across multiple forms in your application.
+Этот паттерн полезен, когда есть стандартные конфигурации полей, используемые в нескольких формах приложения.
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-To learn more about Signal Forms, check out these related guides:
+Чтобы узнать больше о Signal Forms, ознакомьтесь с этими связанными руководствами:
 
-- [Field State Management](guide/forms/signals/field-state-management) - Learn how to use the state signals created by these functions in your templates and component logic
-- [Validation](guide/forms/signals/validation) - Learn about validation rules and error handling
-- [Custom Controls](guide/forms/signals/custom-controls) - Learn how custom controls can read metadata and state to configure themselves automatically
+- [Управление состоянием полей](guide/forms/signals/field-state-management) — как использовать сигналы состояния, создаваемые этими функциями, в шаблонах и логике компонента
+- [Валидация](guide/forms/signals/validation) — правила валидации и обработка ошибок
+- [Пользовательские controls](guide/forms/signals/custom-controls) — как пользовательские controls могут читать метаданные и состояние, чтобы настраивать себя автоматически

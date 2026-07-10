@@ -1,139 +1,139 @@
-# Building dynamic forms
+# Создание динамических форм
 
-Many forms, such as questionnaires, can be very similar to one another in format and intent.
-To make it faster and easier to generate different versions of such a form, you can create a _dynamic form template_ based on metadata that describes the business object model.
-Then, use the template to generate new forms automatically, according to changes in the data model.
+Многие формы, например анкеты, могут быть очень похожи друг на друга по формату и назначению.
+Чтобы быстрее и проще генерировать разные версии такой формы, можно создать _шаблон динамической формы_ на основе метаданных, описывающих модель бизнес-объекта.
+Затем используйте шаблон для автоматической генерации новых форм в соответствии с изменениями модели данных.
 
-The technique is particularly useful when you have a type of form whose content must change frequently to meet rapidly changing business and regulatory requirements.
-A typical use-case is a questionnaire.
-You might need to get input from users in different contexts.
-The format and style of the forms a user sees should remain constant, while the actual questions you need to ask vary with the context.
+Техника особенно полезна, когда есть тип формы, содержимое которой должно часто меняться, чтобы соответствовать быстро меняющимся бизнес- и регуляторным требованиям.
+Типичный сценарий — анкета.
+Может понадобиться получать ввод от пользователей в разных контекстах.
+Формат и стиль форм, которые видит пользователь, должны оставаться постоянными, а фактические вопросы, которые нужно задать, меняются с контекстом.
 
-In this tutorial, you will build a dynamic form that presents a basic questionnaire.
-You build an online application for heroes seeking employment.
-The agency is constantly tinkering with the application process, but by using the dynamic form
-you can create the new forms on the fly without changing the application code.
+В этом туториале вы создадите динамическую форму, представляющую базовую анкету.
+Вы создаёте онлайн-заявку для героев, ищущих работу.
+Агентство постоянно меняет процесс подачи заявки, но используя динамическую форму,
+можно создавать новые формы на лету без изменения кода приложения.
 
-The tutorial walks you through the following steps:
+Туториал проводит вас через следующие шаги:
 
-1. Enable reactive forms for a project.
-1. Establish a data model to represent form controls.
-1. Populate the model with sample data.
-1. Develop a component to create form controls dynamically.
+1. Включить reactive forms для проекта.
+1. Создать модель данных для представления form controls.
+1. Заполнить модель примерными данными.
+1. Разработать компонент для динамического создания form controls.
 
-The form you create uses input validation and styling to improve the user experience.
-It has a Submit button that is only enabled when all user input is valid, and flags invalid input with color coding and error messages.
+Создаваемая форма использует валидацию ввода и стилизацию для улучшения пользовательского опыта.
+У неё есть кнопка Submit, которая включается только когда весь пользовательский ввод валиден, и помечает невалидный ввод цветовой кодировкой и сообщениями об ошибках.
 
-The basic version can evolve to support a richer variety of questions, more graceful rendering, and superior user experience.
+Базовая версия может развиваться для поддержки более богатого разнообразия вопросов, более изящного рендера и лучшего пользовательского опыта.
 
-## Enable reactive forms for your project
+## Включение reactive forms для проекта {#enable-reactive-forms-for-your-project}
 
-Dynamic forms are based on reactive forms.
+Динамические формы основаны на reactive forms.
 
-To give the application access to reactive form directives, import `ReactiveFormsModule` from the `@angular/forms` package into the necessary components.
+Чтобы дать приложению доступ к директивам reactive forms, импортируйте `ReactiveFormsModule` из пакета `@angular/forms` в необходимые компоненты.
 
 <docs-code-multifile>
     <docs-code header="dynamic-form.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form.component.ts"/>
     <docs-code header="dynamic-form-question.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form-question.component.ts"/>
 </docs-code-multifile>
 
-## Create a form object model
+## Создание объектной модели формы {#create-a-form-object-model}
 
-A dynamic form requires an object model that can describe all scenarios needed by the form functionality.
-The example hero-application form is a set of questions — that is, each control in the form must ask a question and accept an answer.
+Динамической форме нужна объектная модель, которая может описать все сценарии, требуемые функциональностью формы.
+Пример формы заявки героя — набор вопросов: каждый control в форме должен задать вопрос и принять ответ.
 
-The data model for this type of form must represent a question.
-The example includes the `DynamicFormQuestionComponent`, which defines a question as the fundamental object in the model.
+Модель данных для такого типа формы должна представлять вопрос.
+Пример включает `DynamicFormQuestionComponent`, который определяет вопрос как фундаментальный объект в модели.
 
-The following `QuestionBase` is a base class for a set of controls that can represent the question and its answer in the form.
+Следующий `QuestionBase` — базовый класс для набора controls, которые могут представлять вопрос и его ответ в форме.
 
 <docs-code header="question-base.ts" path="adev/src/content/examples/dynamic-form/src/app/question-base.ts"/>
 
-### Define control classes
+### Определение классов controls {#define-control-classes}
 
-From this base, the example derives two new classes, `TextboxQuestion` and `DropdownQuestion`, that represent different control types.
-When you create the form template in the next step, you instantiate these specific question types in order to render the appropriate controls dynamically.
+От этой базы пример выводит два новых класса — `TextboxQuestion` и `DropdownQuestion` — представляющих разные типы controls.
+Когда вы создадите шаблон формы на следующем шаге, вы создадите экземпляры этих конкретных типов вопросов, чтобы динамически рендерить соответствующие controls.
 
-The `TextboxQuestion` control type is represented in a form template using an `<input>` element. It presents a question and lets users enter input. The `type` attribute of the element is defined based on the `type` field specified in the `options` argument (for example `text`, `email`, `url`).
+Тип control `TextboxQuestion` представляется в шаблоне формы элементом `<input>`. Он представляет вопрос и позволяет пользователям вводить данные. Атрибут `type` элемента определяется на основе поля `type`, указанного в аргументе `options` (например, `text`, `email`, `url`).
 
 <docs-code header="question-textbox.ts" path="adev/src/content/examples/dynamic-form/src/app/question-textbox.ts"/>
 
-The `DropdownQuestion` control type presents a list of choices in a select box.
+Тип control `DropdownQuestion` представляет список вариантов в select box.
 
  <docs-code header="question-dropdown.ts" path="adev/src/content/examples/dynamic-form/src/app/question-dropdown.ts"/>
 
-### Compose form groups
+### Композиция групп форм {#compose-form-groups}
 
-A dynamic form uses a service to create grouped sets of input controls, based on the form model.
-The following `QuestionControlService` collects a set of `FormGroup` instances that consume the metadata from the question model.
-You can specify default values and validation rules.
+Динамическая форма использует сервис для создания сгруппированных наборов input controls на основе модели формы.
+Следующий `QuestionControlService` собирает набор экземпляров `FormGroup`, которые потребляют метаданные из модели вопроса.
+Можно указать значения по умолчанию и правила валидации.
 
 <docs-code header="question-control.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question-control.service.ts"/>
 
-## Compose dynamic form contents
+## Композиция содержимого динамической формы {#compose-dynamic-form-contents}
 
-The dynamic form itself is represented by a container component, which you add in a later step.
-Each question is represented in the form component's template by an `<app-question>` tag, which matches an instance of `DynamicFormQuestionComponent`.
+Сама динамическая форма представлена компонентом-контейнером, который вы добавите на более позднем шаге.
+Каждый вопрос представляется в шаблоне компонента формы тегом `<app-question>`, который соответствует экземпляру `DynamicFormQuestionComponent`.
 
-The `DynamicFormQuestionComponent` is responsible for rendering the details of an individual question based on values in the data-bound question object.
-The form relies on a [`[formGroup]` directive](api/forms/FormGroupDirective 'API reference') to connect the template HTML to the underlying control objects.
-The `DynamicFormQuestionComponent` creates form groups and populates them with controls defined in the question model, specifying display and validation rules.
+`DynamicFormQuestionComponent` отвечает за рендер деталей отдельного вопроса на основе значений в data-bound объекте вопроса.
+Форма опирается на [директиву `[formGroup]`](api/forms/FormGroupDirective 'API reference') для связи HTML шаблона с underlying объектами controls.
+`DynamicFormQuestionComponent` создаёт группы форм и заполняет их controls, определёнными в модели вопроса, указывая правила отображения и валидации.
 
 <docs-code-multifile>
   <docs-code header="dynamic-form-question.component.html" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form-question.component.html"/>
   <docs-code header="dynamic-form-question.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form-question.component.ts"/>
 </docs-code-multifile>
 
-The goal of the `DynamicFormQuestionComponent` is to present question types defined in your model.
-You only have two types of questions at this point but you can imagine many more.
-The `@switch` block in the template determines which type of question to display.
-The switch uses directives with the [`formControlName`](api/forms/FormControlName 'FormControlName directive API reference') and [`formGroup`](api/forms/FormGroupDirective 'FormGroupDirective API reference') selectors.
-Both directives are defined in `ReactiveFormsModule`.
+Цель `DynamicFormQuestionComponent` — представлять типы вопросов, определённые в вашей модели.
+Сейчас у вас только два типа вопросов, но можно представить гораздо больше.
+Блок `@switch` в шаблоне определяет, какой тип вопроса отображать.
+Switch использует директивы с селекторами [`formControlName`](api/forms/FormControlName 'FormControlName directive API reference') и [`formGroup`](api/forms/FormGroupDirective 'FormGroupDirective API reference').
+Обе директивы определены в `ReactiveFormsModule`.
 
-### Supply data
+### Поставка данных {#supply-data}
 
-Another service is needed to supply a specific set of questions from which to build an individual form.
-For this exercise you create the `QuestionService` to supply this array of questions from the hard-coded sample data.
-In a real-world app, the service might fetch data from a backend system.
-The key point, however, is that you control the hero job-application questions entirely through the objects returned from `QuestionService`.
-To maintain the questionnaire as requirements change, you only need to add, update, and remove objects from the `questions` array.
+Нужен ещё один сервис, чтобы поставлять конкретный набор вопросов, из которых строится отдельная форма.
+Для этого упражнения вы создаёте `QuestionService` для поставки этого массива вопросов из захардкоженных примерных данных.
+В реальном приложении сервис мог бы загружать данные из backend-системы.
+Ключевой момент, однако, в том, что вы полностью контролируете вопросы заявки героя через объекты, возвращаемые из `QuestionService`.
+Чтобы поддерживать анкету при изменении требований, нужно только добавлять, обновлять и удалять объекты из массива `questions`.
 
-The `QuestionService` supplies a set of questions in the form of an array bound to `input()` questions.
+`QuestionService` поставляет набор вопросов в виде массива, привязанного к `input()` questions.
 
 <docs-code header="question.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question.service.ts"/>
 
-## Create a dynamic form template
+## Создание шаблона динамической формы {#create-a-dynamic-form-template}
 
-The `DynamicFormComponent` component is the entry point and the main container for the form, which is represented using the `<app-dynamic-form>` in a template.
+Компонент `DynamicFormComponent` — точка входа и основной контейнер формы, представленный как `<app-dynamic-form>` в шаблоне.
 
-The `DynamicFormComponent` component presents a list of questions by binding each one to an `<app-question>` element that matches the `DynamicFormQuestionComponent`.
+Компонент `DynamicFormComponent` представляет список вопросов, привязывая каждый к элементу `<app-question>`, который соответствует `DynamicFormQuestionComponent`.
 
 <docs-code-multifile>
     <docs-code header="dynamic-form.component.html" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form.component.html"/>
     <docs-code header="dynamic-form.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form.component.ts"/>
 </docs-code-multifile>
 
-### Display the form
+### Отображение формы {#display-the-form}
 
-To display an instance of the dynamic form, the `AppComponent` shell template passes the `questions` array returned by the `QuestionService` to the form container component, `<app-dynamic-form>`.
+Чтобы отобразить экземпляр динамической формы, shell-шаблон `AppComponent` передаёт массив `questions`, возвращённый `QuestionService`, компоненту-контейнеру формы `<app-dynamic-form>`.
 
 <docs-code header="app.component.ts" path="adev/src/content/examples/dynamic-form/src/app/app.component.ts"/>
 
-This separation of model and data lets you repurpose the components for any type of survey, as long as it's compatible with the _question_ object model.
+Это разделение модели и данных позволяет переиспользовать компоненты для любого типа опроса, пока он совместим с объектной моделью _вопроса_.
 
-### Ensuring valid data
+### Обеспечение валидных данных {#ensuring-valid-data}
 
-The form template uses dynamic data binding of metadata to render the form without making any hardcoded assumptions about specific questions.
-It adds both control metadata and validation criteria dynamically.
+Шаблон формы использует динамическую привязку данных метаданных для рендера формы без каких-либо захардкоженных предположений о конкретных вопросах.
+Он динамически добавляет и метаданные controls, и критерии валидации.
 
-To ensure valid input, the _Save_ button is disabled until the form is in a valid state.
-When the form is valid, click _Save_ and the application renders the current form values as JSON.
+Чтобы обеспечить валидный ввод, кнопка _Save_ отключена, пока форма не в валидном состоянии.
+Когда форма валидна, нажмите _Save_, и приложение отрендерит текущие значения формы как JSON.
 
-The following figure shows the final form.
+Следующий рисунок показывает финальную форму.
 
 <img alt="Dynamic-Form" src="assets/images/guide/dynamic-form/dynamic-form.png">
 
-## Next steps
+## Следующие шаги {#next-steps}
 
 <docs-pill-row>
   <docs-pill title="Validating form input" href="guide/forms/reactive-forms#validating-form-input" />

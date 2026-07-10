@@ -46,7 +46,7 @@
 - Объект `$event`
 - Выражения безопасной навигации (Safe navigation expressions)
 
-ВАЖНО: Флаг `fullTemplateTypeCheck` устарел в Angular 13.
+IMPORTANT: Флаг `fullTemplateTypeCheck` устарел в Angular 13.
 Вместо него следует использовать семейство опций компилятора `strictTemplates`.
 
 ### Строгий режим

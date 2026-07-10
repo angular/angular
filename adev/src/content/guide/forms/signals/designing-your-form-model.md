@@ -1,12 +1,12 @@
-# Designing your form model
+# Проектирование модели формы
 
-Signal Forms uses a model-driven approach, deriving the form's state and structure directly from the model you provide. Because it serves as the foundation of the entire form, it is important to start with a well-designed form model. This guide explores best practices for designing form models.
+Signal Forms используют model-driven подход: состояние и структура формы выводятся напрямую из предоставленной модели. Поскольку модель — основа всей формы, важно начинать с хорошо спроектированной модели формы. В этом руководстве рассматриваются лучшие практики проектирования моделей форм.
 
-## Form model vs domain model
+## Модель формы и доменная модель {#form-model-vs-domain-model}
 
-Forms are used to collect user input. Your application likely has a domain model used to represent this input in a way that's optimized for business logic or storage. However, this is often _different_ than how we want to model the data in our form.
+Формы собирают пользовательский ввод. В приложении, скорее всего, есть доменная модель, представляющая этот ввод так, как удобно для бизнес-логики или хранения. Однако это часто _отличается_ от того, как данные моделируются в форме.
 
-The form model represents the raw user input as it appears in the UI. For instance, in a form you might ask a user to pick a date and a time slot for an appointment as separate input fields, even if your domain model represents it as a single JavaScript `Date` object.
+Модель формы представляет «сырой» пользовательский ввод так, как он выглядит в UI. Например, в форме можно попросить пользователя выбрать дату и временной слот для встречи отдельными полями ввода, даже если доменная модель представляет это одним объектом JavaScript `Date`.
 
 ```ts
 interface AppointmentFormModel {
@@ -21,17 +21,17 @@ interface AppointmentDomainModel {
 }
 ```
 
-Forms should use a form model tailored to the input experience, rather than simply repurposing the domain model.
+Формы должны использовать модель формы, адаптированную под опыт ввода, а не просто переиспользовать доменную модель.
 
-## Form model best practices
+## Лучшие практики модели формы {#form-model-best-practices}
 
-### Use specific types
+### Используйте конкретные типы {#use-specific-types}
 
-Always define interfaces or types for your models as shown in [Using TypeScript types](/guide/forms/signals/models#using-typescript-types). Explicit types provide better IntelliSense, catch errors at compile time, and serve as documentation for what data the form contains.
+Всегда определяйте интерфейсы или типы для моделей, как показано в [Использование типов TypeScript](/guide/forms/signals/models#using-typescript-types). Явные типы дают лучший IntelliSense, ловят ошибки на этапе компиляции и служат документацией того, какие данные содержит форма.
 
-### Initialize all fields
+### Инициализируйте все поля {#initialize-all-fields}
 
-Provide initial values for every field in your model:
+Задавайте начальные значения для каждого поля модели:
 
 ```ts {prefer, header: 'All fields initialized'}
 const taskModel = signal({
@@ -49,11 +49,11 @@ const taskModel = signal({
 });
 ```
 
-Missing initial values mean those fields won't exist in the field tree, making them inaccessible for form interactions.
+Отсутствие начальных значений означает, что эти поля не появятся в дереве полей и будут недоступны для взаимодействия с формой.
 
-### Keep models focused
+### Держите модели сфокусированными {#keep-models-focused}
 
-Each model should represent a single form or a cohesive set of related data:
+Каждая модель должна представлять одну форму или связный набор связанных данных:
 
 ```ts {prefer, header: 'Focused on a single purpose'}
 const loginModel = signal({
@@ -75,11 +75,11 @@ const appModel = signal({
 });
 ```
 
-Separate models for different concerns makes forms easier to understand and reuse. Create multiple forms if you're managing distinct sets of data.
+Отдельные модели для разных задач делают формы понятнее и проще для повторного использования. Создавайте несколько форм, если управляете разными наборами данных.
 
-### Consider validation requirements
+### Учитывайте требования валидации {#consider-validation-requirements}
 
-Design models with validation in mind. Group fields that validate together:
+Проектируйте модели с учётом валидации. Группируйте поля, которые валидируются вместе:
 
 ```ts {prefer, header: 'Related fields grouped for comparison'}
 // Password fields grouped for comparison
@@ -90,15 +90,15 @@ interface PasswordChangeData {
 }
 ```
 
-This structure makes cross-field validation (like checking if `newPassword` matches `confirmPassword`) more natural.
+Такая структура делает кросс-полевую валидацию (например, проверку совпадения `newPassword` и `confirmPassword`) естественнее.
 
-### Match data types to UI controls
+### Сопоставляйте типы данных с UI-контролами {#match-data-types-to-ui-controls}
 
-Properties on your form model should match the data types expected by your UI controls.
+Свойства модели формы должны соответствовать типам данных, ожидаемым UI-контролами.
 
-For example, consider a beverage order form with a `size` field (6, 12, or 24 pack) and a `quantity` field. The UI uses a dropdown (`<select>`) for size and a number input (`<input type="number">`) for quantity.
+Например, рассмотрим форму заказа напитков с полем `size` (упаковка 6, 12 или 24) и полем `quantity`. UI использует выпадающий список (`<select>`) для размера и числовой input (`<input type="number">`) для количества.
 
-Although the size options look numeric, `<select>` elements work with string values, so `size` should be modeled as a string. An `<input type="number">` on the other hand, does work with numbers, so `quantity` can be modeled as a number.
+Хотя варианты размера выглядят числовыми, элементы `<select>` работают со строковыми значениями, поэтому `size` следует моделировать как строку. `<input type="number">`, напротив, работает с числами, поэтому `quantity` можно моделировать как число.
 
 ```ts {prefer, header: 'Appropriate data types for the bound UI controls'}
 interface BeverageOrderFormModel {
@@ -107,11 +107,11 @@ interface BeverageOrderFormModel {
 }
 ```
 
-### Avoid `undefined`
+### Избегайте `undefined` {#avoid-undefined}
 
-A form model must not contain `undefined` values or properties. In Signal Forms the structure of the form is derived from the structure of the model, and `undefined` signifies the _absence of a field_, rather than a field with an empty value. This means you must also avoid optional fields (e.g., `{property?: string}`), as they implicitly allow `undefined`.
+Модель формы не должна содержать значения или свойства `undefined`. В Signal Forms структура формы выводится из структуры модели, а `undefined` означает _отсутствие поля_, а не поле с пустым значением. Поэтому также нужно избегать опциональных полей (например, `{property?: string}`), так как они неявно допускают `undefined`.
 
-To represent a property with an empty value in your form model, use a value that the UI control understands to mean "empty" (e.g. `""` for a `<input type="text">`). If you're designing a custom UI control, `null` often works as a good value to signify "empty".
+Чтобы представить свойство с пустым значением в модели формы, используйте значение, которое UI-контрол понимает как «пустое» (например, `""` для `<input type="text">`). Если вы проектируете пользовательский UI-контрол, `null` часто хорошо подходит как значение «пусто».
 
 ```ts {prefer, header: 'Appropriate empty values'}
 interface UserFormModel {
@@ -123,13 +123,13 @@ interface UserFormModel {
 form(signal({name: '', birthday: null}));
 ```
 
-### Avoid models with dynamic structure
+### Избегайте моделей с динамической структурой {#avoid-models-with-dynamic-structure}
 
-A form model has a dynamic structure if it changes shape (if the properties on the object change) based on its value. This happens when the model type allows for values with different shapes, such as a union of object types that have different properties, or a union of an object and a primitive. The following sections examine a few common scenarios where models with a dynamic structure might seem appealing, but ultimately prove problematic.
+У модели формы динамическая структура, если её форма меняется (если меняются свойства объекта) в зависимости от значения. Это происходит, когда тип модели допускает значения разной формы — например, объединение объектных типов с разными свойствами или объединение объекта и примитива. В следующих разделах рассматриваются распространённые сценарии, где модели с динамической структурой могут казаться привлекательными, но в итоге оказываются проблемными.
 
-#### Empty value for a complex object
+#### Пустое значение для сложного объекта {#empty-value-for-a-complex-object}
 
-We often use forms to ask users to enter brand new data, rather than edit existing data in a system. A good example of this is an account creation form. We might model that using the following form model.
+Формы часто используют, чтобы попросить пользователей ввести совершенно новые данные, а не редактировать существующие в системе. Хороший пример — форма создания аккаунта. Её можно смоделировать следующей моделью формы.
 
 ```ts
 interface CreateAccountFormModel {
@@ -141,13 +141,13 @@ interface CreateAccountFormModel {
 }
 ```
 
-When creating the form we encounter a dilemma, what should the initial value in the model be? It may be tempting to create a `form<CreateAccountFormModel | null>()` since we don't have any input from the user yet.
+При создании формы возникает дилемма: каким должно быть начальное значение в модели? Может возникнуть соблазн создать `form<CreateAccountFormModel | null>()`, поскольку ввода от пользователя ещё нет.
 
 ```ts {avoid, header: 'Using null as empty value for complex object'}
 createAccountForm = form<CreateAccountFormModel | null>(signal(/* what goes here, null? */));
 ```
 
-However, it is important to remember that Signal Forms is _model driven_. If our model is `null` and `null` doesn't have a `name` or `username` property, that means our form won't have those subfields either. Instead what we really want is an instance of `CreateAccountFormModel` with all of its leaf fields set to an empty value.
+Однако важно помнить, что Signal Forms — _model driven_. Если модель — `null`, а у `null` нет свойств `name` или `username`, то и у формы не будет этих подполей. На самом деле нужен экземпляр `CreateAccountFormModel` со всеми листовыми полями, установленными в пустое значение.
 
 ```ts {prefer, header: 'Same shape value with empty values for properties'}
 createAccountForm = form<CreateAccountFormModel>(
@@ -161,7 +161,7 @@ createAccountForm = form<CreateAccountFormModel>(
 );
 ```
 
-Using this representation, all of the subfields we need now exist, and we can bind them using the `[formField]` directive in our template.
+При таком представлении все нужные подполя существуют, и их можно привязать директивой `[formField]` в шаблоне.
 
 ```html
 First: <input [formField]="createAccountForm.name.first" /> Last:
@@ -169,9 +169,9 @@ First: <input [formField]="createAccountForm.name.first" /> Last:
 <input [formField]="createAccountForm.username" />
 ```
 
-#### Fields that are conditionally hidden or unavailable
+#### Поля, условно скрытые или недоступные {#fields-that-are-conditionally-hidden-or-unavailable}
 
-Forms aren't always linear. You often need to create conditional paths based on previous user input. One example of this is a form where we give the user different payment options. Let's start by imagining what the UI for such a form might look like.
+Формы не всегда линейны. Часто нужны условные пути на основе предыдущего ввода пользователя. Один из примеров — форма с разными вариантами оплаты. Начнём с того, как может выглядеть UI такой формы.
 
 ```html
 Name: <input type="text" />
@@ -190,7 +190,7 @@ Name: <input type="text" />
 </section>
 ```
 
-The best way to handle this is to use a form model with a static structure that includes fields for _all_ potential payment methods. In our schema, we can hide or disable the fields that are not currently available.
+Лучший способ обработать это — использовать модель формы со статической структурой, включающей поля для _всех_ потенциальных способов оплаты. В схеме можно скрывать или отключать поля, которые сейчас недоступны.
 
 ```ts {prefer, header: 'Static structure model'}
 interface BillPayFormModel {
@@ -217,9 +217,9 @@ const billPaySchema = schema<BillPayFormModel>((billPay) => {
 });
 ```
 
-Using this model, both `card` and `bank` objects are always present in the form's state. When the user switches payment methods, we only update the `type` property. The data they entered into the card fields remains safely stored in the `card` object, ready to be redisplayed if they switch back.
+При такой модели объекты `card` и `bank` всегда присутствуют в состоянии формы. Когда пользователь переключает способ оплаты, обновляется только свойство `type`. Данные, введённые в поля карты, остаются безопасно сохранёнными в объекте `card` и готовы к повторному отображению при переключении обратно.
 
-In contrast, a dynamic form model may initially seem like a good fit for this use case. After all, we don't need fields for account and routing number if the user selected "Credit Card". We may be tempted to model this as a discriminated union:
+Напротив, динамическая модель формы может сначала казаться подходящей. В конце концов, поля номера счёта и routing number не нужны, если пользователь выбрал "Credit Card". Может возникнуть соблазн смоделировать это как дискриминированное объединение:
 
 ```ts {avoid, header: 'Dynamic structure model'}
 interface BillPayFormModel {
@@ -239,23 +239,23 @@ interface BillPayFormModel {
 }
 ```
 
-However, consider what would happen in the following scenario:
+Однако подумайте, что произойдёт в следующем сценарии:
 
-1. User fills out their name and credit card information
-2. They're about to submit, but at the last moment they notice the convenience fee.
-3. They toggle to the bank account option instead, figuring they might as well avoid the fee.
-4. As they're about to enter the bank account info, they have second thoughts, they wouldn't want it to wind up in a leak.
-5. They toggle back to credit card option, but they notice all the info they just entered is gone!
+1. Пользователь заполняет имя и данные кредитной карты
+2. Он почти готов отправить форму, но в последний момент замечает комиссию за удобство.
+3. Он переключается на вариант банковского счёта, решив избежать комиссии.
+4. Когда он уже собирается ввести данные счёта, появляются сомнения — вдруг данные утекут.
+5. Он переключается обратно на кредитную карту и замечает, что вся только что введённая информация исчезла!
 
-This illustrates another problem with form models that have a dynamic structure: they can cause data loss. A model like this assumes that once a field becomes hidden, the information in it will never be needed again. It replaces the credit card information with the bank information, and has no way to get the credit card information back.
+Это иллюстрирует ещё одну проблему моделей форм с динамической структурой: они могут приводить к потере данных. Такая модель предполагает, что как только поле скрыто, информация в нём больше не понадобится. Она заменяет данные карты банковскими и не может вернуть данные карты.
 
-#### Exceptions
+#### Исключения {#exceptions}
 
-While static structure is generally preferred, there are specific scenarios where dynamic structure is necessary and supported.
+Хотя статическая структура обычно предпочтительнее, есть конкретные сценарии, где динамическая структура необходима и поддерживается.
 
-##### Arrays
+##### Массивы {#arrays}
 
-Arrays are the most common exception. Forms often need to collect a variable number of items, such as a list of phone numbers, attendees, or line items in an order.
+Массивы — самое распространённое исключение. Формам часто нужно собирать переменное число элементов: список телефонов, участников или позиций заказа.
 
 ```ts
 interface SendEmailFormModel {
@@ -264,13 +264,13 @@ interface SendEmailFormModel {
 }
 ```
 
-In this case, the `recipientEmails` array grows and shrinks as the user interacts with the form. While the length of the array is dynamic, the structure of the individual items should be consistent (each item should have the same shape).
+В этом случае массив `recipientEmails` растёт и уменьшается по мере взаимодействия пользователя с формой. Хотя длина массива динамическая, структура отдельных элементов должна быть согласованной (у каждого элемента должна быть одна и та же форма).
 
-##### Fields that are treated atomically by the UI control
+##### Поля, которые UI-контрол обрабатывает атомарно {#fields-that-are-treated-atomically-by-the-ui-control}
 
-Another case where dynamic structure is acceptable is when a complex object is treated as a single, atomic value by the UI control. That is, if the control does not attempt to bind to or access any of its sub-fields individually. In this scenario, the control updates the value by replacing the entire object at once, rather than modifying its internal properties. Because the form structure is irrelevant in this scenario, it's acceptable for that structure to be dynamic.
+Ещё один случай, когда динамическая структура приемлема, — когда сложный объект обрабатывается UI-контролом как одно атомарное значение. То есть контрол не пытается привязываться к отдельным подполям или обращаться к ним. В этом сценарии контрол обновляет значение, заменяя весь объект целиком, а не изменяя внутренние свойства. Поскольку структура формы в этом сценарии не важна, допустимо, чтобы она была динамической.
 
-For example, consider a user profile form that includes a `location` field. The location is selected using a complex "location picker" widget (perhaps a map or a search-ahead dropdown) that returns a coordinate object. In the case where the location is not yet selected, or the user chooses not to share their location, the picker indicates the location as `null`.
+Например, рассмотрим форму профиля пользователя с полем `location`. Местоположение выбирается сложным виджетом «location picker» (возможно, картой или выпадающим списком с поиском), который возвращает объект координат. Если местоположение ещё не выбрано или пользователь решил не делиться им, picker указывает местоположение как `null`.
 
 ```ts {prefer, header: 'Dynamic structure is ok when field is treated as atomic'}
 interface Location {
@@ -286,20 +286,20 @@ interface UserProfileFormModel {
 }
 ```
 
-In the template, we bind the `location` field directly to our custom control:
+В шаблоне поле `location` привязывается напрямую к пользовательскому контролу:
 
 ```html
 Username: <input [formField]="userForm.username" /> Location:
 <location-picker [formField]="userForm.location"></location-picker>
 ```
 
-Here, `<location-picker>` consumes and produces the entire `Location` object (or `null`), and doesn't access `userForm.location.lat` or `userForm.location.lng`. Therefore, `location` can safely have a dynamic shape without violating the principles of model-driven forms.
+Здесь `<location-picker>` потребляет и производит весь объект `Location` (или `null`) и не обращается к `userForm.location.lat` или `userForm.location.lng`. Поэтому у `location` может безопасно быть динамическая форма без нарушения принципов model-driven форм.
 
-## Translating between form model and domain model
+## Преобразование между моделью формы и доменной моделью {#translating-between-form-model-and-domain-model}
 
-Given that the form model and domain model represent the same concept differently, we need to have a way to translate between these different representations. When we want to present some existing data in the system to the user in a form, we need to transform it from the domain model representation to the form model representation. Conversely when we want to save a user's changes, we need to transform the data from the form model representation to the domain model representation.
+Поскольку модель формы и доменная модель представляют одну и ту же концепцию по-разному, нужен способ преобразования между этими представлениями. Когда нужно показать пользователю существующие данные системы в форме, их преобразуют из доменной модели в модель формы. И наоборот, когда нужно сохранить изменения пользователя, данные преобразуют из модели формы в доменную модель.
 
-Let's imagine that we have a domain model and a form model and we've written some functions to convert between them.
+Представим, что есть доменная модель и модель формы, и написаны функции преобразования между ними.
 
 ```ts
 interface MyDomainModel { ... }
@@ -314,11 +314,11 @@ function domainModelToFormModel(domainModel: MyDomainModel): MyFormModel { ... }
 function formModelToDomainModel(formModel: MyFormModel): MyDomainModel { ... }
 ```
 
-### Domain model to form model
+### Из доменной модели в модель формы {#domain-model-to-form-model}
 
-When we're creating a form to edit some existing domain model in the system, we'll typically receive that domain model either as an `input()` to our form component or from a backend (e.g. via a resource). In either case, `linkedSignal` provides an excellent way to apply our transform.
+Когда создаётся форма для редактирования существующей доменной модели в системе, доменная модель обычно приходит либо как `input()` компонента формы, либо с backend (например, через resource). В обоих случаях `linkedSignal` — отличный способ применить преобразование.
 
-In the case where we receive the domain model as an `input()`, we can use `linkedSignal` to create a writable form model from the input signal.
+Если доменная модель приходит как `input()`, можно использовать `linkedSignal`, чтобы создать записываемую модель формы из input-сигнала.
 
 ```ts {prefer, header: 'Use linkedSignal to convert domain model to form model'}
 @Component(...)
@@ -339,7 +339,7 @@ class MyForm {
 }
 ```
 
-Similarly, when we receive the domain model from the backend via a resource, we can create a `linkedSignal` based on its value to create our `formModel`. In this scenario, the domain model may take some time to fetch, and we should disable the form until the data is loaded.
+Аналогично, когда доменная модель приходит с backend через resource, можно создать `linkedSignal` на основе её значения для `formModel`. В этом сценарии загрузка доменной модели может занять время, и форму следует отключить, пока данные не загружены.
 
 ```ts {prefer, header: 'Disable or hide the form when data is unavailable'}
 @Component(...)
@@ -363,13 +363,13 @@ class MyForm {
 }
 ```
 
-The examples above show a pure derivation of the form model, directly from the domain model. However, in some cases you may wish to do a more advanced diff operation between the new domain model value and the previous domain model and form model values. This can be implemented based on the `linkedSignal` [previous state](/guide/signals/linked-signal#accounting-for-previous-state).
+Примеры выше показывают чистое выведение модели формы напрямую из доменной модели. Однако в некоторых случаях может понадобиться более продвинутая операция diff между новым значением доменной модели и предыдущими значениями доменной модели и модели формы. Это можно реализовать на основе [предыдущего состояния](/guide/signals/linked-signal#accounting-for-previous-state) `linkedSignal`.
 
-### Form model to domain model
+### Из модели формы в доменную модель {#form-model-to-domain-model}
 
-When we're ready to save the user's input back to the system, we need to convert it to the domain model representation. This would typically happen when the user submits the form, or continuously as the user edits for an auto-saving form.
+Когда нужно сохранить ввод пользователя обратно в систему, его преобразуют в представление доменной модели. Обычно это происходит при отправке формы или непрерывно по мере редактирования — для формы с автосохранением.
 
-To save on submit, we can handle the conversion in the `submit` function.
+Чтобы сохранять при отправке, преобразование можно выполнить в функции `submit`.
 
 ```ts {prefer, header: 'Convert form model to domain model on submit'}
 @Component(...)
@@ -386,10 +386,10 @@ class MyForm {
 }
 ```
 
-Alternatively, you could also send the form model directly to the server and do the conversion from
-form model to domain model on the server.
+Альтернативно можно отправить модель формы напрямую на сервер и выполнить преобразование из
+модели формы в доменную модель на сервере.
 
-For continuous saving, update the domain model in an `effect`.
+Для непрерывного сохранения обновляйте доменную модель в `effect`.
 
 ```ts {prefer, header: 'Convert form model to domain model in an effect for auto-saving'}
 @Component(...)
@@ -409,7 +409,7 @@ class MyForm {
 }
 ```
 
-The examples above show a pure conversion from the form model to the domain model. However, it is perfectly acceptable to consider the full form state in addition to just the form model value. For example, to save bytes we might want to only send partial updates to the server based on what the user changed. In this case our conversion function could be designed to take the entire form state and return a sparse domain model based on the form's values and dirtiness.
+Примеры выше показывают чистое преобразование из модели формы в доменную модель. Однако вполне допустимо учитывать полное состояние формы, а не только значение модели формы. Например, чтобы экономить байты, можно отправлять на сервер только частичные обновления на основе того, что изменил пользователь. В этом случае функция преобразования может принимать всё состояние формы и возвращать разреженную доменную модель на основе значений формы и dirtiness.
 
 ```ts
 type Sparse<T> = T extends object ? {

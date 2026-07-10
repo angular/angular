@@ -13,7 +13,7 @@
 @let items = history.items();
 
 @if (items.recent.length) {
-  <p class="title">Recent</p>
+  <p class="title">Недавние</p>
   <ul class="history-results recent">
     @for (item of items.recent; track item.id; let idx = $index) {
       <li docsSearchItem (mouseenter)="onMouseEnter($event, idx)">
@@ -32,7 +32,7 @@
           type="button"
           class="fav-btn"
           (click)="history.makeFavorite(item)"
-          title="Make favorite"
+          title="В избранное"
         >
           <i role="presentation" class="material-symbols-outlined type-icon" aria-hidden="true">
             star
@@ -42,7 +42,7 @@
           type="button"
           class="remove-btn"
           (click)="history.removeItem(item)"
-          title="Remove item"
+          title="Удалить"
         >
           <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> close </i>
         </button>
@@ -52,7 +52,7 @@
 }
 
 @if (items.favorite.length) {
-  <p class="title">Favorite</p>
+  <p class="title">Избранное</p>
   <ul class="history-results favorite">
     @for (item of items.favorite; track item.id; let idx = $index) {
       <li docsSearchItem (mouseenter)="onMouseEnter($event, items.recent.length + idx)">
@@ -70,7 +70,7 @@
           type="button"
           class="remove-btn"
           (click)="history.removeItem(item)"
-          title="Remove item"
+          title="Удалить"
         >
           <i role="presentation" class="material-symbols-outlined" aria-hidden="true"> close </i>
         </button>

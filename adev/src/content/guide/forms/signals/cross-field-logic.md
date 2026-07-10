@@ -1,32 +1,32 @@
-# Cross-field logic
+# Cross-field логика
 
-**Cross-field logic** is necessary when any rule, validation, or behavior of one field depends on another field's value or state.
+**Cross-field логика** необходима, когда любое правило, валидация или поведение одного поля зависит от значения или состояния другого поля.
 
-Signal forms provide a **field context** to every rule function. The field context provides access to the current field's value and state, and lets you read other fields in the form using `valueOf()`, `stateOf()`, and `fieldTreeOf()`.
+Signal forms предоставляют **контекст поля** каждой функции правила. Контекст поля даёт доступ к значению и состоянию текущего поля и позволяет читать другие поля формы через `valueOf()`, `stateOf()` и `fieldTreeOf()`.
 
-This guide covers the field context API in depth and shows common cross-field patterns. For single-field validation, see the [Validation guide](/guide/forms/signals/validation).
+Это руководство подробно описывает API контекста поля и показывает распространённые cross-field паттерны. Для валидации одного поля см. [руководство по валидации](/guide/forms/signals/validation).
 
-## Understanding the field context
+## Понимание контекста поля {#understanding-the-field-context}
 
-Every rule function in signal forms receives a **field context** parameter, which is an object that describes the current field and provides access to the rest of the form.
+Каждая функция правила в signal forms получает параметр **контекста поля** — объект, описывающий текущее поле и предоставляющий доступ к остальной форме.
 
-There are three properties you can access for the current field:
+Есть три свойства, к которым можно обращаться для текущего поля:
 
-| Property    | Type                 | Description                                                          |
+| Свойство    | Тип                  | Описание                                                             |
 | ----------- | -------------------- | -------------------------------------------------------------------- |
-| `value`     | `Signal<TValue>`     | The current field's value as a signal                                |
-| `state`     | `FieldState<TValue>` | The current field's state (such as validity, errors, touched, dirty) |
-| `fieldTree` | `FieldTree<TValue>`  | The current field's tree, for programmatic access to child fields    |
+| `value`     | `Signal<TValue>`     | Значение текущего поля как сигнал                                    |
+| `state`     | `FieldState<TValue>` | Состояние текущего поля (валидность, ошибки, touched, dirty)         |
+| `fieldTree` | `FieldTree<TValue>`  | Дерево текущего поля для программного доступа к дочерним полям       |
 
-For cross-field logic, the following three properties allow you to access other parts of the form:
+Для cross-field логики следующие три свойства позволяют обращаться к другим частям формы:
 
-| Property        | Type                           | Description                                                                                                                        |
-| --------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `valueOf()`     | `(path) => PValue`             | Most common. Use when you need another field's raw value for comparisons or calculations.                                          |
-| `stateOf()`     | `(path) => FieldState<PValue>` | Use when your logic depends on another field's state, such as whether it's valid, touched, or dirty.                               |
-| `fieldTreeOf()` | `(path) => FieldTree<PModel>`  | Use when you need programmatic access to another field's tree, such as pushing errors to a specific child field with validateTree. |
+| Свойство        | Тип                            | Описание                                                                                                                        |
+| --------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `valueOf()`     | `(path) => PValue`             | Самый распространённый. Когда нужно сырое значение другого поля для сравнений или вычислений.                                   |
+| `stateOf()`     | `(path) => FieldState<PValue>` | Когда логика зависит от состояния другого поля — валидно ли оно, touched или dirty.                                             |
+| `fieldTreeOf()` | `(path) => FieldTree<PModel>`  | Когда нужен программный доступ к дереву другого поля, например для передачи ошибок конкретному дочернему полю через validateTree. |
 
-Here is an example of using `value` and `valueOf()` to validate that the current field (end date) comes after the start date in the form:
+Пример использования `value` и `valueOf()` для валидации того, что текущее поле (дата окончания) идёт после даты начала в форме:
 
 ```ts
 import {Component, signal} from '@angular/core';
@@ -56,13 +56,13 @@ export class EventForm {
 }
 ```
 
-NOTE: The `fieldContext` parameter is typically destructured to pull out only what the rule needs. The remaining examples in this guide use this pattern.
+NOTE: Параметр `fieldContext` обычно деструктурируют, чтобы извлечь только то, что нужно правилу. Остальные примеры в этом руководстве используют этот паттерн.
 
-## Cross-field validation patterns
+## Паттерны cross-field валидации {#cross-field-validation-patterns}
 
-The date range example from the previous section validates the end date against the start date. Because the rule reads `valueOf(schemaPath.startDate)`, it re-evaluates automatically whenever either date changes. In other words, a single validator is enough to keep the error state correct.
+Пример диапазона дат из предыдущего раздела валидирует дату окончания относительно даты начала. Поскольку правило читает `valueOf(schemaPath.startDate)`, оно автоматически переоценивается при изменении любой из дат. Иными словами, одного валидатора достаточно, чтобы состояние ошибки оставалось корректным.
 
-However, that single validator only places the error on the end date field. If you want both fields to show an error when the range is invalid, add a matching validation rule to each field:
+Однако этот один валидатор размещает ошибку только на поле даты окончания. Если нужно, чтобы оба поля показывали ошибку при невалидном диапазоне, добавьте соответствующее правило валидации к каждому полю:
 
 ```ts
 import {Component, signal} from '@angular/core';
@@ -101,13 +101,13 @@ export class EventForm {
 }
 ```
 
-Both rules make use of `valueOf()` to read the other field. Because each rule is reactive, changing either date re-evaluates both validations automatically.
+Оба правила используют `valueOf()` для чтения другого поля. Поскольку каждое правило реактивно, изменение любой даты автоматически переоценивает обе валидации.
 
-NOTE: When a rule involves multiple fields, you need to decide where the error belongs: on a specific field, on multiple fields, or on the parent. In general, place the error where the user would most likely go to fix the problem.
+NOTE: Когда правило затрагивает несколько полей, нужно решить, где должна быть ошибка: на конкретном поле, на нескольких полях или на родителе. В общем случае размещайте ошибку там, куда пользователь с наибольшей вероятностью пойдёт, чтобы исправить проблему.
 
-### Conditional requirements
+### Условные требования {#conditional-requirements}
 
-In some forms, certain fields are only required under certain conditions. For example, a registration form might require a company name only when the user selects a business account type:
+В некоторых формах определённые поля обязательны только при определённых условиях. Например, форма регистрации может требовать название компании только когда пользователь выбирает тип бизнес-аккаунта:
 
 ```ts
 import {Component, signal} from '@angular/core';
@@ -131,15 +131,15 @@ export class RegistrationForm {
 }
 ```
 
-The `when` option receives the same field context as any other rule function, so `valueOf` works the same way. When the user switches back to `'personal'`, the condition re-evaluates and the requirement — along with its error — clears automatically.
+Опция `when` получает тот же контекст поля, что и любая другая функция правила, поэтому `valueOf` работает так же. Когда пользователь переключается обратно на `'personal'`, условие переоценивается и требование — вместе с его ошибкой — очищается автоматически.
 
-Using `required()` with `when` instead of a manual `validate()` check also adds proper required metadata to the field, which enables accessibility features like marking the field as required for screen readers.
+Использование `required()` с `when` вместо ручной проверки `validate()` также добавляет корректные метаданные required к полю, что включает возможности доступности вроде пометки поля как обязательного для screen readers.
 
-### Validating based on another field's state
+### Валидация на основе состояния другого поля {#validating-based-on-another-fields-state}
 
-The examples so far use `valueOf()` to read another field's value. Sometimes your logic depends on another field's _state_ instead — whether it's valid, touched, or dirty. Use `stateOf()` for this.
+Примеры до сих пор используют `valueOf()` для чтения значения другого поля. Иногда логика зависит от _состояния_ другого поля — валидно ли оно, touched или dirty. Для этого используйте `stateOf()`.
 
-For example, a confirm-password field should only check for a match once the user has interacted with the password field. If the user hasn't touched the password yet, flagging a mismatch on the confirmation is premature:
+Например, поле confirm-password должно проверять совпадение только после того, как пользователь взаимодействовал с полем password. Если пользователь ещё не трогал password, помечать несовпадение на подтверждении преждевременно:
 
 ```ts
 import {Component, signal} from '@angular/core';
@@ -171,15 +171,15 @@ export class PasswordForm {
 }
 ```
 
-The `stateOf()` call returns the other field's [field state](api/forms/signals/FieldState), giving you access to signals like `invalid()`, `touched()`, and `dirty()`. Because these are signals, the rule re-evaluates whenever the password field's validity changes.
+Вызов `stateOf()` возвращает [состояние поля](api/forms/signals/FieldState) другого поля, давая доступ к сигналам вроде `invalid()`, `touched()` и `dirty()`. Поскольку это сигналы, правило переоценивается при изменении валидности поля password.
 
-WARNING: Be careful not to read state which depends on your field's validation, as that creates a circular loop. For example, a validator which checks whether the parent field is valid will create an infinite loop because the parent's validity depends on its children's validity (which includes your validator).
+CRITICAL: Будьте осторожны, не читайте состояние, которое зависит от валидации вашего поля — это создаёт циклический цикл. Например, валидатор, проверяющий, валидно ли родительское поле, создаст бесконечный цикл, потому что валидность родителя зависит от валидности его потомков (включая ваш валидатор).
 
-## Using validateTree
+## Использование validateTree {#using-validatetree}
 
-The examples so far use `validate()` to check individual fields. Sometimes you need to validate a group of fields where the logic is inherently about multiple fields in a group, and direct errors to specific children within it. `validateTree` handles is ideal for these kinds of scenarios.
+Примеры до сих пор используют `validate()` для проверки отдельных полей. Иногда нужно валидировать группу полей, где логика по сути о нескольких полях в группе, и направлять ошибки конкретным потомкам внутри неё. `validateTree` идеален для таких сценариев.
 
-For example, in a Sudoku puzzle, each row must contain unique numbers. This is a group-level rule: you check the entire row, then flag the specific cells that violate it. This kind of validation can't be expressed cleanly with `validate` on individual fields, because each cell would need to know about every other cell.
+Например, в головоломке Sudoku каждая строка должна содержать уникальные числа. Это правило уровня группы: вы проверяете всю строку, затем помечаете конкретные ячейки, которые его нарушают. Такую валидацию нельзя чисто выразить через `validate` на отдельных полях, потому что каждой ячейке нужно знать о каждой другой ячейке.
 
 ```ts
 import {Component, signal} from '@angular/core';
@@ -227,22 +227,22 @@ export class SudokuRow {
 }
 ```
 
-The validator runs on the parent field (the row), reads all cell values, counts duplicates, and returns an error for each cell that contains a repeated number. The `fieldTree` property on each error tells Angular exactly which cell should show the error. Without `fieldTree`, the errors would apply to the row itself — not where the user needs to see them.
+Валидатор выполняется на родительском поле (строке), читает все значения ячеек, считает дубликаты и возвращает ошибку для каждой ячейки, содержащей повторяющееся число. Свойство `fieldTree` на каждой ошибке сообщает Angular, какая именно ячейка должна показать ошибку. Без `fieldTree` ошибки применялись бы к самой строке — не туда, где пользователю нужно их видеть.
 
-Because `validateTree` can return an array of errors, a single validator can flag multiple cells at once. Each error includes a `fieldTree` pointing to its target, so Angular routes the errors to the correct fields.
+Поскольку `validateTree` может возвращать массив ошибок, один валидатор может пометить несколько ячеек сразу. Каждая ошибка включает `fieldTree`, указывающий на цель, поэтому Angular направляет ошибки к корректным полям.
 
-### When to use validateTree vs validate
+### Когда использовать validateTree vs validate {#when-to-use-validatetree-vs-validate}
 
-Prefer `validate()` with `valueOf()` when the error belongs on the field being validated — even if the rule reads from other fields. Reach for `validateTree` when:
+Предпочитайте `validate()` с `valueOf()`, когда ошибка принадлежит полю, которое валидируется — даже если правило читает из других полей. Обращайтесь к `validateTree`, когда:
 
-- The validation logic is inherently about a group of fields, not any single field
-- The validator needs to return errors targeting different child fields
+- Логика валидации по сути о группе полей, а не о любом одном поле
+- Валидатору нужно возвращать ошибки, нацеленные на разные дочерние поля
 
-TIP: For an introduction to `validateTree` and its return type, see the [Validation guide](/guide/forms/signals/validation).
+TIP: Введение в `validateTree` и его тип возврата см. в [руководстве по валидации](/guide/forms/signals/validation).
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-This guide covered the field context API and common cross-field patterns. To learn more about related Signal Forms guide, check out:
+Это руководство охватило API контекста поля и распространённые cross-field паттерны. Чтобы узнать больше о связанных руководствах Signal Forms:
 
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/validation" title="Validation" />

@@ -2,7 +2,7 @@
 
 Вы можете тестировать [пайпы](guide/templates/pipes) без использования утилит тестирования Angular.
 
-## Тестирование `TitleCasePipe`
+## Тестирование `TitleCasePipe` {#testing-the-titlecasepipe}
 
 Класс пайпа (Pipe) имеет один метод, `transform`, который преобразует входное значение в выходное.
 Реализация `transform` редко взаимодействует с DOM.
@@ -18,7 +18,7 @@
 
 <docs-code header="title-case.pipe.spec.ts" path="adev/src/content/examples/testing/src/app/shared/title-case.pipe.spec.ts" region="excerpt"/>
 
-## Написание DOM-тестов для поддержки тестирования пайпа
+## Написание DOM-тестов для поддержки тестирования пайпа {#writing-dom-tests-to-support-a-pipe-test}
 
 Это тесты пайпа _в изоляции_.
 Они не могут показать, правильно ли работает `TitleCasePipe` при применении в компонентах приложения.

@@ -1,30 +1,30 @@
-# Inspect the Router Tree
+# Просмотр дерева роутера
 
-The **Router Tree** tab lets you visualize the routing tree of your application. You can explore how routes are nested and view details about specific routes.
+Вкладка **Router Tree** позволяет визуализировать дерево маршрутизации приложения. Можно исследовать вложенность маршрутов и просматривать детали конкретных маршрутов.
 
-<img src="assets/images/guide/devtools/router-tree.png" alt="A screenshot of the 'Router Tree' tab in Angular DevTools showing a tree of configured routes. The active routes are highlighted in green, while inactive ones are white.">
+<img src="assets/images/guide/devtools/router-tree.png" alt="Скриншот вкладки «Router Tree» в Angular DevTools с деревом настроенных маршрутов. Активные маршруты выделены зелёным, неактивные — белым.">
 
-### View route details
+### Просмотр деталей маршрута {#view-route-details}
 
-When you select a specific route in the tree, Angular DevTools displays its properties in the sidebar on the right. This information includes:
+При выборе конкретного маршрута в дереве Angular DevTools отображает его свойства на боковой панели справа. Эта информация включает:
 
-- **Path**: The URL path for the route. If the route uses a custom URL matcher, DevTools displays the **Matcher** instead.
-- **Component**: The component rendered for this route. If the route is a redirect, DevTools displays the **Redirect to** target instead.
-- **Path Match**: The path matching strategy (`prefix` or `full`), if configured.
-- **Data**: Static data associated with the route, displayed as a JSON tree.
-- **Resolvers**: Route resolvers, displayed as key-value pairs.
-- **Guards**: Any guards configured on the route, grouped by type — `canActivate`, `canActivateChild`, `canDeactivate`, and `canMatch`.
-- **Providers**: Route-level providers, if configured.
-- **Title**: The route title, if configured.
-- **RunGuardsAndResolvers**: The re-run strategy for guards and resolvers, if configured.
-- **Active**: Whether this route is currently active.
-- **Auxiliary**: Indicates if the route is an auxiliary route (e.g., in a named outlet).
-- **Lazy**: Indicates if the route is lazily loaded.
+- **Path**: URL-путь маршрута. Если маршрут использует пользовательский URL matcher, DevTools вместо этого отображает **Matcher**.
+- **Component**: Компонент, отрисовываемый для этого маршрута. Если маршрут — redirect, DevTools вместо этого отображает цель **Redirect to**.
+- **Path Match**: Стратегия сопоставления пути (`prefix` или `full`), если настроена.
+- **Data**: Статические данные, связанные с маршрутом, отображаемые как JSON-дерево.
+- **Resolvers**: Resolvers маршрута, отображаемые как пары ключ-значение.
+- **Guards**: Любые guards, настроенные на маршруте, сгруппированные по типу — `canActivate`, `canActivateChild`, `canDeactivate` и `canMatch`.
+- **Providers**: Providers уровня маршрута, если настроены.
+- **Title**: Заголовок маршрута, если настроен.
+- **RunGuardsAndResolvers**: Стратегия повторного запуска guards и resolvers, если настроена.
+- **Active**: Активен ли этот маршрут в данный момент.
+- **Auxiliary**: Указывает, является ли маршрут вспомогательным (например, в именованном outlet).
+- **Lazy**: Указывает, загружается ли маршрут лениво.
 
-Note: Properties like Path Match, Data, Resolvers, Guards, Providers, Title, and RunGuardsAndResolvers only appear in the sidebar when they are configured on the selected route.
+Примечание: свойства вроде Path Match, Data, Resolvers, Guards, Providers, Title и RunGuardsAndResolvers появляются на боковой панели только если они настроены на выбранном маршруте.
 
-### Navigate to a specific route
+### Навигация к конкретному маршруту {#navigate-to-a-specific-route}
 
-You can easily trigger navigation directly from the DevTools. While inspecting a route's details in the right sidebar, click on the **Navigate** icon next to the path string. This triggers the Angular router to navigate to that URL in your application.
+Навигацию можно легко запустить прямо из DevTools. Просматривая детали маршрута на правой боковой панели, нажмите значок **Navigate** рядом со строкой пути. Это заставит Angular router перейти по этому URL в приложении.
 
-<img src="assets/images/guide/devtools/router-tree-navigate.png" alt="A screenshot showing the 'Navigate to' tooltip on the route path in the 'Routes Details' sidebar.">
+<img src="assets/images/guide/devtools/router-tree-navigate.png" alt="Скриншот с подсказкой «Navigate to» на пути маршрута в боковой панели «Routes Details».">

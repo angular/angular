@@ -1,17 +1,17 @@
-# Understanding communication with backend services using HTTP
+# Взаимодействие с backend-сервисами по HTTP
 
-Most front-end applications need to communicate with a server over the HTTP protocol to download or upload data and access other back-end services. Angular provides a client HTTP API for Angular applications, the `HttpClient` service class in `@angular/common/http`.
+Большинству front-end приложений нужно общаться с сервером по протоколу HTTP, чтобы загружать или отправлять данные и обращаться к другим backend-сервисам. Angular предоставляет клиентский HTTP API для приложений Angular — класс сервиса `HttpClient` в `@angular/common/http`.
 
-## HTTP client service features
+## Возможности HTTP-клиентского сервиса {#http-client-service-features}
 
-The HTTP client service offers the following major features:
+HTTP-клиентский сервис предлагает следующие основные возможности:
 
-- The ability to request [typed response values](guide/http/making-requests#fetching-json-data)
-- Streamlined [error handling](guide/http/making-requests#handling-request-failure)
-- Request and response [interception](guide/http/interceptors)
-- Robust [testing utilities](guide/http/testing)
+- Возможность запрашивать [типизированные значения ответа](guide/http/making-requests#fetching-json-data)
+- Упрощённая [обработка ошибок](guide/http/making-requests#handling-request-failure)
+- [Перехват](guide/http/interceptors) запросов и ответов
+- Надёжные [утилиты для тестирования](guide/http/testing)
 
-## What's next
+## Что дальше {#whats-next}
 
 <docs-pill-row>
   <docs-pill href="guide/http/setup" title="Setting up HttpClient"/>

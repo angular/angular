@@ -6,9 +6,9 @@
   <docs-pill href="/api/aria/tree/Tree" title="Tree API Reference"/>
 </docs-pill-row>
 
-## Overview
+## Обзор {#overview}
 
-A tree displays hierarchical data where items can expand to reveal children or collapse to hide them. Users navigate with arrow keys, expand and collapse nodes, and optionally select items for navigation or data selection scenarios.
+Tree отображает иерархические данные, где элементы могут раскрываться, показывая потомков, или сворачиваться, скрывая их. Пользователи перемещаются стрелками, раскрывают и сворачивают узлы и опционально выбирают элементы для навигации или выбора данных.
 
 <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.ts">
   <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.ts"/>
@@ -16,42 +16,42 @@ A tree displays hierarchical data where items can expand to reveal children or c
   <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.css"/>
 </docs-code-multifile>
 
-## Usage
+## Использование {#usage}
 
-Trees work well for displaying hierarchical data where users need to navigate through nested structures.
+Trees хорошо подходят для отображения иерархических данных, где пользователям нужно перемещаться по вложенным структурам.
 
-**Use trees when:**
+**Используйте trees, когда:**
 
-- Building file system navigation
-- Showing folder and document hierarchies
-- Creating nested menu structures
-- Displaying organization charts
-- Browsing hierarchical data
-- Implementing site navigation with nested sections
+- Строите навигацию по файловой системе
+- Показываете иерархии папок и документов
+- Создаёте вложенные структуры меню
+- Отображаете организационные диаграммы
+- Просматриваете иерархические данные
+- Реализуете навигацию сайта со вложенными секциями
 
-**Avoid trees when:**
+**Избегайте trees, когда:**
 
-- Displaying flat lists (use [Listbox](guide/aria/listbox) instead)
-- Showing data tables (use [Grid](guide/aria/grid) instead)
-- Creating simple dropdowns (use [Select](guide/aria/select) instead)
-- Building breadcrumb navigation (use breadcrumb patterns)
+- Показываете плоские списки (вместо этого используйте [Listbox](guide/aria/listbox))
+- Показываете таблицы данных (вместо этого используйте [Grid](guide/aria/grid))
+- Создаёте простые dropdown (вместо этого используйте [Select](guide/aria/select))
+- Строите breadcrumb-навигацию (используйте паттерны breadcrumb)
 
-## Features
+## Возможности {#features}
 
-- **Hierarchical navigation** - Nested tree structure with expand and collapse functionality
-- **Selection modes** - Single or multi-selection with explicit or follow-focus behavior
-- **Selection follows focus** - Optional automatic selection when focus changes
-- **Keyboard navigation** - Arrow keys, Home, End, and type-ahead search
-- **Expand/collapse** - Right/Left arrows or Enter to toggle parent nodes
-- **Disabled items** - Disable specific nodes with focus management
-- **Focus modes** - Roving tabindex or activedescendant focus strategies
-- **RTL support** - Right-to-left language navigation
+- **Иерархическая навигация** — вложенная структура tree с раскрытием и сворачиванием
+- **Режимы выбора** — одиночный или множественный выбор с поведением explicit или follow-focus
+- **Selection follows focus** — опциональный автоматический выбор при смене фокуса
+- **Клавиатурная навигация** — стрелки, Home, End и type-ahead поиск
+- **Раскрытие/сворачивание** — стрелки вправо/влево или Enter для переключения родительских узлов
+- **Отключённые элементы** — отключение конкретных узлов с управлением фокусом
+- **Режимы фокуса** — стратегии roving tabindex или activedescendant
+- **Поддержка RTL** — навигация для языков справа налево
 
-## Examples
+## Примеры {#examples}
 
-### Navigation tree
+### Navigation tree {#navigation-tree}
 
-Use a tree for navigation where clicking items triggers actions rather than selecting them.
+Используйте tree для навигации, где клик по элементам запускает действия, а не выбирает их.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -63,11 +63,11 @@ Use a tree for navigation where clicking items triggers actions rather than sele
   </docs-tab>
 </docs-tab-group>
 
-Set `[nav]="true"` to enable navigation mode. This uses `aria-current` to indicate the current page instead of selection.
+Задайте `[nav]="true"`, чтобы включить режим навигации. Он использует `aria-current` для указания текущей страницы вместо выбора.
 
-### Single selection
+### Одиночный выбор {#single-selection}
 
-Enable single selection for scenarios where users choose one item from the tree.
+Включите одиночный выбор для сценариев, где пользователи выбирают один элемент из tree.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -86,11 +86,11 @@ Enable single selection for scenarios where users choose one item from the tree.
   </docs-tab>
 </docs-tab-group>
 
-Leave `[multi]="false"` (the default) for single selection. Users press Space to select the focused item.
+Оставьте `[multi]="false"` (значение по умолчанию) для одиночного выбора. Пользователи нажимают Space, чтобы выбрать элемент в фокусе.
 
-### Multi-selection
+### Множественный выбор {#multi-selection}
 
-Allow users to select multiple items from the tree.
+Позвольте пользователям выбирать несколько элементов из tree.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -109,11 +109,11 @@ Allow users to select multiple items from the tree.
   </docs-tab>
 </docs-tab-group>
 
-Set `[multi]="true"` on the tree. Users select items individually with Space or select ranges with Shift+Arrow keys.
+Задайте `[multi]="true"` на tree. Пользователи выбирают элементы по одному Space или диапазоны через Shift+стрелки.
 
-### Selection follows focus
+### Selection follows focus {#selection-follows-focus}
 
-When selection follows focus, the focused item is automatically selected. This simplifies interaction for navigation scenarios.
+Когда selection follows focus, элемент в фокусе выбирается автоматически. Это упрощает взаимодействие для сценариев навигации.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -132,11 +132,11 @@ When selection follows focus, the focused item is automatically selected. This s
   </docs-tab>
 </docs-tab-group>
 
-Set `[selectionMode]="'follow'"` on the tree. Selection automatically updates as users navigate with arrow keys.
+Задайте `[selectionMode]="'follow'"` на tree. Выбор автоматически обновляется, когда пользователи перемещаются стрелками.
 
-### Disabled tree items
+### Отключённые элементы tree {#disabled-tree-items}
 
-Disable specific tree nodes to prevent interaction. Control whether disabled items can receive focus.
+Отключайте конкретные узлы tree, чтобы предотвратить взаимодействие. Контролируйте, могут ли disabled-элементы получать фокус.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -155,12 +155,12 @@ Disable specific tree nodes to prevent interaction. Control whether disabled ite
   </docs-tab>
 </docs-tab-group>
 
-When `[softDisabled]="true"` on the tree, disabled items can receive focus but cannot be activated or selected. When `[softDisabled]="false"`, disabled items are skipped during keyboard navigation.
+Когда `[softDisabled]="true"` на tree, disabled-элементы могут получать фокус, но не могут быть активированы или выбраны. Когда `[softDisabled]="false"`, disabled-элементы пропускаются при клавиатурной навигации.
 
-## Testing
+## Тестирование {#testing}
 
-Angular Aria provides component harnesses for testing tree components.
-Here is an example of how to use the harnesses in a component test:
+Angular Aria предоставляет component harnesses для тестирования компонентов tree.
+Пример использования harnesses в тесте компонента:
 
 ```typescript
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -215,9 +215,9 @@ describe('MyTreeComponent', () => {
 });
 ```
 
-## API reference
+## API reference {#api-reference}
 
-For detailed API documentation, inspect the following API references:
+Подробную API-документацию смотрите в следующих API reference:
 
 - [`Tree`](/api/aria/tree/Tree)
 - [`TreeItem`](/api/aria/tree/TreeItem)

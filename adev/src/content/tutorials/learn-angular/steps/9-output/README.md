@@ -42,11 +42,11 @@ this.incrementCountEvent.emit(this.count);
 
 <docs-workflow>
 
-<docs-step title="Добавьте свойство `output()`">
+<docs-step title="Add an `output()` property">
 Обновите `child.ts`, добавив output-свойство с именем `addItemEvent`. Убедитесь, что тип output установлен как `string`.
 </docs-step>
 
-<docs-step title="Завершите метод `addItem`">
+<docs-step title="Complete `addItem` method">
 В `child.ts` обновите метод `addItem`; используйте следующий код в качестве логики:
 
 <docs-code header="child.ts" highlight="[2]" language="ts">
@@ -57,7 +57,7 @@ addItem() {
 
 </docs-step>
 
-<docs-step title="Обновите шаблон `App`">
+<docs-step title="Update the `App` template">
 В `app.ts` обновите шаблон, чтобы прослушивать генерируемое событие, добавив следующий код:
 
 ```angular-html

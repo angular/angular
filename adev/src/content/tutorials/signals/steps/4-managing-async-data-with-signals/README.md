@@ -13,7 +13,7 @@
 
 <docs-workflow>
 
-<docs-step title="Импорт функции resource и API">
+<docs-step title="Import resource function and API">
 Добавьте `resource` в список импортов и импортируйте функцию-заглушку API.
 
 ```ts
@@ -25,7 +25,7 @@ import {loadUser} from './user-api';
 
 </docs-step>
 
-<docs-step title="Создание ресурса для данных пользователя">
+<docs-step title="Create a resource for user data">
 Добавьте в класс компонента свойство, создающее ресурс для загрузки данных пользователя на основе сигнала с ID пользователя.
 
 ```ts
@@ -39,7 +39,7 @@ userResource = resource({
 
 </docs-step>
 
-<docs-step title="Добавление методов для взаимодействия с ресурсом">
+<docs-step title="Add methods to interact with the resource">
 Добавьте методы для изменения ID пользователя и перезагрузки ресурса.
 
 ```ts
@@ -56,7 +56,7 @@ reloadUser() {
 `reload()`.
 </docs-step>
 
-<docs-step title="Создание вычисляемых сигналов для состояний ресурса">
+<docs-step title="Create computed signals for resource states">
 Добавьте вычисляемые (computed) сигналы для доступа к различным состояниям ресурса.
 
 ```ts
@@ -68,7 +68,7 @@ hasError = computed(() => this.userResource.status() === 'error');
 `value()` для загруженных данных и метод `hasValue()`, который безопасно проверяет наличие данных.
 </docs-step>
 
-<docs-step title="Подключение кнопок и отображение состояний ресурса">
+<docs-step title="Wire up the buttons and display resource states">
 Структура шаблона уже готова. Теперь свяжите всё воедино:
 
 Часть 1. **Добавьте обработчики клика для кнопок:**

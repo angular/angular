@@ -15,7 +15,7 @@ Router.
 
 <docs-workflow>
 
-<docs-step title="Импорт директивы `RouterLink`">
+<docs-step title="Import `RouterLink` directive">
 
 В файле `app.ts` добавьте импорт директивы `RouterLink` к существующему импорту из `@angular/router` и добавьте её в
 массив `imports` декоратора вашего компонента.
@@ -32,7 +32,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 
 </docs-step>
 
-<docs-step title="Добавление `routerLink` в шаблон">
+<docs-step title="Add a `routerLink` to template">
 
 Чтобы использовать директиву `RouterLink`, замените атрибуты `href` на `routerLink`. Обновите шаблон, внеся это
 изменение.

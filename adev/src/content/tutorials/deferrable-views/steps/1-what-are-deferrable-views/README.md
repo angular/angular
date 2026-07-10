@@ -14,7 +14,7 @@ _Откладываемые представления_ (deferrable views) в An
 
 <docs-workflow>
 
-<docs-step title="Добавьте блок `@defer` в секцию шаблона">
+<docs-step title="Add a `@defer` block to a section of a template">
 В файле `app.ts` оберните компонент `article-comments` в блок `@defer` для его отложенной загрузки.
 
 <docs-code language="angular-html">

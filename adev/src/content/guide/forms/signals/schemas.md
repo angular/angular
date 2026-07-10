@@ -1,10 +1,10 @@
-# Schemas and schema composability
+# Схемы и композируемость схем
 
-Signal Forms uses a two-layer architecture to separate _how your form is structured_ from _how it behaves at runtime_.
+Signal Forms используют двухслойную архитектуру, чтобы отделить _как структурирована ваша форма_ от _как она ведёт себя в runtime_.
 
-When you pass a schema function to `form()`, that function _runs once_ during form creation. Its job is to set up the form's logic tree by declaring which fields have validation, which fields are disabled, and which fields depend on other fields. This is the **structural layer** of your form.
+Когда вы передаёте функцию схемы в `form()`, эта функция _выполняется один раз_ при создании формы. Её задача — настроить дерево логики формы, объявив, какие поля имеют валидацию, какие отключены и какие зависят от других полей. Это **структурный слой** вашей формы.
 
-Inside a schema function, you call rule functions such as `disabled()` and `validate()`. These rule functions accept reactive logic that recomputes whenever the signals they reference change. Conditional rules like `disabled()` and `required()` accept optional configuration, including a `when` function that activates the rule. Together, these form the **behavioral layer** of your form during runtime.
+Внутри функции схемы вы вызываете функции правил, такие как `disabled()` и `validate()`. Эти функции правил принимают реактивную логику, которая пересчитывается при изменении сигналов, на которые они ссылаются. Условные правила вроде `disabled()` и `required()` принимают опциональную конфигурацию, включая функцию `when`, которая активирует правило. Вместе они образуют **поведенческий слой** вашей формы в runtime.
 
 ```ts
 contactForm = form(this.contactModel, (schemaPath) => {
@@ -29,11 +29,11 @@ graph TD
     B2 --> G
 ```
 
-This distinction is important when you compose schemas because functions like `apply()`, `applyWhen()`, and `schema()` all operate at the structural layer. Schemas control _which_ rules exist and _whether_ they're active, while rule functions define _what_ those rules evaluate.
+Это различие важно при композиции схем, потому что функции вроде `apply()`, `applyWhen()` и `schema()` работают на структурном слое. Схемы контролируют, _какие_ правила существуют и _активны_ ли они, а функции правил определяют, _что_ эти правила оценивают.
 
-## Create reusable schemas with `schema()`
+## Создание переиспользуемых схем с `schema()` {#create-reusable-schemas-with-schema}
 
-When multiple forms share the same rules for a common data shape, you can use the `schema()` function to extract those rules into a reusable schema.
+Когда несколько форм разделяют одни и те же правила для общей формы данных, можно использовать функцию `schema()`, чтобы извлечь эти правила в переиспользуемую схему.
 
 ```ts
 import {schema, required, minLength} from '@angular/forms/signals';
@@ -46,13 +46,13 @@ const nameSchema = schema<{first: string; last: string}>((name) => {
 });
 ```
 
-The `schema()` function wraps a function and converts it into a reusable `Schema<T>` object. Like any schema function, it _runs once_ per form, but the object itself can be shared across as many forms as you need.
+Функция `schema()` оборачивает функцию и преобразует её в переиспользуемый объект `Schema<T>`. Как любая функция схемы, она _выполняется один раз_ на форму, но сам объект можно разделять между столькими формами, сколькими нужно.
 
-TIP: If rules only appear in one place, an inline schema function works just as well. Use `schema()` when you want to reuse the same schema across multiple forms or apply the same schema to multiple paths. Reusable `Schema` objects are cached per form compilation.
+TIP: Если правила появляются только в одном месте, inline-функция схемы работает так же хорошо. Используйте `schema()`, когда хотите переиспользовать одну схему в нескольких формах или применить одну схему к нескольким путям. Переиспользуемые объекты `Schema` кэшируются на компиляцию формы.
 
-### Using the schema with `apply()`
+### Использование схемы с `apply()` {#using-the-schema-with-apply}
 
-You can apply a reusable schema to a specific path in a form by using the `apply()` function. When you call `apply()`, the schema receives a scoped path that only sees the fields within that sub-path:
+Переиспользуемую схему можно применить к конкретному пути в форме с помощью функции `apply()`. При вызове `apply()` схема получает scoped-путь, который видит только поля внутри этого подпути:
 
 ```ts
 import {apply} from '@angular/forms/signals';
@@ -66,17 +66,17 @@ registrationForm = form(this.registrationModel, (schemaPath) => {
 });
 ```
 
-## Conditional schemas with `applyWhen()`
+## Условные схемы с `applyWhen()` {#conditional-schemas-with-applywhen}
 
-NOTE: The [Adding form logic guide](guide/forms/signals/form-logic) introduced `applyWhen()` for conditional rules with inline logic. This section covers how to compose `applyWhen()` with reusable schemas.
+NOTE: [Руководство по добавлению логики формы](guide/forms/signals/form-logic) представило `applyWhen()` для условных правил с inline-логикой. Этот раздел охватывает, как компоновать `applyWhen()` с переиспользуемыми схемами.
 
-Some rules should only apply under certain conditions. For example, a zip code field might require validation only when the selected country is the United States.
+Некоторые правила должны применяться только при определённых условиях. Например, поле zip code может требовать валидации только когда выбранная страна — США.
 
-The `applyWhen()` function applies a schema conditionally based on reactive state. It accepts three arguments:
+Функция `applyWhen()` применяет схему условно на основе реактивного состояния. Она принимает три аргумента:
 
-1. A path to apply the schema to
-1. A reactive logic function that returns `true` when the schema should be active
-1. A schema or schema function containing the conditional rules
+1. Путь, к которому применить схему
+1. Реактивную логическую функцию, возвращающую `true`, когда схема должна быть активна
+1. Схему или функцию схемы, содержащую условные правила
 
 ```ts
 import {form, applyWhen, required, pattern} from '@angular/forms/signals';
@@ -93,15 +93,15 @@ addressForm = form(this.addressModel, (schemaPath) => {
 });
 ```
 
-The logic function receives a `FieldContext`, which provides access to `value`, `valueOf`, `stateOf`, and other reactive helpers. Because it's reactive, the condition is re-evaluated whenever the signals it reads change. When the condition becomes `false`, the rules inside the schema deactivate. When it becomes `true` again, they reactivate.
+Логическая функция получает `FieldContext`, который предоставляет доступ к `value`, `valueOf`, `stateOf` и другим реактивным хелперам. Поскольку она реактивна, условие переоценивается при изменении сигналов, которые она читает. Когда условие становится `false`, правила внутри схемы деактивируются. Когда снова становится `true` — реактивируются.
 
-The schema itself is still structural — the schema function runs once during form creation. The condition controls whether those rules are _active_, not whether they _exist_.
+Сама схема по-прежнему структурна — функция схемы выполняется один раз при создании формы. Условие контролирует, _активны_ ли эти правила, а не _существуют_ ли они.
 
-Inside the conditional schema, use the scoped path parameter passed to that schema function. Paths from an outer schema are not valid inside a nested schema.
+Внутри условной схемы используйте scoped-параметр пути, переданный этой функции схемы. Пути из внешней схемы невалидны внутри вложенной схемы.
 
-### Combining `applyWhen()` with reusable schemas
+### Комбинация `applyWhen()` с переиспользуемыми схемами {#combining-applywhen-with-reusable-schemas}
 
-Since `applyWhen()` accepts a `Schema` object, you can pair it with `schema()` to conditionally apply reusable schemas:
+Поскольку `applyWhen()` принимает объект `Schema`, его можно сочетать с `schema()` для условного применения переиспользуемых схем:
 
 ```ts
 const usZipCodeSchema = schema<{zipCode: string}>((address) => {
@@ -128,13 +128,13 @@ shippingForm = form(this.shippingModel, (schemaPath) => {
 });
 ```
 
-NOTE: The logic function accesses `valueOf(schemaPath.country)` even though the path argument is `schemaPath.address`. This is because the `valueOf` helper can access any field in the form, not just fields within the scoped path.
+NOTE: Логическая функция обращается к `valueOf(schemaPath.country)`, даже если аргумент пути — `schemaPath.address`. Это потому что хелпер `valueOf` может обращаться к любому полю в форме, а не только к полям внутри scoped-пути.
 
-This pattern keeps validation logic modular — each country's address rules live in their own schema, and the form selects which one to activate based on the user's choice.
+Этот паттерн держит логику валидации модульной — правила адреса каждой страны живут в собственной схеме, а форма выбирает, какую активировать, на основе выбора пользователя.
 
-## Type-narrowing with `applyWhenValue()`
+## Сужение типов с `applyWhenValue()` {#type-narrowing-with-applywhenvalue}
 
-The `applyWhenValue()` function simplifies conditions that only need to check the field's value. Instead of receiving a `FieldContext`, the condition function receives the field's raw value directly.
+Функция `applyWhenValue()` упрощает условия, которым нужно только проверить значение поля. Вместо `FieldContext` функция условия получает сырое значение поля напрямую.
 
 ```ts {header: "applyWhen — logic function receives FieldContext"}
 applyWhen(schemaPath.payment, ({value}) => value().type === 'credit-card', creditCardSchema);
@@ -144,7 +144,7 @@ applyWhen(schemaPath.payment, ({value}) => value().type === 'credit-card', credi
 applyWhenValue(schemaPath.payment, (payment) => payment.type === 'credit-card', creditCardSchema);
 ```
 
-The main advantage of `applyWhenValue()` is TypeScript type guard support. When the condition function is a type guard, the schema's type parameter narrows to the guarded type. This is especially useful for discriminated unions, where each variant has different fields that need different rules.
+Главное преимущество `applyWhenValue()` — поддержка type guard TypeScript. Когда функция условия — type guard, параметр типа схемы сужается до охраняемого типа. Это особенно полезно для discriminated unions, где у каждого варианта разные поля, нуждающиеся в разных правилах.
 
 ```ts
 import {form, applyWhenValue, required} from '@angular/forms/signals';
@@ -188,11 +188,11 @@ paymentForm = form(this.paymentModel, (schemaPath) => {
 });
 ```
 
-Without the type guard, TypeScript would not know which fields are available inside each schema function. The type narrowing ensures that accessing `payment.cardNumber` is type-safe in the credit card branch and `payment.accountNumber` is type-safe in the bank transfer branch.
+Без type guard TypeScript не знал бы, какие поля доступны внутри каждой функции схемы. Сужение типов гарантирует, что обращение к `payment.cardNumber` типобезопасно в ветке credit card, а `payment.accountNumber` — в ветке bank transfer.
 
-## Array items with `applyEach()`
+## Элементы массива с `applyEach()` {#array-items-with-applyeach}
 
-When a form contains an array of objects, you often need the same rules applied to every item. The `applyEach()` function applies a schema to each item in an array field, regardless of how many items exist.
+Когда форма содержит массив объектов, часто нужны одни и те же правила для каждого элемента. Функция `applyEach()` применяет схему к каждому элементу поля-массива независимо от того, сколько элементов существует.
 
 ```ts
 import {form, applyEach, required, min} from '@angular/forms/signals';
@@ -209,11 +209,11 @@ orderForm = form(this.orderModel, (schemaPath) => {
 });
 ```
 
-The schema function passed to `applyEach()` receives a `SchemaPathTree` scoped to a single array item. Rules declared inside apply to every item in the array, including items added after form creation.
+Функция схемы, переданная в `applyEach()`, получает `SchemaPathTree`, scoped к одному элементу массива. Правила, объявленные внутри, применяются к каждому элементу массива, включая элементы, добавленные после создания формы.
 
-### Combining `applyEach()` with reusable schemas
+### Комбинация `applyEach()` с переиспользуемыми схемами {#combining-applyeach-with-reusable-schemas}
 
-Since `applyEach()` accepts a `Schema` object, you can extract item-level rules into a reusable schema and share them across forms:
+Поскольку `applyEach()` принимает объект `Schema`, можно извлечь правила уровня элемента в переиспользуемую схему и разделять их между формами:
 
 ```ts
 const lineItemSchema = schema<LineItem>((item) => {
@@ -232,12 +232,12 @@ invoiceForm = form(this.invoiceModel, (schemaPath) => {
 });
 ```
 
-TIP: For more on validating array items, including custom error messages per field, see the [Validation guide](guide/forms/signals/validation).
+TIP: Подробнее о валидации элементов массива, включая пользовательские сообщения об ошибках на поле, см. в [руководстве по валидации](guide/forms/signals/validation).
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-To learn more about Signal Forms, check out these related guides:
+Чтобы узнать больше о Signal Forms, см. эти связанные руководства:
 
-- [Adding form logic](guide/forms/signals/form-logic) - Learn how to add conditional logic, dynamic behavior, and metadata to your forms
-- [Validation](guide/forms/signals/validation) - Learn about validation rules and error handling
-- [Async operations](guide/forms/signals/async-operations) - Learn how to handle form submission and async validation
+- [Добавление логики формы](guide/forms/signals/form-logic) — как добавлять условную логику, динамическое поведение и метаданные в формы
+- [Валидация](guide/forms/signals/validation) — правила валидации и обработка ошибок
+- [Асинхронные операции](guide/forms/signals/async-operations) — отправка формы и async-валидация

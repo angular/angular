@@ -1,17 +1,17 @@
-# Deployment
+# Развёртывание
 
-When you are ready to deploy your Angular application to a remote server, you have various options.
+Когда вы готовы развернуть Angular-приложение на удалённом сервере, есть несколько вариантов.
 
-## Automatic deployment with the CLI
+## Автоматическое развёртывание с помощью CLI {#automatic-deployment-with-the-cli}
 
-The Angular CLI command `ng deploy` executes the `deploy` [CLI builder](tools/cli/cli-builder) associated with your project.
-A number of third-party builders implement deployment capabilities to different platforms.
-You can add any of them to your project with `ng add`.
+Команда Angular CLI `ng deploy` выполняет [CLI builder](tools/cli/cli-builder) `deploy`, связанный с вашим проектом.
+Ряд сторонних builders реализует возможности развёртывания на разные платформы.
+Любой из них можно добавить в проект с помощью `ng add`.
 
-When you add a package with deployment capability, it will automatically update your workspace configuration (`angular.json` file) with a `deploy` section for the selected project.
-You can then use the `ng deploy` command to deploy that project.
+Когда вы добавляете пакет с возможностью развёртывания, он автоматически обновляет конфигурацию workspace (`angular.json`) секцией `deploy` для выбранного проекта.
+После этого можно использовать команду `ng deploy` для развёртывания этого проекта.
 
-For example, the following command automatically deploys a project to [Firebase](https://firebase.google.com/).
+Например, следующая команда автоматически разворачивает проект на [Firebase](https://firebase.google.com/).
 
 ```shell
 
@@ -20,15 +20,15 @@ ng deploy
 
 ```
 
-The command is interactive.
-In this case, you must have or create a Firebase account and authenticate using it.
-The command prompts you to select a Firebase project for deployment before building your application and uploading the production assets to Firebase.
+Команда интерактивна.
+В этом случае необходимо иметь или создать аккаунт Firebase и пройти аутентификацию.
+Команда предложит выбрать Firebase-проект для развёртывания, затем соберёт приложение и загрузит production-артефакты в Firebase.
 
-The table below lists tools which implement deployment functionality to different platforms.
-The `deploy` command for each package may require different command line options.
-You can read more by following the links associated with the package names below:
+В таблице ниже перечислены инструменты, реализующие развёртывание на разные платформы.
+Команда `deploy` для каждого пакета может требовать разные опции командной строки.
+Подробнее — по ссылкам, связанным с именами пакетов ниже:
 
-| Deployment to                                                     | Setup Command                                                                               |
+| Развёртывание на                                                     | Команда настройки                                                                               |
 | :---------------------------------------------------------------- | :------------------------------------------------------------------------------------------ |
 | [Firebase hosting](https://firebase.google.com/docs/hosting)      | [`ng add @angular/fire`](https://npmjs.org/package/@angular/fire)                           |
 | [Vercel](https://vercel.com/solutions/angular)                    | [`vercel init angular`](https://github.com/vercel/vercel/tree/main/examples/angular)        |
@@ -36,91 +36,91 @@ You can read more by following the links associated with the package names below
 | [GitHub Pages](https://pages.github.com)                          | [`ng add angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages)               |
 | [Amazon Cloud S3](https://aws.amazon.com/s3/?nc2=h_ql_prod_st_s3) | [`ng add @jefiozie/ngx-aws-deploy`](https://www.npmjs.com/package/@jefiozie/ngx-aws-deploy) |
 
-If you're deploying to a self-managed server or there's no builder for your favorite cloud platform, you can either [create a builder](tools/cli/cli-builder) that allows you to use the `ng deploy` command, or read through this guide to learn how to manually deploy your application.
+Если вы разворачиваете на самостоятельно управляемом сервере или для вашей облачной платформы нет builder, можно либо [создать builder](tools/cli/cli-builder), позволяющий использовать `ng deploy`, либо прочитать это руководство, чтобы узнать, как развернуть приложение вручную.
 
-## Manual deployment to a remote server
+## Ручное развёртывание на удалённый сервер {#manual-deployment-to-a-remote-server}
 
-To manually deploy your application, create a production build and copy the output directory to a web server or content delivery network (CDN).
-By default, `ng build` uses the `production` configuration.
-If you have customized your build configurations, you may want to confirm [production optimizations](tools/cli/deployment#production-optimizations) are being applied before deploying.
+Чтобы развернуть приложение вручную, создайте production-сборку и скопируйте выходной каталог на веб-сервер или CDN.
+По умолчанию `ng build` использует конфигурацию `production`.
+Если вы настроили конфигурации сборки, перед развёртыванием стоит убедиться, что применяются [production-оптимизации](tools/cli/deployment#production-optimizations).
 
-`ng build` outputs the built artifacts to `dist/my-app/` by default, however this path can be configured with the `outputPath` option in the `@angular/build:application` builder.
-Copy this directory to the server and configure it to serve the directory.
+`ng build` по умолчанию выводит собранные артефакты в `dist/my-app/`, однако этот путь можно настроить опцией `outputPath` в builder `@angular/build:application`.
+Скопируйте этот каталог на сервер и настройте его на раздачу каталога.
 
-While this is a minimal deployment solution, there are a few requirements for the server to serve your Angular application correctly.
+Хотя это минимальное решение для развёртывания, для корректной раздачи Angular-приложения к серверу есть несколько требований.
 
-## Server configuration
+## Конфигурация сервера {#server-configuration}
 
-This section covers changes you may need to configure on the server to run your Angular application.
+В этом разделе описаны изменения, которые может потребоваться настроить на сервере для запуска Angular-приложения.
 
-### Routed apps must fall back to `index.html`
+### Приложения с маршрутизацией должны возвращать `index.html` {#routed-apps-must-fall-back-to-indexhtml}
 
-Client-side rendered Angular applications are perfect candidates for serving with a static HTML server because all the content is static and generated at build time.
+Клиентские Angular-приложения хорошо подходят для раздачи статическим HTML-сервером, потому что весь контент статичен и генерируется на этапе сборки.
 
-If the application uses the Angular router, you must configure the server to return the application's host page (`index.html`) when asked for a file that it does not have.
+Если приложение использует Angular router, необходимо настроить сервер так, чтобы он возвращал главную страницу приложения (`index.html`), когда запрашивается отсутствующий файл.
 
-A routed application should support "deep links".
-A _deep link_ is a URL that specifies a path to a component inside the application.
-For example, `http://my-app.test/users/42` is a _deep link_ to the user detail page that displays the user with `id` 42.
+Приложение с маршрутизацией должно поддерживать «deep links».
+_Deep link_ — это URL, указывающий путь к компоненту внутри приложения.
+Например, `http://my-app.test/users/42` — это _deep link_ на страницу деталей пользователя с `id` 42.
 
-There is no issue when the user initially loads the index page and then navigates to that URL from within a running client.
-The Angular router performs the navigation _client-side_ and does not request a new HTML page.
+Проблемы нет, когда пользователь сначала загружает index-страницу, а затем переходит по этому URL из работающего клиента.
+Angular router выполняет навигацию _на клиенте_ и не запрашивает новую HTML-страницу.
 
-But clicking a deep link in an email, entering it in the browser address bar, or even refreshing the browser while already on the deep linked page will all be handled by the browser itself, _outside_ the running application.
-The browser makes a direct request to the server for `/users/42`, bypassing Angular's router.
+Но клик по deep link в письме, ввод его в адресной строке браузера или даже обновление страницы, уже находясь на deep-linked странице, обрабатываются самим браузером _вне_ работающего приложения.
+Браузер делает прямой запрос к серверу за `/users/42`, обходя роутер Angular.
 
-A static server routinely returns `index.html` when it receives a request for `http://my-app.test/`.
-But most servers by default will reject `http://my-app.test/users/42` and returns a `404 - Not Found` error _unless_ it is configured to return `index.html` instead.
-Configure the fallback route or 404 page to `index.html` for your server, so Angular is served for deep links and can display the correct route.
-Some servers call this fallback behavior "Single-Page Application" (SPA) mode.
+Статический сервер обычно возвращает `index.html`, когда получает запрос к `http://my-app.test/`.
+Но большинство серверов по умолчанию отклонят `http://my-app.test/users/42` и вернут ошибку `404 - Not Found`, _если_ не настроены возвращать вместо этого `index.html`.
+Настройте fallback-маршрут или страницу 404 на `index.html` для вашего сервера, чтобы Angular отдавался для deep links и мог отобразить правильный маршрут.
+Некоторые серверы называют это поведение режимом «Single-Page Application» (SPA).
 
-Once the browser loads the application, Angular router will read the URL to determine which page it is on and display `/users/42` correctly.
+После загрузки приложения браузером Angular router прочитает URL, определит текущую страницу и корректно отобразит `/users/42`.
 
-For "real" 404 pages such as `http://my-app.test/does-not-exist`, the server does not require any additional configuration.
-[404 pages implemented in the Angular router](guide/routing/common-router-tasks#displaying-a-404-page) will be displayed correctly.
+Для «настоящих» страниц 404, таких как `http://my-app.test/does-not-exist`, серверу не требуется дополнительная конфигурация.
+[Страницы 404, реализованные в Angular router](guide/routing/common-router-tasks#displaying-a-404-page), отобразятся корректно.
 
-### Requesting data from a different server (CORS)
+### Запрос данных с другого сервера (CORS) {#requesting-data-from-a-different-server-cors}
 
-Web developers may encounter a [_cross-origin resource sharing_](https://developer.mozilla.org/docs/Web/HTTP/CORS 'Cross-origin resource sharing') error when making a network request to a server other than the application's own host server.
-Browsers forbid such requests unless the server explicitly permits them.
+Веб-разработчики могут столкнуться с ошибкой [_cross-origin resource sharing_](https://developer.mozilla.org/docs/Web/HTTP/CORS 'Cross-origin resource sharing') при сетевом запросе к серверу, отличному от хост-сервера приложения.
+Браузеры запрещают такие запросы, если сервер явно их не разрешает.
 
-There isn't anything Angular or the client application can do about these errors.
-The _server_ must be configured to accept the application's requests.
-Read about how to enable CORS for specific servers at [enable-cors.org](https://enable-cors.org/server.html 'Enabling CORS server').
+Angular или клиентское приложение ничего не могут сделать с этими ошибками.
+_Сервер_ должен быть настроен на приём запросов приложения.
+О том, как включить CORS для конкретных серверов, читайте на [enable-cors.org](https://enable-cors.org/server.html 'Enabling CORS server').
 
-## Production optimizations
+## Production-оптимизации {#production-optimizations}
 
-`ng build` uses the `production` configuration unless configured otherwise. This configuration enables the following build optimization features.
+`ng build` использует конфигурацию `production`, если не указано иное. Эта конфигурация включает следующие возможности оптимизации сборки.
 
-| Features                                                          | Details                                                                                       |
+| Возможности                                                          | Подробности                                                                                       |
 | :---------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
-| [Ahead-of-Time (AOT) Compilation](tools/cli/aot-compiler)         | Pre-compiles Angular component templates.                                                     |
-| [Production mode](tools/cli/deployment#development-only-features) | Optimizes the application for the best runtime performance                                    |
-| Bundling                                                          | Concatenates your many application and library files into a minimum number of deployed files. |
-| Minification                                                      | Removes excess whitespace, comments, and optional tokens.                                     |
-| Mangling                                                          | Renames functions, classes, and variables to use shorter, arbitrary identifiers.              |
-| Dead code elimination                                             | Removes unreferenced modules and unused code.                                                 |
+| [Ahead-of-Time (AOT) компиляция](tools/cli/aot-compiler)         | Предварительно компилирует шаблоны компонентов Angular.                                                     |
+| [Production mode](tools/cli/deployment#development-only-features) | Оптимизирует приложение для наилучшей производительности во время выполнения                                    |
+| Bundling                                                          | Объединяет множество файлов приложения и библиотек в минимальное число развёртываемых файлов. |
+| Minification                                                      | Удаляет лишние пробелы, комментарии и необязательные токены.                                     |
+| Mangling                                                          | Переименовывает функции, классы и переменные в более короткие произвольные идентификаторы.              |
+| Dead code elimination                                             | Удаляет неиспользуемые модули и неиспользуемый код.                                                 |
 
-See [`ng build`](cli/build) for more about CLI build options and their effects.
+См. [`ng build`](cli/build) для подробностей об опциях сборки CLI и их эффектах.
 
-### Development-only features
+### Возможности только для разработки {#development-only-features}
 
-When you run an application locally using `ng serve`, Angular uses the development configuration
-at runtime which enables:
+Когда вы запускаете приложение локально с помощью `ng serve`, Angular во время выполнения использует конфигурацию development,
+которая включает:
 
-- Extra safety checks such as [`expression-changed-after-checked`](errors/NG0100) detection.
-- More detailed error messages.
-- Additional debugging utilities such as the global `ng` variable with [debugging functions](api#core-global) and [Angular DevTools](tools/devtools) support.
+- Дополнительные проверки безопасности, такие как обнаружение [`expression-changed-after-checked`](errors/NG0100).
+- Более подробные сообщения об ошибках.
+- Дополнительные утилиты отладки, такие как глобальная переменная `ng` с [функциями отладки](api#core-global) и поддержка [Angular DevTools](tools/devtools).
 
-These features are helpful during development, but they require extra code in the app, which is
-undesirable in production. To ensure these features do not negatively impact bundle size for end users, Angular CLI
-removes development-only code from the bundle when building for production.
+Эти возможности полезны при разработке, но требуют дополнительного кода в приложении, что
+нежелательно в production. Чтобы они не влияли отрицательно на размер бандла для конечных пользователей, Angular CLI
+удаляет код только для разработки из бандла при сборке для production.
 
-Building your application with `ng build` by default uses the `production` configuration which removes these features from the output for optimal bundle size.
+Сборка приложения с `ng build` по умолчанию использует конфигурацию `production`, которая удаляет эти возможности из вывода для оптимального размера бандла.
 
-## `--deploy-url`
+## `--deploy-url` {#--deploy-url}
 
-`--deploy-url` is a command line option used to specify the base path for resolving relative URLs for assets such as images, scripts, and style sheets at _compile_ time.
+`--deploy-url` — опция командной строки для указания базового пути разрешения относительных URL для ресурсов, таких как изображения, скрипты и таблицы стилей, на этапе _компиляции_.
 
 ```shell
 
@@ -128,7 +128,7 @@ ng build --deploy-url /my/assets
 
 ```
 
-The effect and purpose of `--deploy-url` overlaps with [`<base href>`](guide/routing/router-reference#base-href). Both can be used for initial scripts, stylesheets, lazy scripts, and css resources.
+Эффект и назначение `--deploy-url` пересекаются с [`<base href>`](guide/routing/router-reference#base-href). Оба можно использовать для начальных скриптов, таблиц стилей, ленивых скриптов и CSS-ресурсов.
 
-Unlike `<base href>` which can be defined in a single place at runtime, the `--deploy-url` needs to be hard-coded into an application at build time.
-Prefer `<base href>` where possible.
+В отличие от `<base href>`, который можно определить в одном месте во время выполнения, `--deploy-url` нужно жёстко задать в приложении на этапе сборки.
+По возможности предпочитайте `<base href>`.

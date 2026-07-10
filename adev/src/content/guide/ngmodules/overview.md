@@ -1,6 +1,6 @@
 # NgModules
 
-ВАЖНО: Команда Angular рекомендует
+IMPORTANT: Команда Angular рекомендует
 использовать [standalone-компоненты](guide/components/anatomy-of-components#-imports-in-the-component-decorator) вместо
 `NgModule` для всего нового кода. Используйте это руководство для понимания существующего кода, созданного с помощью
 `@NgModule`.
@@ -116,9 +116,9 @@ export class CustomMenuModule { }
 export class CustomMenuModule { }
 ```
 
-## Провайдеры NgModule
+## Провайдеры NgModule {#ngmodule-providers}
 
-СОВЕТ: См. руководство по [Внедрению зависимостей (DI)](guide/di) для получения информации о внедрении зависимостей и
+TIP: См. руководство по [Внедрению зависимостей (DI)](guide/di) для получения информации о внедрении зависимостей и
 провайдерах.
 
 `NgModule` может указывать `providers` (провайдеров) для внедряемых зависимостей. Эти провайдеры доступны для:
@@ -153,7 +153,7 @@ export class UserProfileModule { }
 - `UserProfile` может внедрить `OverlayManager`, так как его NgModule импортирует `CustomMenuModule`.
 - `UserDataClient` может внедрить `OverlayManager`, так как его NgModule импортирует `CustomMenuModule`.
 
-### Паттерн `forRoot` и `forChild`
+### Паттерн `forRoot` и `forChild` {#the-forroot-and-forchild-pattern}
 
 Некоторые NgModule определяют статический метод `forRoot`, который принимает некоторую конфигурацию и возвращает массив
 провайдеров. Имя «`forRoot`» — это соглашение, указывающее на то, что эти провайдеры предназначены для добавления
@@ -183,9 +183,9 @@ bootstrapApplication(MyApplicationRoot, {
 export class UserProfile { /* ... */ }
 ```
 
-## Запуск (Bootstrapping) приложения
+## Запуск (Bootstrapping) приложения {#bootstrapping-an-application}
 
-ВАЖНО: Команда Angular рекомендует использовать [bootstrapApplication](api/platform-browser/bootstrapApplication) вместо
+IMPORTANT: Команда Angular рекомендует использовать [bootstrapApplication](api/platform-browser/bootstrapApplication) вместо
 `bootstrapModule` для всего нового кода. Используйте это руководство для понимания существующих приложений, запускаемых
 с помощью `@NgModule`.
 

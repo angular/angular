@@ -6,9 +6,9 @@
   <docs-pill href="/api?query=combobox#angular_aria_combobox" title="Combobox API Reference"/>
 </docs-pill-row>
 
-## Overview
+## Обзор {#overview}
 
-A directive that coordinates a trigger element (such as a text input, button, or `div`) with a popup, providing the primitive directive for autocomplete, select, and multiselect patterns.
+Директива, координирующая trigger-элемент (текстовый input, кнопку или `div`) с popup — примитивная директива для паттернов autocomplete, select и multiselect.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -36,39 +36,39 @@ A directive that coordinates a trigger element (such as a text input, button, or
   </docs-tab>
 </docs-tab-group>
 
-## Usage
+## Использование {#usage}
 
-Combobox is the primitive directive that coordinates an interactive trigger element (such as a text input, button, or `div`) with a popup. It provides the foundation for autocomplete, select, and multiselect patterns. Consider using combobox directly when:
+Combobox — примитивная директива, координирующая интерактивный trigger-элемент (текстовый input, кнопку или `div`) с popup. Она даёт основу для паттернов autocomplete, select и multiselect. Рассмотрите прямое использование combobox, когда:
 
-- **Building custom autocomplete patterns** - Creating specialized filtering or suggestion behavior
-- **Creating custom selection components** - Developing dropdowns with unique requirements
-- **Coordinating input with popup** - Pairing text input with listbox, tree, or dialog content
-- **Implementing custom filtering** - Filtering and orchestrating matching options in user space
+- **Строите кастомные паттерны autocomplete** — специализированная фильтрация или поведение подсказок
+- **Создаёте кастомные компоненты выбора** — dropdown с уникальными требованиями
+- **Координируете input с popup** — связываете текстовый ввод с контентом listbox, tree или dialog
+- **Реализуете кастомную фильтрацию** — фильтрация и оркестрация совпадающих опций в user space
 
-Use documented patterns instead when:
+Используйте задокументированные паттерны, когда:
 
-- Standard autocomplete with filtering is needed - See the [Autocomplete pattern](guide/aria/autocomplete) for ready-to-use examples
-- Single-selection dropdowns are needed - See the [Select pattern](guide/aria/select) for complete dropdown implementation
-- Multiple-selection dropdowns are needed - See the [Multiselect pattern](guide/aria/multiselect) for multi-select with compact display
+- Нужен стандартный autocomplete с фильтрацией — см. [паттерн Autocomplete](guide/aria/autocomplete) для готовых примеров
+- Нужны dropdown с одиночным выбором — см. [паттерн Select](guide/aria/select) для полной реализации dropdown
+- Нужны dropdown с множественным выбором — см. [паттерн Multiselect](guide/aria/multiselect) для multi-select с компактным отображением
 
-NOTE: The [Autocomplete](guide/aria/autocomplete), [Select](guide/aria/select), and [Multiselect](guide/aria/multiselect) guides show documented patterns that combine this directive with [Listbox](guide/aria/listbox) for specific use cases.
+NOTE: Руководства [Autocomplete](guide/aria/autocomplete), [Select](guide/aria/select) и [Multiselect](guide/aria/multiselect) показывают задокументированные паттерны, сочетающие эту директиву с [Listbox](guide/aria/listbox) для конкретных сценариев.
 
-## Features
+## Возможности {#features}
 
-Angular's combobox provides a fully accessible input-popup coordination system with:
+Combobox Angular предоставляет полностью доступную систему координации input-popup с:
 
-- **Trigger Element with Popup** - Coordinates trigger element with popup content
-- **Flexible Coordination** - Integrates seamlessly with standard layouts (listbox, tree, grid, or dialog)
-- **Keyboard Navigation** - Arrow keys, Enter, Escape handling
-- **Screen Reader Support** - Built-in ARIA attributes including role="combobox" and aria-expanded
-- **Popup Management** - Automatic show/hide based on user interaction
-- **Signal-Based Reactivity** - Reactive state management using Angular signals
+- **Trigger-элементом с popup** — координация trigger-элемента с контентом popup
+- **Гибкой координацией** — бесшовная интеграция со стандартными layout (listbox, tree, grid или dialog)
+- **Клавиатурной навигацией** — обработка стрелок, Enter, Escape
+- **Поддержкой screen reader** — встроенные ARIA-атрибуты, включая role="combobox" и aria-expanded
+- **Управлением popup** — автоматический показ/скрытие на основе взаимодействия пользователя
+- **Signal-based реактивностью** — реактивное управление состоянием через сигналы Angular
 
-## Examples
+## Примеры {#examples}
 
-### Autocomplete
+### Autocomplete {#autocomplete}
 
-An accessible input field that filters and suggests options as users type, helping them find and select values from a list.
+Доступное поле ввода, которое фильтрует и предлагает опции по мере ввода, помогая находить и выбирать значения из списка.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -96,11 +96,11 @@ An accessible input field that filters and suggests options as users type, helpi
   </docs-tab>
 </docs-tab-group>
 
-Filtering is managed in user space by updating a signal that reactively filters the options list. Users navigate with arrow keys and select with Enter or click. This provides complete control and maximum flexibility for custom selection logic. See the [Autocomplete guide](guide/aria/autocomplete) for complete filtering patterns and examples.
+Фильтрация управляется в user space обновлением сигнала, который реактивно фильтрует список опций. Пользователи перемещаются стрелками и выбирают Enter или кликом. Это даёт полный контроль и максимальную гибкость для кастомной логики выбора. Полные паттерны фильтрации и примеры — в [руководстве Autocomplete](guide/aria/autocomplete).
 
-### Readonly mode
+### Режим readonly {#readonly-mode}
 
-A pattern that combines a readonly combobox with listbox to create single-selection dropdowns with keyboard navigation and screen reader support.
+Паттерн, сочетающий readonly combobox с listbox для создания dropdown с одиночным выбором, клавиатурной навигацией и поддержкой screen reader.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -128,13 +128,13 @@ A pattern that combines a readonly combobox with listbox to create single-select
   </docs-tab>
 </docs-tab-group>
 
-Triggering a dropdown without text input can be achieved using a button as the host trigger, or applying the native HTML `readonly` attribute to the input trigger. The popup opens on click or arrow keys.
+Запуск dropdown без текстового ввода достигается использованием кнопки как host trigger или применением нативного HTML-атрибута `readonly` к input trigger. Popup открывается по клику или стрелкам.
 
-This configuration provides the foundation for the [Select](guide/aria/select) and [Multiselect](guide/aria/multiselect) patterns. See those guides for complete dropdown implementations with triggers and overlay positioning.
+Эта конфигурация даёт основу для паттернов [Select](guide/aria/select) и [Multiselect](guide/aria/multiselect). Полные реализации dropdown с triggers и позиционированием overlay — в этих руководствах.
 
-### Datepicker grid
+### Datepicker grid {#datepicker-grid}
 
-Combobox can coordinate with a two-dimensional grid to create accessible datepickers. Users navigate dates inside the calendar grid table using directional arrow keys and confirm selection with click, Enter, or Spacebar.
+Combobox может координироваться с двумерным grid для создания доступных datepickers. Пользователи перемещаются по датам внутри таблицы calendar grid стрелками и подтверждают выбор кликом, Enter или Spacebar.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -162,9 +162,9 @@ Combobox can coordinate with a two-dimensional grid to create accessible datepic
   </docs-tab>
 </docs-tab-group>
 
-### Dialog popup
+### Dialog popup {#dialog-popup}
 
-Dialog popups combine the combobox trigger with standard dialog layouts and focus traps (such as CDK's `cdkTrapFocus`). Use dialog popups when the overlay requires modal behavior or backdrop interaction.
+Dialog popups сочетают combobox trigger со стандартными dialog layout и focus traps (например, `cdkTrapFocus` CDK). Используйте dialog popups, когда overlay требует modal-поведения или взаимодействия с backdrop.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -192,10 +192,10 @@ Dialog popups combine the combobox trigger with standard dialog layouts and focu
   </docs-tab>
 </docs-tab-group>
 
-## Testing
+## Тестирование {#testing}
 
-Angular Aria provides a `ComboboxHarness` for testing combobox components.
-Here is an example of how to use the harness in a component test:
+Angular Aria предоставляет `ComboboxHarness` для тестирования компонентов combobox.
+Пример использования harness в тесте компонента:
 
 ```typescript
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -235,23 +235,23 @@ describe('MyComboboxComponent', () => {
 });
 ```
 
-## API reference
+## API reference {#api-reference}
 
-For detailed API documentation, inspect the following API references:
+Подробную API-документацию смотрите в следующих API reference:
 
 - [`Combobox`](/api/aria/combobox/Combobox)
 - [`ComboboxPopup`](/api/aria/combobox/ComboboxPopup)
 - [`ComboboxWidget`](/api/aria/combobox/ComboboxWidget)
 
-### Related patterns and directives
+### Связанные паттерны и директивы {#related-patterns-and-directives}
 
-Combobox is the primitive directive for these documented patterns:
+Combobox — примитивная директива для этих задокументированных паттернов:
 
-- [Autocomplete](guide/aria/autocomplete) - Filtering and suggestions pattern (coordinates input typing with options list)
-- [Select](guide/aria/select) - Single selection dropdown pattern (applied directly on non-editable button triggers)
-- [Multiselect](guide/aria/multiselect) - Multiple selection pattern (applied on non-editable triggers with multi-enabled Listbox)
+- [Autocomplete](guide/aria/autocomplete) — паттерн фильтрации и подсказок (координирует ввод с списком опций)
+- [Select](guide/aria/select) — паттерн dropdown с одиночным выбором (применяется напрямую к нередактируемым button triggers)
+- [Multiselect](guide/aria/multiselect) — паттерн множественного выбора (применяется к нередактируемым triggers с multi-enabled Listbox)
 
-Combobox typically combines with:
+Combobox обычно сочетается с:
 
-- [Listbox](guide/aria/listbox) - Most common popup content
-- [Tree](guide/aria/tree) - Hierarchical popup content (see Tree guide for examples)
+- [Listbox](guide/aria/listbox) — самый частый контент popup
+- [Tree](guide/aria/tree) — иерархический контент popup (примеры — в руководстве Tree)

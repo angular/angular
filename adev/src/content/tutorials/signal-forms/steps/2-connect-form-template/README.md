@@ -1,22 +1,22 @@
-# Connect your form to the template
+# Подключите форму к шаблону
 
-Now, you need to connect your form to the template using the `[formField]` directive. This creates two-way data binding between your form model and the input elements.
+Теперь нужно связать форму с шаблоном через директиву `[formField]`. Она создаёт двустороннюю привязку данных между моделью формы и элементами ввода.
 
-In this lesson, you'll learn how to:
+В этом уроке вы научитесь:
 
-- Import the `FormField` directive
-- Use the `[formField]` directive to bind form fields to inputs
-- Connect text inputs and checkboxes to your form
-- Display form field values in the template
+- импортировать директиву `FormField`;
+- использовать `[formField]` для привязки полей формы к input;
+- подключать текстовые поля и чекбоксы к форме;
+- отображать значения полей формы в шаблоне.
 
-Let's wire up the template!
+Давайте подключим шаблон!
 
 <hr />
 
 <docs-workflow>
 
 <docs-step title="Import the FormField directive">
-Import the `FormField` directive from `@angular/forms/signals` and add it to your component's imports array:
+Импортируйте директиву `FormField` из `@angular/forms/signals` и добавьте её в массив imports компонента:
 
 ```ts
 import { form, FormField } from '@angular/forms/signals';
@@ -32,17 +32,17 @@ import { form, FormField } from '@angular/forms/signals';
 </docs-step>
 
 <docs-step title="Bind the email field">
-In your template, add the `[formField]` directive to the email input:
+В шаблоне добавьте директиву `[formField]` к полю email:
 
 ```html
 <input type="email" [formField]="loginForm.email" />
 ```
 
-The `loginForm.email` expression accesses the email field from your form.
+Выражение `loginForm.email` обращается к полю email вашей формы.
 </docs-step>
 
 <docs-step title="Bind the password field">
-Add the `[formField]` directive to the password input:
+Добавьте директиву `[formField]` к полю password:
 
 ```html
 <input type="password" [formField]="loginForm.password" />
@@ -51,7 +51,7 @@ Add the `[formField]` directive to the password input:
 </docs-step>
 
 <docs-step title="Bind the checkbox field">
-Add the `[formField]` directive to the checkbox input:
+Добавьте директиву `[formField]` к чекбоксу:
 
 ```html
 <input type="checkbox" [formField]="loginForm.rememberMe" />
@@ -60,7 +60,7 @@ Add the `[formField]` directive to the checkbox input:
 </docs-step>
 
 <docs-step title="Display the form values">
-Below the form, there's a debug section to show current form values. Display each field value using `.value()`:
+Под формой есть отладочная секция для текущих значений. Отобразите значение каждого поля через `.value()`:
 
 ```angular-html
 <p>Email: {{ loginForm.email().value() }}</p>
@@ -68,11 +68,11 @@ Below the form, there's a debug section to show current form values. Display eac
 <p>Remember me: {{ loginForm.rememberMe().value() ? 'Yes' : 'No' }}</p>
 ```
 
-Form field values are signals, so the displayed values update automatically as you type.
+Значения полей формы — это сигналы, поэтому отображаемые значения обновляются автоматически при вводе.
 </docs-step>
 
 </docs-workflow>
 
-Great work! You've connected your form to the template and displayed the form values. The `[formField]` directive handles two-way data binding automatically - as you type, the `loginModel` signal updates, and the displayed values update immediately.
+Отличная работа! Вы подключили форму к шаблону и отобразили значения. Директива `[formField]` автоматически обеспечивает двустороннюю привязку: при вводе обновляется сигнал `loginModel`, и отображаемые значения меняются сразу.
 
-Next, you'll learn [how to add validation to your form](/tutorials/signal-forms/3-add-validation)!
+Далее — [как добавить валидацию в форму](/tutorials/signal-forms/3-add-validation)!

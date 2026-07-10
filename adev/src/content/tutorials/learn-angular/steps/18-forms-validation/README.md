@@ -12,7 +12,7 @@
 
 <docs-workflow>
 
-<docs-step title="Импорт валидаторов">
+<docs-step title="Import Validators">
 
 Angular предоставляет набор инструментов для валидации. Чтобы воспользоваться ими, сначала обновите компонент,
 импортировав `Validators` из `@angular/forms`.
@@ -26,7 +26,7 @@ export class App {}
 
 </docs-step>
 
-<docs-step title="Добавление валидации в форму">
+<docs-step title="Add validation to form">
 
 В каждый `FormControl` можно передать `Validators`, которые вы хотите использовать для проверки значений этого контрола.
 Например, если вы хотите сделать поле `name` в `profileForm` обязательным, используйте `Validators.required`.
@@ -43,7 +43,7 @@ profileForm = new FormGroup({
 
 </docs-step>
 
-<docs-step title="Проверка валидации формы в шаблоне">
+<docs-step title="Check form validation in template">
 
 Чтобы определить, валидна ли форма, класс `FormGroup` предоставляет свойство `valid`.
 Вы можете использовать это свойство для динамической привязки атрибутов. Обновите кнопку отправки (`button`), чтобы она

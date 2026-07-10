@@ -1,8 +1,8 @@
-# Debouncing signals with `debounced`
+# Debounce сигналов с `debounced`
 
-IMPORTANT: `debounced` is [experimental](reference/releases#experimental). It's ready for you to try, but it might change before it is stable.
+IMPORTANT: `debounced` — [экспериментальная](reference/releases#experimental) функция. Её можно пробовать, но до стабилизации API может измениться.
 
-Use `debounced` to delay reacting to a signal's value until it stops changing. It returns a `Resource` whose value reflects the debounced value of the source signal.
+Используйте `debounced`, чтобы отложить реакцию на значение сигнала, пока оно не перестанет меняться. Функция возвращает `Resource`, значение которого отражает debounced-значение исходного сигнала.
 
 ```angular-ts
 import {debounced, resource, signal} from '@angular/core';
@@ -31,17 +31,17 @@ export class Search {
 }
 ```
 
-`debounced` takes the source signal and a wait duration in milliseconds. The returned resource's `value()` always contains the last settled value, and `status()` tells you whether a new value is still pending.
+`debounced` принимает исходный сигнал и длительность ожидания в миллисекундах. `value()` возвращённого resource всегда содержит последнее «установившееся» значение, а `status()` показывает, ожидается ли ещё новое значение.
 
-## Status during debounce
+## Статус во время debounce {#status-during-debounce}
 
-While the debounce timer is counting down, `status()` is `'loading'` and `value()` returns the previously resolved value. When the timer expires, the resource settles to `'resolved'`. If the source signal throws, the resource enters `'error'` immediately; no timer runs.
+Пока идёт отсчёт debounce-таймера, `status()` равен `'loading'`, а `value()` возвращает ранее разрешённое значение. Когда таймер истекает, resource переходит в `'resolved'`. Если исходный сигнал выбрасывает ошибку, resource сразу переходит в `'error'`; таймер не запускается.
 
-See [Resource status](/guide/signals/resource#resource-status) for the full list of statuses and their `value()` behavior.
+Полный список статусов и поведение `value()` см. в [Resource status](/guide/signals/resource#resource-status).
 
-## Custom wait function
+## Пользовательская функция ожидания {#custom-wait-function}
 
-Instead of a millisecond duration, you can pass a function that returns a `Promise<void>`. The resource resolves when the promise resolves. If the source signal changes before the promise settles, Angular discards the previous promise and starts a new one.
+Вместо длительности в миллисекундах можно передать функцию, возвращающую `Promise<void>`. Resource разрешается, когда промис разрешается. Если исходный сигнал изменится до завершения промиса, Angular отбрасывает предыдущий промис и запускает новый.
 
 ```ts
 debouncedQuery = debounced(query, (value, lastSnapshot) => {
@@ -53,13 +53,13 @@ debouncedQuery = debounced(query, (value, lastSnapshot) => {
 });
 ```
 
-See the `DebounceTimer` type in the API reference for details.
+Подробности см. в типе `DebounceTimer` в API reference.
 
-## Equality
+## Equality {#equality}
 
-By default, `debounced` uses `Object.is` to compare values.
+По умолчанию `debounced` сравнивает значения через `Object.is`.
 
-Provide a custom equality function with the `equal` option when the default identity check is too strict:
+Передайте пользовательскую функцию equality через опцию `equal`, если проверка по идентичности слишком строгая:
 
 ```ts
 debouncedFilter = debounced(filter, 200, {
@@ -67,11 +67,11 @@ debouncedFilter = debounced(filter, 200, {
 });
 ```
 
-## Injection context
+## Контекст внедрения {#injection-context}
 
-`debounced` must be called inside an [injection context](guide/di/dependency-injection-context). Angular automatically destroys the debounced resource and cancels any pending timer when the injector is destroyed.
+`debounced` нужно вызывать внутри [контекста внедрения](guide/di/dependency-injection-context). Angular автоматически уничтожает debounced resource и отменяет ожидающий таймер при уничтожении injector.
 
-To use `debounced` outside of an injection context, pass an explicit `Injector` via the options:
+Чтобы использовать `debounced` вне контекста внедрения, передайте явный `Injector` через опции:
 
 ```ts
 @Service()

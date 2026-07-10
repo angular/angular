@@ -1,49 +1,49 @@
-# LLM prompts and AI IDE setup
+# Промпты для LLM и настройка ИИ-IDE
 
-Generating code with large language models (LLMs) is a rapidly growing area of interest for developers. While LLMs are often capable of generating working code it can be a challenge to generate code for consistently evolving frameworks like Angular.
+Генерация кода с помощью больших языковых моделей (LLM) быстро набирает популярность среди разработчиков. Хотя LLM часто способны генерировать рабочий код, стабильно получать качественный код для постоянно развивающихся фреймворков вроде Angular бывает непросто.
 
-Advanced instructions and prompting are an emerging standard for supporting modern code generation with domain specific details. This section contains curated content and resources to support more accurate code generation for Angular and LLMs.
+Продвинутые инструкции и промптинг становятся стандартом поддержки современной генерации кода с учётом предметной области. В этом разделе собраны материалы и ресурсы, которые помогают LLM точнее генерировать код для Angular.
 
-## Custom Prompts and System Instructions
+## Пользовательские промпты и системные инструкции {#custom-prompts-and-system-instructions}
 
-Improve your experience generating code with LLMs by using one of the following custom, domain specific files.
+Улучшите генерацию кода с LLM, используя один из следующих специализированных файлов.
 
-NOTE: These files will be updated on a regular basis staying up to date with Angular's conventions.
+NOTE: Эти файлы регулярно обновляются, чтобы соответствовать соглашениям Angular.
 
-Here is a set of instructions to help LLMs generate correct code that follows Angular best practices. This file can be included as system instructions to your AI tooling or included along with your prompt as context.
+Ниже — набор инструкций, помогающих LLM генерировать корректный код по лучшим практикам Angular. Файл можно подключить как системные инструкции к ИИ-инструменту или добавить к промпту как контекст.
 
 <docs-code language="md" path="packages/core/resources/best-practices.md" class="compact"/>
 
-<a download href="/assets/context/best-practices.md" target="_blank">Click here to download the best-practices.md file.</a>
+<a download href="/assets/context/best-practices.md" target="_blank">Нажмите здесь, чтобы скачать файл best-practices.md.</a>
 
-## Rules Files
+## Файлы правил {#rules-files}
 
-Several editors, such as <a href="https://studio.firebase.google.com?utm_source=adev&utm_medium=website&utm_campaign=BUILD_WITH_AI_ANGULAR&utm_term=angular_devrel&utm_content=build_with_ai_angular_firebase_studio" target="_blank">Firebase Studio</a> have rules files useful for providing critical context to LLMs.
+В ряде редакторов, например в <a href="https://studio.firebase.google.com?utm_source=adev&utm_medium=website&utm_campaign=BUILD_WITH_AI_ANGULAR&utm_term=angular_devrel&utm_content=build_with_ai_angular_firebase_studio" target="_blank">Firebase Studio</a>, есть файлы правил, полезные для передачи критически важного контекста LLM.
 
-| Environment/IDE      | Rules File                                                                                                             | Installation Instructions                                                                                                                                       |
+| Среда/IDE            | Файл правил                                                                                                            | Инструкции по установке                                                                                                                                         |
 | :------------------- | :--------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Firebase Studio      | <a download href="/assets/context/airules.md" target="_blank">airules.md</a>                                           | <a href="https://firebase.google.com/docs/studio/set-up-gemini#custom-instructions" target="_blank">Configure `airules.md`</a>                                  |
-| Copilot powered IDEs | <a download="copilot-instructions.md" href="/assets/context/guidelines.md" target="_blank">copilot-instructions.md</a> | <a href="https://code.visualstudio.com/docs/copilot/copilot-customization#_custom-instructions" target="_blank">Configure `.github/copilot-instructions.md`</a> |
-| Cursor               | <a download href="/assets/context/angular-20.mdc" target="_blank">cursor.md</a>                                        | <a href="https://docs.cursor.com/context/rules" target="_blank">Configure `cursorrules.md`</a>                                                                  |
-| JetBrains IDEs       | <a download href="/assets/context/guidelines.md" target="_blank">guidelines.md</a>                                     | <a href="https://www.jetbrains.com/help/junie/customize-guidelines.html" target="_blank">Configure `guidelines.md`</a>                                          |
-| VS Code              | <a download=".instructions.md" href="/assets/context/guidelines.md" target="_blank">.instructions.md</a>               | <a href="https://code.visualstudio.com/docs/copilot/copilot-customization#_custom-instructions" target="_blank">Configure `.instructions.md`</a>                |
-| Windsurf             | <a download href="/assets/context/guidelines.md" target="_blank">guidelines.md</a>                                     | <a href="https://docs.windsurf.com/windsurf/cascade/memories#rules" target="_blank">Configure `guidelines.md`</a>                                               |
+| Firebase Studio      | <a download href="/assets/context/airules.md" target="_blank">airules.md</a>                                           | <a href="https://firebase.google.com/docs/studio/set-up-gemini#custom-instructions" target="_blank">Настройка `airules.md`</a>                                  |
+| IDE на базе Copilot  | <a download="copilot-instructions.md" href="/assets/context/guidelines.md" target="_blank">copilot-instructions.md</a> | <a href="https://code.visualstudio.com/docs/copilot/copilot-customization#_custom-instructions" target="_blank">Настройка `.github/copilot-instructions.md`</a> |
+| Cursor               | <a download href="/assets/context/angular-20.mdc" target="_blank">cursor.md</a>                                        | <a href="https://docs.cursor.com/context/rules" target="_blank">Настройка `cursorrules.md`</a>                                                                  |
+| JetBrains IDEs       | <a download href="/assets/context/guidelines.md" target="_blank">guidelines.md</a>                                     | <a href="https://www.jetbrains.com/help/junie/customize-guidelines.html" target="_blank">Настройка `guidelines.md`</a>                                          |
+| VS Code              | <a download=".instructions.md" href="/assets/context/guidelines.md" target="_blank">.instructions.md</a>               | <a href="https://code.visualstudio.com/docs/copilot/copilot-customization#_custom-instructions" target="_blank">Настройка `.instructions.md`</a>                |
+| Windsurf             | <a download href="/assets/context/guidelines.md" target="_blank">guidelines.md</a>                                     | <a href="https://docs.windsurf.com/windsurf/cascade/memories#rules" target="_blank">Настройка `guidelines.md`</a>                                               |
 
-## Angular CLI MCP Server setup
+## Настройка Angular CLI MCP Server {#angular-cli-mcp-server-setup}
 
-The Angular CLI includes an experimental [Model Context Protocol (MCP) server](https://modelcontextprotocol.io/) that allows AI assistants in your development environment to interact with the Angular CLI.
+Angular CLI включает экспериментальный [Model Context Protocol (MCP) server](https://modelcontextprotocol.io/), который позволяет ИИ-ассистентам в среде разработки взаимодействовать с Angular CLI.
 
-[**Learn how to set up the Angular CLI MCP Server**](/ai/mcp)
+[**Узнайте, как настроить Angular CLI MCP Server**](/ai/mcp)
 
-## Providing Context with `llms.txt`
+## Контекст с помощью `llms.txt` {#providing-context-with-llmstxt}
 
-`llms.txt` is a proposed standard for websites designed to help LLMs better understand and process their content. The Angular team has developed two versions of this file to help LLMs and tools that use LLMs for code generation to create better modern Angular code.
+`llms.txt` — предлагаемый стандарт для сайтов, помогающий LLM лучше понимать и обрабатывать их содержимое. Команда Angular подготовила две версии этого файла, чтобы LLM и инструменты на их основе генерировали более качественный современный код Angular.
 
-- <a href="/llms.txt" target="_blank">llms.txt</a> - an index file providing links to key files and resources.
-- <a href="/assets/context/llms-full.txt" target="_blank">llms-full.txt</a> - a more robust compiled set of resources describing how Angular works and how to build Angular applications.
+- <a href="/llms.txt" target="_blank">llms.txt</a> — индексный файл со ссылками на ключевые файлы и ресурсы.
+- <a href="/assets/context/llms-full.txt" target="_blank">llms-full.txt</a> — более полный набор материалов о том, как устроен Angular и как создавать Angular-приложения.
 
-Be sure to check out the [overview page](/ai) for more information on how to integrate AI into your Angular applications.
+Обязательно загляните на [обзорную страницу](/ai), чтобы узнать больше об интеграции ИИ в Angular-приложения.
 
-## Web Codegen Scorer
+## Web Codegen Scorer {#web-codegen-scorer}
 
-The Angular team developed and open-sourced the [Web Codegen Scorer](https://github.com/angular/web-codegen-scorer), a tool to evaluate and score the quality of AI generated web code. You can use this tool to make evidence-based decisions relating to AI-generated code, such as fine-tuning prompts to improve the accuracy of LLM-generated code for Angular. These prompts can be included as system instructions for your AI tooling or as context with your prompt. You can also use this tool to compare the quality of code produced by different models and monitor quality over time as models and agents evolve.
+Команда Angular разработала и открыла исходный код [Web Codegen Scorer](https://github.com/angular/web-codegen-scorer) — инструмента для оценки качества веб-кода, сгенерированного ИИ. С его помощью можно принимать решения на основе данных: например, дорабатывать промпты, чтобы повысить точность кода Angular от LLM. Такие промпты можно подключать как системные инструкции к ИИ-инструменту или как контекст к запросу. Также инструмент позволяет сравнивать качество кода разных моделей и отслеживать его со временем по мере развития моделей и агентов.

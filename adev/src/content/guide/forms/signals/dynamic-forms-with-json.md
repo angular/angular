@@ -1,23 +1,23 @@
-# Dynamic Forms with JSON
+# Динамические формы с JSON
 
-Some forms can't define their structure at compile time. Server-driven forms, admin panels, multi-tenant applications, and CMS-managed content all need to render fields from configuration delivered at runtime, typically as JSON from a backend, an admin tool, or per-tenant settings.
+Некоторые формы не могут определить свою структуру на этапе компиляции. Server-driven формы, админ-панели, multi-tenant приложения и контент, управляемый CMS, должны рендерить поля из конфигурации, доставляемой во время выполнения — обычно как JSON с backend, из админ-инструмента или из настроек тенанта.
 
-This guide shows how to build forms whose model, schema, validation, and rendering are all derived from a single runtime configuration.
+Это руководство показывает, как строить формы, чьи модель, схема, валидация и рендеринг выводятся из одной runtime-конфигурации.
 
-## When to use JSON-driven forms
+## Когда использовать JSON-driven формы {#when-to-use-json-driven-forms}
 
-This pattern is a good choice when:
+Этот паттерн хорош, когда:
 
-- A backend defines which fields appear based on user role, feature flags, or business rules
-- Non-developers configure form structure through an admin panel or CMS
-- Each tenant in a multi-tenant application has its own form structure stored as configuration
-- Forms need to evolve without redeploying the frontend
+- Backend определяет, какие поля появляются, на основе роли пользователя, feature flags или бизнес-правил
+- Не-разработчики настраивают структуру формы через админ-панель или CMS
+- У каждого тенанта в multi-tenant приложении своя структура формы, хранимая как конфигурация
+- Формы должны эволюционировать без повторного деплоя frontend
 
-Use a static form (with fields defined directly in your component) when the structure is known at build time. Static forms get full TypeScript checking on every field, plus straightforward testing and tooling support.
+Используйте статическую форму (с полями, определёнными напрямую в компоненте), когда структура известна на этапе сборки. Статические формы получают полную проверку TypeScript на каждом поле, а также простую поддержку тестирования и инструментов.
 
-## Defining a typed field config
+## Определение типизированной конфигурации поля {#defining-a-typed-field-config}
 
-When you want to render fields from runtime configuration, start with a TypeScript type that captures the shape of each field. A discriminated union by `kind` lets each variant declare its own validation options:
+Когда нужно рендерить поля из runtime-конфигурации, начните с типа TypeScript, описывающего форму каждого поля. Дискриминированное объединение по `kind` позволяет каждому варианту объявлять свои опции валидации:
 
 ```ts
 type FieldConfig =
@@ -25,9 +25,9 @@ type FieldConfig =
   | {kind: 'number'; name: string; label: string; required?: boolean; min?: number; max?: number};
 ```
 
-Every variant has a name, label, and optional `required` flag. Number fields additionally accept `min` and `max` bounds. Add new variants by adding new `kind` branches.
+У каждого варианта есть name, label и опциональный флаг `required`. Числовые поля дополнительно принимают границы `min` и `max`. Новые варианты добавляются новыми ветвями `kind`.
 
-A concrete config might look like this:
+Конкретная конфигурация может выглядеть так:
 
 ```ts
 const profileConfig: FieldConfig[] = [
@@ -36,11 +36,11 @@ const profileConfig: FieldConfig[] = [
 ];
 ```
 
-In practice this `FieldConfig[]` typically arrives from your backend, an admin panel, or a CMS. For brevity, the examples below use an in-component literal.
+На практике этот `FieldConfig[]` обычно приходит с backend, из админ-панели или CMS. Для краткости примеры ниже используют литерал внутри компонента.
 
-## Building the model from config
+## Построение модели из конфигурации {#building-the-model-from-config}
 
-The form's model needs one entry per field with a default value matching the field's kind. A small helper handles this:
+Модели формы нужна одна запись на поле со значением по умолчанию, соответствующим kind поля. Небольшой helper обрабатывает это:
 
 ```ts
 function buildModel(configs: FieldConfig[]): Record<string, string | number | null> {
@@ -52,13 +52,13 @@ function buildModel(configs: FieldConfig[]): Record<string, string | number | nu
 }
 ```
 
-The model uses `Record<string, string | number | null>` because the keys are not known ahead of time.
+Модель использует `Record<string, string | number | null>`, потому что ключи заранее неизвестны.
 
-In addition, numeric fields initialize to `null` rather than `0` so an empty field reads as empty. With `0`, [`required()`](api/forms/signals/required) would treat the field as already filled, and any [`min()`](api/forms/signals/min) constraint above zero would flag the field invalid before the user enters anything.
+Кроме того, числовые поля инициализируются как `null`, а не `0`, чтобы пустое поле читалось как пустое. С `0` [`required()`](api/forms/signals/required) считал бы поле уже заполненным, а любое ограничение [`min()`](api/forms/signals/min) выше нуля помечало бы поле невалидным до того, как пользователь что-либо введёт.
 
-## Building the schema from config
+## Построение схемы из конфигурации {#building-the-schema-from-config}
 
-The schema is also derived from the config. You can loop through each entry and apply the validators that match its kind:
+Схема также выводится из конфигурации. Можно пройтись по каждой записи и применить валидаторы, соответствующие её kind:
 
 ```ts
 import {required, min, max, SchemaFn} from '@angular/forms/signals';
@@ -81,11 +81,11 @@ function buildSchema(configs: FieldConfig[]): SchemaFn<Record<string, string | n
 }
 ```
 
-The discriminated union narrows `config` inside each branch, so `config.min` and `config.max` are typed correctly when `config.kind === 'number'`.
+Дискриминированное объединение сужает `config` внутри каждой ветви, поэтому `config.min` и `config.max` типизированы корректно, когда `config.kind === 'number'`.
 
-## Expressing conditional rules in config
+## Выражение условных правил в конфигурации {#expressing-conditional-rules-in-config}
 
-Some validation rules only make sense under certain conditions. For example, US state codes need validating only when the country is the US. Express these dependencies in the config by adding a `when` discriminator that names another field and the value it must equal:
+Некоторые правила валидации имеют смысл только при определённых условиях. Например, коды штатов США нужно валидировать только когда страна — US. Выразите эти зависимости в конфигурации, добавив дискриминатор `when`, который именует другое поле и значение, которому оно должно равняться:
 
 ```ts
 type WhenCondition = {field: string; equals: string | number};
@@ -103,7 +103,7 @@ type FieldConfig =
     };
 ```
 
-Update `buildSchema()` to translate `when` into an [`applyWhen()`](api/forms/signals/applyWhen) call. Shared rule application logic moves into a small closure so the conditional and unconditional branches both call the same function:
+Обновите `buildSchema()`, чтобы переводить `when` в вызов [`applyWhen()`](api/forms/signals/applyWhen). Общая логика применения правил выносится в небольшое замыкание, чтобы условная и безусловная ветви вызывали одну и ту же функцию:
 
 ```ts
 import {applyWhen, required, min, max, SchemaFn} from '@angular/forms/signals';
@@ -131,9 +131,9 @@ function buildSchema(configs: FieldConfig[]): SchemaFn<Record<string, string | n
 }
 ```
 
-When `applyWhen()`'s condition is true, the rules inside activate. When the condition becomes false, the rules deactivate and the field's validation state clears. Because the condition function reads through `valueOf(rootPath[field])`, the form re-evaluates the gate every time the referenced field changes.
+Когда условие `applyWhen()` истинно, правила внутри активируются. Когда условие становится ложным, правила деактивируются, и состояние валидации поля очищается. Поскольку функция условия читает через `valueOf(rootPath[field])`, форма переоценивает gate каждый раз, когда меняется ссылочное поле.
 
-A config that uses `when` looks like this:
+Конфигурация, использующая `when`, выглядит так:
 
 ```ts
 const addressConfig: FieldConfig[] = [
@@ -148,17 +148,17 @@ const addressConfig: FieldConfig[] = [
 ];
 ```
 
-The `stateCode` field only requires a value when `country` is `'US'`. Users entering any other country can leave `stateCode` blank without blocking submission.
+Поле `stateCode` требует значение только когда `country` равно `'US'`. Пользователи, вводящие любую другую страну, могут оставить `stateCode` пустым, не блокируя отправку.
 
-For more complex conditions (multiple fields, ranges, or non-equality checks), extend `WhenCondition` with additional discriminators (such as `in: string[]` or `notEquals: string | number`) and translate each variant inside `buildSchema()`. The principle is the same: the config carries the data, `buildSchema()` translates it to `applyWhen()` calls.
+Для более сложных условий (несколько полей, диапазоны или проверки неравенства) расширьте `WhenCondition` дополнительными дискриминаторами (например, `in: string[]` или `notEquals: string | number`) и переводите каждый вариант внутри `buildSchema()`. Принцип тот же: конфигурация несёт данные, `buildSchema()` переводит их в вызовы `applyWhen()`.
 
-To gate visibility instead of validation, follow the same pattern using [`hidden()`](api/forms/signals/hidden) on the field path. See [Configuring `hidden()` state on fields](guide/forms/signals/form-logic#configuring-hidden-state-on-fields) for details.
+Чтобы управлять видимостью вместо валидации, следуйте тому же паттерну с [`hidden()`](api/forms/signals/hidden) на пути поля. Подробности см. в [Настройка состояния `hidden()` на полях](guide/forms/signals/form-logic#configuring-hidden-state-on-fields).
 
-## Expressing repeating fields in config
+## Выражение повторяющихся полей в конфигурации {#expressing-repeating-fields-in-config}
 
-Some configurations need fields that grow and shrink at runtime, like a list of phone numbers, tags, or invoice line items. Add an `array` kind to the config and translate it to [`applyEach()`](api/forms/signals/applyEach) so per-item rules apply uniformly as items come and go.
+Некоторым конфигурациям нужны поля, которые растут и уменьшаются во время выполнения: список телефонов, тегов или позиций счёта. Добавьте вариант `array` в конфигурацию и переведите его в [`applyEach()`](api/forms/signals/applyEach), чтобы правила на элемент применялись единообразно по мере появления и исчезновения элементов.
 
-Extend `FieldConfig` with an `array` variant. This example uses arrays of strings; the same approach scales to arrays of objects by replacing the item shape with a record:
+Расширьте `FieldConfig` вариантом `array`. В этом примере используются массивы строк; тот же подход масштабируется на массивы объектов заменой формы элемента на record:
 
 ```ts
 type FieldConfig =
@@ -175,7 +175,7 @@ type FieldConfig =
   | {kind: 'array'; name: string; label: string; itemRequired?: boolean; when?: WhenCondition};
 ```
 
-Update `buildModel()` to initialize array fields with an empty array. The model widens to include `string[]`:
+Обновите `buildModel()`, чтобы инициализировать array-поля пустым массивом. Модель расширяется, включая `string[]`:
 
 ```ts
 function buildModel(configs: FieldConfig[]): Record<string, string | number | null | string[]> {
@@ -189,7 +189,7 @@ function buildModel(configs: FieldConfig[]): Record<string, string | number | nu
 }
 ```
 
-Update `buildSchema()` to apply per-item rules with `applyEach()`. The path coming from a `Record<string, string | number | null | string[]>` model is too broad for `applyEach()` (and for `min()` / `max()`) to type-check directly, so cast `fieldPath` to the appropriate shape inside each `kind` branch:
+Обновите `buildSchema()`, чтобы применять правила на элемент через `applyEach()`. Путь из модели `Record<string, string | number | null | string[]>` слишком широк для прямой проверки типов `applyEach()` (и `min()` / `max()`), поэтому приводите `fieldPath` к подходящей форме внутри каждой ветви `kind`:
 
 ```ts
 import {
@@ -238,9 +238,9 @@ function buildSchema(
 }
 ```
 
-The casts inside each branch are deliberate escape hatches: you're trading the compiler's structural guarantee for a runtime invariant the surrounding `kind` check enforces. Each cast is scoped to a `kind` block, so the assumption stays local and straightforward to audit.
+Приведения внутри каждой ветви — намеренные escape hatches: вы меняете структурную гарантию компилятора на runtime-инвариант, который обеспечивает окружающая проверка `kind`. Каждое приведение ограничено блоком `kind`, поэтому допущение остаётся локальным и простым для аудита.
 
-A config that uses the `array` kind looks like this:
+Конфигурация, использующая kind `array`, выглядит так:
 
 ```ts
 const contactConfig: FieldConfig[] = [
@@ -249,7 +249,7 @@ const contactConfig: FieldConfig[] = [
 ];
 ```
 
-To render an array field, iterate it with `@for` and let users add or remove items by updating the model signal. Add a typed accessor that returns a [`FieldTree`](api/forms/signals/FieldTree) so the iteration sees the array structure, and define methods to grow and shrink the model:
+Чтобы отрендерить array-поле, переберите его через `@for` и позвольте пользователям добавлять или удалять элементы обновлением сигнала модели. Добавьте типизированный accessor, возвращающий [`FieldTree`](api/forms/signals/FieldTree), чтобы итерация видела структуру массива, и определите методы для роста и уменьшения модели:
 
 ```ts
 import {FieldTree} from '@angular/forms/signals';
@@ -274,9 +274,9 @@ removeItem(name: string, index: number) {
 }
 ```
 
-`FieldTree<string[]>` is iterable, so `@for` can walk it; each item is a `FieldTree<string>` that satisfies `[formField]` directly. Leaf fields can use `Field<T>` accessors instead, since `Field<T>` is the callable signature without iteration.
+`FieldTree<string[]>` итерируем, поэтому `@for` может по нему пройти; каждый элемент — `FieldTree<string>`, который напрямую удовлетворяет `[formField]`. Для листовых полей можно использовать accessors `Field<T>`, поскольку `Field<T>` — вызываемая сигнатура без итерации.
 
-In the template, render an array case like this:
+В шаблоне случай array рендерится так:
 
 ```angular-html
 @case ('array') {
@@ -291,11 +291,11 @@ In the template, render an array case like this:
 }
 ```
 
-The `addItem()` method extends the model; the form re-derives the array's fields automatically. New items start with fresh validation state. `removeItem()` filters the model; the dropped item's field state goes with it.
+Метод `addItem()` расширяет модель; форма автоматически перевыводит поля массива. Новые элементы начинаются со свежего состояния валидации. `removeItem()` фильтрует модель; состояние поля удалённого элемента уходит вместе с ним.
 
-### Tracking item identity
+### Отслеживание идентичности элементов {#tracking-item-identity}
 
-Signal Forms tracks each item in an array of objects by its identity. When you store a reference to a field at a specific position, that reference follows the underlying data, not the position. Reading state through the held reference returns the data even if it has moved:
+Signal Forms отслеживает каждый элемент в массиве объектов по его идентичности. Когда вы храните ссылку на поле в конкретной позиции, эта ссылка следует за лежащими в основе данными, а не за позицией. Чтение состояния через удерживаемую ссылку возвращает данные, даже если они переместились:
 
 ```ts
 const contactModel = signal([
@@ -316,22 +316,22 @@ console.log(aliceField().value().phone); // '555-0001' (Alice's number)
 console.log(contactForm[0]().value().phone); // '555-0002' (Bob, now at index 0)
 ```
 
-This identity tracking prevents bugs when sorting, reordering, or filtering, as long as the referenced item remains in the array. Stored field references remain valid even when array order changes; removing the referenced item itself orphans the held reference.
+Это отслеживание идентичности предотвращает баги при сортировке, переупорядочивании или фильтрации, пока ссылочный элемент остаётся в массиве. Сохранённые ссылки на поля остаются валидными даже при изменении порядка массива; удаление самого ссылочного элемента orphan'ит удерживаемую ссылку.
 
-For arrays of primitives (the `phoneNumbers` example above), Signal Forms tracks items positionally instead: index 0 always refers to whatever value is currently at position 0.
+Для массивов примитивов (пример `phoneNumbers` выше) Signal Forms отслеживает элементы позиционно: индекс 0 всегда ссылается на то значение, которое сейчас в позиции 0.
 
-Identity here is by JavaScript object reference, not by a logical id like a database key. If you replace the array with freshly-deserialized objects (for example, after a server reload), field state doesn't follow the logical item even when each item's `id` is unchanged. The guarantee covers in-memory operations like sorting, reordering, and filtering, not data refresh.
+Идентичность здесь — по ссылке на объект JavaScript, а не по логическому id вроде ключа базы данных. Если заменить массив свежедесериализованными объектами (например, после перезагрузки с сервера), состояние поля не следует за логическим элементом, даже если `id` каждого элемента не изменился. Гарантия покрывает in-memory операции вроде сортировки, переупорядочивания и фильтрации, но не обновление данных.
 
-## Validating the config
+## Валидация конфигурации {#validating-the-config}
 
-Configs from external sources need validation before the form is built. Several failure modes can hide in untrusted JSON:
+Конфигурации из внешних источников нужно валидировать до построения формы. В недоверенном JSON могут скрываться несколько режимов сбоя:
 
-- Duplicate `name` values overwrite earlier model entries and break the `track config.name` expression in the template.
-- A `when` clause that names a non-existent field fails at runtime when the condition first evaluates.
-- A `when` clause that compares against an `array` field has no defined equality semantics.
-- A `when.equals` value whose type doesn't match the referenced field's kind silently never matches, hiding the conditional behavior as if the rule were never active.
+- Дублирующиеся значения `name` перезаписывают более ранние записи модели и ломают выражение `track config.name` в шаблоне.
+- Предложение `when`, именующее несуществующее поле, падает во время выполнения при первой оценке условия.
+- Предложение `when`, сравнивающее с полем `array`, не имеет определённой семантики равенства.
+- Значение `when.equals`, чей тип не совпадает с kind ссылочного поля, молча никогда не совпадает, скрывая условное поведение так, будто правило никогда не было активным.
 
-Catch all four at the boundary:
+Ловите все четыре на границе:
 
 ```ts
 function validateConfigs(configs: FieldConfig[]): FieldConfig[] {
@@ -369,11 +369,11 @@ function validateConfigs(configs: FieldConfig[]): FieldConfig[] {
 }
 ```
 
-The first pass enforces uniqueness; the second pass walks each `when` clause to confirm the referenced field exists, isn't an array, and is being compared against a value of the right type. The function returns the configs unchanged on success, so it composes cleanly with the field initializer that holds the configs in the component. Failures surface at the boundary between your application and the upstream source rather than as opaque form misbehavior later.
+Первый проход обеспечивает уникальность; второй проходит каждое предложение `when`, чтобы подтвердить, что ссылочное поле существует, не является массивом и сравнивается со значением правильного типа. Функция возвращает конфигурации без изменений при успехе, поэтому чисто компонуется с инициализатором поля, хранящим конфигурации в компоненте. Сбои проявляются на границе между приложением и upstream-источником, а не как непрозрачное неправильное поведение формы позже.
 
-## Rendering the form dynamically
+## Динамический рендеринг формы {#rendering-the-form-dynamically}
 
-In the component, use `@for` to iterate the configs and `@switch` on `kind` to pick the right input control:
+В компоненте используйте `@for` для итерации конфигураций и `@switch` по `kind`, чтобы выбрать нужный input-контрол:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -455,15 +455,15 @@ export class DynamicForm {
 }
 ```
 
-Template type-checking treats `dynamicForm[name]` as an independent expression, so the `@switch` narrowing on `config.kind` doesn't reach the indexed access. The accessors restate that narrowing as a cast at the binding site, and the matching `kind` branch guarantees the narrowed type is correct at runtime.
+Проверка типов шаблона трактует `dynamicForm[name]` как независимое выражение, поэтому сужение `@switch` по `config.kind` не достигает индексированного доступа. Accessors повторяют это сужение как приведение в месте привязки, а соответствующая ветвь `kind` гарантирует корректность суженного типа во время выполнения.
 
-Because the model and schema are both derived from the same `FieldConfig[]` at component construction, they can't drift apart for a given config. The example above assumes the config is available synchronously when the component is created.
+Поскольку модель и схема выводятся из одного `FieldConfig[]` при создании компонента, они не могут разойтись для данной конфигурации. Пример выше предполагает, что конфигурация доступна синхронно при создании компонента.
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-JSON-driven forms keep their model and schema aligned by deriving both from the same `FieldConfig[]`. Each extension in this guide (conditional rules, repeating fields) widens the type and adds a translation step inside `buildSchema()` while preserving that alignment. The model and schema stay locked together, regardless of where the config comes from or how it grows.
+JSON-driven формы держат модель и схему согласованными, выводя обе из одного `FieldConfig[]`. Каждое расширение в этом руководстве (условные правила, повторяющиеся поля) расширяет тип и добавляет шаг перевода внутри `buildSchema()`, сохраняя это согласование. Модель и схема остаются связанными независимо от того, откуда приходит конфигурация и как она растёт.
 
-For related guides cover other aspects of Signal Forms, check out:
+Связанные руководства по другим аспектам Signal Forms:
 
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/schemas" title="Schemas and schema composability" />
@@ -472,10 +472,10 @@ For related guides cover other aspects of Signal Forms, check out:
   <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
 </docs-pill-row>
 
-For detailed API documentation, see:
+Подробную документацию API см. в:
 
-- [`form()`](api/forms/signals/form) - Create a form from a model signal
-- [`applyWhen()`](api/forms/signals/applyWhen) - Apply a schema conditionally based on reactive state
-- [`applyEach()`](api/forms/signals/applyEach) - Apply a schema to each item in an array field
-- [`FieldTree`](api/forms/signals/FieldTree) - Navigable tree of fields exposed by `form()`
-- [`SchemaFn`](api/forms/signals/SchemaFn) - Type signature for schema functions
+- [`form()`](api/forms/signals/form) — создать форму из сигнала модели
+- [`applyWhen()`](api/forms/signals/applyWhen) — применить схему условно на основе реактивного состояния
+- [`applyEach()`](api/forms/signals/applyEach) — применить схему к каждому элементу array-поля
+- [`FieldTree`](api/forms/signals/FieldTree) — навигируемое дерево полей, предоставляемое `form()`
+- [`SchemaFn`](api/forms/signals/SchemaFn) — сигнатура типа для функций схемы

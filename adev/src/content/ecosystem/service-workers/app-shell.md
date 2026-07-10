@@ -9,7 +9,7 @@
 отобразить HTML и CSS без необходимости инициализации JavaScript.
 
 <docs-workflow>
-<docs-step title="Подготовка приложения">
+<docs-step title="Prepare the application">
 Выполните это с помощью следующей команды Angular CLI:
 
 ```shell
@@ -19,7 +19,7 @@ ng new my-app
 Для существующего приложения вам необходимо вручную добавить `Router` и определить `<router-outlet>` внутри вашего
 приложения.
 </docs-step>
-<docs-step title="Создание оболочки приложения (App shell)">
+<docs-step title="Create the application shell">
 Используйте Angular CLI для автоматического создания оболочки приложения.
 
 ```shell
@@ -42,7 +42,7 @@ src
 └── main.server.ts # начальная загрузка основного серверного приложения
 </docs-code>
 
-<docs-step title="Проверка сборки приложения с контентом оболочки">
+<docs-step title="Verify the application is built with the shell content">
 
 ```shell
 ng build --configuration=development

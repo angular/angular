@@ -1,23 +1,23 @@
-# @loading, @error and @placeholder blocks
+# Блоки @loading, @error и @placeholder
 
-Deferrable views let you define content to be shown in different loading states.
+Откладываемые представления позволяют задать контент для разных состояний загрузки.
 
-| Block          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Блок           | Описание                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@placeholder` | By default, defer blocks do not render any content before they are triggered. The `@placeholder` is an optional block that declares content to show before the deferred content loads. Angular replaces the placeholder with the deferred content after loading completes. While this block is optional, the Angular team recommends always including a placeholder. [Learn more in the full deferrable views documentation](guide/templates/defer) |
-| `@loading`     | This optional block allows you to declare content to be shown during the loading of any deferred dependencies.                                                                                                                                                                                                                                                                                                                                      |
-| `@error`       | This block allows you to declare content which is shown if deferred loading fails.                                                                                                                                                                                                                                                                                                                                                                  |
+| `@placeholder` | По умолчанию блоки defer не рендерят контент до срабатывания. `@placeholder` — необязательный блок, объявляющий контент до загрузки отложенного содержимого. Angular заменяет placeholder отложенным контентом после завершения загрузки. Блок необязателен, но команда Angular рекомендует всегда включать placeholder. [Подробнее в полной документации по откладываемым представлениям](guide/templates/defer) |
+| `@loading`     | Необязательный блок для контента, показываемого во время загрузки отложенных зависимостей.                                                                                                                                                                                                                                                                                                                                      |
+| `@error`       | Блок для контента, показываемого при сбое отложенной загрузки.                                                                                                                                                                                                                                                                                                                                                                  |
 
-The contents of all the above sub-blocks are eagerly loaded. Additionally, some features require a `@placeholder` block.
+Содержимое всех этих подблоков загружается eagerly. Кроме того, некоторым возможностям нужен блок `@placeholder`.
 
-In this activity, you'll learn how to use the `@loading`, `@error` and `@placeholder` blocks to manage the states of deferrable views.
+В этом задании вы научитесь использовать блоки `@loading`, `@error` и `@placeholder` для управления состояниями откладываемых представлений.
 
 <hr>
 
 <docs-workflow>
 
 <docs-step title="Add `@placeholder` block">
-In your `app.ts`, add a `@placeholder` block to the `@defer` block.
+В `app.ts` добавьте блок `@placeholder` к блоку `@defer`.
 
 ```angular-html {highlight:[3,4,5]}
 @defer {
@@ -30,7 +30,7 @@ In your `app.ts`, add a `@placeholder` block to the `@defer` block.
 </docs-step>
 
 <docs-step title="Configure the `@placeholder` block">
-The `@placeholder` block accepts an optional parameter to specify the `minimum` amount of time that this placeholder should be shown. This `minimum` parameter is specified in time increments of milliseconds (ms) or seconds (s). This parameter exists to prevent fast flickering of placeholder content in the case that the deferred dependencies are fetched quickly.
+Блок `@placeholder` принимает необязательный параметр `minimum` — минимальное время показа placeholder. Параметр `minimum` задаётся в миллисекундах (ms) или секундах (s). Он нужен, чтобы избежать быстрого мерцания placeholder, если отложенные зависимости загружаются очень быстро.
 
 ```angular-html {highlight:[3,4,5]}
 @defer {
@@ -43,16 +43,16 @@ The `@placeholder` block accepts an optional parameter to specify the `minimum` 
 </docs-step>
 
 <docs-step title="Add `@loading` block">
-Next add a `@loading` block to the component template.
+Далее добавьте блок `@loading` в шаблон компонента.
 
-The `@loading` block accepts two optional parameters:
+Блок `@loading` принимает два необязательных параметра:
 
-- `minimum`: the amount of time that this block should be shown
-- `after`: the amount of time to wait after loading begins before showing the loading template
+- `minimum`: время, в течение которого блок должен отображаться
+- `after`: время ожидания после начала загрузки перед показом шаблона загрузки
 
-Both parameters are specified in time increments of milliseconds (ms) or seconds (s).
+Оба параметра задаются в миллисекундах (ms) или секундах (s).
 
-Update `app.ts` to include a `@loading` block with a minimum parameter of `1s` as well as an after parameter with the value 500ms to the @loading block.
+Обновите `app.ts`: добавьте блок `@loading` с параметром minimum `1s` и параметром after со значением 500ms.
 
 ```angular-html {highlight:[5,6,7]}
 @defer {
@@ -64,12 +64,12 @@ Update `app.ts` to include a `@loading` block with a minimum parameter of `1s` a
 }
 ```
 
-NOTE: this example uses two parameters, separated by the ; character.
+NOTE: в этом примере используются два параметра, разделённые символом `;`.
 
 </docs-step>
 
 <docs-step title="Add `@error` block">
-Finally, add an `@error` block to the `@defer` block.
+Наконец, добавьте блок `@error` к блоку `@defer`.
 
 ```angular-html {highlight:[7,8,9]}
 @defer {
@@ -86,4 +86,4 @@ Finally, add an `@error` block to the `@defer` block.
 </docs-step>
 </docs-workflow>
 
-Congratulations! At this point, you have a good understanding about deferrable views. Keep up the great work and let's learn about triggers next.
+Поздравляем! Теперь у вас хорошее понимание откладываемых представлений. Продолжайте в том же духе — дальше разберём триггеры.

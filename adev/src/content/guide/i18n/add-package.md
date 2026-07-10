@@ -1,28 +1,28 @@
-# Add the localize package
+# Добавление пакета localize
 
-To take advantage of the localization features of Angular, use the [Angular CLI][CliMain] to add the `@angular/localize` package to your project.
+Чтобы воспользоваться возможностями локализации Angular, используйте [Angular CLI][CliMain] для добавления пакета `@angular/localize` в проект.
 
-To add the `@angular/localize` package, use the following command to update the `package.json` and TypeScript configuration files in your project.
+Чтобы добавить пакет `@angular/localize`, используйте следующую команду — она обновит `package.json` и файлы конфигурации TypeScript в проекте.
 
 <docs-code language="shell" path="adev/src/content/examples/i18n/doc-files/commands.sh" region="add-localize"/>
 
-It adds `types: ["@angular/localize"]` in the TypeScript configuration files.
-It also adds line `/// <reference types="@angular/localize" />` at the top of the `main.ts` file which is the reference to the type definition.
+Она добавляет `types: ["@angular/localize"]` в файлы конфигурации TypeScript.
+Также добавляет строку `/// <reference types="@angular/localize" />` в начало файла `main.ts` — это ссылка на определение типов.
 
-HELPFUL: For more information about `package.json` and `tsconfig.json` files, see [Workspace npm dependencies][GuideNpmPackages] and [TypeScript Configuration][GuideTsConfig]. To learn about Triple-slash Directives visit [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/triple-slash-directives.html#-reference-types-).
+HELPFUL: Подробнее о файлах `package.json` и `tsconfig.json` см. [Зависимости npm рабочей области][GuideNpmPackages] и [Конфигурация TypeScript][GuideTsConfig]. О Triple-slash Directives — в [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/triple-slash-directives.html#-reference-types-).
 
-If `@angular/localize` is not installed and you try to build a localized version of your project (for example, while using the `i18n` attributes in templates), the [Angular CLI][CliMain] will generate an error, which would contain the steps that you can take to enable i18n for your project.
+Если `@angular/localize` не установлен и вы пытаетесь собрать локализованную версию проекта (например, используя атрибуты `i18n` в шаблонах), [Angular CLI][CliMain] сгенерирует ошибку с шагами, которые можно предпринять для включения i18n в проекте.
 
-## Options
+## Опции {#options}
 
 | OPTION             | DESCRIPTION                                                                                                                                                                                   | VALUE TYPE | DEFAULT VALUE |
 | :----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- | :------------ |
-| `--project`        | The name of the project.                                                                                                                                                                      | `string`   |
-| `--use-at-runtime` | If set, then `$localize` can be used at runtime. Also `@angular/localize` gets included in the `dependencies` section of `package.json`, rather than `devDependencies`, which is the default. | `boolean`  | `false`       |
+| `--project`        | Имя проекта.                                                                                                                                                                                  | `string`   |
+| `--use-at-runtime` | Если задано, `$localize` можно использовать в runtime. Также `@angular/localize` попадает в секцию `dependencies` в `package.json`, а не в `devDependencies` (значение по умолчанию).         | `boolean`  | `false`       |
 
-For more available options, see `ng add` in [Angular CLI][CliMain].
+Другие доступные опции см. в `ng add` в [Angular CLI][CliMain].
 
-## What's next
+## Что дальше {#whats-next}
 
 <docs-pill-row>
   <docs-pill href="guide/i18n/locale-id" title="Refer to locales by ID"/>

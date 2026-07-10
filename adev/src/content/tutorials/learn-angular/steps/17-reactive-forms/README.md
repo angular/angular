@@ -10,7 +10,7 @@
 
 <docs-workflow>
 
-<docs-step title="Импорт модуля `ReactiveForms`">
+<docs-step title="Import `ReactiveForms` module">
 
 В `app.ts` импортируйте `ReactiveFormsModule` из `@angular/forms` и добавьте его в массив `imports` компонента.
 
@@ -36,7 +36,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 </docs-step>
 
-<docs-step title="Создание объекта `FormGroup` с FormControls">
+<docs-step title="Create the `FormGroup` object with FormControls">
 
 Реактивные формы используют класс `FormControl` для представления элементов управления формы (например, полей ввода).
 Angular предоставляет класс `FormGroup`, который объединяет элементы управления формы в удобный объект, упрощая работу с
@@ -58,7 +58,7 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Связывание FormGroup и FormControls с формой">
+<docs-step title="Link the FormGroup and FormControls to the form">
 
 Каждый `FormGroup` должен быть прикреплен к форме с помощью директивы `[formGroup]`.
 
@@ -81,7 +81,7 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Обработка обновлений формы">
+<docs-step title="Handle update to the form">
 
 Когда вам нужно получить данные из `FormGroup`, это можно сделать, обратившись к значению (value) `FormGroup`. Обновите
 `template`, чтобы отобразить значения формы:
@@ -95,7 +95,7 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Доступ к значениям FormGroup">
+<docs-step title="Access FormGroup values">
 Добавьте в класс компонента новый метод `handleSubmit`, который вы позже будете использовать для обработки отправки формы.
 Этот метод будет отображать значения из формы; вы можете получить доступ к значениям через FormGroup.
 
@@ -110,7 +110,7 @@ handleSubmit() {
 </docs-code>
 </docs-step>
 
-<docs-step title="Добавление `ngSubmit` к форме">
+<docs-step title="Add `ngSubmit` to the form">
 У вас есть доступ к значениям формы, теперь пришло время обработать событие отправки и использовать метод `handleSubmit`.
 В Angular для этой цели есть специальный обработчик событий под названием `ngSubmit`. Обновите элемент формы, чтобы вызывать метод `handleSubmit` при отправке формы.
 

@@ -102,7 +102,7 @@
               <button
                 type="button"
                 (click)="toggle(item)"
-                [attr.aria-label]="(item.isExpanded ? 'Collapse' : 'Expand') + ' ' + item.label"
+                [attr.aria-label]="(item.isExpanded ? 'Свернуть' : 'Развернуть') + ' ' + item.label"
                 [attr.aria-expanded]="item.isExpanded"
                 class="docs-secondary-nav-button"
                 [class.docs-faceted-list-item-active]="item | isActiveNavigationItem: activeItem()"
@@ -162,8 +162,8 @@
 
 <ng-template let-item #itemStatus>
   @if (item.status === 'new') {
-    <span class="tag docs-new-item">New</span>
+    <span class="tag docs-new-item">Новое</span>
   } @else if (item.status === 'updated') {
-    <span class="tag docs-updated-item">Updated</span>
+    <span class="tag docs-updated-item">Обновлено</span>
   }
 </ng-template>

@@ -1,22 +1,22 @@
-# Learn Angular Signal Forms
+# Изучайте Angular Signal Forms
 
-This interactive tutorial will teach you how to build reactive forms using Angular's Signal Forms API.
+Этот интерактивный туториал научит создавать реактивные формы с помощью API Signal Forms в Angular.
 
-## How to use this tutorial
+## Как пользоваться этим туториалом {#how-to-use-this-tutorial}
 
-This tutorial assumes you understand Angular's core concepts and have basic familiarity with signals. If you're new to Angular, read our [essentials guide](/essentials). If you're new to signals, complete the [signals tutorial](/tutorials/signals) first.
+Туториал предполагает знание основных концепций Angular и базовое знакомство с сигналами. Если вы новичок в Angular, прочитайте [руководство по основам](/essentials). Если вы новичок в сигналах, сначала пройдите [туториал по сигналам](/tutorials/signals).
 
-Each step represents a concept in Signal Forms. You'll build a complete login form from scratch, learning the fundamentals step by step.
+Каждый шаг — это концепция Signal Forms. Вы создадите полноценную форму входа с нуля, изучая основы шаг за шагом.
 
-**Your learning path:**
+**Ваш путь обучения:**
 
-1. Set up the form model with TypeScript and signals
-2. Connect the form to your template
-3. Add validation rules
-4. Display validation errors to users
-5. Handle form submission
-6. Explore advanced topics and next steps
+1. Настройте модель формы с TypeScript и сигналами
+2. Подключите форму к шаблону
+3. Добавьте правила валидации
+4. Показывайте ошибки валидации пользователям
+5. Обработайте отправку формы
+6. Изучите продвинутые темы и следующие шаги
 
-If you get stuck, click "Reveal answer" at the top.
+Если застряли, нажмите «Reveal answer» вверху.
 
-Alright, let's [get started](/tutorials/signal-forms/1-set-up-form-model)!
+Итак, [начнём](/tutorials/signal-forms/1-set-up-form-model)!

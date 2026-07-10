@@ -1,0 +1,216 @@
+<div class="header">Гидратация</div>
+<div class="description">
+  Гидратация — это процесс восстановления серверно-отрендеренного приложения на клиенте
+
+  <p>
+    Эта демонстрация показывает стратегии гидратации Angular, позволяя имитировать сетевую задержку и
+    наблюдать, как различные компоненты гидратируются в зависимости от настроенных триггеров.
+  </p>
+</div>
+
+<div class="demo-container">
+  <div class="max-width-wrapper">
+    <div class="main-layout">
+      <!-- Controls & Logs -->
+      <div class="sidebar">
+        <div class="card config-card">
+          <h3 class="sidebar-title font-mono">
+            <docs-icon>schedule</docs-icon>
+            Настройки симуляции
+          </h3>
+
+          <div class="config-controls">
+            <div class="control-group">
+              <div class="label-row">
+                <label>Сетевая задержка</label>
+                <span class="latency-value font-mono">{{ latency() }}ms</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="4000"
+                step="100"
+                [value]="latency()"
+                (input)="updateLatency($event)"
+                class="range-input"
+              />
+            </div>
+
+            <button
+              (click)="resetSimulation()"
+              [disabled]="isSimulationRunning()"
+              class="btn-reset"
+            >
+              <docs-icon>refresh</docs-icon>
+              Сбросить
+            </button>
+          </div>
+        </div>
+
+        <!-- Terminal Log -->
+        <div class="terminal">
+          <h3 class="terminal-title font-mono">Лог гидратации</h3>
+          <div class="terminal-body font-mono custom-scrollbar">
+            @for (evt of eventQueue(); track $index) {
+              <div class="log-entry animate-in">
+                <span class="log-index">0{{ $index + 1 }}</span>
+                <span class="log-tag">событие:</span>
+                <span class="log-msg">{{ evt }}</span>
+              </div>
+            }
+            @if (eventQueue().length === 0) {
+              <div class="log-placeholder">Ожидание загрузки приложения...</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulator Stage -->
+      <div class="simulator-stage">
+        <div class="browser-window">
+          <!-- Browser UI -->
+          <div class="browser-header">
+            <div class="window-controls">
+              <div class="dot-win"></div>
+              <div class="dot-win"></div>
+              <div class="dot-win"></div>
+            </div>
+            <div class="address-bar font-mono">
+              <docs-icon>lock</docs-icon>
+              angular.dev/hydration-strategies
+            </div>
+          </div>
+
+          <!-- Viewport Content -->
+          <div class="viewport">
+            @if (currentState() === 'Серверный рендеринг...') {
+              <div class="ssr-overlay animate-fade">
+                <div class="ssr-spinner">
+                  <div class="spinner-outer"></div>
+                  <div class="spinner-inner"></div>
+                </div>
+                <p class="ssr-title">Генерация SSR-разметки...</p>
+              </div>
+            }
+
+            <div class="viewport-flex">
+              <div class="viewport-header">
+                <div class="header-text">
+                  <h4 class="viewport-title">Стратегии компонентов</h4>
+                  <p class="viewport-subtitle">Сочетание немедленных и отложенных триггеров гидратации.</p>
+                </div>
+                <div class="viewport-stats">
+                  <div class="stats-label">Основное приложение</div>
+                  <div class="stats-value font-tabular">{{ progress() }}%</div>
+                </div>
+              </div>
+
+              <div class="component-grid">
+                @for (card of [card1(), card2(), card3(), card4()]; track $index) {
+                  <div
+                    (click)="handleCardClick(card.id)"
+                    class="component-card transition-all"
+                    [class]="{
+                      'interactive': isInteractive() || card.strategy === 'on-interaction',
+                      'static': !isInteractive() && card.strategy !== 'on-interaction',
+                      'active-card': card.clickCount > 0,
+                      'dashed-border': !card.isHydrated,
+                    }"
+                  >
+                    <div class="card-top">
+                      <div
+                        class="icon-box transition-all"
+                        [class]="card.isHydrated ? 'icon-hydrated' : 'icon-static'"
+                      >
+                        @if (card.isHydrating) {
+                          <div class="loading-spinner"></div>
+                        } @else {
+                          <docs-icon>water_drop</docs-icon>
+                        }
+                      </div>
+                      @if (card.clickCount > 0) {
+                        <div class="click-badge font-tabular animate-zoom">
+                          <span class="badge-label">КЛИКИ:</span> {{ card.clickCount }}
+                        </div>
+                      }
+                    </div>
+
+                    <div class="card-body">
+                      <h5 class="card-title">{{ card.title }}</h5>
+                      <p class="card-desc">{{ card.description }}</p>
+                    </div>
+
+                    <div class="card-footer">
+                      @if (card.isHydrating) {
+                        <div class="tag tag-deferred animate-slide-in">
+                          <span class="tag-dot spin"></span>
+                          Гидратация...
+                        </div>
+                      } @else if (!card.isHydrated) {
+                        <div class="tag tag-deferred">
+                          <span class="tag-dot pulse"></span>
+                          Статичный
+                        </div>
+                      } @else {
+                        <div class="tag tag-hydrated animate-slide-in">
+                          <span class="tag-dot"></span>
+                          Гидратирован
+                        </div>
+                      }
+                    </div>
+
+                    @if (card.syntax) {
+                      <div
+                        class="syntax-badge font-mono"
+                        [class]="card.isHydrated ? 'syntax-inactive' : 'syntax-active'"
+                      >
+                        {{ card.syntax }}
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Lifecycle Progress -->
+          <div class="lifecycle-progress-bar">
+            <div class="progress-fill transition-all" [style.width.%]="progress()"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Explanatory Feature Cards -->
+    <div class="explainer-grid">
+      <div class="explainer-item">
+        <h5 class="explainer-title"><span class="dot-red"></span> Немедленная гидратация</h5>
+        <p class="explainer-text">
+          Ключевые компоненты (например, навигация или контент первого экрана) гидратируются сразу,
+          как только основной бандл приложения готов.
+        </p>
+      </div>
+      <div class="explainer-item">
+        <h5 class="explainer-title"><span class="dot-violet"></span> Инкрементальная гидратация</h5>
+        <p class="explainer-text">
+          Используйте триггеры гидратации, такие как <code>on interaction</code> или <code>on timer</code>,
+          чтобы отложить выполнение JS для некритичных элементов.
+        </p>
+      </div>
+      <div class="explainer-item">
+        <h5 class="explainer-title"><span class="dot-green"></span> Воспроизведение событий</h5>
+        <p class="explainer-text">
+          Клики пользователя не теряются. Angular записывает события в фазе «Статичный» и
+          воспроизводит их после гидратации.
+        </p>
+      </div>
+    </div>
+  </div>
+  <button
+    class="docs-primary-btn"
+    [attr.text]="'Подробнее о гидратации'"
+    routerLink="/guide/hydration"
+  >
+    Подробнее о гидратации
+  </button>
+</div>

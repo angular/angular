@@ -11,7 +11,7 @@
 
 <docs-workflow>
 
-<docs-step title="Создание `HousingLocation`">
+<docs-step title="Create the `HousingLocation`">
 На этом этапе вы создадите новый компонент для вашего приложения.
 
 На панели **Terminal** вашей IDE:
@@ -30,18 +30,18 @@
    ng serve
    ```
 
-   ПРИМЕЧАНИЕ: Этот шаг предназначен только для вашей локальной среды!
+   NOTE: Этот шаг предназначен только для вашей локальной среды!
 
 1. Откройте браузер и перейдите по адресу `http://localhost:4200`, чтобы увидеть приложение.
 1. Убедитесь, что приложение собирается без ошибок.
 
-   ПОЛЕЗНО: Оно должно выглядеть так же, как и в предыдущем уроке, потому что, хотя вы и добавили новый компонент, вы
+   HELPFUL: Оно должно выглядеть так же, как и в предыдущем уроке, потому что, хотя вы и добавили новый компонент, вы
    еще не включили его ни в один из шаблонов приложения.
 
 1. Оставьте `ng serve` запущенным, пока выполняете следующие шаги.
    </docs-step>
 
-<docs-step title="Добавление нового компонента в макет приложения">
+<docs-step title="Add the new component to your app's layout">
 На этом этапе вы добавите новый компонент `HousingLocation` в компонент `Home` вашего приложения, чтобы он отображался в макете.
 
 На панели **Edit** вашей IDE:
@@ -62,12 +62,12 @@
 
 </docs-step>
 
-<docs-step title="Добавление стилей для компонента">
+<docs-step title="Add the styles for the component">
 На этом этапе вы скопируете заранее написанные стили для `HousingLocation` в ваше приложение, чтобы оно отображалось корректно.
 
 1. Откройте `src/app/housing-location/housing-location.css` и вставьте приведенные ниже стили в файл:
 
-   ПРИМЕЧАНИЕ: В браузере (онлайн-редакторе) их можно поместить в массив `styles` файла
+   NOTE: В браузере (онлайн-редакторе) их можно поместить в массив `styles` файла
    `src/app/housing-location/housing-location.ts`.
 
    <docs-code header="Add CSS styles to housing location to the component in src/app/housing-location/housing-location.css" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/housing-location/housing-location.css"/>

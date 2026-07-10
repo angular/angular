@@ -15,7 +15,7 @@
 
 <docs-workflow>
 
-<docs-step title="Импорт директивы NgOptimizedImage">
+<docs-step title="Import the NgOptimizedImage directive">
 
 Чтобы использовать директиву `NgOptimizedImage`, сначала импортируйте её из библиотеки `@angular/common` и добавьте в
 массив `imports` компонента.
@@ -31,7 +31,7 @@ import { NgOptimizedImage } from '@angular/common';
 
 </docs-step>
 
-<docs-step title="Замена атрибута src на ngSrc">
+<docs-step title="Update the src attribute to be ngSrc">
 
 Чтобы включить директиву `NgOptimizedImage`, замените атрибут `src` на `ngSrc`. Это относится как к статическим
 источникам изображений (т.е. `src`), так и к динамическим (т.е. `[src]`).
@@ -57,7 +57,7 @@ imports: [NgOptimizedImage],
 
 </docs-step>
 
-<docs-step title="Добавление атрибутов width и height">
+<docs-step title="Add width and height attributes">
 
 Обратите внимание, что в приведенном выше примере кода у каждого изображения есть атрибуты `width` и `height`. Чтобы
 предотвратить [сдвиг макета](https://web.dev/articles/cls), директива `NgOptimizedImage` требует наличия обоих атрибутов
@@ -73,12 +73,12 @@ imports: [NgOptimizedImage],
 </div>
 ```
 
-ПРИМЕЧАНИЕ: Чтобы изображение с `fill` отображалось правильно, его родительский элемент должен иметь стиль
+NOTE: Чтобы изображение с `fill` отображалось правильно, его родительский элемент должен иметь стиль
 `position: "relative"`, `position: "fixed"` или `position: "absolute"`.
 
 </docs-step>
 
-<docs-step title="Приоритезация важных изображений">
+<docs-step title="Prioritize important images">
 
 Одной из самых важных оптимизаций для производительности загрузки является приоритезация любого изображения, которое
 может быть ["элементом LCP"](https://web.dev/articles/optimize-lcp) (самым большим графическим элементом на экране при
@@ -91,7 +91,7 @@ imports: [NgOptimizedImage],
 
 </docs-step>
 
-<docs-step title="Необязательно: Использование загрузчика изображений">
+<docs-step title="Optional: Use an image loader">
 
 `NgOptimizedImage` позволяет
 указать [загрузчик изображений](guide/image-optimization#configuring-an-image-loader-for-ngoptimizedimage), который

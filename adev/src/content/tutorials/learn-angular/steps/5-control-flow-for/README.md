@@ -37,7 +37,7 @@ export class App {
 
 <docs-workflow>
 
-<docs-step title="Добавьте свойство `users`">
+<docs-step title="Add the `users` property">
 В классе `App` добавьте свойство `users`, содержащее пользователей и их имена.
 
 ```ts
@@ -46,7 +46,7 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Обновите шаблон">
+<docs-step title="Update the template">
 Обновите шаблон, чтобы отобразить имя каждого пользователя в элементе `p`, используя синтаксис шаблона `@for`.
 
 ```angular-html
@@ -55,7 +55,7 @@ export class App {
 }
 ```
 
-ПРИМЕЧАНИЕ: использование `track` обязательно; вы можете использовать `id` или любой другой уникальный идентификатор.
+NOTE: использование `track` обязательно; вы можете использовать `id` или любой другой уникальный идентификатор.
 
 </docs-step>
 

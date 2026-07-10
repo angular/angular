@@ -1,18 +1,18 @@
 # Angular CLI MCP Server
 
-The Angular CLI includes a Model Context Protocol (MCP) server that enables AI assistants (like Cursor, Antigravity, JetBrains AI, etc.) to interact directly with the Angular CLI. It provides tools for code generation, workspace analysis, and running builds/tests.
+Angular CLI включает Model Context Protocol (MCP) server, который позволяет ИИ-ассистентам (Cursor, Antigravity, JetBrains AI и др.) напрямую взаимодействовать с Angular CLI. Он предоставляет инструменты для генерации кода, анализа workspace, а также запуска сборок и тестов.
 
-<docs-callout title="Integration with Angular AI Agent Skills">
-  If your host environment supports custom Agent Skills (such as Antigravity), you can combine the Angular CLI MCP server with the official [Angular AI Skills](https://angular.dev/ai/skills). While the skills provide the agent with deep instruction-level guidance and coding standards, the MCP server provides the action tools (like compiling, running tests, and analyzing workspaces) to execute those guidelines, resulting in a complete and powerful development agent.
+<docs-callout title="Интеграция с Angular AI Agent Skills">
+  Если ваша среда поддерживает пользовательские Agent Skills (например, Antigravity), можно объединить Angular CLI MCP server с официальными [Angular AI Skills](https://angular.dev/ai/skills). Навыки дают агенту глубокие инструкции и стандарты кодирования, а MCP-сервер — инструменты действий (компиляция, запуск тестов, анализ workspace) для выполнения этих рекомендаций. В итоге получается полноценный и мощный агент разработки.
 </docs-callout>
 
-## Get Started
+## Начало работы {#get-started}
 
-To use the MCP server, you configure your host environment (IDE or CLI) to run `npx @angular/cli mcp`.
+Чтобы использовать MCP-сервер, настройте хост-среду (IDE или CLI) на запуск `npx @angular/cli mcp`.
 
 <docs-tab-group>
   <docs-tab label="Antigravity IDE">
-    Create a file named `.antigravity/mcp.json` in your project's root:
+    Создайте файл `.antigravity/mcp.json` в корне проекта:
 
     ```json
     {
@@ -28,7 +28,7 @@ To use the MCP server, you configure your host environment (IDE or CLI) to run `
   </docs-tab>
 
   <docs-tab label="Cursor">
-    Create `.cursor/mcp.json` in the project root (or globally at `~/.cursor/mcp.json`):
+    Создайте `.cursor/mcp.json` в корне проекта (или глобально в `~/.cursor/mcp.json`):
 
     ```json
     {
@@ -44,7 +44,7 @@ To use the MCP server, you configure your host environment (IDE or CLI) to run `
   </docs-tab>
 
   <docs-tab label="VS Code">
-    Create `.vscode/mcp.json`:
+    Создайте `.vscode/mcp.json`:
 
     ```json
     {
@@ -60,65 +60,65 @@ To use the MCP server, you configure your host environment (IDE or CLI) to run `
   </docs-tab>
 </docs-tab-group>
 
-## Available Tools (Default)
+## Доступные инструменты (по умолчанию) {#available-tools-default}
 
-When the MCP server is enabled, AI agents have access to the following tools:
+Когда MCP-сервер включён, ИИ-агенты получают доступ к следующим инструментам:
 
-| Name                        | Description                                                                                               |
+| Имя                         | Описание                                                                                               |
 | :-------------------------- | :-------------------------------------------------------------------------------------------------------- |
-| `ai_tutor`                  | Launches an interactive AI-powered Angular tutor.                                                         |
-| `devserver.start`           | Asynchronously starts a dev server (`ng serve`). Returns immediately.                                     |
-| `devserver.stop`            | Stops the dev server.                                                                                     |
-| `devserver.wait_for_build`  | Returns the logs of the most recent build in a running dev server.                                        |
-| `get_best_practices`        | Retrieves the Angular Best Practices Guide (crucial for standalone components, typed forms, etc.).        |
-| `list_projects`             | Lists all applications and libraries in the workspace by reading `angular.json`.                          |
-| `onpush_zoneless_migration` | Analyzes code and provides a plan to migrate it to `OnPush` change detection (prerequisite for zoneless). |
-| `run_target`                | Executes a configured target (e.g., build, test, lint, e2e, deploy).                                      |
-| `search_documentation`      | Searches the official documentation at `https://angular.dev`.                                             |
+| `ai_tutor`                  | Запускает интерактивного ИИ-наставника по Angular.                                                         |
+| `devserver.start`           | Асинхронно запускает dev-сервер (`ng serve`). Возвращает управление сразу.                                     |
+| `devserver.stop`            | Останавливает dev-сервер.                                                                                     |
+| `devserver.wait_for_build`  | Возвращает логи последней сборки работающего dev-сервера.                                        |
+| `get_best_practices`        | Получает руководство по лучшим практикам Angular (важно для standalone-компонентов, типизированных форм и т.д.).        |
+| `list_projects`             | Перечисляет все приложения и библиотеки в workspace, читая `angular.json`.                          |
+| `onpush_zoneless_migration` | Анализирует код и предлагает план миграции на `OnPush` обнаружение изменений (предпосылка для zoneless). |
+| `run_target`                | Выполняет настроенный target (например, build, test, lint, e2e, deploy).                                      |
+| `search_documentation`      | Ищет в официальной документации на `https://angular.dev`.                                             |
 
-## Common Workflows
+## Типовые сценарии {#common-workflows}
 
-These workflows demonstrate how AI assistants coordinate different MCP tools to automatically achieve complex developer stories.
+Эти сценарии показывают, как ИИ-ассистенты координируют разные MCP-инструменты, чтобы автоматически решать сложные задачи разработчика.
 
-### 1. Performance Tuning: Zoneless & OnPush Migration
+### 1. Настройка производительности: миграция на Zoneless и OnPush {#1-performance-tuning-zoneless--onpush-migration}
 
-The AI agent optimizes change detection performance and migrates components to a zoneless-ready state.
+ИИ-агент оптимизирует производительность обнаружения изменений и переводит компоненты в состояние, готовое к zoneless.
 
-1. **Discover Workspace**: The AI agent calls `list_projects` to locate components, projects, and style/test configurations in the workspace.
-2. **Schematic Modernization (Prerequisite)**: The AI agent runs any prerequisite signal migrations using standard `ng generate` commands (e.g., Signal Inputs, Signal Queries).
-3. **Plan Migration**: The AI agent calls `onpush_zoneless_migration` with the absolute path of the directory or component file.
-4. **Apply Changes**: The AI agent automatically applies the single actionable change returned by the tool to the codebase.
-5. **Verify Changes**: The AI agent runs unit tests by calling `run_target` with the target parameter set to `"test"`.
-6. **Repeat**: The AI agent calls `onpush_zoneless_migration` again to retrieve the next step, repeating until the tool indicates the migration is complete.
+1. **Обнаружение workspace**: агент вызывает `list_projects`, чтобы найти компоненты, проекты и конфигурации стилей/тестов.
+2. **Модернизация схемами (предпосылка)**: агент выполняет необходимые миграции сигналов стандартными командами `ng generate` (например, Signal Inputs, Signal Queries).
+3. **План миграции**: агент вызывает `onpush_zoneless_migration` с абсолютным путём к каталогу или файлу компонента.
+4. **Применение изменений**: агент автоматически применяет к кодовой базе одно конкретное изменение, возвращённое инструментом.
+5. **Проверка изменений**: агент запускает unit-тесты через `run_target` с параметром `"test"`.
+6. **Повтор**: агент снова вызывает `onpush_zoneless_migration` за следующим шагом и повторяет цикл, пока инструмент не сообщит о завершении миграции.
 
-### 2. Feature Development & TDD Loop
+### 2. Разработка функций и цикл TDD {#2-feature-development--tdd-loop}
 
-The AI agent automates research, implementation, and verification when developing new features.
+ИИ-агент автоматизирует исследование, реализацию и проверку при разработке новых функций.
 
-1. **API & Syntax Research**: The AI agent uses `search_documentation` to look up Angular APIs or syntax rules (e.g., `@defer` block options).
-2. **Load Coding Standards**: The AI agent calls `get_best_practices` with the workspace path to load Angular version-aligned coding rules.
-3. **Start Local Dev Server**: The AI agent starts a background server by calling `devserver.start`.
-4. **Monitor Build**: The AI agent uses `devserver.wait_for_build` to watch build logs and ensure compilation succeeds as it edits the code.
-5. **Write and Execute Tests**: The AI agent identifies the project's test framework (e.g., Jasmine, Jest, Vitest) via `list_projects`, writes the corresponding test file, and runs the tests using `run_target` with `"test"`.
-6. **Stop Dev Server**: When finished, the AI agent stops the active dev server by calling `devserver.stop`.
+1. **Исследование API и синтаксиса**: агент использует `search_documentation` для поиска Angular API или правил синтаксиса (например, опции блока `@defer`).
+2. **Загрузка стандартов кодирования**: агент вызывает `get_best_practices` с путём workspace, чтобы загрузить правила, соответствующие версии Angular.
+3. **Запуск локального dev-сервера**: агент запускает фоновый сервер через `devserver.start`.
+4. **Мониторинг сборки**: агент использует `devserver.wait_for_build`, чтобы следить за логами сборки и убедиться, что компиляция проходит успешно при правках кода.
+5. **Написание и запуск тестов**: агент определяет тестовый фреймворк проекта (например, Jasmine, Jest, Vitest) через `list_projects`, пишет соответствующий тестовый файл и запускает тесты через `run_target` с `"test"`.
+6. **Остановка dev-сервера**: по завершении агент останавливает активный dev-сервер через `devserver.stop`.
 
-### 3. Developer Onboarding and Learning
+### 3. Онбординг и обучение разработчика {#3-developer-onboarding-and-learning}
 
-The AI agent guides the developer through Angular concepts in an interactive sandbox.
+ИИ-агент проводит разработчика по концепциям Angular в интерактивной песочнице.
 
-1. **Discover Projects**: The AI agent calls `list_projects` to scan the workspace and identify the codebase structure.
-2. **Launch Tutor**: The AI agent runs `ai_tutor` to load the curriculum instructions, persona, and tutoring guidelines.
-3. **Follow the Curriculum**: The AI agent guides the user through the curriculum, explaining concepts and instructing them on what components to build or modify.
-4. **Implement & Verify**: The AI agent helps implement the sandbox code and verifies changes using `run_target` with `"test"` or `"build"`.
+1. **Обнаружение проектов**: агент вызывает `list_projects`, чтобы просканировать workspace и понять структуру кодовой базы.
+2. **Запуск наставника**: агент запускает `ai_tutor`, чтобы загрузить учебный план, персону и рекомендации по обучению.
+3. **Следование учебному плану**: агент проводит пользователя по программе, объясняя концепции и указывая, какие компоненты создавать или изменять.
+4. **Реализация и проверка**: агент помогает реализовать код песочницы и проверяет изменения через `run_target` с `"test"` или `"build"`.
 
-## Command Options
+## Параметры команды {#command-options}
 
-You can pass arguments to the MCP server in the `args` array of your configuration:
+Аргументы MCP-серверу можно передавать в массиве `args` конфигурации:
 
-- `--read-only`: Only registers tools that do not modify the project.
-- `--local-only`: Only registers tools that do not require an internet connection.
+- `--read-only`: регистрирует только инструменты, которые не изменяют проект.
+- `--local-only`: регистрирует только инструменты, которым не нужен интернет.
 
-Example for read-only mode:
+Пример режима только для чтения:
 
 ```json
 "args": ["-y", "@angular/cli", "mcp", "--read-only"]

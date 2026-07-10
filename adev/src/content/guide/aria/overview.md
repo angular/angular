@@ -1,13 +1,13 @@
 <docs-decorative-header title="Angular Aria">
 </docs-decorative-header>
 
-## What is Angular Aria?
+## Что такое Angular Aria? {#what-is-angular-aria}
 
-Building accessible components seems straightforward, but implementing them according to the [W3C Accessibility Guidelines](https://www.w3.org/TR/wcag/) requires significant effort and accessibility expertise.
+Создание доступных компонентов кажется простым, но реализация по [W3C Accessibility Guidelines](https://www.w3.org/TR/wcag/) требует значительных усилий и экспертизы в accessibility.
 
-Angular Aria is a collection of headless, accessible directives that implement common [WAI-ARIA patterns](https://www.w3.org/WAI/ARIA/apg/patterns/). The directives handle keyboard interactions, ARIA attributes, focus management, and screen reader support. All you have to do is provide the HTML structure, CSS styling, and business logic!
+Angular Aria — набор headless, доступных директив, реализующих распространённые [паттерны WAI-ARIA](https://www.w3.org/WAI/ARIA/apg/patterns/). Директивы обрабатывают клавиатурные взаимодействия, ARIA-атрибуты, управление фокусом и поддержку screen reader. Вам остаётся предоставить HTML-структуру, CSS-стили и бизнес-логику!
 
-## Installation
+## Установка {#installation}
 
 <docs-code-multifile>
   <docs-code header="npm" language="shell">
@@ -24,9 +24,9 @@ Angular Aria is a collection of headless, accessible directives that implement c
   </docs-code>
 </docs-code-multifile>
 
-## Showcase
+## Showcase {#showcase}
 
-For example, let's take a toolbar menu. While it may appear to be a "simple" row of buttons tied with specific logic, keyboard navigation and screen readers add a lot of unexpected complexity to those unfamiliar with accessibility.
+Например, возьмём toolbar menu. На вид это «простой» ряд кнопок со связанной логикой, но клавиатурная навигация и screen reader добавляют много неожиданной сложности для тех, кто мало знаком с accessibility.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -54,60 +54,60 @@ For example, let's take a toolbar menu. While it may appear to be a "simple" row
   </docs-tab>
 </docs-tab-group>
 
-In this one scenario, developers need to consider:
+В этом сценарии разработчикам нужно учесть:
 
-- **Keyboard navigation**. Users need to open the menu with Enter or Space, navigate options with arrow keys, select with Enter, and close with Escape.
-- **Screen readers** need to announce the menu's state, the number of options, and which option has focus.
-- **Focus management** needs to move logically between the trigger and menu items.
-- **Right-to-left languages** require the ability to navigate in reverse.
+- **Клавиатурную навигацию**. Пользователи должны открывать меню Enter или Space, перемещаться по опциям стрелками, выбирать Enter и закрывать Escape.
+- **Screen readers** должны объявлять состояние меню, число опций и какая опция в фокусе.
+- **Управление фокусом** должно логично перемещаться между trigger и пунктами меню.
+- **Языки справа налево** требуют возможности навигации в обратном направлении.
 
-## What's included?
+## Что входит в комплект? {#whats-included}
 
-Angular Aria includes directives with comprehensive documentation, working examples and API references for common interactive patterns:
+Angular Aria включает директивы с подробной документацией, рабочими примерами и API reference для распространённых интерактивных паттернов:
 
-### Search and selection
+### Поиск и выбор {#search-and-selection}
 
-| Component                               | Description                                                    |
-| --------------------------------------- | -------------------------------------------------------------- |
-| [Autocomplete](guide/aria/autocomplete) | Text input with filtered suggestions that appear as users type |
-| [Listbox](guide/aria/listbox)           | Single or multi-select option lists with keyboard navigation   |
-| [Select](guide/aria/select)             | Single-selection dropdown pattern with keyboard navigation     |
-| [Multiselect](guide/aria/multiselect)   | Multiple-selection dropdown pattern with compact display       |
-| [Combobox](guide/aria/combobox)         | Primitive directive that coordinates a text input with a popup |
+| Компонент                               | Описание                                                         |
+| --------------------------------------- | ---------------------------------------------------------------- |
+| [Autocomplete](guide/aria/autocomplete) | Текстовый ввод с отфильтрованными подсказками по мере ввода      |
+| [Listbox](guide/aria/listbox)           | Списки опций с одиночным или множественным выбором и клавиатурой |
+| [Select](guide/aria/select)             | Паттерн dropdown с одиночным выбором и клавиатурной навигацией   |
+| [Multiselect](guide/aria/multiselect)   | Паттерн dropdown с множественным выбором и компактным отображением |
+| [Combobox](guide/aria/combobox)         | Примитивная директива, координирующая текстовый ввод с popup     |
 
-### Navigation and call to actions
+### Навигация и действия {#navigation-and-call-to-actions}
 
-| Component                     | Description                                                |
+| Компонент                     | Описание                                                   |
 | ----------------------------- | ---------------------------------------------------------- |
-| [Menu](guide/aria/menu)       | Dropdown menus with nested submenus and keyboard shortcuts |
-| [Menubar](guide/aria/menubar) | Horizontal navigation bar for persistent application menus |
-| [Toolbar](guide/aria/toolbar) | Grouped sets of controls with logical keyboard navigation  |
+| [Menu](guide/aria/menu)       | Выпадающие меню со вложенными подменю и горячими клавишами |
+| [Menubar](guide/aria/menubar) | Горизонтальная панель навигации для постоянных меню приложения |
+| [Toolbar](guide/aria/toolbar) | Группы элементов управления с логичной клавиатурной навигацией |
 
-### Content organization
+### Организация контента {#content-organization}
 
-| Component                         | Description                                                            |
-| --------------------------------- | ---------------------------------------------------------------------- |
-| [Accordion](guide/aria/accordion) | Collapsible content panels that can expand individually or exclusively |
-| [Tabs](guide/aria/tabs)           | Tabbed interfaces with automatic or manual activation modes            |
-| [Tree](guide/aria/tree)           | Hierarchical lists with expand/collapse functionality                  |
-| [Grid](guide/aria/grid)           | Two-dimensional data display with cell-by-cell keyboard navigation     |
+| Компонент                         | Описание                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------ |
+| [Accordion](guide/aria/accordion) | Сворачиваемые панели контента — по одной или взаимоисключающе            |
+| [Tabs](guide/aria/tabs)           | Вкладки с режимами автоматической или ручной активации                   |
+| [Tree](guide/aria/tree)           | Иерархические списки с раскрытием/сворачиванием                          |
+| [Grid](guide/aria/grid)           | Двумерное отображение данных с клавиатурной навигацией по ячейкам        |
 
-## When to use Angular Aria
+## Когда использовать Angular Aria {#when-to-use-angular-aria}
 
-Angular Aria works well when you need accessible interactive components that are WCAG compliant with custom styling. Examples include:
+Angular Aria хорошо подходит, когда нужны доступные интерактивные компоненты, соответствующие WCAG, с кастомными стилями. Примеры:
 
-- **Building a design system** - Your team maintains a component library with specific visual standards that need accessible implementations
-- **Enterprise component libraries** - You're creating reusable components for multiple applications within an organization
-- **Custom brand requirements** - The interface needs to match precise design specifications that pre-styled component libraries cannot easily accommodate
+- **Создание дизайн-системы** — команда поддерживает библиотеку компонентов с конкретными визуальными стандартами и нуждается в доступных реализациях
+- **Корпоративные библиотеки компонентов** — вы создаёте переиспользуемые компоненты для нескольких приложений в организации
+- **Требования бренда** — интерфейс должен точно соответствовать дизайн-спецификациям, которые готовые стилизованные библиотеки плохо покрывают
 
-## When not to use Angular Aria
+## Когда не использовать Angular Aria {#when-not-to-use-angular-aria}
 
-Angular Aria might not fit every scenario:
+Angular Aria подходит не для каждого сценария:
 
-- **Pre-styled components** - If you need components that look complete without custom styling, use Angular Material instead
-- **Simple forms** - Native HTML form controls like `<button>` and `<input type="radio">` provide built-in accessibility for straightforward use cases
-- **Rapid prototyping** - When validating concepts quickly, pre-styled component libraries reduce initial development time
+- **Готовые стилизованные компоненты** — если нужны компоненты, которые выглядят завершённо без кастомных стилей, используйте Angular Material
+- **Простые формы** — нативные HTML-контролы вроде `<button>` и `<input type="radio">` дают встроенную доступность для простых случаев
+- **Быстрое прототипирование** — при быстрой проверке идей готовые стилизованные библиотеки сокращают начальное время разработки
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-Check out a component from the side nav or [list above](#whats-included), or start with [Toolbar](guide/aria/toolbar) to see a complete example of how Angular Aria directives work!
+Выберите компонент в боковой навигации или [в списке выше](#whats-included), либо начните с [Toolbar](guide/aria/toolbar), чтобы увидеть полный пример работы директив Angular Aria!

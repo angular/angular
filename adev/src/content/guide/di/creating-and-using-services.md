@@ -1,20 +1,20 @@
-# Creating and using services
+# Создание и использование сервисов
 
-Services are reusable pieces of code that you can share across your Angular application. You commonly use them to handle data fetching, business logic, or other functionality that multiple components need to access.
+Сервисы — переиспользуемые фрагменты кода, которыми можно делиться в приложении Angular. Обычно их применяют для загрузки данных, бизнес-логики или другой функциональности, к которой нужен доступ из нескольких компонентов.
 
-## Creating a service
+## Создание сервиса {#creating-a-service}
 
-You can create a service using the [Angular CLI](tools/cli) with the following command:
+Сервис можно создать с помощью [Angular CLI](tools/cli) командой:
 
 ```bash
 ng generate service CUSTOM_NAME
 ```
 
-This command creates a dedicated `CUSTOM_NAME.ts` file in your `src` directory.
+Команда создаёт отдельный файл `CUSTOM_NAME.ts` в каталоге `src`.
 
-You can also manually create a service by adding the `@Service()` decorator to a TypeScript class. This tells Angular that you can use the class as an injectable dependency.
+Сервис также можно создать вручную, добавив декоратор `@Service()` к классу TypeScript. Так Angular узнаёт, что класс можно использовать как внедряемую зависимость.
 
-The following example defines a service that allows users to add and retrieve data:
+В следующем примере определён сервис, позволяющий добавлять и получать данные:
 
 ```ts {header: "src/app/basic-data-store.ts"}
 import {Service} from '@angular/core';
@@ -33,36 +33,36 @@ export class BasicDataStore {
 }
 ```
 
-## How services become available
+## Как сервисы становятся доступными {#how-services-become-available}
 
-Services are provisioned at the root level by default. When a service is provided globally, Angular guarantees three main benefits:
+По умолчанию сервисы регистрируются на уровне root. При глобальном предоставлении Angular гарантирует три основных преимущества:
 
-- **Singleton Instance:** Creates a single, shared instance for the entire application.
-- **Global Availability:** Automatically accessible anywhere without manual provider registration.
-- **Tree-shakability:** Ensures the service is excluded from the final production bundle if your code never explicitly uses it.
+- **Экземпляр-синглтон:** создаётся один общий экземпляр на всё приложение.
+- **Глобальная доступность:** сервис доступен везде без ручной регистрации провайдера.
+- **Tree-shakability:** сервис исключается из финального production-бандла, если код его явно не использует.
 
-### Using the `@Service` vs `@Injectable` decorator
+### Декораторы `@Service` и `@Injectable` {#using-the-service-vs-injectable-decorator}
 
-The `@Service` decorator serves as a modern, ergonomic shorthand for the traditional `@Injectable({ providedIn: 'root' })` syntax.
+Декоратор `@Service` — современный удобный сокращённый вариант традиционного синтаксиса `@Injectable({ providedIn: 'root' })`.
 
-Use this quick reference to decide which decorator fits your scenario:
+Краткая справка, какой декоратор выбрать:
 
-| Feature / Requirement                         | `@Service` | `@Injectable`                           |
+| Возможность / требование                     | `@Service` | `@Injectable`                           |
 | --------------------------------------------- | ---------- | --------------------------------------- |
-| **`inject()` function support**               | Yes        | Yes                                     |
-| **Constructor-based DI**                      | ❌ No      | Yes                                     |
-| **Implicit root singleton provider**          | Yes        | ❌ No (requires `{providedIn: 'root'}`) |
-| **Advanced provider keys (`useClass`, etc.)** | ❌ No      | Yes                                     |
-| **Custom initialization factories**           | Yes        | Yes                                     |
-| **Non-root scopes (`platform`, etc.)**        | ❌ No      | Yes                                     |
+| **Поддержка функции `inject()`**              | Да         | Да                                      |
+| **DI через конструктор**                      | ❌ Нет     | Да                                      |
+| **Неявный root-синглтон**                     | Да         | ❌ Нет (нужен `{providedIn: 'root'}`)   |
+| **Расширенные ключи провайдера (`useClass` и др.)** | ❌ Нет | Да                                      |
+| **Пользовательские фабрики инициализации**    | Да         | Да                                      |
+| **Области вне root (`platform` и др.)**       | ❌ Нет     | Да                                      |
 
-### Replacing the implementation with a factory
+### Замена реализации через фабрику {#replacing-the-implementation-with-a-factory}
 
-If you need to control how the singleton is created, for example, to swap in a different implementation depending on the environment, pass a `factory` function.
+Если нужно контролировать создание синглтона — например, подставлять другую реализацию в зависимости от окружения — передайте функцию `factory`.
 
-The factory runs in an [injection context](guide/di/dependency-injection-context), so you can use [`inject()`](api/core/inject) inside it to read other dependencies.
+Фабрика выполняется в [контексте внедрения](guide/di/dependency-injection-context), поэтому внутри неё можно вызывать [`inject()`](api/core/inject) для чтения других зависимостей.
 
-The following `Analytics` service is a no-op locally so events don't pollute the console during development. In production, the factory reads an `ANALYTICS_ENABLED` token and returns a `GoogleAnalytics` subclass that forwards events to the real tracker:
+Следующий сервис `Analytics` локально — no-op, чтобы события не засоряли консоль при разработке. В production фабрика читает токен `ANALYTICS_ENABLED` и возвращает подкласс `GoogleAnalytics`, который отправляет события в реальный трекер:
 
 ```ts {header: "src/app/analytics.ts"}
 import {inject, InjectionToken, Service} from '@angular/core';
@@ -84,11 +84,11 @@ class GoogleAnalytics extends Analytics {
 }
 ```
 
-NOTE: The `factory` option replaces the `useClass`, `useValue`, `useExisting`, and `useFactory` options of `@Injectable`. If you need any of those, keep using `@Injectable`.
+NOTE: Опция `factory` заменяет опции `useClass`, `useValue`, `useExisting` и `useFactory` у `@Injectable`. Если они нужны — продолжайте использовать `@Injectable`.
 
-### Opting out of automatic provisioning
+### Отказ от автоматической регистрации {#opting-out-of-automatic-provisioning}
 
-By default, `@Service` provides the class at the root injector. If you want to provide it manually, for example, to scope it to a specific route or component, set `autoProvided: false`:
+По умолчанию `@Service` регистрирует класс в root-инжекторе. Чтобы регистрировать вручную — например, ограничить область маршрутом или компонентом — задайте `autoProvided: false`:
 
 ```ts {header: "src/app/analytics-logger.ts"}
 import {Service} from '@angular/core';
@@ -101,21 +101,21 @@ export class AnalyticsLogger {
 }
 ```
 
-You are then responsible for adding the service to a `providers` array, just like with a plain `@Injectable()`:
+Тогда сервис нужно добавить в массив `providers` самостоятельно, как и с обычным `@Injectable()`:
 
-### When to use `@Service` vs `@Injectable`
+### Когда выбирать `@Service` или `@Injectable` {#when-to-use-service-vs-injectable}
 
-Reach for `@Service` when you are creating a new singleton class that uses `inject()` for its dependencies. Keep using `@Injectable` when you need any of the following:
+Выбирайте `@Service`, когда создаёте новый синглтон-класс с зависимостями через `inject()`. Оставляйте `@Injectable`, если нужно любое из следующего:
 
-- **Constructor-based dependency injection.** `@Service` only supports the [`inject()`](api/core/inject) function.
-- **Advanced provider configuration** such as `useClass`, `useValue`, `useExisting`, or `useFactory`. `@Service` exposes a single `factory` option instead.
-- **Non-root scopes** such as `providedIn: 'platform'`.
+- **Внедрение зависимостей через конструктор.** `@Service` поддерживает только функцию [`inject()`](api/core/inject).
+- **Расширенная конфигурация провайдера** — `useClass`, `useValue`, `useExisting` или `useFactory`. У `@Service` вместо этого одна опция `factory`.
+- **Области вне root**, например `providedIn: 'platform'`.
 
-## Injecting a service
+## Внедрение сервиса {#injecting-a-service}
 
-Once you've created a service with `providedIn: 'root'`, you can inject it anywhere in your application using the `inject()` function from `@angular/core`.
+После создания сервиса с `providedIn: 'root'` его можно внедрять в любом месте приложения функцией `inject()` из `@angular/core`.
 
-### Injecting into a component
+### Внедрение в компонент {#injecting-into-a-component}
 
 ```angular-ts
 import {Component, inject} from '@angular/core';
@@ -135,7 +135,7 @@ export class Example {
 }
 ```
 
-### Injecting into another service
+### Внедрение в другой сервис {#injecting-into-another-service}
 
 ```ts
 import {inject, Service} from '@angular/core';
@@ -156,13 +156,13 @@ export class BasicDataStore {
 }
 ```
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-While `providedIn: 'root'` covers most use cases, Angular also provides additional ways you can configure services for more specialized scenarios:
+Хотя `providedIn: 'root'` покрывает большинство сценариев, Angular также предлагает дополнительные способы настройки сервисов для более специальных случаев:
 
-- **Component-specific instances** - When components need their own isolated service instances
-- **Manual configuration** - For services that require runtime configuration
-- **Factory providers** - For dynamic service creation based on runtime conditions
-- **Value providers** - For providing configuration objects or constants
+- **Экземпляры на уровне компонента** — когда компонентам нужны изолированные экземпляры сервиса
+- **Ручная конфигурация** — для сервисов, требующих настройки во время выполнения
+- **Фабричные провайдеры** — для динамического создания сервисов по условиям runtime
+- **Value-провайдеры** — для объектов конфигурации или констант
 
-You can learn more about these advanced patterns in the next guide: [defining dependency providers](/guide/di/defining-dependency-providers).
+Подробнее об этих продвинутых паттернах — в следующем руководстве: [определение провайдеров зависимостей](/guide/di/defining-dependency-providers).

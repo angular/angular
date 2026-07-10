@@ -4,7 +4,7 @@
 
 <docs-video src="https://www.youtube.com/embed/eM3zi_n7lNs?si=MIl5NcRxvcLjYt5f&amp;start=477"/>
 
-ПРИМЕЧАНИЕ: В этом видео используется старый синтаксис, но основные концепции остаются актуальными.
+NOTE: В этом видео используется старый синтаксис, но основные концепции остаются актуальными.
 
 ## Чему вы научитесь
 
@@ -25,7 +25,7 @@
 
 <docs-workflow>
 
-<docs-step title="Добавление данных о жилье в `Home`">
+<docs-step title="Add housing data to the `Home`">
 
 В `Home` сейчас есть только один объект жилья. В этом шаге вы добавите массив записей `HousingLocation`.
 
@@ -33,11 +33,11 @@
 1. Обновите класс `Home`, добавив свойство `housingLocationList`. Обновите свой код, чтобы он соответствовал следующему:
    <docs-code language="angular-ts"  header="Add housingLocationList property in home.ts" path="adev/src/content/tutorials/first-app/steps/09-services/src/app/home/home.ts" visibleLines="26-131"/>
 
-   ВАЖНО: Не удаляйте декоратор `@Component`, вы обновите этот код в следующем шаге.
+   IMPORTANT: Не удаляйте декоратор `@Component`, вы обновите этот код в следующем шаге.
 
 </docs-step>
 
-<docs-step title="Обновление шаблона `Home` для использования `@for`">
+<docs-step title="Update the `Home` template to use `@for`">
 Теперь в приложении есть набор данных, который можно использовать для отображения записей в браузере с помощью блока `@for`.
 
 1. Обновите тег `<app-housing-location>` в коде шаблона следующим образом:

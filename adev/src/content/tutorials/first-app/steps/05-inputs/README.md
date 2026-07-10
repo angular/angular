@@ -5,7 +5,7 @@
 
 <docs-video src="https://www.youtube.com/embed/eM3zi_n7lNs?si=WvRGFSkW_7_zDIFD&amp;start=241"/>
 
-ПРИМЕЧАНИЕ: В этом видео используется старый синтаксис, но основные концепции остаются актуальными.
+NOTE: В этом видео используется старый синтаксис, но основные концепции остаются актуальными.
 
 ## Чему вы научитесь
 
@@ -24,14 +24,14 @@
 
 <docs-workflow>
 
-<docs-step title="Импорт функции input()">
+<docs-step title="Import the input() function">
 В редакторе кода импортируйте вспомогательный метод `input` из `@angular/core` в компонент `HousingLocation`.
 
 <docs-code header="Import input in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.ts" visibleLines="[1]"/>
 
 </docs-step>
 
-<docs-step title="Добавление свойства Input">
+<docs-step title="Add the Input property">
 Добавьте обязательное свойство с именем `housingLocation` и инициализируйте его с помощью `input.required()`, указав тип `HousingLocationInfo`.
 
   <docs-code header="Declare the input property in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/housing-location/housing-location.ts" visibleLines="[12]"/>
@@ -43,7 +43,7 @@
 
 </docs-step>
 
-<docs-step title="Передача данных во входное свойство">
+<docs-step title="Pass data to the input">
 Отправьте значение `housingLocation` из компонента `Home` в свойство `housingLocation` компонента HousingLocation.
 
 <docs-code language="angular-ts" header="Declare the input property for HousingLocation in home.ts" path="adev/src/content/tutorials/first-app/steps/06-property-binding/src/app/home/home.ts" visibleLines="[16]"/>

@@ -1,56 +1,56 @@
-# Animating your Application with CSS
+# Анимация приложения с CSS
 
-CSS offers a robust set of tools for you to create beautiful and engaging animations within your application.
+CSS предлагает мощный набор инструментов для создания красивых и вовлекающих анимаций в приложении.
 
-## How to write animations in native CSS
+## Как писать анимации на нативном CSS {#how-to-write-animations-in-native-css}
 
-If you've never written any native CSS animations, there are a number of excellent guides to get you started. Here are a few of them:
+Если вы никогда не писали нативные CSS-анимации, есть ряд отличных руководств для старта. Вот некоторые из них:
 [MDN's CSS Animations guide](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations)
 [W3Schools CSS3 Animations guide](https://www.w3schools.com/css/css3_animations.asp)
 [The Complete CSS Animations Tutorial](https://www.lambdatest.com/blog/css-animations-tutorial/)
 [CSS Animation for Beginners](https://thoughtbot.com/blog/css-animation-for-beginners)
 
-and a couple of videos:
+и несколько видео:
 [Learn CSS Animation in 9 Minutes](https://www.youtube.com/watch?v=z2LQYsZhsFw)
 [Net Ninja CSS Animation Tutorial Playlist](https://www.youtube.com/watch?v=jgw82b5Y2MU&list=PL4cUxeGkcC9iGYgmEd2dm3zAKzyCGDtM5)
 
-Check out some of these guides and tutorials, then come back to this guide.
+Изучите эти руководства и туториалы, затем вернитесь к этому гайду.
 
-## Creating Reusable Animations
+## Создание переиспользуемых анимаций {#creating-reusable-animations}
 
-You can create reusable animations that can be shared across your application using `@keyframes`. Define keyframe animations in a shared CSS file, and you'll be able to re-use those keyframe animations wherever you want within your application.
+Можно создавать переиспользуемые анимации, которыми можно делиться по всему приложению, используя `@keyframes`. Определите keyframe-анимации в общем CSS-файле — и сможете переиспользовать их где угодно в приложении.
 
 <docs-code header="animations.css" path="adev/src/content/examples/animations/src/app/animations.css" region="animation-shared"/>
 
-Adding the class `animated-class` to an element would trigger the animation on that element.
+Добавление класса `animated-class` к элементу запустит анимацию на этом элементе.
 
-## Animating a Transition
+## Анимация перехода {#animating-a-transition}
 
-### Animating State and Styles
+### Анимация состояния и стилей {#animating-state-and-styles}
 
-You may want to animate between two different states, for example when an element is opened or closed. You can accomplish this by using CSS classes, either with a keyframe animation or transition styling.
+Может понадобиться анимировать переход между двумя состояниями — например, когда элемент открыт или закрыт. Это можно сделать через CSS-классы — с keyframe-анимацией или transition-стилями.
 
 <docs-code header="animations.css" path="adev/src/content/examples/animations/src/app/animations.css" region="animation-states"/>
 
-Triggering the `open` or `closed` state is done by toggling classes on the element in your component. You can find examples of how to do this in our [template guide](guide/templates/binding#css-class-and-style-property-bindings).
+Состояние `open` или `closed` включается переключением классов на элементе в компоненте. Примеры — в нашем [руководстве по шаблонам](guide/templates/binding#css-class-and-style-property-bindings).
 
-You can see similar examples in the template guide for [animating styles directly](guide/templates/binding#css-style-properties).
+Похожие примеры — в руководстве по шаблонам для [прямой анимации стилей](guide/templates/binding#css-style-properties).
 
-### Transitions, Timing, and Easing
+### Transitions, Timing и Easing {#transitions-timing-and-easing}
 
-Animating often requires adjusting timing, delays, and easing behaviors. This can be done using several css properties or shorthand properties.
+Анимация часто требует настройки тайминга, задержек и easing. Это делается через несколько CSS-свойств или shorthand-свойства.
 
-Specify `animation-duration`, `animation-delay`, and `animation-timing-function` for a keyframe animation in CSS, or alternatively use the `animation` shorthand property.
+Задайте `animation-duration`, `animation-delay` и `animation-timing-function` для keyframe-анимации в CSS либо используйте shorthand-свойство `animation`.
 
 <docs-code header="animations.css" path="adev/src/content/examples/animations/src/app/animations.css" region="animation-timing"/>
 
-Similarly, you can use `transition-duration`, `transition-delay`, and `transition-timing-function` and the `transition` shorthand for animations that are not using `@keyframes`.
+Аналогично можно использовать `transition-duration`, `transition-delay` и `transition-timing-function` и shorthand `transition` для анимаций без `@keyframes`.
 
 <docs-code header="animations.css" path="adev/src/content/examples/animations/src/app/animations.css" region="transition-timing"/>
 
-### Triggering an Animation
+### Запуск анимации {#triggering-an-animation}
 
-Animations can be triggered by toggling CSS styles or classes. Once a class is present on an element, the animation will occur. Removing the class will revert the element back to whatever CSS is defined for that element. Here's an example:
+Анимации запускаются переключением CSS-стилей или классов. Как только класс присутствует на элементе, анимация произойдёт. Удаление класса вернёт элемент к CSS, определённому для него. Пример:
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/open-close.ts">
     <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/native-css/open-close.ts" />
@@ -58,11 +58,11 @@ Animations can be triggered by toggling CSS styles or classes. Once a class is p
     <docs-code header="open-close.css" path="adev/src/content/examples/animations/src/app/native-css/open-close.css"/>
 </docs-code-multifile>
 
-## Transition and Triggers
+## Transition и Triggers {#transition-and-triggers}
 
-### Animating Auto Height
+### Анимация Auto Height {#animating-auto-height}
 
-You can use CSS Grid to animate to auto height.
+Можно использовать CSS Grid для анимации к auto height.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/auto-height.ts">
     <docs-code header="auto-height.ts" path="adev/src/content/examples/animations/src/app/native-css/auto-height.ts" />
@@ -70,11 +70,11 @@ You can use CSS Grid to animate to auto height.
     <docs-code header="auto-height.css" path="adev/src/content/examples/animations/src/app/native-css/auto-height.css"  />
 </docs-code-multifile>
 
-If you don't have to worry about supporting all browsers, you can also check out `calc-size()`, which is the true solution to animating auto height. See [MDN's docs](https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size) and [this tutorial](https://frontendmasters.com/blog/one-of-the-boss-battles-of-css-is-almost-won-transitioning-to-auto/) for more information.
+Если не нужно поддерживать все браузеры, также посмотрите `calc-size()` — настоящее решение для анимации auto height. Подробнее — в [документации MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size) и [этом туториале](https://frontendmasters.com/blog/one-of-the-boss-battles-of-css-is-almost-won-transitioning-to-auto/).
 
-### Animate entering and leaving a view
+### Анимация появления и ухода из view {#animate-entering-and-leaving-a-view}
 
-You can create animations for when an item enters a view or leaves a view. Let's start by looking at how to animate an element entering a view. We'll do this with `animate.enter`, which will apply animation classes when an element enters the view.
+Можно создавать анимации для появления элемента во view или ухода из view. Начнём с анимации появления. Используем `animate.enter`, который применяет классы анимации, когда элемент входит во view.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/insert.ts">
     <docs-code header="insert.ts" path="adev/src/content/examples/animations/src/app/native-css/insert.ts" />
@@ -82,7 +82,7 @@ You can create animations for when an item enters a view or leaves a view. Let's
     <docs-code header="insert.css" path="adev/src/content/examples/animations/src/app/native-css/insert.css"  />
 </docs-code-multifile>
 
-Animating an element when it leaves the view is similar to animating when entering a view. Use `animate.leave` to specify which CSS classes to apply when the element leaves the view.
+Анимация элемента при уходе из view похожа на анимацию появления. Используйте `animate.leave`, чтобы указать, какие CSS-классы применить, когда элемент покидает view.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/remove.ts">
     <docs-code header="remove.ts" path="adev/src/content/examples/animations/src/app/native-css/remove.ts" />
@@ -90,11 +90,11 @@ Animating an element when it leaves the view is similar to animating when enteri
     <docs-code header="remove.css" path="adev/src/content/examples/animations/src/app/native-css/remove.css"  />
 </docs-code-multifile>
 
-For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations).
+Подробнее о `animate.enter` и `animate.leave` — в [руководстве по Enter и Leave анимациям](guide/animations).
 
-### Animating increment and decrement
+### Анимация increment и decrement {#animating-increment-and-decrement}
 
-Animating on increment and decrement is a common pattern in applications. Here's an example of how you can accomplish that behavior.
+Анимация при increment и decrement — распространённый паттерн в приложениях. Вот пример, как этого добиться.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/increment-decrement.ts">
     <docs-code header="increment-decrement.ts" path="adev/src/content/examples/animations/src/app/native-css/increment-decrement.ts" />
@@ -102,11 +102,11 @@ Animating on increment and decrement is a common pattern in applications. Here's
     <docs-code header="increment-decrement.css" path="adev/src/content/examples/animations/src/app/native-css/increment-decrement.css" />
 </docs-code-multifile>
 
-### Disabling an animation or all animations
+### Отключение анимации или всех анимаций {#disabling-an-animation-or-all-animations}
 
-If you'd like to disable the animations that you've specified, you have multiple options.
+Если нужно отключить указанные анимации, есть несколько вариантов.
 
-1. Create a custom class that forces animation and transition to `none`.
+1. Создайте кастомный класс, который принудительно задаёт animation и transition в `none`.
 
 ```css
 .no-animation {
@@ -115,15 +115,15 @@ If you'd like to disable the animations that you've specified, you have multiple
 }
 ```
 
-Applying this class to an element prevents any animation from firing on that element. You could alternatively scope this to your entire DOM or section of your DOM to enforce this behavior. However, this prevents animation events from firing. If you are awaiting animation events for element removal, this solution won't work. A workaround is to set durations to 1 millisecond instead.
+Применение этого класса к элементу предотвращает запуск любой анимации на нём. Можно также ограничить область действия всем DOM или секцией DOM. Однако это предотвращает срабатывание событий анимации. Если вы ждёте события анимации для удаления элемента, это решение не подойдёт. Обходной путь — задать длительности в 1 миллисекунду.
 
-2. Use the [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) media query to ensure no animations play for users that prefer less animation.
+2. Используйте media query [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion), чтобы анимации не воспроизводились для пользователей, предпочитающих меньше анимации.
 
-3. Prevent adding animation classes programatically
+3. Не добавляйте классы анимации программно
 
-### Animation Callbacks
+### Callback'и анимации {#animation-callbacks}
 
-If you have actions you would like to execute at certain points during animations, there are a number of available events you can listen to. Here's a few of them.
+Если есть действия, которые нужно выполнить в определённые моменты анимаций, есть ряд доступных событий, на которые можно подписаться. Вот некоторые из них.
 
 [`OnAnimationStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationstart_event)  
 [`OnAnimationEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationend_event)  
@@ -135,17 +135,17 @@ If you have actions you would like to execute at certain points during animation
 [`OnTransitionEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionend_event)  
 [`OnTransitionCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitioncancel_event)
 
-The Web Animations API has a lot of additional functionality. [Take a look at the documentation](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API) to see all the available animation APIs.
+У Web Animations API много дополнительных возможностей. [Смотрите документацию](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API), чтобы увидеть все доступные animation API.
 
-NOTE: Be aware of bubbling issues with these callbacks. If you are animating children and parents, the events bubble up from children to parents. Consider stopping propagation or looking at more details within the event to determine if you're responding to the desired event target rather than an event bubbling up from a child node. You can examine the `animationname` property or the properties being transitioned to verify you have the right nodes.
+NOTE: Учитывайте проблемы bubbling с этими callback'ами. Если анимируете детей и родителей, события всплывают от детей к родителям. Рассмотрите остановку propagation или просмотр деталей события, чтобы реагировать на нужный target, а не на событие, всплывшее от дочернего узла. Можно проверить свойство `animationname` или свойства, участвующие в transition, чтобы убедиться, что у вас правильные узлы.
 
-## Complex Sequences
+## Сложные последовательности {#complex-sequences}
 
-Animations are often more complicated than just a simple fade in or fade out. You may have lots of complicated sequences of animations you may want to run. Let's take a look at some of those possible scenarios.
+Анимации часто сложнее простого fade in или fade out. Может быть много сложных последовательностей анимаций. Рассмотрим некоторые из таких сценариев.
 
-### Staggering animations in a list
+### Stagger-анимации в списке {#staggering-animations-in-a-list}
 
-One common effect is to stagger the animations of each item in a list to create a cascade effect. This can be accomplished by utilizing `animation-delay` or `transition-delay`. Here is an example of what that CSS might look like.
+Распространённый эффект — stagger-анимации каждого элемента списка для cascade-эффекта. Это достигается через `animation-delay` или `transition-delay`. Пример того, как может выглядеть такой CSS.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/stagger.ts">
     <docs-code header="stagger.ts" path="adev/src/content/examples/animations/src/app/native-css/stagger.ts" />
@@ -153,9 +153,9 @@ One common effect is to stagger the animations of each item in a list to create 
     <docs-code header="stagger.css" path="adev/src/content/examples/animations/src/app/native-css/stagger.css" />
 </docs-code-multifile>
 
-### Parallel Animations
+### Параллельные анимации {#parallel-animations}
 
-You can apply multiple animations to an element at once using the `animation` shorthand property. Each can have their own durations and delays. This allows you to compose animations together and create complicated effects.
+К элементу можно применить несколько анимаций сразу через shorthand-свойство `animation`. У каждой могут быть свои длительности и задержки. Это позволяет компоновать анимации и создавать сложные эффекты.
 
 ```css
 .target-element {
@@ -165,11 +165,11 @@ You can apply multiple animations to an element at once using the `animation` sh
 }
 ```
 
-In this example, the `rotate` and `fade-in` animations fire at the same time, but have different durations.
+В этом примере анимации `rotate` и `fade-in` запускаются одновременно, но имеют разные длительности.
 
-### Animating the items of a reordering list
+### Анимация элементов переупорядочиваемого списка {#animating-the-items-of-a-reordering-list}
 
-Items in a `@for` loop will be removed and re-added, which will fire off animations using `@starting-styles` for entry animations. Alternatively, you can use `animate.enter` for this same behavior. Use `animate.leave` to animate elements as they are removed, as seen in the example below.
+Элементы в цикле `@for` будут удаляться и добавляться заново, что запустит анимации с `@starting-styles` для entry-анимаций. Альтернативно можно использовать `animate.enter` для того же поведения. Используйте `animate.leave` для анимации элементов при удалении, как в примере ниже.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/reorder.ts">
     <docs-code header="reorder.ts" path="adev/src/content/examples/animations/src/app/native-css/reorder.ts" />
@@ -177,13 +177,13 @@ Items in a `@for` loop will be removed and re-added, which will fire off animati
     <docs-code header="reorder.css" path="adev/src/content/examples/animations/src/app/native-css/reorder.css" />
 </docs-code-multifile>
 
-## Programmatic control of animations
+## Программное управление анимациями {#programmatic-control-of-animations}
 
-You can retrieve animations off an element directly using [`Element.getAnimations()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations). This returns an array of every [`Animation`](https://developer.mozilla.org/en-US/docs/Web/API/Animation) on that element. You can use the `Animation` API to do much more than you could with what the `AnimationPlayer` from the animations package offered. From here you can `cancel()`, `play()`, `pause()`, `reverse()` and much more. This native API should provide everything you need to control your animations.
+Анимации с элемента можно получить напрямую через [`Element.getAnimations()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations). Это возвращает массив каждого [`Animation`](https://developer.mozilla.org/en-US/docs/Web/API/Animation) на этом элементе. API `Animation` позволяет делать гораздо больше, чем предлагал `AnimationPlayer` из пакета animations. Отсюда можно `cancel()`, `play()`, `pause()`, `reverse()` и многое другое. Этот нативный API должен предоставить всё необходимое для управления анимациями.
 
-## More on Angular animations
+## Дополнительно об анимациях Angular {#more-on-angular-animations}
 
-You might also be interested in the following:
+Вас также могут заинтересовать:
 
 <docs-pill-row>
   <docs-pill href="guide/animations" title="Enter and Leave animations"/>

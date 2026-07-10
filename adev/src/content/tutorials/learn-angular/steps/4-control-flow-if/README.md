@@ -39,16 +39,16 @@ export class App {
 
 <docs-workflow>
 
-<docs-step title="Создайте свойство с именем `isServerRunning`">
+<docs-step title="Create a property called `isServerRunning`">
 В классе `App` добавьте `boolean` свойство с именем `isServerRunning` и установите начальное значение `true`.
 </docs-step>
 
-<docs-step title="Используйте `@if` в шаблоне">
+<docs-step title="Use `@if` in the template">
 Обновите шаблон, чтобы отобразить сообщение `Yes, the server is running`, если значение `isServerRunning` равно `true`.
 
 </docs-step>
 
-<docs-step title="Используйте `@else` в шаблоне">
+<docs-step title="Use `@else` in the template">
 Теперь Angular поддерживает нативный синтаксис шаблонов для определения случая "иначе" (else) с помощью синтаксиса `@else`. Обновите шаблон, чтобы отобразить сообщение `No, the server is not running` в случае выполнения условия `@else`.
 
 Вот пример:

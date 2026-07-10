@@ -20,7 +20,7 @@ template: `{{ date | date:'medium' }}`;
 
 <docs-workflow>
 
-<docs-step title="Форматирование числа с помощью `DecimalPipe`">
+<docs-step title="Format a number with `DecimalPipe`">
 
 В `app.ts` обновите шаблон, чтобы включить параметр для `decimal` Pipe.
 
@@ -31,12 +31,12 @@ template: `
 `
 </docs-code>
 
-ПРИМЕЧАНИЕ: Что это за формат? Параметр для `DecimalPipe` называется `digitsInfo`, этот параметр использует формат:
+NOTE: Что это за формат? Параметр для `DecimalPipe` называется `digitsInfo`, этот параметр использует формат:
 `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`
 
 </docs-step>
 
-<docs-step title="Форматирование даты с помощью `DatePipe`">
+<docs-step title="Format a date with `DatePipe`">
 
 Теперь обновите шаблон, чтобы использовать `date` Pipe.
 
@@ -52,7 +52,7 @@ template: `
 
 </docs-step>
 
-<docs-step title="Форматирование валюты с помощью `CurrencyPipe`">
+<docs-step title="Format a currency with `CurrencyPipe`">
 
 В качестве последнего задания обновите шаблон, чтобы использовать `currency` Pipe.
 

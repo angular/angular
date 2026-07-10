@@ -1,18 +1,18 @@
-# Directive composition API
+# API композиции директив
 
-Angular directives offer a great way to encapsulate reusable behaviors— directives can apply
-attributes, CSS classes, and event listeners to an element.
+Директивы Angular — удобный способ инкапсулировать переиспользуемое поведение: директивы могут применять
+атрибуты, CSS-классы и слушатели событий к элементу.
 
-The _directive composition API_ lets you apply directives to a component's host element from
-_within_ the component TypeScript class.
+_API композиции директив_ позволяет применять директивы к host-элементу компонента
+_изнутри_ TypeScript-класса компонента.
 
-## Adding directives to a component
+## Добавление директив к компоненту {#adding-directives-to-a-component}
 
-You apply directives to a component by adding a `hostDirectives` property to a component's
-decorator. We call such directives _host directives_.
+Директивы применяются к компоненту через свойство `hostDirectives` в декораторе
+компонента. Такие директивы называют _host-директивами_.
 
-In this example, we apply the directive `MenuBehavior` to the host element of `AdminMenu`. This
-works similarly to applying the `MenuBehavior` to the `<admin-menu>` element in a template.
+В этом примере директива `MenuBehavior` применяется к host-элементу `AdminMenu`. Это
+работает аналогично применению `MenuBehavior` к элементу `<admin-menu>` в шаблоне.
 
 ```typescript
 @Component({
@@ -23,23 +23,23 @@ works similarly to applying the `MenuBehavior` to the `<admin-menu>` element in 
 export class AdminMenu {}
 ```
 
-When the framework renders a component, Angular also creates an instance of each host directive. The
-directives' host bindings apply to the component's host element. By default, host directive inputs
-and outputs are not exposed as part of the component's public API. See
-[Including inputs and outputs](#including-inputs-and-outputs) below for more information.
+Когда фреймворк рендерит компонент, Angular также создаёт экземпляр каждой host-директивы.
+Host-привязки директив применяются к host-элементу компонента. По умолчанию inputs и outputs
+host-директив не входят в публичный API компонента. См.
+[Включение inputs и outputs](#including-inputs-and-outputs) ниже.
 
-**Angular applies host directives statically at compile time.** You cannot dynamically add
-directives at runtime.
+**Angular применяет host-директивы статически на этапе компиляции.** Нельзя динамически добавлять
+директивы в runtime.
 
-**Directives used in `hostDirectives` may not specify `standalone: false`.**
+**Директивы в `hostDirectives` не должны указывать `standalone: false`.**
 
-**Angular ignores the `selector` of directives applied in the `hostDirectives` property.**
+**Angular игнорирует `selector` директив, применённых в свойстве `hostDirectives`.**
 
-## Including inputs and outputs
+## Включение inputs и outputs {#including-inputs-and-outputs}
 
-When you apply `hostDirectives` to your component, the inputs and outputs from the host directives
-are not included in your component's API by default. You can explicitly include inputs and outputs
-in your component's API by expanding the entry in `hostDirectives`:
+Когда вы применяете `hostDirectives` к компоненту, inputs и outputs host-директив
+по умолчанию не включаются в API компонента. Их можно явно включить в API компонента,
+расширив запись в `hostDirectives`:
 
 ```typescript
 @Component({
@@ -56,15 +56,15 @@ in your component's API by expanding the entry in `hostDirectives`:
 export class AdminMenu {}
 ```
 
-By explicitly specifying the inputs and outputs, consumers of the component with `hostDirective` can
-bind them in a template:
+Явно указав inputs и outputs, потребители компонента с `hostDirective` могут
+привязывать их в шаблоне:
 
 ```angular-html
 <admin-menu menuId="top-menu" (menuClosed)="logMenuClosed()"></admin-menu>
 ```
 
-Furthermore, you can alias inputs and outputs from `hostDirective` to customize the API of your
-component:
+Кроме того, inputs и outputs из `hostDirective` можно алиасить, чтобы настроить API
+компонента:
 
 ```typescript
 @Component({
@@ -85,18 +85,18 @@ export class AdminMenu {}
 <admin-menu id="top-menu" (closed)="logMenuClosed()"></admin-menu>
 ```
 
-## Adding directives to another directive
+## Добавление директив к другой директиве {#adding-directives-to-another-directive}
 
-You can also add `hostDirectives` to other directives, in addition to components. This enables the
-transitive aggregation of multiple behaviors.
+`hostDirectives` можно добавлять и к другим директивам, не только к компонентам. Это позволяет
+транзитивно агрегировать несколько поведений.
 
-In the following example, we define two directives, `Menu` and `Tooltip`. We then compose the behavior
-of these two directives in `MenuWithTooltip`. Finally, we apply `MenuWithTooltip`
-to `SpecializedMenuWithTooltip`.
+В следующем примере определены две директивы — `Menu` и `Tooltip`. Затем поведение
+этих двух директив композируется в `MenuWithTooltip`. Наконец, `MenuWithTooltip`
+применяется к `SpecializedMenuWithTooltip`.
 
-When `SpecializedMenuWithTooltip` is used in a template, it creates instances of all of `Menu`
-, `Tooltip`, and `MenuWithTooltip`. Each of these directives' host bindings apply to the host
-element of `SpecializedMenuWithTooltip`.
+Когда `SpecializedMenuWithTooltip` используется в шаблоне, создаются экземпляры всех
+`Menu`, `Tooltip` и `MenuWithTooltip`. Host-привязки каждой из этих директив применяются к host-
+элементу `SpecializedMenuWithTooltip`.
 
 ```ts
 @Directive({
@@ -122,14 +122,14 @@ export class MenuWithTooltip {}
 export class SpecializedMenuWithTooltip {}
 ```
 
-## Host directive semantics
+## Семантика host-директив {#host-directive-semantics}
 
-### Directive execution order
+### Порядок выполнения директив {#directive-execution-order}
 
-Host directives go through the same lifecycle as components and directives used directly in a
-template. However, host directives always execute their constructor, lifecycle hooks, and bindings _before_ the component or directive on which they are applied.
+Host-директивы проходят тот же жизненный цикл, что и компоненты и директивы, используемые напрямую в
+шаблоне. Однако host-директивы всегда выполняют конструктор, хуки жизненного цикла и привязки _до_ компонента или директивы, к которым они применены.
 
-The following example shows minimal use of a host directive:
+Следующий пример показывает минимальное использование host-директивы:
 
 ```typescript
 @Component({
@@ -140,20 +140,20 @@ The following example shows minimal use of a host directive:
 export class AdminMenu {}
 ```
 
-The order of execution here is:
+Порядок выполнения здесь:
 
-1. `MenuBehavior` instantiated
-2. `AdminMenu` instantiated
-3. `MenuBehavior` receives inputs (`ngOnInit`)
-4. `AdminMenu` receives inputs (`ngOnInit`)
-5. `MenuBehavior` applies host bindings
-6. `AdminMenu` applies host bindings
+1. Создаётся экземпляр `MenuBehavior`
+2. Создаётся экземпляр `AdminMenu`
+3. `MenuBehavior` получает inputs (`ngOnInit`)
+4. `AdminMenu` получает inputs (`ngOnInit`)
+5. `MenuBehavior` применяет host-привязки
+6. `AdminMenu` применяет host-привязки
 
-This order of operations means that components with `hostDirectives` can override any host bindings
-specified by a host directive.
+Такой порядок операций означает, что компоненты с `hostDirectives` могут переопределять любые host-привязки,
+заданные host-директивой.
 
-This order of operations extends to nested chains of host directives, as shown in the following
-example.
+Этот порядок операций распространяется и на вложенные цепочки host-директив, как в следующем
+примере.
 
 ```typescript
 @Directive({...})
@@ -170,42 +170,42 @@ export class CustomTooltip { }
 export class EvenMoreCustomTooltip { }
 ```
 
-In the example above, the order of execution is:
+В примере выше порядок выполнения:
 
-1. `Tooltip` instantiated
-2. `CustomTooltip` instantiated
-3. `EvenMoreCustomTooltip` instantiated
-4. `Tooltip` receives inputs (`ngOnInit`)
-5. `CustomTooltip` receives inputs (`ngOnInit`)
-6. `EvenMoreCustomTooltip` receives inputs (`ngOnInit`)
-7. `Tooltip` applies host bindings
-8. `CustomTooltip` applies host bindings
-9. `EvenMoreCustomTooltip` applies host bindings
+1. Создаётся экземпляр `Tooltip`
+2. Создаётся экземпляр `CustomTooltip`
+3. Создаётся экземпляр `EvenMoreCustomTooltip`
+4. `Tooltip` получает inputs (`ngOnInit`)
+5. `CustomTooltip` получает inputs (`ngOnInit`)
+6. `EvenMoreCustomTooltip` получает inputs (`ngOnInit`)
+7. `Tooltip` применяет host-привязки
+8. `CustomTooltip` применяет host-привязки
+9. `EvenMoreCustomTooltip` применяет host-привязки
 
-### Dependency injection
+### Внедрение зависимостей {#dependency-injection}
 
-A component or directive that specifies `hostDirectives` can inject the instances of those host
-directives and vice versa.
+Компонент или директива, указывающие `hostDirectives`, могут внедрять экземпляры этих host-
+директив и наоборот.
 
-When applying host directives to a component, both the component and host directives can define
-providers.
+При применении host-директив к компоненту и компонент, и host-директивы могут определять
+провайдеры.
 
-If a component or directive with `hostDirectives` and those host directives both provide the same
-injection token, the providers defined by class with `hostDirectives` take precedence over providers
-defined by the host directives.
+Если компонент или директива с `hostDirectives` и эти host-директивы предоставляют один и тот же
+injection token, провайдеры, определённые классом с `hostDirectives`, имеют приоритет над провайдерами,
+определёнными host-директивами.
 
-### Host directive de-duplication
+### Дедупликация host-директив {#host-directive-de-duplication}
 
-When the same directive appears more than once in the resolved host directive tree, it is automatically de-duplicated rather than throwing an error. Two deterministic rules are used to decide which match survives.
+Когда одна и та же директива появляется более одного раза в разрешённом дереве host-директив, она автоматически дедуплицируется, а не вызывает ошибку. Для выбора выжившего совпадения используются два детерминированных правила.
 
-#### Template match takes precedence
+#### Совпадение по шаблону имеет приоритет {#template-match-takes-precedence}
 
-If a directive matches an element once through a **template selector** and also appears as a
-**host directive**, Angular keeps only the template match and discards all host directive matches.
+Если директива совпадает с элементом один раз через **селектор шаблона** и также появляется как
+**host-директива**, Angular сохраняет только совпадение по шаблону и отбрасывает все совпадения host-директив.
 
-The mental model is that a host directive match represents `Partial<YourDirective>` , a partial
-application where only the inputs and outputs explicitly listed in `hostDirectives` are exposed,
-while a template match represents the full directive with its complete public API.
+Ментальная модель: совпадение host-директивы представляет `Partial<YourDirective>` — частичное
+применение, где открыты только inputs и outputs, явно перечисленные в `hostDirectives`,
+тогда как совпадение по шаблону представляет полную директиву с полным публичным API.
 
 ```ts
 @Directive({selector: '[hoverable]'})
@@ -224,14 +224,14 @@ export class Button {}
 <app-button hoverable></app-button>
 ```
 
-#### Multiple host directive matches are merged
+#### Несколько совпадений host-директив объединяются {#multiple-host-directive-matches-are-merged}
 
-If the same directive appears **more than once as a host directive** , for example, when two
-directives both declare a common dependency in their `hostDirectives` , Angular merges all
-instances into a single directive instance. The input and output mappings from all instances are
-combined.
+Если одна и та же директива появляется **более одного раза как host-директива** — например, когда две
+директивы объявляют общую зависимость в своих `hostDirectives` — Angular объединяет все
+экземпляры в один экземпляр директивы. Отображения inputs и outputs из всех экземпляров
+комбинируются.
 
-This resolves the classic [diamond problem](https://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem) in host directive composition:
+Это решает классическую [проблему ромба](https://en.wikipedia.org/wiki/Multiple_inheritance#The_diamond_problem) в композиции host-директив:
 
 ```ts
 // A shared behavior that both triggers need
@@ -267,14 +267,14 @@ export class DropdownTrigger {
 <button popoverTrigger dropdownTrigger>Actions</button>
 ```
 
-HELPFUL: Because Angular produces only one instance of the shared directive, both `PopoverTrigger`
-and `DropdownTrigger` receive the same `TriggerRef` instance when they inject it.
+HELPFUL: Поскольку Angular создаёт только один экземпляр общей директивы, и `PopoverTrigger`,
+и `DropdownTrigger` получают один и тот же экземпляр `TriggerRef` при внедрении.
 
-#### Conflicting aliases
+#### Конфликтующие алиасы {#conflicting-aliases}
 
-When Angular merges duplicate host directive matches it also merges their input and output mappings.
-If two instances of the same host directive expose the **same input or output under different
-aliases**, Angular throws an error at compile time ([NG8024](errors/NG8024))
+Когда Angular объединяет дублирующиеся совпадения host-директив, он также объединяет их отображения inputs и outputs.
+Если два экземпляра одной host-директивы открывают **один и тот же input или output под разными
+алиасами**, Angular выбрасывает ошибку на этапе компиляции ([NG8024](errors/NG8024))
 
 ```ts
 @Directive({
@@ -297,5 +297,5 @@ export class DropdownTrigger {}
 <button popoverTrigger dropdownTrigger></button>
 ```
 
-To resolve this, ensure that both paths expose the shared input or output under the same alias, or
-do not expose it at all.
+Чтобы разрешить это, убедитесь, что оба пути открывают общий input или output под одним алиасом, либо
+не открывайте его вовсе.

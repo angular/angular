@@ -1,12 +1,12 @@
-# Field metadata
+# Метаданные поля
 
-Field metadata is reactive data you can attach to an individual field. Angular's built-in constraint validators like `required()` and `min()` use this system internally. In other words, every time you call a validator, you're contributing to a metadata key for that particular field.
+Метаданные поля — реактивные данные, которые можно прикрепить к отдельному полю. Встроенные constraint-валидаторы Angular вроде `required()` и `min()` используют эту систему внутри. Другими словами, каждый вызов валидатора вносит вклад в ключ метаданных для конкретного поля.
 
-This guide covers the metadata system in depth: how reducers combine contributions from multiple schema rules, how to write custom reducers, how reading composes with `hasMetadata()`, and how managed metadata ties lifecycle-aware objects to individual fields.
+Это руководство подробно рассматривает систему метаданных: как reducers объединяют вклады от нескольких правил схемы, как писать пользовательские reducers, как чтение сочетается с `hasMetadata()`, и как managed metadata привязывает объекты с жизненным циклом к отдельным полям.
 
-## You have already been using metadata
+## Вы уже использовали метаданные {#you-have-already-been-using-metadata}
 
-When you call `required()` in a schema and read `.required()` on the resulting field in a template, you are using the metadata system. `state.required` is not a special-case property. It is a convenience getter that returns the current value of a built-in `REQUIRED` metadata key.
+Когда вы вызываете `required()` в схеме и читаете `.required()` у получившегося поля в шаблоне, вы используете систему метаданных. `state.required` — не особое свойство. Это удобный getter, возвращающий текущее значение встроенного ключа метаданных `REQUIRED`.
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -36,38 +36,38 @@ export class Registration {
 }
 ```
 
-Calling `required(path.username)` contributes a value to the `REQUIRED` metadata key on that field. Reading `registrationForm.username().required()` returns the accumulated value. The metadata key is the bridge connecting the two.
+Вызов `required(path.username)` вносит значение в ключ метаданных `REQUIRED` на этом поле. Чтение `registrationForm.username().required()` возвращает накопленное значение. Ключ метаданных — мост, связывающий эти два действия.
 
-Several built-in constraint validators follow this pattern:
+Несколько встроенных constraint-валидаторов следуют этому паттерну:
 
-| Validator     | Metadata key               | Type                  | `FieldState` getter |
+| Валидатор     | Ключ метаданных               | Тип                  | Getter `FieldState` |
 | ------------- | -------------------------- | --------------------- | ------------------- |
 | `required()`  | `REQUIRED`                 | `boolean`             | `required`          |
-| `min()`       | `MIN` selects `MIN_NUMBER` | `number \| undefined` | `min`               |
-| `max()`       | `MAX` selects `MAX_NUMBER` | `number \| undefined` | `max`               |
-| `minDate()`   | `MIN` selects `MIN_DATE`   | `Date \| undefined`   | `min`               |
-| `maxDate()`   | `MAX` selects `MAX_DATE`   | `Date \| undefined`   | `max`               |
+| `min()`       | `MIN` выбирает `MIN_NUMBER` | `number \| undefined` | `min`               |
+| `max()`       | `MAX` выбирает `MAX_NUMBER` | `number \| undefined` | `max`               |
+| `minDate()`   | `MIN` выбирает `MIN_DATE`   | `Date \| undefined`   | `min`               |
+| `maxDate()`   | `MAX` выбирает `MAX_DATE`   | `Date \| undefined`   | `max`               |
 | `minLength()` | `MIN_LENGTH`               | `number \| undefined` | `minLength`         |
 | `maxLength()` | `MAX_LENGTH`               | `number \| undefined` | `maxLength`         |
 | `pattern()`   | `PATTERN`                  | `RegExp[]`            | `pattern`           |
 
-Non-constraint validators like `email()` and `validate()` do not contribute to metadata. They run their check and surface a validation error, but they do not publish a reactive value for templates to read.
+Валидаторы без ограничений вроде `email()` и `validate()` не вносят вклад в метаданные. Они выполняют проверку и показывают ошибку валидации, но не публикуют реактивное значение для чтения в шаблонах.
 
-## When to use custom metadata
+## Когда использовать пользовательские метаданные {#when-to-use-custom-metadata}
 
-When you need reactive data attached to a specific field that built-in state signals like `valid()`, `disabled()`, and `touched()` do not cover, use **custom metadata**.
+Когда нужны реактивные данные, привязанные к конкретному полю, которые не покрывают встроенные сигналы состояния вроде `valid()`, `disabled()` и `touched()`, используйте **пользовательские метаданные**.
 
-Some examples might include:
+Примеры:
 
-- **Configuration attached to reusable field schemas.** A currency symbol on a price field, so any template or custom control rendering the field can display it. Or `MIN_DATE` and `MAX_DATE` on a date field, read by a reusable range picker.
-- **Parsed values shared between rules on one field.** A phone number parsed once into E.164 format, so a format validator and a uniqueness check both read the same canonical form without reparsing.
-- **Display hints assembled from the field's state.** A severity level (`'info' | 'warning' | 'error'`) that the UI maps to badges and icons, or a context-aware help message that changes based on what the user has typed and which other fields are filled in.
+- **Конфигурация, привязанная к переиспользуемым схемам полей.** Символ валюты на поле цены, чтобы любой шаблон или пользовательский контрол, отображающий поле, мог его показать. Или `MIN_DATE` и `MAX_DATE` на поле даты, читаемые переиспользуемым range picker.
+- **Разобранные значения, общие для правил одного поля.** Номер телефона, один раз разобранный в формат E.164, чтобы валидатор формата и проверка уникальности читали одну каноническую форму без повторного разбора.
+- **Подсказки отображения, собранные из состояния поля.** Уровень серьёзности (`'info' | 'warning' | 'error'`), который UI сопоставляет со значками и иконками, или контекстное сообщение помощи, меняющееся в зависимости от того, что ввёл пользователь и какие другие поля заполнены.
 
-If you find yourself keeping a parallel `Map<fieldKey, value>` alongside your form to track something per field, that is a sign metadata is the right tool. Metadata stays colocated with the schema, stays reactive, and participates in the field's lifecycle.
+Если вы держите параллельный `Map<fieldKey, value>` рядом с формой, чтобы отслеживать что-то по полям, это признак, что метаданные — правильный инструмент. Метаданные остаются рядом со схемой, остаются реактивными и участвуют в жизненном цикле поля.
 
-## Creating a metadata key
+## Создание ключа метаданных {#creating-a-metadata-key}
 
-When you want to create a custom key, call `createMetadataKey<TWrite>()`. The type parameter describes the value your schema rules will contribute.
+Чтобы создать пользовательский ключ, вызовите `createMetadataKey<TWrite>()`. Параметр типа описывает значение, которое будут вносить правила схемы.
 
 ```ts
 import {createMetadataKey} from '@angular/forms/signals';
@@ -75,13 +75,13 @@ import {createMetadataKey} from '@angular/forms/signals';
 export const USERNAME_HELP = createMetadataKey<string>();
 ```
 
-Every `createMetadataKey()` call creates a new unique key. Two calls with matching type parameters are still two distinct keys, so define each key once at module scope and import it wherever it's needed.
+Каждый вызов `createMetadataKey()` создаёт новый уникальный ключ. Два вызова с совпадающими параметрами типа — всё равно два разных ключа, поэтому определяйте каждый ключ один раз на уровне модуля и импортируйте его там, где нужно.
 
-NOTE: A key created without a reducer uses "override" semantics by default: the last contribution wins if multiple rules set the key.
+NOTE: Ключ, созданный без reducer, по умолчанию использует семантику "override": при нескольких правилах, задающих ключ, побеждает последний вклад.
 
-## Setting values from a schema
+## Задание значений из схемы {#setting-values-from-a-schema}
 
-When you need to register a value for the key on a specific field, use `metadata(path, key, logic)` inside a schema function.
+Чтобы зарегистрировать значение ключа на конкретном поле, используйте `metadata(path, key, logic)` внутри функции схемы.
 
 ```angular-ts
 import {Component, computed, signal} from '@angular/core';
@@ -124,19 +124,19 @@ export class Registration {
 }
 ```
 
-The logic function receives the field's context, which exposes `value` as a signal of the field's current value, `state` as the field's `FieldState`, and methods like `valueOf(path)` and `stateOf(path)` for reading other fields in the same form. Any signal the function reads becomes a reactive dependency: when `value()` changes, the metadata recomputes, and any template reading the key updates.
+Функция логики получает контекст поля, который предоставляет `value` как сигнал текущего значения поля, `state` как `FieldState` поля и методы вроде `valueOf(path)` и `stateOf(path)` для чтения других полей той же формы. Любой сигнал, который читает функция, становится реактивной зависимостью: когда меняется `value()`, метаданные пересчитываются, и любой шаблон, читающий ключ, обновляется.
 
-## Reading metadata from a field
+## Чтение метаданных из поля {#reading-metadata-from-a-field}
 
-`hasMetadata(key)` returns `true` if any schema rule registered the key on this field. `state.metadata(key)` returns `undefined` when no rule has registered the key, and a signal of the current reduced value otherwise.
+`hasMetadata(key)` возвращает `true`, если какое-либо правило схемы зарегистрировало ключ на этом поле. `state.metadata(key)` возвращает `undefined`, если ни одно правило не зарегистрировало ключ, и сигнал текущего приведённого значения в противном случае.
 
 ```ts
 registrationForm.username().hasMetadata(USERNAME_HELP); // true if any metadata() rule registered this key
 ```
 
-The shape of that inner value (whether it can itself be `undefined`, what type it holds) depends on the key's reducer. Reducers are covered in the next section.
+Форма внутреннего значения (может ли оно само быть `undefined`, какой тип хранит) зависит от reducer ключа. Reducers рассматриваются в следующем разделе.
 
-When the key may not be registered, gate the read with `hasMetadata()`:
+Когда ключ может быть не зарегистрирован, ограничивайте чтение через `hasMetadata()`:
 
 ```angular-html
 @if (registrationForm.username().hasMetadata(USERNAME_HELP)) {
@@ -144,27 +144,27 @@ When the key may not be registered, gate the read with `hasMetadata()`:
 }
 ```
 
-When you know a rule always registers the key (because the schema in the same file does so), you can skip the `hasMetadata()` check and use optional chaining as a compact alternative:
+Когда известно, что правило всегда регистрирует ключ (потому что схема в том же файле это делает), проверку `hasMetadata()` можно пропустить и использовать optional chaining как компактную альтернативу:
 
 ```ts
 const message = registrationForm.username().metadata(USERNAME_HELP)?.();
 // message: string | undefined
 ```
 
-Or, when the rule is guaranteed to have registered, drop the optional chain and assert:
+Или, когда регистрация правила гарантирована, уберите optional chain и используйте assertion:
 
 ```ts
 const message = registrationForm.username().metadata(USERNAME_HELP)!();
 // message: string | undefined (still, because the inner value may be undefined)
 ```
 
-The component example above uses optional chaining inside a `computed()` so the template binds to a plain `string`, with an empty fallback for the initial frame.
+Пример компонента выше использует optional chaining внутри `computed()`, чтобы шаблон привязывался к обычному `string` с пустым запасным значением для начального кадра.
 
-This is the whole API for a single contributor. The next section covers what happens when more than one schema rule contributes to the same key, and how to combine those contributions with reducers.
+Это весь API для одного вкладчика. Следующий раздел описывает, что происходит, когда несколько правил схемы вносят вклад в один ключ, и как объединять эти вклады с помощью reducers.
 
-## Combining contributions with reducers
+## Объединение вкладов с помощью reducers {#combining-contributions-with-reducers}
 
-Override semantics work when only one rule contributes to a key on a given field. As soon as two rules contribute, the first value is silently discarded:
+Семантика override работает, когда только одно правило вносит вклад в ключ на данном поле. Как только вносят вклад два правила, первое значение молча отбрасывается:
 
 ```ts
 const HELP = createMetadataKey<string>();
@@ -175,9 +175,9 @@ form(model, (path) => {
 });
 ```
 
-After both rules run, `state.metadata(HELP)!()` returns only the second message. This is almost never what you want. Contributions often come from different sources: two schemas composed with `apply()` that each attach help text, or multiple validation rules that each contribute a hint.
+После выполнения обоих правил `state.metadata(HELP)!()` возвращает только второе сообщение. Это почти никогда не то, что нужно. Вклады часто приходят из разных источников: две схемы, соединённые через `apply()`, каждая из которых добавляет текст помощи, или несколько правил валидации, каждое из которых вносит подсказку.
 
-To combine contributions, pass a reducer to `createMetadataKey()`. A reducer describes how to fold individual values into an accumulated result:
+Чтобы объединять вклады, передайте reducer в `createMetadataKey()`. Reducer описывает, как свернуть отдельные значения в накопленный результат:
 
 ```ts
 import {createMetadataKey, MetadataReducer} from '@angular/forms/signals';
@@ -195,48 +195,48 @@ form(model, (path) => {
 // ]
 ```
 
-Notice the two type parameters on `createMetadataKey<TWrite, TAcc>`: the first is the type each rule contributes, the second is the type the reducer produces. With `list()`, rules contribute a `string` and the field reads back a `string[]`.
+Обратите внимание на два параметра типа у `createMetadataKey<TWrite, TAcc>`: первый — тип, который вносит каждое правило, второй — тип, который производит reducer. С `list()` правила вносят `string`, а поле читает обратно `string[]`.
 
-### Built-in reducers
+### Встроенные reducers {#built-in-reducers}
 
-Angular provides six built-in reducers on the [`MetadataReducer`](api/forms/signals/MetadataReducer) namespace. `override()` has two forms with slightly different semantics, listed separately in the table:
+Angular предоставляет шесть встроенных reducers в пространстве имён [`MetadataReducer`](api/forms/signals/MetadataReducer). У `override()` две формы с немного разной семантикой, перечисленные отдельно в таблице:
 
-| Reducer        | Accumulator type      | What it does                                                           | Initial value |
+| Reducer        | Тип аккумулятора      | Что делает                                                           | Начальное значение |
 | -------------- | --------------------- | ---------------------------------------------------------------------- | ------------- |
-| `list<T>()`    | `T[]`                 | Accepts `T \| undefined` contributions; appends non-`undefined` values | `[]`          |
-| `or()`         | `boolean`             | `true` if any contribution is `true`                                   | `false`       |
-| `and()`        | `boolean`             | `true` only if every contribution is `true`                            | `true`        |
-| `min()`        | `number \| undefined` | Keeps the smallest contributed number                                  | `undefined`   |
-| `max()`        | `number \| undefined` | Keeps the largest contributed number                                   | `undefined`   |
-| `override()`   | `T \| undefined`      | Last contribution replaces previous (the default)                      | `undefined`   |
-| `override(fn)` | `T`                   | Same, but with a provided initial value                                | `fn()`        |
+| `list<T>()`    | `T[]`                 | Принимает вклады `T \| undefined`; добавляет значения, не равные `undefined` | `[]`          |
+| `or()`         | `boolean`             | `true`, если любой вклад — `true`                                   | `false`       |
+| `and()`        | `boolean`             | `true` только если каждый вклад — `true`                            | `true`        |
+| `min()`        | `number \| undefined` | Сохраняет наименьшее внесённое число                                  | `undefined`   |
+| `max()`        | `number \| undefined` | Сохраняет наибольшее внесённое число                                   | `undefined`   |
+| `override()`   | `T \| undefined`      | Последний вклад заменяет предыдущий (по умолчанию)                      | `undefined`   |
+| `override(fn)` | `T`                   | То же, но с заданным начальным значением                                | `fn()`        |
 
-`list()` is the only built-in reducer whose item type is wider than its accumulator's element type. A rule may contribute `undefined` and the reducer will silently drop it. This is how the built-in `PATTERN` key handles dynamic `pattern()` rules whose logic function returns `undefined`: the `undefined` contribution is skipped rather than included in the final regex list.
+`list()` — единственный встроенный reducer, у которого тип элемента шире типа элемента аккумулятора. Правило может внести `undefined`, и reducer молча отбросит его. Так встроенный ключ `PATTERN` обрабатывает динамические правила `pattern()`, чья функция логики возвращает `undefined`: вклад `undefined` пропускается, а не включается в итоговый список regex.
 
-### How built-in validator keys use reducers
+### Как встроенные ключи валидаторов используют reducers {#how-built-in-validator-keys-use-reducers}
 
-While `MetadataReducer.min()` and `MetadataReducer.max()` are reducers, you may be surprised to learn that they are not validators. `MetadataReducer.min()` picks the smallest contribution to a key, while the `min()` validator enforces a lower bound on a field's value. They share a name but solve different problems.
+Хотя `MetadataReducer.min()` и `MetadataReducer.max()` — reducers, может удивить, что они не валидаторы. `MetadataReducer.min()` выбирает наименьший вклад в ключ, а валидатор `min()` накладывает нижнюю границу на значение поля. Они разделяют имя, но решают разные задачи.
 
-The built-in constraint keys pick their reducers based on what "strictest" means for the constraint, which is often the opposite of what the key's name suggests:
+Встроенные ключи ограничений выбирают reducers исходя из того, что значит «самый строгий» для ограничения, что часто противоположно тому, что предполагает имя ключа:
 
-| Key          | Reducer          | Reasoning                                                                                                                              |
+| Ключ          | Reducer          | Обоснование                                                                                                                              |
 | ------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `REQUIRED`   | `or()`           | If any `required()` rule evaluates to `true`, the field is required.                                                                   |
-| `MIN_NUMBER` | `max()`          | A minimum-number constraint is strictest when largest. If one rule requires `>= 5` and another `>= 10`, the effective minimum is `10`. |
-| `MIN_DATE`   | `max()`          | Same logic as `MIN_NUMBER`: the latest required date wins.                                                                             |
-| `MAX_NUMBER` | `min()`          | A maximum-number constraint is strictest when smallest. If one rule caps at `100` and another at `50`, the effective maximum is `50`.  |
-| `MAX_DATE`   | `min()`          | Same logic as `MAX_NUMBER`: the earliest allowed date wins.                                                                            |
-| `MIN_LENGTH` | `max()`          | Same logic as `MIN_NUMBER`: the longest required length wins.                                                                          |
-| `MAX_LENGTH` | `min()`          | Same logic as `MAX_NUMBER`: the shortest allowed length wins.                                                                          |
-| `PATTERN`    | `list<RegExp>()` | Each `pattern()` call contributes a regex; the value must match all of them.                                                           |
+| `REQUIRED`   | `or()`           | Если любое правило `required()` вычисляется в `true`, поле обязательно.                                                                   |
+| `MIN_NUMBER` | `max()`          | Ограничение минимума числа самое строгое, когда наибольшее. Если одно правило требует `>= 5`, а другое `>= 10`, эффективный минимум — `10`. |
+| `MIN_DATE`   | `max()`          | Та же логика, что у `MIN_NUMBER`: побеждает самая поздняя требуемая дата.                                                                             |
+| `MAX_NUMBER` | `min()`          | Ограничение максимума числа самое строгое, когда наименьшее. Если одно правило ограничивает `100`, а другое `50`, эффективный максимум — `50`.  |
+| `MAX_DATE`   | `min()`          | Та же логика, что у `MAX_NUMBER`: побеждает самая ранняя допустимая дата.                                                                            |
+| `MIN_LENGTH` | `max()`          | Та же логика, что у `MIN_NUMBER`: побеждает наибольшая требуемая длина.                                                                          |
+| `MAX_LENGTH` | `min()`          | Та же логика, что у `MAX_NUMBER`: побеждает наименьшая допустимая длина.                                                                          |
+| `PATTERN`    | `list<RegExp>()` | Каждый вызов `pattern()` вносит regex; значение должно совпадать со всеми.                                                           |
 
-`MIN` and `MAX` are selection keys. They point to the concrete key that matches the field's value type, such as `MIN_NUMBER` for `min()` and `MIN_DATE` for `minDate()`. This is why `field().min()` and `field().max()` work for both numeric and date fields.
+`MIN` и `MAX` — ключи выбора. Они указывают на конкретный ключ, соответствующий типу значения поля, например `MIN_NUMBER` для `min()` и `MIN_DATE` для `minDate()`. Поэтому `field().min()` и `field().max()` работают и для числовых, и для date-полей.
 
-This pairing of "strictest wins" is why calling `min(path.age, 18)` and `min(path.age, 21)` in two composed schemas works correctly. Each call registers its own validator that enforces its specific bound (so a value below either bound fails validation). Separately, each call contributes to the `MIN_NUMBER` key, and `state.min!()` reports the aggregate (`21`) so UI and custom controls can read the effective minimum.
+Такое сочетание «побеждает самый строгий» — причина, почему вызовы `min(path.age, 18)` и `min(path.age, 21)` в двух соединённых схемах работают корректно. Каждый вызов регистрирует свой валидатор, проверяющий свою конкретную границу (поэтому значение ниже любой из границ не проходит валидацию). Отдельно каждый вызов вносит вклад в ключ `MIN_NUMBER`, и `state.min!()` сообщает агрегат (`21`), чтобы UI и пользовательские контролы могли прочитать эффективный минимум.
 
-### Writing a custom reducer
+### Написание пользовательского reducer {#writing-a-custom-reducer}
 
-When you want to write your own reducer, implement an object matching the `MetadataReducer<TAcc, TItem>` interface:
+Чтобы написать собственный reducer, реализуйте объект, соответствующий интерфейсу `MetadataReducer<TAcc, TItem>`:
 
 ```ts
 interface MetadataReducer<TAcc, TItem> {
@@ -245,7 +245,7 @@ interface MetadataReducer<TAcc, TItem> {
 }
 ```
 
-You can define a custom reducer when none of the built-ins match the semantics you need. For example, a `SEVERITY` key that keeps the most severe level contributed by any rule:
+Пользовательский reducer можно определить, когда ни один из встроенных не соответствует нужной семантике. Например, ключ `SEVERITY`, сохраняющий самый серьёзный уровень, внесённый любым правилом:
 
 ```ts
 import {createMetadataKey, type MetadataReducer} from '@angular/forms/signals';
@@ -265,7 +265,7 @@ const maxSeverity: MetadataReducer<Severity | undefined, Severity> = {
 export const SEVERITY = createMetadataKey<Severity, Severity | undefined>(maxSeverity);
 ```
 
-Any number of rules can now contribute a severity, and the field reports the highest:
+Любое число правил теперь может вносить severity, и поле сообщает наивысший:
 
 ```ts
 form(model, (path) => {
@@ -277,17 +277,17 @@ form(model, (path) => {
 });
 ```
 
-The reducer runs whenever any contribution's signals change, so `state.metadata(SEVERITY)!()` stays in sync with the current worst case across all rules.
+Reducer запускается при изменении сигналов любого вклада, поэтому `state.metadata(SEVERITY)!()` остаётся синхронизированным с текущим худшим случаем по всем правилам.
 
-TIP: Keep your reducers pure: `reduce()` should depend only on its two arguments, and `getInitial()` should return the same value every time it is called. Reducers run inside a reactive computation that re-executes when any contribution's signals change, so impure reducers produce inconsistent metadata.
+TIP: Держите reducers чистыми: `reduce()` должен зависеть только от двух аргументов, а `getInitial()` должен возвращать одно и то же значение при каждом вызове. Reducers выполняются внутри реактивного вычисления, которое перезапускается при изменении сигналов любого вклада, поэтому нечистые reducers дают несогласованные метаданные.
 
-## Attaching lifecycle-aware objects with managed metadata
+## Прикрепление объектов с жизненным циклом через managed metadata {#attaching-lifecycle-aware-objects-with-managed-metadata}
 
-Managed metadata stores a lifecycle-aware object on a field instead of a reactive value. Use it for per-field objects like a `resource()` that fetches external data, an `effect()` that syncs to an outside system, or a service handle scoped to a single field.
+Managed metadata хранит на поле объект с жизненным циклом вместо реактивного значения. Используйте его для объектов на уровне поля: `resource()`, загружающий внешние данные, `effect()`, синхронизирующий с внешней системой, или handle сервиса, ограниченный одним полем.
 
-### Creating a managed key
+### Создание managed-ключа {#creating-a-managed-key}
 
-When you want to define a managed key, call `createManagedMetadataKey<TRead, TWrite>(create)`. The `create` function you pass produces the value the key holds.
+Чтобы определить managed-ключ, вызовите `createManagedMetadataKey<TRead, TWrite>(create)`. Передаваемая функция `create` производит значение, которое хранит ключ.
 
 ```ts
 import {Signal} from '@angular/core';
@@ -308,15 +308,15 @@ export const URL_PREVIEW = createManagedMetadataKey((_state, url: Signal<string 
 });
 ```
 
-The `create` function receives the field's `FieldState` and a `Signal<TAcc>` of data contributed by `metadata()` rules for this key, and returns whatever object should live on the field. The return value is stored as-is: unlike non-managed keys, the framework does not wrap it in a `computed()`.
+Функция `create` получает `FieldState` поля и `Signal<TAcc>` данных, внесённых правилами `metadata()` для этого ключа, и возвращает объект, который должен жить на поле. Возвращаемое значение хранится как есть: в отличие от не-managed ключей, фреймворк не оборачивает его в `computed()`.
 
-`create` runs once when a field is constructed, inside the field's injection context. That lets you call `inject()`, `resource()`, and `effect()` inside `create`, and ties cleanup to the field's lifecycle: when the field is destroyed, Angular destroys the injection context, and any `resource()`, `effect()`, or `DestroyRef` callback you registered there cleans up automatically.
+`create` выполняется один раз при создании поля, внутри injection context поля. Это позволяет вызывать `inject()`, `resource()` и `effect()` внутри `create` и привязывает очистку к жизненному циклу поля: когда поле уничтожается, Angular уничтожает injection context, и любой `resource()`, `effect()` или callback `DestroyRef`, зарегистрированный там, очищается автоматически.
 
-Because `create` itself is not reactive, any behavior that needs to respond to signal changes has to live inside an `effect()`, `resource()`, or `httpResource()` set up during that initial call. `URL_PREVIEW` demonstrates the pattern: the `httpResource()` reads the URL signal inside its request function, so the request re-runs whenever the signal changes. The schema rule (`metadata(path.url, URL_PREVIEW, ({value}) => value())`) decides what data to feed in; the managed key decides what to do with it.
+Поскольку сама `create` не реактивна, любое поведение, которое должно реагировать на изменения сигналов, должно жить внутри `effect()`, `resource()` или `httpResource()`, настроенных при этом начальном вызове. `URL_PREVIEW` демонстрирует паттерн: `httpResource()` читает сигнал URL внутри функции запроса, поэтому запрос перезапускается при изменении сигнала. Правило схемы (`metadata(path.url, URL_PREVIEW, ({value}) => value())`) решает, какие данные подавать; managed-ключ решает, что с ними делать.
 
-### Using a managed key in a form
+### Использование managed-ключа в форме {#using-a-managed-key-in-a-form}
 
-When you need to use a managed key in a form, register a `metadata()` rule for the key, and then read the returned object from the field state.
+Чтобы использовать managed-ключ в форме, зарегистрируйте правило `metadata()` для ключа, а затем читайте возвращённый объект из состояния поля.
 
 ```angular-ts
 import {Component, computed, signal} from '@angular/core';
@@ -372,20 +372,20 @@ export class LinkEditor {
 }
 ```
 
-Each array item gets its own `URL_PREVIEW` resource because `applyEach` registers the schema rules against each item independently. When the user adds a link, `create` runs for the new item's field. When a link is removed (not shown here, but a common pattern), the framework tears down that field's injector along with the resource.
+Каждый элемент массива получает свой resource `URL_PREVIEW`, потому что `applyEach` регистрирует правила схемы для каждого элемента независимо. Когда пользователь добавляет ссылку, `create` выполняется для поля нового элемента. Когда ссылка удаляется (здесь не показано, но распространённый паттерн), фреймворк уничтожает injector этого поля вместе с resource.
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-Remember that metadata exists so reactive data can travel with the field through schema composition, accumulate across rules, and tear down with the field's lifecycle. It leverages the same system Angular's built-in validators use, and can be tailored to your own use cases.
+Помните: метаданные существуют, чтобы реактивные данные могли путешествовать с полем через композицию схем, накапливаться по правилам и уничтожаться вместе с жизненным циклом поля. Они используют ту же систему, что и встроенные валидаторы Angular, и могут быть адаптированы под ваши сценарии.
 
-For detailed API documentation, see:
+Подробную документацию API см. в:
 
-- [`createMetadataKey()`](api/forms/signals/createMetadataKey) - Define a metadata key with optional reducer
-- [`createManagedMetadataKey()`](api/forms/signals/createManagedMetadataKey) - Define a lifecycle-aware metadata key
-- [`metadata()`](api/forms/signals/metadata) - Contribute a value to a metadata key in a schema
-- [`MetadataReducer`](api/forms/signals/MetadataReducer) - Built-in reducers for combining contributions
+- [`createMetadataKey()`](api/forms/signals/createMetadataKey) — определить ключ метаданных с опциональным reducer
+- [`createManagedMetadataKey()`](api/forms/signals/createManagedMetadataKey) — определить ключ метаданных с жизненным циклом
+- [`metadata()`](api/forms/signals/metadata) — внести значение в ключ метаданных в схеме
+- [`MetadataReducer`](api/forms/signals/MetadataReducer) — встроенные reducers для объединения вкладов
 
-For additional related guides on Signal Forms, check out:
+Дополнительные связанные руководства по Signal Forms:
 
 <docs-pill-row>
   <docs-pill href="guide/forms/signals/form-logic" title="Adding form logic" />

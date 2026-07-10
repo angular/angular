@@ -1,9 +1,8 @@
-# Content projection with ng-content
+# Content projection с ng-content
 
-TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: Это руководство предполагает, что вы уже прочитали [Essentials Guide](essentials). Прочитайте его сначала, если вы новичок в Angular.
 
-You often need to create components that act as containers for different types of content. For
-example, you may want to create a custom card component:
+Часто нужно создавать компоненты, которые выступают контейнерами для разного типа контента. Например, вы можете захотеть создать пользовательский card-компонент:
 
 ```angular-ts
 @Component({
@@ -15,7 +14,7 @@ export class CustomCard {
 }
 ```
 
-**You can use the `<ng-content>` element as a placeholder to mark where content should go**:
+**Можно использовать элемент `<ng-content>` как placeholder, чтобы отметить, куда должен попасть контент**:
 
 ```angular-ts
 @Component({
@@ -27,12 +26,12 @@ export class CustomCard {
 }
 ```
 
-TIP: `<ng-content>` works similarly
-to [the native `<slot>` element](https://developer.mozilla.org/docs/Web/HTML/Element/slot),
-but with some Angular-specific functionality.
+TIP: `<ng-content>` работает похоже
+на [нативный элемент `<slot>`](https://developer.mozilla.org/docs/Web/HTML/Element/slot),
+но с некоторой Angular-специфичной функциональностью.
 
-When you use a component with `<ng-content>`, any children of the component host element are
-rendered, or **projected**, at the location of that `<ng-content>`:
+Когда вы используете компонент с `<ng-content>`, любые дочерние элементы host-элемента компонента
+отрисовываются, или **проецируются**, в месте этого `<ng-content>`:
 
 ```angular-ts
 // Component source
@@ -65,25 +64,25 @@ export class CustomCard {
 </custom-card>
 ```
 
-Angular refers to any children of a component passed this way as that component's **content**. This
-is distinct from the component's **view**, which refers to the elements defined in the component's
-template.
+Angular называет любых дочерних элементов компонента, переданных таким образом, **content** этого компонента. Это
+отличается от **view** компонента, который относится к элементам, определённым в шаблоне
+компонента.
 
-**The `<ng-content>` element is neither a component nor DOM element**. Instead, it is a special
-placeholder that tells Angular where to render content. Angular's compiler processes
-all `<ng-content>` elements at build-time. You cannot insert, remove, or modify `<ng-content>` at
-run time. You cannot add directives, styles, or arbitrary attributes to `<ng-content>`.
+**Элемент `<ng-content>` — ни компонент, ни DOM-элемент**. Вместо этого это специальный
+placeholder, который сообщает Angular, где отрисовывать контент. Компилятор Angular обрабатывает
+все элементы `<ng-content>` на этапе сборки. Нельзя вставлять, удалять или изменять `<ng-content>` во
+время выполнения. Нельзя добавлять директивы, стили или произвольные атрибуты к `<ng-content>`.
 
-IMPORTANT: You should not conditionally include `<ng-content>` with `@if`, `@for`, or `@switch`. Angular always
-instantiates and creates DOM nodes for content rendered to a `<ng-content>` placeholder, even if
-that `<ng-content>` placeholder is hidden. For conditional rendering of component content,
-see [Template fragments](api/core/ng-template).
+IMPORTANT: Не следует условно включать `<ng-content>` с `@if`, `@for` или `@switch`. Angular всегда
+создаёт экземпляры и DOM-узлы для контента, отрисованного в placeholder `<ng-content>`, даже если
+этот placeholder `<ng-content>` скрыт. Для условной отрисовки контента компонента
+см. [Template fragments](api/core/ng-template).
 
-## Multiple content placeholders
+## Несколько placeholder контента {#multiple-content-placeholders}
 
-Angular supports projecting multiple different elements into different `<ng-content>` placeholders
-based on CSS selector. Expanding the card example from above, you could create two placeholders for
-a card title and a card body by using the `select` attribute:
+Angular поддерживает проецирование нескольких разных элементов в разные placeholder `<ng-content>`
+на основе CSS-селектора. Расширяя пример card выше, можно создать два placeholder для
+заголовка card и тела card, используя атрибут `select`:
 
 ```angular-ts
 @Component({
@@ -140,12 +139,12 @@ export class App {}
 </custom-card>
 ```
 
-The `<ng-content>` placeholder supports the same CSS selectors
-as [component selectors](guide/components/selectors).
+Placeholder `<ng-content>` поддерживает те же CSS-селекторы,
+что и [селекторы компонентов](guide/components/selectors).
 
-If you include one or more `<ng-content>` placeholders with a `select` attribute and
-one `<ng-content>` placeholder without a `select` attribute, the latter captures all elements that
-did not match a `select` attribute:
+Если включить один или несколько placeholder `<ng-content>` с атрибутом `select` и
+один placeholder `<ng-content>` без атрибута `select`, последний захватывает все элементы, которые
+не совпали с атрибутом `select`:
 
 ```angular-html
 <!-- Component template -->
@@ -178,12 +177,12 @@ did not match a `select` attribute:
 </custom-card>
 ```
 
-If a component does not include an `<ng-content>` placeholder without a `select` attribute, any
-elements that don't match one of the component's placeholders do not render into the DOM.
+Если компонент не включает placeholder `<ng-content>` без атрибута `select`, любые
+элементы, которые не совпадают ни с одним из placeholder компонента, не отрисовываются в DOM.
 
-## Fallback content
+## Fallback-контент {#fallback-content}
 
-Angular can show _fallback content_ for a component's `<ng-content>` placeholder if that component doesn't have any matching child content. You can specify fallback content by adding child content to the `<ng-content>` element itself.
+Angular может показывать _fallback-контент_ для placeholder `<ng-content>` компонента, если у этого компонента нет подходящего дочернего контента. Fallback-контент можно указать, добавив дочерний контент в сам элемент `<ng-content>`.
 
 ```angular-html
 <!-- Component template -->
@@ -213,11 +212,11 @@ Angular can show _fallback content_ for a component's `<ng-content>` placeholder
 </custom-card>
 ```
 
-## Aliasing content for projection
+## Алиасинг контента для проекции {#aliasing-content-for-projection}
 
-Angular supports a special attribute, `ngProjectAs`, that allows you to specify a CSS selector on
-any element. Whenever an element with `ngProjectAs` is checked against an `<ng-content>`
-placeholder, Angular compares against the `ngProjectAs` value instead of the element's identity:
+Angular поддерживает специальный атрибут `ngProjectAs`, который позволяет указать CSS-селектор на
+любом элементе. Когда элемент с `ngProjectAs` проверяется против placeholder `<ng-content>`,
+Angular сравнивает со значением `ngProjectAs` вместо идентичности элемента:
 
 ```angular-html
 <!-- Component template -->
@@ -248,15 +247,15 @@ placeholder, Angular compares against the `ngProjectAs` value instead of the ele
 </custom-card>
 ```
 
-`ngProjectAs` supports only static values and cannot be bound to dynamic expressions.
+`ngProjectAs` поддерживает только статические значения и не может быть привязан к динамическим выражениям.
 
-## Caveats
+## Ограничения {#caveats}
 
-### Projected content lives in the parent's view
+### Проецируемый контент живёт во view родителя {#projected-content-lives-in-the-parents-view}
 
-Even though projected content is _rendered_ inside the receiving component, it is still owned by the component that declared it. Angular tracks it as part of the parent's view, which has a couple of side effects worth knowing about.
+Хотя проецируемый контент _отрисовывается_ внутри принимающего компонента, он по-прежнему принадлежит компоненту, который его объявил. Angular отслеживает его как часть view родителя, что имеет несколько побочных эффектов, о которых стоит знать.
 
-**Change detection:** Projected content is checked when the _parent_ runs change detection. If the receiving component uses `OnPush`, Angular can skip checking that component's own template — but it won't skip the projected content, because that belongs to the parent.
+**Change detection:** Проецируемый контент проверяется, когда _родитель_ запускает change detection. Если принимающий компонент использует `OnPush`, Angular может пропустить проверку собственного шаблона этого компонента — но не пропустит проецируемый контент, потому что он принадлежит родителю.
 
 ```angular-html
 <!-- Parent template (default change detection) -->
@@ -266,12 +265,12 @@ Even though projected content is _rendered_ inside the receiving component, it i
 </onpush-wrapper>
 ```
 
-**Dependency injection:** Projected content gets its dependencies from the parent's injector, not from the receiving component's `viewProviders`. See [Providers and viewProviders](guide/di/hierarchical-dependency-injection) for details.
+**Dependency injection:** Проецируемый контент получает зависимости из injector родителя, а не из `viewProviders` принимающего компонента. См. [Providers and viewProviders](guide/di/hierarchical-dependency-injection) для деталей.
 
-### Some library components don't support projected children
+### Некоторые библиотечные компоненты не поддерживают проецируемых детей {#some-library-components-dont-support-projected-children}
 
-Certain components — menus, tabs, lists — use `ContentChildren` to find their children and wire up behavior like keyboard navigation, focus management, or ARIA attributes. They're written assuming they own their children directly, so projecting external content into them tends to break things in subtle ways.
+Определённые компоненты — menus, tabs, lists — используют `ContentChildren`, чтобы находить своих детей и настраивать поведение вроде клавиатурной навигации, управления фокусом или ARIA-атрибутов. Они написаны в предположении, что владеют детьми напрямую, поэтому проецирование внешнего контента в них обычно ломает вещи неочевидным образом.
 
-For example, wrapping `<mat-menu-item>` elements in an extra layer and projecting them into `<mat-menu>` can silently break keyboard navigation and screen reader support. The query still finds the items, but the internal setup that makes them interactive may not work correctly when the items come from a different view context.
+Например, обёртка элементов `<mat-menu-item>` в дополнительный слой и проецирование их в `<mat-menu>` может незаметно сломать клавиатурную навигацию и поддержку screen reader. Query всё ещё находит элементы, но внутренняя настройка, делающая их интерактивными, может работать некорректно, когда элементы приходят из другого view-контекста.
 
-If a library component manages its children's behavior, check its docs before reaching for content projection — it may not be supported.
+Если библиотечный компонент управляет поведением своих детей, проверьте его документацию, прежде чем использовать content projection — это может быть не поддерживается.

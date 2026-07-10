@@ -6,9 +6,9 @@
   <docs-pill href="/api?query=grid#angular_aria_grid" title="Grid API Reference"/>
 </docs-pill-row>
 
-## Overview
+## Обзор {#overview}
 
-A grid enables users to navigate two-dimensional data or interactive elements using directional arrow keys, Home, End, and Page Up/Down. Grids work for data tables, calendars, spreadsheets, and layout patterns that group related interactive elements.
+Grid позволяет пользователям перемещаться по двумерным данным или интерактивным элементам с помощью стрелок, Home, End и Page Up/Down. Grids подходят для таблиц данных, календарей, электронных таблиц и layout-паттернов, группирующих связанные интерактивные элементы.
 
 <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.ts">
   <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.ts"/>
@@ -16,40 +16,40 @@ A grid enables users to navigate two-dimensional data or interactive elements us
   <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.css"/>
 </docs-code-multifile>
 
-## Usage
+## Использование {#usage}
 
-Grids work well for data or interactive elements organized in rows and columns where users need keyboard navigation in multiple directions.
+Grids хорошо подходят для данных или интерактивных элементов, организованных в строки и столбцы, где нужна клавиатурная навигация в нескольких направлениях.
 
-**Use grids when:**
+**Используйте grids, когда:**
 
-- Building interactive data tables with editable or selectable cells
-- Creating calendars or date pickers
-- Implementing spreadsheet-like interfaces
-- Grouping interactive elements (buttons, checkboxes) to reduce tab stops on a page
-- Building interfaces requiring two-dimensional keyboard navigation
+- Строите интерактивные таблицы данных с редактируемыми или выбираемыми ячейками
+- Создаёте календари или date pickers
+- Реализуете интерфейсы в стиле spreadsheet
+- Группируете интерактивные элементы (кнопки, checkboxes), чтобы уменьшить число tab stops на странице
+- Строите интерфейсы, требующие двумерной клавиатурной навигации
 
-**Avoid grids when:**
+**Избегайте grids, когда:**
 
-- Displaying simple read-only tables (use semantic HTML `<table>` instead)
-- Showing single-column lists (use [Listbox](guide/aria/listbox) instead)
-- Displaying hierarchical data (use [Tree](guide/aria/tree) instead)
-- Building forms without tabular layout (use standard form controls)
+- Показываете простые read-only таблицы (вместо этого используйте семантический HTML `<table>`)
+- Показываете одноколоночные списки (вместо этого используйте [Listbox](guide/aria/listbox))
+- Отображаете иерархические данные (вместо этого используйте [Tree](guide/aria/tree))
+- Строите формы без табличного layout (используйте стандартные form controls)
 
-## Features
+## Возможности {#features}
 
-- **Two-dimensional navigation** - Arrow keys move between cells in all directions
-- **Focus modes** - Choose between roving tabindex or activedescendant focus strategies
-- **Selection support** - Optional cell selection with single or multi-select modes
-- **Wrapping behavior** - Configure how navigation wraps at grid edges (continuous, loop, or nowrap)
-- **Range selection** - Select multiple cells with modifier keys or dragging
-- **Disabled states** - Disable the entire grid or individual cells
-- **RTL support** - Automatic right-to-left language navigation
+- **Двумерная навигация** — стрелки перемещают между ячейками во всех направлениях
+- **Режимы фокуса** — выбор между roving tabindex или activedescendant
+- **Поддержка выбора** — опциональный выбор ячеек в режимах single или multi-select
+- **Поведение wrapping** — настройка того, как навигация оборачивается на краях grid (continuous, loop или nowrap)
+- **Выбор диапазона** — выбор нескольких ячеек с modifier-клавишами или перетаскиванием
+- **Состояния disabled** — отключение всего grid или отдельных ячеек
+- **Поддержка RTL** — автоматическая навигация для языков справа налево
 
-## Examples
+## Примеры {#examples}
 
-### Data table grid
+### Grid таблицы данных {#data-table-grid}
 
-Use a grid for interactive tables where users need to navigate between cells using arrow keys. This example shows a basic data table with keyboard navigation.
+Используйте grid для интерактивных таблиц, где пользователям нужно перемещаться между ячейками стрелками. Пример показывает базовую таблицу данных с клавиатурной навигацией.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -68,11 +68,11 @@ Use a grid for interactive tables where users need to navigate between cells usi
   </docs-tab>
 </docs-tab-group>
 
-Apply the `ngGrid` directive to the table element, `ngGridRow` to each row, and `ngGridCell` to each cell.
+Примените директиву `ngGrid` к элементу table, `ngGridRow` к каждой строке и `ngGridCell` к каждой ячейке.
 
-### Calendar grid
+### Grid календаря {#calendar-grid}
 
-Calendars are a common use case for grids. This example shows a month view where users navigate dates using arrow keys.
+Календари — распространённый сценарий для grids. Пример показывает вид месяца, где пользователи перемещаются по датам стрелками.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -98,11 +98,11 @@ Calendars are a common use case for grids. This example shows a month view where
   </docs-tab>
 </docs-tab-group>
 
-Users can activate a date by pressing Enter or Space when focused on a cell.
+Пользователи могут активировать дату, нажав Enter или Space, когда фокус на ячейке.
 
-### Layout grid
+### Layout grid {#layout-grid}
 
-Use a layout grid to group interactive elements and reduce tab stops. This example shows a grid of pill buttons.
+Используйте layout grid, чтобы группировать интерактивные элементы и уменьшить число tab stops. Пример показывает сетку pill-кнопок.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -128,11 +128,11 @@ Use a layout grid to group interactive elements and reduce tab stops. This examp
   </docs-tab>
 </docs-tab-group>
 
-Instead of tabbing through each button, users navigate with arrow keys and only one button receives tab focus.
+Вместо Tab по каждой кнопке пользователи перемещаются стрелками, и только одна кнопка получает tab-фокус.
 
-### Selection and focus modes
+### Режимы выбора и фокуса {#selection-and-focus-modes}
 
-Enable selection with `[enableSelection]="true"` and configure how focus and selection interact.
+Включите выбор через `[enableSelection]="true"` и настройте взаимодействие фокуса и выбора.
 
 ```angular-html
 <table
@@ -149,20 +149,20 @@ Enable selection with `[enableSelection]="true"` and configure how focus and sel
 </table>
 ```
 
-**Selection modes:**
+**Режимы выбора:**
 
-- `follow`: Focused cell is automatically selected
-- `explicit`: Users select cells with Space or click
+- `follow`: ячейка в фокусе выбирается автоматически
+- `explicit`: пользователи выбирают ячейки Space или кликом
 
-**Focus modes:**
+**Режимы фокуса:**
 
-- `roving`: Focus moves to cells using `tabindex` (better for simple grids)
-- `activedescendant`: Focus stays on grid container, `aria-activedescendant` indicates active cell (better for virtual scrolling)
+- `roving`: фокус перемещается к ячейкам через `tabindex` (лучше для простых grids)
+- `activedescendant`: фокус остаётся на контейнере grid, `aria-activedescendant` указывает активную ячейку (лучше для virtual scrolling)
 
-## Testing
+## Тестирование {#testing}
 
-Angular Aria provides component harnesses for testing grid components.
-Here is an example of how to use the harnesses in a component test:
+Angular Aria предоставляет component harnesses для тестирования компонентов grid.
+Пример использования harnesses в тесте компонента:
 
 ```typescript
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -211,9 +211,9 @@ describe('MyGridComponent', () => {
 });
 ```
 
-## API reference
+## API reference {#api-reference}
 
-For detailed API documentation, inspect the following API references:
+Подробную API-документацию смотрите в следующих API reference:
 
 - [`Grid`](/api/aria/grid/Grid)
 - [`GridRow`](/api/aria/grid/GridRow)

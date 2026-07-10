@@ -6,70 +6,9 @@
   <docs-pill href="/api/aria/menu/Menu" title="Menu API Reference"/>
 </docs-pill-row>
 
-## Overview
+## Обзор {#overview}
 
-A menu offers a list of actions or options to users, typically appearing in response to a button click or right-click. Menus support keyboard navigation with arrow keys, submenus, checkboxes, radio buttons, and disabled items.
-
-<docs-tab-group>
-  <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menu/src/menu-trigger/app/app.ts">
-      <docs-code header="app.ts" path="adev/src/content/examples/aria/menu/src/menu-trigger/app/app.ts"/>
-      <docs-code header="app.html" path="adev/src/content/examples/aria/menu/src/menu-trigger/app/app.html"/>
-      <docs-code header="app.css" path="adev/src/content/examples/aria/menu/src/menu-trigger/app/app.css"/>
-    </docs-code-multifile>
-  </docs-tab>
-
-  <docs-tab label="Material">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menu/src/menu-trigger/material/app/app.ts">
-      <docs-code header="app.ts" path="adev/src/content/examples/aria/menu/src/menu-trigger/material/app/app.ts"/>
-      <docs-code header="app.html" path="adev/src/content/examples/aria/menu/src/menu-trigger/material/app/app.html"/>
-      <docs-code header="app.css" path="adev/src/content/examples/aria/menu/src/menu-trigger/material/app/app.css"/>
-    </docs-code-multifile>
-  </docs-tab>
-
-  <docs-tab label="Retro">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menu/src/menu-trigger/retro/app/app.ts">
-      <docs-code header="app.ts" path="adev/src/content/examples/aria/menu/src/menu-trigger/retro/app/app.ts"/>
-      <docs-code header="app.html" path="adev/src/content/examples/aria/menu/src/menu-trigger/retro/app/app.html"/>
-      <docs-code header="app.css" path="adev/src/content/examples/aria/menu/src/menu-trigger/retro/app/app.css"/>
-    </docs-code-multifile>
-  </docs-tab>
-</docs-tab-group>
-
-## Usage
-
-Menus work well for presenting lists of actions or commands that users can choose from.
-
-**Use menus when:**
-
-- Building application command menus (File, Edit, View)
-- Creating context menus (right-click actions)
-- Showing dropdown action lists
-- Implementing toolbar dropdowns
-- Organizing settings or options
-
-**Avoid menus when:**
-
-- Building site navigation (use navigation landmarks instead)
-- Creating form selects (use the [Select](guide/aria/select) component)
-- Switching between content panels (use [Tabs](guide/aria/tabs))
-- Showing collapsible content (use [Accordion](guide/aria/accordion))
-
-## Features
-
-- **Keyboard navigation** - Arrow keys, Home/End, and character search for efficient navigation
-- **Submenus** - Nested menu support with automatic positioning
-- **Menu types** - Standalone menus, triggered menus, and menubars
-- **Checkboxes and radios** - Toggle and selection menu items
-- **Disabled items** - Soft or hard disabled states with focus management
-- **Auto-close behavior** - Configurable close on selection
-- **RTL support** - Right-to-left language navigation
-
-## Examples
-
-### Menu with trigger
-
-Create a dropdown menu by pairing a trigger button with a menu. The trigger opens and closes the menu.
+Menu предлагает пользователям список действий или опций, обычно появляясь в ответ на клик по кнопке или правый клик. Menus поддерживают клавиатурную навигацию стрелками, подменю, checkboxes, radio buttons и отключённые элементы.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -97,22 +36,83 @@ Create a dropdown menu by pairing a trigger button with a menu. The trigger open
   </docs-tab>
 </docs-tab-group>
 
-The menu automatically closes when a user selects an item or presses Escape.
+## Использование {#usage}
 
-### Context menu
+Menus хорошо подходят для представления списков действий или команд, из которых пользователи могут выбирать.
 
-Context menus appear at the cursor position when users right-click an element.
+**Используйте menus, когда:**
+
+- Строите командные меню приложения (File, Edit, View)
+- Создаёте context menus (действия по правому клику)
+- Показываете выпадающие списки действий
+- Реализуете dropdown в toolbar
+- Организуете настройки или опции
+
+**Избегайте menus, когда:**
+
+- Строите навигацию сайта (вместо этого используйте navigation landmarks)
+- Создаёте form selects (используйте компонент [Select](guide/aria/select))
+- Переключаетесь между панелями контента (используйте [Tabs](guide/aria/tabs))
+- Показываете сворачиваемый контент (используйте [Accordion](guide/aria/accordion))
+
+## Возможности {#features}
+
+- **Клавиатурная навигация** — стрелки, Home/End и поиск по символам
+- **Подменю** — вложенные меню с автоматическим позиционированием
+- **Типы меню** — standalone menus, triggered menus и menubars
+- **Checkboxes и radios** — toggle- и selection-пункты меню
+- **Отключённые элементы** — soft или hard disabled с управлением фокусом
+- **Поведение auto-close** — настраиваемое закрытие при выборе
+- **Поддержка RTL** — навигация для языков справа налево
+
+## Примеры {#examples}
+
+### Menu с trigger {#menu-with-trigger}
+
+Создайте dropdown menu, связав кнопку-trigger с menu. Trigger открывает и закрывает menu.
+
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menu/src/menu-trigger/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/menu/src/menu-trigger/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/menu/src/menu-trigger/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/menu/src/menu-trigger/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menu/src/menu-trigger/material/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/menu/src/menu-trigger/material/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/menu/src/menu-trigger/material/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/menu/src/menu-trigger/material/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menu/src/menu-trigger/retro/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/menu/src/menu-trigger/retro/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/menu/src/menu-trigger/retro/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/menu/src/menu-trigger/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
+
+Menu автоматически закрывается, когда пользователь выбирает элемент или нажимает Escape.
+
+### Context menu {#context-menu}
+
+Context menus появляются в позиции курсора, когда пользователи кликают правой кнопкой по элементу.
 
 <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/menu/src/menu-context/app/app.ts">
   <docs-code header="app.ts" path="adev/src/content/examples/aria/menu/src/menu-context/app/app.ts"/>
   <docs-code header="app.html" path="adev/src/content/examples/aria/menu/src/menu-context/app/app.html"/>
 </docs-code-multifile>
 
-Position the menu using the `contextmenu` event coordinates.
+Позиционируйте menu, используя координаты события `contextmenu`.
 
-### Standalone menu
+### Standalone menu {#standalone-menu}
 
-A standalone menu doesn't require a trigger and remains visible in the interface.
+Standalone menu не требует trigger и остаётся видимым в интерфейсе.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -140,11 +140,11 @@ A standalone menu doesn't require a trigger and remains visible in the interface
   </docs-tab>
 </docs-tab-group>
 
-Standalone menus work well for always-visible action lists or navigation.
+Standalone menus хорошо подходят для всегда видимых списков действий или навигации.
 
-### Disabled menu items
+### Отключённые пункты меню {#disabled-menu-items}
 
-Disable specific menu items using the `disabled` input. Control focus behavior with `softDisabled`.
+Отключайте конкретные пункты меню через input `disabled`. Поведение фокуса контролируйте через `softDisabled`.
 
 <docs-tab-group>
   <docs-tab label="Basic">
@@ -172,12 +172,12 @@ Disable specific menu items using the `disabled` input. Control focus behavior w
   </docs-tab>
 </docs-tab-group>
 
-When `[softDisabled]="true"`, disabled items can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled items are skipped during keyboard navigation.
+Когда `[softDisabled]="true"`, disabled-элементы могут получать фокус, но не могут быть активированы. Когда `[softDisabled]="false"`, disabled-элементы пропускаются при клавиатурной навигации.
 
-## Testing
+## Тестирование {#testing}
 
-Angular Aria provides component harnesses for testing menu components.
-Here is an example of how to use the harnesses in a component test:
+Angular Aria предоставляет component harnesses для тестирования компонентов menu.
+Пример использования harnesses в тесте компонента:
 
 ```typescript
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -244,9 +244,9 @@ describe('MyMenuComponent', () => {
 });
 ```
 
-## API reference
+## API reference {#api-reference}
 
-For detailed API documentation, inspect the following API references:
+Подробную API-документацию смотрите в следующих API reference:
 
 - [`Menu`](/api/aria/menu/Menu)
 - [`MenuBar`](/api/aria/menu/MenuBar)

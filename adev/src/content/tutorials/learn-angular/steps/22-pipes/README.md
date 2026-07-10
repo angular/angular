@@ -29,7 +29,7 @@ loudMessage = 'we think you are doing great!'
 
 <docs-workflow>
 
-<docs-step title="Импортируйте pipe LowerCase">
+<docs-step title="Import the `LowerCase` pipe">
 Сначала обновите `app.ts`, добавив импорт `LowerCasePipe` из `@angular/common` на уровне файла.
 
 ```ts
@@ -38,7 +38,7 @@ import { LowerCasePipe } from '@angular/common';
 
 </docs-step>
 
-<docs-step title="Добавьте pipe в imports">
+<docs-step title="Add the pipe to the template imports">
 Далее обновите массив `imports` в декораторе `@Component()`, добавив туда ссылку на `LowerCasePipe`.
 
 <docs-code language="ts" highlight="[3]">
@@ -50,7 +50,7 @@ import { LowerCasePipe } from '@angular/common';
 
 </docs-step>
 
-<docs-step title="Добавьте pipe в шаблон">
+<docs-step title="Add the pipe to the template">
 И наконец, в `app.ts` обновите шаблон, чтобы включить pipe `lowercase`:
 
 ```ts
