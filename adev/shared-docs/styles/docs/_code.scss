@@ -199,11 +199,9 @@ $code-font-size: 0.875rem;
 
     &:not([hideDollar]) {
       .shiki {
-        .line {
-          &::before {
-            content: '$';
-            padding-inline-end: 0.5rem;
-          }
+        .line:not(:empty)::before {
+          content: '$';
+          padding-inline-end: 0.5rem;
         }
       }
     }
