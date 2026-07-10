@@ -1304,6 +1304,9 @@ export function transformExpressionsInOp(
     case OpKind.DeferWhen:
       op.expr = transformExpressionsInExpression(op.expr, transform, flags);
       break;
+    case OpKind.DeferOnLoaded:
+      op.loadedExpr = transformExpressionsInExpression(op.loadedExpr, transform, flags);
+      break;
     case OpKind.StoreLet:
       op.value = transformExpressionsInExpression(op.value, transform, flags);
       break;

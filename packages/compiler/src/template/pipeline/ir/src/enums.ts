@@ -176,6 +176,11 @@ export enum OpKind {
   DeferWhen,
 
   /**
+   * An operation that registers a callback to be invoked when a `@defer` block completes loading.
+   */
+  DeferOnLoaded,
+
+  /**
    * An i18n message that has been extracted for inclusion in the consts array.
    */
   I18nMessage,
