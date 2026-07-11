@@ -324,18 +324,22 @@ export class HttpParams {
     }
     if (this.cloneFrom !== null) {
       this.cloneFrom.init();
-      this.cloneFrom.keys().forEach((key) => this.map!.set(key, this.cloneFrom!.map!.get(key)!));
+
+      for (const [key, values] of this.cloneFrom.map!.entries()) {
+        this.map!.set(key, values);
+      }
+
       this.updates!.forEach((update) => {
         switch (update.op) {
           case 'a':
           case 's':
-            const base = (update.op === 'a' ? this.map!.get(update.param) : undefined) || [];
+            const base = update.op === 'a' ? (this.map!.get(update.param) || []).slice() : [];
             base.push(valueToString(update.value!));
             this.map!.set(update.param, base);
             break;
           case 'd':
             if (update.value !== undefined) {
-              let base = this.map!.get(update.param) || [];
+              const base = (this.map!.get(update.param) || []).slice();
               const idx = base.indexOf(valueToString(update.value));
               if (idx !== -1) {
                 base.splice(idx, 1);
