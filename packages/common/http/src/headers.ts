@@ -192,10 +192,10 @@ export class HttpHeaders {
 
   private copyFrom(other: HttpHeaders) {
     other.init();
-    Array.from(other.headers.keys()).forEach((key) => {
-      this.headers.set(key, other.headers.get(key)!);
+    for (const [key, values] of other.headers.entries()) {
+      this.headers.set(key, values);
       this.normalizedNames.set(key, other.normalizedNames.get(key)!);
-    });
+    }
   }
 
   private clone(update: Update): HttpHeaders {
@@ -218,7 +218,7 @@ export class HttpHeaders {
           return;
         }
         this.maybeSetNormalizedName(update.name, key);
-        const base = (update.op === 'a' ? this.headers.get(key) : undefined) || [];
+        const base = update.op === 'a' ? (this.headers.get(key) || []).slice() : [];
         base.push(...value);
         this.headers.set(key, base);
         break;
