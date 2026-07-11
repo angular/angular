@@ -193,7 +193,7 @@ export class HttpHeaders {
   private copyFrom(other: HttpHeaders) {
     other.init();
     Array.from(other.headers.keys()).forEach((key) => {
-      this.headers.set(key, other.headers.get(key)!);
+      this.headers.set(key, other.headers.get(key)!.slice());
       this.normalizedNames.set(key, other.normalizedNames.get(key)!);
     });
   }

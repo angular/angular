@@ -324,7 +324,9 @@ export class HttpParams {
     }
     if (this.cloneFrom !== null) {
       this.cloneFrom.init();
-      this.cloneFrom.keys().forEach((key) => this.map!.set(key, this.cloneFrom!.map!.get(key)!));
+      this.cloneFrom
+        .keys()
+        .forEach((key) => this.map!.set(key, this.cloneFrom!.map!.get(key)!.slice()));
       this.updates!.forEach((update) => {
         switch (update.op) {
           case 'a':
