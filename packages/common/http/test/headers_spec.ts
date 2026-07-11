@@ -165,6 +165,15 @@ describe('HttpHeaders', () => {
       expect(third.getAll('foo')).toEqual(['bar', 'baz']);
     });
 
+    it('should not mutate a materialized source', () => {
+      const source = new HttpHeaders().set('foo', 'bar');
+      expect(source.getAll('foo')).toEqual(['bar']);
+
+      const clone = source.append('foo', 'baz');
+      expect(clone.getAll('foo')).toEqual(['bar', 'baz']);
+      expect(source.getAll('foo')).toEqual(['bar']);
+    });
+
     it('should preserve the case of the first call', () => {
       const headers = new HttpHeaders();
       const second = headers.append('FOO', 'bar');
