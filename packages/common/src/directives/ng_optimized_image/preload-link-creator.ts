@@ -47,8 +47,17 @@ export class PreloadLinkCreator {
    * @param src The original src of the image that is set on the `ngSrc` input.
    * @param srcset The parsed and formatted srcset created from the `ngSrcset` input
    * @param sizes The value of the `sizes` attribute passed in to the `<img>` tag
+   * @param crossOrigin The value of the `crossorigin` attribute passed in to the `<img>` tag
    */
-  createPreloadLinkTag(renderer: Renderer2, src: string, srcset?: string, sizes?: string): void {
+  createPreloadLinkTag(
+    renderer: Renderer2,
+    src: string,
+    srcset?: string,
+    sizes?: string,
+    crossOrigin?: string | null,
+  ): void {
+    const preloadKey = JSON.stringify([src, getCrossOriginMode(crossOrigin)]);
+
     if (
       ngDevMode &&
       !this.errorShown &&
@@ -66,17 +75,21 @@ export class PreloadLinkCreator {
       );
     }
 
-    if (this.preloadedImages.has(src)) {
+    if (this.preloadedImages.has(preloadKey)) {
       return;
     }
 
-    this.preloadedImages.add(src);
+    this.preloadedImages.add(preloadKey);
 
     const preload = renderer.createElement('link');
     renderer.setAttribute(preload, 'as', 'image');
     renderer.setAttribute(preload, 'href', src);
     renderer.setAttribute(preload, 'rel', 'preload');
     renderer.setAttribute(preload, 'fetchpriority', 'high');
+
+    if (crossOrigin != null) {
+      renderer.setAttribute(preload, 'crossorigin', crossOrigin);
+    }
 
     if (sizes) {
       renderer.setAttribute(preload, 'imageSizes', sizes);
@@ -88,4 +101,12 @@ export class PreloadLinkCreator {
 
     renderer.appendChild(this.document.head, preload);
   }
+}
+
+function getCrossOriginMode(crossOrigin?: string | null): string | null {
+  if (crossOrigin == null) {
+    return null;
+  }
+
+  return crossOrigin.toLowerCase() === 'use-credentials' ? 'use-credentials' : 'anonymous';
 }

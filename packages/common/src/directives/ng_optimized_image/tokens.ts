@@ -17,11 +17,9 @@ import {InjectionToken} from '@angular/core';
 export const DEFAULT_PRELOADED_IMAGES_LIMIT = 5;
 
 /**
- * Helps to keep track of priority images that already have a corresponding
- * preload tag (to avoid generating multiple preload tags with the same URL).
- *
- * This Set tracks the original src passed into the `ngSrc` input not the src after it has been
- * run through the specified `IMAGE_LOADER`.
+ * Helps to keep track of priority images that already have a corresponding preload tag. Each key
+ * identifies the rewritten image URL and its CORS mode, since preload tags with different CORS
+ * modes are not interchangeable.
  */
 export const PRELOADED_IMAGES = new InjectionToken<Set<string>>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'NG_OPTIMIZED_PRELOADED_IMAGES' : '',
