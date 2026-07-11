@@ -72,6 +72,15 @@ describe('HttpUrlEncodedParams', () => {
       expect(mutated.toString()).toEqual('a=b&a=true');
     });
 
+    it('should not mutate a materialized source when appending', () => {
+      const source = new HttpParams().append('a', 'b');
+      expect(source.getAll('a')).toEqual(['b']);
+
+      const clone = source.append('a', 'c');
+      expect(clone.getAll('a')).toEqual(['b', 'c']);
+      expect(source.getAll('a')).toEqual(['b']);
+    });
+
     it('should allow appending all string parameters', () => {
       const body = new HttpParams({fromString: 'a=a1&b=b1'});
       const mutated = body.appendAll({a: ['a2', 'a3'], b: 'b2'});
@@ -136,6 +145,15 @@ describe('HttpUrlEncodedParams', () => {
       const body = new HttpParams({fromString: 'a=1&a=2&a=3&a=4&a=5'});
       const mutated = body.delete('a', '2').delete('a', '4');
       expect(mutated.getAll('a')).toEqual(['1', '3', '5']);
+    });
+
+    it('should not mutate a materialized source when deleting a value', () => {
+      const source = new HttpParams().append('a', '1').append('a', '2');
+      expect(source.getAll('a')).toEqual(['1', '2']);
+
+      const clone = source.delete('a', '1');
+      expect(clone.getAll('a')).toEqual(['2']);
+      expect(source.getAll('a')).toEqual(['1', '2']);
     });
 
     it('should allow deletion of one value of a number parameter', () => {
