@@ -102,7 +102,16 @@ export function resolveUrl(
       );
     }
 
-    return new URL(urlStr, origin);
+    resolved = new URL(urlStr, origin);
+
+    // A protocol-relative URL inherits the base scheme, so the only origin-sensitive
+    // change it can introduce is the host. Honor `allowOriginChange` here too, the same
+    // way every other return path does.
+    if (!allowOriginChange && resolved.origin !== originUrl.origin) {
+      throwSuspiciousUrlError(urlStr);
+    }
+
+    return resolved;
   }
 
   resolved = new URL(urlStr, origin);

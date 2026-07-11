@@ -48,6 +48,30 @@ describe('resolveUrl', () => {
       expect(url.href).toBe('http://test.com/other-path');
     });
 
+    it('should throw for a protocol-relative url that changes origin when allowOriginChange is false', () => {
+      expect(() =>
+        resolveUrl('//evil.com/path', 'http://test.com', {
+          allowProtocolRelative: true,
+          allowOriginChange: false,
+        }),
+      ).toThrowError(/NG05703/);
+    });
+
+    it('should resolve a same-origin protocol-relative url when allowOriginChange is false', () => {
+      const url = resolveUrl('//test.com/other-path', 'http://test.com', {
+        allowProtocolRelative: true,
+        allowOriginChange: false,
+      });
+      expect(url.href).toBe('http://test.com/other-path');
+    });
+
+    it('should resolve a cross-origin protocol-relative url when origin changes are allowed', () => {
+      const url = resolveUrl('//other.com/path', 'http://test.com', {
+        allowProtocolRelative: true,
+      });
+      expect(url.origin).toBe('http://other.com');
+    });
+
     it('should throw an error for malformed absolute URLs', () => {
       const malformedUrls = [
         'http://evil.com:80:80/path',
