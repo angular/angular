@@ -8,17 +8,16 @@
 
 import {inject} from '@angular/core';
 import {SettingsStore} from './settings_store';
-import {ThemePreference} from './theme_types';
+import {SettingsDataV2} from '../application-providers/settings_versions';
 
-// WARNING: Any changes to the settings items should be accompanied by a migration.
-// Check settings_provider.ts
-// Please keep in sync the validation tests in settings_provider_spec.ts as well.
+// If you need to update an item, please refer to `settings_versions.ts` and this doc:
+// https://github.com/angular/angular/blob/main/devtools/docs/settings.md
 export class Settings {
-  private readonly settingsStore = inject(SettingsStore);
+  private readonly settingsStore = inject(SettingsStore<SettingsDataV2>);
 
   readonly showCommentNodes = this.settingsStore.create({
     key: 'show_comment_nodes',
-    category: 'general', // Good candidate for migration to `components`
+    category: 'components',
     initialValue: false,
   });
 
@@ -28,7 +27,7 @@ export class Settings {
     initialValue: false,
   });
 
-  readonly theme = this.settingsStore.create<ThemePreference>({
+  readonly theme = this.settingsStore.create({
     key: 'theme',
     category: 'general',
     initialValue: 'system',
