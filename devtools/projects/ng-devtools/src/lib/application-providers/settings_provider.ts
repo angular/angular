@@ -10,12 +10,12 @@ import {provideAppInitializer, inject, Provider, EnvironmentProviders} from '@an
 import {SETTINGS_STORE_KEY, SettingsStore} from '../application-services/settings_store';
 import {ApplicationOperations} from '../application-operations';
 import {Settings} from '../application-services/settings';
-
-export const DATA_VERSION_KEY = '__v';
-
-// Note: Any changes to the settings items should be accompanied
-// by a migration along with a version bump.
-const LATEST_DATA_VERSION = 2;
+import {
+  DATA_VERSION_KEY,
+  LATEST_DATA_VERSION,
+  SettingsDataV1,
+  SettingsDataV2,
+} from './settings_versions';
 
 export function provideSettings(): (Provider | EnvironmentProviders)[] {
   let savedSettings: {[key: string]: unknown};
@@ -47,7 +47,7 @@ export function applyMigrations(
   data: {[key: string]: unknown},
   appOperations: ApplicationOperations,
 ): {[key: string]: unknown} {
-  const dataCopy = structuredClone(data);
+  let dataCopy = structuredClone(data);
   const dataVer = dataCopy[DATA_VERSION_KEY];
 
   if (dataVer === LATEST_DATA_VERSION) {
@@ -95,26 +95,30 @@ export function applyMigrations(
 
   // V1 -> V2 migration
   if (dataVer === 1) {
-    const newData = dataCopy;
-    // Convert `timing_api_enabled` (cat: `general`) key to `performance_track` (cat: `profiling`).
-    newData['performance_track@profiling'] = dataCopy['timing_api_enabled@general'];
-    delete dataCopy['timing_api_enabled@general'];
+    const currData = dataCopy as unknown as SettingsDataV1;
+    const newData: SettingsDataV2 = {
+      [DATA_VERSION_KEY]: 2,
 
-    // Convert `activeTab` (cat: `general`) key to `active_tab` (cat: `general`).
-    dataCopy['active_tab@general'] = dataCopy['activeTab@general'];
-    delete dataCopy['activeTab@general'];
+      // No change
+      'theme@general': currData['theme@general'],
+      'show_hydration_overlays@components': currData['show_hydration_overlays@components'],
 
-    // Flag no logner needed. The feature has been promoted to stable.
-    delete dataCopy['router_graph_enabled@general'];
+      // Convert `timing_api_enabled` (cat: `general`) key to `performance_track` (cat: `profiling`).
+      'performance_track@profiling': currData['timing_api_enabled@general'],
 
-    // Flag no logner needed. The feature has been promoted to stable.
-    delete dataCopy['signal_graph_enabled@general'];
+      // Convert `activeTab` (cat: `general`) key to `active_tab` (cat: `general`).
+      'active_tab@general': currData['activeTab@general'],
 
-    // Flag no logner needed. The feature has been promoted to stable.
-    delete dataCopy['transfer_state_enabled@general'];
+      // Change the category of `show_comment_nodes` (from `general` to `components`).
+      'show_comment_nodes@components': currData['show_comment_nodes@general'],
 
-    // Update the data instance version to V2.
-    dataCopy[DATA_VERSION_KEY] = 2;
+      // Flags that are no longer needed:
+      // - router_graph_enabled@general
+      // - signal_graph_enabled@general
+      // - transfer_state_enabled@general
+    };
+
+    dataCopy = newData as unknown as {[key: string]: unknown};
   }
 
   dataCopy[DATA_VERSION_KEY] = LATEST_DATA_VERSION;

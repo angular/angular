@@ -49,6 +49,7 @@ ng_project(
     deps = [
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:settings_versions",
     ],
 )
 
@@ -59,6 +60,7 @@ ng_project(
         ":settings_store",
         ":theme_types_lib",
         "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:settings_versions",
     ],
 )
 
