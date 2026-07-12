@@ -158,7 +158,6 @@ export class NodeRuntimeSandbox {
       '.angular',
       'dist',
       'BUILD.bazel',
-      'idx',
       'package.json.template',
       'config.json',
     ];
