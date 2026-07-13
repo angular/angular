@@ -26,6 +26,19 @@ describe('ShadowCss', () => {
     expect(shim(css, 'contenta')).toEqualCss(expected);
   });
 
+  it('should not backtrack catastrophically on an unterminated pseudo-class paren', () => {
+    // The `:host(...)`, `:host-context(...)` and `:nth-*(...)` scoping regexes match the
+    // parenthesized selector body. A selector that opens a paren but never closes it, followed
+    // by a long run of characters, used to trigger exponential backtracking (ReDoS) and hang
+    // the compiler/JIT. Scoping must stay fast on such malformed input.
+    const tail = 'a'.repeat(60);
+    for (const selector of [`:host(${tail}`, `:host-context(${tail}`, `div:nth-child(${tail}`]) {
+      const start = Date.now();
+      shim(`${selector} {color: red;}`, 'contenta', 'a-host');
+      expect(Date.now() - start).toBeLessThan(1000);
+    }
+  });
+
   it('should add an attribute to every selector', () => {
     const css = 'one, two {color: red;}';
     const expected = 'one[contenta], two[contenta] {color:red;}';
