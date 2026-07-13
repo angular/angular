@@ -105,12 +105,6 @@ importers:
       '@types/angular':
         specifier: ^1.6.47
         version: 1.8.9
-      '@types/babel__core':
-        specifier: 7.20.5
-        version: 7.20.5
-      '@types/babel__generator':
-        specifier: 7.27.0
-        version: 7.27.0
       '@types/chrome':
         specifier: ^0.2.0
         version: 0.2.2
@@ -1092,9 +1086,6 @@ importers:
       '@babel/core':
         specifier: 8.0.1
         version: 8.0.1
-      '@types/babel__core':
-        specifier: 7.20.5
-        version: 7.20.5
       tinyglobby:
         specifier: ^0.2.12
         version: 0.2.17

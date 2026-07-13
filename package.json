@@ -86,8 +86,6 @@
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@schematics/angular": "22.1.0-next.3",
     "@types/angular": "^1.6.47",
-    "@types/babel__core": "7.20.5",
-    "@types/babel__generator": "7.27.0",
     "@types/chrome": "^0.2.0",
     "@types/dom-navigation": "^1.0.5",
     "@types/jasmine": "^6.0.0",
