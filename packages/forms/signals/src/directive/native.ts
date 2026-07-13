@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {untracked} from '@angular/core';
+import {ɵformatRuntimeError as formatRuntimeError, untracked} from '@angular/core';
 import {NativeInputParseError, WithoutFieldTree} from '../api/rules';
 import type {ParseResult} from '../api/transformed_value';
+import {RuntimeErrorCode} from '../errors';
 import type {InputValidityMonitor} from './input_validity_monitor';
 
 // Re-export shared native utilities from main forms package
 export {
-  ɵisNativeFormElement as isNativeFormElement,
   ɵelementAcceptsMinMax as elementAcceptsMinMax,
+  ɵisNativeFormElement as isNativeFormElement,
   ɵisTextualFormElement as isTextualFormElement,
   ɵsetNativeDomProperty as setNativeDomProperty,
   type ɵNativeFormControl as NativeFormControl,
@@ -145,6 +146,15 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
       return;
     }
     if (value === null) {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.TEXT_INPUT_NULL_VALUE,
+            `The text input ${element.name} received a null value. Text inputs should use empty strings to represent null values. ` +
+              ` The input's value will be set to an empty string instead.`,
+          ),
+        );
+      }
       element.value = '';
       return;
     }
