@@ -46,6 +46,63 @@ suite('patchVitest `suite`', () => {
   }));
 });
 
+describe('patchVitest `describe`/`it` modifiers', () => {
+  describe('direct modifiers (e.g. skip, only, etc.)', () => {
+    let skippedDescribeBodyRan = false;
+    describe.skip('a skipped `describe`', () => {
+      it('should not run because the parent describe is skipped', () => {
+        skippedDescribeBodyRan = true;
+      });
+    });
+
+    let skippedTestRan = false;
+    it.skip('a skipped test', () => {
+      skippedTestRan = true;
+    });
+
+    it('should not have run the body of a skipped `describe`', () => {
+      expect(skippedDescribeBodyRan).toBe(false);
+    });
+
+    it('should not have run the body of a skipped test', () => {
+      expect(skippedTestRan).toBe(false);
+    });
+
+    // Validate that direct calls are patched.
+    describe.shuffle('a shuffled `describe`', () => {
+      it('should work with a patched `describe.shuffle`', fakeAsync(() => {
+        expect(createAsyncTesterFlag()).toBe(true);
+      }));
+    });
+  });
+
+  describe('curried modifiers (e.g. each, runIf, etc.)', () => {
+    describe.each([['suite A'], ['suite B']])('%s', (suiteName) => {
+      it(`should execute ${suiteName} tests inside a zone`, fakeAsync(() => {
+        expect(createAsyncTesterFlag()).toBe(true);
+      }));
+    });
+
+    it.each([
+      [1, 1, 2],
+      [1, 2, 3],
+    ])(
+      'should add the numbers and run inside a zone',
+      fakeAsync((a, b, expected) => {
+        expect(a + b).toBe(expected);
+        expect(createAsyncTesterFlag()).toBe(true);
+      }),
+    );
+
+    it.runIf(true)(
+      'should run when `runIf` condition is true',
+      fakeAsync(() => {
+        expect(createAsyncTesterFlag()).toBe(true);
+      }),
+    );
+  });
+});
+
 function createAsyncTesterFlag() {
   let flag = false;
   setTimeout(() => {
