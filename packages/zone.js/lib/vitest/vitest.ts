@@ -19,40 +19,31 @@ interface TestingZoneType extends ZoneType {
 }
 
 /**
- * The list of method names for the describe/suite factories.
+ * The list of method names for the describe/suite and test/it factories
+ * that are called directly (i.e. same signature as describe/it).
+ *
  * Example: `describe.skip('...', () => { ... });`
  * Sourced from https://vitest.dev/api/#describe
  */
-const DESCRIBE_FACTORY_NAMES = [
+const DIRECT_MODIFIER_NAMES = [
   'skip',
-  'skipIf',
-  'runIf',
   'only',
   'concurrent',
   'sequential',
   'shuffle',
   'todo',
-  'each',
-  'for',
 ] as const;
 
 /**
- * The list of method names for the test/it factories.
- * Example: `test.skip('...', () => { ... });`
- * Sourced from https://vitest.dev/api/#test
+ * The list of method names for the describe/suite and test/it modifiers
+ * that are curried (i.e. called once with a condition/table to get back a chainable fn).
+ *
+ * Example: `describe.each([...])('...', () => { ... });`
+ * Sourced from https://vitest.dev/api/#describe
  */
-const TEST_FACTORY_NAMES = [
-  'skip',
-  'skipIf',
-  'runIf',
-  'only',
-  'concurrent',
-  'sequential',
-  'shuffle',
-  'todo',
-  'each',
-  'for',
-] as const;
+const CURRIED_MODIFIER_NAMES = ['skipIf', 'runIf', 'each', 'for'] as const;
+
+type TEST_MODIFIER_NAME = (typeof DIRECT_MODIFIER_NAMES | typeof CURRIED_MODIFIER_NAMES)[number];
 
 export function patchVitest(Zone: ZoneType): void {
   Zone.__load_patch('vitest', (context: any, Zone: TestingZoneType) => {
@@ -83,6 +74,10 @@ export function patchVitest(Zone: ZoneType): void {
      * synchronous-only zone.
      */
     function wrapDescribeInZone(describeBody: Function): Function {
+      // `describe` might be called without a body (e.g. `describe.todo`)
+      if (typeof describeBody !== 'function') {
+        return describeBody;
+      }
       return function (this: unknown, ...args: unknown[]) {
         return syncZone.run(describeBody, this, args);
       };
@@ -111,54 +106,53 @@ export function patchVitest(Zone: ZoneType): void {
       return wrappedFunc;
     }
 
-    ['suite', 'describe'].forEach((methodName) => {
-      let originalVitestFn: Function & Record<(typeof DESCRIBE_FACTORY_NAMES)[number], Function> =
-        context[methodName];
+    /** Patch functions with modifiers (i.e. `describe`/`it`). */
+    function patchFnWithModifiers(methodName: string, wrapFn: (fn: Function) => Function) {
+      const originalVitestFn: Function & Record<TEST_MODIFIER_NAME, Function> = context[methodName];
       // Skip if already patched
       if (context[Zone.__symbol__(methodName)]) {
         return;
       }
-
       context[Zone.__symbol__(methodName)] = originalVitestFn;
+
+      // Patching the main function
       context[methodName] = function (this: unknown, ...args: [unknown, Function, ...unknown[]]) {
-        args[1] = wrapDescribeInZone(args[1]);
+        args[1] = wrapFn(args[1]);
         return originalVitestFn.apply(this, args);
       };
 
-      for (const factoryName of DESCRIBE_FACTORY_NAMES) {
-        context[methodName][factoryName] = function (this: unknown, ...factoryArgs: unknown[]) {
-          const originalDescribeFn = originalVitestFn.apply(this, factoryArgs);
+      // Patching direct modifier calls
+      for (const modifierName of DIRECT_MODIFIER_NAMES) {
+        context[methodName][modifierName] = function (
+          this: unknown,
+          ...args: [unknown, Function, ...unknown[]]
+        ) {
+          args[1] = wrapFn(args[1]);
+          return originalVitestFn[modifierName].apply(this, args);
+        };
+      }
+
+      // Patching curried modifier calls
+      for (const modifierName of CURRIED_MODIFIER_NAMES) {
+        context[methodName][modifierName] = function (this: unknown, ...modifierArgs: unknown[]) {
+          // Since we are patching a curried function, we need
+          // to pass the original context first (`originalVitestFn`).
+          // Else, the chaining won't be possible (will get an error).
+          const originalFn = originalVitestFn[modifierName].apply(originalVitestFn, modifierArgs);
+
           return function (this: unknown, ...args: [unknown, Function, ...unknown[]]) {
-            args[1] = wrapDescribeInZone(args[1]);
-            return originalDescribeFn.apply(this, args);
+            args[1] = wrapFn(args[1]);
+            return originalFn.apply(this, args);
           };
         };
       }
-    });
+    }
 
-    ['it', 'test'].forEach((methodName) => {
-      let originalVitestFn: Function & Record<(typeof TEST_FACTORY_NAMES)[number], Function> =
-        context[methodName];
-      // Skip if already patched
-      if (context[Zone.__symbol__(methodName)]) {
-        return;
-      }
+    ['suite', 'describe'].forEach((methodName) =>
+      patchFnWithModifiers(methodName, wrapDescribeInZone),
+    );
 
-      context[Zone.__symbol__(methodName)] = originalVitestFn;
-      context[methodName] = function (this: unknown, ...args: [unknown, Function, ...unknown[]]) {
-        args[1] = wrapTestInZone(args[1]);
-        return originalVitestFn.apply(this, args);
-      };
-
-      for (const factoryName of TEST_FACTORY_NAMES) {
-        context[methodName][factoryName] = function (this: unknown, ...factoryArgs: unknown[]) {
-          return function (this: unknown, ...args: [unknown, Function, ...unknown[]]) {
-            args[1] = wrapTestInZone(args[1]);
-            return originalVitestFn.apply(this, factoryArgs).apply(this, args);
-          };
-        };
-      }
-    });
+    ['it', 'test'].forEach((methodName) => patchFnWithModifiers(methodName, wrapTestInZone));
 
     ['beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach((methodName) => {
       const originalVitestFn: Function = context[methodName];
