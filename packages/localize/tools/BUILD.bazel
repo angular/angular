@@ -21,7 +21,6 @@ ts_project(
     visibility = ["//packages/localize/tools:__subpackages__"],
     deps = [
         "//:node_modules/@babel/core",
-        "//:node_modules/@types/babel__core",
         "//:node_modules/@types/node",
         "//:node_modules/@types/yargs",
         "//:node_modules/tinyglobby",

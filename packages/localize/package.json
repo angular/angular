@@ -34,7 +34,6 @@
   ],
   "dependencies": {
     "@babel/core": "8.0.1",
-    "@types/babel__core": "7.20.5",
     "tinyglobby": "^0.2.12",
     "yargs": "^18.0.0"
   },

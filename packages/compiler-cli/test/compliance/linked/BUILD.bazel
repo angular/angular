@@ -5,7 +5,7 @@ ts_project(
     testonly = True,
     srcs = ["linked_compile_spec.ts"],
     deps = [
-        "//:node_modules/@types/babel__core",
+        "//:node_modules/@babel/core",
         "//packages/compiler-cli/linker",
         "//packages/compiler-cli/linker/babel",
         "//packages/compiler-cli/private",
