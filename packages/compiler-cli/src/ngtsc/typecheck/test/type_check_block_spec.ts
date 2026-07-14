@@ -264,11 +264,9 @@ describe('type check blocks', () => {
       ];
       const actual = tcb(TEMPLATE, DIRECTIVES);
       expect(actual).toContain(
-        'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "fieldA" | "fieldB">) => i0.Dir<T> = null!;',
+        'const _ctor1: <T extends string = any>(init: Partial<Pick<i0.Dir<T>, "fieldA" | "fieldB">>) => i0.Dir<T> = null!;',
       );
-      expect(actual).toContain(
-        'var _t1 = _ctor1({ "fieldA": (((this).foo)), "fieldB": 0 as any });',
-      );
+      expect(actual).toContain('var _t1 = _ctor1({ "fieldA": (((this).foo)) });');
     });
 
     it('should handle multiple bindings to the same property', () => {
@@ -324,7 +322,7 @@ describe('type check blocks', () => {
 
       const actual = tcb(TEMPLATE, DIRECTIVES);
       expect(actual).toContain(
-        'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "input">) => i0.Dir<T> = null!;',
+        'const _ctor1: <T extends string = any>(init: Partial<Pick<i0.Dir<T>, "input">>) => i0.Dir<T> = null!;',
       );
       expect(actual).toContain(
         'var _t2 = _ctor1({ "input": (null!) }); ' + 'var _t1 = _t2; ' + '_t2.input = (_t1);',
@@ -356,7 +354,7 @@ describe('type check blocks', () => {
       ];
       const actual = tcb(TEMPLATE, DIRECTIVES);
       expect(actual).toContain(
-        'const _ctor1: <T extends string = any>(init: Pick<i0.DirA<T>, "inputA">) => i0.DirA<T> = null!; const _ctor2: <T extends string = any>(init: Pick<i0.DirB<T>, "inputB">) => i0.DirB<T> = null!;',
+        'const _ctor1: <T extends string = any>(init: Partial<Pick<i0.DirA<T>, "inputA">>) => i0.DirA<T> = null!; const _ctor2: <T extends string = any>(init: Partial<Pick<i0.DirB<T>, "inputB">>) => i0.DirB<T> = null!;',
       );
       expect(actual).toContain(
         'var _t4 = _ctor1({ "inputA": (null!) }); ' +
@@ -433,12 +431,10 @@ describe('type check blocks', () => {
       const block = tcb(TEMPLATE, DIRECTIVES);
 
       expect(block).toContain(
-        'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "fieldA"> & ' +
-          '{ "aria-label": typeof i0.Dir["ngAcceptInputType_aria-label"]; }) => i0.Dir<T> = null!;',
+        'const _ctor1: <T extends string = any>(init: Partial<Pick<i0.Dir<T>, "fieldA">> & ' +
+          '{ "aria-label"?: typeof i0.Dir["ngAcceptInputType_aria-label"]; }) => i0.Dir<T> = null!;',
       );
-      expect(block).toContain(
-        'var _t1 = _ctor1({ "fieldA": (((this).foo)), "aria-label": 0 as any });',
-      );
+      expect(block).toContain('var _t1 = _ctor1({ "fieldA": (((this).foo)) });');
     });
   });
 
@@ -919,7 +915,7 @@ describe('type check blocks', () => {
     ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain(
-      'const _ctor1: <T extends string = any>(init: Pick<i0.TwoWay<T>, "input">) => i0.TwoWay<T> = null!',
+      'const _ctor1: <T extends string = any>(init: Partial<Pick<i0.TwoWay<T>, "input">>) => i0.TwoWay<T> = null!',
     );
     expect(block).toContain(
       'var _t1 = _ctor1({ "input": (i1.ɵunwrapWritableSignal(((this).value))) });',
@@ -2889,7 +2885,7 @@ describe('type check blocks', () => {
       ];
       const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain(
-        'const _ctor1: <T extends string = any>(init: Pick<i0.Comp<T>, "input">) => i0.Comp<T> = null!;',
+        'const _ctor1: <T extends string = any>(init: Partial<Pick<i0.Comp<T>, "input">>) => i0.Comp<T> = null!;',
       );
       expect(block).toContain('var _t1 = _ctor1({ "input": (((this).value)) });');
       expect(block).toContain('_t1.input = (((this).value));');
@@ -2909,7 +2905,7 @@ describe('type check blocks', () => {
       ];
       const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain(
-        'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "input">) => i0.Dir<T> = null!;',
+        'const _ctor1: <T extends string = any>(init: Partial<Pick<i0.Dir<T>, "input">>) => i0.Dir<T> = null!;',
       );
       expect(block).toContain('var _t1 = _ctor1({ "input": (((this).value)) });');
       expect(block).toContain('_t1.input = (((this).value));');

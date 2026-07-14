@@ -684,6 +684,89 @@ runInEachFileSystem(() => {
           ),
         ],
       },
+      // NoInfer on model write types (#69373): unbound inputs must not poison inference with `any`.
+      {
+        id: 'NoInfer blocks inference from model value, two-way, mode omitted',
+        inputs: {
+          value: {type: 'ModelSignal<NoInfer<Value<T>> | null>', isSignal: true},
+          mode: {type: 'InputSignal<T>', isSignal: true},
+        },
+        outputs: {valueChange: {type: 'ModelSignal<NoInfer<Value<T>> | null>'}},
+        extraFileContent: `
+          type Mode = 'single' | 'range';
+          type ValueByMode = {single: string; range: readonly [string, string]};
+          type Value<T extends Mode = 'single'> = ValueByMode[T];
+        `,
+        directiveGenerics: `<T extends Mode = 'single'>`,
+        component: `
+          single: string | null = null;
+          range: readonly [string, string] | null = null;
+        `,
+        template: `<div dir [(value)]="range">`,
+        expected: [
+          jasmine.stringContaining(
+            `Type 'readonly [string, string]' is not assignable to type 'string'`,
+          ),
+        ],
+      },
+      {
+        id: 'NoInfer allows single value when mode omitted, two-way',
+        inputs: {
+          value: {type: 'ModelSignal<NoInfer<Value<T>> | null>', isSignal: true},
+          mode: {type: 'InputSignal<T>', isSignal: true},
+        },
+        outputs: {valueChange: {type: 'ModelSignal<NoInfer<Value<T>> | null>'}},
+        extraFileContent: `
+          type Mode = 'single' | 'range';
+          type ValueByMode = {single: string; range: readonly [string, string]};
+          type Value<T extends Mode = 'single'> = ValueByMode[T];
+        `,
+        directiveGenerics: `<T extends Mode = 'single'>`,
+        component: `single: string | null = null;`,
+        template: `<div dir [(value)]="single">`,
+        expected: [],
+      },
+      {
+        id: 'NoInfer still allows inference from mode input, two-way',
+        inputs: {
+          value: {type: 'ModelSignal<NoInfer<Value<T>> | null>', isSignal: true},
+          mode: {type: 'InputSignal<T>', isSignal: true},
+        },
+        outputs: {valueChange: {type: 'ModelSignal<NoInfer<Value<T>> | null>'}},
+        extraFileContent: `
+          type Mode = 'single' | 'range';
+          type ValueByMode = {single: string; range: readonly [string, string]};
+          type Value<T extends Mode = 'single'> = ValueByMode[T];
+        `,
+        directiveGenerics: `<T extends Mode = 'single'>`,
+        component: `
+          range: readonly [string, string] | null = null;
+          rangeMode = 'range' as const;
+        `,
+        template: `<div dir [mode]="rangeMode" [(value)]="range">`,
+        expected: [],
+      },
+      {
+        id: 'NoInfer blocks inference from model value, one-way, mode omitted',
+        inputs: {
+          value: {type: 'ModelSignal<NoInfer<Value<T>> | null>', isSignal: true},
+          mode: {type: 'InputSignal<T>', isSignal: true},
+        },
+        outputs: {valueChange: {type: 'ModelSignal<NoInfer<Value<T>> | null>'}},
+        extraFileContent: `
+          type Mode = 'single' | 'range';
+          type ValueByMode = {single: string; range: readonly [string, string]};
+          type Value<T extends Mode = 'single'> = ValueByMode[T];
+        `,
+        directiveGenerics: `<T extends Mode = 'single'>`,
+        component: `range: readonly [string, string] | null = null;`,
+        template: `<div dir [value]="range">`,
+        expected: [
+          jasmine.stringContaining(
+            `Type 'readonly [string, string]' is not assignable to type 'string'`,
+          ),
+        ],
+      },
     ];
 
     generateDiagnoseJasmineSpecs(bindingCases);

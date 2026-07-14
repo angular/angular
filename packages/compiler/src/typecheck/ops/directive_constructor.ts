@@ -108,15 +108,9 @@ export class TcbDirectiveCtorOp extends TcbOp {
       }
     }
 
-    // Add unset directive inputs for each of the remaining unset fields.
-    for (const {classPropertyName} of this.dir.inputs) {
-      if (!genericInputs.has(classPropertyName)) {
-        genericInputs.set(classPropertyName, {type: 'unset', field: classPropertyName});
-      }
-    }
-
     // Call the type constructor of the directive to infer a type, and assign the directive
-    // instance.
+    // instance. Unbound inputs are omitted (init is Partial) so they do not poison inference
+    // with `any` fillers and so `NoInfer` on bound inputs is respected.
     const typeCtor = tcbCallTypeCtor(this.dir, this.tcb, Array.from(genericInputs.values()));
     typeCtor.markIgnoreDiagnostics();
     this.scope.addStatement(new TcbExpr(`var ${id.print()} = ${typeCtor.print()}`));
@@ -173,31 +167,25 @@ function tcbCallTypeCtor(
   inputs: TcbDirectiveInput[],
 ): TcbExpr {
   const typeCtor = tcb.env.typeCtorFor(dir);
+
   let literal = '{ ';
 
-  // Construct an object literal containing each directive input.
+  // Construct an object literal containing only bound directive inputs. Unbound inputs are omitted
+  // so they do not poison generic inference with `any` fillers (and so `NoInfer` works).
   for (let i = 0; i < inputs.length; i++) {
     const input = inputs[i];
     const propertyName = TcbExpr.quoteAndEscape(input.field);
     const isLast = i === inputs.length - 1;
 
-    if (input.type === 'binding') {
-      // For bound inputs, the property is assigned the binding expression.
-      let expr = widenBinding(input.expression, tcb, input.originalExpression);
+    let expr = widenBinding(input.expression, tcb, input.originalExpression);
 
-      if (input.isTwoWayBinding && tcb.env.config.allowSignalsInTwoWayBindings) {
-        expr = unwrapWritableSignal(expr, tcb);
-      }
-
-      const assignment = new TcbExpr(`${propertyName}: ${expr.wrapForTypeChecker().print()}`);
-      assignment.addParseSpanInfo(input.sourceSpan);
-      literal += assignment.print();
-    } else {
-      // A type constructor is required to be called with all input properties, so any unset
-      // inputs are simply assigned a value of type `any` to ignore them.
-      literal += `${propertyName}: 0 as any`;
+    if (input.isTwoWayBinding && tcb.env.config.allowSignalsInTwoWayBindings) {
+      expr = unwrapWritableSignal(expr, tcb);
     }
 
+    const assignment = new TcbExpr(`${propertyName}: ${expr.wrapForTypeChecker().print()}`);
+    assignment.addParseSpanInfo(input.sourceSpan);
+    literal += assignment.print();
     literal += `${isLast ? '' : ','} `;
   }
 

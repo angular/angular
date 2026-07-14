@@ -55,19 +55,15 @@ export function generateTypeCtorDeclarationFn(
  *
  * An inline type constructor for NgFor looks like:
  *
- * static ngTypeCtor<T>(init: Pick<NgForOf<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>):
+ * static ngTypeCtor<T>(init: Partial<Pick<NgForOf<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>>):
  *   NgForOf<T>;
  *
  * A typical constructor would be:
  *
- * NgForOf.ngTypeCtor(init: {
- *   ngForOf: ['foo', 'bar'],
- *   ngForTrackBy: null as any,
- *   ngForTemplate: null as any,
- * }); // Infers a type of NgForOf<string>.
+ * NgForOf.ngTypeCtor({ngForOf: ['foo', 'bar']}); // Infers a type of NgForOf<string>.
  *
- * Any inputs declared on the type for which no property binding is present are assigned a value of
- * type `any`, to avoid producing any type errors for unset inputs.
+ * Unbound inputs are omitted from the type constructor call (the init type is `Partial`) so
+ * they do not poison generic inference with `any` and so `NoInfer` on other inputs is respected.
  *
  * Inline type constructors are used when the type being created has bounded generic types which
  * make writing a declared type constructor (via `generateTypeCtorDeclarationFn`) difficult or
@@ -115,10 +111,11 @@ function constructTypeCtorParameter(
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, its initType will be:
   //
-  // Pick<rawType, 'inputA'|'inputB'>
+  // Partial<Pick<rawType, 'inputA'|'inputB'>>
   //
-  // Pick here is used to select only those fields from which the generic type parameters of the
-  // directive will be inferred.
+  // Pick selects the fields that can contribute to generic inference. Partial is required so
+  // unbound inputs can be omitted from the call. Filling missing keys with `any` (the previous
+  // approach) poisons inference and defeats TypeScript's `NoInfer` on other inputs.
   //
   // In the special case there are no inputs, initType is set to {}.
   let initType: string | null = null;
@@ -139,15 +136,16 @@ function constructTypeCtorParameter(
       const coercionType =
         transformType !== undefined ? transformType : `typeof ${typeRef}${access}`;
 
+      // Optional so unbound coerced inputs can be omitted without an `any` placeholder.
       coercedKeys.push(
-        `${isUnsafe ? TcbExpr.quoteAndEscape(classPropertyName) : classPropertyName}: ${coercionType}`,
+        `${isUnsafe ? TcbExpr.quoteAndEscape(classPropertyName) : classPropertyName}?: ${coercionType}`,
       );
     }
   }
 
   if (plainKeys.length > 0) {
     // Construct a union of all the field names.
-    initType = `Pick<${typeRefWithGenerics}, ${plainKeys.join(' | ')}>`;
+    initType = `Partial<Pick<${typeRefWithGenerics}, ${plainKeys.join(' | ')}>>`;
   }
   if (coercedKeys.length > 0) {
     let coercedLiteral = '{\n';
@@ -160,12 +158,13 @@ function constructTypeCtorParameter(
   if (signalInputKeys.length > 0) {
     const keyTypeUnion = signalInputKeys.join(' | ');
 
-    // Construct the UnwrapDirectiveSignalInputs<rawType, keyTypeUnion>.
+    // Construct Partial<UnwrapDirectiveSignalInputs<rawType, keyTypeUnion>> so unbound signal
+    // inputs are omitted rather than filled with `any` (which defeats `NoInfer`).
     const unwrapRef = env.referenceExternalSymbol(
       R3Identifiers.UnwrapDirectiveSignalInputs.moduleName,
       R3Identifiers.UnwrapDirectiveSignalInputs.name,
     );
-    const unwrapExpr = `${unwrapRef.print()}<${typeRefWithGenerics}, ${keyTypeUnion}>`;
+    const unwrapExpr = `Partial<${unwrapRef.print()}<${typeRefWithGenerics}, ${keyTypeUnion}>>`;
     initType = initType !== null ? `${initType} & ${unwrapExpr}` : unwrapExpr;
   }
 

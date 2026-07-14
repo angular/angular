@@ -67,19 +67,7 @@ export interface TcbDirectiveBoundInput {
   isTwoWayBinding: boolean;
 }
 
-/**
- * Indicates that a certain field of a directive does not have a corresponding input binding.
- */
-export interface TcbDirectiveUnsetInput {
-  type: 'unset';
-
-  /**
-   * The name of a field on the directive for which no input binding is present.
-   */
-  field: string;
-}
-
-export type TcbDirectiveInput = TcbDirectiveBoundInput | TcbDirectiveUnsetInput;
+export type TcbDirectiveInput = TcbDirectiveBoundInput;
 
 export function getBoundAttributes(
   directive: TcbDirectiveMetadata,
