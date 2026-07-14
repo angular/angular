@@ -52,7 +52,9 @@ import {
   AttributeCompletionKind,
   buildAnimationCompletionEntries,
   buildAttributeCompletionTable,
+  CustomElementsManifestEntryInfo,
   getAttributeCompletionSymbol,
+  getCustomElementsManifestDisplayInfo,
 } from './attribute_completions';
 import {
   DisplayInfo,
@@ -99,6 +101,50 @@ export enum CompletionNodeContext {
 }
 
 const ANIMATION_PHASES = ['start', 'done'];
+const stringLiteralUnionCache = new Map<string, string[] | null>();
+
+/** Returns string literals from a pure string-literal union, allowing nullish members. */
+function stringLiteralUnion(typeText: string): string[] | null {
+  const cached = stringLiteralUnionCache.get(typeText);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const source = ts.createSourceFile(
+    'custom-elements-manifest-completion.ts',
+    `type __CustomElementsManifestCompletion = (${typeText});`,
+    ts.ScriptTarget.Latest,
+    false,
+    ts.ScriptKind.TS,
+  );
+  const declaration = source.statements[0];
+  const values: string[] = [];
+  const collect = (type: ts.TypeNode): boolean => {
+    if (ts.isParenthesizedTypeNode(type)) {
+      return collect(type.type);
+    }
+    if (ts.isUnionTypeNode(type)) {
+      return type.types.every(collect);
+    }
+    if (
+      type.kind === ts.SyntaxKind.UndefinedKeyword ||
+      type.kind === ts.SyntaxKind.NeverKeyword ||
+      (ts.isLiteralTypeNode(type) && type.literal.kind === ts.SyntaxKind.NullKeyword)
+    ) {
+      return true;
+    }
+    if (ts.isLiteralTypeNode(type) && ts.isStringLiteral(type.literal)) {
+      values.push(type.literal.text);
+      return true;
+    }
+    return false;
+  };
+  const result =
+    ts.isTypeAliasDeclaration(declaration) && collect(declaration.type)
+      ? Array.from(new Set(values))
+      : null;
+  stringLiteralUnionCache.set(typeText, result);
+  return result;
+}
 
 function buildBlockSnippet(insertSnippet: boolean, blockName: string, withParens: boolean): string {
   if (!insertSnippet) {
@@ -275,11 +321,12 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     this: LiteralCompletionBuilder,
     options: ts.GetCompletionsAtPositionOptions | undefined,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
+    const manifestResults = this.getCustomElementsManifestLiteralCompletions();
     const location = this.compiler
       .getTemplateTypeChecker()
       .getLiteralCompletionLocation(this.node, this.component);
     if (location === null) {
-      return undefined;
+      return manifestResults;
     }
     const tsResults = this.tsLS.getCompletionsAtPosition(
       location.tcbPath,
@@ -287,7 +334,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       options,
     );
     if (tsResults === undefined) {
-      return undefined;
+      return manifestResults;
     }
 
     let replacementSpan: ts.TextSpan | undefined;
@@ -323,9 +370,45 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
         });
       }
     }
+    for (const result of manifestResults?.entries ?? []) {
+      if (!ngResults.some((entry) => entry.name === result.name)) {
+        ngResults.push({...result, replacementSpan});
+      }
+    }
     return {
       ...tsResults,
       entries: ngResults,
+    };
+  }
+
+  /** Literal string completions available directly from a manifest, independent of strictness. */
+  private getCustomElementsManifestLiteralCompletions(
+    this: LiteralCompletionBuilder,
+  ): ts.CompletionInfo | undefined {
+    if (!(this.node instanceof TextAttribute) || !(this.nodeParent instanceof TmplAstElement)) {
+      return undefined;
+    }
+    const attributeName = this.node.name;
+    const attribute = this.compiler
+      .getTemplateTypeChecker()
+      .getCustomElementsManifestSchema(this.nodeParent.name)
+      ?.attributes?.find((entry) => entry.name === attributeName);
+    const values =
+      attribute?.stringLiteralValues ??
+      (attribute?.typeText === undefined ? null : stringLiteralUnion(attribute.typeText));
+    if (values === null || values.length === 0) {
+      return undefined;
+    }
+    return {
+      isGlobalCompletion: false,
+      isMemberCompletion: false,
+      isNewIdentifierLocation: false,
+      entries: values.map((name) => ({
+        name,
+        kind: ts.ScriptElementKind.string,
+        kindModifiers: ts.ScriptElementKindModifier.none,
+        sortText: name,
+      })),
     };
   }
 
@@ -764,8 +847,13 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       }),
     );
     // Don't provide non-Angular tags (directive === null) because we expect other extensions
-    // (i.e. Emmet) to provide those for HTML files.
-    potentialTags = potentialTags.filter(([_, directive]) => directive !== null);
+    // (i.e. Emmet) to provide those for HTML files. Tags declared in Custom Elements Manifests
+    // (via the `customElementsManifests` compiler option) are kept, since other extensions don't know
+    // about them.
+    const customElementTags = templateTypeChecker.getPotentialCustomElementsManifestTags();
+    potentialTags = potentialTags.filter(
+      ([tag, directive]) => directive !== null || customElementTags.has(tag),
+    );
     const directiveCompletionDetailMap = new Map<string, DirectiveInfoForCompletionDetail>();
 
     const entries: ts.CompletionEntry[] = [];
@@ -786,13 +874,20 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
           symbolName: directive.tsCompletionEntryInfos[0].tsCompletionEntrySymbolName,
         });
       }
+      // Tags declared in a Custom Elements Manifest surface their deprecation status.
+      const manifestSchema =
+        directive === null ? templateTypeChecker.getCustomElementsManifestSchema(tag) : null;
       entries.push({
         kind: tagCompletionKind(directive),
         name: tag,
         sortText: tag,
         replacementSpan,
-        hasAction: directive?.isInScope === true ? undefined : true,
+        hasAction: directive === null || directive.isInScope === true ? undefined : true,
         data: directive?.tsCompletionEntryInfos?.[0]?.tsCompletionEntryData,
+        kindModifiers:
+          manifestSchema?.deprecated !== undefined
+            ? ts.ScriptElementKindModifier.deprecatedModifier
+            : undefined,
       });
     }
 
@@ -844,7 +939,27 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     }
 
     if (directive === undefined || directive === null) {
-      return undefined;
+      // Tags declared in a Custom Elements Manifest have no directive, but may carry
+      // documentation and deprecation metadata from the manifest.
+      const manifestSchema = templateTypeChecker.getCustomElementsManifestSchema(entryName);
+      if (
+        manifestSchema === null ||
+        (manifestSchema.description === undefined && manifestSchema.deprecated === undefined)
+      ) {
+        return undefined;
+      }
+      const manifestDisplayInfo = getCustomElementsManifestDisplayInfo(manifestSchema);
+      return {
+        kind: tagCompletionKind(null),
+        name: entryName,
+        kindModifiers:
+          manifestSchema.deprecated !== undefined
+            ? ts.ScriptElementKindModifier.deprecatedModifier
+            : ts.ScriptElementKindModifier.none,
+        displayParts: [],
+        documentation: manifestDisplayInfo.documentation,
+        tags: manifestDisplayInfo.tags,
+      };
     }
 
     const displayInfo = getDirectiveDisplayInfo(this.tsLS, directive);
@@ -1173,7 +1288,12 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
   ): ts.CompletionEntryDetails | undefined {
     // `entryName` here may be `foo` or `[foo]`, depending on which suggested completion the user
     // chose. Strip off any binding syntax to get the real attribute name.
-    const {name, kind} = stripBindingSugar(entryName);
+    const strippedBinding = stripBindingSugar(entryName);
+    const isExplicitAttributeBinding = strippedBinding.name.startsWith('attr.');
+    const name = isExplicitAttributeBinding
+      ? strippedBinding.name.slice('attr.'.length)
+      : strippedBinding.name;
+    const kind = strippedBinding.kind;
 
     let element: TmplAstElement | TmplAstTemplate;
     if (this.node instanceof TmplAstElement || this.node instanceof TmplAstTemplate) {
@@ -1203,6 +1323,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
      * so the `classPropertyName` can get from the directive meta by the entry name.
      */
     let classPropertyName: string | null = null;
+    let manifestInfo: CustomElementsManifestEntryInfo | undefined = undefined;
 
     if (directiveCompletionDetail === undefined) {
       // If the directive completion detail is not available in the cache, it means that the directive
@@ -1221,6 +1342,15 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       directive = 'directive' in completion ? completion.directive : null;
       attrKind = completion.kind;
       classPropertyName = 'classPropertyName' in completion ? completion.classPropertyName : null;
+      if (completion.kind === AttributeCompletionKind.DomAttribute) {
+        manifestInfo = isExplicitAttributeBinding
+          ? completion.attributeManifestInfo
+          : entryName.startsWith('[')
+            ? completion.propertyManifestInfo
+            : completion.attributeManifestInfo;
+      } else {
+        manifestInfo = 'manifestInfo' in completion ? completion.manifestInfo : undefined;
+      }
     } else {
       const {fileName, entryName: directiveName, pos} = directiveCompletionDetail;
       const node = this.getTsNodeAtPosition(fileName, pos)?.parent;
@@ -1259,8 +1389,17 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       case AttributeCompletionKind.DomProperty:
         // TODO(alxhub): ideally we would show the same documentation as quick info here. However,
         // since these bindings don't exist in the TCB, there is no straightforward way to
-        // retrieve a `ts.Symbol` for the field in the TS DOM definition.
+        // retrieve a `ts.Symbol` for the field in the TS DOM definition. Properties and events
+        // declared in a Custom Elements Manifest carry documentation from the manifest itself.
         displayParts = [];
+        if (manifestInfo !== undefined) {
+          const manifestDisplayInfo = getCustomElementsManifestDisplayInfo(manifestInfo);
+          if (manifestInfo.typeText !== undefined) {
+            displayParts = [{kind: 'text', text: `${entryName}: ${manifestInfo.typeText}`}];
+          }
+          documentation = manifestDisplayInfo.documentation;
+          tags = manifestDisplayInfo.tags;
+        }
         break;
       case AttributeCompletionKind.DirectiveAttribute:
         if (directive === null) {
@@ -1337,7 +1476,10 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     return {
       name: entryName,
       kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
-      kindModifiers: ts.ScriptElementKindModifier.none,
+      kindModifiers:
+        manifestInfo?.deprecated !== undefined
+          ? ts.ScriptElementKindModifier.deprecatedModifier
+          : ts.ScriptElementKindModifier.none,
       displayParts,
       documentation,
       tags,

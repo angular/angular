@@ -9,6 +9,7 @@
 import * as o from '../../../../output/output_ast';
 import {CONTEXT_NAME} from '../../../../render3/view/util';
 import {isUnsafeObjectKey} from '../../../../render3/util';
+import {normalizeCustomElementTagName} from '../../../../schema/custom_elements_manifest_schema';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {
@@ -52,9 +53,21 @@ const DOM_PROPERTY_REMAPPING = new Map([
  */
 export function reify(job: CompilationJob): void {
   for (const unit of job.units) {
+    const elementTags = collectElementTags(unit);
     reifyCreateOperations(unit, unit.create);
-    reifyUpdateOperations(unit, unit.update);
+    reifyUpdateOperations(unit, unit.update, elementTags);
   }
+}
+
+/** Collects element tag names before creation operations are replaced with instructions. */
+function collectElementTags(unit: CompilationUnit): Map<ir.XrefId, string> {
+  const tags = new Map<ir.XrefId, string>();
+  for (const op of unit.create) {
+    if ((op.kind === ir.OpKind.Element || op.kind === ir.OpKind.ElementStart) && op.tag !== null) {
+      tags.set(op.xref, op.tag);
+    }
+  }
+  return tags;
 }
 
 /**
@@ -636,7 +649,11 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
   }
 }
 
-function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
+function reifyUpdateOperations(
+  unit: CompilationUnit,
+  ops: ir.OpList<ir.UpdateOp>,
+  elementTags: Map<ir.XrefId, string> = new Map(),
+): void {
   for (const op of ops) {
     ir.transformExpressionsInOp(
       op,
@@ -649,13 +666,18 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
         ir.OpList.replace(op, ng.advance(op.delta, op.sourceSpan));
         break;
       case ir.OpKind.Property:
+        const exactCustomElementProperty = isExactCustomElementProperty(
+          unit.job,
+          elementTags.get(op.target),
+          op.name,
+        );
         ir.OpList.replace(
           op,
           unit.job.mode === TemplateCompilationMode.DomOnly &&
             op.bindingKind !== ir.BindingKind.LegacyAnimation &&
             op.bindingKind !== ir.BindingKind.Animation
-            ? reifyDomProperty(op)
-            : reifyProperty(op),
+            ? reifyDomProperty(op, exactCustomElementProperty)
+            : reifyProperty(op, exactCustomElementProperty),
         );
         break;
       case ir.OpKind.Control:
@@ -664,7 +686,13 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(
           op,
-          ng.twoWayProperty(op.name, op.expression, op.sanitizer, op.sourceSpan),
+          ng.twoWayProperty(
+            op.name,
+            op.expression,
+            op.sanitizer,
+            op.sourceSpan,
+            isExactCustomElementProperty(unit.job, elementTags.get(op.target), op.name),
+          ),
         );
         break;
       case ir.OpKind.StyleProp:
@@ -707,7 +735,7 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
           ) {
             ir.OpList.replace(op, ng.syntheticHostProperty(op.name, op.expression, op.sourceSpan));
           } else {
-            ir.OpList.replace(op, reifyDomProperty(op));
+            ir.OpList.replace(op, reifyDomProperty(op, false));
           }
         }
         break;
@@ -761,9 +789,12 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
  * @param op A property binding operation.
  * @returns A statement to update the property at runtime.
  */
-function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
+function reifyDomProperty(
+  op: ir.DomPropertyOp | ir.PropertyOp,
+  exactCustomElementProperty: boolean,
+): ir.UpdateOp {
   return ng.domProperty(
-    DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
+    exactCustomElementProperty ? op.name : (DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name),
     op.expression,
     op.sanitizer,
     op.sourceSpan,
@@ -779,10 +810,23 @@ function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
  * @param op A property binding operation.
  * @returns A statement to update the property at runtime.
  */
-function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
+function reifyProperty(op: ir.PropertyOp, exactCustomElementProperty: boolean): ir.UpdateOp {
   return isAriaAttribute(op.name)
     ? ng.ariaProperty(op.name, op.expression, op.sourceSpan)
-    : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan);
+    : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan, exactCustomElementProperty);
+}
+
+function isExactCustomElementProperty(
+  job: CompilationJob,
+  tagName: string | undefined,
+  propertyName: string,
+): boolean {
+  return (
+    tagName !== undefined &&
+    job.customElementPropertyNames
+      ?.get(normalizeCustomElementTagName(tagName))
+      ?.has(propertyName) === true
+  );
 }
 
 function reifyControl(op: ir.ControlOp): ir.UpdateOp {

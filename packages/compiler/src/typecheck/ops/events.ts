@@ -17,6 +17,7 @@ import {TcbDirectiveMetadata} from '../api';
 import {TcbExpressionTranslator, unwrapWritableSignal} from './expression';
 import {ExpressionIdentifier} from '../comments';
 import {checkSplitTwoWayBinding} from './bindings';
+import {getCustomElementsManifestEventCheckType} from './custom_elements_manifest';
 import {LocalSymbol} from './references';
 
 const EVENT_PARAMETER = '$event';
@@ -177,6 +178,28 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, eventType.print());
         this.scope.addStatement(handler);
       } else if (this.tcb.env.config.checkTypeOfDomEvents) {
+        // When the element is a custom element declared in a Custom Elements Manifest and the
+        // event has a validated check type, declare `$event` with that type directly —
+        // `addEventListener` inference would only produce the base `Event` type for it.
+        const manifestCheckType =
+          output.target === null && this.target instanceof Element
+            ? getCustomElementsManifestEventCheckType(
+                this.tcb.env.config,
+                this.target.name,
+                output.name,
+              )
+            : null;
+        if (manifestCheckType !== null) {
+          // The span on the type maps resolution failures of `import()` type queries in the
+          // check type back to the event binding in the template.
+          const eventType = new TcbExpr(`(${manifestCheckType})`).addParseSpanInfo(
+            output.keySpan ?? output.sourceSpan,
+          );
+          const handler = tcbCreateEventHandler(output, this.tcb, this.scope, eventType.print());
+          this.scope.addStatement(handler);
+          continue;
+        }
+
         // If strict checking of DOM events is enabled, generate a call to `addEventListener` on
         // the element instance so that TypeScript's type inference for
         // `HTMLElement.addEventListener` using `HTMLElementEventMap` to infer an accurate type for

@@ -298,4 +298,78 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
         expect(elementschema).toContain(prop);
       });
   });
+
+  describe('custom element schemas', () => {
+    let customRegistry: DomElementSchemaRegistry;
+    beforeEach(() => {
+      customRegistry = new DomElementSchemaRegistry([
+        {
+          tagName: 'my-button',
+          properties: [
+            {name: 'label', type: 'string'},
+            {name: 'disabled', type: 'boolean'},
+            {name: 'count', type: 'number'},
+            {name: 'items', type: 'object'},
+            {name: 'innerHTML', type: 'string'},
+          ],
+          events: [{name: 'itemselect'}],
+        },
+        {tagName: 'my-icon', properties: [], events: []},
+      ]);
+    });
+
+    it('should detect declared custom elements', () => {
+      expect(customRegistry.hasElement('my-button', [])).toBeTruthy();
+      expect(customRegistry.hasElement('MY-BUTTON', [])).toBeTruthy();
+      expect(customRegistry.hasElement('my-icon', [])).toBeTruthy();
+      expect(customRegistry.hasElement('other-element', [])).toBeFalsy();
+    });
+
+    it('should detect declared properties of custom elements', () => {
+      expect(customRegistry.hasProperty('my-button', 'label', [])).toBeTruthy();
+      expect(customRegistry.hasProperty('MY-BUTTON', 'label', [])).toBeTruthy();
+      expect(customRegistry.hasProperty('my-button', 'disabled', [])).toBeTruthy();
+      expect(customRegistry.hasProperty('my-button', 'count', [])).toBeTruthy();
+      expect(customRegistry.hasProperty('my-button', 'items', [])).toBeTruthy();
+    });
+
+    it('should not detect undeclared properties of custom elements', () => {
+      expect(customRegistry.hasProperty('my-button', 'unknown', [])).toBeFalsy();
+      expect(customRegistry.hasProperty('my-icon', 'label', [])).toBeFalsy();
+    });
+
+    it('should inherit standard HTML element properties and events', () => {
+      expect(customRegistry.hasProperty('my-button', 'id', [])).toBeTruthy();
+      expect(customRegistry.hasProperty('my-button', 'hidden', [])).toBeTruthy();
+      expect(customRegistry.allKnownEventsOfElement('my-button')).toContain('click');
+    });
+
+    it('should preserve wildcard security contexts for manifest-declared elements', () => {
+      expect(customRegistry.securityContext('my-button', 'innerHTML', false)).toBe(
+        SecurityContext.HTML,
+      );
+    });
+
+    it('should include declared properties and events in the allKnown* queries', () => {
+      expect(customRegistry.allKnownElementNames()).toContain('my-button');
+      expect(customRegistry.allKnownAttributesOfElement('my-button')).toContain('label');
+      expect(customRegistry.allKnownEventsOfElement('my-button')).toContain('itemselect');
+    });
+
+    it('should prefer manifest precision while preserving schema behavior for uncovered tags', () => {
+      expect(
+        customRegistry.hasProperty('my-button', 'unknown', [CUSTOM_ELEMENTS_SCHEMA]),
+      ).toBeFalsy();
+      expect(customRegistry.hasElement('other-element', [CUSTOM_ELEMENTS_SCHEMA])).toBeTruthy();
+      expect(
+        customRegistry.hasProperty('other-element', 'unknown', [CUSTOM_ELEMENTS_SCHEMA]),
+      ).toBeTruthy();
+      expect(customRegistry.hasProperty('my-button', 'unknown', [NO_ERRORS_SCHEMA])).toBeTruthy();
+    });
+
+    it('should not affect other elements', () => {
+      expect(customRegistry.hasProperty('div', 'label', [])).toBeFalsy();
+      expect(customRegistry.hasElement('div', [])).toBeTruthy();
+    });
+  });
 });

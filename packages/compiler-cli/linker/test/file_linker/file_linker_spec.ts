@@ -179,6 +179,34 @@ describe('FileLinker', () => {
     });
   });
 
+  it('should preserve exact custom-element property names from a partial declaration', () => {
+    const source = `
+      ɵɵngDeclareComponent({
+        minVersion: "22.0.0",
+        version: "0.0.0-PLACEHOLDER",
+        ngImport: core,
+        template: \`<my-button [readonly]="true"></my-button>\`,
+        isInline: true,
+        isStandalone: true,
+        customElementPropertyNames: {"my-button": ["readonly"]},
+        type: SomeComp
+      });
+    `;
+    const {fileLinker} = createFileLinker(source);
+    const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+    const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+      .expression as ts.CallExpression;
+    const result = fileLinker.linkPartialDeclaration(
+      'ɵɵngDeclareComponent',
+      [call.arguments[0]],
+      new MockDeclarationScope(),
+    );
+    const output = ts.createPrinter().printNode(ts.EmitHint.Unspecified, result, sourceFile);
+
+    expect(output).toContain('ɵɵdomProperty("readonly", true)');
+    expect(output).not.toContain('readOnly');
+  });
+
   describe('legacyOptionalChaining support', () => {
     function linkComponentWithTemplate(version: string, template: string): string {
       // Note that the `minVersion` is set to the placeholder,

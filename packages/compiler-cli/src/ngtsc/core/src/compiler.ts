@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LEGACY_OPTIONAL_CHAINING_DEFAULT, TypeCheckingConfig} from '@angular/compiler';
+import {
+  ɵCustomElementsManifestSchema as CustomElementsManifestSchema,
+  LEGACY_OPTIONAL_CHAINING_DEFAULT,
+  TypeCheckingConfig,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {
@@ -19,6 +23,7 @@ import {
   ReferencesRegistry,
 } from '../../annotations';
 import {InjectableClassRegistry, JitDeclarationRegistry} from '../../annotations/common';
+import {loadCustomElementsManifests} from '../../custom_elements_manifest';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {
   COMPILER_ERRORS_WITH_GUIDES,
@@ -145,7 +150,7 @@ interface LazyCompilationState {
   dtsTransforms: DtsTransformRegistry;
   aliasingHost: AliasingHost | null;
   refEmitter: ReferenceEmitter;
-  templateTypeChecker: TemplateTypeChecker;
+  templateTypeChecker: TemplateTypeCheckerImpl;
   resourceRegistry: ResourceRegistry;
   extendedTemplateChecker: ExtendedTemplateChecker | null;
   templateSemanticsChecker: TemplateSemanticsChecker | null;
@@ -399,6 +404,22 @@ export class NgCompiler {
   private readonly emitDeclarationOnly: boolean;
 
   /**
+   * Custom element schemas loaded from the manifests configured via the `customElementsManifests` option,
+   * or `null` if none are configured.
+   */
+  private customElementsManifestSchemas: CustomElementsManifestSchema[] | null = null;
+
+  /** Files whose changes can alter configured manifest resolution or contents. */
+  private customElementsManifestResolutionPaths: Set<AbsoluteFsPath> = new Set();
+
+  /**
+   * Diagnostics produced while loading Custom Elements Manifests. Kept separate from
+   * `constructionDiagnostics` so they can be replaced when a manifest changes and so a broken
+   * manifest doesn't disable unrelated checks.
+   */
+  private customElementsManifestDiagnostics: ts.Diagnostic[] = [];
+
+  /**
    * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
    * new compilation uses a fresh `PerfRecorder`. Thus, classes created with a lifespan of the
    * `NgCompiler` use a `DelegatingPerfRecorder` so the `PerfRecorder` they write to can be updated
@@ -485,6 +506,7 @@ export class NgCompiler {
       ...this.adapter.constructionDiagnostics,
       ...verifyCompatibleTypeCheckOptions(this.options),
       ...verifyEmitDeclarationOnly(this.options),
+      ...verifyCustomElementsManifestsOption(this.options),
     );
 
     this.currentProgram = inputProgram;
@@ -508,6 +530,32 @@ export class NgCompiler {
       moduleResolutionCache,
     );
     this.resourceManager = new AdapterResourceLoader(adapter, this.options);
+
+    const customElementsManifests = getValidCustomElementsManifestsOption(this.options);
+    if (customElementsManifests !== null && customElementsManifests.length > 0) {
+      const manifestResult = loadCustomElementsManifests(
+        customElementsManifests,
+        resolve(this.options['basePath'] ?? this.adapter.getCurrentDirectory()),
+        this.options,
+        this.adapter,
+        moduleResolutionCache,
+        inputProgram.getTypeChecker(),
+      );
+      this.customElementsManifestSchemas = manifestResult.schemas;
+      this.customElementsManifestResolutionPaths = manifestResult.resolutionPaths;
+      this.customElementsManifestDiagnostics = manifestResult.diagnostics;
+      // Manifest schemas affect every template in the program. Record each manifest as a global
+      // resource dependency so incremental build hosts invalidate all source files and include the
+      // manifests in their resource watch set.
+      for (const sourceFile of inputProgram.getSourceFiles()) {
+        if (sourceFile.isDeclarationFile || this.adapter.isShim(sourceFile)) {
+          continue;
+        }
+        for (const resolutionPath of this.customElementsManifestResolutionPaths) {
+          this.incrementalCompilation.depGraph.addResourceDependency(sourceFile, resolutionPath);
+        }
+      }
+    }
     this.cycleAnalyzer = new CycleAnalyzer(
       new ImportGraph(inputProgram.getTypeChecker(), this.delegatingPerfRecorder),
     );
@@ -544,9 +592,59 @@ export class NgCompiler {
     this.delegatingPerfRecorder.target = perfRecorder;
 
     perfRecorder.inPhase(PerfPhase.ResourceUpdate, () => {
+      let manifestChanged = false;
+      for (const resourceFile of changedResources) {
+        if (this.customElementsManifestResolutionPaths.has(resolve(resourceFile))) {
+          manifestChanged = true;
+          break;
+        }
+      }
+      if (manifestChanged) {
+        // A Custom Elements Manifest changed. Reload the schemas, update the existing template
+        // type-checking configuration, and invalidate analyzed components so their TCBs are
+        // regenerated. Retaining the compilation preserves the finalized semantic dependency
+        // graph, which cannot safely be recreated during a resource-only update.
+        const manifestResult = loadCustomElementsManifests(
+          getValidCustomElementsManifestsOption(this.options) ?? [],
+          resolve(this.options['basePath'] ?? this.adapter.getCurrentDirectory()),
+          this.options,
+          this.adapter,
+          null,
+          this.inputProgram.getTypeChecker(),
+        );
+        this.customElementsManifestSchemas = manifestResult.schemas;
+        this.customElementsManifestResolutionPaths = manifestResult.resolutionPaths;
+        this.customElementsManifestDiagnostics = manifestResult.diagnostics;
+        for (const sourceFile of this.inputProgram.getSourceFiles()) {
+          if (sourceFile.isDeclarationFile || this.adapter.isShim(sourceFile)) {
+            continue;
+          }
+          for (const resolutionPath of this.customElementsManifestResolutionPaths) {
+            this.incrementalCompilation.depGraph.addResourceDependency(sourceFile, resolutionPath);
+          }
+        }
+        this.resourceManager.invalidate();
+        if (this.compilation !== null) {
+          this.compilation.templateTypeChecker.updateCustomElementsManifestSchemas(
+            this.customElementsManifestSchemas,
+          );
+          for (const records of this.compilation.traitCompiler.getAnalyzedRecords().values()) {
+            for (const record of records) {
+              if (
+                ts.isClassDeclaration(record.node) &&
+                this.compilation.resourceRegistry.getTemplate(record.node) !== null
+              ) {
+                this.compilation.templateTypeChecker.invalidateClass(record.node);
+              }
+            }
+          }
+        }
+      }
+
       if (this.compilation === null) {
-        // Analysis hasn't happened yet, so no update is necessary - any changes to resources will
-        // be captured by the initial analysis pass itself.
+        // Analysis hasn't happened yet, so no update is necessary for component resources - any
+        // changes to them will be captured by the initial analysis pass itself. Manifest changes
+        // were handled above because their schemas were loaded before analysis in the constructor.
         return;
       }
 
@@ -692,7 +790,9 @@ export class NgCompiler {
    * Get all setup-related diagnostics for this compilation.
    */
   getOptionDiagnostics(): ts.Diagnostic[] {
-    return this.constructionDiagnostics;
+    return this.customElementsManifestDiagnostics.length === 0
+      ? this.constructionDiagnostics
+      : [...this.constructionDiagnostics, ...this.customElementsManifestDiagnostics];
   }
 
   /**
@@ -1150,6 +1250,8 @@ export class NgCompiler {
       };
     }
 
+    typeCheckingConfig.customElementsManifestSchemas = this.customElementsManifestSchemas;
+
     // Apply explicitly configured strictness flags on top of the default configuration
     // based on "strictTemplates".
     if (this.options.strictInputTypes !== undefined) {
@@ -1543,6 +1645,7 @@ export class NgCompiler {
         this.enableSelectorless,
         this.emitDeclarationOnly,
         this.options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
+        () => this.customElementsManifestSchemas,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
@@ -1844,6 +1947,35 @@ function verifyEmitDeclarationOnly(options: NgCompilerOptions): ts.Diagnostic[] 
       messageText: 'TS compiler option "emitDeclarationOnly" is not supported.',
     }),
   ];
+}
+
+function verifyCustomElementsManifestsOption(options: NgCompilerOptions): ts.Diagnostic[] {
+  const value = (options as {customElementsManifests?: unknown}).customElementsManifests;
+  if (
+    value === undefined ||
+    (Array.isArray(value) &&
+      value.every((entry) => typeof entry === 'string' && entry.trim().length > 0))
+  ) {
+    return [];
+  }
+  return [
+    makeConfigDiagnostic({
+      category: ts.DiagnosticCategory.Error,
+      code: ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_OPTION,
+      messageText:
+        'Angular compiler option "customElementsManifests" must be an array of non-empty strings.',
+    }),
+  ];
+}
+
+function getValidCustomElementsManifestsOption(
+  options: NgCompilerOptions,
+): readonly string[] | null {
+  const value = (options as {customElementsManifests?: unknown}).customElementsManifests;
+  return Array.isArray(value) &&
+    value.every((entry) => typeof entry === 'string' && entry.trim().length > 0)
+    ? value
+    : null;
 }
 
 function makeConfigDiagnostic({

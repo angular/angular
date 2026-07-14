@@ -103,6 +103,164 @@ describe('getSemanticDiagnostics', () => {
     expect(diags).toEqual([]);
   });
 
+  it('should report invalid interpolated custom-element manifest properties', () => {
+    const manifest = {
+      schemaVersion: '1.0.0',
+      modules: [
+        {
+          kind: 'javascript-module',
+          path: 'my-meter.js',
+          declarations: [
+            {
+              kind: 'class',
+              name: 'MyMeter',
+              customElement: true,
+              tagName: 'my-meter',
+              members: [{kind: 'field', name: 'value', type: {text: 'number'}}],
+            },
+          ],
+        },
+      ],
+    };
+    const project = env.addProject(
+      'test-cem-interpolation',
+      {
+        'custom-elements.json': JSON.stringify(manifest),
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './app.html'})
+          export class AppComponent { value = 1; }
+        `,
+        'app.html': `<my-meter value="{{ value }}"></my-meter>`,
+      },
+      {strictTemplates: true, customElementsManifests: ['./custom-elements.json']},
+    );
+
+    const diags = project.getDiagnosticsForFile('app.html');
+    expect(diags.length).toBe(1);
+    expect(diags[0].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
+  });
+
+  it('should update custom-element manifest diagnostics after an editor resource change', () => {
+    const manifest = (type: string) => ({
+      schemaVersion: '1.0.0',
+      modules: [
+        {
+          kind: 'javascript-module',
+          path: 'my-meter.js',
+          declarations: [
+            {
+              kind: 'class',
+              name: 'MyMeter',
+              customElement: true,
+              tagName: 'my-meter',
+              members: [{kind: 'field', name: 'value', type: {text: type}}],
+            },
+          ],
+        },
+      ],
+    });
+    const project = env.addProject(
+      'test-cem-resource-change',
+      {
+        'custom-elements.json': JSON.stringify(manifest('number')),
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './app.html'})
+          export class AppComponent {}
+        `,
+        'app.html': `<my-meter [value]="'text'"></my-meter>`,
+      },
+      {strictTemplates: true, customElementsManifests: ['./custom-elements.json']},
+    );
+
+    expect(
+      project.getDiagnosticsForFile('app.html').map((diagnostic) => diagnostic.messageText),
+    ).toEqual([`Type 'string' is not assignable to type 'number'.`]);
+
+    // The first compilation registered the manifest as a project resource. Editing that resource
+    // must invalidate the Angular compiler even though the TypeScript program is unchanged.
+    project.openFile('custom-elements.json').contents = JSON.stringify(manifest('string'));
+
+    expect(project.getDiagnosticsForFile('app.html')).toEqual([]);
+  });
+
+  it('should resolve manifest type references through declarations outside the app program', () => {
+    const manifest = {
+      schemaVersion: '1.0.0',
+      modules: [
+        {
+          kind: 'javascript-module',
+          path: 'button.js',
+          declarations: [
+            {
+              kind: 'class',
+              name: 'Button',
+              customElement: true,
+              tagName: 'button-box',
+              members: [
+                {
+                  kind: 'field',
+                  name: 'variant',
+                  attribute: 'variant',
+                  type: {
+                    text: 'ButtonVariant',
+                    references: [{name: 'ButtonVariant', module: 'button.js', start: 0, end: 13}],
+                  },
+                },
+              ],
+            },
+          ],
+          exports: [
+            {kind: 'js', name: 'Button', declaration: {name: 'Button'}},
+            {kind: 'custom-element-definition', name: 'button-box', declaration: {name: 'Button'}},
+          ],
+        },
+      ],
+    };
+    const project = env.addProject(
+      'test-cem-transitive-types',
+      {
+        'node_modules/@test/elements/package.json': JSON.stringify({
+          name: '@test/elements',
+          customElements: './custom-elements.json',
+          exports: {
+            './package.json': './package.json',
+            './button.js': {
+              types: './button/index.d.ts',
+              default: './button.js',
+            },
+          },
+        }),
+        'node_modules/@test/elements/custom-elements.json': JSON.stringify(manifest),
+        'node_modules/@test/elements/button/index.d.ts': `export * from './button';`,
+        'node_modules/@test/elements/button/button.d.ts': `
+          export type ButtonVariant = 'primary' | 'secondary';
+          export declare class Button extends HTMLElement {
+            variant?: ButtonVariant;
+          }
+        `,
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './app.html'})
+          export class AppComponent {}
+        `,
+        'app.html': `<button-box variant="invalid"></button-box>`,
+      },
+      {strictTemplates: true, customElementsManifests: ['@test/elements']},
+    );
+
+    // The component deliberately does not import the custom-element package. The language service
+    // must still follow the declaration entry point's transitive re-export when validating the CEM.
+    expect(project.ngLS.getCompilerOptionsDiagnostics()).toEqual([]);
+    expect(
+      project.getDiagnosticsForFile('app.html').map((diagnostic) => diagnostic.messageText),
+    ).toEqual([`Type '"invalid"' is not assignable to type 'ButtonVariant'.`]);
+  });
+
   it('should not report external template diagnostics on the TS file', () => {
     const files = {
       'app.ts': `

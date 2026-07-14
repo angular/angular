@@ -10,6 +10,7 @@ import {SchemaMetadata} from '../core';
 import {AbsoluteSourceSpan} from '../expression_parser/ast';
 import {ClassPropertyMapping, ClassPropertyName, InputOrOutput} from '../property_mapping';
 import {BoundTarget, LegacyAnimationTriggerNames, MatchSource} from '../render3/view/t2_api';
+import {CustomElementsManifestSchema} from '../schema/custom_elements_manifest_schema';
 import {TcbExpr} from './ops/codegen';
 
 export interface TypeCtorMetadata {
@@ -243,6 +244,13 @@ export interface TypeCheckingConfig {
    * `checkTemplateBodies` setting.
    */
   alwaysCheckSchemaInTemplateBodies: boolean;
+
+  /**
+   * Custom element schemas parsed from Custom Elements Manifests (`custom-elements.json`)
+   * configured via the `customElementsManifests` compiler option, used to extend the DOM schema for
+   * element and property checks, or `null` if none are configured.
+   */
+  customElementsManifestSchemas?: CustomElementsManifestSchema[] | null;
 
   /**
    * Whether to check resolvable queries.

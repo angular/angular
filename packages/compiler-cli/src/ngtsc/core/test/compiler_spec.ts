@@ -17,6 +17,7 @@ import {
   setFileSystem,
 } from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
+import {ErrorCode, ngErrorCode} from '../../diagnostics';
 import {IncrementalBuildStrategy, NoopIncrementalBuildStrategy} from '../../incremental';
 import {ProgramDriver, TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection';
@@ -100,6 +101,32 @@ runInEachFileSystem(() => {
       );
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toContain('does_not_exist');
+    });
+
+    it('should diagnose an invalid customElementsManifests option without throwing', () => {
+      const sourceFile = _('/cmp.ts');
+      fs.writeFile(sourceFile, `export class Cmp {}`);
+      const options: NgCompilerOptions = {
+        customElementsManifests: [42] as unknown as string[],
+      };
+      const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+      const host = NgCompilerHost.wrap(baseHost, [sourceFile], options, /* oldProgram */ null);
+      const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+      const compiler = makeFreshCompiler(
+        host,
+        options,
+        program,
+        new TsCreateProgramDriver(program, host, options, []),
+        new NoopIncrementalBuildStrategy(),
+        /** enableTemplateTypeChecker */ false,
+        /* usePoisonedData */ false,
+      );
+
+      const diagnostics = compiler.getOptionDiagnostics();
+      expect(diagnostics.length).toBe(1);
+      expect(diagnostics[0].code).toBe(
+        ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_OPTION),
+      );
     });
 
     describe('getComponentsWithTemplateFile', () => {
@@ -374,6 +401,239 @@ runInEachFileSystem(() => {
     });
 
     describe('resource-only changes', () => {
+      it('should reload a changed manifest before the first analysis', () => {
+        const COMPONENT = _('/cmp.ts');
+        const MANIFEST = _('/custom-elements.json');
+        fs.writeFile(
+          COMPONENT,
+          `
+          import {Component} from '@angular/core';
+          @Component({template: '<new-element></new-element>'})
+          export class Cmp {}
+        `,
+        );
+        const manifest = (tagName: string) =>
+          JSON.stringify({
+            schemaVersion: '1.0.0',
+            modules: [
+              {
+                path: 'element.js',
+                declarations: [{kind: 'class', name: 'ElementClass', customElement: true, tagName}],
+              },
+            ],
+          });
+        fs.writeFile(MANIFEST, manifest('old-element'));
+
+        const options: NgCompilerOptions = {
+          strictTemplates: true,
+          basePath: _('/'),
+          customElementsManifests: ['./custom-elements.json'],
+        };
+        const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+        const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
+        const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+        const compilerA = makeFreshCompiler(
+          host,
+          options,
+          program,
+          new TsCreateProgramDriver(program, host, options, []),
+          new NoopIncrementalBuildStrategy(),
+          /** enableTemplateTypeChecker */ false,
+          /* usePoisonedData */ false,
+        );
+
+        // Change the manifest before anything causes the compiler to analyze the program.
+        fs.writeFile(MANIFEST, manifest('new-element'));
+        const compilerB = NgCompiler.fromTicket(
+          resourceChangeTicket(compilerA, new Set([MANIFEST])),
+          host,
+        );
+
+        const componentSf = getSourceFileOrError(program, COMPONENT);
+        expect(compilerB.getDiagnosticsForFile(componentSf, OptimizeFor.WholeProgram)).toEqual([]);
+        expect(compilerB.getResourceDependencies(componentSf)).toContain(MANIFEST);
+      });
+
+      it('should reload a configured manifest that is created after initial analysis', () => {
+        const COMPONENT = _('/cmp.ts');
+        const MANIFEST = _('/custom-elements.json');
+        fs.writeFile(
+          COMPONENT,
+          `
+          import {Component} from '@angular/core';
+          @Component({template: '<new-element></new-element>'})
+          export class Cmp {}
+        `,
+        );
+        const options: NgCompilerOptions = {
+          strictTemplates: true,
+          basePath: _('/'),
+          customElementsManifests: ['./custom-elements.json'],
+        };
+        const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+        const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
+        const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+        const compilerA = makeFreshCompiler(
+          host,
+          options,
+          program,
+          new TsCreateProgramDriver(program, host, options, []),
+          new NoopIncrementalBuildStrategy(),
+          /** enableTemplateTypeChecker */ false,
+          /* usePoisonedData */ false,
+        );
+        const componentSf = getSourceFileOrError(program, COMPONENT);
+
+        expect(compilerA.getOptionDiagnostics().length).toBe(1);
+        expect(compilerA.getDiagnosticsForFile(componentSf, OptimizeFor.WholeProgram).length).toBe(
+          1,
+        );
+        fs.writeFile(
+          MANIFEST,
+          JSON.stringify({
+            schemaVersion: '1.0.0',
+            modules: [
+              {
+                kind: 'javascript-module',
+                path: 'element.js',
+                declarations: [
+                  {
+                    kind: 'class',
+                    name: 'NewElement',
+                    customElement: true,
+                    tagName: 'new-element',
+                  },
+                ],
+              },
+            ],
+          }),
+        );
+
+        const compilerB = NgCompiler.fromTicket(
+          resourceChangeTicket(compilerA, new Set([MANIFEST])),
+          host,
+        );
+        expect(compilerB.getOptionDiagnostics()).toEqual([]);
+        expect(compilerB.getDiagnosticsForFile(componentSf, OptimizeFor.WholeProgram)).toEqual([]);
+        expect(compilerB.getResourceDependencies(componentSf)).toContain(MANIFEST);
+      });
+
+      it('should process manifest and component resource changes from the same batch', () => {
+        const COMPONENT = _('/cmp.ts');
+        const TEMPLATE = _('/cmp.html');
+        const MANIFEST = _('/custom-elements.json');
+        const manifest = (tagName: string) =>
+          JSON.stringify({
+            schemaVersion: '1.0.0',
+            modules: [
+              {
+                kind: 'javascript-module',
+                path: 'element.js',
+                declarations: [{kind: 'class', name: 'ElementClass', customElement: true, tagName}],
+              },
+            ],
+          });
+        fs.writeFile(
+          COMPONENT,
+          `
+            import {Component} from '@angular/core';
+            @Component({templateUrl: './cmp.html'})
+            export class Cmp {}
+          `,
+        );
+        fs.writeFile(TEMPLATE, '<old-element></old-element>');
+        fs.writeFile(MANIFEST, manifest('old-element'));
+
+        const options: NgCompilerOptions = {
+          strictTemplates: true,
+          basePath: _('/'),
+          customElementsManifests: ['./custom-elements.json'],
+        };
+        const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+        const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
+        const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+        const compilerA = makeFreshCompiler(
+          host,
+          options,
+          program,
+          new TsCreateProgramDriver(program, host, options, []),
+          new NoopIncrementalBuildStrategy(),
+          /** enableTemplateTypeChecker */ false,
+          /* usePoisonedData */ false,
+        );
+        const componentSf = getSourceFileOrError(program, COMPONENT);
+        expect(compilerA.getDiagnosticsForFile(componentSf, OptimizeFor.WholeProgram)).toEqual([]);
+
+        fs.writeFile(TEMPLATE, '<new-element></new-element>');
+        fs.writeFile(MANIFEST, manifest('new-element'));
+        const compilerB = NgCompiler.fromTicket(
+          resourceChangeTicket(compilerA, new Set([MANIFEST, TEMPLATE])),
+          host,
+        );
+
+        expect(compilerB.getDiagnosticsForFile(componentSf, OptimizeFor.WholeProgram)).toEqual([]);
+      });
+
+      it('should reload a bare-package manifest when its package.json mapping changes', () => {
+        const COMPONENT = _('/cmp.ts');
+        const PACKAGE_JSON = _('/node_modules/@my/lib/package.json');
+        const manifest = (tagName: string) =>
+          JSON.stringify({
+            schemaVersion: '1.0.0',
+            modules: [
+              {
+                kind: 'javascript-module',
+                path: 'element.js',
+                declarations: [{kind: 'class', name: 'ElementClass', customElement: true, tagName}],
+              },
+            ],
+          });
+        fs.writeFile(
+          COMPONENT,
+          `
+          import {Component} from '@angular/core';
+          @Component({template: '<new-element></new-element>'})
+          export class Cmp {}
+        `,
+        );
+        fs.ensureDir(_('/node_modules/@my/lib'));
+        fs.writeFile(_('/node_modules/@my/lib/old.json'), manifest('old-element'));
+        fs.writeFile(_('/node_modules/@my/lib/new.json'), manifest('new-element'));
+        fs.writeFile(PACKAGE_JSON, JSON.stringify({name: '@my/lib', customElements: './old.json'}));
+        const options: NgCompilerOptions = {
+          strictTemplates: true,
+          basePath: _('/'),
+          customElementsManifests: ['@my/lib'],
+        };
+        const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+        const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
+        const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+        const compilerA = makeFreshCompiler(
+          host,
+          options,
+          program,
+          new TsCreateProgramDriver(program, host, options, []),
+          new NoopIncrementalBuildStrategy(),
+          /** enableTemplateTypeChecker */ false,
+          /* usePoisonedData */ false,
+        );
+        const componentSf = getSourceFileOrError(program, COMPONENT);
+        expect(compilerA.getDiagnosticsForFile(componentSf, OptimizeFor.WholeProgram).length).toBe(
+          1,
+        );
+        expect(compilerA.getResourceDependencies(componentSf)).toContain(PACKAGE_JSON);
+
+        fs.writeFile(PACKAGE_JSON, JSON.stringify({name: '@my/lib', customElements: './new.json'}));
+        const compilerB = NgCompiler.fromTicket(
+          resourceChangeTicket(compilerA, new Set([PACKAGE_JSON])),
+          host,
+        );
+        expect(compilerB.getDiagnosticsForFile(componentSf, OptimizeFor.WholeProgram)).toEqual([]);
+        expect(compilerB.getResourceDependencies(componentSf)).toContain(
+          _('/node_modules/@my/lib/new.json'),
+        );
+      });
+
       it('should reuse the full compilation state for a resource-only change', () => {
         const COMPONENT = _('/cmp.ts');
         const TEMPLATE = _('/template.html');

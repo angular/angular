@@ -4138,7 +4138,9 @@ runInEachFileSystem(() => {
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
 1. If 'my-foo' is an Angular component, then verify that it is part of this module.
-2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
+2. If 'my-foo' is a Web Component, configure its Custom Elements Manifest in 'angularCompilerOptions.customElementsManifests'.
+3. If no Custom Elements Manifest is available for 'my-foo', add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component.
+4. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
       });
 
       it('should have a descriptive error for unknown elements that contain a dash in standalone components', () => {
@@ -4161,7 +4163,9 @@ runInEachFileSystem(() => {
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
 1. If 'my-foo' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.`);
+2. If 'my-foo' is a Web Component, configure its Custom Elements Manifest in 'angularCompilerOptions.customElementsManifests'.
+3. If no Custom Elements Manifest is available for 'my-foo', add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component.
+4. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
       });
 
       it('should check for unknown properties', () => {
@@ -4258,7 +4262,9 @@ runInEachFileSystem(() => {
         expect(diags.length).toBe(2);
         expect(diags[0].messageText).toBe(`'custom-element' is not a known element:
 1. If 'custom-element' is an Angular component, then verify that it is part of this module.
-2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
+2. If 'custom-element' is a Web Component, configure its Custom Elements Manifest in 'angularCompilerOptions.customElementsManifests'.
+3. If no Custom Elements Manifest is available for 'custom-element', add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component.
+4. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
         expect(diags[1].messageText)
           .toBe(`Can't bind to 'foo' since it isn't a known property of 'custom-element'.
 1. If 'custom-element' is an Angular component and it has 'foo' input, then verify that it is part of this module.
@@ -4450,6 +4456,1169 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
+      });
+    });
+
+    describe('schema checking with custom elements manifests', () => {
+      const manifest = {
+        schemaVersion: '1.0.0',
+        modules: [
+          {
+            kind: 'javascript-module',
+            path: 'my-button.js',
+            declarations: [
+              {
+                kind: 'class',
+                name: 'MyButton',
+                customElement: true,
+                tagName: 'my-button',
+                members: [
+                  {kind: 'field', name: 'label', type: {text: 'string'}},
+                  {kind: 'field', name: 'disabled', type: {text: 'boolean'}},
+                  {kind: 'field', name: 'innerHTML', type: {text: 'string'}},
+                  {
+                    kind: 'field',
+                    name: 'readonly',
+                    attribute: 'readonly',
+                    type: {text: 'boolean'},
+                  },
+                  {kind: 'field', name: 'validity', type: {text: 'object'}, readonly: true},
+                ],
+                attributes: [{name: 'data-mode', type: {text: 'string'}}],
+                events: [{name: 'itemselect'}],
+              },
+            ],
+          },
+        ],
+      };
+
+      beforeEach(() => {
+        env.tsconfig({strictTemplates: false, customElementsManifests: ['./custom-elements.json']});
+        env.write('custom-elements.json', JSON.stringify(manifest));
+      });
+
+      it('should not produce diagnostics for elements and properties declared in a manifest', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<my-button [label]="\\'go\\'" [disabled]="true" [id]="\\'a\\'" (itemselect)="1" (click)="1">test</my-button>',
+            standalone: false,
+          })
+          export class FooCmp {}
+          @NgModule({
+            declarations: [FooCmp],
+          })
+          export class FooModule {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should emit exact manifest property names without HTML attribute remapping', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'blah',
+              template: '<my-button [readonly]="true" [tabindex]="0"></my-button>',
+            })
+            export class FooCmp {}
+          `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+        env.driveMain();
+        const js = env.getContents('test.js');
+        expect(js).toContain('ɵɵdomProperty("readonly", true)');
+        // Inherited standard DOM properties continue to use Angular's normal mapping.
+        expect(js).toContain('("tabIndex", 0)');
+      });
+
+      it('should preserve sanitizers when emitting exact manifest property names', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'blah',
+              template: '<my-button [innerHTML]="html"></my-button>',
+            })
+            export class FooCmp { html = '<strong>content</strong>'; }
+          `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain(
+          'i0.ɵɵdomProperty("innerHTML", ctx.html, i0.ɵɵsanitizeHtml)',
+        );
+      });
+
+      it('should normalize manifest tag names for checking and exact property code generation', () => {
+        env.tsconfig({
+          strictTemplates: true,
+          customElementsManifests: ['./custom-elements.json'],
+        });
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'blah',
+              template: '<MY-BUTTON [label]="123" [readonly]="true"></MY-BUTTON>',
+            })
+            export class FooCmp {}
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(`not assignable to type 'string'`);
+
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'blah',
+              template: '<MY-BUTTON [label]="\\'go\\'" [readonly]="true"></MY-BUTTON>',
+            })
+            export class FooCmp {}
+          `,
+        );
+        expect(env.driveDiagnostics()).toEqual([]);
+        env.driveMain();
+        const js = env.getContents('test.js');
+        expect(js).toContain('("readonly", true)');
+        expect(js).not.toContain('("readOnly", true)');
+      });
+
+      it('should preserve exact manifest property names when directives require full mode', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, Directive} from '@angular/core';
+            @Directive({selector: '[marker]'})
+            export class Marker {}
+            @Component({
+              selector: 'blah',
+              imports: [Marker],
+              template: '<my-button marker [readonly]="true"></my-button>',
+            })
+            export class FooCmp {}
+          `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain('ɵɵproperty("readonly", true, null, true)');
+      });
+
+      it('should retain used exact manifest properties in partial declarations', () => {
+        env.tsconfig({
+          compilationMode: 'partial',
+          customElementsManifests: ['./custom-elements.json'],
+        });
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'blah',
+              template: '<my-button [readonly]="true"></my-button>',
+            })
+            export class FooCmp {}
+          `,
+        );
+
+        env.driveMain();
+        expect(env.getContents('test.js')).toContain(
+          'customElementPropertyNames: { "my-button": ["readonly"] }',
+        );
+      });
+
+      it('should produce diagnostics for undeclared properties of a manifest-declared element', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<my-button [unknown]="1">test</my-button>',
+            standalone: false,
+          })
+          export class FooCmp {}
+          @NgModule({
+            declarations: [FooCmp],
+          })
+          export class FooModule {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE));
+        expect(diags[0].messageText).toContain(
+          `Can't bind to 'unknown' since it isn't a known property of 'my-button'.`,
+        );
+        expect(diags[0].messageText).toContain('does not declare a bindable property');
+        expect(diags[0].messageText).not.toContain('CUSTOM_ELEMENTS_SCHEMA');
+      });
+
+      it('should prefer manifest precision while CUSTOM_ELEMENTS_SCHEMA covers other tags', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<my-button [unknown]="1"></my-button><other-element [anything]="1"></other-element>',
+            standalone: false,
+          })
+          export class FooCmp {}
+          @NgModule({
+            declarations: [FooCmp],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+          })
+          export class FooModule {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE));
+        expect(diags[0].messageText).toContain(`Can't bind to 'unknown'`);
+      });
+
+      it('should not treat an attribute-only declaration as a JavaScript property', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<my-button data-mode="compact" [data-mode]="\\'compact\\'"></my-button>',
+          })
+          export class FooCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE));
+        expect(diags[0].messageText).toContain(`Can't bind to 'data-mode'`);
+      });
+
+      it('should produce diagnostics for bindings to readonly manifest properties', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<my-button [validity]="1">test</my-button>',
+          })
+          export class FooCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE));
+        expect(diags[0].messageText).toContain(
+          `Can't bind to 'validity' since it isn't a known property of 'my-button'.`,
+        );
+      });
+
+      it('should allow the slot attribute on children of manifest-declared elements', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<my-button><span slot="icon">i</span><span [slot]="\\'label\\'">l</span></my-button>',
+          })
+          export class FooCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should allow the slot attribute on manifest-declared child elements', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<my-button><my-button [slot]="\\'nested\\'">n</my-button></my-button>',
+          })
+          export class FooCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should produce diagnostics for elements not declared in a manifest', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<other-element>test</other-element>',
+            standalone: false,
+          })
+          export class FooCmp {}
+          @NgModule({
+            declarations: [FooCmp],
+          })
+          export class FooModule {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT));
+        expect(diags[0].messageText).toContain(`'other-element' is not a known element`);
+      });
+
+      it('should support manifest-declared elements in standalone components', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<my-button [label]="\\'go\\'">test</my-button>',
+          })
+          export class FooCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should prefer components over manifest-declared elements with the same selector', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Input} from '@angular/core';
+          @Component({
+            selector: 'my-button',
+            template: '...',
+          })
+          export class MyButtonCmp {
+            @Input() someInput = '';
+          }
+
+          @Component({
+            selector: 'blah',
+            imports: [MyButtonCmp],
+            template: '<my-button [someInput]="\\'yes\\'">test</my-button>',
+          })
+          export class FooCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should resolve manifests through module specifiers', () => {
+        env.write('node_modules/@my/elements/custom-elements.json', JSON.stringify(manifest));
+        // The declaration's class must be importable, or the instance type degrades to
+        // `HTMLElement` with a warning.
+        env.write(
+          'node_modules/@my/elements/my-button.d.ts',
+          `export declare class MyButton extends HTMLElement {}`,
+        );
+        env.tsconfig({
+          strictTemplates: false,
+          customElementsManifests: ['@my/elements/custom-elements.json'],
+        });
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<my-button [label]="\\'go\\'">test</my-button>',
+            standalone: false,
+          })
+          export class FooCmp {}
+          @NgModule({
+            declarations: [FooCmp],
+          })
+          export class FooModule {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should produce a diagnostic for manifests that cannot be resolved', () => {
+        env.tsconfig({strictTemplates: false, customElementsManifests: ['./missing.json']});
+        env.write('test.ts', `export const unused = true;`);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(
+          ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_NOT_FOUND),
+        );
+        expect(diags[0].messageText).toContain(`'./missing.json'`);
+      });
+
+      it('should produce a diagnostic for manifests that cannot be parsed', () => {
+        env.write('custom-elements.json', 'not json {');
+        env.write('test.ts', `export const unused = true;`);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID));
+      });
+
+      it('should warn about and skip declarations with native tag names', () => {
+        env.write(
+          'custom-elements.json',
+          JSON.stringify({
+            schemaVersion: '1.0.0',
+            modules: [
+              {
+                kind: 'javascript-module',
+                path: 'fancy-marquee.js',
+                declarations: [
+                  {
+                    kind: 'class',
+                    name: 'FancyMarquee',
+                    customElement: true,
+                    tagName: 'marquee',
+                    members: [{kind: 'field', name: 'glitter', type: {text: 'boolean'}}],
+                  },
+                ],
+              },
+            ],
+          }),
+        );
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<marquee [glitter]="true"></marquee>',
+          })
+          export class FooCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        // The declaration is skipped with a warning...
+        expect(diags[0].code).toBe(
+          ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_TAG_NAME),
+        );
+        expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+        expect(diags[0].messageText).toContain(`'marquee'`);
+        // ...so the native element is NOT extended with the declared property.
+        expect(diags[1].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE));
+        expect(diags[1].messageText).toContain(
+          `Can't bind to 'glitter' since it isn't a known property of 'marquee'.`,
+        );
+      });
+
+      it('should warn about duplicate tags across manifests and use the first declaration', () => {
+        env.write(
+          'second-manifest.json',
+          JSON.stringify({
+            schemaVersion: '1.0.0',
+            modules: [
+              {
+                kind: 'javascript-module',
+                path: 'other-button.js',
+                declarations: [
+                  {
+                    kind: 'class',
+                    name: 'OtherButton',
+                    customElement: true,
+                    tagName: 'my-button',
+                    members: [{kind: 'field', name: 'other', type: {text: 'string'}}],
+                  },
+                ],
+              },
+            ],
+          }),
+        );
+        env.tsconfig({
+          strictTemplates: false,
+          customElementsManifests: ['./custom-elements.json', './second-manifest.json'],
+        });
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'blah',
+            template: '<my-button [label]="\\'ok\\'" [other]="\\'nope\\'"></my-button>',
+          })
+          export class FooCmp {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].code).toBe(
+          ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_DUPLICATE_TAG),
+        );
+        expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+        // The first manifest's declaration wins: 'label' is known, 'other' is not.
+        expect(diags[1].code).toBe(ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE));
+        expect(diags[1].messageText).toContain(
+          `Can't bind to 'other' since it isn't a known property of 'my-button'.`,
+        );
+      });
+
+      describe('binding value type checking', () => {
+        const typedManifest = {
+          schemaVersion: '1.0.0',
+          modules: [
+            {
+              kind: 'javascript-module',
+              path: 'my-button.js',
+              declarations: [
+                {
+                  kind: 'class',
+                  name: 'MyButton',
+                  customElement: true,
+                  tagName: 'my-button',
+                  members: [
+                    {kind: 'field', name: 'count', type: {text: 'number'}},
+                    {kind: 'field', name: 'variant', type: {text: "'primary' | 'secondary'"}},
+                    {kind: 'field', name: 'items', type: {text: 'MyItem[]'}},
+                  ],
+                  attributes: [
+                    {name: 'count', fieldName: 'count', type: {text: 'number'}},
+                    {
+                      name: 'variant',
+                      fieldName: 'variant',
+                      type: {text: "'primary' | 'secondary'"},
+                    },
+                  ],
+                  events: [
+                    {name: 'countchange', type: {text: 'CustomEvent'}},
+                    {name: 'plain', type: {text: 'SomethingUnresolvable'}},
+                  ],
+                },
+              ],
+            },
+          ],
+        };
+
+        function writeComponent(template: string): void {
+          env.write(
+            'test.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'blah',
+              template: '${template}',
+            })
+            export class FooCmp {}
+          `,
+          );
+        }
+
+        beforeEach(() => {
+          env.tsconfig({
+            strictTemplates: true,
+            customElementsManifests: ['./custom-elements.json'],
+          });
+          env.write('custom-elements.json', JSON.stringify(typedManifest));
+        });
+
+        it('should report bindings whose value does not match the declared primitive type', () => {
+          writeComponent(`<my-button [count]="\\'nope\\'"></my-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`not assignable to type 'number'`);
+        });
+
+        it('should report bindings whose value does not match a literal union type', () => {
+          writeComponent(`<my-button [variant]="\\'tertiary\\'"></my-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`not assignable to type`);
+        });
+
+        it('should accept bindings whose value matches the declared type', () => {
+          writeComponent(`<my-button [count]="1" [variant]="\\'primary\\'"></my-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags).toEqual([]);
+        });
+
+        it('should report interpolated properties whose serialized value does not match', () => {
+          writeComponent(`<my-button count="{{ 1 }}"></my-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`not assignable to type 'number'`);
+        });
+
+        it('should report invalid interpolated properties in external templates', () => {
+          env.write('test.html', `<my-button count="{{ 1 }}"></my-button>`);
+          env.write(
+            'test.ts',
+            `
+              import {Component} from '@angular/core';
+              @Component({
+                selector: 'blah',
+                templateUrl: './test.html',
+              })
+              export class FooCmp {}
+            `,
+          );
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`not assignable to type 'number'`);
+        });
+
+        it('should report interpolated strings that widen beyond a literal union', () => {
+          env.write('test.html', `<my-button variant="{{ variant }}"></my-button>`);
+          env.write(
+            'test.ts',
+            `
+              import {Component} from '@angular/core';
+              @Component({
+                selector: 'blah',
+                templateUrl: './test.html',
+              })
+              export class FooCmp { variant: string = 'primary'; }
+            `,
+          );
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`not assignable to type`);
+        });
+
+        it('should treat literal interpolation as serialized string for union checking', () => {
+          writeComponent(`<my-button variant="{{ \\'primary\\' }}"></my-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`not assignable to type`);
+        });
+
+        it('should report invalid string-union static attribute values', () => {
+          writeComponent(`<my-button variant="tertiary"></my-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`not assignable to type`);
+        });
+
+        it('should accept valid string-union static attribute values', () => {
+          writeComponent(`<my-button variant="primary"></my-button>`);
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
+
+        it('should convert and check numeric static attribute values', () => {
+          writeComponent(`<my-button count="0.5"></my-button>`);
+          expect(env.driveDiagnostics()).toEqual([]);
+
+          writeComponent(`<my-button count="many"></my-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`not assignable to type 'number'`);
+        });
+
+        it('should not check values of named types without references', () => {
+          writeComponent(`<my-button [items]="\\'anything\\'"></my-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags).toEqual([]);
+        });
+
+        it('should check values against types referenced from a package', () => {
+          env.write(
+            'node_modules/@my/elements/package.json',
+            JSON.stringify({
+              name: '@my/elements',
+              types: './index.d.ts',
+              customElements: './custom-elements.json',
+            }),
+          );
+          env.write(
+            'node_modules/@my/elements/index.d.ts',
+            `export type ButtonVariant = 'a' | 'b';`,
+          );
+          env.write(
+            'node_modules/@my/elements/lib-button.d.ts',
+            `export declare class LibButton extends HTMLElement { variant: 'a' | 'b'; }`,
+          );
+          env.write(
+            'node_modules/@my/elements/custom-elements.json',
+            JSON.stringify({
+              schemaVersion: '1.0.0',
+              modules: [
+                {
+                  kind: 'javascript-module',
+                  path: 'lib-button.js',
+                  declarations: [
+                    {
+                      kind: 'class',
+                      name: 'LibButton',
+                      customElement: true,
+                      tagName: 'lib-button',
+                      members: [
+                        {
+                          kind: 'field',
+                          name: 'variant',
+                          type: {
+                            text: 'ButtonVariant',
+                            references: [
+                              {
+                                name: 'ButtonVariant',
+                                package: '@my/elements',
+                                start: 0,
+                                end: 13,
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+          env.tsconfig({strictTemplates: true, customElementsManifests: ['@my/elements']});
+
+          writeComponent(`<lib-button [variant]="\\'c\\'"></lib-button>`);
+          let diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`not assignable to type`);
+
+          writeComponent(`<lib-button [variant]="\\'a\\'"></lib-button>`);
+          diags = env.driveDiagnostics();
+          expect(diags).toEqual([]);
+        });
+
+        it('should type local references from an importable package declaration', () => {
+          env.write(
+            'node_modules/@my/elements/package.json',
+            JSON.stringify({
+              name: '@my/elements',
+              types: './index.d.ts',
+              customElements: './custom-elements.json',
+            }),
+          );
+          env.write(
+            'node_modules/@my/elements/index.d.ts',
+            `export {LibButton} from './lib-button.js';`,
+          );
+          env.write(
+            'node_modules/@my/elements/lib-button.d.ts',
+            `export declare class LibButton extends HTMLElement { count: number; }`,
+          );
+          env.write(
+            'node_modules/@my/elements/custom-elements.json',
+            JSON.stringify({
+              schemaVersion: '1.0.0',
+              modules: [
+                {
+                  path: 'lib-button.js',
+                  declarations: [
+                    {
+                      kind: 'class',
+                      name: 'LibButton',
+                      customElement: true,
+                      tagName: 'lib-button',
+                      members: [{kind: 'field', name: 'count', type: {text: 'number'}}],
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+          env.tsconfig({strictTemplates: true, customElementsManifests: ['@my/elements']});
+
+          writeComponent(`<lib-button #button>{{button.count.toFixed()}}</lib-button>`);
+          expect(env.driveDiagnostics()).toEqual([]);
+
+          writeComponent(`<lib-button #button>{{button.missing}}</lib-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`'missing' does not exist on type 'LibButton'`);
+        });
+
+        it('should type local references when a library class does not declare HTMLElement inheritance', () => {
+          env.write(
+            'node_modules/@my/elements/package.json',
+            JSON.stringify({
+              name: '@my/elements',
+              types: './index.d.ts',
+              customElements: './custom-elements.json',
+            }),
+          );
+          env.write(
+            'node_modules/@my/elements/index.d.ts',
+            `export {LibButton} from './lib-button.js';`,
+          );
+          env.write(
+            'node_modules/@my/elements/lib-button.d.ts',
+            `export declare class LibButton { count: number; }`,
+          );
+          env.write(
+            'node_modules/@my/elements/custom-elements.json',
+            JSON.stringify({
+              schemaVersion: '1.0.0',
+              modules: [
+                {
+                  path: 'lib-button.js',
+                  declarations: [
+                    {
+                      kind: 'class',
+                      name: 'LibButton',
+                      customElement: true,
+                      tagName: 'lib-button',
+                      members: [{kind: 'field', name: 'count', type: {text: 'number'}}],
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+          env.tsconfig({strictTemplates: true, customElementsManifests: ['@my/elements']});
+
+          writeComponent(`<lib-button #button>{{button.count.toFixed()}}</lib-button>`);
+          expect(env.driveDiagnostics()).toEqual([]);
+        });
+
+        it('should warn and type local references as HTMLElement when the declared class is not importable', () => {
+          env.write(
+            'node_modules/@my/elements/package.json',
+            JSON.stringify({
+              name: '@my/elements',
+              types: './index.d.ts',
+              customElements: './custom-elements.json',
+            }),
+          );
+          env.write('node_modules/@my/elements/index.d.ts', `export {};`);
+          env.write(
+            'node_modules/@my/elements/custom-elements.json',
+            JSON.stringify({
+              schemaVersion: '1.0.0',
+              modules: [
+                {
+                  // An unpublished source path: the declaration's class cannot be imported.
+                  path: 'src/lib-button.ts',
+                  declarations: [
+                    {
+                      kind: 'class',
+                      name: 'LibButton',
+                      customElement: true,
+                      tagName: 'lib-button',
+                      members: [{kind: 'field', name: 'count', type: {text: 'number'}}],
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+          env.tsconfig({strictTemplates: true, customElementsManifests: ['@my/elements']});
+
+          // The reference falls back to `HTMLElement` and the unresolvable class module is
+          // reported as a configuration warning — never as errors on the template.
+          writeComponent(`<lib-button #button [count]="1">{{button.tagName}}</lib-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(
+            ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_UNRESOLVABLE_TYPE_REFERENCE),
+          );
+          expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+          expect(diags[0].messageText).toContain(`'@my/elements/src/lib-button.ts'`);
+        });
+
+        it('should warn and fall back to HTMLElement when a declaration module omits the class export', () => {
+          env.write(
+            'node_modules/@my/elements/package.json',
+            JSON.stringify({
+              name: '@my/elements',
+              types: './index.d.ts',
+              customElements: './custom-elements.json',
+            }),
+          );
+          env.write(
+            'node_modules/@my/elements/index.d.ts',
+            `export {Other} from './lib-button.js';`,
+          );
+          env.write('node_modules/@my/elements/lib-button.d.ts', `export declare class Other {}`);
+          env.write(
+            'node_modules/@my/elements/custom-elements.json',
+            JSON.stringify({
+              schemaVersion: '1.0.0',
+              modules: [
+                {
+                  path: 'lib-button.js',
+                  declarations: [
+                    {
+                      kind: 'class',
+                      name: 'LibButton',
+                      customElement: true,
+                      tagName: 'lib-button',
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+          env.tsconfig({strictTemplates: true, customElementsManifests: ['@my/elements']});
+
+          writeComponent(`<lib-button #button>{{button.tagName}}</lib-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(
+            ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_UNRESOLVABLE_TYPE_REFERENCE),
+          );
+          expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+          expect(diags[0].messageText).toContain(`'LibButton'`);
+          expect(diags[0].messageText).toContain(`'@my/elements/lib-button.js'`);
+        });
+
+        it('should warn and fall back to existence checking for references to packages without types', () => {
+          env.write(
+            'custom-elements.json',
+            JSON.stringify({
+              schemaVersion: '1.0.0',
+              modules: [
+                {
+                  kind: 'javascript-module',
+                  path: 'my-button.js',
+                  declarations: [
+                    {
+                      kind: 'class',
+                      name: 'MyButton',
+                      customElement: true,
+                      tagName: 'my-button',
+                      members: [
+                        {
+                          kind: 'field',
+                          name: 'variant',
+                          type: {
+                            text: 'Variant',
+                            references: [
+                              {name: 'Variant', package: '@does/not-exist', start: 0, end: 7},
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+          writeComponent(`<my-button [variant]="\\'a\\'"></my-button>`);
+          // The unresolvable reference produces a warning on the configuration — never errors
+          // on template bindings, since users cannot fix the library's manifest.
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(
+            ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_UNRESOLVABLE_TYPE_REFERENCE),
+          );
+          expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+          expect(diags[0].messageText).toContain(`'@does/not-exist'`);
+        });
+
+        it('should warn and fall back instead of emitting an unknown global into the TCB', () => {
+          env.write(
+            'custom-elements.json',
+            JSON.stringify({
+              schemaVersion: '1.0.0',
+              modules: [
+                {
+                  kind: 'javascript-module',
+                  path: 'my-button.js',
+                  declarations: [
+                    {
+                      kind: 'class',
+                      name: 'MyButton',
+                      customElement: true,
+                      tagName: 'my-button',
+                      members: [
+                        {
+                          kind: 'field',
+                          name: 'missing',
+                          type: {
+                            text: 'NotARealType',
+                            references: [{name: 'NotARealType', package: 'global:'}],
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+          writeComponent(`<my-button [missing]="1"></my-button>`);
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(
+            ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_UNRESOLVABLE_TYPE_REFERENCE),
+          );
+          expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+          expect(diags[0].messageText).toContain(`'NotARealType' from 'global:'`);
+          expect(diags[0].messageText).not.toContain(`Cannot find name`);
+        });
+
+        it('should not check binding values outside of strict mode', () => {
+          env.tsconfig({
+            strictTemplates: false,
+            customElementsManifests: ['./custom-elements.json'],
+          });
+          writeComponent(`<my-button [count]="\\'nope\\'"></my-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags).toEqual([]);
+        });
+
+        it('should check values against index-less references from a package', () => {
+          env.write(
+            'node_modules/@my/elements/package.json',
+            JSON.stringify({
+              name: '@my/elements',
+              types: './index.d.ts',
+              customElements: './custom-elements.json',
+            }),
+          );
+          env.write(
+            'node_modules/@my/elements/index.d.ts',
+            `export type ButtonVariant = 'a' | 'b';`,
+          );
+          env.write(
+            'node_modules/@my/elements/lib-button.d.ts',
+            `export declare class LibButton extends HTMLElement { variant: 'a' | 'b'; }`,
+          );
+          env.write(
+            'node_modules/@my/elements/custom-elements.json',
+            JSON.stringify({
+              schemaVersion: '1.0.0',
+              modules: [
+                {
+                  kind: 'javascript-module',
+                  path: 'lib-button.js',
+                  declarations: [
+                    {
+                      kind: 'class',
+                      name: 'LibButton',
+                      customElement: true,
+                      tagName: 'lib-button',
+                      members: [
+                        {
+                          kind: 'field',
+                          name: 'variant',
+                          // Per the CEM spec, a reference without start/end covers the whole
+                          // type text.
+                          type: {
+                            text: 'ButtonVariant',
+                            references: [{name: 'ButtonVariant', package: '@my/elements'}],
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+          env.tsconfig({strictTemplates: true, customElementsManifests: ['@my/elements']});
+
+          writeComponent(`<lib-button [variant]="\\'c\\'"></lib-button>`);
+          let diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`not assignable to type`);
+
+          writeComponent(`<lib-button [variant]="\\'a\\'"></lib-button>`);
+          diags = env.driveDiagnostics();
+          expect(diags).toEqual([]);
+        });
+
+        it('should type $event from the manifest event type', () => {
+          writeComponent(`<my-button (countchange)="$event.detail"></my-button>`);
+          let diags = env.driveDiagnostics();
+          expect(diags).toEqual([]);
+
+          writeComponent(`<my-button (countchange)="$event.doesNotExist"></my-button>`);
+          diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`'doesNotExist' does not exist`);
+        });
+
+        it('should fall back to addEventListener inference for untrustworthy event types', () => {
+          // `SomethingUnresolvable` has no reference, so `$event` falls back to the base
+          // `Event` type via `addEventListener` inference.
+          writeComponent(`<my-button (plain)="$event.timeStamp"></my-button>`);
+          let diags = env.driveDiagnostics();
+          expect(diags).toEqual([]);
+
+          writeComponent(`<my-button (plain)="$event.doesNotExist"></my-button>`);
+          diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`'doesNotExist' does not exist`);
+        });
+
+        it('should warn and fall back to event inference for references to packages without types', () => {
+          env.write(
+            'custom-elements.json',
+            JSON.stringify({
+              schemaVersion: '1.0.0',
+              modules: [
+                {
+                  kind: 'javascript-module',
+                  path: 'my-button.js',
+                  declarations: [
+                    {
+                      kind: 'class',
+                      name: 'MyButton',
+                      customElement: true,
+                      tagName: 'my-button',
+                      events: [
+                        {
+                          name: 'commit',
+                          type: {
+                            text: 'CommitEvent',
+                            references: [
+                              {name: 'CommitEvent', package: '@does/not-exist', start: 0, end: 11},
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            }),
+          );
+          writeComponent(`<my-button (commit)="$event"></my-button>`);
+          // The unresolvable reference produces a warning on the configuration and `$event`
+          // falls back to DOM event inference — never errors on template bindings.
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].code).toBe(
+            ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_UNRESOLVABLE_TYPE_REFERENCE),
+          );
+          expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+          expect(diags[0].messageText).toContain(`'@does/not-exist'`);
+        });
+
+        it('should not check event types outside of strict mode', () => {
+          env.tsconfig({
+            strictTemplates: false,
+            customElementsManifests: ['./custom-elements.json'],
+          });
+          writeComponent(`<my-button (countchange)="$event.doesNotExist"></my-button>`);
+          const diags = env.driveDiagnostics();
+          expect(diags).toEqual([]);
+        });
       });
     });
 

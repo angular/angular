@@ -217,6 +217,7 @@ export function compileComponentFromMetadata(
     getTemplateSourceLocationsEnabled(),
     meta.legacyOptionalChaining,
     meta.foreignImports,
+    meta.customElementPropertyNames ?? null,
   );
 
   // Then the IR is transformed to prepare it for code generation.

@@ -7,9 +7,12 @@
  */
 import {
   AST,
+  BindingType,
   TmplAstBlockNode,
   TmplAstBoundAttribute,
+  TmplAstBoundEvent,
   TmplAstDeferredTrigger,
+  TmplAstElement,
   TmplAstNode,
   TmplAstTextAttribute,
 } from '@angular/compiler';
@@ -33,6 +36,7 @@ import {
 
 import ts from 'typescript';
 
+import {getCustomElementsManifestDisplayInfo} from './attribute_completions';
 import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './utils/display_parts';
 import {
   createDollarAnyQuickInfo,
@@ -143,7 +147,47 @@ export class QuickInfoBuilder {
       symbol.kind === SymbolKind.Input ? DisplayInfoKind.PROPERTY : DisplayInfoKind.EVENT;
 
     const quickInfo = this.getQuickInfoAtTcbLocation(symbol.bindings[0].tcbLocation);
-    return quickInfo === undefined ? undefined : updateQuickInfoKind(quickInfo, kind);
+    const result = quickInfo === undefined ? undefined : updateQuickInfoKind(quickInfo, kind);
+    const target = symbol.bindings[0].target;
+    if (symbol.kind !== SymbolKind.Output || target.kind !== SymbolKind.Element) {
+      return result;
+    }
+
+    // Events declared in a Custom Elements Manifest carry documentation from the manifest,
+    // whether or not the TCB has type information for `$event`.
+    const eventName = this.node instanceof TmplAstBoundEvent ? this.node.name : null;
+    const manifestEvent =
+      eventName === null
+        ? undefined
+        : this.compiler
+            .getTemplateTypeChecker()
+            .getCustomElementsManifestSchema(target.templateNode.name)
+            ?.events.find((event) => event.name === eventName);
+    if (
+      manifestEvent === undefined ||
+      (manifestEvent.description === undefined &&
+        manifestEvent.deprecated === undefined &&
+        manifestEvent.typeText === undefined)
+    ) {
+      return result;
+    }
+    const manifestDisplayInfo = getCustomElementsManifestDisplayInfo(manifestEvent);
+    if (result === undefined || manifestEvent.typeText !== undefined) {
+      return createQuickInfo(
+        eventName!,
+        DisplayInfoKind.EVENT,
+        getTextSpanOfNode(this.node),
+        undefined /* containerName */,
+        manifestEvent.typeText,
+        manifestDisplayInfo.documentation,
+        manifestDisplayInfo.tags,
+      );
+    }
+    return {
+      ...result,
+      documentation: manifestDisplayInfo.documentation ?? result.documentation,
+      tags: manifestDisplayInfo.tags ?? result.tags,
+    };
   }
 
   private getQuickInfoForElementSymbol(symbol: ElementSymbol): ts.QuickInfo {
@@ -155,6 +199,12 @@ export class QuickInfoBuilder {
       return this.getQuickInfoForDirectiveSymbol(directiveSymbol, templateNode);
     }
 
+    // Elements declared in a Custom Elements Manifest carry documentation from the manifest.
+    const manifestSchema = this.compiler
+      .getTemplateTypeChecker()
+      .getCustomElementsManifestSchema(templateNode.name);
+    const manifestDisplayInfo = getCustomElementsManifestDisplayInfo(manifestSchema ?? undefined);
+
     return createQuickInfo(
       templateNode.name,
       DisplayInfoKind.ELEMENT,
@@ -163,6 +213,8 @@ export class QuickInfoBuilder {
       this.typeChecker.typeToString(
         this.compiler.getTemplateTypeChecker().getTypeOfSymbol(symbol)!,
       ),
+      manifestDisplayInfo.documentation,
+      manifestDisplayInfo.tags,
     );
   }
 
@@ -243,7 +295,51 @@ export class QuickInfoBuilder {
     );
 
     const directiveSymbol = directives.size > 0 ? directives.values().next().value : null;
-    return directiveSymbol ? this.getQuickInfoForDirectiveSymbol(directiveSymbol) : undefined;
+    if (directiveSymbol) {
+      return this.getQuickInfoForDirectiveSymbol(directiveSymbol);
+    }
+
+    // Properties and attributes declared in a Custom Elements Manifest carry documentation from
+    // the manifest even though there is no TypeScript declaration symbol for the DOM binding.
+    // (Event bindings never produce a `DomBindingSymbol`; their manifest documentation is
+    // attached in `getQuickInfoForBindingSymbol`.)
+    const attributeName = this.node.name;
+    const host = symbol.host.templateNode;
+    const manifestSchema =
+      host instanceof TmplAstElement
+        ? this.compiler.getTemplateTypeChecker().getCustomElementsManifestSchema(host.name)
+        : null;
+    const manifestProperty = manifestSchema?.properties.find(
+      (property) => property.name === attributeName,
+    );
+    const manifestAttribute = manifestSchema?.attributes?.find(
+      (attribute) => attribute.name === attributeName,
+    );
+    const isAttributeBinding =
+      this.node instanceof TmplAstTextAttribute ||
+      (this.node instanceof TmplAstBoundAttribute && this.node.type === BindingType.Attribute);
+    const manifestEntry = isAttributeBinding
+      ? (manifestAttribute ?? manifestProperty)
+      : (manifestProperty ?? manifestAttribute);
+    if (
+      manifestEntry === undefined ||
+      (manifestEntry.description === undefined &&
+        manifestEntry.deprecated === undefined &&
+        manifestEntry.typeText === undefined &&
+        manifestEntry.default === undefined)
+    ) {
+      return undefined;
+    }
+    const manifestDisplayInfo = getCustomElementsManifestDisplayInfo(manifestEntry);
+    return createQuickInfo(
+      this.node.name,
+      DisplayInfoKind.PROPERTY,
+      getTextSpanOfNode(this.node),
+      undefined /* containerName */,
+      manifestEntry.typeText,
+      manifestDisplayInfo.documentation,
+      manifestDisplayInfo.tags,
+    );
   }
 
   private getQuickInfoForDirectiveSymbol(

@@ -106,6 +106,18 @@ describe('instructions', () => {
       t.update();
       expect(t.html).toEqual('<a title="Hello"></a>');
     });
+
+    it('should bypass HTML property-name mapping for an exact custom-element property', () => {
+      const t = new ViewFixture({create: () => ɵɵelement(0, 'my-element'), decls: 1, vars: 1});
+
+      t.update(() => {
+        ɵɵproperty('readonly', true, null, true);
+      });
+
+      const element = t.host.firstChild as HTMLElement & {readonly?: boolean; readOnly?: boolean};
+      expect(element.readonly).toBe(true);
+      expect(element.readOnly).toBeUndefined();
+    });
   });
 
   describe('element', () => {

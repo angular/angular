@@ -32,6 +32,15 @@
           "default": true,
           "description": "Whether the compiler should avoid generating code for classes that haven't been exported."
         },
+        "customElementsManifests": {
+          "type": "array",
+          "description": "Custom Elements Manifest locations used for web-component template checking. Entries may be paths relative to the project tsconfig, JSON module specifiers within packages, or bare package names whose package.json declares a customElements field.",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
         "disableTypeScriptVersionCheck": {
           "type": "boolean",
           "description": "Disable TypeScript Version Check."

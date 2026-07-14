@@ -9,6 +9,7 @@
 import {Element} from '../../render3/r3_ast';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
+import {getCustomElementsManifestInstanceCheckType} from './custom_elements_manifest';
 import type {Context} from './context';
 import type {Scope} from './scope';
 
@@ -40,7 +41,18 @@ export class TcbElementOp extends TcbOp {
     idNode.addParseSpanInfo(this.element.startSourceSpan || this.element.sourceSpan);
 
     // Add the declaration of the element using document.createElement.
-    const initializer = new TcbExpr(`document.createElement("${this.element.name}")`);
+    let initializer = new TcbExpr(`document.createElement("${this.element.name}")`);
+    if (this.tcb.env.config.checkTypeOfDomReferences) {
+      const instanceCheckType = getCustomElementsManifestInstanceCheckType(
+        this.tcb.env.config,
+        this.element.name,
+      );
+      if (instanceCheckType !== null) {
+        initializer = new TcbExpr(
+          `document.createElement("${this.element.name}") as unknown as (${instanceCheckType})`,
+        );
+      }
+    }
     initializer.addParseSpanInfo(this.element.startSourceSpan || this.element.sourceSpan);
     const stmt = new TcbExpr(`var ${idNode.print()} = ${initializer.print()}`);
     stmt.addParseSpanInfo(this.element.startSourceSpan || this.element.sourceSpan);

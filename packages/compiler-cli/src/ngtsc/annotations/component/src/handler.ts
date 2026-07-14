@@ -16,6 +16,8 @@ import {
   compileDeferResolverFunction,
   compileHmrInitializer,
   ConstantPool,
+  ɵCustomElementsManifestSchema as CustomElementsManifestSchema,
+  ɵnormalizeCustomElementTagName as normalizeCustomElementTagName,
   createHostElement,
   CssSelector,
   DeclarationListEmitMode,
@@ -44,6 +46,10 @@ import {
   SelectorlessMatcher,
   SelectorMatcher,
   TmplAstDeferredBlock,
+  TmplAstElement,
+  TmplAstNode,
+  TmplAstRecursiveVisitor,
+  tmplAstVisitAll,
   TypeCheckId,
   ViewEncapsulation,
 } from '@angular/compiler';
@@ -291,6 +297,9 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     private readonly enableSelectorless: boolean,
     private readonly emitDeclarationOnly: boolean,
     private readonly legacyOptionalChaining: boolean,
+    private readonly getCustomElementsManifestSchemas: () =>
+      | readonly CustomElementsManifestSchema[]
+      | null = () => null,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -1502,6 +1511,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...resolution,
       defer,
       foreignImports,
+      customElementPropertyNames: this.getCustomElementPropertyNames(analysis.template.nodes),
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
 
@@ -1575,6 +1585,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...analysis.meta,
       ...resolution,
       defer,
+      customElementPropertyNames: this.getCustomElementPropertyNames(analysis.template.nodes),
     };
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
@@ -1634,6 +1645,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...resolution,
       defer,
       foreignImports,
+      customElementPropertyNames: this.getCustomElementPropertyNames(analysis.template.nodes),
     } as R3ComponentMetadata<R3TemplateDependency>;
 
     if (deferrableTypes !== null) {
@@ -1699,6 +1711,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...resolution,
       defer,
       foreignImports,
+      customElementPropertyNames: this.getCustomElementPropertyNames(analysis.template.nodes),
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());
@@ -2589,6 +2602,53 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
   /** Creates a new binding parser. */
   private getNewBindingParser() {
     return makeBindingParser(this.enableSelectorless);
+  }
+
+  /** Exact custom-element JavaScript property names used during template code generation. */
+  private getCustomElementPropertyNames(
+    template: TmplAstNode[],
+  ): ReadonlyMap<string, ReadonlySet<string>> | null {
+    const schemas = this.getCustomElementsManifestSchemas();
+    if (schemas === null || schemas.length === 0) {
+      return null;
+    }
+    const visitor = new CustomElementPropertyUsageVisitor(schemas);
+    tmplAstVisitAll(visitor, template);
+    return visitor.propertyNames.size === 0 ? null : visitor.propertyNames;
+  }
+}
+
+/** Collects exact manifest properties that are actually bound in a component template. */
+class CustomElementPropertyUsageVisitor extends TmplAstRecursiveVisitor {
+  readonly propertyNames = new Map<string, Set<string>>();
+  private readonly schemas = new Map<string, Set<string>>();
+
+  constructor(schemas: readonly CustomElementsManifestSchema[]) {
+    super();
+    for (const schema of schemas) {
+      this.schemas.set(
+        normalizeCustomElementTagName(schema.tagName),
+        new Set(schema.properties.map((property) => property.name)),
+      );
+    }
+  }
+
+  override visitElement(element: TmplAstElement): void {
+    const tagName = normalizeCustomElementTagName(element.name);
+    const properties = this.schemas.get(tagName);
+    if (properties !== undefined) {
+      for (const input of element.inputs) {
+        if (properties.has(input.name)) {
+          let used = this.propertyNames.get(tagName);
+          if (used === undefined) {
+            used = new Set();
+            this.propertyNames.set(tagName, used);
+          }
+          used.add(input.name);
+        }
+      }
+    }
+    super.visitElement(element);
   }
 }
 

@@ -6,15 +6,27 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AST, BindingType} from '../../expression_parser/ast';
+import {AST, ASTWithSource, BindingType, Interpolation} from '../../expression_parser/ast';
 import {BindingPropertyName, ClassPropertyName} from '../../property_mapping';
 import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
-import {BoundAttribute, Component, Directive, Element, Template} from '../../render3/r3_ast';
+import {
+  BoundAttribute,
+  Component,
+  Directive,
+  Element,
+  Template,
+  TextAttribute,
+} from '../../render3/r3_ast';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
 import {declareVariable, TcbExpr} from './codegen';
+import {
+  getCustomElementsManifestAttributeCheck,
+  getCustomElementsManifestPropertyCheckType,
+  hasCustomElementsManifestProperty,
+} from './custom_elements_manifest';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 const REGISTRY = new DomElementSchemaRegistry();
 import {tcbExpression, unwrapWritableSignal} from './expression';
@@ -259,6 +271,15 @@ export class TcbUnclaimedInputsOp extends TcbOp {
     // the element itself.
     let elId: TcbExpr | null = null;
 
+    if (this.target instanceof Element && this.tcb.env.config.checkTypeOfAttributes) {
+      for (const attribute of this.target.attributes) {
+        if (this.claimedInputs?.has(attribute.name)) {
+          continue;
+        }
+        this.checkCustomElementTextAttribute(attribute);
+      }
+    }
+
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.inputs) {
       const isPropertyBinding =
@@ -275,13 +296,61 @@ export class TcbUnclaimedInputsOp extends TcbOp {
         binding.value,
       );
 
+      // When the element is a custom element declared in a Custom Elements Manifest and the
+      // bound property has a validated check type, assign the binding value to a variable of
+      // that type so TypeScript checks it. This is gated on `checkTypeOfInputBindings` (rather
+      // than merely widening the value) so that manifests with unresolvable type references
+      // can never introduce diagnostics into non-strict projects.
+      const checkType =
+        isPropertyBinding &&
+        binding.name !== 'style' &&
+        binding.name !== 'class' &&
+        this.tcb.env.config.checkTypeOfInputBindings &&
+        this.target instanceof Element
+          ? getCustomElementsManifestPropertyCheckType(
+              this.tcb.env.config,
+              this.target.name,
+              binding.name,
+            )
+          : null;
+      if (checkType !== null) {
+        const id = new TcbExpr(this.tcb.allocateId());
+        // The span on the type maps resolution failures of `import()` type queries in the
+        // check type (e.g. a manifest referencing a package without type declarations) back
+        // to the property binding in the template.
+        const type = new TcbExpr(`(${checkType})`).addParseSpanInfo(
+          binding.keySpan ?? binding.sourceSpan,
+        );
+        this.scope.addStatement(declareVariable(id, type));
+        id.addParseSpanInfo(binding.keySpan ?? binding.sourceSpan);
+        let checkedExpression = expr.wrapForTypeChecker();
+        if (isInterpolation(binding.value)) {
+          // Interpolation always serializes to a string at runtime. Materialize that type before
+          // the contextual assignment so TypeScript cannot infer a literal-union target type for
+          // a broad string expression such as `"" + ctx.variant`.
+          checkedExpression = new TcbExpr(
+            `(${checkedExpression.print()}) as string`,
+          ).addParseSpanInfo(binding.value.sourceSpan);
+        }
+        this.scope.addStatement(
+          new TcbExpr(`${id.print()} = ${checkedExpression.print()}`).addParseSpanInfo(
+            binding.sourceSpan,
+          ),
+        );
+        continue;
+      }
+
       if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           if (elId === null) {
             elId = this.scope.resolve(this.target);
           }
           // A direct binding to a property.
-          const propertyName = REGISTRY.getMappedPropName(binding.name);
+          const propertyName =
+            this.target instanceof Element &&
+            hasCustomElementsManifestProperty(this.tcb.env.config, this.target.name, binding.name)
+              ? binding.name
+              : REGISTRY.getMappedPropName(binding.name);
           const stmt = new TcbExpr(
             `${elId.print()}[${TcbExpr.quoteAndEscape(propertyName)}] = ${expr.wrapForTypeChecker().print()}`,
           ).addParseSpanInfo(binding.sourceSpan);
@@ -299,4 +368,63 @@ export class TcbUnclaimedInputsOp extends TcbOp {
 
     return null;
   }
+
+  /** Emits a contextual assignment for a manifest-declared static attribute, when safe. */
+  private checkCustomElementTextAttribute(attribute: TextAttribute): void {
+    if (!(this.target instanceof Element)) {
+      return;
+    }
+    const attributeCheck = getCustomElementsManifestAttributeCheck(
+      this.tcb.env.config,
+      this.target.name,
+      attribute.name,
+    );
+    if (attributeCheck === null || attributeCheck.type === 'object') {
+      return;
+    }
+
+    let value: string;
+    switch (attributeCheck.type) {
+      case 'string':
+        value = TcbExpr.quoteAndEscape(attribute.value);
+        break;
+      case 'number': {
+        // Custom-element number attributes are serialized strings at runtime. Validate the HTML
+        // spelling first, then emit a numeric literal so TypeScript can check number literal unions.
+        const isNumber = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/.test(attribute.value);
+        value = isNumber
+          ? String(Number(attribute.value))
+          : TcbExpr.quoteAndEscape(attribute.value);
+        break;
+      }
+      case 'boolean': {
+        // Follow HTML boolean-attribute syntax: presence (empty text) or the attribute's own name.
+        const normalizedValue = attribute.value.replace(/[A-Z]/g, (char) => char.toLowerCase());
+        const normalizedName = attribute.name.replace(/[A-Z]/g, (char) => char.toLowerCase());
+        value =
+          normalizedValue === '' || normalizedValue === normalizedName
+            ? 'true'
+            : TcbExpr.quoteAndEscape(attribute.value);
+        break;
+      }
+    }
+
+    const id = new TcbExpr(this.tcb.allocateId());
+    const type = new TcbExpr(`(${attributeCheck.checkType})`).addParseSpanInfo(
+      attribute.keySpan ?? attribute.sourceSpan,
+    );
+    this.scope.addStatement(declareVariable(id, type));
+    id.addParseSpanInfo(attribute.keySpan ?? attribute.sourceSpan);
+    const expression = new TcbExpr(`(${value})`).addParseSpanInfo(attribute.sourceSpan);
+    this.scope.addStatement(
+      new TcbExpr(`${id.print()} = ${expression.print()}`).addParseSpanInfo(attribute.sourceSpan),
+    );
+  }
+}
+
+function isInterpolation(value: AST): boolean {
+  return (
+    value instanceof Interpolation ||
+    (value instanceof ASTWithSource && value.ast instanceof Interpolation)
+  );
 }

@@ -101,6 +101,20 @@ export function createComponentDefinitionMap(
     definitionMap.set('minVersion', o.literal('17.0.0'));
   }
 
+  if (meta.customElementPropertyNames !== null && meta.customElementPropertyNames !== undefined) {
+    definitionMap.set('minVersion', o.literal('22.0.0'));
+    definitionMap.set(
+      'customElementPropertyNames',
+      o.literalMap(
+        Array.from(meta.customElementPropertyNames, ([tagName, propertyNames]) => ({
+          key: tagName,
+          value: o.literalArr(Array.from(propertyNames, (propertyName) => o.literal(propertyName))),
+          quoted: true,
+        })),
+      ),
+    );
+  }
+
   definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
   definitionMap.set('dependencies', compileUsedDependenciesMetadata(meta));
   definitionMap.set('viewProviders', meta.viewProviders);

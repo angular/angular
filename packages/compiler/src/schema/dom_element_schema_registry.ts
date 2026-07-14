@@ -10,6 +10,10 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContex
 import {isNgContainer, isNgContent, splitNsName} from '../ml_parser/tags';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../template/pipeline/src/namespaces';
 import {dashCaseToCamelCase} from '../util';
+import {
+  CustomElementsManifestSchema,
+  normalizeCustomElementTagName,
+} from './custom_elements_manifest_schema';
 import {checkSecurityContext} from './dom_security_schema';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
@@ -19,7 +23,7 @@ const STRING = 'string';
 const OBJECT = 'object';
 
 function normalizeTagName(tagName: string): string {
-  const tagNameLower = tagName.toLowerCase();
+  const tagNameLower = normalizeCustomElementTagName(tagName);
   const [ns, name] = splitNsName(tagNameLower, false);
 
   return ns === SVG_NAMESPACE || ns === MATH_ML_NAMESPACE ? `:${ns}:${name}` : name;
@@ -346,8 +350,9 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   // We don't allow binding to events for security reasons. Allowing event bindings would almost
   // certainly introduce bad XSS vulnerabilities. Instead, we store events in a separate schema.
   private _eventSchema = new Map<string, Set<string>>();
+  private _customElementsManifestTags = new Set<string>();
 
-  constructor() {
+  constructor(customElementsManifestSchemas?: readonly CustomElementsManifestSchema[]) {
     super();
     SCHEMA.forEach((encodedType) => {
       const type = new Map<string, string>();
@@ -389,6 +394,37 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
         }
       });
     });
+
+    if (customElementsManifestSchemas !== undefined) {
+      for (const customElement of customElementsManifestSchemas) {
+        const tag = normalizeTagName(customElement.tagName);
+        this._customElementsManifestTags.add(tag);
+        // Custom elements extend `HTMLElement` at runtime and manifests don't list inherited
+        // standard properties/events, so seed each entry from `[HTMLElement]`. Tags that would
+        // collide with built-in elements are not valid custom element names and are filtered
+        // out (with a warning) before schemas reach the registry.
+        const type = new Map<string, string>(this._schema.get('[htmlelement]')!);
+        const events = new Set<string>(this._eventSchema.get('[htmlelement]')!);
+        for (const {name: property, type: propertyType} of customElement.properties) {
+          type.set(property, propertyType);
+        }
+        for (const event of customElement.events) {
+          events.add(event.name);
+        }
+        this._schema.set(tag, type);
+        this._eventSchema.set(tag, events);
+      }
+    }
+  }
+
+  /** Whether this registry contains any schemas loaded from Custom Elements Manifests. */
+  hasCustomElementsManifestSchemas(): boolean {
+    return this._customElementsManifestTags.size > 0;
+  }
+
+  /** Whether `tagName` was declared by a configured Custom Elements Manifest. */
+  isCustomElementFromManifest(tagName: string): boolean {
+    return this._customElementsManifestTags.has(normalizeTagName(tagName));
   }
 
   override hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
@@ -397,6 +433,12 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     }
 
     const normalizedTag = normalizeTagName(tagName);
+    // A configured manifest is a more precise schema for its own tags. Keep that precision when
+    // CUSTOM_ELEMENTS_SCHEMA is also present so applications can migrate incrementally while the
+    // schema continues to cover other, manifest-less custom elements.
+    if (this._customElementsManifestTags.has(normalizedTag)) {
+      return this._schema.get(normalizedTag)!.has(propName);
+    }
     if (normalizedTag.includes('-')) {
       if (isNgContainer(normalizedTag) || isNgContent(normalizedTag)) {
         return false;

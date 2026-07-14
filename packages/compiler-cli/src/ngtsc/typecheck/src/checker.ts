@@ -9,6 +9,8 @@
 import {
   AST,
   BoundTarget,
+  ɵCustomElementsManifestSchema as CustomElementsManifestSchema,
+  ɵnormalizeCustomElementTagName as normalizeCustomElementTagName,
   ForeignComponentMeta,
   CssSelector,
   DomElementSchemaRegistry,
@@ -114,6 +116,7 @@ import {
   TypeCheckingHost,
 } from './context';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
+import {REGISTRY} from './dom';
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
@@ -243,7 +246,6 @@ function getTcbLocationForSymbol(symbol: Symbol | BindingSymbol | ClassSymbol): 
   }
 }
 
-const REGISTRY = new DomElementSchemaRegistry();
 /**
  * Primary template type-checking engine, which performs type-checking using a
  * `TypeCheckingProgramStrategy` for type-checking program maintenance, and the
@@ -251,6 +253,19 @@ const REGISTRY = new DomElementSchemaRegistry();
  */
 export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   private state = new Map<AbsoluteFsPath, FileTypeCheckingData>();
+
+  private _domSchemaRegistry: DomElementSchemaRegistry | null = null;
+
+  /**
+   * The DOM schema registry used for element/property checks and completions. When custom
+   * element schemas are configured, a dedicated registry instance extended with them is created;
+   * otherwise the shared default registry is used to amortize its construction cost.
+   */
+  private get domSchemaRegistry(): DomElementSchemaRegistry {
+    return (this._domSchemaRegistry ??= this.config.customElementsManifestSchemas?.length
+      ? new DomElementSchemaRegistry(this.config.customElementsManifestSchemas)
+      : REGISTRY);
+  }
 
   /**
    * Stores the `CompletionEngine` which powers autocompletion for each component class.
@@ -289,8 +304,24 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   private elementTagCache = new Map<ts.ClassDeclaration, Map<string, PotentialDirective | null>>();
   private generatedRangeCache = new WeakMap<ts.SourceFile, ts.TextRange[]>();
 
+  /** Lazily-built index of `customElementsManifestSchemas` by tag name. */
+  private customElementsManifestSchemaCache: Map<string, CustomElementsManifestSchema> | null =
+    null;
+
   private isComplete = false;
   private priorResultsAdopted = false;
+
+  /**
+   * Replace the global Custom Elements Manifest schemas used by subsequent TCB generation.
+   * Callers must invalidate every component after this update because the schemas affect all
+   * templates.
+   */
+  updateCustomElementsManifestSchemas(schemas: CustomElementsManifestSchema[] | null): void {
+    this.config.customElementsManifestSchemas = schemas;
+    this._domSchemaRegistry = null;
+    this.customElementsManifestSchemaCache = null;
+    this.elementTagCache.clear();
+  }
 
   constructor(
     private originalProgram: ts.Program,
@@ -1060,6 +1091,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       host,
       this.programDriver.inliningMode,
       this.perf,
+      this.domSchemaRegistry,
     );
   }
 
@@ -1482,8 +1514,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     const tagMap = new Map<string, PotentialDirective | null>();
+    const customElementsManifestTags = this.getPotentialCustomElementsManifestTags();
 
-    for (const tag of REGISTRY.allKnownElementNames()) {
+    for (const tag of this.domSchemaRegistry.allKnownElementNames()) {
       tagMap.set(tag, null);
     }
 
@@ -1495,9 +1528,21 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
 
       for (const selector of CssSelector.parse(directive.selector)) {
-        if (selector.element === null || tagMap.has(selector.element)) {
+        if (selector.element === null) {
           // Skip this directive if it doesn't match an element tag, or if another directive has
           // already been included with the same element name.
+          continue;
+        }
+
+        const isPlainElementSelector =
+          selector.attrs.length === 0 &&
+          selector.classNames.length === 0 &&
+          selector.notSelectors.length === 0;
+        const replacesManifestEntry =
+          tagMap.get(selector.element) === null &&
+          customElementsManifestTags.has(selector.element) &&
+          isPlainElementSelector;
+        if (tagMap.has(selector.element) && !replacesManifestEntry) {
           continue;
         }
 
@@ -1510,15 +1555,59 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getPotentialDomBindings(tagName: string): {attribute: string; property: string}[] {
-    const attributes = REGISTRY.allKnownAttributesOfElement(tagName);
-    return attributes.map((attribute) => ({
+    const attributes = this.domSchemaRegistry.allKnownAttributesOfElement(tagName);
+    let bindings = attributes.map((attribute) => ({
       attribute,
-      property: REGISTRY.getMappedPropName(attribute),
+      property: this.domSchemaRegistry.getMappedPropName(attribute),
     }));
+    const manifestSchema = this.getCustomElementsManifestSchema(tagName);
+    if (manifestSchema !== null) {
+      const propertyNames = new Set(manifestSchema.properties.map((property) => property.name));
+      const mappedPropertyNames = new Set(
+        Array.from(propertyNames, (propertyName) =>
+          this.domSchemaRegistry.getMappedPropName(propertyName),
+        ),
+      );
+      // Registry-wide HTML attribute mappings must not rename exact JavaScript property names from
+      // a manifest. Replace any mapped representation with the manifest spelling.
+      bindings = bindings.filter(
+        ({attribute, property}) =>
+          !propertyNames.has(attribute) &&
+          !propertyNames.has(property) &&
+          !mappedPropertyNames.has(attribute) &&
+          !mappedPropertyNames.has(property),
+      );
+      for (const propertyName of propertyNames) {
+        bindings.push({attribute: propertyName, property: propertyName});
+      }
+    }
+    return bindings;
   }
 
   getPotentialDomEvents(tagName: string): string[] {
-    return REGISTRY.allKnownEventsOfElement(tagName);
+    return this.domSchemaRegistry.allKnownEventsOfElement(tagName);
+  }
+
+  getPotentialCustomElementsManifestTags(): Set<string> {
+    const tags = new Set<string>();
+    for (const schema of this.config.customElementsManifestSchemas ?? []) {
+      tags.add(schema.tagName);
+    }
+    return tags;
+  }
+
+  getCustomElementsManifestSchema(tagName: string): CustomElementsManifestSchema | null {
+    if (this.customElementsManifestSchemaCache === null) {
+      this.customElementsManifestSchemaCache = new Map();
+      for (const schema of this.config.customElementsManifestSchemas ?? []) {
+        this.customElementsManifestSchemaCache.set(
+          normalizeCustomElementTagName(schema.tagName),
+          schema,
+        );
+      }
+    }
+    const normalizedTagName = normalizeCustomElementTagName(tagName);
+    return this.customElementsManifestSchemaCache.get(normalizedTagName) ?? null;
   }
 
   getPrimaryAngularDecorator(target: ts.ClassDeclaration): ts.Decorator | null {

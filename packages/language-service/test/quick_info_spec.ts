@@ -1434,6 +1434,137 @@ describe('quick info', () => {
   }
 });
 
+describe('quick info for custom elements manifests', () => {
+  function setupWithManifest(template: string) {
+    const manifest = {
+      schemaVersion: '1.0.0',
+      modules: [
+        {
+          kind: 'javascript-module',
+          path: 'my-button.js',
+          declarations: [
+            {
+              kind: 'class',
+              name: 'MyButton',
+              customElement: true,
+              tagName: 'my-button',
+              description: 'A themed button.',
+              members: [
+                {
+                  kind: 'field',
+                  name: 'label',
+                  type: {text: 'string'},
+                  description: 'The button label.',
+                },
+                {
+                  kind: 'field',
+                  name: 'disabled',
+                  type: {text: 'boolean'},
+                  deprecated: 'Use aria-disabled instead.',
+                },
+              ],
+              attributes: [
+                {
+                  name: 'label',
+                  fieldName: 'label',
+                  type: {text: 'string'},
+                  description: 'The label attribute.',
+                },
+              ],
+              events: [
+                {
+                  name: 'activate',
+                  type: {text: 'UnresolvedActivateEvent'},
+                  description: 'Fired when the button activates.',
+                  deprecated: 'Use invoke instead.',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const env = LanguageServiceTestEnv.setup();
+    const project = env.addProject(
+      'test-cem',
+      {
+        'custom-elements.json': JSON.stringify(manifest),
+        'app.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            templateUrl: './app.html',
+            selector: 'app-cmp',
+          })
+          export class AppCmp {}
+
+          @NgModule({
+            declarations: [AppCmp],
+          })
+          export class AppModule {}
+        `,
+        'app.html': template,
+      },
+      {customElementsManifests: ['./custom-elements.json']},
+    );
+    return project.openFile('app.html');
+  }
+
+  it('should include manifest documentation when hovering an element', () => {
+    const file = setupWithManifest(`<my-button label="go"></my-button>`);
+    file.moveCursorToText('<my-but¦ton label');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(toText(info.documentation)).toEqual('A themed button.');
+  });
+
+  it('should include manifest documentation when hovering a property binding', () => {
+    const file = setupWithManifest(`<my-button [label]="'go'"></my-button>`);
+    file.moveCursorToText('[lab¦el]');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(toText(info.documentation)).toEqual('The button label.');
+    expect(toText(info.displayParts)).toEqual('(property) label: string');
+  });
+
+  it('should prefer manifest attribute documentation for a static attribute', () => {
+    const file = setupWithManifest(`<my-button label="go"></my-button>`);
+    file.moveCursorToText('lab¦el="go"');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(toText(info.documentation)).toEqual('The label attribute.');
+    expect(toText(info.displayParts)).toEqual('(property) label: string');
+  });
+
+  it('should surface deprecation when hovering a deprecated property', () => {
+    const file = setupWithManifest(`<my-button [disabled]="true"></my-button>`);
+    file.moveCursorToText('[disab¦led]');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(info.tags).toEqual([
+      jasmine.objectContaining({
+        name: 'deprecated',
+        text: [{kind: 'text', text: 'Use aria-disabled instead.'}],
+      }),
+    ]);
+  });
+
+  it('should include manifest documentation and deprecation when hovering an event', () => {
+    const file = setupWithManifest(`<my-button (activate)="onActivate()"></my-button>`);
+    file.moveCursorToText('(acti¦vate)');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(toText(info.displayParts)).toEqual('(event) activate: UnresolvedActivateEvent');
+    expect(toText(info.documentation)).toEqual('Fired when the button activates.');
+    expect(info.tags).toEqual([
+      jasmine.objectContaining({
+        name: 'deprecated',
+        text: [{kind: 'text', text: 'Use invoke instead.'}],
+      }),
+    ]);
+  });
+});
+
 function toText(displayParts?: ts.SymbolDisplayPart[]): string {
   return (displayParts || []).map((p) => p.text).join('');
 }

@@ -64,6 +64,57 @@ Use `'partial'` for independently published libraries, such as npm packages.
 `'partial'` compilations output a stable, intermediate format which better supports usage by applications built at different Angular versions from the library.
 Libraries built at "HEAD" alongside their applications and using the same version of Angular such as in a mono-repository can use `'full'` since there is no risk of version skew.
 
+### `customElementsManifests`
+
+A list of [Custom Elements Manifest](https://github.com/webcomponents/custom-elements-manifest) \(`custom-elements.json`\) locations describing web components used in templates.
+
+Each entry may be one of the following:
+
+| Entry format                     | Details                                                                                                      |
+| :------------------------------- | :----------------------------------------------------------------------------------------------------------- |
+| `'./custom-elements.json'`       | A path relative to the project's `tsconfig.json`.                                                            |
+| `'@my/lib/custom-elements.json'` | A module specifier of a `.json` file within a package, resolved through the project's module resolution.     |
+| `'@my/lib'`                      | A bare package name; the manifest is located via the `customElements` field of the package's `package.json`. |
+
+Elements declared in these manifests are treated as known elements during template type checking:
+
+- They don't produce "is not a known element" diagnostics \(`NG8001`\).
+- Their declared members and events are recognized in bindings \(`NG8002`\), while bindings to properties the manifests don't declare are still reported. Members marked `readonly` are excluded, since assigning to them at runtime can never work. Manifest attributes are offered as static-attribute completions, but an attribute-only declaration does not authorize a same-named JavaScript property binding; use `[attr.name]` when binding an attribute directly.
+- The Angular Language Service offers their tags, properties, attributes, and events in completions. Attribute declarations offer both static and `[attr.name]` forms. Completion details and hovers include the manifest's type, default value, documentation \(`description`/`summary`\), and deprecation status \(`deprecated`\). Static attributes whose types are string literal unions offer value completions even when strict attribute checking is disabled.
+
+The Language Service treats the manifest's declared type text as descriptive metadata, so it can display that text even when Angular cannot safely use it for template checking. Only the validated type information described below affects diagnostics; otherwise the binding or event remains existence-checked only.
+
+This makes it possible to use a web component library without adding `CUSTOM_ELEMENTS_SCHEMA`, which disables schema checking for every element with a dash in its tag name rather than describing the elements that actually exist.
+When both mechanisms are present, a manifest remains authoritative for the tags it declares, while `CUSTOM_ELEMENTS_SCHEMA` continues to allow other hyphenated tags. This supports incremental migration from broad schema suppression to manifest-backed checking.
+
+When [strict template type checking](tools/cli/template-typecheck#strict-mode) is enabled \(`strictTemplates` or `strictInputTypes`\), binding _values_ are also checked against the manifest's type information in two cases:
+
+- The declared type text is self-contained: primitives, literal unions, and arrays or safe generics of those \(for example `boolean`, `'primary' | 'secondary'`, `string[]`\).
+- The declared type's named types are located by the manifest's optional `type.references` entries — either through `start`/`end` indices that exactly cover the name in the type text, or index-less when the entire type text is the referenced name. Following the manifest schema, a reference without `package` is local to the manifest's package, a reference without `module` is local to the containing JavaScript module, and platform globals use `package: "global:"`. Explicit package and module references are checked against the package's TypeScript declarations. References that don't resolve to an exported type declaration — for example unpublished source paths, missing exports, value-only exports, or packages without types, which the consuming application cannot fix — produce a configuration _warning_ (`NG4011`) and affected properties, attributes, and events fall back to existence-only checking; they never produce errors on template bindings.
+
+Under the same conditions, `$event` in event bindings is typed from the manifest's event `type` \(gated on `strictDomEventTypes` within strict mode\); events whose type information isn't trustworthy fall back to the standard DOM event type inference.
+
+When `strictAttributeTypes` is enabled, trustworthy static attribute types with one unambiguous primitive serialization category are checked using HTML serialization semantics. String literal unions require an exact declared value, numeric text such as `precision="0.5"` is checked as a number, and boolean attribute presence is checked as `true`. Complex object-valued attributes and types that mix serialization categories, such as `boolean | number`, remain unchecked. Property bindings continue to use JavaScript property types, so `[precision]="value"` checks `value` directly as a number. Interpolation serializes its result to a string before assigning the property, so `precision="{{ value }}"` is not assignable to a numeric property; use `[precision]="value"` to preserve the number.
+
+Bindings written as `[attr.name]` use Angular's general attribute serialization behavior: `null` removes the attribute and other values are converted to text. Their values are not checked against manifest property or attribute types.
+
+Manifest property names are exact JavaScript property names. Angular therefore preserves them during code generation instead of applying native HTML attribute-to-property mappings such as `readonly` to `readOnly`. Standard inherited properties that the manifest does not redeclare continue to use Angular's normal DOM mapping.
+
+Directive host bindings are compiled independently of the consuming component and do not have access to its configured manifests. A directive host binding such as `host: {'[readonly]': 'value'}` therefore continues to use Angular's native DOM mapping (`readonly` to `readOnly`), even when the directive is applied to a manifest-declared custom element. Bind exact custom-element properties in the component template when this distinction matters.
+
+Properties and events whose type information doesn't meet these conditions — including function types, qualified names, and named types without references — are existence-checked only. The input side of a manually written two-way binding is checked against its manifest property type; its event side receives manifest typing only when the manifest declares the exact `<propertyName>Change` event. The language service does not offer two-way binding completions for manifest properties: DOM listeners receive an event object, while Angular two-way binding assigns `$event` directly to the bound value. Use an explicit property binding and event handler (for example `[count]="count" (countChange)="count = $event.detail"`) when a custom event carries the new value. Angular does not infer mappings from web-component event names such as `count-changed` or `countchange`.
+
+For package-based manifests, strict DOM local-reference checking also uses the manifest declaration's class and module information. This gives `#ref` the web component class type when that class resolves to importable TypeScript declarations; path-based manifests, declarations without importable class information, and class references that don't resolve (reported by the same `NG4011` warning) fall back to `HTMLElement`.
+
+Inherited members are recognized only when the manifest lists them on the custom element's own declaration, as manifests produced by the [Custom Elements Manifest analyzer](https://custom-elements-manifest.open-wc.org/) do; `superclass` and `mixins` references are not resolved.
+
+Manifest declarations are validated against the platform's custom element registration rules:
+
+- A declaration whose tag name is not a [valid custom element name](https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name) — for example a hyphen-free native tag name like `marquee`, which `customElements.define` would reject — is skipped with a warning \(`NG4009`\). Native elements are never extended.
+- When multiple declarations claim the same tag name \(within one manifest or across manifests\), the first declaration wins and later ones are skipped with a warning \(`NG4010`\), mirroring runtime behavior where only the first `customElements.define` call for a name succeeds.
+
+Manifest files are global compilation resources: edits invalidate template checking throughout the program and are reloaded when the compiler host reports them as changed. The Angular language service and project-local `ngc --watch` manifests use this path; whether changes inside ignored dependency directories such as `node_modules` trigger a rebuild depends on the build host's watch configuration.
+
 ### `disableExpressionLowering`
 
 When `true`, the default, transforms code that is or could be used in an annotation, to allow it to be imported from template factory modules.

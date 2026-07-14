@@ -214,6 +214,45 @@ export enum ErrorCode {
   CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED = 4006,
 
   /**
+   * Raised when an entry of the `customElementsManifests` compiler option cannot be resolved to a
+   * Custom Elements Manifest file, or the file cannot be read.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_NOT_FOUND = 4007,
+
+  /**
+   * Raised when a Custom Elements Manifest referenced by the `customElementsManifests` compiler option
+   * cannot be parsed.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID = 4008,
+
+  /**
+   * Raised (as a warning) when a Custom Elements Manifest declares a custom element whose tag
+   * name is not a valid custom element name — for example a native, hyphen-free tag name. The
+   * declaration is skipped.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_TAG_NAME = 4009,
+
+  /**
+   * Raised (as a warning) when multiple custom element declarations claim the same tag name.
+   * Mirroring runtime `customElements.define` semantics, the first declaration wins and
+   * subsequent ones are skipped.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_DUPLICATE_TAG = 4010,
+
+  /**
+   * Raised (as a warning) when a type referenced by a Custom Elements Manifest cannot be
+   * resolved to TypeScript declarations — for example when the manifest points at an
+   * unpublished source path or a package without types. Affected properties and events fall back
+   * to existence-only checking, while affected element instances fall back to `HTMLElement`.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_UNRESOLVABLE_TYPE_REFERENCE = 4011,
+
+  /**
+   * Raised when `customElementsManifests` is not an array of non-empty strings.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_OPTION = 4012,
+
+  /**
    * Raised when a host expression has a parse error, such as a host listener or host binding
    * expression containing a pipe.
    */
