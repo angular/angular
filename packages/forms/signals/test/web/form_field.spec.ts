@@ -6421,6 +6421,222 @@ describe('field directive', () => {
       expect(input.value).toBe('10');
     });
   });
+
+  describe('form associated custom element', () => {
+    // Simplified form associated custom element implementations
+    class InputBase extends HTMLElement {
+      static formAssociated = true;
+      static get observedAttributes() {
+        return ['value'];
+      }
+
+      protected readonly internals: ElementInternals;
+
+      get type(): string {
+        return 'text';
+      }
+
+      set value(val: string) {
+        this.setAttribute('value', val);
+      }
+      get value() {
+        return this.getAttribute('value') ?? '';
+      }
+
+      set disabled(val: boolean) {
+        this.toggleAttribute('disabled', val);
+      }
+      get disabled() {
+        return this.hasAttribute('disabled');
+      }
+
+      get validity() {
+        return this.internals.validity;
+      }
+
+      get validationMessage() {
+        return this.internals.validationMessage;
+      }
+
+      constructor() {
+        super();
+        this.internals = this.attachInternals();
+      }
+    }
+
+    class DateInput extends InputBase {
+      static override get observedAttributes() {
+        return super.observedAttributes.concat(['min', 'max']);
+      }
+      override get type(): string {
+        return 'date';
+      }
+
+      set valueAsDate(date: Date | null) {
+        if (date === null) {
+          this.value = '';
+        } else if (isNaN(date.getTime())) {
+          this.value = 'invalid';
+          this.internals.setValidity({badInput: true}, 'Invalid date');
+        } else {
+          this.value = date.toISOString().split('T')[0];
+          this.internals.setValidity({});
+        }
+      }
+      get valueAsDate(): Date | null {
+        const val = this.value;
+        if (!val) return null;
+        const date = new Date(val);
+        return isNaN(date.getTime()) ? null : date;
+      }
+
+      set min(val: string) {
+        this.setAttribute('min', val);
+      }
+      get min() {
+        return this.getAttribute('min') ?? '';
+      }
+
+      set max(val: string) {
+        this.setAttribute('max', val);
+      }
+      get max() {
+        return this.getAttribute('max') ?? '';
+      }
+    }
+
+    class CheckboxInput extends InputBase {
+      override get type(): string {
+        return 'checkbox';
+      }
+
+      set checked(val: boolean) {
+        this.toggleAttribute('checked', val);
+      }
+      get checked() {
+        return this.hasAttribute('checked');
+      }
+    }
+
+    beforeAll(() => {
+      if (!customElements.get('date-input')) {
+        customElements.define('date-input', DateInput);
+      }
+      if (!customElements.get('checkbox-input')) {
+        customElements.define('checkbox-input', CheckboxInput);
+      }
+    });
+
+    it('should sync with date form associated custom element', () => {
+      @Component({
+        imports: [FormField],
+        template: `<date-input [formField]="f"></date-input>`,
+      })
+      class TestCmp {
+        f = form(signal(new Date('2024-01-01')));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as DateInput;
+      const cmp = fix.componentInstance;
+
+      // Initial state
+      expect(input.valueAsDate?.toISOString()).toBe('2024-01-01T00:00:00.000Z');
+
+      // Model -> View
+      act(() => cmp.f().value.set(new Date('2024-02-02')));
+      expect(input.valueAsDate?.toISOString()).toBe('2024-02-02T00:00:00.000Z');
+
+      // View -> Model
+      act(() => {
+        input.valueAsDate = new Date('2024-03-03');
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()?.toISOString()).toBe('2024-03-03T00:00:00.000Z');
+    });
+
+    it('should sync with checkbox form associated custom element', () => {
+      @Component({
+        imports: [FormField],
+        template: `<checkbox-input [formField]="f"></checkbox-input>`,
+      })
+      class TestCmp {
+        f = form(signal(true));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as CheckboxInput;
+      const cmp = fix.componentInstance;
+
+      // Initial state
+      expect(input.checked).toBe(true);
+
+      // Model -> View
+      act(() => cmp.f().value.set(false));
+      expect(input.checked).toBe(false);
+
+      // View -> Model
+      act(() => {
+        input.checked = true;
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe(true);
+    });
+
+    it('should sync min/max with form associated custom element', () => {
+      @Component({
+        imports: [FormField],
+        template: `<date-input [formField]="f"></date-input>`,
+      })
+      class TestCmp {
+        min = signal(new Date('2024-01-01'));
+        max = signal(new Date('2024-12-31'));
+        f = form(signal(new Date('2024-01-01')), (p) => {
+          minDate(p, this.min);
+          maxDate(p, this.max);
+        });
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as DateInput;
+      const cmp = fix.componentInstance;
+
+      // Initial state
+      expect(input.min).toBe('2024-01-01');
+      expect(input.max).toBe('2024-12-31');
+
+      // Update min/max
+      act(() => {
+        cmp.min.set(new Date('2024-02-01'));
+        cmp.max.set(new Date('2024-11-30'));
+      });
+      expect(input.min).toBe('2024-02-01');
+      expect(input.max).toBe('2024-11-30');
+    });
+
+    it('should detect validity changes from form associated custom element', () => {
+      @Component({
+        imports: [FormField],
+        template: `<date-input [formField]="f"></date-input>`,
+      })
+      class TestCmp {
+        f = form(signal(new Date('2024-01-01')));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as DateInput;
+      const cmp = fix.componentInstance;
+
+      expect(cmp.f().errors()).toEqual([]);
+      act(() => {
+        input.valueAsDate = new Date(NaN);
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'parse', message: 'Invalid date'}),
+      ]);
+    });
+  });
 });
 
 function setupRadioGroup() {

@@ -46,8 +46,8 @@ import {cvaControlCreate} from './control_cva';
 import {nativeControlCreate} from './control_native';
 import {
   elementAcceptsMinMax,
+  elementAcceptsMinMaxLength,
   isNativeFormElement,
-  isTextualFormElement,
   type NativeFormControl,
 } from './native';
 import {InputValidityMonitor} from './input_validity_monitor';
@@ -96,6 +96,16 @@ export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
  *    designed to work with reactive forms. It should not be used by controls written for signal
  *    forms.
  *
+ * ### FormField compatible custom elements
+ *
+ * In order to make a custom element work with formField, the corresponding
+ * custom element must implement form association (`static formAssociated = true`)
+ * and ideally expose form related properties, including `type` (correlating to an <input> type
+ * if compatible, otherwise a separate unique value), `value`, `required`, `disabled`,
+ * `validity` and `validationMessage`. Also depending on use case, the custom element should
+ * implement `checked`, `min`, `max`, `minLength`, `maxLength`, `valueAsNumber` and `valueAsDate`
+ * properties.
+ *
  * @category control
  *
  * @see [How the FormField directive works](guide/forms/signals/custom-controls#how-the-formfield-directive-works)
@@ -143,8 +153,8 @@ export class FormField<T> {
 
   // Compute some helper booleans about the type of element we're sitting on.
   private readonly elementIsNativeFormElement = isNativeFormElement(this.element);
-  private readonly elementAcceptsTextualValues = isTextualFormElement(this.element);
   private _elementAcceptsMinMax: boolean | undefined;
+  private _elementAcceptsMinMaxLength: boolean | undefined;
 
   /**
    * Utility that casts `this.element` to `NativeFormControl` to avoid repeated type guards. Only
@@ -425,7 +435,7 @@ export class FormField<T> {
         return (this._elementAcceptsMinMax ??= elementAcceptsMinMax(this.element));
       case 'minLength':
       case 'maxLength':
-        return this.elementAcceptsTextualValues;
+        return (this._elementAcceptsMinMaxLength ??= elementAcceptsMinMaxLength(this.element));
       case 'disabled':
       case 'required':
       case 'readonly':
