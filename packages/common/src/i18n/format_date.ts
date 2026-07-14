@@ -33,7 +33,8 @@ import {RuntimeErrorCode} from '../errors';
 export const ISO8601_DATE_REGEX =
   /^(\d{4,})-?(\d\d)-?(\d\d)(?:T(\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(Z|([+-])(\d\d):?(\d\d))?)?$/;
 //    1        2       3         4          5          6          7          8  9     10      11
-const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
+// tslint:disable-next-line:no-toplevel-property-access
+const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = Object.create(null);
 const DATE_FORMATS_SPLIT =
   /((?:[^BEGHLMOSWYZabcdhmswyz']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|Y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|c{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
 const MAX_DATE_FORMAT_LENGTH = 256;
@@ -201,7 +202,7 @@ function createDate(year: number, month: number, date: number): Date {
 
 function getNamedFormat(locale: string, format: string): string {
   const localeId = getLocaleId(locale);
-  NAMED_FORMATS[localeId] ??= {};
+  NAMED_FORMATS[localeId] ??= Object.create(null);
 
   if (NAMED_FORMATS[localeId][format]) {
     return NAMED_FORMATS[localeId][format];
@@ -570,7 +571,8 @@ function weekNumberingYearGetter(size: number, trim = false): DateFormatter {
 
 type DateFormatter = (date: Date, locale: string, offset: number) => string;
 
-const DATE_FORMATS: {[format: string]: DateFormatter} = {};
+// tslint:disable-next-line:no-toplevel-property-access
+const DATE_FORMATS: {[format: string]: DateFormatter} = Object.create(null);
 
 // Based on CLDR formats:
 // See complete list: http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
