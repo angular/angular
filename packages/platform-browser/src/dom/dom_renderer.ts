@@ -44,7 +44,7 @@ export const NAMESPACE_URIS: {[ns: string]: string} = {
 };
 
 const COMPONENT_REGEX = /%COMP%/g;
-const SOURCEMAP_URL_REGEXP = /\/\*#\s*sourceMappingURL=(.+?)\s*\*\//;
+const SOURCEMAP_URL_REGEXP = /\/\*#\s*sourceMappingURL=([^\s*]+)\s*\*\//;
 const PROTOCOL_REGEXP = /^https?:/;
 
 export const COMPONENT_VARIABLE = '%COMP%';
