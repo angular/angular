@@ -361,6 +361,15 @@ describe('Format date', () => {
       );
     });
 
+    it('should treat format tokens that collide with Object.prototype members as literals', () => {
+      // A format token that matches an inherited property name (e.g. `__proto__`) must not
+      // resolve to a value off the prototype of the internal format caches. Before the caches
+      // were given a null prototype, `__proto__` read back `Object.prototype`, garbling the
+      // named-format lookup and crashing the token lookup (it was invoked as a formatter).
+      expect(formatDate(date, '__proto__', ɵDEFAULT_LOCALE_ID)).toEqual('__proto__');
+      expect(formatDate(date, 'y__proto__', ɵDEFAULT_LOCALE_ID)).toEqual('2015__proto__');
+    });
+
     it('should format invalid in IE ISO date', () =>
       expect(formatDate('2017-01-11T12:00:00.014-0500', defaultFormat, ɵDEFAULT_LOCALE_ID)).toEqual(
         'Jan 11, 2017',
