@@ -18,6 +18,16 @@ import { Signal } from '@angular/core';
 import { ValueEqualityFn } from '@angular/core';
 import { WritableResource } from '@angular/core';
 
+// @public @deprecated
+export class DangerousHttpClientJsonpModule {
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<DangerousHttpClientJsonpModule, never>;
+    // (undocumented)
+    static ɵinj: i0.ɵɵInjectorDeclaration<DangerousHttpClientJsonpModule>;
+    // (undocumented)
+    static ɵmod: i0.ɵɵNgModuleDeclaration<DangerousHttpClientJsonpModule, never, never, never>;
+}
+
 // @public
 export class FetchBackend implements HttpBackend {
     // (undocumented)
@@ -555,16 +565,6 @@ export interface HttpClientCommonOptions extends Omit<HttpRequestOptions, 'heade
     params?: HttpParams | {
         [param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>;
     };
-}
-
-// @public @deprecated
-export class HttpClientJsonpModule {
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<HttpClientJsonpModule, never>;
-    // (undocumented)
-    static ɵinj: i0.ɵɵInjectorDeclaration<HttpClientJsonpModule>;
-    // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientJsonpModule, never, never, never>;
 }
 
 // @public @deprecated
@@ -1236,6 +1236,9 @@ export class JsonpInterceptor {
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): EnvironmentProviders;
 
 // @public @deprecated
+export function withDangerousJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport>;
+
+// @public @deprecated
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch>;
 
 // @public
@@ -1243,9 +1246,6 @@ export function withInterceptors(interceptorFns: HttpInterceptorFn[]): HttpFeatu
 
 // @public
 export function withInterceptorsFromDi(): HttpFeature<HttpFeatureKind.LegacyInterceptors>;
-
-// @public @deprecated
-export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport>;
 
 // @public
 export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtection>;

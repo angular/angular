@@ -123,12 +123,12 @@ export class HttpXhrBackend implements HttpBackend {
    */
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
     // Quick check to give a better error message when a user attempts to use
-    // HttpClient.jsonp() without installing the HttpClientJsonpModule
+    // HttpClient.jsonp() without installing the DangerousHttpClientJsonpModule
     if (req.method === 'JSONP') {
       throw new RuntimeError(
         RuntimeErrorCode.MISSING_JSONP_MODULE,
         (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          `Cannot make a JSONP request without JSONP support. To fix the problem, either add the \`withJsonpSupport()\` call (if \`provideHttpClient()\` is used) or import the \`HttpClientJsonpModule\` in the root NgModule.`,
+          `Cannot make a JSONP request without JSONP support. To fix the problem, either add the \`withDangerousJsonpSupport()\` call (if \`provideHttpClient()\` is used) or import the \`DangerousHttpClientJsonpModule\` in the root NgModule.`,
       );
     }
 

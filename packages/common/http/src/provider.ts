@@ -92,7 +92,7 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * @see {@link withInterceptorsFromDi}
  * @see {@link withXsrfConfiguration}
  * @see {@link withNoXsrfProtection}
- * @see {@link withJsonpSupport}
+ * @see {@link withDangerousJsonpSupport}
  * @see {@link withRequestsMadeViaParent}
  * @see {@link withXhr}
  */
@@ -239,10 +239,17 @@ export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtec
 /**
  * Add JSONP support to the configuration of the current `HttpClient` instance.
  *
+ * IMPORTANT: JSONP works by loading and executing JavaScript from a remote origin
+ * via a `<script>` tag. Unlike standard XHR/fetch requests, the response
+ * is executed as code in the page's context, which bypasses normal
+ * same-origin protections and can lead to XSS-style attacks if the
+ * endpoint is compromised or untrusted.
+ * Please avoid using this and transition over to CORS-enabled APIs. This API would be removed in v23.
+ *
  * @see {@link provideHttpClient}
  * @deprecated 22.1 JSONP is deprecated as it can cause XSS vulnerabilities. Use standard HTTP requests instead. Intent to remove in future versions of Angular.
  */
-export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
+export function withDangerousJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
   return makeHttpFeature(HttpFeatureKind.JsonpSupport, [
     JsonpClientBackend,
     {provide: JsonpCallbackContext, useFactory: jsonpCallbackContext},
