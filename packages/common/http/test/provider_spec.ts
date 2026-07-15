@@ -53,6 +53,7 @@ import {
   withXsrfConfiguration,
 } from '../src/provider';
 import {resetFetchBackendWarningFlag} from '../src/backend';
+import {MockXhrFactory} from './xhr_mock';
 
 describe('without provideHttpClientTesting', () => {
   it('should contribute to stability', async () => {
@@ -537,6 +538,36 @@ describe('provideHttpClient', () => {
         });
       });
     }
+
+    it('should inherit root interceptors when withXhr overrides parent delegation', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          {
+            provide: HTTP_ROOT_INTERCEPTOR_FNS,
+            useValue: makeLiteralTagInterceptorFn('root'),
+            multi: true,
+          },
+        ],
+      });
+
+      const child = createEnvironmentInjector(
+        [
+          provideHttpClient(withRequestsMadeViaParent(), withXhr()),
+          {provide: XhrFactory, useClass: MockXhrFactory},
+        ],
+        TestBed.inject(EnvironmentInjector),
+      );
+
+      try {
+        child.get(HttpClient).get('/test').subscribe();
+        const factory = child.get(XhrFactory) as MockXhrFactory;
+        expect(factory.mock.mockHeaders['X-Tag']).toBe('root');
+        factory.mock.mockFlush(200, 'OK', '{}');
+      } finally {
+        child.destroy();
+      }
+    });
   });
 
   describe('compatibility with Http NgModules', () => {
