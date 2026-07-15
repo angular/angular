@@ -13,8 +13,10 @@ import {
   findComponentAndHost,
   highlightHydrationElement,
   highlightSelectedElement,
+  highlightSelectedElementsForProfiler,
   removeHydrationHighlights,
   unHighlight,
+  unHighlightProfiler,
 } from '../highlighter';
 import {getDirectiveForestManager} from '../directive-forest/manager';
 import {ComponentTreeNode} from '../interfaces';
@@ -104,6 +106,20 @@ export class ComponentInspector {
     if (elementToHighlight) {
       highlightSelectedElement(elementToHighlight);
     }
+  }
+
+  highlightByPositions(positions: ElementPosition[]): void {
+    const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
+    const elementsToHighlight = positions
+      .map((position) => findNodeInForest(position, forest))
+      .filter((element): element is HTMLElement => element !== null);
+
+    if (elementsToHighlight.length > 0) {
+      highlightSelectedElementsForProfiler(elementsToHighlight);
+      return;
+    }
+
+    unHighlightProfiler();
   }
 
   highlightHydrationNodes(): void {

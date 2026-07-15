@@ -441,6 +441,8 @@ export interface Events {
   highlightComponent: (id: number) => void;
   selectComponent: (id: number) => void;
   removeComponentHighlight: () => void;
+  createRenderScanOverlay: (positions: ElementPosition[]) => void;
+  removeRenderScanOverlay: () => void;
 
   enableTimingAPI: () => void;
   disableTimingAPI: () => void;
