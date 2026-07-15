@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, signal, viewChildren, Injectable} from '@angular/core';
+import {Component, signal, viewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormField, form} from '../../public_api';
 import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
@@ -56,6 +56,90 @@ describe('numeric inputs', () => {
 
       expect(fixture.componentInstance.f().value()).toBe(420);
       expect(fixture.componentInstance.f().errors()).toEqual([]);
+    });
+
+    it('should preserve a negative decimal typed into a number input', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" step="0.01" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(null);
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+      act(() => {
+        validityMonitor.setInputState(input, '-', true);
+      });
+
+      expect(fixture.componentInstance.f().value()).toBeNull();
+      expect(fixture.componentInstance.f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'parse'}),
+      ]);
+
+      act(() => {
+        validityMonitor.setInputState(input, '-0', false);
+      });
+
+      expect(fixture.componentInstance.f().value()).toBe(0);
+      expect(fixture.componentInstance.f().errors()).toEqual([]);
+      expect(input.value).toBe('-0');
+
+      act(() => {
+        validityMonitor.setInputState(input, '-0.5', false);
+      });
+
+      expect(fixture.componentInstance.f().value()).toBe(-0.5);
+      expect(input.value).toBe('-0.5');
+    });
+
+    it('should preserve fractional zeroes while editing a number input', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" step="0.01" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(null);
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+      act(() => {
+        validityMonitor.setInputState(input, '1', false);
+      });
+      act(() => {
+        validityMonitor.setInputState(input, '1.0', false);
+      });
+      act(() => {
+        validityMonitor.setInputState(input, '1.00', false);
+      });
+      act(() => {
+        validityMonitor.setInputState(input, '1.000', false);
+      });
+      act(() => {
+        validityMonitor.setInputState(input, '1.0000', false);
+      });
+
+      expect(fixture.componentInstance.f().value()).toBe(1);
+      expect(input.value).toBe('1.0000');
+
+      act(() => {
+        validityMonitor.setInputState(input, '1.00005', false);
+      });
+      act(() => {
+        validityMonitor.setInputState(input, '1.0000', false);
+      });
+      act(() => {
+        validityMonitor.setInputState(input, '1.00004', false);
+      });
+
+      expect(fixture.componentInstance.f().value()).toBe(1.00004);
+      expect(input.value).toBe('1.00004');
     });
 
     it('should clear parse errors on one control when another control for the same field updates the model', () => {
@@ -205,6 +289,73 @@ describe('text input with numeric model', () => {
     expect(fixture.componentInstance.f().errors()).toEqual([]);
   });
 
+  it('should preserve a negative decimal typed into a text input with a numeric model', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(null);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    setInputValue(input, '-');
+
+    expect(fixture.componentInstance.f().value()).toBeNull();
+    expect(fixture.componentInstance.f().errors()).toEqual([
+      jasmine.objectContaining({kind: 'parse'}),
+    ]);
+    expect(input.value).toBe('-');
+
+    setInputValue(input, '-0');
+
+    expect(fixture.componentInstance.f().errors()).toEqual([]);
+    expect(input.value).toBe('-0');
+
+    setInputValue(input, '-0.');
+
+    expect(fixture.componentInstance.f().errors()).toEqual([]);
+    expect(input.value).toBe('-0.');
+
+    setInputValue(input, '-0.5');
+
+    expect(fixture.componentInstance.f().value()).toBe(-0.5);
+    expect(input.value).toBe('-0.5');
+  });
+
+  it('should not parse non-decimal numeric text', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(42);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    setInputValue(input, '0b0101');
+
+    expect(fixture.componentInstance.f().value()).toBe(42);
+    expect(fixture.componentInstance.f().errors()).toEqual([
+      jasmine.objectContaining({kind: 'parse'}),
+    ]);
+    expect(input.value).toBe('0b0101');
+
+    setInputValue(input, '0x22');
+
+    expect(fixture.componentInstance.f().value()).toBe(42);
+    expect(fixture.componentInstance.f().errors()).toEqual([
+      jasmine.objectContaining({kind: 'parse'}),
+    ]);
+    expect(input.value).toBe('0x22');
+  });
+
   it('should produce a parse error when user types non-numeric text', () => {
     @Component({
       imports: [FormField],
@@ -307,6 +458,13 @@ describe('text input with numeric model', () => {
     expect(input.value).toBe('99');
   });
 });
+
+function setInputValue(input: HTMLInputElement, value: string) {
+  act(() => {
+    input.value = value;
+    input.dispatchEvent(new Event('input'));
+  });
+}
 
 function act<T>(fn: () => T): T {
   try {
