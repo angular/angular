@@ -8,7 +8,8 @@
 
 import {initializeMessageBus} from '../../../ng-devtools-backend';
 
-import {unHighlight} from '../../../ng-devtools-backend/src/lib/highlighter';
+import {removeHighlightsByType} from '../../../ng-devtools-backend/src/lib/highlighter';
+import {HighlightType} from '../../../ng-devtools-backend/src/lib/highlighter/highlights';
 
 import {initializeExtendedWindowOperations} from './chrome-window-extensions';
 import {getBackendUri, getContentScriptUri} from './comm-utils';
@@ -44,7 +45,7 @@ messageBus.on('handshake', () => {
     'mousemove',
     () => {
       if (!inspectorRunning) {
-        unHighlight();
+        removeHighlightsByType(HighlightType.InspectElement);
       }
     },
     false,

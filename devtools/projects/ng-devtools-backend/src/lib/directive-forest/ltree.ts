@@ -8,7 +8,7 @@
 
 import semver from 'semver';
 
-import {getDirectiveName} from '../highlighter';
+import {Type} from '@angular/core';
 import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces';
 import {isCustomElement} from '../utils/general';
 import {VERSION} from '../version';
@@ -156,4 +156,9 @@ export class LTreeStrategy {
     const rootLView = ctx.lView ?? ctx;
     return this._extract(rootLView);
   }
+}
+
+// Note(hawkgs): Duplicate due to cyclic dependency.
+function getDirectiveName(dir: Type<unknown> | undefined | null): string {
+  return dir ? dir.constructor.name : 'unknown';
 }

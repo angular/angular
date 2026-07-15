@@ -201,7 +201,7 @@ ts_project(
         ":comm_utils",
         ":same_page_message_bus",
         "//devtools/projects/ng-devtools-backend",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib/highlighter",
     ],
 )
 

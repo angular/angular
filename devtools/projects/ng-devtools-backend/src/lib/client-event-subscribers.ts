@@ -50,7 +50,6 @@ import {
   serializeResolutionPath,
   updateState,
 } from './component-tree/component-tree';
-import {unHighlight} from './highlighter';
 import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
 import {disableTimingAPI, enableTimingAPI} from './profiling/timing-api';
 import {getProfiler, Profiler} from './profiling/profiler';
@@ -64,6 +63,8 @@ import {runOutsideAngular, unwrapSignal} from './utils/general';
 import {sanitizeObject} from './utils/serialization';
 import {SignalGraphRef} from './utils/signal-graph-ref';
 import {getDirectiveForestManager} from './directive-forest/manager';
+import {highlightHydrationNodes, removeHydrationHighlights} from './hydration-highlighting';
+import {removeAllHighlights} from './highlighter';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
@@ -76,6 +77,8 @@ export const subscribeToClientEvents = (
   const inspector: InspectorRef = {ref: null};
 
   messageBus.on('shutdown', shutdownCallback(messageBus));
+
+  messageBus.on('devtoolsShutdown', devtoolsShutdownCallback(inspector));
 
   messageBus.on(
     'getLatestComponentExplorerView',
@@ -139,6 +142,11 @@ export const subscribeToClientEvents = (
 
 const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.destroy();
+};
+
+const devtoolsShutdownCallback = (inspector: InspectorRef) => () => {
+  inspector.ref?.stopInspecting();
+  removeAllHighlights();
 };
 
 const getLatestComponentExplorerViewCallback =
@@ -373,10 +381,10 @@ const setupInspector = (messageBus: MessageBus<Events>): ComponentInspector => {
   messageBus.on('createHighlightOverlay', (position: ElementPosition) => {
     inspector.highlightByPosition(position);
   });
-  messageBus.on('removeHighlightOverlay', unHighlight);
+  messageBus.on('removeHighlightOverlay', () => inspector.unhighlight());
 
-  messageBus.on('createHydrationOverlay', inspector.highlightHydrationNodes);
-  messageBus.on('removeHydrationOverlay', inspector.removeHydrationHighlights);
+  messageBus.on('createHydrationOverlay', highlightHydrationNodes);
+  messageBus.on('removeHydrationOverlay', removeHydrationHighlights);
 
   return inspector;
 };
