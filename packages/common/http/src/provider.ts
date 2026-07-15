@@ -14,7 +14,7 @@ import {
   Provider,
 } from '@angular/core';
 
-import {HttpBackend, HttpHandler, HttpInterceptorHandler} from './backend';
+import {HttpBackend, HttpHandler, HttpInterceptorHandler, HttpParentBackend} from './backend';
 import {HttpClient} from './client';
 import {FetchBackend} from './fetch';
 import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, legacyInterceptorFnFactory} from './interceptor';
@@ -282,7 +282,7 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
             'withRequestsMadeViaParent() can only be used when the parent injector also configures HttpClient',
           );
         }
-        return handlerFromParent;
+        return new HttpParentBackend(handlerFromParent!);
       },
     },
   ]);
