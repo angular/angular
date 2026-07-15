@@ -20,6 +20,7 @@ import {
 import {BrowserModule, withEventReplay, withIncrementalHydration} from '@angular/platform-browser';
 import {renderModule, ServerModule} from '../index';
 import {getHydrationInfoFromTransferState, ssr} from './hydration_utils';
+import {toInlineScriptJson} from '../src/transfer_state';
 import domino from '../third_party/domino/bundled-domino';
 
 describe('transfer_state', () => {
@@ -105,6 +106,32 @@ describe('transfer_state', () => {
 
     const output = await renderModule(TransferStoreModule, {document: '<app></app>'});
     expect(output).toBe(defaultExpectedOutput);
+  });
+
+  describe('toInlineScriptJson', () => {
+    it('matches plain JSON.stringify for values with no special characters', () => {
+      expect(toInlineScriptJson('ng')).toBe(JSON.stringify('ng'));
+      expect(toInlineScriptJson(['click', 'input'])).toBe(JSON.stringify(['click', 'input']));
+    });
+
+    it('escapes `<` so a `</script>` sequence cannot break out of a <script> tag', () => {
+      const malicious = '</script><script>alert(1)</script>';
+      const result = toInlineScriptJson(malicious);
+
+      expect(result).not.toContain('<');
+      // The escaping must be reversible: decoding the unicode escapes back
+      // to their original characters must reproduce the original value.
+      expect(JSON.parse(result.replace(/\\u003C/g, '<').replace(/\\u002F/g, '/'))).toBe(malicious);
+    });
+
+    it('relies on JSON.stringify to escape a `"` so it cannot break out of a string literal', () => {
+      const malicious = '"); alert(1); //';
+      const result = toInlineScriptJson(malicious);
+
+      expect(JSON.parse(result.replace(/\\u003C/g, '<').replace(/\\u002F/g, '/'))).toBe(malicious);
+      // A raw, unescaped quote would terminate the JSON string early.
+      expect(result.startsWith('"') && result.endsWith('"')).toBeTrue();
+    });
   });
 
   describe('getTransferState', () => {
