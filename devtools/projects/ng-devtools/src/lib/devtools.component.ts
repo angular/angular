@@ -17,7 +17,7 @@ import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Frame} from './application-environment';
 import {BrowserStylesService} from './application-services/browser_styles_service';
-import {MatIcon, MatIconRegistry} from '@angular/material/icon';
+import {MatIconRegistry} from '@angular/material/icon';
 import {SUPPORTED_APIS} from './application-providers/supported_apis';
 import {APP_DATA} from './application-providers/app_data';
 import {Settings} from './application-services/settings';
@@ -48,7 +48,7 @@ export const LAST_SUPPORTED_VERSION = 12;
   selector: 'ng-devtools',
   templateUrl: './devtools.component.html',
   styleUrls: ['./devtools.component.scss'],
-  imports: [DevToolsTabsComponent, MatIcon, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
+  imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
 })
 export class DevToolsComponent implements OnDestroy {
   protected readonly supportedApis = inject(SUPPORTED_APIS);
