@@ -85,6 +85,9 @@ describe('DevtoolsComponent', () => {
     expect(fixture.nativeElement.querySelector('.devtools-state-screen').textContent).toContain(
       'We detected an application built with a production configuration. Angular DevTools only supports development builds.',
     );
+    expect(
+      fixture.nativeElement.querySelector('.devtools-state-angie').getAttribute('src'),
+    ).toContain('angie-sad.svg');
   });
 
   it('should render version support message when Angular Status is EXISTS and angular version is not supported', async () => {
@@ -99,6 +102,9 @@ describe('DevtoolsComponent', () => {
     expect(fixture.nativeElement.querySelector('.devtools-state-screen').textContent).toContain(
       `Angular DevTools only supports Angular versions ${LAST_SUPPORTED_VERSION} and above`,
     );
+    expect(
+      fixture.nativeElement.querySelector('.devtools-state-angie').getAttribute('src'),
+    ).toContain('angie-coding-01.svg');
   });
 
   it('should render Angular application not detected when Angular Status is DOES_NOT_EXIST', async () => {
@@ -110,6 +116,9 @@ describe('DevtoolsComponent', () => {
     expect(fixture.nativeElement.querySelector('.devtools-state-screen').textContent).toContain(
       'Angular application not detected',
     );
+    expect(
+      fixture.nativeElement.querySelector('.devtools-state-angie').getAttribute('src'),
+    ).toContain('angie-error.svg');
   });
 
   it('should render loading svg when Angular Status is UNKNOWN', async () => {
