@@ -5,112 +5,146 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-/**
- * @fileoverview
- * @suppress {globalThis}
+
+/*
+ * This is necessary for Chrome and Chrome mobile, to enable
+ * things like redefining `createdCallback` on an element.
  */
 
-import {isBrowser, isMix, isNode, ObjectGetPrototypeOf, patchOnProperties} from '../common/utils';
+let zoneSymbol: any;
+let _defineProperty: any;
+let _getOwnPropertyDescriptor: any;
+let _create: any;
+let unconfigurablesKey: any;
 
-export interface IgnoreProperty {
-  target: any;
-  ignoreProperties: string[];
+export function propertyPatch() {
+  zoneSymbol = Zone.__symbol__;
+  _defineProperty = (Object as any)[zoneSymbol('defineProperty')] = Object.defineProperty;
+  _getOwnPropertyDescriptor = (Object as any)[zoneSymbol('getOwnPropertyDescriptor')] =
+    Object.getOwnPropertyDescriptor;
+  _create = Object.create;
+  unconfigurablesKey = zoneSymbol('unconfigurables');
+  Object.defineProperty = function (obj: any, prop: string, desc: any) {
+    if (isUnconfigurable(obj, prop)) {
+      throw new TypeError("Cannot assign to read only property '" + prop + "' of " + obj);
+    }
+    const originalConfigurableFlag = desc.configurable;
+    if (prop !== 'prototype') {
+      desc = rewriteDescriptor(obj, prop, desc);
+    }
+    return _tryDefineProperty(obj, prop, desc, originalConfigurableFlag);
+  };
+
+  Object.defineProperties = function <T>(
+    obj: T,
+    props: PropertyDescriptorMap &
+      ThisType<any> & {
+        [s: symbol]: PropertyDescriptor;
+      },
+  ): T {
+    Object.keys(props).forEach(function (prop) {
+      Object.defineProperty(obj, prop, props[prop]);
+    });
+    for (const sym of Object.getOwnPropertySymbols(props)) {
+      const desc = Object.getOwnPropertyDescriptor(props, sym);
+      if (desc?.enumerable) {
+        Object.defineProperty(obj, sym, props[sym]);
+      }
+    }
+    return obj;
+  };
+
+  Object.create = <any>function (proto: any, propertiesObject: any) {
+    if (typeof propertiesObject === 'object' && !Object.isFrozen(propertiesObject)) {
+      Object.keys(propertiesObject).forEach(function (prop) {
+        propertiesObject[prop] = rewriteDescriptor(proto, prop, propertiesObject[prop]);
+      });
+    }
+    return _create(proto, propertiesObject);
+  };
+
+  Object.getOwnPropertyDescriptor = function (obj, prop) {
+    const desc = _getOwnPropertyDescriptor(obj, prop);
+    if (desc && isUnconfigurable(obj, prop)) {
+      desc.configurable = false;
+    }
+    return desc;
+  };
 }
 
-export function filterProperties(
-  target: any,
-  onProperties: string[],
-  ignoreProperties: IgnoreProperty[],
-): string[] {
-  if (!ignoreProperties || ignoreProperties.length === 0) {
-    return onProperties;
-  }
-
-  const tip: IgnoreProperty[] = ignoreProperties.filter((ip) => ip.target === target);
-  if (tip.length === 0) {
-    return onProperties;
-  }
-
-  const targetIgnoreProperties: string[] = tip[0].ignoreProperties;
-  return onProperties.filter((op) => targetIgnoreProperties.indexOf(op) === -1);
+export function _redefineProperty(obj: any, prop: string, desc: any) {
+  const originalConfigurableFlag = desc.configurable;
+  desc = rewriteDescriptor(obj, prop, desc);
+  return _tryDefineProperty(obj, prop, desc, originalConfigurableFlag);
 }
 
-export function patchFilteredProperties(
-  target: any,
-  onProperties: string[],
-  ignoreProperties: IgnoreProperty[],
-  prototype?: any,
-) {
-  // check whether target is available, sometimes target will be undefined
-  // because different browser or some 3rd party plugin.
-  if (!target) {
-    return;
-  }
-  const filteredProperties: string[] = filterProperties(target, onProperties, ignoreProperties);
-  patchOnProperties(target, filteredProperties, prototype);
+function isUnconfigurable(obj: any, prop: any) {
+  return obj && obj[unconfigurablesKey] && obj[unconfigurablesKey][prop];
 }
 
-/**
- * Get all event name properties which the event name startsWith `on`
- * from the target object itself, inherited properties are not considered.
- */
-export function getOnEventNames(target: Object) {
-  return Object.getOwnPropertyNames(target)
-    .filter((name) => name.startsWith('on') && name.length > 2)
-    .map((name) => name.substring(2));
+function rewriteDescriptor(obj: any, prop: string, desc: any) {
+  // 🛡️ FIX: do not modify the original descriptor object.
+  // Create a shallow copy and modify the copy instead.
+  const newDesc = { ...desc };
+  if (!Object.isFrozen(desc)) {
+    newDesc.configurable = true;
+  }
+  if (!newDesc.configurable) {
+    if (!obj[unconfigurablesKey] && !Object.isFrozen(obj)) {
+      _defineProperty(obj, unconfigurablesKey, { writable: true, value: {} });
+    }
+    if (obj[unconfigurablesKey]) {
+      obj[unconfigurablesKey][prop] = true;
+    }
+  }
+  return newDesc;
 }
 
-export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
-  if (isNode && !isMix) {
-    return;
-  }
-  if ((Zone as any)[api.symbol('patchEvents')]) {
-    // events are already been patched by legacy patch.
-    return;
-  }
-  const ignoreProperties: IgnoreProperty[] = _global['__Zone_ignore_on_properties'];
-  // for browsers that we can patch the descriptor:  Chrome & Firefox
-  let patchTargets: string[] = [];
-  if (isBrowser) {
-    const internalWindow: any = window;
-    patchTargets = patchTargets.concat([
-      'Document',
-      'SVGElement',
-      'Element',
-      'HTMLElement',
-      'HTMLBodyElement',
-      'HTMLMediaElement',
-      'HTMLFrameSetElement',
-      'HTMLFrameElement',
-      'HTMLIFrameElement',
-      'HTMLMarqueeElement',
-      'Worker',
-    ]);
-    patchFilteredProperties(
-      internalWindow,
-      getOnEventNames(internalWindow),
-      ignoreProperties,
-      ObjectGetPrototypeOf(internalWindow),
-    );
-  }
-  patchTargets = patchTargets.concat([
-    'XMLHttpRequest',
-    'XMLHttpRequestEventTarget',
-    'IDBIndex',
-    'IDBRequest',
-    'IDBOpenDBRequest',
-    'IDBDatabase',
-    'IDBTransaction',
-    'IDBCursor',
-    'WebSocket',
-  ]);
-  for (let i = 0; i < patchTargets.length; i++) {
-    const target = _global[patchTargets[i]];
-    target?.prototype &&
-      patchFilteredProperties(
-        target.prototype,
-        getOnEventNames(target.prototype),
-        ignoreProperties,
-      );
+function _tryDefineProperty(obj: any, prop: string, desc: any, originalConfigurableFlag: any) {
+  try {
+    return _defineProperty(obj, prop, desc);
+  } catch (error) {
+    if (desc.configurable) {
+      // In case of errors, when the configurable flag was likely set by rewriteDescriptor(),
+      // let's retry with the original flag value
+      if (typeof originalConfigurableFlag == 'undefined') {
+        delete desc.configurable;
+      } else {
+        desc.configurable = originalConfigurableFlag;
+      }
+      try {
+        return _defineProperty(obj, prop, desc);
+      } catch (error) {
+        let swallowError = false;
+        if (
+          prop === 'createdCallback' ||
+          prop === 'attachedCallback' ||
+          prop === 'detachedCallback' ||
+          prop === 'attributeChangedCallback'
+        ) {
+          // We only swallow the error in registerElement patch
+          // this is the work around since some applications
+          // fail if we throw the error
+          swallowError = true;
+        }
+        if (!swallowError) {
+          throw error;
+        }
+        // TODO: @JiaLiPassion, Some application such as `registerElement` patch
+        // still need to swallow the error, in the future after these applications
+        // are updated, the following logic can be removed.
+        let descJson: string | null = null;
+        try {
+          descJson = JSON.stringify(desc);
+        } catch (error) {
+          descJson = desc.toString();
+        }
+        console.log(
+          `Attempting to configure '${prop}' with descriptor '${descJson}' on object '${obj}' and got error, giving up: ${error}`,
+        );
+      }
+    } else {
+      throw error;
+    }
   }
 }
