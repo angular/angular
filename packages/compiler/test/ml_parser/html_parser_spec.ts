@@ -1629,6 +1629,20 @@ describe('HtmlParser', () => {
       });
     });
 
+    describe('ignored syntax', () => {
+      it('should ignore doctype declaration', () => {
+        expect(humanizeDom(parser.parse(`<!DOCTYPE html>hello`, 'TestComp'))).toEqual([
+          [html.Text, 'hello', 0, ['hello']],
+        ]);
+      });
+
+      it('should ignore processing instruction', () => {
+        expect(
+          humanizeDom(parser.parse(`<?xml version="1.0" encoding="UTF-8"?>hello`, 'TestComp')),
+        ).toEqual([[html.Text, 'hello', 0, ['hello']]]);
+      });
+    });
+
     describe('source spans', () => {
       it('should store the location', () => {
         expect(
