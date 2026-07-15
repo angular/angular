@@ -47,6 +47,17 @@ export abstract class HttpBackend implements HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
 
+/**
+ * An `HttpBackend` that delegates requests to the parent injector's `HttpHandler`.
+ */
+export class HttpParentBackend implements HttpBackend {
+  constructor(private parent: HttpHandler) {}
+
+  handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+    return this.parent.handle(req);
+  }
+}
+
 let fetchBackendWarningDisplayed = false;
 
 /** Internal function to reset the flag in tests */
@@ -99,11 +110,13 @@ export class HttpInterceptorHandler implements HttpHandler {
 
   handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {
     if (this.chain === null) {
+      const rootInterceptorFns = this.injector.get(
+        HTTP_ROOT_INTERCEPTOR_FNS,
+        [],
+        this.backend instanceof HttpParentBackend ? {self: true} : undefined,
+      );
       const dedupedInterceptorFns = Array.from(
-        new Set([
-          ...this.injector.get(HTTP_INTERCEPTOR_FNS),
-          ...this.injector.get(HTTP_ROOT_INTERCEPTOR_FNS, []),
-        ]),
+        new Set([...this.injector.get(HTTP_INTERCEPTOR_FNS), ...rootInterceptorFns]),
       );
 
       // Note: interceptors are wrapped right-to-left so that final execution order is
