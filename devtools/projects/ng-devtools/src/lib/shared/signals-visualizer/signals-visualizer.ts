@@ -422,8 +422,7 @@ export class SignalsGraphVisualizer {
           updatedNodes.push(n.id);
         } else if (isClusterNode(n) && !this.expandedClustersIds.has(n.id)) {
           const previewNode = signalGraph.nodes[n.previewNode ?? -1] as
-            | DevtoolsSignalNode
-            | undefined;
+            DevtoolsSignalNode | undefined;
 
           if (previewNode && previewNode.epoch !== existingNode.epoch) {
             this.updateDagreNode(previewNode, existingNode, signalGraph);

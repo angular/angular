@@ -11,10 +11,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 
 type Docs =
-  | 'view-encapsulation'
-  | 'change-detection'
-  | 'dependency-injection'
-  | 'injector-hierarchies';
+  'view-encapsulation' | 'change-detection' | 'dependency-injection' | 'injector-hierarchies';
 
 const URLS: {[key in Docs]: string} = {
   'change-detection': 'https://angular.dev/api/core/ChangeDetectionStrategy',

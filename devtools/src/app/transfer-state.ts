@@ -146,8 +146,7 @@ export function serializeTransferState(): void {
   doc.body.appendChild(script);
 
   const root = doc.querySelector('app-root') as
-    | (Element & {__ngDebugHydrationInfo__?: unknown})
-    | null;
+    (Element & {__ngDebugHydrationInfo__?: unknown}) | null;
   if (root) {
     root.__ngDebugHydrationInfo__ = {};
   }
