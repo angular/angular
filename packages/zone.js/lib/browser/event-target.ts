@@ -7,11 +7,13 @@
  */
 
 export function eventTargetPatch(_global: any, api: _ZonePrivate) {
-  if ((Zone as any)[api.symbol('patchEventTarget')]) {
+  const sym = api.symbol('patchEventTarget');
+  // 🛡️ FIX: prevent prototype pollution by checking hasOwnProperty
+  if ((Zone as any).hasOwnProperty(sym) && (Zone as any)[sym]) {
     // EventTarget is already patched.
     return;
   }
-  const {eventNames, zoneSymbolEventNames, TRUE_STR, FALSE_STR, ZONE_SYMBOL_PREFIX} =
+  const { eventNames, zoneSymbolEventNames, TRUE_STR, FALSE_STR, ZONE_SYMBOL_PREFIX } =
     api.getGlobalObjects()!;
   //  predefine all __zone_symbol__ + eventName + true/false string
   for (let i = 0; i < eventNames.length; i++) {
