@@ -102,15 +102,15 @@ export class InputSignatureTest {
     transform: (v: string | boolean) => '',
   });
 
-  /** boolean, boolean */
+  /** boolean, unknown */
   explicitReadWithBooleanAttributeTransform = input<boolean>(false, {transform: booleanAttribute});
-  /** number, number */
+  /** number, unknown */
   explicitReadWithNumberAttributeTransform = input<number>(0, {transform: numberAttribute});
-  /** boolean | undefined, boolean | undefined */
+  /** boolean | undefined, unknown */
   explicitReadWithUndefinedInitialBooleanAttributeTransform = input<boolean>(undefined, {
     transform: booleanAttribute,
   });
-  /** number | undefined, number | undefined */
+  /** number | undefined, unknown */
   explicitReadWithUndefinedInitialNumberAttributeTransform = input<number>(undefined, {
     transform: numberAttribute,
   });

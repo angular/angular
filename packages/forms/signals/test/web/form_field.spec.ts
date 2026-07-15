@@ -3978,6 +3978,25 @@ describe('field directive', () => {
   });
 
   describe('input transforms', () => {
+    it('should accept an explicit read type with InputSignalWithTransform', () => {
+      @Component({selector: 'custom-control', template: ``})
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model('');
+        readonly disabled = input<boolean>(false, {transform: booleanAttribute});
+      }
+
+      @Component({
+        imports: [FormField, CustomControl],
+        template: `<custom-control [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      expect(fixture.componentInstance).toBeDefined();
+    });
+
     it('should accept InputSignal without transform', () => {
       @Component({selector: 'custom-control', template: ``})
       class CustomControl implements FormValueControl<string> {
