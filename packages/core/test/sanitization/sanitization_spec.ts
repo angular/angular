@@ -27,7 +27,11 @@ import {
   ɵɵtrustConstantHtml,
   ɵɵtrustConstantResourceUrl,
 } from '../../src/sanitization/sanitization';
-import {SECURITY_SCHEMA, SecurityContext} from '../../src/sanitization/dom_security_schema';
+import {
+  checkSecurityContext,
+  SECURITY_SCHEMA,
+  SecurityContext,
+} from '../../src/sanitization/dom_security_schema';
 
 function fakeLView(): LView {
   const fake = [null, {}] as LView;
@@ -200,6 +204,22 @@ describe('sanitization', () => {
     expect(
       ɵɵsanitizeUrlOrResourceUrl(bypassSanitizationTrustUrl('javascript:true'), 'a', 'href'),
     ).toEqual('javascript:true');
+  });
+
+  it('should apply URL security context to SVG elements that load external resources', () => {
+    // svg:image and svg:feImage load external images (analogous to HTML <img src>)
+    expect(checkSecurityContext('image', 'href', 'svg')).toBe(SecurityContext.URL);
+    expect(checkSecurityContext('image', 'xlink:href', 'svg')).toBe(SecurityContext.URL);
+    expect(checkSecurityContext('feImage', 'href', 'svg')).toBe(SecurityContext.URL);
+    expect(checkSecurityContext('feImage', 'xlink:href', 'svg')).toBe(SecurityContext.URL);
+    // svg:use loads external SVG fragments which may include scripted content
+    expect(checkSecurityContext('use', 'href', 'svg')).toBe(SecurityContext.URL);
+    expect(checkSecurityContext('use', 'xlink:href', 'svg')).toBe(SecurityContext.URL);
+    // Verify svg:a still has URL context (no regression)
+    expect(checkSecurityContext('a', 'href', 'svg')).toBe(SecurityContext.URL);
+    // Verify non-SVG elements with same tag names are unaffected
+    expect(checkSecurityContext('use', 'href', null)).toBe(SecurityContext.NONE);
+    expect(checkSecurityContext('image', 'href', null)).toBe(SecurityContext.NONE);
   });
 
   it('should only trust constant strings from template literal tags without interpolation', () => {
