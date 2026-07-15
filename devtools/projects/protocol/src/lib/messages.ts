@@ -223,9 +223,7 @@ export interface WizComponentMetadata extends BaseDirectiveMetadata {
 
 /** Directive metadata for all supported frameworks. */
 export type DirectiveMetadata =
-  | AngularDirectiveMetadata
-  | AcxDirectiveMetadata
-  | WizComponentMetadata;
+  AngularDirectiveMetadata | AcxDirectiveMetadata | WizComponentMetadata;
 
 export interface SerializedInjectedService {
   token: string;
@@ -383,13 +381,7 @@ export interface SupportedApis {
 }
 
 export type TransferStateValue =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | Record<string, unknown>
-  | unknown[];
+  string | number | boolean | null | undefined | Record<string, unknown> | unknown[];
 
 export interface Events {
   handshake: () => void;

@@ -606,9 +606,7 @@ const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
     if (!injector) continue;
 
     const rootData = ng.ɵgetTransferState?.(injector) as
-      | Record<string, TransferStateValue>
-      | null
-      | undefined;
+      Record<string, TransferStateValue> | null | undefined;
     if (rootData && typeof rootData === 'object') {
       Object.assign(merged, rootData);
       collected = true;
