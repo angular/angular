@@ -39,7 +39,7 @@ export function isElement(node: Node | null): node is Element {
 /**
  * Check whether the input is a function.
  */
-export function isFunction(value: any): value is Function {
+export function isFunction(value: unknown): value is Function {
   return typeof value === 'function';
 }
 
@@ -74,7 +74,7 @@ export function matchesSelector(el: any, selector: string): boolean {
 /**
  * Test two values for strict equality, accounting for the fact that `NaN !== NaN`.
  */
-export function strictEquals(value1: any, value2: any): boolean {
+export function strictEquals(value1: unknown, value2: unknown): boolean {
   return value1 === value2 || (value1 !== value1 && value2 !== value2);
 }
 
