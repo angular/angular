@@ -55,15 +55,20 @@ export function generateTypeCtorDeclarationFn(
  *
  * An inline type constructor for NgFor looks like:
  *
- * static ngTypeCtor<T>(init: Partial<Pick<NgForOf<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>>):
+ * static ngTypeCtor<T>(init: Pick<NgForOf<T>, 'ngForOf'|'ngForTrackBy'|'ngForTemplate'>):
  *   NgForOf<T>;
  *
  * A typical constructor would be:
  *
- * NgForOf.ngTypeCtor({ngForOf: ['foo', 'bar']}); // Infers a type of NgForOf<string>.
+ * NgForOf.ngTypeCtor(init: {
+ *   ngForOf: ['foo', 'bar'],
+ *   ngForTrackBy: null as any,
+ *   ngForTemplate: null as any,
+ * }); // Infers a type of NgForOf<string>.
  *
- * Unbound inputs are omitted from the type constructor call (the init type is `Partial`) so
- * they do not poison generic inference with `any` and so `NoInfer` on other inputs is respected.
+ * Unbound non-signal inputs are assigned `0 as any` so generic inference falls back to the type
+ * parameter default. Unbound signal inputs are omitted (init is `Partial` over signal keys) so
+ * they do not poison inference and defeat TypeScript's `NoInfer` on other inputs.
  *
  * Inline type constructors are used when the type being created has bounded generic types which
  * make writing a declared type constructor (via `generateTypeCtorDeclarationFn`) difficult or
@@ -111,11 +116,14 @@ function constructTypeCtorParameter(
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, its initType will be:
   //
-  // Partial<Pick<rawType, 'inputA'|'inputB'>>
+  // Pick<rawType, 'inputA'|'inputB'>
   //
-  // Pick selects the fields that can contribute to generic inference. Partial is required so
-  // unbound inputs can be omitted from the call. Filling missing keys with `any` (the previous
-  // approach) poisons inference and defeats TypeScript's `NoInfer` on other inputs.
+  // Pick here is used to select only those fields from which the generic type parameters of the
+  // directive will be inferred. Unbound non-signal inputs are filled with `any` in the call.
+  //
+  // Unbound signal inputs are omitted from the call; the init type includes
+  // `Partial<UnwrapDirectiveSignalInputs<...>>` so they do not poison inference and defeat
+  // TypeScript's `NoInfer` on other inputs.
   //
   // In the special case there are no inputs, initType is set to {}.
   let initType: string | null = null;
@@ -136,16 +144,15 @@ function constructTypeCtorParameter(
       const coercionType =
         transformType !== undefined ? transformType : `typeof ${typeRef}${access}`;
 
-      // Optional so unbound coerced inputs can be omitted without an `any` placeholder.
       coercedKeys.push(
-        `${isUnsafe ? TcbExpr.quoteAndEscape(classPropertyName) : classPropertyName}?: ${coercionType}`,
+        `${isUnsafe ? TcbExpr.quoteAndEscape(classPropertyName) : classPropertyName}: ${coercionType}`,
       );
     }
   }
 
   if (plainKeys.length > 0) {
     // Construct a union of all the field names.
-    initType = `Partial<Pick<${typeRefWithGenerics}, ${plainKeys.join(' | ')}>>`;
+    initType = `Pick<${typeRefWithGenerics}, ${plainKeys.join(' | ')}>`;
   }
   if (coercedKeys.length > 0) {
     let coercedLiteral = '{\n';

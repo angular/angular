@@ -276,7 +276,7 @@ TestClass.ngTypeCtor({value: 'test'});
         const typeCtor = TestClassWithCtor.members.find(isTypeCtor)!;
         const ctorText = typeCtor.getText().replace(/[ \r\n]+/g, ' ');
         expect(ctorText).toContain(
-          'init: Partial<Pick<TestClass, "foo">> & { bar?: typeof TestClass.ngAcceptInputType_bar; baz?: boolean | string; }',
+          'init: Pick<TestClass, "foo"> & { bar: typeof TestClass.ngAcceptInputType_bar; baz: boolean | string; }',
         );
       });
     });

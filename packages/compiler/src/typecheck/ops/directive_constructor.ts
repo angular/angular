@@ -108,9 +108,16 @@ export class TcbDirectiveCtorOp extends TcbOp {
       }
     }
 
+    // Add unset directive inputs for each of the remaining unset fields.
+    for (const {classPropertyName, isSignal} of this.dir.inputs) {
+      if (!genericInputs.has(classPropertyName)) {
+        genericInputs.set(classPropertyName, {type: 'unset', field: classPropertyName, isSignal});
+      }
+    }
+
     // Call the type constructor of the directive to infer a type, and assign the directive
-    // instance. Unbound inputs are omitted (init is Partial) so they do not poison inference
-    // with `any` fillers and so `NoInfer` on bound inputs is respected.
+    // instance. Unbound signal inputs are omitted so they do not poison inference with `any`
+    // fillers and so `NoInfer` on bound inputs is respected.
     const typeCtor = tcbCallTypeCtor(this.dir, this.tcb, Array.from(genericInputs.values()));
     typeCtor.markIgnoreDiagnostics();
     this.scope.addStatement(new TcbExpr(`var ${id.print()} = ${typeCtor.print()}`));
@@ -170,22 +177,32 @@ function tcbCallTypeCtor(
 
   let literal = '{ ';
 
-  // Construct an object literal containing only bound directive inputs. Unbound inputs are omitted
-  // so they do not poison generic inference with `any` fillers (and so `NoInfer` works).
-  for (let i = 0; i < inputs.length; i++) {
-    const input = inputs[i];
+  // Construct an object literal containing each directive input. Unbound signal inputs are omitted
+  // so they do not poison generic inference with `any` fillers (and so `NoInfer` works). Unbound
+  // non-signal inputs are assigned `0 as any` so generic inference falls back to the type
+  // parameter default.
+  const parts: string[] = [];
+  for (const input of inputs) {
     const propertyName = TcbExpr.quoteAndEscape(input.field);
-    const isLast = i === inputs.length - 1;
 
-    let expr = widenBinding(input.expression, tcb, input.originalExpression);
+    if (input.type === 'binding') {
+      let expr = widenBinding(input.expression, tcb, input.originalExpression);
 
-    if (input.isTwoWayBinding && tcb.env.config.allowSignalsInTwoWayBindings) {
-      expr = unwrapWritableSignal(expr, tcb);
+      if (input.isTwoWayBinding && tcb.env.config.allowSignalsInTwoWayBindings) {
+        expr = unwrapWritableSignal(expr, tcb);
+      }
+
+      const assignment = new TcbExpr(`${propertyName}: ${expr.wrapForTypeChecker().print()}`);
+      assignment.addParseSpanInfo(input.sourceSpan);
+      parts.push(assignment.print());
+    } else if (!input.isSignal) {
+      parts.push(`${propertyName}: 0 as any`);
     }
+  }
 
-    const assignment = new TcbExpr(`${propertyName}: ${expr.wrapForTypeChecker().print()}`);
-    assignment.addParseSpanInfo(input.sourceSpan);
-    literal += assignment.print();
+  for (let i = 0; i < parts.length; i++) {
+    const isLast = i === parts.length - 1;
+    literal += parts[i];
     literal += `${isLast ? '' : ','} `;
   }
 
