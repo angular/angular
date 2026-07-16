@@ -38,41 +38,32 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
 const SAFE_URL_PATTERN = /^(?!javascript:)(?:[a-z0-9+.-]+:|[^&:\/?#]*(?:[\/?#]|$))/i;
 
 /**
- * A pattern that matches safe `data:` URLs. Only binary media MIME types (image, video, audio)
- * with base64 encoding are permitted. This prevents dangerous MIME types such as
- * `data:text/html` or `data:application/javascript` from being used as XSS vectors when
- * Angular binds URLs in templates or sanitizes innerHTML content.
+ * A pattern that matches `data:` URLs with MIME types that can execute scripts
+ * when navigated to or embedded. These are explicitly blocked to prevent XSS.
  *
- * Note: `data:image/svg+xml` is intentionally excluded because SVG documents can embed
- * executable scripts, making them unsafe when opened via a link or navigation.
+ * Blocked MIME types:
+ * - `text/html`, `application/xhtml+xml` — rendered as HTML documents with full script execution
+ * - `text/javascript`, `application/javascript` — executed as JavaScript directly
+ * - `image/svg+xml` — SVG documents can embed and execute scripts when opened as a document
  *
- * Allowed image types: bmp, gif, jpeg, jpg, png, tiff, webp
- * Allowed video types: mpeg, mp4, ogg, webm
- * Allowed audio types: 3gpp, 3gpp2, aac, midi, mp3, mp4, mpeg, ogg, opus, wav, webm, x-m4a
+ * All other `data:` URLs (e.g. `data:text/csv`, `data:application/pdf`,
+ * `data:application/json`) remain allowed, preserving common patterns such as
+ * client-side file generation for download via `<a [href]="..." download>`.
  */
-const SAFE_DATA_URL_PATTERN =
-  /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:3gpp|3gpp2|aac|midi|mp3|mp4|mpeg|ogg|opus|wav|webm|x-m4a));base64,[a-z0-9+\/]+=*$/i;
+const UNSAFE_DATA_URL_PATTERN =
+  /^data:(?:text\/html|application\/xhtml\+xml|text\/javascript|application\/javascript|image\/svg\+xml)[,;]/i;
 
 export function _sanitizeUrl(url: string): string {
   url = String(url);
-  if (/^data:/i.test(url)) {
-    // `data:` URLs require special handling: only safe binary media MIME types with base64
-    // encoding are permitted. This prevents `data:text/html` and similar MIME types from
-    // bypassing sanitization and enabling XSS via innerHTML or URL bindings.
-    if (SAFE_DATA_URL_PATTERN.test(url)) return url;
-
+  if (UNSAFE_DATA_URL_PATTERN.test(url)) {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       console.warn(`WARNING: sanitizing unsafe URL value ${url} (see ${XSS_SECURITY_URL})`);
     }
-
     return 'unsafe:' + url;
   }
-
   if (SAFE_URL_PATTERN.test(url)) return url;
-
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     console.warn(`WARNING: sanitizing unsafe URL value ${url} (see ${XSS_SECURITY_URL})`);
   }
-
   return 'unsafe:' + url;
 }
