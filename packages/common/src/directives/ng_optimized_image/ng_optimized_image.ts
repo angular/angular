@@ -1247,7 +1247,11 @@ function assertNonZeroRenderedHeight(
     removeLoadListenerFn();
     removeErrorListenerFn();
     const renderedHeight = img.clientHeight;
-    if (dir.fill && renderedHeight === 0) {
+    // A cached image may fire `load` while the element is still detached from
+    // the DOM (for example a duplicate `ngSrc` inside a `@defer` block), and a
+    // detached element always reports a zero height. Skip the check in that
+    // case to avoid a false-positive warning.
+    if (dir.fill && renderedHeight === 0 && img.isConnected) {
       console.warn(
         formatRuntimeError(
           RuntimeErrorCode.INVALID_INPUT,

@@ -1160,6 +1160,43 @@ describe('Image directive', () => {
           `${IMG_BASE_URL}/path/img.png 2048w, ${IMG_BASE_URL}/path/img.png 3840w`,
       );
     });
+
+    it('should not warn about a zero rendered height when a fill image loads while detached from the DOM', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      // A cached image can fire `load` before its view is attached to the DOM,
+      // and a detached element always reports a zero height.
+      Object.defineProperty(img, 'clientHeight', {value: 0, configurable: true});
+      Object.defineProperty(img, 'isConnected', {value: false, configurable: true});
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+      img.dispatchEvent(new Event('load'));
+      expect(consoleWarnSpy.calls.count()).toBe(0);
+    });
+
+    it('should warn about a zero rendered height when a fill image is connected to the DOM', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      Object.defineProperty(img, 'clientHeight', {value: 0, configurable: true});
+      Object.defineProperty(img, 'isConnected', {value: true, configurable: true});
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+      img.dispatchEvent(new Event('load'));
+      expect(consoleWarnSpy.calls.count()).toBe(1);
+      expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
+        /NG02952:.*the height of the fill-mode image is zero/,
+      );
+    });
   });
 
   describe('placeholder attribute', () => {
