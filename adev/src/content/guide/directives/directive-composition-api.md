@@ -83,14 +83,10 @@ The following example defines two directives, `Menu` and `Tooltip`, then compose
 When `SpecializedMenuWithTooltip` is used in a template, it creates instances of all of `Menu`, `Tooltip`, and `MenuWithTooltip`. Each of these directives' host bindings apply to the host element of `SpecializedMenuWithTooltip`.
 
 ```ts
-@Directive({
-  /* ... */
-})
+@Directive({/* ... */})
 export class Menu {}
 
-@Directive({
-  /* ... */
-})
+@Directive({/* ... */})
 export class Tooltip {}
 
 // MenuWithTooltip can compose behaviors from multiple other directives
