@@ -139,4 +139,20 @@ describe('hidden', () => {
     f.name().value.set('hidden-cat');
     expect(f.name().hidden()).toBe(true);
   });
+
+  it('it returns true when configOrLogic is omitted', () => {
+    const cat = signal({name: 'Pirojok-the-cat', age: 5});
+    const f = form(
+      cat,
+      (p) => {
+        hidden(p.name);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.name().hidden()).withContext('Name is permanently hidden').toBeTrue();
+
+    f.name().value.set('some-other-cat');
+    expect(f.name().hidden()).toBeTrue();
+  });
 });

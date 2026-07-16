@@ -221,6 +221,45 @@ export class Profile {
 }
 ```
 
+### Always hidden
+
+To make a field permanently hidden, call `hidden()` with just the field path:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, hidden} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-profile',
+  imports: [FormField],
+  template: `
+    <label>
+      <input type="checkbox" [formField]="profileForm.isPublic" />
+      Make profile public
+    </label>
+
+    <!-- The publicUrl is permanently hidden, so this block never renders -->
+    @if (!profileForm.publicUrl().hidden()) {
+      <label>
+        Public URL
+        <input [formField]="profileForm.publicUrl" />
+      </label>
+    }
+  `,
+})
+export class Profile {
+  profileModel = signal({
+    isPublic: false,
+    publicUrl: '',
+  });
+
+  profileForm = form(this.profileModel, (schemaPath) => {
+    // This field is now permanently hidden and excluded from active validation
+    hidden(schemaPath.publicUrl);
+  });
+}
+```
+
 ## Display uneditable fields with `readonly()`
 
 The `readonly()` rule prevents users from updating a field. The `[FormField]` directive automatically binds this state to the HTML `readonly` attribute, which prevents editing while still allowing users to focus and select text.
