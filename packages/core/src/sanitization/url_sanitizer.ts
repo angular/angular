@@ -36,9 +36,39 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
  * This regular expression was taken from the Closure sanitization library.
  */
 const SAFE_URL_PATTERN = /^(?!javascript:)(?:[a-z0-9+.-]+:|[^&:\/?#]*(?:[\/?#]|$))/i;
+
+/**
+ * A pattern that matches safe `data:` URLs. Only binary media MIME types (image, video, audio)
+ * with base64 encoding are permitted. This prevents dangerous MIME types such as
+ * `data:text/html` or `data:application/javascript` from being used as XSS vectors when
+ * Angular binds URLs in templates or sanitizes innerHTML content.
+ *
+ * Note: `data:image/svg+xml` is intentionally excluded because SVG documents can embed
+ * executable scripts, making them unsafe when opened via a link or navigation.
+ *
+ * Allowed image types: bmp, gif, jpeg, jpg, png, tiff, webp
+ * Allowed video types: mpeg, mp4, ogg, webm
+ * Allowed audio types: 3gpp, 3gpp2, aac, midi, mp3, mp4, mpeg, ogg, opus, wav, webm, x-m4a
+ */
+const SAFE_DATA_URL_PATTERN =
+  /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:3gpp|3gpp2|aac|midi|mp3|mp4|mpeg|ogg|opus|wav|webm|x-m4a));base64,[a-z0-9+\/]+=*$/i;
+
 export function _sanitizeUrl(url: string): string {
   url = String(url);
-  if (url.match(SAFE_URL_PATTERN)) return url;
+  if (/^data:/i.test(url)) {
+    // `data:` URLs require special handling: only safe binary media MIME types with base64
+    // encoding are permitted. This prevents `data:text/html` and similar MIME types from
+    // bypassing sanitization and enabling XSS via innerHTML or URL bindings.
+    if (SAFE_DATA_URL_PATTERN.test(url)) return url;
+
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.warn(`WARNING: sanitizing unsafe URL value ${url} (see ${XSS_SECURITY_URL})`);
+    }
+
+    return 'unsafe:' + url;
+  }
+
+  if (SAFE_URL_PATTERN.test(url)) return url;
 
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     console.warn(`WARNING: sanitizing unsafe URL value ${url} (see ${XSS_SECURITY_URL})`);
