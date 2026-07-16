@@ -8,33 +8,33 @@
 
 import {inject} from '@angular/core';
 import {SettingsStore} from './settings_store';
-import {ThemePreference} from './theme_types';
+import {SettingsDataV2} from '../application-providers/settings_versions';
 
-// Note: Any changes to the settings items should be accompanied by a migration.
-// Check settings_provider.ts
+// If you need to update an item, please refer to `settings_versions.ts` and this doc:
+// https://github.com/angular/angular/blob/main/devtools/docs/settings.md
 export class Settings {
-  private readonly settingsStore = inject(SettingsStore);
+  private readonly settingsStore = inject(SettingsStore<SettingsDataV2>);
 
   readonly showCommentNodes = this.settingsStore.create({
     key: 'show_comment_nodes',
-    category: 'general', // Good candidate for migration to `components`
+    category: 'components',
     initialValue: false,
   });
 
-  readonly timingAPIEnabled = this.settingsStore.create({
-    key: 'timing_api_enabled',
-    category: 'general', // Good candidate for migration to `profiler`
+  readonly performanceTrack = this.settingsStore.create({
+    key: 'performance_track',
+    category: 'profiling',
     initialValue: false,
   });
 
-  readonly theme = this.settingsStore.create<ThemePreference>({
+  readonly theme = this.settingsStore.create({
     key: 'theme',
     category: 'general',
     initialValue: 'system',
   });
 
   readonly activeTab = this.settingsStore.create({
-    key: 'activeTab',
+    key: 'active_tab',
     category: 'general',
     initialValue: 'Components',
   });

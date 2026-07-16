@@ -108,12 +108,12 @@ export class DevToolsComponent implements OnDestroy {
   }
 
   private syncBackendWithSettings() {
-    // Keep BE in sync with timing API.
+    // Keep BE in sync with the performance track setting.
     effect(() => {
-      if (this.settings.timingAPIEnabled()) {
-        this.messageBus.emit('enableTimingAPI');
+      if (this.settings.performanceTrack()) {
+        this.messageBus.emit('enablePerformanceTrack');
       } else {
-        this.messageBus.emit('disableTimingAPI');
+        this.messageBus.emit('disablePerformanceTrack');
       }
     });
 
