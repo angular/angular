@@ -71,4 +71,60 @@ describe('URL sanitizer', () => {
       it(`valid ${url}`, () => expect(_sanitizeUrl(url)).toMatch(/^unsafe:/));
     }
   });
+
+  describe('data: URL handling', () => {
+    describe('dangerous data: URLs are sanitized', () => {
+      const dangerousDataUrls = [
+        // HTML content can execute scripts when navigated to (e.g. via <a href>)
+        'data:text/html,<h1>Hello</h1>',
+        'data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==',
+        'data:text/html;charset=utf-8,<script>alert(1)</script>',
+        // JavaScript MIME types execute scripts directly
+        'data:application/javascript,alert(1)',
+        'data:text/javascript,alert(1)',
+        // XHTML can embed scripts
+        'data:application/xhtml+xml,<html><script>alert(1)</script></html>',
+        // SVG can embed scripts and executes them when opened as a document
+        'data:image/svg+xml,<svg onload="alert(1)"></svg>',
+        'data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9ImFsZXJ0KDEpIj48L3N2Zz4=',
+        // Plain text data URLs
+        'data:text/plain,hello',
+        // data: URLs without base64 encoding for media types are not permitted
+        'data:image/png,rawbytes',
+        'data:video/mp4,rawbytes',
+      ];
+      for (const url of dangerousDataUrls) {
+        it(`blocks "${url}"`, () => {
+          expect(_sanitizeUrl(url)).toMatch(/^unsafe:/);
+          expect(logMsgs.join('\n')).toMatch(/sanitizing unsafe URL value/);
+        });
+      }
+    });
+
+    describe('safe data: URLs are allowed', () => {
+      const safeDataUrls = [
+        // Binary image types with base64 encoding
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAAAAAAAAAAAAAAAAAAAAAAD-/xAAUAQEAAAAAAAAAAAAAAAAAAAAAA/8QAFAEAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k=',
+        'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+        'data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JZQCdAEO/gHOAAA=',
+        'data:image/bmp;base64,Qk0eAAAAAAAAABoAAAAMAAAAAQAAAAEAAAABACAAAAA=',
+        'data:image/tiff;base64,SUkqAAgAAAA=',
+        // Binary video types with base64 encoding
+        'data:video/mp4;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ',
+        'data:video/webm;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
+        'data:video/ogg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ',
+        // Binary audio types with base64 encoding
+        'data:audio/opus;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
+        'data:audio/mp3;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ',
+        'data:audio/ogg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ',
+        'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAA==',
+      ];
+      for (const url of safeDataUrls) {
+        it(`allows "${url.substring(0, 40)}..."`, () => {
+          expect(_sanitizeUrl(url)).toEqual(url);
+        });
+      }
+    });
+  });
 });
