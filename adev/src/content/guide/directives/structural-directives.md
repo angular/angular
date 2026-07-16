@@ -2,13 +2,15 @@
 
 Structural directives are directives applied to an `<ng-template>` element that conditionally or repeatedly render the content of that `<ng-template>`.
 
+For everyday conditional and repeated rendering, use Angular's built-in [control flow blocks](guide/templates/control-flow) (`@if`, `@for`, and `@switch`). Write a structural directive when you need reusable rendering behavior that control flow doesn't cover, such as gating content behind a permission check or providing a template with data from an external source.
+
 ## Example use case
 
-In this guide you'll build a structural directive which fetches data from a given data source and renders its template when that data is available. This directive is called `SelectDirective`, after the SQL keyword `SELECT`, and match it with an attribute selector `[select]`.
+This guide uses a directive called `SelectDirective` as its running example. The directive fetches data from a given data source and renders its template when that data is available. It is named after the SQL keyword `SELECT` and matched with an attribute selector, `[select]`.
 
-`SelectDirective` will have an input naming the data source to be used, which you will call `selectFrom`. The `select` prefix for this input is important for the [shorthand syntax](#structural-directive-shorthand). The directive will instantiate its `<ng-template>` with a template context providing the selected data.
+`SelectDirective` has an input naming the data source to use, called `selectFrom`. The `select` prefix for this input is important for the [shorthand syntax](#structural-directive-shorthand). The directive instantiates its `<ng-template>` with a template context providing the selected data.
 
-The following is an example of using this directive directly on an `<ng-template>` would look like:
+Using this directive directly on an `<ng-template>` looks like this:
 
 ```angular-html
 <ng-template select let-data [selectFrom]="source">
@@ -18,7 +20,7 @@ The following is an example of using this directive directly on an `<ng-template
 
 The structural directive can wait for the data to become available and then render its `<ng-template>`.
 
-HELPFUL: Note that Angular's `<ng-template>` element defines a template that doesn't render anything by default, if you just wrap elements in an `<ng-template>` without applying a structural directive those elements will not be rendered.
+HELPFUL: Angular's `<ng-template>` element defines a template that doesn't render anything by default. If you wrap elements in an `<ng-template>` without applying a structural directive, those elements are not rendered.
 
 For more information, see the [ng-template API](api/core/ng-template) documentation.
 
@@ -60,20 +62,12 @@ You can only apply one structural directive per element when using the shorthand
 
 ## Creating a structural directive
 
-This section guides you through creating the `SelectDirective`.
+A structural directive is a directive class that injects two dependencies:
 
-<docs-workflow>
-<docs-step title="Generate the directive">
-Using the Angular CLI, run the following command, where `select` is the name of the directive:
+- [`TemplateRef`](api/core/TemplateRef) gives the directive access to the content of the `<ng-template>` it is applied to.
+- [`ViewContainerRef`](api/core/ViewContainerRef) represents the location in the DOM where the directive can render that template.
 
-```shell
-ng generate directive select
-```
-
-Angular creates the directive class and specifies the CSS selector, `[select]`, that identifies the directive in a template.
-</docs-step>
-<docs-step title="Make the directive structural">
-Import `TemplateRef`, `ViewContainerRef`, and `input`. Inject `TemplateRef` and `ViewContainerRef` in the directive as private properties.
+The directive controls rendering by creating, or not creating, embedded views from the template in the view container. The complete `SelectDirective` looks like this:
 
 ```ts
 import {Directive, TemplateRef, ViewContainerRef, inject, input} from '@angular/core';
@@ -88,27 +82,9 @@ export interface DataSource<T> {
 export class SelectDirective {
   private templateRef = inject(TemplateRef);
   private viewContainerRef = inject(ViewContainerRef);
-}
-```
 
-</docs-step>
-<docs-step title="Add the 'selectFrom' input">
-Add a `selectFrom` `input()` property.
-
-```ts
-export class SelectDirective {
-  // ...
   selectFrom = input.required<DataSource<unknown>>();
-}
-```
 
-</docs-step>
-<docs-step title="Add the business logic">
-With `SelectDirective` now scaffolded as a structural directive with its input, you can now add the logic to fetch the data and render the template with it:
-
-```ts
-export class SelectDirective {
-  // ...
   async ngOnInit() {
     const data = await this.selectFrom().load();
     this.viewContainerRef.createEmbeddedView(this.templateRef, {
@@ -120,10 +96,15 @@ export class SelectDirective {
 }
 ```
 
-</docs-step>
-</docs-workflow>
+The `selectFrom` input names the data source the directive reads from. It uses [`input.required()`](guide/components/inputs#required-inputs) because the directive can't do anything useful without a data source.
 
-That's it - `SelectDirective` is up and running. A follow-up step might be to [add template type-checking support](#typing-the-directives-context).
+When Angular initializes the directive, it loads the data and then renders the template by calling `createEmbeddedView()`. The second argument is the template's _context object_: values the template can bind to with `let` declarations. Assigning the data to the `$implicit` key makes it the default value that `let-data` (or `let data` in shorthand) receives.
+
+NOTE: This example renders its template once, when the directive initializes. It does not re-render when the bound data source changes.
+
+Once the directive works, consider [adding template type-checking support](#typing-the-directives-context).
+
+HELPFUL: The CLI command [`ng generate directive`](tools/cli/schematics) scaffolds a directive along with its test file.
 
 ## Structural directive syntax reference
 
@@ -167,8 +148,8 @@ The following table provides shorthand examples:
 | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------ |
 | `*myDir="let item of [1,2,3]"`                                        | `<ng-template myDir let-item [myDirOf]="[1, 2, 3]">`                                                          |
 | `*myDir="let item of [1,2,3] as items; trackBy: myTrack; index as i"` | `<ng-template myDir let-item [myDirOf]="[1,2,3]" let-items="myDirOf" [myDirTrackBy]="myTrack" let-i="index">` |
-| `*ngComponentOutlet="componentClass";`                                | `<ng-template [ngComponentOutlet]="componentClass">`                                                          |
-| `*ngComponentOutlet="componentClass; inputs: myInputs";`              | `<ng-template [ngComponentOutlet]="componentClass" [ngComponentOutletInputs]="myInputs">`                     |
+| `*ngComponentOutlet="componentClass"`                                 | `<ng-template [ngComponentOutlet]="componentClass">`                                                          |
+| `*ngComponentOutlet="componentClass; inputs: myInputs"`               | `<ng-template [ngComponentOutlet]="componentClass" [ngComponentOutletInputs]="myInputs">`                     |
 | `*myDir="exp as value"`                                               | `<ng-template [myDir]="exp" let-value="myDir">`                                                               |
 
 ## Improving template type checking for custom directives
@@ -251,3 +232,11 @@ export class SelectDirective<T> {
   }
 }
 ```
+
+## What's next
+
+<docs-pill-row>
+  <docs-pill href="guide/directives/directive-composition-api" title="Directive composition API"/>
+  <docs-pill href="guide/templates/ng-template" title="ng-template"/>
+  <docs-pill href="guide/templates/control-flow" title="Control flow"/>
+</docs-pill-row>
