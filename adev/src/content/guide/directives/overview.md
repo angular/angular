@@ -14,36 +14,31 @@ Common examples include:
 - Reading from or writing to the host element's DOM, attributes, or classes.
 - Adding behavior to a component you don't own without changing its source.
 
-If you need to render your own markup or manage a piece of UI with its own template, reach for a [component](guide/components) rather than a directive.
+If you need to render your own markup or manage a piece of UI with its own template, reach for a [component](guide/components), a specialized directive with its own template.
 
 ## A quick example
 
-Suppose you want elements to highlight when the user hovers over them, changing their background color to yellow. Rather than repeat the same event-handling logic on every element, you can package that behavior in a directive and apply it wherever you need it.
+Suppose you want elements to highlight when the user hovers over them with a mouse, changing their background color to yellow. Rather than repeat the same event-handling logic on every element, you can package that behavior in a directive and apply it wherever you need it.
 
-The following `appHighlight` directive sets the host element's background color when the pointer enters and clears it when the pointer leaves:
+The following `appHighlight` directive sets the host element's background color when the mouse enters and clears it when the mouse leaves:
 
 ```angular-ts
-import {Directive, ElementRef, inject} from '@angular/core';
+import {Directive, signal} from '@angular/core';
 
 @Directive({
   selector: '[appHighlight]',
   host: {
-    '(mouseenter)': 'onMouseEnter()',
-    '(mouseleave)': 'onMouseLeave()',
+    '(mouseenter)': 'isHovered.set(true)',
+    '(mouseleave)': 'isHovered.set(false)',
+    '[style.background-color]': 'isHovered() ? "yellow" : null',
   },
 })
 export class HighlightDirective {
-  private el = inject(ElementRef);
-
-  onMouseEnter() {
-    this.el.nativeElement.style.backgroundColor = 'yellow';
-  }
-
-  onMouseLeave() {
-    this.el.nativeElement.style.backgroundColor = '';
-  }
+  protected isHovered = signal(false);
 }
 ```
+
+The `host` metadata listens for mouse events to update the `isHovered` signal, and binds the host element's `background-color` style to the signal's value.
 
 Apply the directive by adding its selector as an attribute on an element:
 
@@ -55,10 +50,11 @@ Every element that carries the `appHighlight` attribute gains the same hover beh
 
 ## Types of directives
 
-Angular has two primary types of directives:
+Angular has three primary types of directives:
 
 | Directive type                                                  | Details                                                                           |
 | :-------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
+| [Components](guide/components)                                  | Define reusable UI with their own template.                                       |
 | [Attribute directives](guide/directives/attribute-directives)   | Change the appearance or behavior of an element, component, or another directive. |
 | [Structural directives](guide/directives/structural-directives) | Change the DOM layout by adding and removing DOM elements.                        |
 
