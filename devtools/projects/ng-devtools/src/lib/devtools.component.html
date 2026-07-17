@@ -11,8 +11,7 @@
             <img
               class="devtools-state-angie"
               src="/assets/angie-coding-01.svg"
-              alt=""
-              aria-hidden="true"
+              alt="Angie illustration"
             />
             <p class="text-message">
               Angular DevTools only supports Angular versions {{ LAST_SUPPORTED_VERSION }} and
@@ -22,7 +21,7 @@
         }
       } @else {
         <div class="devtools-state-screen">
-          <img class="devtools-state-angie" src="/assets/angie-sad.svg" alt="" aria-hidden="true" />
+          <img class="devtools-state-angie" src="/assets/angie-sad.svg" alt="Angie illustration" />
           <p
             class="text-message"
             matTooltip="A dev build is when the `optimization` flag is set to `false` in the angular.json config file."
@@ -81,7 +80,7 @@
     }
     @case (AngularStatus.DOES_NOT_EXIST) {
       <div class="devtools-state-screen">
-        <img class="devtools-state-angie" src="/assets/angie-error.svg" alt="" aria-hidden="true" />
+        <img class="devtools-state-angie" src="/assets/angie-error.svg" alt="Angie illustration" />
         <p
           class="text-message"
           matTooltip="You see this message because the app is still loading, or this is not an Angular application"
