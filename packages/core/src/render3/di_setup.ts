@@ -108,7 +108,7 @@ function resolveProvider(
     const beginIndex = tNode.providerIndexes & TNodeProviderIndexes.ProvidersStartIndexMask;
     const endIndex = tNode.directiveStart;
     const cptViewProvidersCount =
-      tNode.providerIndexes >> TNodeProviderIndexes.CptViewProvidersCountShift;
+      tNode.providerIndexes >>> TNodeProviderIndexes.CptViewProvidersCountShift;
 
     if (isTypeProvider(provider) || !provider.multi) {
       const factory = new NodeInjectorFactory(

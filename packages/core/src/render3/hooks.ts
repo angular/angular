@@ -308,11 +308,11 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
   const directiveIndex = isInitHook ? -arr[i] : (arr[i] as number);
   const directive = currentView[directiveIndex];
   if (isInitHook) {
-    const indexWithintInitPhase = currentView[FLAGS] >> LViewFlags.IndexWithinInitPhaseShift;
+    const indexWithintInitPhase = currentView[FLAGS] >>> LViewFlags.IndexWithinInitPhaseShift;
     // The init phase state must be always checked here as it may have been recursively updated.
     if (
       indexWithintInitPhase <
-        currentView[PREORDER_HOOK_FLAGS] >> PreOrderHookFlags.NumberOfInitHooksCalledShift &&
+        currentView[PREORDER_HOOK_FLAGS] >>> PreOrderHookFlags.NumberOfInitHooksCalledShift &&
       (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase
     ) {
       currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
