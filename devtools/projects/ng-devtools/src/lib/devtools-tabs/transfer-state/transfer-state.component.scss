@@ -54,12 +54,11 @@
     border-radius: 0.5rem;
     text-align: center;
 
-    .info-icon {
-      font-size: 2rem;
-      width: 2rem;
-      height: 2rem;
-      color: var(--secondary-contrast);
-      margin-bottom: 0.5rem;
+    .info-angie {
+      display: block;
+      height: 120px;
+      width: auto;
+      margin: 0 auto 0.75rem;
     }
 
     h3 {
