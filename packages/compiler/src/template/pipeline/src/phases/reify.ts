@@ -403,7 +403,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         break;
       case ir.OpKind.DeferOn:
         let args: o.Expression[] = [];
-        switch (op.trigger.kind) {
+        const triggerKind = op.trigger.kind;
+
+        switch (triggerKind) {
           case ir.DeferTriggerKind.Never:
           case ir.DeferTriggerKind.Immediate:
             break;
@@ -447,12 +449,13 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
               }
             }
             break;
-          default:
+          default: {
+            const unhandledTriggerKind: never = triggerKind;
+
             throw new Error(
-              `AssertionError: Unsupported reification of defer trigger kind ${
-                (op.trigger as any).kind
-              }`,
+              `AssertionError: Unsupported reification of defer trigger kind ${unhandledTriggerKind}`,
             );
+          }
         }
         ir.OpList.replace(op, ng.deferOn(op.trigger.kind, args, op.modifier, op.sourceSpan));
         break;
