@@ -65,4 +65,20 @@ describe('ShadowCss, processRules', () => {
       ).toEqual('a {b2}');
     });
   });
+
+  describe('ReDoS hardening', () => {
+    it('should complete in linear time with many comment placeholders and no terminator', () => {
+      // Regression test for polynomial backtracking in _ruleRe.
+      // Before the fix, a CSS string with k COMMENT placeholders followed by
+      // content without a `;' or `{' terminator caused O(k²) backtracking.
+      // The test verifies that processRules returns promptly; a hanging test
+      // is the observable symptom of the unfixed regex.
+      const manyComments = ' /* a comment */ '.repeat(200) + 'unclosed-selector';
+      const start = Date.now();
+      processRules(manyComments, (rule) => rule);
+      const elapsed = Date.now() - start;
+      // Should complete well under 1 second even with 200 comment tokens.
+      expect(elapsed).toBeLessThan(1000);
+    });
+  });
 });
