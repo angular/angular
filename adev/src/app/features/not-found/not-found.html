@@ -4,8 +4,10 @@
     <div class="docs-not-found__bubble">
       <h1 tabindex="-1">Page Not Found</h1>
       <p>
-        We couldn't find what you were looking for. We have initiated a search for the term
-        extracted from the URL.
+        We couldn't find what you were looking for.
+        @if (searchResults().length > 0) {
+          We have initiated a search for the term extracted from the URL.
+        }
       </p>
       <p>
         If you think this is a mistake, please
