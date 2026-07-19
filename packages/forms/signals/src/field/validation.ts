@@ -293,7 +293,7 @@ export class FieldValidationState implements ValidationState {
   readonly pending = computed(() =>
     this.node.structure.reduceChildren(
       this.asyncErrors().includes('pending'),
-      (child, value) => value || child.validationState.asyncErrors().includes('pending'),
+      (child, value) => value || child.validationState.pending(),
     ),
   );
 
