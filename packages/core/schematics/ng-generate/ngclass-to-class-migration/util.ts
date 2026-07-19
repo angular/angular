@@ -39,11 +39,18 @@ export function migrateNgClassBindings(
   replacementCount: number;
   migrated: string;
   changed: boolean;
+  canRemoveNgClass: boolean;
   canRemoveCommonModule: boolean;
 } {
   const parsed = parseTemplate(template);
   if (!parsed.tree || !parsed.tree.rootNodes.length) {
-    return {migrated: template, changed: false, replacementCount: 0, canRemoveCommonModule: false};
+    return {
+      migrated: template,
+      changed: false,
+      replacementCount: 0,
+      canRemoveNgClass: true,
+      canRemoveCommonModule: false,
+    };
   }
 
   const visitor = new NgClassCollector(template, componentNode, typeChecker);
@@ -66,6 +73,7 @@ export function migrateNgClassBindings(
     migrated: newTemplate,
     changed,
     replacementCount,
+    canRemoveNgClass: visitor.skippedNgClassCount === 0,
     canRemoveCommonModule: changed ? canRemoveCommonModule(newTemplate) : false,
   };
 }
@@ -249,6 +257,7 @@ function replaceTemplate(
  */
 export class NgClassCollector extends RecursiveVisitor {
   readonly replacements: {start: number; end: number; replacement: string}[] = [];
+  skippedNgClassCount = 0;
   private originalTemplate: string;
   private isNgClassImported: boolean = true; // Default to true (permissive)
 
@@ -290,6 +299,7 @@ export class NgClassCollector extends RecursiveVisitor {
         const staticMatch = tryParseStaticObjectLiteral(expr);
 
         if (staticMatch === null) {
+          this.skippedNgClassCount++;
           continue;
         }
 

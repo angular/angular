@@ -102,6 +102,99 @@ describe('NgClass migration', () => {
     expect(content).not.toContain('imports:');
   });
 
+  it('should preserve NgClass import when unconverted [ngClass] bindings remain', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+          imports: [NgClass],
+          template: \`
+            <div [ngClass]="{ active: isActive }">migrated</div>
+            <div [ngClass]="['class-a', condition ? 'class-b' : '']">skipped (array)</div>
+          \`,
+        })
+        export class App {
+          isActive = true;
+          condition = true;
+        }
+      `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/app.component.ts');
+
+    // The object literal binding should be migrated.
+    expect(content).toContain('[class.active]="isActive"');
+    // The array binding should remain as [ngClass].
+    expect(content).toContain("[ngClass]=\"['class-a', condition ? 'class-b' : '']\"");
+    // NgClass import must be preserved since [ngClass] still exists in the template.
+    expect(content).toContain("import {NgClass} from '@angular/common';");
+    expect(content).toContain('imports: [NgClass]');
+  });
+
+  it('should preserve the shared NgClass import when one of several components in the same file is only partially migrated', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+
+        @Component({
+          selector: 'fully-migrated',
+          imports: [NgClass],
+          template: \`<div [ngClass]="{ active: isActive }">migrated</div>\`,
+        })
+        export class FullyMigrated {
+          isActive = true;
+        }
+
+        @Component({
+          selector: 'partially-migrated',
+          imports: [NgClass],
+          template: \`
+            <div [ngClass]="{ active: isActive }">migrated</div>
+            <div [ngClass]="['class-a', condition ? 'class-b' : '']">skipped (array)</div>
+          \`,
+        })
+        export class PartiallyMigrated {
+          isActive = true;
+          condition = true;
+        }
+      `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/app.component.ts');
+    // Split the file so each component's decorator/template can be asserted on independently -
+    // both components still contain the literal text `imports: [NgClass]` in their source before
+    // migration, so a plain `content.includes(...)` check on the whole file can't distinguish
+    // between them.
+    const partiallyMigratedIndex = content.indexOf("selector: 'partially-migrated'");
+    const fullyMigratedSection = content.slice(0, partiallyMigratedIndex);
+    const partiallyMigratedSection = content.slice(partiallyMigratedIndex);
+
+    // The fully migratable component's [ngClass] should be converted, and its own `imports`
+    // array should no longer list `NgClass` since it doesn't need it anymore.
+    expect(fullyMigratedSection).toContain('[class.active]="isActive"');
+    expect(fullyMigratedSection).not.toContain('imports:');
+
+    // The partially migrated component keeps its unconvertible binding as [ngClass], and its
+    // own `imports` array must still list `NgClass`.
+    expect(partiallyMigratedSection).toContain('[class.active]="isActive"');
+    expect(partiallyMigratedSection).toContain(
+      "[ngClass]=\"['class-a', condition ? 'class-b' : '']\"",
+    );
+    expect(partiallyMigratedSection).toContain('imports: [NgClass]');
+
+    // Because `PartiallyMigrated` still needs `NgClass`, the shared top-level import statement
+    // must be preserved even though `FullyMigrated` no longer needs it.
+    expect(content).toContain("import {NgClass} from '@angular/common';");
+  });
+
   describe('No change cases', () => {
     it('should not change static HTML elements', async () => {
       writeFile(
