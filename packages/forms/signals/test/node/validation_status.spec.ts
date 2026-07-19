@@ -443,6 +443,42 @@ describe('validation status', () => {
       expect(f().invalid()).toBe(true);
     });
 
+    it('pending should flow from child to grandparent', async () => {
+      let res: Resource<unknown>;
+
+      const f = form(
+        signal({grandparent: {parent: {child: 'VALID'}}}),
+        (p) => {
+          validateAsync(p.grandparent.parent.child, {
+            params: ({value}) => value(),
+            factory: (params) =>
+              (res = resource({
+                params,
+                loader: ({params}) =>
+                  new Promise<ValidationError[]>((r) =>
+                    setTimeout(() => r(validateValueForChild(params, undefined))),
+                  ),
+              })),
+            onSuccess: (results) => results,
+            onError: () => null,
+          });
+        },
+        {injector},
+      );
+
+      expect(f.grandparent.parent.child().pending()).toBe(true);
+      expect(f.grandparent.parent().pending()).toBe(true);
+      expect(f.grandparent().pending()).toBe(true);
+      expect(f().pending()).toBe(true);
+
+      await appRef.whenStable();
+
+      expect(f.grandparent.parent.child().pending()).toBe(false);
+      expect(f.grandparent.parent().pending()).toBe(false);
+      expect(f.grandparent().pending()).toBe(false);
+      expect(f().pending()).toBe(false);
+    });
+
     it('should produce pending status during debounce period', async () => {
       let res: Resource<unknown>;
 
