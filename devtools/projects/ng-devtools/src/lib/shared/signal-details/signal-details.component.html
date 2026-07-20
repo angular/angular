@@ -16,6 +16,17 @@
       >
         <mat-icon> code </mat-icon>
       </button>
+      <button
+        ng-button
+        size="compact"
+        class="action-btn"
+        [btnType]="hasBreakpoint() ? 'primary' : 'secondary'"
+        (click)="hasBreakpoint() ? removeBreakpoint.emit(node) : setBreakpoint.emit(node)"
+        [disabled]="!node.debuggable"
+        [matTooltip]="hasBreakpoint() ? 'Remove breakpoint' : 'Set breakpoint'"
+      >
+        <mat-icon> label </mat-icon>
+      </button>
     } @else if (isClusterNode) {
       <button
         ng-button

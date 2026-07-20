@@ -49,6 +49,57 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     this.runInInspectedWindow(inspectSignal, target);
   }
 
+  override setSignalBreakpoint(position: SignalNodePosition, target: Frame): void {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    chrome.runtime.sendMessage(
+      {
+        action: 'setSignalBreakpoint',
+        tabId,
+        position,
+      },
+      (response) => {
+        if (!response || !response.success) {
+          console.error('Failed to set breakpoint via CDP:', response?.error);
+        }
+      },
+    );
+  }
+
+  override removeSignalBreakpoint(position: SignalNodePosition, target: Frame): void {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    chrome.runtime.sendMessage(
+      {
+        action: 'removeSignalBreakpoint',
+        tabId,
+        position,
+      },
+      (response) => {
+        if (!response || !response.success) {
+          console.error('Failed to remove breakpoint via CDP:', response?.error);
+        }
+      },
+    );
+  }
+
+  override getActiveSignalBreakpoints(target: Frame): Promise<SignalNodePosition[]> {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage(
+        {
+          action: 'getActiveSignalBreakpoints',
+          tabId,
+        },
+        (response) => {
+          if (response && response.success && response.activePositions) {
+            resolve(response.activePositions);
+          } else {
+            resolve([]);
+          }
+        },
+      );
+    });
+  }
+
   override viewSourceFromRouter(name: string, type: string, target: Frame): void {
     const viewSource = `inspect(inspectedApplication.findConstructorByNameForRouter(${JSON.stringify(name)}, ${JSON.stringify(type)}))`;
     this.runInInspectedWindow(viewSource, target);

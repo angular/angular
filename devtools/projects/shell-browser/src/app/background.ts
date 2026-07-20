@@ -8,7 +8,7 @@
 
 /// <reference types="chrome"/>
 
-import {AngularDetection} from '../../../protocol';
+import {AngularDetection, SignalNodePosition} from '../../../protocol';
 import {TabManager} from './tab_manager';
 
 function getPopUpName(ng: AngularDetection): string {
@@ -81,4 +81,176 @@ if (chrome !== undefined && chrome.runtime !== undefined) {
 
   const tabs = {};
   TabManager.initialize(tabs);
+
+  interface ScriptParsedParams {
+    scriptId: string;
+    url: string;
+  }
+
+  const scriptMap = new Map<string, string>();
+
+  chrome.debugger.onEvent.addListener((source, method, params) => {
+    if (method === 'Debugger.scriptParsed' && params) {
+      const {scriptId, url} = params as ScriptParsedParams;
+      if (scriptId && url) {
+        scriptMap.set(scriptId, url);
+      }
+    }
+  });
+
+  /**
+   * Tracks active CDP signal breakpoints per browser tab.
+   * - Outer Map Key: tabId (number) — Chrome tab ID being inspected.
+   * - Inner Map Key: positionKey (string) — Serialized SignalNodePosition (JSON string).
+   * - Inner Map Value: breakpointId (string) — CDP breakpoint ID returned by Debugger.setBreakpointByUrl.
+   */
+  const activeBreakpoints = new Map<number, Map<string, string>>();
+
+  function serializePosition(position: SignalNodePosition): string {
+    return JSON.stringify({
+      element: position.element,
+      signalId: position.signalId,
+    });
+  }
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === 'setSignalBreakpoint') {
+      const {tabId, position} = message;
+      setBreakpointViaCDP(tabId, position)
+        .then((result) => sendResponse({success: true, result}))
+        .catch((err) => {
+          console.error('CDP Error:', err);
+          sendResponse({success: false, error: err.message || err});
+        });
+      return true; // Keep channel open
+    } else if (message.action === 'removeSignalBreakpoint') {
+      const {tabId, position} = message;
+      removeBreakpointViaCDP(tabId, position)
+        .then((result) => sendResponse({success: true, result}))
+        .catch((err) => {
+          console.error('CDP Error:', err);
+          sendResponse({success: false, error: err.message || err});
+        });
+      return true; // Keep channel open
+    } else if (message.action === 'getActiveSignalBreakpoints') {
+      const {tabId} = message;
+      const tabBreakpoints = activeBreakpoints.get(tabId);
+      const activePositions: SignalNodePosition[] = [];
+      if (tabBreakpoints) {
+        for (const posKey of tabBreakpoints.keys()) {
+          try {
+            activePositions.push(JSON.parse(posKey) as SignalNodePosition);
+          } catch {}
+        }
+      }
+      sendResponse({success: true, activePositions});
+      return true;
+    }
+    return false;
+  });
+
+  function attachDebugger(target: chrome.debugger.Debuggee, version: string): Promise<void> {
+    return chrome.debugger.attach(target, version);
+  }
+
+  function sendDebuggerCommand(
+    target: chrome.debugger.Debuggee,
+    method: string,
+    commandParams?: {[key: string]: unknown},
+  ): Promise<any> {
+    return chrome.debugger.sendCommand(target, method, commandParams);
+  }
+
+  async function setBreakpointViaCDP(tabId: number, position: SignalNodePosition) {
+    const target = {tabId};
+
+    try {
+      await attachDebugger(target, '1.3');
+    } catch (err: any) {
+      const msg = err.message ? String(err.message).toLowerCase() : '';
+      if (!msg.includes('already attached')) {
+        throw err;
+      }
+    }
+
+    await sendDebuggerCommand(target, 'Debugger.enable');
+
+    const expression = `inspectedApplication.findSignalNodeByPosition('${JSON.stringify(position)}')`;
+    const evalResult = await sendDebuggerCommand(target, 'Runtime.evaluate', {
+      expression,
+      objectGroup: 'angular-devtools',
+    });
+
+    if (evalResult.exceptionDetails) {
+      throw new Error('Evaluation failed: ' + evalResult.exceptionDetails.exception.description);
+    }
+
+    const objectId = evalResult.result.objectId;
+    if (!objectId) {
+      throw new Error('Could not find function object');
+    }
+
+    const propsResult = await sendDebuggerCommand(target, 'Runtime.getProperties', {
+      objectId,
+    });
+
+    const internalProps = propsResult.internalProperties || [];
+    const locationProp = internalProps.find((p: any) => p.name === '[[FunctionLocation]]');
+
+    if (!locationProp || !locationProp.value || !locationProp.value.value) {
+      throw new Error('Could not find [[FunctionLocation]]');
+    }
+
+    const {scriptId, lineNumber, columnNumber} = locationProp.value.value;
+
+    let bpResult;
+    const url = scriptMap.get(scriptId);
+
+    if (!url) {
+      console.warn('Could not find URL for scriptId:', scriptId, 'falling back to scriptId');
+      bpResult = await sendDebuggerCommand(target, 'Debugger.setBreakpoint', {
+        location: {scriptId, lineNumber, columnNumber},
+      });
+    } else {
+      bpResult = await sendDebuggerCommand(target, 'Debugger.setBreakpointByUrl', {
+        url,
+        lineNumber,
+        columnNumber,
+      });
+    }
+
+    const breakpointId = bpResult.breakpointId;
+
+    if (bpResult && bpResult.breakpointId) {
+      if (!activeBreakpoints.has(tabId)) {
+        activeBreakpoints.set(tabId, new Map());
+      }
+      const posKey = serializePosition(position);
+      activeBreakpoints.get(tabId)!.set(posKey, bpResult.breakpointId);
+    }
+
+    return bpResult;
+  }
+
+  async function removeBreakpointViaCDP(tabId: number, position: SignalNodePosition) {
+    const target = {tabId};
+    const tabBps = activeBreakpoints.get(tabId);
+    if (!tabBps) {
+      throw new Error('No active breakpoints for this tab');
+    }
+    const posKey = serializePosition(position);
+    const breakpointId = tabBps.get(posKey);
+    if (!breakpointId) {
+      throw new Error('No active breakpoint found for this signal');
+    }
+
+    await sendDebuggerCommand(target, 'Debugger.removeBreakpoint', {
+      breakpointId,
+    });
+
+    tabBps.delete(posKey);
+    if (tabBps.size === 0) {
+      activeBreakpoints.delete(tabId);
+    }
+  }
 }

@@ -58,6 +58,18 @@ export class AppOperationsMock extends ApplicationOperations {
     throw new Error('Method not implemented.');
   }
 
+  override setSignalBreakpoint(position: SignalNodePosition, target: Frame): void {
+    throw new Error('Method not implemented.');
+  }
+
+  override removeSignalBreakpoint(position: SignalNodePosition, target: Frame): void {
+    throw new Error('Method not implemented.');
+  }
+
+  override getActiveSignalBreakpoints(target: Frame): Promise<SignalNodePosition[]> {
+    return Promise.resolve([]);
+  }
+
   override viewSourceFromRouter(name: string, type: string, target: Frame): void {
     throw new Error('Method not implemented.');
   }
