@@ -1,6 +1,9 @@
 # Congratulations!
 
-You've completed the Signal Forms tutorial and built a complete login form from scratch!
+<div class="docs-tutorial-mascot">
+  <img class="docs-tutorial-mascot__angie" src="assets/images/angie/superhero.svg" aria-hidden="true">
+  <p class="docs-tutorial-mascot__bubble">You've done it! You completed the Signal Forms tutorial and built a login form from scratch.</p>
+</div>
 
 ## What you learned
 
