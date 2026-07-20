@@ -6,6 +6,20 @@
 }
 
 .info {
-  margin-top: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+
+  img {
+    height: 160px;
+    width: auto;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin: 0;
+  }
 }
