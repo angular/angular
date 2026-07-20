@@ -84,8 +84,8 @@ export function getNativeControlValue(
       if (element.value === '') {
         return {value: null};
       }
-      const parsed = parseDecimalNumber(element.value);
-      if (parsed === undefined) {
+      const parsed = Number(element.value);
+      if (Number.isNaN(parsed)) {
         return {error: new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>};
       }
       return {value: parsed};
@@ -162,17 +162,6 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
 
   // Default to setting the value as a string.
   element.value = value as string;
-}
-
-function parseDecimalNumber(value: string): number | undefined {
-  const parsed = Number(value);
-  // `parseFloat` does not consume non-decimal prefixes like `0b`/`0x`, while `Number`
-  // rejects trailing garbage. Requiring both to agree keeps decimal input permissive
-  // without accepting other JavaScript numeric literal forms.
-  if (Number.isNaN(parsed) || !Object.is(parsed, parseFloat(value))) {
-    return undefined;
-  }
-  return parsed;
 }
 
 /** Writes a value to a native <input type="number">. */
