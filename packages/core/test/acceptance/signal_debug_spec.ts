@@ -26,7 +26,7 @@ import {
 } from '../../src/render3/debug/framework_injector_profiler';
 import {setInjectorProfiler} from '../../src/render3/debug/injector_profiler';
 import type {DebugSignalGraphEdge, DebugSignalGraphNode} from '../../primitives/devtools';
-import {getSignalGraph} from '../../src/render3/util/signal_debug';
+import {getSignalGraph, toggleWatchSignal} from '../../src/render3/util/signal_debug';
 import {fakeAsync, TestBed, tick} from '../../testing';
 
 describe('getSignalGraph', () => {
@@ -477,5 +477,139 @@ describe('getSignalGraph', () => {
 
     ref.destroy();
     expect(getFrameworkDIDebugData().resolverToEffects.get(injector)?.length).toBe(0);
+  });
+});
+
+describe('toggleWatchSignal', () => {
+  beforeEach(() => {
+    setInjectorProfiler(null);
+    setupFrameworkInjectorProfiler();
+  });
+
+  afterEach(() => {
+    getFrameworkDIDebugData().reset();
+    setInjectorProfiler(null);
+    TestBed.resetTestingModule();
+  });
+
+  it('should toggle watching a signal, printing debugging information when active, and stopping when disposed', fakeAsync(() => {
+    @Component({selector: 'component-with-watched-signal', template: `{{ mySignal() }}`})
+    class WithWatchedSignal {
+      mySignal = signal(100, {debugName: 'mySignal'});
+    }
+    TestBed.configureTestingModule({imports: [WithWatchedSignal]});
+    const fixture = TestBed.createComponent(WithWatchedSignal);
+
+    tick();
+    fixture.detectChanges();
+    const injector = fixture.componentRef.injector;
+
+    const initialGraph = getSignalGraph(injector);
+    const signalNode = initialGraph.nodes.find((node) => node.label === 'mySignal')!;
+    expect(signalNode).toBeDefined();
+    expect(signalNode.watched).toBe(false);
+
+    const spy = spyOn(console, 'log');
+
+    toggleWatchSignal(signalNode.id);
+
+    expect(spy).toHaveBeenCalledWith('[mySignal]', ': ', 100);
+    spy.calls.reset();
+
+    const activeGraph = getSignalGraph(injector);
+    const activeSignalNode = activeGraph.nodes.find((node) => node.label === 'mySignal')!;
+    expect(activeSignalNode.watched).toBe(true);
+
+    fixture.componentInstance.mySignal.set(200);
+    tick();
+
+    expect(spy).toHaveBeenCalledWith('[mySignal]', ': ', 200);
+    spy.calls.reset();
+
+    toggleWatchSignal(signalNode.id);
+
+    const disposedGraph = getSignalGraph(injector);
+    const disposedSignalNode = disposedGraph.nodes.find((node) => node.label === 'mySignal')!;
+    expect(disposedSignalNode.watched).toBe(false);
+
+    fixture.componentInstance.mySignal.set(300);
+    tick();
+
+    expect(spy).not.toHaveBeenCalled();
+  }));
+
+  it('should dispose the watch when toggled off', fakeAsync(() => {
+    @Component({selector: 'component-with-disposed-watch', template: `{{ mySignal() }}`})
+    class App {
+      mySignal = signal('initial');
+    }
+    TestBed.configureTestingModule({imports: [App]});
+    const fixture = TestBed.createComponent(App);
+    tick();
+    fixture.detectChanges();
+
+    const signalGraph = getSignalGraph(fixture.componentRef.injector);
+    const signalNode = signalGraph.nodes.find((node) => node.kind === 'signal')!;
+
+    const spy = spyOn(console, 'log');
+
+    // Start watching (triggers initial log execution)
+    toggleWatchSignal(signalNode.id);
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.calls.reset();
+
+    // Signal update should trigger log execution while watched
+    fixture.componentInstance.mySignal.set('watched update');
+    tick();
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.calls.reset();
+
+    // Stop watching (disposes watch)
+    toggleWatchSignal(signalNode.id);
+
+    // Further signal updates should not trigger logging
+    fixture.componentInstance.mySignal.set('unwatched update');
+    tick();
+    expect(spy).not.toHaveBeenCalled();
+  }));
+
+  it('should dispose watch and clean up tracking maps if node is dereferenced as undefined', fakeAsync(() => {
+    @Component({selector: 'component-for-deref-test', template: `{{ mySignal() }}`})
+    class App {
+      mySignal = signal('hello');
+    }
+    TestBed.configureTestingModule({imports: [App]});
+    const fixture = TestBed.createComponent(App);
+    tick();
+    fixture.detectChanges();
+
+    const signalGraph = getSignalGraph(fixture.componentRef.injector);
+    const signalNode = signalGraph.nodes.find((node) => node.kind === 'signal')!;
+
+    // Start watching
+    toggleWatchSignal(signalNode.id);
+
+    // Simulate garbage collection across WeakRef instances
+    spyOn(WeakRef.prototype, 'deref').and.returnValue(undefined);
+
+    const spy = spyOn(console, 'log');
+
+    // Triggering signal update causes watch callback to run, detecting node is gone
+    fixture.componentInstance.mySignal.set('world');
+    tick();
+
+    // Watch should destroy itself and avoid logging
+    expect(spy).not.toHaveBeenCalled();
+
+    // Calling toggleWatchSignal on the dead node ID should run safely without errors
+    expect(() => toggleWatchSignal(signalNode.id)).not.toThrow();
+  }));
+
+  it('should handle non-existent node IDs safely', () => {
+    const spyLog = spyOn(console, 'log');
+    const spyWarn = spyOn(console, 'warn');
+    expect(() => toggleWatchSignal('non-existent-id-99999')).not.toThrow();
+    expect(spyLog).not.toHaveBeenCalled();
+    expect(spyWarn).toHaveBeenCalledTimes(1);
   });
 });
