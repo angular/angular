@@ -85,6 +85,9 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
   } @else {
-    <p class="no-providers-label">No such providers</p>
+    <div class="no-providers-label">
+      <img src="/assets/angie-orthos-back.svg" alt="Angie illustration" />
+      <p>No such providers</p>
+    </div>
   }
 }

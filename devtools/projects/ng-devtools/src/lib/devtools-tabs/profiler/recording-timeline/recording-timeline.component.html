@@ -1,5 +1,8 @@
 @if (!hasFrames() && visualizing()) {
-  <p class="info">There's no information to show.</p>
+  <div class="info">
+    <img src="/assets/angie-question.svg" alt="Angie illustration" />
+    <p>There's no information to show.</p>
+  </div>
 }
 
 @if (hasFrames()) {
@@ -13,7 +16,10 @@
 @let frame = this.frame();
 
 @if (hasFrames() && !frame) {
-  <p class="info">Select a bar to preview a particular change detection cycle.</p>
+  <div class="info">
+    <img src="/assets/angie-magnifying-glass.svg" alt="Angie illustration" />
+    <p>Select a bar to preview a particular change detection cycle.</p>
+  </div>
 } @else if (hasFrames() && frame) {
   <ng-visualizer-controls
     [record]="frame"
