@@ -23,7 +23,7 @@ export interface Parser<TRaw> {
   /**
    * Parses the given raw value and updates the underlying model value if successful.
    */
-  setRawValue: (rawValue: TRaw) => void;
+  setRawValue: (rawValue: TRaw, markAsDirty?: boolean) => void;
   /**
    * Resets the parser errors.
    */
@@ -40,7 +40,7 @@ export interface Parser<TRaw> {
  */
 export function createParser<TValue, TRaw>(
   getValue: () => TValue,
-  setValue: (value: TValue) => void,
+  setValue: (value: TValue, markAsDirty: boolean) => void,
   parse: (raw: TRaw) => ParseResult<TValue>,
 ): Parser<TRaw> {
   const errors = linkedSignal({
@@ -49,11 +49,11 @@ export function createParser<TValue, TRaw>(
     equal: shallowArrayEquals,
   });
 
-  const setRawValue = (rawValue: TRaw) => {
+  const setRawValue = (rawValue: TRaw, markAsDirty = true) => {
     const result = parse(rawValue);
     errors.set(normalizeErrors(result.error));
     if (result.value !== undefined) {
-      setValue(result.value);
+      setValue(result.value, markAsDirty);
     }
     // `errors` is a linked signal sourced from the model value; write parse errors after
     // model updates so `{value, errors}` results do not get reset by the recomputation.
