@@ -25,7 +25,6 @@ jasmine_test(
         "//packages/core/schematics/ng-generate/common-to-standalone-migration:static_files",
         "//packages/core/schematics/ng-generate/control-flow-migration:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
-        "//packages/core/schematics/ng-generate/ngclass-to-class-migration:static_files",
         "//packages/core/schematics/ng-generate/ngstyle-to-style-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",
         "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",

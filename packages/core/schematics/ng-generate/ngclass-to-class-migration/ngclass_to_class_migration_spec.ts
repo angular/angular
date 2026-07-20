@@ -25,7 +25,7 @@ describe('NgClass migration', () => {
     return runner.runSchematic('ngclass-to-class', options, tree);
   }
 
-  const collectionJsonPath = resolve('../collection.json');
+  const collectionJsonPath = resolve('../../collection.json');
   beforeEach(() => {
     runner = new SchematicTestRunner('test', collectionJsonPath);
     host = new TempScopedNodeJsSyncHost();
@@ -126,7 +126,6 @@ describe('NgClass migration', () => {
 
     const content = tree.readContent('/app.component.ts');
 
-    // The object literal binding should be migrated.
     expect(content).toContain('[class.active]="isActive"');
     // The array binding should remain as [ngClass].
     expect(content).toContain("[ngClass]=\"['class-a', condition ? 'class-b' : '']\"");
@@ -505,7 +504,10 @@ describe('NgClass migration', () => {
   });
 
   describe('Complex and multi-element migrations', () => {
-    it('should migrate complex object literals with mixed class keys to [class] binding', async () => {
+    it('should not migrate a space-separated key mixed with a regular key to [class] binding by default', async () => {
+      // Regression test for https://github.com/angular/angular/issues/69833 — [class]="{...}"
+      // object syntax does not support space-separated key names, so without
+      // `migrateSpaceSeparatedKey` the binding must be left as [ngClass].
       writeFile(
         '/app.component.ts',
         `
@@ -525,8 +527,9 @@ describe('NgClass migration', () => {
       const content = tree.readContent('/app.component.ts');
 
       expect(content).toContain(
-        `<div [class]="{'class1 class2': condition, 'class3': anotherCondition}"></div>`,
+        `<div [ngClass]="{'class1 class2': condition, 'class3': anotherCondition}"></div>`,
       );
+      expect(content).not.toContain('[class]=');
     });
 
     it('should migrate keys with extra whitespace for multiple conditions', async () => {
@@ -1039,7 +1042,7 @@ describe('migrateSpaceSeparatedKey option', () => {
     return runner.runSchematic('ngclass-to-class', options, tree);
   }
 
-  const collectionJsonPath = resolve('../collection.json');
+  const collectionJsonPath = resolve('../../collection.json');
   beforeEach(() => {
     runner = new SchematicTestRunner('test', collectionJsonPath);
     host = new TempScopedNodeJsSyncHost();
@@ -1074,5 +1077,225 @@ describe('migrateSpaceSeparatedKey option', () => {
     const content = tree.readContent('/app.component.ts');
 
     expect(content).toContain(`<div [class.class1]="condition" [class.class2]="condition"></div>`);
+  });
+
+  it('should expand mixed space-separated and regular keys individually', async () => {
+    // Regression test for https://github.com/angular/angular/issues/69833
+    // The object has one key with spaces ('class1 class2') and one plain key ('class3'),
+    // each with a different condition. The [class]="..." fallback cannot represent
+    // space-separated key names, so every entry must be emitted as [class.X]="condition".
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': condition, 'class3': condition2}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(
+      `<div [class.class1]="condition" [class.class2]="condition" [class.class3]="condition2"></div>`,
+    );
+  });
+
+  it('should not expand when a space-separated key is mixed with an empty-string key', async () => {
+    // Expanding every binding as [class.${key}] would produce the invalid `[class.]` binding
+    // for the empty key, so the whole binding must be left unchanged instead.
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': condition, '': condition2}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(
+      `<div [ngClass]="{'class1 class2': condition, '': condition2}"></div>`,
+    );
+    expect(content).not.toContain('[class.]');
+  });
+
+  it('should not expand when a space-separated key expansion produces a duplicate class name', async () => {
+    // 'class1 class2': first expands to class1/class2, and the separate 'class1' key would
+    // collide with the expanded class1 binding, producing two conflicting [class.class1]
+    // bindings on the same element. The binding must be left unchanged instead.
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': first, class1: second}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [ngClass]="{'class1 class2': first, class1: second}"></div>`);
+  });
+
+  it('should not expand a space-separated key whose expanded class name contains a dot', async () => {
+    // `[class.a.b]` is parsed by Angular as binding to property `a`, silently discarding
+    // everything after the first dot — expanding 'a.b c' would produce a binding that
+    // silently applies the wrong class. The whole binding must be left unchanged instead.
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'a.b c': condition, 'd': condition2}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [ngClass]="{'a.b c': condition, 'd': condition2}"></div>`);
+    expect(content).not.toContain('[class.a');
+  });
+
+  it('should treat a tab as a class-name separator', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1\\tclass2': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [class.class1]="condition" [class.class2]="condition"></div>`);
+  });
+
+  it('should treat a newline as a class-name separator', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1\\nclass2': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [class.class1]="condition" [class.class2]="condition"></div>`);
+  });
+
+  it('should not expand when a shorthand property collides with an expanded space-separated key', async () => {
+    // The shorthand `class1` binding and the `class1` produced by splitting
+    // 'class1 class2' would collide, producing two conflicting [class.class1] bindings.
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{class1, 'class1 class2': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [ngClass]="{class1, 'class1 class2': condition}"></div>`);
+  });
+
+  it('should expand a space-separated key mixed with a numeric-looking class name', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'1foo bar': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [class.1foo]="condition" [class.bar]="condition"></div>`);
+  });
+
+  it('should not migrate when a computed property key is mixed with a space-separated key', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{[dynamicKey]: condition, 'class1 class2': condition2}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(
+      `<div [ngClass]="{[dynamicKey]: condition, 'class1 class2': condition2}"></div>`,
+    );
   });
 });
