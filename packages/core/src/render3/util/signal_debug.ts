@@ -104,6 +104,14 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         debuggableFn: consumer.lView?.[CONTEXT]?.constructor as (() => unknown) | undefined,
         id,
       });
+    } else if (isEffectNode(consumer)) {
+      debugSignalGraphNodes.push({
+        label: consumer.debugName,
+        kind: consumer.kind,
+        epoch: consumer.version,
+        debuggableFn: consumer.fn,
+        id,
+      });
     } else {
       debugSignalGraphNodes.push({
         label: consumer.debugName,
