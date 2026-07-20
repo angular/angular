@@ -44,6 +44,7 @@ import {
   HttpFeature,
   HttpFeatureKind,
   provideHttpClient,
+  withFetch,
   withInterceptors,
   withInterceptorsFromDi,
   withJsonpSupport,
@@ -53,7 +54,6 @@ import {
   withXsrfConfiguration,
 } from '../src/provider';
 import {resetFetchBackendWarningFlag} from '../src/backend';
-import {MockXhrFactory} from './xhr_mock';
 
 describe('without provideHttpClientTesting', () => {
   it('should contribute to stability', async () => {
@@ -513,33 +513,32 @@ describe('provideHttpClient', () => {
             'child:response',
           ]);
         });
-
-        it('should be able to connect to a legacy-provided HttpClient context', () => {
-          TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
-            providers: [provideLegacyInterceptor('parent')],
-          });
-
-          const child = createEnvironmentInjector(
-            [
-              provideHttpClient(
-                ...commonHttpFeatures,
-                withRequestsMadeViaParent(),
-                withInterceptors([makeLiteralTagInterceptorFn('child')]),
-              ),
-            ],
-            TestBed.inject(EnvironmentInjector),
-          );
-
-          child.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
-          const req = TestBed.inject(HttpTestingController).expectOne('/test');
-          expect(req.request.headers.get('X-Tag')).toEqual('child,parent');
-          req.flush('');
-        });
       });
     }
 
-    it('should inherit root interceptors when withXhr overrides parent delegation', () => {
+    it('should be able to connect to a legacy-provided HttpClient context', () => {
+      TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule],
+        providers: [provideLegacyInterceptor('parent')],
+      });
+
+      const child = createEnvironmentInjector(
+        [
+          provideHttpClient(
+            withRequestsMadeViaParent(),
+            withInterceptors([makeLiteralTagInterceptorFn('child')]),
+          ),
+        ],
+        TestBed.inject(EnvironmentInjector),
+      );
+
+      child.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      expect(req.request.headers.get('X-Tag')).toEqual('child,parent');
+      req.flush('');
+    });
+
+    it('should not inherit the delegation marker in independent child contexts', () => {
       TestBed.configureTestingModule({
         providers: [
           provideHttpClient(),
@@ -548,22 +547,62 @@ describe('provideHttpClient', () => {
             useValue: makeLiteralTagInterceptorFn('root'),
             multi: true,
           },
+          provideHttpClientTesting(),
+        ],
+      });
+
+      const delegatingParent = createEnvironmentInjector(
+        [provideHttpClient(withRequestsMadeViaParent())],
+        TestBed.inject(EnvironmentInjector),
+      );
+      const independentChild = createEnvironmentInjector(
+        [
+          provideHttpClient(withInterceptors([makeLiteralTagInterceptorFn('child')])),
+          {provide: HttpBackend, useValue: TestBed.inject(HttpBackend)},
+        ],
+        delegatingParent,
+      );
+
+      try {
+        independentChild.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+        const req = TestBed.inject(HttpTestingController).expectOne('/test');
+        expect(req.request.headers.get('X-Tag')).toEqual('child,root');
+        req.flush('');
+      } finally {
+        independentChild.destroy();
+        delegatingParent.destroy();
+      }
+    });
+
+    it('should inherit root interceptors when a custom provider overrides delegation', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          {
+            provide: HTTP_ROOT_INTERCEPTOR_FNS,
+            useValue: makeLiteralTagInterceptorFn('root'),
+            multi: true,
+          },
+          provideHttpClientTesting(),
         ],
       });
 
       const child = createEnvironmentInjector(
         [
-          provideHttpClient(withRequestsMadeViaParent(), withXhr()),
-          {provide: XhrFactory, useClass: MockXhrFactory},
+          provideHttpClient(
+            withRequestsMadeViaParent(),
+            withInterceptors([makeLiteralTagInterceptorFn('child')]),
+          ),
+          {provide: HttpBackend, useValue: TestBed.inject(HttpBackend)},
         ],
         TestBed.inject(EnvironmentInjector),
       );
 
       try {
-        child.get(HttpClient).get('/test').subscribe();
-        const factory = child.get(XhrFactory) as MockXhrFactory;
-        expect(factory.mock.mockHeaders['X-Tag']).toBe('root');
-        factory.mock.mockFlush(200, 'OK', '{}');
+        child.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+        const req = TestBed.inject(HttpTestingController).expectOne('/test');
+        expect(req.request.headers.get('X-Tag')).toEqual('child,root');
+        req.flush('');
       } finally {
         child.destroy();
       }
