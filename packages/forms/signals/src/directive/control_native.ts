@@ -41,19 +41,13 @@ export function nativeControlCreate(
 ): () => void {
   let updateMode = false;
   const input = parent.nativeFormElement;
-  const bindings = createBindings<ControlBindingKey | 'controlValue'>();
 
   // TODO: (perf) ok to always create this?
   const parser = createParser(
     // Read from the model value
     () => parent.state().value(),
     // Write to the buffered "control value"
-    (rawValue: unknown) => {
-      // Mark the parsed value as already seen from this native control so the next update pass
-      // does not reformat and write it back over the user's in-progress input text.
-      bindings['controlValue'] = rawValue;
-      parent.state().controlValue.set(rawValue);
-    },
+    (rawValue: unknown) => parent.state().controlValue.set(rawValue),
     // Our parse function doesn't care about the raw value that gets passed in,
     // It just reads the newly parsed value directly off the input element.
     (_rawValue: unknown) => getNativeControlValue(input, parent.state().value, validityMonitor),
@@ -99,6 +93,8 @@ export function nativeControlCreate(
       parent.destroyRef,
     );
   }
+
+  const bindings = createBindings<ControlBindingKey | 'controlValue'>();
 
   return () => {
     const state = parent.state();
