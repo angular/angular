@@ -26,6 +26,7 @@ export interface DebugSignalGraphNode {
   label?: string;
   preview: Descriptor;
   debuggable: boolean;
+  watched: boolean;
 }
 
 export interface DebugSignalGraphEdge {
@@ -459,4 +460,6 @@ export interface Events {
   devtoolsShutdown: () => void;
 
   log: (logEvent: {message: string; level: 'log' | 'warn' | 'debug' | 'error'}) => void;
+
+  toggleWatchSignal: (signalId: string) => void;
 }

@@ -131,6 +131,8 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
 
+  messageBus.on('toggleWatchSignal', toggleWatchSignal(messageBus));
+
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     inspector.ref = setupInspector(messageBus);
 
@@ -660,10 +662,16 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
         epoch: node.epoch,
         preview: serializeValue(node.value),
         debuggable: !!node.debuggableFn,
+        watched: node.watched ?? false,
       };
     });
     messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
   }
+};
+
+const toggleWatchSignal = (messageBus: MessageBus<Events>) => (id: string) => {
+  const ng = ngDebugClient();
+  ng.toggleWatchSignal?.(id);
 };
 
 // Route data needs to be serializable to be sent over the message bus.
