@@ -12,10 +12,18 @@ import type {
 } from '../../../primitives/devtools';
 import {
   ComputedNode,
+  ERRORED,
   LinkedSignalNode,
+  REACTIVE_NODE,
   ReactiveNode,
   SIGNAL,
   SignalNode,
+  consumerAfterComputation,
+  consumerBeforeComputation,
+  consumerDestroy,
+  consumerPollProducersForChange,
+  producerAccessed,
+  producerUpdateValueVersion,
 } from '../../../primitives/signals';
 import {Injector} from '../../di/injector';
 import {R3Injector} from '../../di/r3_injector';
@@ -70,8 +78,45 @@ function getTemplateConsumer(injector: NodeInjector): ReactiveLViewConsumer | nu
   return null;
 }
 
+/**
+ * Maps a `ReactiveNode` to its generated unique string ID for DevTools.
+ */
 const signalDebugMap = new WeakMap<ReactiveNode, string>();
+
+interface DebugWatchNode extends ReactiveNode {
+  targetNode: WeakRef<ReactiveNode>;
+  destroyed: boolean;
+}
+
+/**
+ * Stores signal debug metadata by string ID, holding a `WeakRef` to the `ReactiveNode`
+ * and a `WeakRef` to any active `DebugWatchNode` so signals and watchers can form isolated
+ * cycles that are eligible for garbage collection when app references are dropped.
+ */
+const signalDebugNodeMap = new Map<
+  string,
+  {
+    node: WeakRef<SignalNode<unknown> | ComputedNode<unknown> | LinkedSignalNode<unknown, unknown>>;
+    watch?: WeakRef<DebugWatchNode>;
+  }
+>();
+
+/**
+ * Finalization registry that destroys and cleans up a `DebugWatchNode` automatically if the target
+ * `ReactiveNode` is garbage-collected while being watched.
+ */
+const watchCleanupRegistry = new FinalizationRegistry<{id: string}>(({id}) => {
+  unwatchSignal(id);
+  signalDebugNodeMap.delete(id);
+});
 let counter = 0;
+
+function isWatched(id: string): boolean {
+  const watchRef = signalDebugNodeMap.get(id)?.watch;
+  if (!watchRef) return false;
+  const watchNode = watchRef.deref();
+  return watchNode !== undefined && !watchNode.destroyed;
+}
 
 function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, ReactiveNode[]>): {
   nodes: DebugSignalGraphNode[];
@@ -91,31 +136,31 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
       signalDebugMap.set(consumer, id);
     }
 
-    // collect node
     if (isComputedNode(consumer)) {
+      if (!signalDebugNodeMap.has(id)) {
+        signalDebugNodeMap.set(id, {node: new WeakRef(consumer)});
+        watchCleanupRegistry.register(consumer, {id});
+      }
       debugSignalGraphNodes.push({
         label: consumer.debugName,
         value: consumer.value,
         kind: consumer.kind,
         epoch: consumer.version,
         debuggableFn: consumer.computation,
-        id,
-      });
-    } else if (isLinkedSignalNode(consumer)) {
-      debugSignalGraphNodes.push({
-        label: consumer.debugName,
-        value: consumer.value,
-        kind: consumer.kind,
-        epoch: consumer.version,
-        debuggableFn: consumer.computation as () => unknown,
+        watched: isWatched(id),
         id,
       });
     } else if (isSignalNode(consumer)) {
+      if (!signalDebugNodeMap.has(id)) {
+        signalDebugNodeMap.set(id, {node: new WeakRef(consumer)});
+        watchCleanupRegistry.register(consumer, {id});
+      }
       debugSignalGraphNodes.push({
         label: consumer.debugName,
         value: consumer.value,
         kind: consumer.kind,
         epoch: consumer.version,
+        watched: isWatched(id),
         id,
       });
     } else if (isTemplateEffectNode(consumer)) {
@@ -126,6 +171,21 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         // The `lView[CONTEXT]` is a reference to an instance of the component's class.
         // We get the constructor so that `inspect(.constructor)` shows the component class.
         debuggableFn: consumer.lView?.[CONTEXT]?.constructor as (() => unknown) | undefined,
+        watched: false,
+        id,
+      });
+    } else if (isLinkedSignalNode(consumer)) {
+      if (!signalDebugNodeMap.has(id)) {
+        signalDebugNodeMap.set(id, {node: new WeakRef(consumer)});
+        watchCleanupRegistry.register(consumer, {id});
+      }
+      debugSignalGraphNodes.push({
+        label: consumer.debugName,
+        value: consumer.value,
+        kind: consumer.kind,
+        epoch: consumer.version,
+        debuggableFn: consumer.computation as (() => unknown) | undefined,
+        watched: isWatched(id),
         id,
       });
     } else if (isEffectNode(consumer)) {
@@ -149,6 +209,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         label: consumer.debugName,
         kind: consumer.kind,
         epoch: consumer.version,
+        watched: false,
         id,
       });
     }
@@ -233,4 +294,119 @@ export function getSignalGraph(injector: Injector): DebugSignalGraph {
   const signalDependenciesMap = extractSignalNodesAndEdgesFromRoots(signalNodes);
 
   return getNodesAndEdgesFromSignalMap(signalDependenciesMap);
+}
+
+/**
+ * Toggles debug watching for a signal node by its ID.
+ *
+ * - If the signal is currently watched, disposes the watcher.
+ * - If not watched, creates a reactive `DebugWatchNode` that logs debugging information
+ *   whenever the signal updates or is invalidated.
+ *
+ * Uses `WeakRef` and `FinalizationRegistry` so watching a signal does not prevent it
+ * (or its enclosing context) from being garbage collected.
+ *
+ * @param id The unique string ID of the signal node to watch or unwatch.
+ */
+export function toggleWatchSignal(id: string): void {
+  const entry = signalDebugNodeMap.get(id);
+  if (!entry) {
+    console.warn(
+      `Could not find signal with ID "${id}". The ID may be wrong, or it could have been garbage collected.`,
+    );
+    return;
+  }
+
+  // If already watching this signal, dispose the watcher and stop watching.
+  if (entry.watch) {
+    const activeWatch = entry.watch.deref();
+    if (activeWatch && !activeWatch.destroyed) {
+      unwatchSignal(id);
+      return;
+    }
+  }
+
+  // Retrieve the target ReactiveNode from weak reference mapping.
+  const node = entry.node.deref();
+  if (!node) {
+    unwatchSignal(id);
+    signalDebugNodeMap.delete(id);
+    return;
+  }
+
+  const watchNode = createDebugWatchNode(node);
+  entry.watch = new WeakRef(watchNode);
+  runDebugWatch(watchNode);
+}
+
+function createDebugWatchNode(targetNode: ReactiveNode): DebugWatchNode {
+  const node: DebugWatchNode = {
+    ...REACTIVE_NODE,
+    consumerIsAlwaysLive: true,
+    consumerAllowSignalWrites: true,
+    dirty: true,
+    kind: 'effect',
+    targetNode: new WeakRef(targetNode),
+    destroyed: false,
+    consumerMarkedDirty: () => {
+      if (node.destroyed) return;
+      // Schedule watch re-execution asynchronously in the next microtask after
+      // the signal update cycle completes, ceding the main thread back to the
+      // framework and avoiding synchronous re-entrancy during value computation.
+      queueMicrotask(() => runDebugWatch(node));
+    },
+  };
+  return node;
+}
+
+function runDebugWatch(node: DebugWatchNode): void {
+  if (node.destroyed) return;
+
+  const targetNode = node.targetNode.deref();
+  if (!targetNode) {
+    node.destroyed = true;
+    consumerDestroy(node);
+    return;
+  }
+
+  node.dirty = false;
+  if (node.version > 0 && !consumerPollProducersForChange(node)) {
+    return;
+  }
+  node.version++;
+
+  const prevConsumer = consumerBeforeComputation(node);
+  try {
+    producerUpdateValueVersion(targetNode);
+    producerAccessed(targetNode);
+    const name = targetNode.debugName ? targetNode.debugName : 'DevTools signal watch';
+    if (
+      (isComputedNode(targetNode) || isLinkedSignalNode(targetNode)) &&
+      targetNode.value === ERRORED
+    ) {
+      // tslint:disable-next-line:no-console
+      console.error(`[${name} (error)]:`, targetNode.error);
+      return;
+    }
+    const value =
+      isSignalNode(targetNode) || isComputedNode(targetNode) || isLinkedSignalNode(targetNode)
+        ? targetNode.value
+        : undefined;
+    // tslint:disable-next-line:no-console
+    console.log(`[${name}]:`, value);
+  } finally {
+    consumerAfterComputation(node, prevConsumer);
+  }
+}
+
+function unwatchSignal(id: string) {
+  const entry = signalDebugNodeMap.get(id);
+  if (entry?.watch) {
+    const watchNode = entry.watch.deref();
+    if (watchNode && !watchNode.destroyed) {
+      watchNode.destroyed = true;
+      consumerDestroy(watchNode);
+    }
+    entry.watch = undefined;
+  }
 }
