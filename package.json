@@ -115,7 +115,7 @@
     "karma-firefox-launcher": "^2.1.0",
     "karma-jasmine": "^5.0.0",
     "karma-sourcemap-loader": "^0.4.0",
-    "magic-string": "^0.30.8",
+    "magic-string": "^1.0.0",
     "protractor": "^7.0.0",
     "reflect-metadata": "^0.2.0",
     "rollup": "4.62.2",
