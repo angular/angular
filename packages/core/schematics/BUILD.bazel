@@ -203,6 +203,7 @@ rollup.rollup(
         "bundles",
     ],
     visibility = [
+        "//packages/core/schematics/ng-generate/ngclass-to-class-migration:__pkg__",
         "//packages/core/schematics/test:__pkg__",
     ],
 )
