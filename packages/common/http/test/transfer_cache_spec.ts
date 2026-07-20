@@ -419,7 +419,7 @@ describe('TransferCache', () => {
 
       const transferState = TestBed.inject(TransferState);
       expect(JSON.parse(transferState.toJson()) as Record<string, unknown>).toEqual({
-        '2da5dfaf112523258ec9c26a0abe9a093b59ed7dbe5f43e4b5ee25a407ac9cf0': {
+        'd501aa2d57b63a95df74e3b0558782b71b077974e968ed303cd30b27e4b70702': {
           [BODY]: 'foo',
           [HEADERS]: {},
           [STATUS]: 200,
@@ -427,7 +427,7 @@ describe('TransferCache', () => {
           [REQ_URL]: '/test-1',
           [RESPONSE_TYPE]: 'json',
         },
-        '869485290d9385f3c0a9ba571918c335bbca9e03373bf8260d02f2b7dd335849': {
+        'ceddc6689dc1f2fc3a0b8c364b6e00a79b99a149f27e84da87cec03d44c150c8': {
           [BODY]: 'buzz',
           [HEADERS]: {},
           [STATUS]: 200,
@@ -762,6 +762,15 @@ describe('TransferCache', () => {
       makeRequestAndExpectOne('/test-1', null, {method: 'POST', transferCache: true, body: 'foo'});
       makeRequestAndExpectNone('/test-1', 'POST', {transferCache: true, body: 'foo'});
       makeRequestAndExpectOne('/test-1', null, {method: 'POST', transferCache: true, body: 'bar'});
+    });
+
+    it('should differentiate POST requests with an ambiguous url/body boundary', () => {
+      // `/items/a` with body `b|c` and `/items/a|b` with body `c` are different requests, but a
+      // cache key that concatenates the fields with `|` maps both to the same string. The second
+      // request must be treated as a cache miss and hit the network.
+      makeRequestAndExpectOne('/items/a', null, {method: 'POST', transferCache: true, body: 'b|c'});
+      makeRequestAndExpectNone('/items/a', 'POST', {transferCache: true, body: 'b|c'});
+      makeRequestAndExpectOne('/items/a|b', null, {method: 'POST', transferCache: true, body: 'c'});
     });
 
     it('should cache POST with the differing body in object form', () => {
