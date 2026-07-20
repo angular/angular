@@ -277,7 +277,6 @@ function getSanitizer(): Sanitizer | null {
  * Set of attributes that are sensitive and should be sanitized.
  */
 const SECURITY_SENSITIVE_ATTRIBUTE_NAMES: ReadonlySet<string> = new Set(['href', 'xlink:href']);
-const SVG_ANIMATION_ATTRIBUTE_NAME_CANDIDATES = ['attributeName', 'attributename'] as const;
 
 /**
  * @remarks Keep this in sync with DOM Security Schema.
@@ -394,7 +393,11 @@ function getSecuritySensitiveSVGAnimationAttributeName(
   element: SVGAnimateElement,
   validationConfig: ReadonlySet<string>,
 ): string | null {
-  for (const attributeName of SVG_ANIMATION_ATTRIBUTE_NAME_CANDIDATES) {
+  for (const attributeName of element.getAttributeNames()) {
+    if (attributeName.toLowerCase() !== 'attributename') {
+      continue;
+    }
+
     const attributeNameValue = element.getAttribute(attributeName);
     if (attributeNameValue !== null && validationConfig.has(attributeNameValue.toLowerCase())) {
       return attributeNameValue;

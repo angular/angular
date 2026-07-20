@@ -662,22 +662,6 @@ describe('sanitization', () => {
     );
   });
 
-  it('should throw when binding to set element with attributeName="href"', () => {
-    @Component({
-      selector: 'test-comp',
-      template: `<svg><set attributeName="href" [to]="'foo'"></set></svg>`,
-    })
-    class TestComp {}
-
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-    const fixture = TestBed.createComponent(TestComp);
-    expect(() => fixture.detectChanges()).toThrowError(
-      /Angular has detected that the `to` was applied/,
-    );
-  });
-
   // The SVG `attributeName` is case-sensitive when accessed via the DOM API
   // (i.e. `setAttribute('attributename', ...)` and `setAttribute('attributeName', ...)`
   // create two distinct attributes). However, the browser tokenizer normalizes
@@ -686,21 +670,23 @@ describe('sanitization', () => {
   // The SSR renderer (Domino) does not perform this normalization, so we
   // explicitly look up the lowercase form as well to make sure the sanitizer
   // is triggered consistently in both environments.
-  it('should throw when binding to set element with attributename="href"', () => {
-    @Component({
-      selector: 'test-comp',
-      template: `<svg><set attributename="href" [attr.to]="'foo'"></set></svg>`,
-    })
-    class TestComp {}
+  for (const attr of ['attributeName', 'attributename', 'attributenAme']) {
+    it(`should throw when binding to set element with ${attr}="href"`, () => {
+      @Component({
+        selector: 'test-comp',
+        template: `<svg><set ${attr}="href" [attr.to]="'foo'"></set></svg>`,
+      })
+      class TestComp {}
 
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
+      TestBed.configureTestingModule({
+        providers: [provideZoneChangeDetection()],
+      });
+      const fixture = TestBed.createComponent(TestComp);
+      expect(() => fixture.detectChanges()).toThrowError(
+        /Angular has detected that the `to` was applied/,
+      );
     });
-    const fixture = TestBed.createComponent(TestComp);
-    expect(() => fixture.detectChanges()).toThrowError(
-      /Angular has detected that the `to` was applied/,
-    );
-  });
+  }
 
   it('should not throw when binding to animate element when attributeName is not href', () => {
     @Component({
