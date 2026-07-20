@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, input, output} from '@angular/core';
+import {Component, computed, inject, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 
-import {DebugSignalGraphNode, ElementPosition} from '../../../../../protocol';
+import {DebugSignalGraphNode, ElementPosition, Events, MessageBus} from '../../../../../protocol';
 import {SignalValueTreeComponent} from './signal-value-tree/signal-value-tree.component';
 import {ButtonComponent} from '../button/button.component';
 import {
@@ -64,11 +64,20 @@ export class SignalDetailsComponent {
   }>();
   protected readonly close = output<void>();
 
+  private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
+
   protected readonly TYPE_CLASS_MAP = TYPE_CLASS_MAP;
   protected readonly CLUSTER_TYPE_CLASS_MAP = CLUSTER_TYPE_CLASS_MAP;
 
   protected readonly isSignalNode = isSignalNode;
   protected readonly isClusterNode = isClusterNode;
+
+  protected isWatchable(node: DevtoolsSignalGraphNode): node is DevtoolsSignalNode {
+    return (
+      isSignalNode(node) &&
+      (node.kind === 'signal' || node.kind === 'computed' || node.kind === 'linkedSignal')
+    );
+  }
 
   protected readonly cluster = computed(() => {
     const node = this.node();
@@ -112,6 +121,13 @@ export class SignalDetailsComponent {
 
     return previewableNode;
   });
+
+  protected toggleIsBeingWatched() {
+    const selectedNode = this.node();
+    if (!this.isWatchable(selectedNode)) return;
+    this._messageBus.emit('toggleWatchSignal', [selectedNode.id]);
+    selectedNode.watched = !selectedNode.watched;
+  }
 
   private getCompoundNodeValueHof(node: DevtoolsClusterNode) {
     const compoundNodes = (this.graph().nodes.filter(

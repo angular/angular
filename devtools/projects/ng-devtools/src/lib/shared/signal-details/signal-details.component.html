@@ -1,6 +1,7 @@
 @let node = this.node();
 @let isSignalNode = this.isSignalNode(node);
 @let isClusterNode = this.isClusterNode(node);
+@let isWatchable = this.isWatchable(node);
 
 <div class="header">
   <div class="controls">
@@ -48,6 +49,19 @@
     >
       <ng-icon name="graph_upstream" />
     </button>
+    @if (isWatchable) {
+      <button
+        ng-button
+        size="compact"
+        class="action-btn"
+        [class.watched]="node.watched"
+        [btnType]="node.watched ? 'primary' : 'secondary'"
+        (click)="toggleIsBeingWatched()"
+        [matTooltip]="node.watched ? 'Unwatch signal' : 'Watch signal'"
+      >
+        <mat-icon> {{ node.watched ? 'visibility_off' : 'visibility' }} </mat-icon>
+      </button>
+    }
   </div>
   <button
     ng-button
