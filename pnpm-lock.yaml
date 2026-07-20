@@ -17,7 +17,7 @@ importers:
     dependencies:
       '@angular-devkit/build-angular':
         specifier: 22.0.7
-        version: 22.0.7(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(bufferutil@4.1.0)(chokidar@5.0.0)(jiti@2.7.0)(karma@6.4.4(bufferutil@4.1.0))(lightningcss@1.32.0)(ng-packagr@22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3))(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tsx@4.23.0)(typescript@6.0.3)(vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))(yaml@2.9.0)
+        version: 22.0.7(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(bufferutil@4.1.0)(chokidar@5.0.0)(jiti@2.7.0)(karma@6.4.4(bufferutil@4.1.0))(lightningcss@1.32.0)(ng-packagr@22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3))(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))(yaml@2.9.0)
       '@angular-devkit/core':
         specifier: 22.0.7
         version: 22.0.7(chokidar@5.0.0)
@@ -28,17 +28,17 @@ importers:
         specifier: workspace:*
         version: link:packages/animations
       '@angular/aria':
-        specifier: 22.0.4
-        version: 22.0.4(@angular/cdk@22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
+        specifier: 22.0.5
+        version: 22.0.5(@angular/cdk@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/benchpress':
         specifier: 'workspace: *'
         version: link:packages/benchpress
       '@angular/build':
         specifier: 22.0.7
-        version: 22.0.7(f1759a5fe4a991d2f00b985ac23b934e)
+        version: 22.0.7(9ddbeb4477bc690f66b6a82396ae78f9)
       '@angular/cdk':
-        specifier: 22.0.4
-        version: 22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.5
+        version: 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 22.0.7
         version: 22.0.7(@cfworker/json-schema@4.1.1)(@types/node@20.19.43)(chokidar@5.0.0)
@@ -67,8 +67,8 @@ importers:
         specifier: 'workspace: *'
         version: link:packages/localize
       '@angular/material':
-        specifier: 22.0.4
-        version: 22.0.4(@angular/cdk@22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.5
+        version: 22.0.5(@angular/cdk@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:packages/platform-browser
@@ -260,8 +260,8 @@ importers:
         specifier: ^9.0.0
         version: 9.1.1
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#488fd3e0a6e5ad872c9c9ca1a6c43d3686146d44
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/488fd3e0a6e5ad872c9c9ca1a6c43d3686146d44(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#84e9337a283b3da3e0458084c0478b2b2fb52be3
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/84e9337a283b3da3e0458084c0478b2b2fb52be3(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
       '@babel/plugin-transform-async-generator-functions':
         specifier: ^7.27.1
         version: 7.29.7(@babel/core@7.29.7)
@@ -359,14 +359,14 @@ importers:
         specifier: workspace:*
         version: link:../packages/animations
       '@angular/aria':
-        specifier: 22.0.4
-        version: 22.0.4(@angular/cdk@22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
+        specifier: 22.0.5
+        version: 22.0.5(@angular/cdk@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 22.0.7
-        version: 22.0.7(585927d40b00a1910757139098f4225f)
+        version: 22.0.7(ce37da5b20f1d7b4f6c140dc5f08832b)
       '@angular/cdk':
-        specifier: 22.0.4
-        version: 22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.5
+        version: 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 22.0.7
         version: 22.0.7(@cfworker/json-schema@4.1.1)(@types/node@24.12.2)(chokidar@5.0.0)
@@ -389,8 +389,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/forms
       '@angular/material':
-        specifier: 22.0.4
-        version: 22.0.4(@angular/cdk@22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 22.0.5
+        version: 22.0.5(@angular/cdk@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:../packages/platform-browser
@@ -579,7 +579,7 @@ importers:
         version: 11.14.0
       ngx-progressbar:
         specifier: 14.0.0
-        version: 14.0.0(@angular/cdk@22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       playwright-core:
         specifier: 1.59.1
         version: 1.59.1
@@ -637,7 +637,7 @@ importers:
         version: 8.5.13
       tailwindcss:
         specifier: 3.4.19
-        version: 3.4.19(tsx@4.23.0)(yaml@2.9.0)
+        version: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
 
   adev/shared-docs:
     dependencies:
@@ -734,7 +734,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: 22.0.7
-        version: 22.0.7(e1f7b20077550bd58c8eb60fc001440e)
+        version: 22.0.7(157929b5562aabc7ccb65a17ba9c5036)
       '@angular/cli':
         specifier: 22.0.7
         version: 22.0.7(@cfworker/json-schema@4.1.1)(@types/node@24.13.3)(chokidar@5.0.0)
@@ -749,7 +749,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: ^4.0.0
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
 
   devtools:
     dependencies:
@@ -834,7 +834,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 22.0.7
-        version: 22.0.7(5ed64a3b4e67f05e6a2d45e9cc8629d0)
+        version: 22.0.7(b8f1da75251734191bc4a9d3f64680ad)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1019,7 +1019,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 22.0.7
-        version: 22.0.7(e1f7b20077550bd58c8eb60fc001440e)
+        version: 22.0.7(157929b5562aabc7ccb65a17ba9c5036)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1284,7 +1284,7 @@ importers:
         version: 2.8.1
       vitest:
         specifier: ^4.0.0
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
 
   packages/zone.js/test/typings:
     dependencies:
@@ -1389,7 +1389,7 @@ importers:
     devDependencies:
       ng-packagr:
         specifier: 22.0.1
-        version: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+        version: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -1570,10 +1570,10 @@ packages:
     resolution: {integrity: sha512-bKgnBB0LPAj44uVXfW0UO1rQBb3HGXDZxa1bLtESr/KCK4j5iiaXlHqvJjc/z0em1Ds9WNQOfNXjV3IdJo9sSw==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
-  '@angular/aria@22.0.4':
-    resolution: {integrity: sha512-8JtncyGVf63DnE5yvk93QldpHhzbF4fd3QGgGMEkC7xc87WxXMRO1FDQFnogZ7sI+YDQ8OMjEiCFUMrpLS3leg==}
+  '@angular/aria@22.0.5':
+    resolution: {integrity: sha512-dPty2PTXkUGr5Qn31W9RpHQq5jwe8fSkpb0KLwFrojP08ZQpnQv6SnwpFhqz2fqCwh3vSqbvk5G1PSDSqFC/8A==}
     peerDependencies:
-      '@angular/cdk': 22.0.4
+      '@angular/cdk': 22.0.5
       '@angular/core': ^22.0.0 || ^23.0.0
 
   '@angular/build@22.0.7':
@@ -1625,8 +1625,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@22.0.4':
-    resolution: {integrity: sha512-XaH1ff9tOn4acPh0zWbrmJznfZqZ0KZkw5+DM5BIeM9URmAOI8xdZWmVNyaUpVSmriANFjeGZS+Sfat9S6hLOg==}
+  '@angular/cdk@22.0.5':
+    resolution: {integrity: sha512-qy1scYkkhedGxrU2GjOUoh76xjsxCDOODWdVfg4aXLXG7RBIH6hOuKdcNpR/sWhfSdY02a11QYRN2CqoqWDvZQ==}
     peerDependencies:
       '@angular/common': ^22.0.0 || ^23.0.0
       '@angular/core': ^22.0.0 || ^23.0.0
@@ -1651,19 +1651,19 @@ packages:
     resolution: {gitHosted: true, integrity: sha512-eVKFxSkVT6SaPLkXKvIGXeD0NuI8np1mc2rH3DebHbCURzAYOwNbbasKShP1AkxZqDsEIv75kIKEIJSfqiNaCw==, tarball: https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56}
     version: 2.1.6
 
-  '@angular/material@22.0.4':
-    resolution: {integrity: sha512-htOFlTwMtcB9J4q6yPD9jJIQVJ5LfRub+KAiD4D7UU1iaCknpNuQKRfLrZh/mEdOVACI52jHAOXS3+eTkloXcQ==}
+  '@angular/material@22.0.5':
+    resolution: {integrity: sha512-A0SnDMvWQBxv3dB2w33GXwuo1/puKtFe8ZMQmIiurS5bbTQpV7UHAM0pWzg7L4DG2cvaH4WZGRPfNG3f8fh+yA==}
     peerDependencies:
-      '@angular/cdk': 22.0.4
+      '@angular/cdk': 22.0.5
       '@angular/common': ^22.0.0 || ^23.0.0
       '@angular/core': ^22.0.0 || ^23.0.0
       '@angular/forms': ^22.0.0 || ^23.0.0
       '@angular/platform-browser': ^22.0.0 || ^23.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/488fd3e0a6e5ad872c9c9ca1a6c43d3686146d44':
-    resolution: {gitHosted: true, integrity: sha512-8fakT/whwCTDosxEoYXCm8t0OqKbGxpRHjY/1EXYTdJE+qEa7yAFgnRv7zVnpxBeyAMSigjB0v2NKoGPSkBjOA==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/488fd3e0a6e5ad872c9c9ca1a6c43d3686146d44}
-    version: 0.0.0-ab850ab679f5ee8f019adca5283795ddf1581201
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/84e9337a283b3da3e0458084c0478b2b2fb52be3':
+    resolution: {gitHosted: true, integrity: sha512-OwwbJR/wBGJfNs8v0FVlJ1gTYK8YRHD0jRFKmOoFzLbT50fOSGblZzlAqwQhfY5cRksECFjP3PC9eBuEwbAbEg==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/84e9337a283b3da3e0458084c0478b2b2fb52be3}
+    version: 0.0.0-7eb2566eaab7757d7fdfc2aa518f5884a42c005b
     hasBin: true
 
   '@angular/ssr@22.0.7':
@@ -2441,8 +2441,8 @@ packages:
       conventional-commits-parser:
         optional: true
 
-  '@conventional-changelog/git-client@3.0.2':
-    resolution: {integrity: sha512-84xuyOzE3VGsQqSX6SBQfWOjXCFui4QD6pSMu2FhzE9pZ6HQ2SrW3pMSOWLrz/QQCfR75xexX88VBKsIuFBqWA==}
+  '@conventional-changelog/git-client@3.1.0':
+    resolution: {integrity: sha512-Tqa/gHco2WJWa740NRjOrfKVvzIqxkZpecb8bemaQ8sKM5PXb1UK4uTyTb/1wIqNuOVaDOFxyBdhTIQZn6gdjQ==}
     engines: {node: '>=22'}
     peerDependencies:
       conventional-commits-filter: ^6.0.1
@@ -3082,15 +3082,15 @@ packages:
     peerDependencies:
       '@firebase/app': 0.x
 
-  '@firebase/app-compat@0.5.14':
-    resolution: {integrity: sha512-rgFmiofYsdS9ZG/Bht3OBxJtPD3zWE1cffShWubEm+4+qZeyzCbmtb1q6jOEjN9fB7uufe4rQmWOPXouR3758Q==}
+  '@firebase/app-compat@0.5.15':
+    resolution: {integrity: sha512-HaiSM9TwbGIR4b7F6+UncHWlqdH89eeY7VUskaOGOlI2PxHS5Z+6hHsYGvNLy0SHDE6zyXO+3QSA6a4aqQxsqA==}
     engines: {node: '>=20.0.0'}
 
   '@firebase/app-types@0.9.5':
     resolution: {integrity: sha512-YevqTjvo7Iujsa9Dwowmd6dSoElhzmD63ZSrq6bzjvQ6POjYgNjOFHLmNIgJs48eNO093NCERibuFnxbfOvU7A==}
 
-  '@firebase/app@0.15.0':
-    resolution: {integrity: sha512-soIskolmGgbpi0K/MfrjtdpO1220qRCbXA4Z8Qx3lM+fVwA3q40m+OM+7zBHd2nuQCrLXb33L6Oc1aBH3Y26AQ==}
+  '@firebase/app@0.15.1':
+    resolution: {integrity: sha512-iD9+Z5HcPo0Uop5f72/VYMeXwKucBhW7iFrISkJFvQ+lSZikTNgTz0FgAtaaTkAG0pEZSnCymA2Fu49n0rcufQ==}
     engines: {node: '>=20.0.0'}
 
   '@firebase/auth-compat@0.6.8':
@@ -3216,16 +3216,16 @@ packages:
     peerDependencies:
       '@firebase/app': 0.x
 
-  '@firebase/remote-config-compat@0.2.26':
-    resolution: {integrity: sha512-uC57Tc7GYYOCnMgLkGIVf999XlaYaPDONoa54c93YTKDctlvCZI89z0zQ2RbhGR8Zf+QuCbQHs/99vqoE84a7g==}
+  '@firebase/remote-config-compat@0.2.27':
+    resolution: {integrity: sha512-FYwYWwSbUdza/pRX4NpSBm/Pimntum3jEIBpnDn5Ey1jHNWgjxrE8Z5SB4mCHd5wGCoYd3koJzxARl/VWIEx0Q==}
     peerDependencies:
       '@firebase/app-compat': 0.x
 
   '@firebase/remote-config-types@0.5.1':
     resolution: {integrity: sha512-cX/1LT6KQwkXzck2eSzeKnuvXZCyr8qaPpDcikoJs7jmI+oBOXixpDLeDtWj1U6GNMkIoXrEDNoyT2Ypcyp5/A==}
 
-  '@firebase/remote-config@0.8.5':
-    resolution: {integrity: sha512-zb+7CDGFP2wYVF1LXQoYIFdoESIQM3p0+uiW1welw8+zvDxAL50K75PKTXXtunJADUrksTVpV7mD0pn54vzJRA==}
+  '@firebase/remote-config@0.9.0':
+    resolution: {integrity: sha512-aNn6/eJhsSC+gXSToiXiYPv3ypLP9lFtzl+/q9kSOBPB7D6rae0Rt2uENZZLXGYbEgHYKQblOhijJAXGbbJjtQ==}
     peerDependencies:
       '@firebase/app': 0.x
 
@@ -3298,8 +3298,8 @@ packages:
     resolution: {integrity: sha512-IJn+8A3QZJfe7FUtWqHVNo3xJs7KFpurCWGWCiCz3oEh+BkRymKZ1QxfAbU2yGMDzTytLGQ2IV6T2r3cuo75/w==}
     engines: {node: '>=18'}
 
-  '@google/genai@2.10.0':
-    resolution: {integrity: sha512-e4cFxj3tiuMtsgOT4G9c1hXyGJhg7/Buj7VVeBacRY3fRtkRZZ59Q3nuVp2xbq8BGQXLXCDB253qMhklMOeUDg==}
+  '@google/genai@2.12.0':
+    resolution: {integrity: sha512-LUr972DZosqPUhf9Mb3CIVu/B99woD3QW6ZJV1T9aNgxaoimAZARmo+IyyDsxIL+zouFiYSdA4hzfEWXc9oNIQ==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.25.2
@@ -5273,9 +5273,6 @@ packages:
   '@types/node@24.12.2':
     resolution: {integrity: sha512-A1sre26ke7HDIuY/M23nd9gfB+nrmhtYyMINbjI1zHJxYteKR6qSMX56FsmjMcDb3SMcjJg5BiRRgOCC/yBD0g==}
 
-  '@types/node@24.13.2':
-    resolution: {integrity: sha512-fRa09kZTgu8o71KFcDjUFuc7F+dEbZYZmkI0mg5YBTRs0yMKjYHsq/c0urDKeDb+D5qVgXOdFcuu+DZPKOITwA==}
-
   '@types/node@24.13.3':
     resolution: {integrity: sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==}
 
@@ -5883,6 +5880,10 @@ packages:
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
+
+  argue-cli@3.1.0:
+    resolution: {integrity: sha512-DhBpBfXL4SS2uC0N922MMajKR3CdrTG0u2or1PNYgXMsrSzViJrbtvT0nCLlLGUI0plam/ZZCs7aAauHtW9thw==}
+    engines: {node: '>=22'}
 
   array-buffer-byte-length@1.0.2:
     resolution: {integrity: sha512-LHE+8BuR7RYGDKvnrmcuSq3tDcKv9OFEXQt/HpbZhY7V6h0zlUXutnAD82GiFx9rdieCMjkvtcsPqBwgUl1Iiw==}
@@ -6729,8 +6730,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  conventional-commits-parser@7.0.1:
-    resolution: {integrity: sha512-6VtskFpPsNkGVk/TY2RnV/MEdKfvCPBtQZN9x8jh9+k5RWBQ+tiaWn5UFCzTr0Dd88iKx7xghxbjBRp5uIzp3g==}
+  conventional-commits-parser@7.1.0:
+    resolution: {integrity: sha512-DPp6hkUjvwIivxbkrTiLXeRswNv1A/4GFA2X6scXma0AMa9632V3TwxmrlkUIEtUktiM3Ln+RrSH2xlP3/jUTw==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -7754,8 +7755,8 @@ packages:
     engines: {node: '>=20.0.0 || >=22.0.0 || >=24.0.0'}
     hasBin: true
 
-  firebase@12.15.0:
-    resolution: {integrity: sha512-p0YTLcRSTiBXMx9sGr4ZNSfLjc/RVBEw4C/TXjVMtw65+6E1Pbm47UY3F4/AqRoDobEcNX3gsbPGy7jPjxbgSQ==}
+  firebase@12.16.0:
+    resolution: {integrity: sha512-CNw6hFBdONkzF8UGLDx/RDRY9gVa5VmJNHd7qi4gdmA3ZuLkuOrhmWefB2l+FN+OxFpN77Itq7aO6zlTi780ag==}
 
   flagged-respawn@2.0.0:
     resolution: {integrity: sha512-Gq/a6YCi8zexmGHMuJwahTGzXlAZAOsbCVKduWXC6TlLCjjFRlExMJc4GC2NYPYZ0r/brw9P7CpRgQmlPVeOoA==}
@@ -9566,10 +9567,6 @@ packages:
   meow@13.2.0:
     resolution: {integrity: sha512-pxQJQzB6djGPXh08dacEloMFopsOqGVRKFPYvPOt9XDZ1HasbgDZA74CJGreSU4G3Ak7EFJGoiH2auq+yXISgA==}
     engines: {node: '>=18'}
-
-  meow@14.1.0:
-    resolution: {integrity: sha512-EDYo6VlmtnumlcBCbh1gLJ//9jvM/ndXHfVXIFrZVr6fGcwTUyCTFNTLCKuY3ffbK8L/+3Mzqnd58RojiZqHVw==}
-    engines: {node: '>=20'}
 
   merge-descriptors@1.0.3:
     resolution: {integrity: sha512-gaNvAS7TZ897/rVaZ0nMtAyxNyi/pdbjbAwUpFQpN70GqnVfOiXpeUUMKRBmzXaSQ8DdTX4/0ms62r2K+hE6mQ==}
@@ -11906,8 +11903,8 @@ packages:
     peerDependencies:
       typescript: 6.0.3
 
-  tsx@4.23.0:
-    resolution: {integrity: sha512-eUdUIaCr963q2h5u3+QwvYp0+eqPvn+egeqZUm0hwERCqqx1E3kK5ehbGCvqSE5MQAULr67ww0cA3jKc3YkM1w==}
+  tsx@4.23.1:
+    resolution: {integrity: sha512-GQHnkIfxyx1wYCOS/wonik5MVRZU9hi1TEZmzGZSCJB1y9YgoZ8H6itNE/u4suE+yLmOzuE4E5S4TZ/ZX2wcWQ==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -12989,13 +12986,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@22.0.7(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(bufferutil@4.1.0)(chokidar@5.0.0)(jiti@2.7.0)(karma@6.4.4(bufferutil@4.1.0))(lightningcss@1.32.0)(ng-packagr@22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3))(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tsx@4.23.0)(typescript@6.0.3)(vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))(yaml@2.9.0)':
+  '@angular-devkit/build-angular@22.0.7(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(bufferutil@4.1.0)(chokidar@5.0.0)(jiti@2.7.0)(karma@6.4.4(bufferutil@4.1.0))(lightningcss@1.32.0)(ng-packagr@22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3))(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tsx@4.23.1)(typescript@6.0.3)(vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))(yaml@2.9.0)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2200.7(chokidar@5.0.0)
       '@angular-devkit/build-webpack': 0.2200.7(chokidar@5.0.0)(webpack-dev-server@5.2.3(bufferutil@4.1.0)(tslib@2.8.1)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)))(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13))
       '@angular-devkit/core': 22.0.7(chokidar@5.0.0)
-      '@angular/build': 22.0.7(872341450e1de49614120ebe55b33238)
+      '@angular/build': 22.0.7(d41642bb8c11d29f920018f3d66e057c)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@babel/core': 7.29.7
       '@babel/generator': 7.29.7
@@ -13055,8 +13052,8 @@ snapshots:
       '@angular/ssr': 22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       esbuild: 0.28.1
       karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
-      tailwindcss: 3.4.19(tsx@4.23.0)(yaml@2.9.0)
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      tailwindcss: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@angular/compiler'
       - '@minify-html/node'
@@ -13117,13 +13114,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/aria@22.0.4(@angular/cdk@22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)':
+  '@angular/aria@22.0.5(@angular/cdk@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)':
     dependencies:
-      '@angular/cdk': 22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  '@angular/build@22.0.7(585927d40b00a1910757139098f4225f)':
+  '@angular/build@22.0.7(157929b5562aabc7ccb65a17ba9c5036)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2200.7(chokidar@5.0.0)
@@ -13132,8 +13129,8 @@ snapshots:
       '@babel/core': 7.29.7
       '@babel/helper-annotate-as-pure': 7.29.7
       '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 6.0.12(@types/node@24.12.2)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))
+      '@inquirer/confirm': 6.0.12(@types/node@24.13.3)
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@24.13.3)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))
       beasties: 0.4.2
       browserslist: 4.28.6
       esbuild: 0.28.1
@@ -13152,7 +13149,7 @@ snapshots:
       tinyglobby: 0.2.16
       tslib: 2.8.1
       typescript: 6.0.3
-      vite: 7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@24.13.3)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
       watchpack: 2.5.1
     optionalDependencies:
       '@angular/core': link:packages/core
@@ -13165,69 +13162,10 @@ snapshots:
       karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       less: 4.6.7
       lmdb: 3.5.4
-      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
-      postcss: 8.5.13
-      tailwindcss: 3.4.19(tsx@4.23.0)(yaml@2.9.0)
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - chokidar
-      - jiti
-      - lightningcss
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  '@angular/build@22.0.7(5ed64a3b4e67f05e6a2d45e9cc8629d0)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.7(chokidar@5.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.29.7
-      '@babel/helper-annotate-as-pure': 7.29.7
-      '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 6.0.12(@types/node@24.12.2)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))
-      beasties: 0.4.2
-      browserslist: 4.28.6
-      esbuild: 0.28.1
-      https-proxy-agent: 9.0.0
-      jsonc-parser: 3.3.1
-      listr2: 10.2.1
-      magic-string: 0.30.21
-      mrmime: 2.0.1
-      parse5-html-rewriting-stream: 8.0.1
-      picomatch: 4.0.4
-      piscina: 5.2.0
-      rollup: 4.60.2
-      sass: 1.99.0
-      semver: 7.7.4
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.16
-      tslib: 2.8.1
-      typescript: 6.0.3
-      vite: 7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
-      watchpack: 2.5.1
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      istanbul-lib-instrument: 6.0.3
-      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      less: 4.6.7
-      lmdb: 3.5.4
-      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
       postcss: 8.5.16
-      tailwindcss: 3.4.19(tsx@4.23.0)(yaml@2.9.0)
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      tailwindcss: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -13241,7 +13179,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@22.0.7(872341450e1de49614120ebe55b33238)':
+  '@angular/build@22.0.7(9ddbeb4477bc690f66b6a82396ae78f9)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2200.7(chokidar@5.0.0)
@@ -13251,7 +13189,7 @@ snapshots:
       '@babel/helper-annotate-as-pure': 7.29.7
       '@babel/helper-split-export-declaration': 7.24.7
       '@inquirer/confirm': 6.0.12(@types/node@20.19.43)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))
       beasties: 0.4.2
       browserslist: 4.28.6
       esbuild: 0.28.1
@@ -13270,7 +13208,184 @@ snapshots:
       tinyglobby: 0.2.16
       tslib: 2.8.1
       typescript: 6.0.3
-      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
+      watchpack: 2.5.1
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      istanbul-lib-instrument: 6.0.3
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      less: 4.6.7
+      lmdb: 3.5.4
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      postcss: 8.5.16
+      tailwindcss: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - chokidar
+      - jiti
+      - lightningcss
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  '@angular/build@22.0.7(b8f1da75251734191bc4a9d3f64680ad)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2200.7(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 7.29.7
+      '@babel/helper-annotate-as-pure': 7.29.7
+      '@babel/helper-split-export-declaration': 7.24.7
+      '@inquirer/confirm': 6.0.12(@types/node@24.12.2)
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))
+      beasties: 0.4.2
+      browserslist: 4.28.6
+      esbuild: 0.28.1
+      https-proxy-agent: 9.0.0
+      jsonc-parser: 3.3.1
+      listr2: 10.2.1
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      parse5-html-rewriting-stream: 8.0.1
+      picomatch: 4.0.4
+      piscina: 5.2.0
+      rollup: 4.60.2
+      sass: 1.99.0
+      semver: 7.7.4
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.16
+      tslib: 2.8.1
+      typescript: 6.0.3
+      vite: 7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
+      watchpack: 2.5.1
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      istanbul-lib-instrument: 6.0.3
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      less: 4.6.7
+      lmdb: 3.5.4
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      postcss: 8.5.16
+      tailwindcss: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - chokidar
+      - jiti
+      - lightningcss
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  '@angular/build@22.0.7(ce37da5b20f1d7b4f6c140dc5f08832b)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2200.7(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 7.29.7
+      '@babel/helper-annotate-as-pure': 7.29.7
+      '@babel/helper-split-export-declaration': 7.24.7
+      '@inquirer/confirm': 6.0.12(@types/node@24.12.2)
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))
+      beasties: 0.4.2
+      browserslist: 4.28.6
+      esbuild: 0.28.1
+      https-proxy-agent: 9.0.0
+      jsonc-parser: 3.3.1
+      listr2: 10.2.1
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      parse5-html-rewriting-stream: 8.0.1
+      picomatch: 4.0.4
+      piscina: 5.2.0
+      rollup: 4.60.2
+      sass: 1.99.0
+      semver: 7.7.4
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.16
+      tslib: 2.8.1
+      typescript: 6.0.3
+      vite: 7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
+      watchpack: 2.5.1
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      istanbul-lib-instrument: 6.0.3
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      less: 4.6.7
+      lmdb: 3.5.4
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      postcss: 8.5.13
+      tailwindcss: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - chokidar
+      - jiti
+      - lightningcss
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  '@angular/build@22.0.7(d41642bb8c11d29f920018f3d66e057c)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2200.7(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 7.29.7
+      '@babel/helper-annotate-as-pure': 7.29.7
+      '@babel/helper-split-export-declaration': 7.24.7
+      '@inquirer/confirm': 6.0.12(@types/node@20.19.43)
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))
+      beasties: 0.4.2
+      browserslist: 4.28.6
+      esbuild: 0.28.1
+      https-proxy-agent: 9.0.0
+      jsonc-parser: 3.3.1
+      listr2: 10.2.1
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      parse5-html-rewriting-stream: 8.0.1
+      picomatch: 4.0.4
+      piscina: 5.2.0
+      rollup: 4.60.2
+      sass: 1.99.0
+      semver: 7.7.4
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.16
+      tslib: 2.8.1
+      typescript: 6.0.3
+      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
       watchpack: 2.5.1
     optionalDependencies:
       '@angular/core': link:packages/core
@@ -13283,10 +13398,10 @@ snapshots:
       karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       less: 4.6.4
       lmdb: 3.5.4
-      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
       postcss: 8.5.13
-      tailwindcss: 3.4.19(tsx@4.23.0)(yaml@2.9.0)
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      tailwindcss: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -13300,125 +13415,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@22.0.7(e1f7b20077550bd58c8eb60fc001440e)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.7(chokidar@5.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.29.7
-      '@babel/helper-annotate-as-pure': 7.29.7
-      '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 6.0.12(@types/node@24.13.3)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@24.13.3)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))
-      beasties: 0.4.2
-      browserslist: 4.28.6
-      esbuild: 0.28.1
-      https-proxy-agent: 9.0.0
-      jsonc-parser: 3.3.1
-      listr2: 10.2.1
-      magic-string: 0.30.21
-      mrmime: 2.0.1
-      parse5-html-rewriting-stream: 8.0.1
-      picomatch: 4.0.4
-      piscina: 5.2.0
-      rollup: 4.60.2
-      sass: 1.99.0
-      semver: 7.7.4
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.16
-      tslib: 2.8.1
-      typescript: 6.0.3
-      vite: 7.3.5(@types/node@24.13.3)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
-      watchpack: 2.5.1
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      istanbul-lib-instrument: 6.0.3
-      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      less: 4.6.7
-      lmdb: 3.5.4
-      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
-      postcss: 8.5.16
-      tailwindcss: 3.4.19(tsx@4.23.0)(yaml@2.9.0)
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - chokidar
-      - jiti
-      - lightningcss
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  '@angular/build@22.0.7(f1759a5fe4a991d2f00b985ac23b934e)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2200.7(chokidar@5.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.29.7
-      '@babel/helper-annotate-as-pure': 7.29.7
-      '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 6.0.12(@types/node@20.19.43)
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))
-      beasties: 0.4.2
-      browserslist: 4.28.6
-      esbuild: 0.28.1
-      https-proxy-agent: 9.0.0
-      jsonc-parser: 3.3.1
-      listr2: 10.2.1
-      magic-string: 0.30.21
-      mrmime: 2.0.1
-      parse5-html-rewriting-stream: 8.0.1
-      picomatch: 4.0.4
-      piscina: 5.2.0
-      rollup: 4.60.2
-      sass: 1.99.0
-      semver: 7.7.4
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.16
-      tslib: 2.8.1
-      typescript: 6.0.3
-      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
-      watchpack: 2.5.1
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.0.7(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      istanbul-lib-instrument: 6.0.3
-      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
-      less: 4.6.7
-      lmdb: 3.5.4
-      ng-packagr: 22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
-      postcss: 8.5.16
-      tailwindcss: 3.4.19(tsx@4.23.0)(yaml@2.9.0)
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - chokidar
-      - jiti
-      - lightningcss
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  '@angular/cdk@22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
+  '@angular/cdk@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
@@ -13515,9 +13512,9 @@ snapshots:
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56': {}
 
-  '@angular/material@22.0.4(@angular/cdk@22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
+  '@angular/material@22.0.5(@angular/cdk@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
-      '@angular/cdk': 22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       '@angular/forms': link:packages/forms
@@ -13525,14 +13522,14 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/488fd3e0a6e5ad872c9c9ca1a6c43d3686146d44(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/84e9337a283b3da3e0458084c0478b2b2fb52be3(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
     dependencies:
       '@actions/core': 3.0.1
-      '@conventional-changelog/git-client': 3.0.2(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.0.1)
+      '@conventional-changelog/git-client': 3.1.0(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.0)
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
-      '@google/genai': 2.10.0(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
-      '@inquirer/prompts': 8.5.2(@types/node@24.13.2)
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
+      '@google/genai': 2.12.0(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
+      '@inquirer/prompts': 8.5.2(@types/node@24.13.3)
+      '@inquirer/type': 4.0.7(@types/node@24.13.3)
       '@octokit/auth-app': 8.2.0
       '@octokit/core': 7.0.6
       '@octokit/graphql': 9.0.3
@@ -13549,7 +13546,7 @@ snapshots:
       '@types/events': 3.0.3
       '@types/folder-hash': 4.0.4
       '@types/jasmine': 6.0.0
-      '@types/node': 24.13.2
+      '@types/node': 24.13.3
       '@types/semver': 7.7.1
       '@types/which': 3.0.4
       '@types/yargs': 17.0.35
@@ -13558,11 +13555,11 @@ snapshots:
       bufferutil: 4.1.0
       cli-progress: 3.12.0
       conventional-commits-filter: 6.0.1
-      conventional-commits-parser: 7.0.1
+      conventional-commits-parser: 7.1.0
       ejs: 6.0.1
       encoding: 0.1.13
       fast-glob: 3.3.3
-      firebase: 12.15.0
+      firebase: 12.16.0
       folder-hash: 4.1.3(supports-color@10.2.2)
       jasmine: 6.3.0
       jasmine-core: 6.3.0
@@ -13573,7 +13570,7 @@ snapshots:
       nock: 14.0.16
       semver: 7.8.5
       supports-color: 10.2.2
-      tsx: 4.23.0
+      tsx: 4.23.1
       typed-graphqlify: 3.1.6
       typescript: 6.0.3
       utf-8-validate: 6.0.6
@@ -14621,14 +14618,14 @@ snapshots:
       conventional-commits-filter: 5.0.0
       conventional-commits-parser: 6.4.0
 
-  '@conventional-changelog/git-client@3.0.2(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.0.1)':
+  '@conventional-changelog/git-client@3.1.0(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.0)':
     dependencies:
       '@simple-libs/child-process-utils': 2.0.0
       '@simple-libs/stream-utils': 2.0.0
       semver: 7.8.5
     optionalDependencies:
       conventional-commits-filter: 6.0.1
-      conventional-commits-parser: 7.0.1
+      conventional-commits-parser: 7.1.0
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -14992,9 +14989,9 @@ snapshots:
 
   '@externs/nodejs@1.5.0': {}
 
-  '@firebase/ai@2.13.1(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)':
+  '@firebase/ai@2.13.1(@firebase/app-types@0.9.5)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/app-check-interop-types': 0.3.4
       '@firebase/app-types': 0.9.5
       '@firebase/component': 0.7.3
@@ -15002,11 +14999,11 @@ snapshots:
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/analytics-compat@0.2.28(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
+  '@firebase/analytics-compat@0.2.28(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/analytics': 0.10.22(@firebase/app@0.15.0)
+      '@firebase/analytics': 0.10.22(@firebase/app@0.15.1)
       '@firebase/analytics-types': 0.8.4
-      '@firebase/app-compat': 0.5.14
+      '@firebase/app-compat': 0.5.15
       '@firebase/component': 0.7.3
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15015,20 +15012,20 @@ snapshots:
 
   '@firebase/analytics-types@0.8.4': {}
 
-  '@firebase/analytics@0.10.22(@firebase/app@0.15.0)':
+  '@firebase/analytics@0.10.22(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.1)
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/app-check-compat@0.4.5(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
+  '@firebase/app-check-compat@0.4.5(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app-check': 0.12.0(@firebase/app@0.15.0)
+      '@firebase/app-check': 0.12.0(@firebase/app@0.15.1)
       '@firebase/app-check-types': 0.5.4
-      '@firebase/app-compat': 0.5.14
+      '@firebase/app-compat': 0.5.15
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
@@ -15040,17 +15037,17 @@ snapshots:
 
   '@firebase/app-check-types@0.5.4': {}
 
-  '@firebase/app-check@0.12.0(@firebase/app@0.15.0)':
+  '@firebase/app-check@0.12.0(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/app-compat@0.5.14':
+  '@firebase/app-compat@0.5.15':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
@@ -15060,7 +15057,7 @@ snapshots:
     dependencies:
       '@firebase/logger': 0.5.1
 
-  '@firebase/app@0.15.0':
+  '@firebase/app@0.15.1':
     dependencies:
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
@@ -15068,10 +15065,10 @@ snapshots:
       idb: 7.1.1
       tslib: 2.8.1
 
-  '@firebase/auth-compat@0.6.8(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)':
+  '@firebase/auth-compat@0.6.8(@firebase/app-compat@0.5.15)(@firebase/app-types@0.9.5)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app-compat': 0.5.14
-      '@firebase/auth': 1.13.3(@firebase/app@0.15.0)
+      '@firebase/app-compat': 0.5.15
+      '@firebase/auth': 1.13.3(@firebase/app@0.15.1)
       '@firebase/auth-types': 0.13.1(@firebase/app-types@0.9.5)(@firebase/util@1.15.1)
       '@firebase/component': 0.7.3
       '@firebase/util': 1.15.1
@@ -15088,9 +15085,9 @@ snapshots:
       '@firebase/app-types': 0.9.5
       '@firebase/util': 1.15.1
 
-  '@firebase/auth@1.13.3(@firebase/app@0.15.0)':
+  '@firebase/auth@1.13.3(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
@@ -15101,9 +15098,9 @@ snapshots:
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/data-connect@0.7.1(@firebase/app@0.15.0)':
+  '@firebase/data-connect@0.7.1(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/auth-interop-types': 0.2.5
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
@@ -15134,11 +15131,11 @@ snapshots:
       faye-websocket: 0.11.4
       tslib: 2.8.1
 
-  '@firebase/firestore-compat@0.4.11(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)':
+  '@firebase/firestore-compat@0.4.11(@firebase/app-compat@0.5.15)(@firebase/app-types@0.9.5)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app-compat': 0.5.14
+      '@firebase/app-compat': 0.5.15
       '@firebase/component': 0.7.3
-      '@firebase/firestore': 4.16.0(@firebase/app@0.15.0)
+      '@firebase/firestore': 4.16.0(@firebase/app@0.15.1)
       '@firebase/firestore-types': 3.0.4(@firebase/app-types@0.9.5)(@firebase/util@1.15.1)
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15151,9 +15148,9 @@ snapshots:
       '@firebase/app-types': 0.9.5
       '@firebase/util': 1.15.1
 
-  '@firebase/firestore@4.16.0(@firebase/app@0.15.0)':
+  '@firebase/firestore@4.16.0(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
@@ -15163,11 +15160,11 @@ snapshots:
       re2js: 0.4.3
       tslib: 2.8.1
 
-  '@firebase/functions-compat@0.4.5(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
+  '@firebase/functions-compat@0.4.5(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app-compat': 0.5.14
+      '@firebase/app-compat': 0.5.15
       '@firebase/component': 0.7.3
-      '@firebase/functions': 0.13.5(@firebase/app@0.15.0)
+      '@firebase/functions': 0.13.5(@firebase/app@0.15.1)
       '@firebase/functions-types': 0.6.4
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15176,9 +15173,9 @@ snapshots:
 
   '@firebase/functions-types@0.6.4': {}
 
-  '@firebase/functions@0.13.5(@firebase/app@0.15.0)':
+  '@firebase/functions@0.13.5(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/app-check-interop-types': 0.3.4
       '@firebase/auth-interop-types': 0.2.5
       '@firebase/component': 0.7.3
@@ -15186,11 +15183,11 @@ snapshots:
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/installations-compat@0.2.22(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)':
+  '@firebase/installations-compat@0.2.22(@firebase/app-compat@0.5.15)(@firebase/app-types@0.9.5)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app-compat': 0.5.14
+      '@firebase/app-compat': 0.5.15
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.1)
       '@firebase/installations-types': 0.5.4(@firebase/app-types@0.9.5)
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15202,9 +15199,9 @@ snapshots:
     dependencies:
       '@firebase/app-types': 0.9.5
 
-  '@firebase/installations@0.6.22(@firebase/app@0.15.0)':
+  '@firebase/installations@0.6.22(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/component': 0.7.3
       '@firebase/util': 1.15.1
       idb: 7.1.1
@@ -15214,11 +15211,11 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@firebase/messaging-compat@0.2.27(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
+  '@firebase/messaging-compat@0.2.27(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app-compat': 0.5.14
+      '@firebase/app-compat': 0.5.15
       '@firebase/component': 0.7.3
-      '@firebase/messaging': 0.13.0(@firebase/app@0.15.0)
+      '@firebase/messaging': 0.13.0(@firebase/app@0.15.1)
       '@firebase/util': 1.15.1
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -15226,22 +15223,22 @@ snapshots:
 
   '@firebase/messaging-interop-types@0.2.5': {}
 
-  '@firebase/messaging@0.13.0(@firebase/app@0.15.0)':
+  '@firebase/messaging@0.13.0(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.1)
       '@firebase/messaging-interop-types': 0.2.5
       '@firebase/util': 1.15.1
       idb: 7.1.1
       tslib: 2.8.1
 
-  '@firebase/performance-compat@0.2.25(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
+  '@firebase/performance-compat@0.2.25(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app-compat': 0.5.14
+      '@firebase/app-compat': 0.5.15
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
-      '@firebase/performance': 0.7.12(@firebase/app@0.15.0)
+      '@firebase/performance': 0.7.12(@firebase/app@0.15.1)
       '@firebase/performance-types': 0.2.4
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15250,22 +15247,22 @@ snapshots:
 
   '@firebase/performance-types@0.2.4': {}
 
-  '@firebase/performance@0.7.12(@firebase/app@0.15.0)':
+  '@firebase/performance@0.7.12(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.1)
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
       web-vitals: 4.2.4
 
-  '@firebase/remote-config-compat@0.2.26(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)':
+  '@firebase/remote-config-compat@0.2.27(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app-compat': 0.5.14
+      '@firebase/app-compat': 0.5.15
       '@firebase/component': 0.7.3
       '@firebase/logger': 0.5.1
-      '@firebase/remote-config': 0.8.5(@firebase/app@0.15.0)
+      '@firebase/remote-config': 0.9.0(@firebase/app@0.15.1)
       '@firebase/remote-config-types': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15274,20 +15271,20 @@ snapshots:
 
   '@firebase/remote-config-types@0.5.1': {}
 
-  '@firebase/remote-config@0.8.5(@firebase/app@0.15.0)':
+  '@firebase/remote-config@0.9.0(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/component': 0.7.3
-      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.1)
       '@firebase/logger': 0.5.1
       '@firebase/util': 1.15.1
       tslib: 2.8.1
 
-  '@firebase/storage-compat@0.4.3(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)':
+  '@firebase/storage-compat@0.4.3(@firebase/app-compat@0.5.15)(@firebase/app-types@0.9.5)(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app-compat': 0.5.14
+      '@firebase/app-compat': 0.5.15
       '@firebase/component': 0.7.3
-      '@firebase/storage': 0.14.3(@firebase/app@0.15.0)
+      '@firebase/storage': 0.14.3(@firebase/app@0.15.1)
       '@firebase/storage-types': 0.8.4(@firebase/app-types@0.9.5)(@firebase/util@1.15.1)
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15300,9 +15297,9 @@ snapshots:
       '@firebase/app-types': 0.9.5
       '@firebase/util': 1.15.1
 
-  '@firebase/storage@0.14.3(@firebase/app@0.15.0)':
+  '@firebase/storage@0.14.3(@firebase/app@0.15.1)':
     dependencies:
-      '@firebase/app': 0.15.0
+      '@firebase/app': 0.15.1
       '@firebase/component': 0.7.3
       '@firebase/util': 1.15.1
       tslib: 2.8.1
@@ -15409,7 +15406,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@2.10.0(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)':
+  '@google/genai@2.12.0(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)':
     dependencies:
       google-auth-library: 10.9.0(supports-color@10.2.2)
       p-retry: 4.6.2
@@ -15507,15 +15504,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.2
 
-  '@inquirer/checkbox@5.2.1(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/ansi': 2.0.7
-      '@inquirer/core': 11.2.1(@types/node@24.13.2)
-      '@inquirer/figures': 2.0.7
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-    optionalDependencies:
-      '@types/node': 24.13.2
-
   '@inquirer/checkbox@5.2.1(@types/node@24.13.3)':
     dependencies:
       '@inquirer/ansi': 2.0.7
@@ -15567,13 +15555,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.2
 
-  '@inquirer/confirm@6.1.1(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/core': 11.2.1(@types/node@24.13.2)
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-    optionalDependencies:
-      '@types/node': 24.13.2
-
   '@inquirer/confirm@6.1.1(@types/node@24.13.3)':
     dependencies:
       '@inquirer/core': 11.2.1(@types/node@24.13.3)
@@ -15618,18 +15599,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.2
 
-  '@inquirer/core@11.2.1(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/ansi': 2.0.7
-      '@inquirer/figures': 2.0.7
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-      cli-width: 4.1.0
-      fast-wrap-ansi: 0.2.2
-      mute-stream: 3.0.0
-      signal-exit: 4.1.0
-    optionalDependencies:
-      '@types/node': 24.13.2
-
   '@inquirer/core@11.2.1(@types/node@24.13.3)':
     dependencies:
       '@inquirer/ansi': 2.0.7
@@ -15666,14 +15635,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.2
 
-  '@inquirer/editor@5.2.2(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/core': 11.2.1(@types/node@24.13.2)
-      '@inquirer/external-editor': 3.0.3(@types/node@24.13.2)
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-    optionalDependencies:
-      '@types/node': 24.13.2
-
   '@inquirer/editor@5.2.2(@types/node@24.13.3)':
     dependencies:
       '@inquirer/core': 11.2.1(@types/node@24.13.3)
@@ -15704,13 +15665,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.2
 
-  '@inquirer/expand@5.1.1(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/core': 11.2.1(@types/node@24.13.2)
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-    optionalDependencies:
-      '@types/node': 24.13.2
-
   '@inquirer/expand@5.1.1(@types/node@24.13.3)':
     dependencies:
       '@inquirer/core': 11.2.1(@types/node@24.13.3)
@@ -15738,13 +15692,6 @@ snapshots:
       iconv-lite: 0.7.3
     optionalDependencies:
       '@types/node': 24.12.2
-
-  '@inquirer/external-editor@3.0.3(@types/node@24.13.2)':
-    dependencies:
-      chardet: 2.2.0
-      iconv-lite: 0.7.3
-    optionalDependencies:
-      '@types/node': 24.13.2
 
   '@inquirer/external-editor@3.0.3(@types/node@24.13.3)':
     dependencies:
@@ -15778,13 +15725,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.2
 
-  '@inquirer/input@5.1.2(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/core': 11.2.1(@types/node@24.13.2)
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-    optionalDependencies:
-      '@types/node': 24.13.2
-
   '@inquirer/input@5.1.2(@types/node@24.13.3)':
     dependencies:
       '@inquirer/core': 11.2.1(@types/node@24.13.3)
@@ -15812,13 +15752,6 @@ snapshots:
       '@inquirer/type': 4.0.7(@types/node@24.12.2)
     optionalDependencies:
       '@types/node': 24.12.2
-
-  '@inquirer/number@4.1.1(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/core': 11.2.1(@types/node@24.13.2)
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-    optionalDependencies:
-      '@types/node': 24.13.2
 
   '@inquirer/number@4.1.1(@types/node@24.13.3)':
     dependencies:
@@ -15850,14 +15783,6 @@ snapshots:
       '@inquirer/type': 4.0.7(@types/node@24.12.2)
     optionalDependencies:
       '@types/node': 24.12.2
-
-  '@inquirer/password@5.1.1(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/ansi': 2.0.7
-      '@inquirer/core': 11.2.1(@types/node@24.13.2)
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-    optionalDependencies:
-      '@types/node': 24.13.2
 
   '@inquirer/password@5.1.1(@types/node@24.13.3)':
     dependencies:
@@ -15942,20 +15867,20 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.19.43
 
-  '@inquirer/prompts@8.5.2(@types/node@24.13.2)':
+  '@inquirer/prompts@8.5.2(@types/node@24.13.3)':
     dependencies:
-      '@inquirer/checkbox': 5.2.1(@types/node@24.13.2)
-      '@inquirer/confirm': 6.1.1(@types/node@24.13.2)
-      '@inquirer/editor': 5.2.2(@types/node@24.13.2)
-      '@inquirer/expand': 5.1.1(@types/node@24.13.2)
-      '@inquirer/input': 5.1.2(@types/node@24.13.2)
-      '@inquirer/number': 4.1.1(@types/node@24.13.2)
-      '@inquirer/password': 5.1.1(@types/node@24.13.2)
-      '@inquirer/rawlist': 5.3.1(@types/node@24.13.2)
-      '@inquirer/search': 4.2.1(@types/node@24.13.2)
-      '@inquirer/select': 5.2.1(@types/node@24.13.2)
+      '@inquirer/checkbox': 5.2.1(@types/node@24.13.3)
+      '@inquirer/confirm': 6.1.1(@types/node@24.13.3)
+      '@inquirer/editor': 5.2.2(@types/node@24.13.3)
+      '@inquirer/expand': 5.1.1(@types/node@24.13.3)
+      '@inquirer/input': 5.1.2(@types/node@24.13.3)
+      '@inquirer/number': 4.1.1(@types/node@24.13.3)
+      '@inquirer/password': 5.1.1(@types/node@24.13.3)
+      '@inquirer/rawlist': 5.3.1(@types/node@24.13.3)
+      '@inquirer/search': 4.2.1(@types/node@24.13.3)
+      '@inquirer/select': 5.2.1(@types/node@24.13.3)
     optionalDependencies:
-      '@types/node': 24.13.2
+      '@types/node': 24.13.3
 
   '@inquirer/rawlist@4.1.11(@types/node@20.19.43)':
     dependencies:
@@ -15978,13 +15903,6 @@ snapshots:
       '@inquirer/type': 4.0.7(@types/node@24.12.2)
     optionalDependencies:
       '@types/node': 24.12.2
-
-  '@inquirer/rawlist@5.3.1(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/core': 11.2.1(@types/node@24.13.2)
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-    optionalDependencies:
-      '@types/node': 24.13.2
 
   '@inquirer/rawlist@5.3.1(@types/node@24.13.3)':
     dependencies:
@@ -16017,14 +15935,6 @@ snapshots:
       '@inquirer/type': 4.0.7(@types/node@24.12.2)
     optionalDependencies:
       '@types/node': 24.12.2
-
-  '@inquirer/search@4.2.1(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/core': 11.2.1(@types/node@24.13.2)
-      '@inquirer/figures': 2.0.7
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-    optionalDependencies:
-      '@types/node': 24.13.2
 
   '@inquirer/search@4.2.1(@types/node@24.13.3)':
     dependencies:
@@ -16062,15 +15972,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.2
 
-  '@inquirer/select@5.2.1(@types/node@24.13.2)':
-    dependencies:
-      '@inquirer/ansi': 2.0.7
-      '@inquirer/core': 11.2.1(@types/node@24.13.2)
-      '@inquirer/figures': 2.0.7
-      '@inquirer/type': 4.0.7(@types/node@24.13.2)
-    optionalDependencies:
-      '@types/node': 24.13.2
-
   '@inquirer/select@5.2.1(@types/node@24.13.3)':
     dependencies:
       '@inquirer/ansi': 2.0.7
@@ -16091,10 +15992,6 @@ snapshots:
   '@inquirer/type@4.0.7(@types/node@24.12.2)':
     optionalDependencies:
       '@types/node': 24.12.2
-
-  '@inquirer/type@4.0.7(@types/node@24.13.2)':
-    optionalDependencies:
-      '@types/node': 24.13.2
 
   '@inquirer/type@4.0.7(@types/node@24.13.3)':
     optionalDependencies:
@@ -17895,10 +17792,6 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
-  '@types/node@24.13.2':
-    dependencies:
-      undici-types: 7.18.2
-
   '@types/node@24.13.3':
     dependencies:
       undici-types: 7.18.2
@@ -18085,21 +17978,21 @@ snapshots:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))':
     dependencies:
-      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))':
     dependencies:
-      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))':
     dependencies:
-      vite: 7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@24.13.3)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@7.3.5(@types/node@24.13.3)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))':
     dependencies:
-      vite: 7.3.5(@types/node@24.13.3)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 7.3.5(@types/node@24.13.3)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
 
   '@vitest/expect@4.1.10':
     dependencies:
@@ -18110,31 +18003,31 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.10(vite@8.1.4(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.10(vite@8.1.4(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.10
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.1.4(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
     optional: true
 
-  '@vitest/mocker@4.1.10(vite@8.1.4(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.10(vite@8.1.4(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.10
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.1.4(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
     optional: true
 
-  '@vitest/mocker@4.1.10(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.10(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.10
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.10':
     dependencies:
@@ -18534,6 +18427,8 @@ snapshots:
       sprintf-js: 1.0.3
 
   argparse@2.0.1: {}
+
+  argue-cli@3.1.0: {}
 
   array-buffer-byte-length@1.0.2:
     dependencies:
@@ -19444,10 +19339,10 @@ snapshots:
       '@simple-libs/stream-utils': 1.2.0
       meow: 13.2.0
 
-  conventional-commits-parser@7.0.1:
+  conventional-commits-parser@7.1.0:
     dependencies:
       '@simple-libs/stream-utils': 2.0.0
-      meow: 14.1.0
+      argue-cli: 3.1.0
 
   convert-source-map@1.9.0: {}
 
@@ -20805,35 +20700,35 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  firebase@12.15.0:
+  firebase@12.16.0:
     dependencies:
-      '@firebase/ai': 2.13.1(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)
-      '@firebase/analytics': 0.10.22(@firebase/app@0.15.0)
-      '@firebase/analytics-compat': 0.2.28(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
-      '@firebase/app': 0.15.0
-      '@firebase/app-check': 0.12.0(@firebase/app@0.15.0)
-      '@firebase/app-check-compat': 0.4.5(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
-      '@firebase/app-compat': 0.5.14
+      '@firebase/ai': 2.13.1(@firebase/app-types@0.9.5)(@firebase/app@0.15.1)
+      '@firebase/analytics': 0.10.22(@firebase/app@0.15.1)
+      '@firebase/analytics-compat': 0.2.28(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)
+      '@firebase/app': 0.15.1
+      '@firebase/app-check': 0.12.0(@firebase/app@0.15.1)
+      '@firebase/app-check-compat': 0.4.5(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)
+      '@firebase/app-compat': 0.5.15
       '@firebase/app-types': 0.9.5
-      '@firebase/auth': 1.13.3(@firebase/app@0.15.0)
-      '@firebase/auth-compat': 0.6.8(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)
-      '@firebase/data-connect': 0.7.1(@firebase/app@0.15.0)
+      '@firebase/auth': 1.13.3(@firebase/app@0.15.1)
+      '@firebase/auth-compat': 0.6.8(@firebase/app-compat@0.5.15)(@firebase/app-types@0.9.5)(@firebase/app@0.15.1)
+      '@firebase/data-connect': 0.7.1(@firebase/app@0.15.1)
       '@firebase/database': 1.1.3
       '@firebase/database-compat': 2.1.4
-      '@firebase/firestore': 4.16.0(@firebase/app@0.15.0)
-      '@firebase/firestore-compat': 0.4.11(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)
-      '@firebase/functions': 0.13.5(@firebase/app@0.15.0)
-      '@firebase/functions-compat': 0.4.5(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
-      '@firebase/installations': 0.6.22(@firebase/app@0.15.0)
-      '@firebase/installations-compat': 0.2.22(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)
-      '@firebase/messaging': 0.13.0(@firebase/app@0.15.0)
-      '@firebase/messaging-compat': 0.2.27(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
-      '@firebase/performance': 0.7.12(@firebase/app@0.15.0)
-      '@firebase/performance-compat': 0.2.25(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
-      '@firebase/remote-config': 0.8.5(@firebase/app@0.15.0)
-      '@firebase/remote-config-compat': 0.2.26(@firebase/app-compat@0.5.14)(@firebase/app@0.15.0)
-      '@firebase/storage': 0.14.3(@firebase/app@0.15.0)
-      '@firebase/storage-compat': 0.4.3(@firebase/app-compat@0.5.14)(@firebase/app-types@0.9.5)(@firebase/app@0.15.0)
+      '@firebase/firestore': 4.16.0(@firebase/app@0.15.1)
+      '@firebase/firestore-compat': 0.4.11(@firebase/app-compat@0.5.15)(@firebase/app-types@0.9.5)(@firebase/app@0.15.1)
+      '@firebase/functions': 0.13.5(@firebase/app@0.15.1)
+      '@firebase/functions-compat': 0.4.5(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)
+      '@firebase/installations': 0.6.22(@firebase/app@0.15.1)
+      '@firebase/installations-compat': 0.2.22(@firebase/app-compat@0.5.15)(@firebase/app-types@0.9.5)(@firebase/app@0.15.1)
+      '@firebase/messaging': 0.13.0(@firebase/app@0.15.1)
+      '@firebase/messaging-compat': 0.2.27(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)
+      '@firebase/performance': 0.7.12(@firebase/app@0.15.1)
+      '@firebase/performance-compat': 0.2.25(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)
+      '@firebase/remote-config': 0.9.0(@firebase/app@0.15.1)
+      '@firebase/remote-config-compat': 0.2.27(@firebase/app-compat@0.5.15)(@firebase/app@0.15.1)
+      '@firebase/storage': 0.14.3(@firebase/app@0.15.1)
+      '@firebase/storage-compat': 0.4.3(@firebase/app-compat@0.5.15)(@firebase/app-types@0.9.5)(@firebase/app@0.15.1)
       '@firebase/util': 1.15.1
     transitivePeerDependencies:
       - '@react-native-async-storage/async-storage'
@@ -21005,7 +20900,7 @@ snapshots:
   gcp-metadata@8.1.2(supports-color@10.2.2):
     dependencies:
       gaxios: 7.2.0(supports-color@10.2.2)
-      google-logging-utils: 1.1.3
+      google-logging-utils: 1.1.4
       json-bigint: 1.0.0
     transitivePeerDependencies:
       - supports-color
@@ -23084,8 +22979,6 @@ snapshots:
 
   meow@13.2.0: {}
 
-  meow@14.1.0: {}
-
   merge-descriptors@1.0.3: {}
 
   merge-descriptors@2.0.0: {}
@@ -23392,7 +23285,7 @@ snapshots:
 
   netmask@2.1.1: {}
 
-  ng-packagr@22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3):
+  ng-packagr@22.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3):
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular/compiler-cli': link:packages/compiler-cli
@@ -23419,7 +23312,7 @@ snapshots:
       typescript: 6.0.3
     optionalDependencies:
       rollup: 4.60.2
-      tailwindcss: 3.4.19(tsx@4.23.0)(yaml@2.9.0)
+      tailwindcss: 3.4.19(tsx@4.23.1)(yaml@2.9.0)
 
   ngx-flamegraph@0.1.1(@angular/common@packages+common)(@angular/core@packages+core):
     dependencies:
@@ -23427,9 +23320,9 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  ngx-progressbar@14.0.0(@angular/cdk@22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
+  ngx-progressbar@14.0.0(@angular/cdk@22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
     dependencies:
-      '@angular/cdk': 22.0.4(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+      '@angular/cdk': 22.0.5(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       rxjs: 7.8.2
@@ -24083,13 +23976,13 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.5.13
 
-  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.13)(tsx@4.23.0)(yaml@2.9.0):
+  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.13)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 1.21.7
       postcss: 8.5.13
-      tsx: 4.23.0
+      tsx: 4.23.1
       yaml: 2.9.0
 
   postcss-loader@8.2.1(postcss@8.5.13)(typescript@6.0.3)(webpack@5.106.2(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.13)):
@@ -25480,7 +25373,7 @@ snapshots:
       string-width: 4.2.3
       strip-ansi: 6.0.1
 
-  tailwindcss@3.4.19(tsx@4.23.0)(yaml@2.9.0):
+  tailwindcss@3.4.19(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -25499,7 +25392,7 @@ snapshots:
       postcss: 8.5.13
       postcss-import: 15.1.0(postcss@8.5.13)
       postcss-js: 4.1.0(postcss@8.5.13)
-      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.13)(tsx@4.23.0)(yaml@2.9.0)
+      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.13)(tsx@4.23.1)(yaml@2.9.0)
       postcss-nested: 6.2.0(postcss@8.5.13)
       postcss-selector-parser: 6.1.4
       resolve: 1.22.12
@@ -25819,7 +25712,7 @@ snapshots:
       tslib: 1.14.1
       typescript: 6.0.3
 
-  tsx@4.23.0:
+  tsx@4.23.1:
     dependencies:
       esbuild: 0.28.0
     optionalDependencies:
@@ -26212,7 +26105,7 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0):
+  vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.5)
@@ -26228,10 +26121,10 @@ snapshots:
       lightningcss: 1.32.0
       sass: 1.99.0
       terser: 5.46.2
-      tsx: 4.23.0
+      tsx: 4.23.1
       yaml: 2.9.0
 
-  vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0):
+  vite@7.3.5(@types/node@20.19.43)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.5)
@@ -26247,10 +26140,10 @@ snapshots:
       lightningcss: 1.32.0
       sass: 1.99.0
       terser: 5.46.2
-      tsx: 4.23.0
+      tsx: 4.23.1
       yaml: 2.9.0
 
-  vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0):
+  vite@7.3.5(@types/node@24.12.2)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.5)
@@ -26266,10 +26159,10 @@ snapshots:
       lightningcss: 1.32.0
       sass: 1.99.0
       terser: 5.46.2
-      tsx: 4.23.0
+      tsx: 4.23.1
       yaml: 2.9.0
 
-  vite@7.3.5(@types/node@24.13.3)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0):
+  vite@7.3.5(@types/node@24.13.3)(jiti@2.7.0)(less@4.6.7)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       esbuild: 0.27.7
       fdir: 6.5.0(picomatch@4.0.5)
@@ -26285,10 +26178,10 @@ snapshots:
       lightningcss: 1.32.0
       sass: 1.99.0
       terser: 5.46.2
-      tsx: 4.23.0
+      tsx: 4.23.1
       yaml: 2.9.0
 
-  vite@8.1.4(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0):
+  vite@8.1.4(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
@@ -26303,11 +26196,11 @@ snapshots:
       less: 4.6.7
       sass: 1.101.0
       terser: 5.46.2
-      tsx: 4.23.0
+      tsx: 4.23.1
       yaml: 2.9.0
     optional: true
 
-  vite@8.1.4(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0):
+  vite@8.1.4(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
@@ -26322,11 +26215,11 @@ snapshots:
       less: 4.6.7
       sass: 1.101.0
       terser: 5.46.2
-      tsx: 4.23.0
+      tsx: 4.23.1
       yaml: 2.9.0
     optional: true
 
-  vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0):
+  vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.5
@@ -26341,13 +26234,13 @@ snapshots:
       less: 4.6.7
       sass: 1.101.0
       terser: 5.46.2
-      tsx: 4.23.0
+      tsx: 4.23.1
       yaml: 2.9.0
 
-  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0):
+  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       '@vitest/expect': 4.1.10
-      '@vitest/mocker': 4.1.10(vite@8.1.4(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.10(vite@8.1.4(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.10
       '@vitest/runner': 4.1.10
       '@vitest/snapshot': 4.1.10
@@ -26364,7 +26257,7 @@ snapshots:
       tinyexec: 1.2.4
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vite: 8.1.4(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@20.19.43)(esbuild@0.28.0)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
@@ -26385,10 +26278,10 @@ snapshots:
       - yaml
     optional: true
 
-  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0):
+  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       '@vitest/expect': 4.1.10
-      '@vitest/mocker': 4.1.10(vite@8.1.4(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.10(vite@8.1.4(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.10
       '@vitest/runner': 4.1.10
       '@vitest/snapshot': 4.1.10
@@ -26405,7 +26298,7 @@ snapshots:
       tinyexec: 1.2.4
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vite: 8.1.4(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@24.12.2)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
@@ -26426,10 +26319,10 @@ snapshots:
       - yaml
     optional: true
 
-  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0):
+  vitest@4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(jsdom@29.1.1)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       '@vitest/expect': 4.1.10
-      '@vitest/mocker': 4.1.10(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.10(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.10
       '@vitest/runner': 4.1.10
       '@vitest/snapshot': 4.1.10
@@ -26446,7 +26339,7 @@ snapshots:
       tinyexec: 1.2.4
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vite: 8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.0)(yaml@2.9.0)
+      vite: 8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(less@4.6.7)(sass@1.101.0)(terser@5.46.2)(tsx@4.23.1)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
