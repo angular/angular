@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@algolia/client-common": "5.55.2",
-    "@algolia/client-search": "5.55.2",
-    "@algolia/requester-browser-xhr": "5.55.2",
-    "@algolia/requester-node-http": "5.55.2",
+    "@algolia/client-common": "5.56.0",
+    "@algolia/client-search": "5.56.0",
+    "@algolia/requester-browser-xhr": "5.56.0",
+    "@algolia/requester-node-http": "5.56.0",
     "@angular/animations": "workspace:*",
     "@angular/aria": "22.1.0-next.4",
     "@angular/build": "22.1.0-next.4",
@@ -57,7 +57,7 @@
     "@webcontainer/api": "1.6.4",
     "@xterm/addon-fit": "0.11.0",
     "@xterm/xterm": "6.0.0",
-    "algoliasearch": "5.55.2",
+    "algoliasearch": "5.56.0",
     "angular-split": "20.0.0",
     "ccount": "^2.0.1",
     "character-entities-html4": "^2.1.0",
@@ -76,7 +76,7 @@
     "karma-coverage": "2.2.1",
     "karma-jasmine": "5.1.0",
     "karma-jasmine-html-reporter": "2.2.0",
-    "marked": "18.0.5",
+    "marked": "18.0.6",
     "mermaid": "11.16.0",
     "ngx-progressbar": "14.0.0",
     "playwright-core": "1.61.1",
@@ -96,9 +96,9 @@
     "zwitch": "^2.0.4"
   },
   "devDependencies": {
-    "autoprefixer": "10.5.2",
+    "autoprefixer": "10.5.4",
     "karma": "~6.4.4",
-    "postcss": "8.5.16",
+    "postcss": "8.5.20",
     "tailwindcss": "3.4.19"
   }
 }
