@@ -541,7 +541,7 @@
     },
     "@@rules_browsers+//browsers:extensions.bzl%browsers": {
       "general": {
-        "bzlTransitiveDigest": "EBp/FfAhc/Sc8W74EymKqcRrKIZ9idpOoGBpTHNBmq4=",
+        "bzlTransitiveDigest": "3W9m9j39szqkOoSVVqamCaSwCCw7x5Wq1kcYTwYBNOc=",
         "usagesDigest": "FmXYJVoVJlnfUU8x8gObSvu4qWcco/9Faw61aC/wBF0=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -550,9 +550,9 @@
           "rules_browsers_chrome_linux": {
             "repoRuleId": "@@rules_browsers+//browsers/private:browser_repo.bzl%browser_repo",
             "attributes": {
-              "sha256": "feda205ebf34b1f11ce029e9fbc53a58d33d1cd2bda589c303b5d765a24d622e",
+              "sha256": "13d6638183ccab406ee16e28730826bd3ea57fe564a741bc935401221dfec64f",
               "urls": [
-                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7933.0/linux64/chrome-headless-shell-linux64.zip"
+                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7960.0/linux64/chrome-headless-shell-linux64.zip"
               ],
               "named_files": {
                 "CHROME-HEADLESS-SHELL": "chrome-headless-shell-linux64/chrome-headless-shell"
@@ -568,9 +568,9 @@
           "rules_browsers_chrome_mac": {
             "repoRuleId": "@@rules_browsers+//browsers/private:browser_repo.bzl%browser_repo",
             "attributes": {
-              "sha256": "35a53578b165feb823cc36e55bde46a4a28f3ccad4501ad2d28dd24f7eeb3ca9",
+              "sha256": "b50ee6ddb3bf30c91f3094fa41cc8e8de60e317c63ef058db2375346cde78d98",
               "urls": [
-                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7933.0/mac-x64/chrome-headless-shell-mac-x64.zip"
+                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7960.0/mac-x64/chrome-headless-shell-mac-x64.zip"
               ],
               "named_files": {
                 "CHROME-HEADLESS-SHELL": "chrome-headless-shell-mac-x64/chrome-headless-shell"
@@ -586,9 +586,9 @@
           "rules_browsers_chrome_mac_arm": {
             "repoRuleId": "@@rules_browsers+//browsers/private:browser_repo.bzl%browser_repo",
             "attributes": {
-              "sha256": "03f590990280f912375f4fc6837cecc001d50b90e82c49e652d5f3753e076f46",
+              "sha256": "49859c1d3b0d29a82c58765e9e5fe21efa0bf7c03a86fc91eb5f3f94f34c45b6",
               "urls": [
-                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7933.0/mac-arm64/chrome-headless-shell-mac-arm64.zip"
+                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7960.0/mac-arm64/chrome-headless-shell-mac-arm64.zip"
               ],
               "named_files": {
                 "CHROME-HEADLESS-SHELL": "chrome-headless-shell-mac-arm64/chrome-headless-shell"
@@ -604,9 +604,9 @@
           "rules_browsers_chrome_win64": {
             "repoRuleId": "@@rules_browsers+//browsers/private:browser_repo.bzl%browser_repo",
             "attributes": {
-              "sha256": "af116be0a1990aaf714886e5ab55e2a6b1c8027a281388828eb3d30f315c3b50",
+              "sha256": "d161d88a999effd212ce87df2ff710be1a25a495cc428d4c3029feccd02dafe9",
               "urls": [
-                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7933.0/win64/chrome-headless-shell-win64.zip"
+                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7960.0/win64/chrome-headless-shell-win64.zip"
               ],
               "named_files": {
                 "CHROME-HEADLESS-SHELL": "chrome-headless-shell-win64/chrome-headless-shell.exe"
@@ -622,9 +622,9 @@
           "rules_browsers_chromedriver_linux": {
             "repoRuleId": "@@rules_browsers+//browsers/private:browser_repo.bzl%browser_repo",
             "attributes": {
-              "sha256": "d1304673b9716955b0f5723112e3abb727244ef29c406f4d57198ede96fb050c",
+              "sha256": "7bb2eedf7030523ba617704bf6c3e472b5974d048d7fa6ac6a764904556c6f36",
               "urls": [
-                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7933.0/linux64/chromedriver-linux64.zip"
+                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7960.0/linux64/chromedriver-linux64.zip"
               ],
               "named_files": {
                 "CHROMEDRIVER": "chromedriver-linux64/chromedriver"
@@ -638,9 +638,9 @@
           "rules_browsers_chromedriver_mac": {
             "repoRuleId": "@@rules_browsers+//browsers/private:browser_repo.bzl%browser_repo",
             "attributes": {
-              "sha256": "c91a282eeba13a9801a42c0b57f689f3ca18b7b82626833ef5359b2f9de52728",
+              "sha256": "5c1fffef90ecea2bb0c12c5a9c0549116fc7acda13cce15881da4aa8b74e6794",
               "urls": [
-                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7933.0/mac-x64/chromedriver-mac-x64.zip"
+                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7960.0/mac-x64/chromedriver-mac-x64.zip"
               ],
               "named_files": {
                 "CHROMEDRIVER": "chromedriver-mac-x64/chromedriver"
@@ -654,9 +654,9 @@
           "rules_browsers_chromedriver_mac_arm": {
             "repoRuleId": "@@rules_browsers+//browsers/private:browser_repo.bzl%browser_repo",
             "attributes": {
-              "sha256": "dbf22753f0869514f15b497b2a41e082d6e36db7e5fc64d81e02946fc884da5c",
+              "sha256": "a33d54c99a50fef25cbedb7c3d3cdd838dd784556138648bcc5da5814109a306",
               "urls": [
-                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7933.0/mac-arm64/chromedriver-mac-arm64.zip"
+                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7960.0/mac-arm64/chromedriver-mac-arm64.zip"
               ],
               "named_files": {
                 "CHROMEDRIVER": "chromedriver-mac-arm64/chromedriver"
@@ -670,9 +670,9 @@
           "rules_browsers_chromedriver_win64": {
             "repoRuleId": "@@rules_browsers+//browsers/private:browser_repo.bzl%browser_repo",
             "attributes": {
-              "sha256": "1545e1a34d89c6f803bb343c9f347406f3ca52187d8e38ec522d9ad3e764ea9a",
+              "sha256": "2673d6a87dabd50c516d4d69b4daf742ff6169877c04bb226971503012262d8c",
               "urls": [
-                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7933.0/win64/chromedriver-win64.zip"
+                "https://storage.googleapis.com/chrome-for-testing-public/152.0.7960.0/win64/chromedriver-win64.zip"
               ],
               "named_files": {
                 "CHROMEDRIVER": "chromedriver-win64/chromedriver.exe"
