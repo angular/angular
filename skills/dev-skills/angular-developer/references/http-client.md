@@ -41,7 +41,7 @@ export class UserService {
 
 Important rules:
 
-- `HttpClient` requests are cold `Observable`s. No request is sent until something subscribes. Multiple subscriptions send multiple backend requests.
+- `HttpClient` requests are cold `Observable`s. No request is sent until the `Observable` is subscribed to. Multiple subscriptions send multiple backend requests.
 - Subscribe to mutation requests (`post`, `put`, `patch`, `delete`) so they execute.
 - The generic type parameter is a type assertion only. Validate unknown backend data at runtime when the shape is not trusted.
 - Use literal values for `responseType` and `observe`; if options are extracted, write values like `responseType: 'text' as const`.
@@ -86,7 +86,7 @@ export const appConfig = {
 
 ## `httpResource`
 
-Use `httpResource` for reactive reads that should expose request status and value as signals.
+Use `httpResource` to create an asynchronous derivation that fetches data over HTTP and exposes the result as reactive signals.
 
 ```ts
 import {httpResource} from '@angular/common/http';
