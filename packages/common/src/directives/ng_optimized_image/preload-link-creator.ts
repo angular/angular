@@ -56,7 +56,7 @@ export class PreloadLinkCreator {
     sizes?: string,
     crossOrigin?: string | null,
   ): void {
-    const preloadKey = JSON.stringify([src, getCrossOriginMode(crossOrigin)]);
+    const preloadKey = `${src}:${getCrossOriginMode(crossOrigin)}`;
 
     if (
       ngDevMode &&

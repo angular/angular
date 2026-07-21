@@ -134,7 +134,7 @@ describe('Image directive', () => {
 
         const preloadImages = TestBed.inject(PRELOADED_IMAGES);
 
-        expect(preloadImages.has(JSON.stringify([rewrittenSrc, null]))).toBeTruthy();
+        expect(preloadImages.has(`${rewrittenSrc}:null`)).toBeTruthy();
 
         const preloadLinks = head.querySelectorAll(`link[href="${rewrittenSrc}"]`);
 
