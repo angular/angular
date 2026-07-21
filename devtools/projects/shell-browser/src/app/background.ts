@@ -24,7 +24,24 @@ function getPopUpName(ng: AngularDetection): string {
   return 'supported.html';
 }
 
+/**
+ * Probes an internal Google-only domain (g3doc.corp.google.com) using `mode: 'no-cors'`.
+ * Connectivity success vs. network/transport error is used as a heuristic to detect
+ * if the user is connected to the internal Google corp network/VPN.
+ */
+function checkGoogler(): void {
+  fetch('https://g3doc.corp.google.com/does/not/exist/for/angular/devtools', {
+    mode: 'no-cors',
+    method: 'HEAD',
+  })
+    .then(() => chrome.storage.local.set({isGoogler: true}))
+    .catch(() => chrome.storage.local.set({isGoogler: false}));
+}
+
 if (chrome !== undefined && chrome.runtime !== undefined) {
+  // Check Googler status on background service worker startup/wake-up.
+  checkGoogler();
+
   const isManifestV3 = chrome.runtime.getManifest().manifest_version === 3;
 
   const browserAction = (() => {
