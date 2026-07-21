@@ -57708,48 +57708,232 @@ var noiseValue2 = /^-?\d+n+$/;
 var originalStringify2 = JSON.stringify;
 var originalParse2 = JSON.parse;
 var customFormat2 = /^-?\d+n$/;
-var bigIntsStringify2 = /([\[:])?"(-?\d+)n"($|([\\n]|\s)*(\s|[\\n])*[,\}\]])/g;
-var noiseStringify2 = /([\[:])?("-?\d+n+)n("$|"([\\n]|\s)*(\s|[\\n])*[,\}\]])/g;
+var bigIntsStringify2 = /([\[:])?"(-?\d+)n"($|\s*[,\}\]])/g;
+var noiseStringify2 = /([\[:])?("-?\d+n+)n("$|"\s*[,\}\]])/g;
+var isUnstringifiable2 = (val) => val === void 0 || typeof val === "function" || typeof val === "symbol";
+var isRawJSON2 = (val) => val !== null && typeof val === "object" && val.constructor && val.constructor.name === "RawJSON";
+var stringifyIteratively2 = (rootValue, replacer, spaceParam) => {
+  let space = "";
+  if (typeof spaceParam === "number") {
+    space = " ".repeat(Math.min(10, Math.max(0, Math.floor(spaceParam))));
+  } else if (typeof spaceParam === "string") {
+    space = spaceParam.slice(0, 10);
+  }
+  const isFunctionReplacer = typeof replacer === "function";
+  const propertyList = Array.isArray(replacer) ? new Set(replacer.map(String)) : null;
+  const prepareVal = (parent, key, val) => {
+    const isObject = val !== null && typeof val === "object";
+    const hasToJSON = isObject && typeof val.toJSON === "function";
+    if (hasToJSON) {
+      val = val.toJSON(key);
+    }
+    const isNoise = typeof val === "string" && noiseValue2.test(val);
+    if (isNoise)
+      return val + "n";
+    const isBigInt = typeof val === "bigint";
+    if (isBigInt) {
+      const supportsRawJSON = "rawJSON" in JSON;
+      if (supportsRawJSON)
+        return JSON.rawJSON(val.toString());
+      return val.toString() + "n";
+    }
+    if (isFunctionReplacer) {
+      val = replacer.call(parent, key, val);
+    }
+    const isPostReplacerObject = val !== null && typeof val === "object";
+    if (isPostReplacerObject) {
+      const isPrimitiveWrapper = val instanceof Number || val instanceof String || val instanceof Boolean;
+      if (isPrimitiveWrapper) {
+        val = val.valueOf();
+      }
+    }
+    return val;
+  };
+  const rootProcessed = prepareVal({ "": rootValue }, "", rootValue);
+  if (isUnstringifiable2(rootProcessed)) {
+    return void 0;
+  }
+  const isRootPrimitive = rootProcessed === null || typeof rootProcessed !== "object";
+  const isRootNativeRawJSON = isRawJSON2(rootProcessed);
+  if (isRootPrimitive || isRootNativeRawJSON) {
+    return originalStringify2(rootProcessed);
+  }
+  const chunks = [];
+  let level = 0;
+  const stack = [
+    {
+      parent: { "": rootProcessed },
+      key: "",
+      val: rootProcessed,
+      isArray: Array.isArray(rootProcessed),
+      keys: Array.isArray(rootProcessed) ? null : Object.keys(rootProcessed),
+      index: 0,
+      first: true
+    }
+  ];
+  const visited = new WeakSet([rootProcessed]);
+  while (stack.length > 0) {
+    const node = stack[stack.length - 1];
+    if (node.index === 0) {
+      chunks.push(node.isArray ? "[" : "{");
+      level++;
+    }
+    let isDone = false;
+    if (node.isArray) {
+      if (node.index < node.val.length) {
+        if (!node.first)
+          chunks.push(",");
+        if (space)
+          chunks.push("\n" + space.repeat(level));
+        const childRaw = node.val[node.index];
+        const childVal = prepareVal(node.val, String(node.index), childRaw);
+        if (isUnstringifiable2(childVal)) {
+          chunks.push("null");
+          node.first = false;
+          node.index++;
+        } else {
+          const isComplexObject = childVal !== null && typeof childVal === "object";
+          const isNativeRaw = isRawJSON2(childVal);
+          if (isComplexObject && !isNativeRaw) {
+            if (visited.has(childVal)) {
+              throw new TypeError("Converting circular structure to JSON");
+            }
+            visited.add(childVal);
+            stack.push({
+              parent: node.val,
+              key: String(node.index),
+              val: childVal,
+              isArray: Array.isArray(childVal),
+              keys: Array.isArray(childVal) ? null : Object.keys(childVal),
+              index: 0,
+              first: true
+            });
+            node.first = false;
+            node.index++;
+          } else {
+            chunks.push(originalStringify2(childVal));
+            node.first = false;
+            node.index++;
+          }
+        }
+      } else {
+        isDone = true;
+      }
+    } else {
+      while (node.index < node.keys.length) {
+        const k = node.keys[node.index++];
+        const isFilteredOutByArray = propertyList && !propertyList.has(k);
+        if (isFilteredOutByArray)
+          continue;
+        const childRaw = node.val[k];
+        const childVal = prepareVal(node.val, k, childRaw);
+        if (isUnstringifiable2(childVal))
+          continue;
+        if (!node.first)
+          chunks.push(",");
+        if (space) {
+          chunks.push("\n" + space.repeat(level) + originalStringify2(k) + ": ");
+        } else {
+          chunks.push(originalStringify2(k) + ":");
+        }
+        const isComplexObject = childVal !== null && typeof childVal === "object";
+        const isNativeRaw = isRawJSON2(childVal);
+        if (isComplexObject && !isNativeRaw) {
+          if (visited.has(childVal)) {
+            throw new TypeError("Converting circular structure to JSON");
+          }
+          visited.add(childVal);
+          stack.push({
+            parent: node.val,
+            key: k,
+            val: childVal,
+            isArray: Array.isArray(childVal),
+            keys: Array.isArray(childVal) ? null : Object.keys(childVal),
+            index: 0,
+            first: true
+          });
+          node.first = false;
+          break;
+        } else {
+          chunks.push(originalStringify2(childVal));
+          node.first = false;
+        }
+      }
+      const isNodeFullyProcessed = node.index >= node.keys.length && stack[stack.length - 1] === node;
+      if (isNodeFullyProcessed) {
+        isDone = true;
+      }
+    }
+    if (isDone) {
+      level--;
+      if (!node.first && space)
+        chunks.push("\n" + space.repeat(level));
+      chunks.push(node.isArray ? "]" : "}");
+      visited.delete(node.val);
+      stack.pop();
+    }
+  }
+  return chunks.join("");
+};
 var JSONStringify2 = (value, replacer, space) => {
-  if ("rawJSON" in JSON) {
-    return originalStringify2(
+  try {
+    const supportsRawJSON = "rawJSON" in JSON;
+    if (supportsRawJSON) {
+      return originalStringify2(
+        value,
+        (key, val) => {
+          if (typeof val === "bigint")
+            return JSON.rawJSON(val.toString());
+          const hasFunctionReplacer = typeof replacer === "function";
+          if (hasFunctionReplacer)
+            return replacer(key, val);
+          const isKeyInArrayReplacer = Array.isArray(replacer) && replacer.includes(key);
+          if (isKeyInArrayReplacer)
+            return val;
+          return val;
+        },
+        space
+      );
+    }
+    if (!value)
+      return originalStringify2(value, replacer, space);
+    const convertedToCustomJSON = originalStringify2(
       value,
-      (key, value2) => {
-        if (typeof value2 === "bigint")
-          return JSON.rawJSON(value2.toString());
-        if (typeof replacer === "function")
-          return replacer(key, value2);
-        if (Array.isArray(replacer) && replacer.includes(key))
-          return value2;
-        return value2;
+      (key, val) => {
+        const isNoise = typeof val === "string" && noiseValue2.test(val);
+        if (isNoise)
+          return val.toString() + "n";
+        if (typeof val === "bigint")
+          return val.toString() + "n";
+        const hasFunctionReplacer = typeof replacer === "function";
+        if (hasFunctionReplacer)
+          return replacer(key, val);
+        const isKeyInArrayReplacer = Array.isArray(replacer) && replacer.includes(key);
+        if (isKeyInArrayReplacer)
+          return val;
+        return val;
       },
       space
     );
+    const processedJSON = convertedToCustomJSON.replace(
+      bigIntsStringify2,
+      "$1$2$3"
+    );
+    const denoisedJSON = processedJSON.replace(noiseStringify2, "$1$2$3");
+    return denoisedJSON;
+  } catch (error2) {
+    if (error2 instanceof RangeError) {
+      const convertedJSON = stringifyIteratively2(value, replacer, space);
+      if (convertedJSON === void 0)
+        return void 0;
+      const supportsRawJSON = "rawJSON" in JSON;
+      if (supportsRawJSON)
+        return convertedJSON;
+      const processedJSON = convertedJSON.replace(bigIntsStringify2, "$1$2$3");
+      return processedJSON.replace(noiseStringify2, "$1$2$3");
+    }
+    throw error2;
   }
-  if (!value)
-    return originalStringify2(value, replacer, space);
-  const convertedToCustomJSON = originalStringify2(
-    value,
-    (key, value2) => {
-      const isNoise = typeof value2 === "string" && noiseValue2.test(value2);
-      if (isNoise)
-        return value2.toString() + "n";
-      if (typeof value2 === "bigint")
-        return value2.toString() + "n";
-      if (typeof replacer === "function")
-        return replacer(key, value2);
-      if (Array.isArray(replacer) && replacer.includes(key))
-        return value2;
-      return value2;
-    },
-    space
-  );
-  const processedJSON = convertedToCustomJSON.replace(
-    bigIntsStringify2,
-    "$1$2$3"
-  );
-  const denoisedJSON = processedJSON.replace(noiseStringify2, "$1$2$3");
-  return denoisedJSON;
 };
 var featureCache2 = /* @__PURE__ */ new Map();
 var isContextSourceSupported2 = () => {
@@ -57776,18 +57960,22 @@ var convertMarkedBigIntsReviver2 = (key, value, context3, userReviver) => {
   const isNoiseValue = typeof value === "string" && noiseValue2.test(value);
   if (isNoiseValue)
     return value.slice(0, -1);
-  if (typeof userReviver !== "function")
+  const hasUserReviver = typeof userReviver === "function";
+  if (!hasUserReviver)
     return value;
   return userReviver(key, value, context3);
 };
 var JSONParseV22 = (text, reviver) => {
   return JSON.parse(text, (key, value, context3) => {
-    const isBigNumber = typeof value === "number" && (value > Number.MAX_SAFE_INTEGER || value < Number.MIN_SAFE_INTEGER);
+    const isNumber = typeof value === "number";
+    const isOutOfBounds = value > Number.MAX_SAFE_INTEGER || value < Number.MIN_SAFE_INTEGER;
+    const isBigNumber = isNumber && isOutOfBounds;
     const isInt = context3 && intRegex2.test(context3.source);
     const isBigInt = isBigNumber && isInt;
     if (isBigInt)
       return BigInt(context3.source);
-    if (typeof reviver !== "function")
+    const hasCustomReviver = typeof reviver === "function";
+    if (!hasCustomReviver)
       return value;
     return reviver(key, value, context3);
   });
@@ -57796,29 +57984,85 @@ var MAX_INT2 = Number.MAX_SAFE_INTEGER.toString();
 var MAX_DIGITS2 = MAX_INT2.length;
 var stringsOrLargeNumbers2 = /"(?:\\.|[^"])*"|-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?/g;
 var noiseValueWithQuotes2 = /^"-?\d+n+"$/;
+var applyReviverIteratively2 = (parsed, userReviver) => {
+  const rootHolder = { "": parsed };
+  const stack = [{ parent: rootHolder, key: "", visited: false }];
+  while (stack.length > 0) {
+    const node = stack[stack.length - 1];
+    if (!node.visited) {
+      node.visited = true;
+      const value = node.parent[node.key];
+      const isComplexObject = value !== null && typeof value === "object";
+      if (isComplexObject) {
+        const keys = Object.keys(value);
+        for (let i = keys.length - 1; i >= 0; i--) {
+          stack.push({ parent: value, key: keys[i], visited: false });
+        }
+      }
+    } else {
+      const { parent, key } = node;
+      let value = parent[key];
+      if (typeof value === "string") {
+        const isCustomFormatBigInt = customFormat2.test(value);
+        if (isCustomFormatBigInt) {
+          value = BigInt(value.slice(0, -1));
+        } else {
+          const isNoise = noiseValue2.test(value);
+          if (isNoise)
+            value = value.slice(0, -1);
+        }
+      }
+      const hasUserReviver = typeof userReviver === "function";
+      if (hasUserReviver) {
+        value = userReviver.call(parent, key, value);
+      }
+      const isDeleted = value === void 0;
+      if (isDeleted) {
+        delete parent[key];
+      } else {
+        parent[key] = value;
+      }
+      stack.pop();
+    }
+  }
+  return rootHolder[""];
+};
+var serializeBigInts2 = (text) => {
+  return text.replace(
+    stringsOrLargeNumbers2,
+    (match, digits, fractional, exponential) => {
+      const isString = match[0] === '"';
+      const isNoise = isString && noiseValueWithQuotes2.test(match);
+      if (isNoise)
+        return match.substring(0, match.length - 1) + 'n"';
+      const hasFractionalOrExponential = fractional || exponential;
+      const isLessThanMaxSafeInt = digits && (digits.length < MAX_DIGITS2 || digits.length === MAX_DIGITS2 && digits <= MAX_INT2);
+      const isStandardValue = isString || hasFractionalOrExponential || isLessThanMaxSafeInt;
+      if (isStandardValue)
+        return match;
+      return '"' + match + 'n"';
+    }
+  );
+};
 var JSONParse2 = (text, reviver) => {
   if (!text)
     return originalParse2(text, reviver);
-  if (isContextSourceSupported2())
-    return JSONParseV22(text, reviver);
-  const serializedData = text.replace(
-    stringsOrLargeNumbers2,
-    (text2, digits, fractional, exponential) => {
-      const isString = text2[0] === '"';
-      const isNoise = isString && noiseValueWithQuotes2.test(text2);
-      if (isNoise)
-        return text2.substring(0, text2.length - 1) + 'n"';
-      const isFractionalOrExponential = fractional || exponential;
-      const isLessThanMaxSafeInt = digits && (digits.length < MAX_DIGITS2 || digits.length === MAX_DIGITS2 && digits <= MAX_INT2);
-      if (isString || isFractionalOrExponential || isLessThanMaxSafeInt)
-        return text2;
-      return '"' + text2 + 'n"';
+  try {
+    if (isContextSourceSupported2())
+      return JSONParseV22(text, reviver);
+    const serializedData = serializeBigInts2(text);
+    return originalParse2(
+      serializedData,
+      (key, value, context3) => convertMarkedBigIntsReviver2(key, value, context3, reviver)
+    );
+  } catch (error2) {
+    if (error2 instanceof RangeError) {
+      const serializedData = serializeBigInts2(text);
+      const parsed = originalParse2(serializedData);
+      return applyReviverIteratively2(parsed, reviver);
     }
-  );
-  return originalParse2(
-    serializedData,
-    (key, value, context3) => convertMarkedBigIntsReviver2(key, value, context3, reviver)
-  );
+    throw error2;
+  }
 };
 var RequestError2 = class extends Error {
   name;
@@ -64899,7 +65143,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-4CYQ2X3J.mjs:
+@angular/ng-dev/bundles/chunk-M7XMYTYE.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
