@@ -60,6 +60,24 @@ export const HTTP_FETCH_MAX_RESPONSE_SIZE = new InjectionToken<number | null>(
 );
 
 /**
+ * Configures which function should be used by the `FetchBackend` when using `fetch`.
+ *
+ * By default it uses `globalThis.fetch`
+ *
+ * @publicApi
+ */
+export const HTTP_FETCH_IMPLEMENTATION = new InjectionToken<typeof globalThis.fetch>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'HTTP_FETCH_IMPLEMENTATION' : '',
+  {
+    providedIn: 'platform',
+    factory:
+      () =>
+      (...args) =>
+        globalThis.fetch(...args),
+  },
+);
+
+/**
  * Uses `fetch` to send requests to a backend server.
  *
  * This `FetchBackend` requires the support of the
@@ -75,8 +93,7 @@ export class FetchBackend implements HttpBackend {
   // We use an arrow function to always reference the current global implementation of `fetch`.
   // This is helpful for cases when the global `fetch` implementation is modified by external code,
   // see https://github.com/angular/angular/issues/57527.
-  private readonly fetchImpl =
-    inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
+  private readonly fetchImpl = inject(HTTP_FETCH_IMPLEMENTATION);
   private readonly ngZone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
   private readonly maxResponseSize = inject(HTTP_FETCH_MAX_RESPONSE_SIZE);
@@ -414,13 +431,6 @@ export class FetchBackend implements HttpBackend {
 
     return chunksAll;
   }
-}
-
-/**
- * Abstract class to provide a mocked implementation of `fetch()`
- */
-export abstract class FetchFactory {
-  abstract fetch: typeof fetch;
 }
 
 function noop(): void {}

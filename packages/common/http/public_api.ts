@@ -14,7 +14,7 @@ export {
 } from './src/backend';
 export {HttpClient, HttpClientCommonOptions} from './src/client';
 export {HttpContext, HttpContextToken} from './src/context';
-export {FetchBackend} from './src/fetch';
+export {FetchBackend, HTTP_FETCH_IMPLEMENTATION} from './src/fetch';
 export {HttpHeaders} from './src/headers';
 export {
   HTTP_INTERCEPTORS,

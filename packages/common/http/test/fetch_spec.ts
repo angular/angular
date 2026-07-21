@@ -21,7 +21,7 @@ import {
   provideHttpClient,
 } from '../public_api';
 import {RuntimeErrorCode} from '../src/errors';
-import {FetchBackend, FetchFactory, HTTP_FETCH_MAX_RESPONSE_SIZE} from '../src/fetch';
+import {FetchBackend, HTTP_FETCH_IMPLEMENTATION, HTTP_FETCH_MAX_RESPONSE_SIZE} from '../src/fetch';
 
 function trackEvents(obs: Observable<any>): Promise<any[]> {
   return obs
@@ -63,12 +63,13 @@ describe('FetchBackend', () => {
   }
 
   beforeEach(() => {
+    fetchMock = new MockFetchFactory();
+    fetchSpy = spyOn(fetchMock, 'fetch').and.callThrough();
+
     TestBed.configureTestingModule({
-      providers: [{provide: FetchFactory, useClass: MockFetchFactory}, FetchBackend],
+      providers: [{provide: HTTP_FETCH_IMPLEMENTATION, useValue: fetchSpy}, FetchBackend],
     });
 
-    fetchMock = TestBed.inject(FetchFactory) as MockFetchFactory;
-    fetchSpy = spyOn(fetchMock, 'fetch').and.callThrough();
     backend = TestBed.inject(FetchBackend);
   });
 
@@ -635,17 +636,18 @@ describe('FetchBackend', () => {
     let infiniteStreamFactory: InfiniteStreamFetchFactory = null!;
 
     beforeEach(() => {
+      infiniteStreamFactory = new InfiniteStreamFetchFactory();
+
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
-          {provide: FetchFactory, useClass: InfiniteStreamFetchFactory},
+          {provide: HTTP_FETCH_IMPLEMENTATION, useValue: infiniteStreamFactory.fetch},
           {provide: HTTP_FETCH_MAX_RESPONSE_SIZE, useValue: 2048},
           FetchBackend,
         ],
       });
 
       backend = TestBed.inject(FetchBackend);
-      infiniteStreamFactory = TestBed.inject(FetchFactory) as InfiniteStreamFetchFactory;
     });
 
     it('aborts a never-ending response stream once the configured size limit is exceeded', async () => {
@@ -663,7 +665,7 @@ describe('FetchBackend', () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         providers: [
-          {provide: FetchFactory, useClass: FiniteChunkFetchFactory},
+          {provide: HTTP_FETCH_IMPLEMENTATION, useValue: finiteChunkFetch},
           {provide: HTTP_FETCH_MAX_RESPONSE_SIZE, useValue: null},
           FetchBackend,
         ],
@@ -680,6 +682,13 @@ describe('FetchBackend', () => {
     });
   });
 });
+
+/**
+ * Abstract class to provide a common implementation of `fetch()`
+ */
+export abstract class FetchFactory {
+  abstract fetch: typeof fetch;
+}
 
 export class MockFetchFactory extends FetchFactory {
   public readonly response = new MockFetchResponse();
@@ -801,22 +810,40 @@ class InfiniteStreamFetchFactory extends FetchFactory {
   };
 }
 
-class FiniteChunkFetchFactory extends FetchFactory {
-  override fetch = async (_input: RequestInfo | URL, _init?: RequestInit): Promise<Response> => {
-    const stream = new ReadableStream<Uint8Array>({
-      start: (controller) => {
-        controller.enqueue(new TextEncoder().encode('ok'));
-        controller.close();
-      },
-    });
+// class FiniteChunkFetchFactory extends FetchFactory {
+//   override fetch = async (_input: RequestInfo | URL, _init?: RequestInit): Promise<Response> => {
+//     const stream = new ReadableStream<Uint8Array>({
+//       start: (controller) => {
+//         controller.enqueue(new TextEncoder().encode('ok'));
+//         controller.close();
+//       },
+//     });
 
-    return new Response(stream, {
-      status: HttpStatusCode.Ok,
-      statusText: 'OK',
-      headers: {'Content-Type': 'text/plain'},
-    });
-  };
-}
+//     return new Response(stream, {
+//       status: HttpStatusCode.Ok,
+//       statusText: 'OK',
+//       headers: {'Content-Type': 'text/plain'},
+//     });
+//   };
+// }
+
+const finiteChunkFetch = async (
+  _input: RequestInfo | URL,
+  _init?: RequestInit,
+): Promise<Response> => {
+  const stream = new ReadableStream<Uint8Array>({
+    start: (controller) => {
+      controller.enqueue(new TextEncoder().encode('ok'));
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    status: HttpStatusCode.Ok,
+    statusText: 'OK',
+    headers: {'Content-Type': 'text/plain'},
+  });
+};
 
 class MockFetchResponse {
   public url?: string;
