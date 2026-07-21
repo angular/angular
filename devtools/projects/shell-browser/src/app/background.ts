@@ -24,7 +24,19 @@ function getPopUpName(ng: AngularDetection): string {
   return 'supported.html';
 }
 
+function checkGoogler(): void {
+  fetch('https://g3doc.corp.google.com/does/not/exist/for/angular/devtools', {
+    mode: 'no-cors',
+  })
+    .then(() => chrome.storage.local.set({isGoogler: true}))
+    .catch(() => chrome.storage.local.set({isGoogler: false}));
+}
+
 if (chrome !== undefined && chrome.runtime !== undefined) {
+  // Check on extension install/update as well as on every background service worker startup/wake-up.
+  chrome.runtime.onInstalled?.addListener(checkGoogler);
+  checkGoogler();
+
   const isManifestV3 = chrome.runtime.getManifest().manifest_version === 3;
 
   const browserAction = (() => {
