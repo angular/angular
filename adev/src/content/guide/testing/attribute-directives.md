@@ -154,3 +154,35 @@ A few techniques are noteworthy:
   The test for the default color uses the injector of the second `<h2>` to get its `Highlight` instance and its `defaultColor`.
 
 - `DebugElement.properties` affords access to the artificial custom property that is set by the directive
+
+## Testing a directive in isolation
+
+A directive can't be constructed through TestBed; it must be rendered through a component's template to behave correctly.
+The `Highlight` directive can be tested this way, using a local test component's input to control the directive.
+
+```ts
+@Component({
+  imports: [Highlight],
+  template: `<p [highlight]="color()">{{ color() }}</p>`,
+})
+class Test {
+  readonly color = input('');
+}
+
+describe('Highlight', () => {
+  let fixture: ComponentFixture<Test>;
+
+  beforeEach(async () => {
+    fixture = TestBed.createComponent(Test);
+    await fixture.whenStable();
+  });
+
+  it('should use the specified color once an input is provided', async () => {
+    fixture.componentRef.setInput('color', 'blue');
+    await fixture.whenStable();
+
+    const p = fixture.nativeElement.querySelector('p');
+    expect(p.style.backgroundColor).toBe('blue');
+  });
+});
+```
