@@ -170,73 +170,12 @@
         <span>{{ animatedAccuracy() | number: '1.1-1' }}%</span>
         accurate
       </h2>
-      <svg class="personified" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 119.07 114.91">
-        <g>
-          <polyline class="i" points="1.5 103.62 56.44 1.5 40.73 8.68" />
-          <line class="i" x1="59.1" y1="18.56" x2="56.44" y2="1.5" />
-          <polyline class="i" points="1.61 103.6 117.57 102.9 103.74 92.56" />
-          <line class="i" x1="103.86" y1="113.41" x2="117.57" y2="102.9" />
-          <path class="i" d="m12.97,84.22c6.4,4.04,10.47,11.28,10.2,19.25" />
-        </g>
-        @if (animatedAccuracy() > 95) {
-          <g>
-            <path
-              class="i"
-              d="m52.68,72.99c-.04.35-.07.71-.07,1.07,0,6.5,7.28,11.77,16.26,11.77s16.26-5.27,16.26-11.77c0-.36-.03-.72-.07-1.07h-32.37Z"
-            />
-            <circle cx="51.13" cy="53.25" r="6.73" />
-            <circle cx="86.5" cy="53.25" r="6.73" />
-            <circle class="g" cx="48.73" cy="51.28" r="2.31" />
-            <circle class="g" cx="84.35" cy="51.18" r="2.31" />
-          </g>
-        } @else if (animatedAccuracy() > 80) {
-          <g>
-            <path class="h" d="m52.59,70.26c3.95,4.3,10.25,7.08,17.34,7.08s13.38-2.78,17.34-7.08" />
-            <path
-              class="h"
-              d="m43.44,54.08c1.82-3.11,5.2-5.19,9.06-5.19,3.62,0,6.82,1.84,8.71,4.63"
-            />
-            <path
-              class="h"
-              d="m96.41,54.08c-1.82-3.11-5.2-5.19-9.06-5.19-3.62,0-6.82,1.84-8.71,4.63"
-            />
-          </g>
-        } @else if (animatedAccuracy() > 60) {
-          <g>
-            <path
-              class="h"
-              d="m77.38,76.81v5.99c0,4.21-3.41,7.62-7.62,7.62h0c-4.21,0-7.62-3.41-7.62-7.62v-5.99"
-            />
-            <line class="h" x1="69.69" y1="82.25" x2="69.76" y2="77.47" />
-            <path class="h" d="m52.42,70.4c3.95,4.3,10.25,7.08,17.34,7.08s13.38-2.78,17.34-7.08" />
-            <path
-              class="h"
-              d="m43.28,54.21c1.82-3.11,5.2-5.19,9.06-5.19,3.62,0,6.82,1.84,8.71,4.63"
-            />
-            <path
-              class="h"
-              d="m96.24,54.21c-1.82-3.11-5.2-5.19-9.06-5.19-3.62,0-6.82,1.84-8.71,4.63"
-            />
-          </g>
-        } @else if (animatedAccuracy() > 40) {
-          <g>
-            <circle cx="51.55" cy="53.15" r="6.73" />
-            <circle cx="86.92" cy="53.15" r="6.73" />
-            <circle class="g" cx="49.15" cy="51.17" r="2.31" />
-            <circle class="g" cx="84.77" cy="51.08" r="2.31" />
-            <line class="h" x1="61.21" y1="76.81" x2="78.15" y2="76.81" />
-          </g>
-        } @else {
-          <g>
-            <circle cx="51.55" cy="53.12" r="6.73" />
-            <circle cx="86.92" cy="53.12" r="6.73" />
-            <circle class="g" cx="49.15" cy="51.14" r="2.31" />
-            <circle class="g" cx="84.77" cy="51.05" r="2.31" />
-            <path class="h" d="m84.01,81.41c-2.37-5.86-8.11-10-14.83-10s-12.45,4.14-14.83,10" />
-          </g>
-        }
-      </svg>
-      <div>"{{ resultQuote() }}"</div>
+      @if (showPose()) {
+        <div class="angie-reaction">
+          <img class="personified" [src]="resultPose()" alt="" aria-hidden="true" />
+          <div class="result-quote">{{ resultQuote() }}</div>
+        </div>
+      }
       <div class="result-buttons">
         <button type="button" (click)="close()" class="gradient-button">
           <span></span><span>again?</span>
@@ -244,7 +183,7 @@
         <a
           target="_blank"
           class="gradient-button"
-          [href]="'https://twitter.com/intent/tweet?text=' + getText()"
+          [href]="'https://x.com/intent/tweet?text=' + getText()"
           ><span></span><span>share<img src="share.svg" aria-hidden="true" /></span
         ></a>
       </div>

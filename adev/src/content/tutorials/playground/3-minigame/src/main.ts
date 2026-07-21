@@ -62,6 +62,7 @@ export class Playground {
   protected readonly rotateVal = signal(40);
   protected readonly goal = signal(85);
   protected readonly animatedAccuracy = signal(0);
+  protected readonly finalAccuracy = signal(0);
   protected readonly gameStats = signal({
     level: 0,
     totalAccuracy: 0,
@@ -99,6 +100,19 @@ export class Playground {
     }
     return this.currentInteractions;
   });
+
+  protected readonly resultPose = computed(() => {
+    const accuracy = this.finalAccuracy();
+    if (accuracy > 95) return 'superhero.svg';
+    if (accuracy > 80) return 'greeting.svg';
+    if (accuracy > 60) return 'coffee.svg';
+    if (accuracy > 40) return 'sad.svg';
+    if (accuracy > 20) return 'error.svg';
+    if (accuracy > 10) return 'laughing.svg';
+    return 'angry.svg';
+  });
+
+  protected readonly showPose = computed(() => this.animatedAccuracy() >= this.finalAccuracy());
 
   protected readonly rotation = computed(() => `rotate(${this.rotateVal()}deg)`);
 
@@ -161,6 +175,7 @@ export class Playground {
     this.isGuessModalOpen.set(true);
     const calcAcc = Math.abs(100 - (Math.abs(this.goal() - this.rotateVal()) / 180) * 100);
     this.resultQuote.set(getResultQuote(calcAcc));
+    this.finalAccuracy.set(calcAcc);
     this.animatedAccuracy.set(calcAcc > 20 ? calcAcc - 20 : 0);
     this.powerUpAccuracy(calcAcc);
     this.gameStats.update(({level, totalAccuracy}) => ({
@@ -203,9 +218,9 @@ export class Playground {
       emojiAccuracy += roundedAcc >= 20 * (i + 1) ? '🟩' : '⬜️';
     }
     return encodeURI(
-      `📐 ${emojiAccuracy} \n My angles are ${roundedAcc}% accurate on level ${
+      `📐 ${emojiAccuracy}\n\nI'm ${roundedAcc}% accurate at angles on level ${
         this.gameStats().level
-      }. \n\nHow @Angular are you? \nhttps://angular.dev/playground`,
+      }.\n\nHow @Angular are you?\nhttps://angular.dev/playground`,
     );
   }
 
