@@ -361,6 +361,15 @@ describe('Format date', () => {
       );
     });
 
+    it('should reject a non-string format whose coerced length exceeds 256 characters', () => {
+      // A non-string format (e.g. an array from untrusted input) has a small `length` but
+      // coerces to a long string, which previously bypassed the length guard.
+      const format = ['y'.repeat(300)] as unknown as string;
+      expect(() => formatDate(date, format, ɵDEFAULT_LOCALE_ID)).toThrowError(
+        /Exceeded maximum length of 256 characters/,
+      );
+    });
+
     it('should treat format tokens that collide with Object.prototype members as literals', () => {
       // A format token that matches an inherited property name (e.g. `__proto__`) must not
       // resolve to a value off the prototype of the internal format caches. Before the caches

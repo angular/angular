@@ -136,7 +136,9 @@ export function formatDate(
 }
 
 function assertValidDateFormatLength(format: string) {
-  if (format.length > MAX_DATE_FORMAT_LENGTH) {
+  // `format` may not be a string at runtime (e.g. an array from untrusted input); the parser
+  // coerces it via `String()`, so measure the coerced length to avoid bypassing this guard.
+  if (String(format).length > MAX_DATE_FORMAT_LENGTH) {
     throw new RuntimeError(
       RuntimeErrorCode.SUSPICIOUS_DATE_FORMAT,
       ngDevMode &&
