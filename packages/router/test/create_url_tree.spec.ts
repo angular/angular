@@ -107,6 +107,12 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual('/');
   });
 
+  it('should not serialize leading empty path commands as a protocol-relative URL', async () => {
+    const p = serializer.parse('/');
+    const t = await createRoot(p, ['/', '', 'attacker.example', 'collect'], {session: 'secret'});
+    expect(serializer.serialize(t)).toEqual('/attacker.example/collect?session=secret');
+  });
+
   it('should error when navigating to the root segment with params', async () => {
     const p = serializer.parse('/');
     await expectAsync(createRoot(p, ['/', {p: 11}])).toBeRejectedWithError(
