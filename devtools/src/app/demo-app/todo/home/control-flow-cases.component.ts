@@ -26,9 +26,7 @@ interface Profile {
 }
 
 type NarrowedSwitchValue =
-  | {kind: 'text'; text: string}
-  | {kind: 'count'; count: number}
-  | {kind: 'flag'; enabled: boolean};
+  {kind: 'text'; text: string} | {kind: 'count'; count: number} | {kind: 'flag'; enabled: boolean};
 
 @Component({
   selector: 'app-control-flow-cases',
