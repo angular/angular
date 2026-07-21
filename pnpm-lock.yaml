@@ -260,8 +260,8 @@ importers:
         specifier: ^9.0.0
         version: 9.1.1
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#84e9337a283b3da3e0458084c0478b2b2fb52be3
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/84e9337a283b3da3e0458084c0478b2b2fb52be3(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#7a67d5221a9efec2b69b102759d04223a3fc8552
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7a67d5221a9efec2b69b102759d04223a3fc8552(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))
       '@babel/plugin-transform-async-generator-functions':
         specifier: ^7.27.1
         version: 7.29.7(@babel/core@7.29.7)
@@ -1661,9 +1661,9 @@ packages:
       '@angular/platform-browser': ^22.0.0 || ^23.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/84e9337a283b3da3e0458084c0478b2b2fb52be3':
-    resolution: {gitHosted: true, integrity: sha512-OwwbJR/wBGJfNs8v0FVlJ1gTYK8YRHD0jRFKmOoFzLbT50fOSGblZzlAqwQhfY5cRksECFjP3PC9eBuEwbAbEg==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/84e9337a283b3da3e0458084c0478b2b2fb52be3}
-    version: 0.0.0-7eb2566eaab7757d7fdfc2aa518f5884a42c005b
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7a67d5221a9efec2b69b102759d04223a3fc8552':
+    resolution: {gitHosted: true, integrity: sha512-DQnETQLANEERiT5UIcBj1D4S1WYlYVOuwtog4JpslthLq0JqSkKXCp7o+1roasNfBrFLaOYMD7wqZiRhsxbNSw==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7a67d5221a9efec2b69b102759d04223a3fc8552}
+    version: 0.0.0-7365173626bd7f475d30ba010bfb0e485233b199
     hasBin: true
 
   '@angular/ssr@22.0.7':
@@ -13506,7 +13506,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/84e9337a283b3da3e0458084c0478b2b2fb52be3(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7a67d5221a9efec2b69b102759d04223a3fc8552(@modelcontextprotocol/sdk@1.29.0(@cfworker/json-schema@4.1.1))':
     dependencies:
       '@actions/core': 3.0.1
       '@conventional-changelog/git-client': 3.1.0(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.0)
@@ -16624,7 +16624,7 @@ snapshots:
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.5
 
   '@npmcli/git@7.0.2':
     dependencies:
@@ -16634,7 +16634,7 @@ snapshots:
       lru-cache: 11.5.2
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       which: 6.0.1
 
   '@npmcli/installed-package-contents@4.0.0':
@@ -16651,7 +16651,7 @@ snapshots:
       hosted-git-info: 9.0.3
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       spdx-expression-parse: 4.0.0
 
   '@npmcli/promise-spawn@9.0.1':
@@ -20882,7 +20882,7 @@ snapshots:
   gcp-metadata@8.1.2(supports-color@10.2.2):
     dependencies:
       gaxios: 7.2.0(supports-color@10.2.2)
-      google-logging-utils: 1.1.3
+      google-logging-utils: 1.1.4
       json-bigint: 1.0.0
     transitivePeerDependencies:
       - supports-color
@@ -23323,7 +23323,7 @@ snapshots:
       graceful-fs: 4.2.11
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.4
+      semver: 7.8.5
       tar: 7.5.20
       tinyglobby: 0.2.16
       undici: 6.27.0
@@ -23389,7 +23389,7 @@ snapshots:
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.5
 
   npm-normalize-package-bin@5.0.0: {}
 
@@ -23410,7 +23410,7 @@ snapshots:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.2
-      semver: 7.7.4
+      semver: 7.8.5
 
   npm-registry-fetch@19.1.1:
     dependencies:
