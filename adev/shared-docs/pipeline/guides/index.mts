@@ -55,6 +55,16 @@ async function main() {
       }
 
       const markdownContent = await readFile(filePath, {encoding: 'utf8'});
+
+      // A leading byte order mark (U+FEFF) stops the first Markdown heading from being
+      // recognized, so the page title renders as a paragraph and loses its header. Fail
+      // the build so the BOM has to be removed from the source file instead.
+      if (markdownContent.charCodeAt(0) === 0xfeff) {
+        throw new Error(
+          `The file "${filePath}" starts with a byte order mark (BOM). Remove it so the leading heading is parsed correctly.`,
+        );
+      }
+
       const htmlOutputContent = await parseMarkdownAsync(markdownContent, {
         markdownFilePath: filePath,
         apiEntries: mapManifestToEntries(apiManifest),
