@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/schema",
+  "$schema": "https://json-schema.org/schema",
   "$id": "SchematicsMyService",
   "title": "My Service Schema",
   "type": "object",
@@ -24,8 +24,6 @@
         "$source": "projectName"
       }
     }
-   },
-  "required": [
-    "name"
-  ]
+  },
+  "required": ["name"]
 }

@@ -245,7 +245,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'node 8',
     action:
-      'Make sure you are using [Node 8 or later](http://www.hostingadvice.com/how-to/update-node-js-latest-version/)',
+      'Make sure you are using [Node 8 or later](https://www.hostingadvice.com/how-to/update-node-js-latest-version/)',
   },
   {
     possibleIn: 600,
@@ -486,7 +486,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'node 10',
     action:
-      'Make sure you are using [Node 10 or later](http://www.hostingadvice.com/how-to/update-node-js-latest-version/).',
+      'Make sure you are using [Node 10 or later](https://www.hostingadvice.com/how-to/update-node-js-latest-version/).',
   },
   {
     possibleIn: 800,
@@ -579,7 +579,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'node 10.13',
     action:
-      'Make sure you are using [Node 10.13 or later](http://www.hostingadvice.com/how-to/update-node-js-latest-version/).',
+      'Make sure you are using [Node 10.13 or later](https://www.hostingadvice.com/how-to/update-node-js-latest-version/).',
   },
   {
     possibleIn: 900,
@@ -780,7 +780,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Medium,
     step: '$localize',
     action:
-      "If you use [Angular's i18n support](http://angular.io/guide/i18n), you will need to begin using `@angular/localize`. Learn more about the [$localize Global Import Migration](https://v9.angular.io/guide/migration-localize).",
+      "If you use [Angular's i18n support](https://angular.io/guide/i18n), you will need to begin using `@angular/localize`. Learn more about the [$localize Global Import Migration](https://v9.angular.io/guide/migration-localize).",
   },
 
   {
@@ -981,7 +981,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v11 browser support',
     action:
-      'Support for IE9, IE10, and IE mobile has been removed. This was announced in the [v10 update](http://blog.angular.dev/version-10-of-angular-now-available-78960babd41#c357). ',
+      'Support for IE9, IE10, and IE mobile has been removed. This was announced in the [v10 update](https://blog.angular.dev/version-10-of-angular-now-available-78960babd41#c357). ',
   },
   {
     possibleIn: 1100,
@@ -1348,7 +1348,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v13 node',
     action:
-      'Make sure you are using [Node 12.20.0 or later](http://www.hostingadvice.com/how-to/update-node-js-latest-version/)',
+      'Make sure you are using [Node 12.20.0 or later](https://www.hostingadvice.com/how-to/update-node-js-latest-version/)',
   },
   {
     possibleIn: 1300,
@@ -1471,7 +1471,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'v14 node',
     action:
-      'Make sure you are using [Node 14.15.0 or later](http://www.hostingadvice.com/how-to/update-node-js-latest-version/)',
+      'Make sure you are using [Node 14.15.0 or later](https://www.hostingadvice.com/how-to/update-node-js-latest-version/)',
   },
   {
     possibleIn: 1400,
