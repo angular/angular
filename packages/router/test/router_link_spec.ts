@@ -329,4 +329,24 @@ describe('RouterLink', () => {
     await harness.navigateByUrl('/different');
     expect(anchor.getAttribute('href')).toBe('/different/child');
   });
+
+  it('rejects a link that would generate a protocol-relative href', async () => {
+    @Component({
+      template: `<a [routerLink]="commands" queryParamsHandling="preserve">commands</a>`,
+      imports: [RouterLink],
+    })
+    class WithLink {
+      readonly commands = ['/', '', 'attacker.example', 'collect'];
+    }
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{path: '', component: WithLink}])],
+    });
+    const fixture = TestBed.createComponent(WithLink);
+
+    await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+      /NG04019: Cannot serialize a UrlTree that would produce a protocol-relative URL/,
+    );
+    expect(fixture.nativeElement.querySelector('a').getAttribute('href')).toBeNull();
+  });
 });
