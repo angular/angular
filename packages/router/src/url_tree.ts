@@ -454,6 +454,13 @@ export class DefaultUrlSerializer implements UrlSerializer {
   /** Converts a `UrlTree` into a url */
   serialize(tree: UrlTree): string {
     const segment = `/${serializeSegment(tree.root, true)}`;
+    if (segment.startsWith('//')) {
+      throw new RuntimeError(
+        RuntimeErrorCode.PROTOCOL_RELATIVE_URL_NOT_ALLOWED,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          'Cannot serialize a UrlTree that would produce a protocol-relative URL.',
+      );
+    }
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
       typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment)}` : '';
