@@ -123,8 +123,7 @@ export const enum IcuCreateOpCode {
  * ```
  */
 export interface IcuCreateOpCodes
-  extends Array<number | string | ELEMENT_MARKER | ICU_MARKER | null>,
-    I18nDebug {
+  extends Array<number | string | ELEMENT_MARKER | ICU_MARKER | null>, I18nDebug {
   __brand__: 'I18nCreateOpCodes';
 }
 
