@@ -5182,9 +5182,6 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  caniuse-lite@1.0.30001805:
-    resolution: {integrity: sha512-52noaS3DubycKSXaU30TwPGIp+POyQSUVa5jBEq3vkRkY0kjyb3LQgvhU6WGyCcyXqVLWO0Cw0Q6BSdD0kUfVA==}
-
   caniuse-lite@1.0.30001806:
     resolution: {integrity: sha512-72Cuvd95zbSYPKq6Fhg8eDJRlzgWDf7/mtoZv6Qe/DYNCEBdNxoA3+rZAU2ZhGCpZlns3EssFavaZomckT5Uuw==}
 
@@ -8986,10 +8983,6 @@ packages:
 
   postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
-
-  postcss@8.5.16:
-    resolution: {integrity: sha512-vuwillviilfKZsg0VGj5R/YwwcHx4SLsIOI/7K6mQkWx+l5cUHTjj5g0AasTBcyXsbfTgrwsUNmVUb5xVwyPwg==}
-    engines: {node: ^10 || ^12 || >=14}
 
   postcss@8.5.20:
     resolution: {integrity: sha512-lW616l85ucIQL+FocMmL7pQFPqBmwejrCMg+iPxyImlrANNJG9NHq/RkyCZopDhd8C3LA03PHRJDjkbGu8vvug==}
@@ -15273,7 +15266,7 @@ snapshots:
   browserslist@4.28.6:
     dependencies:
       baseline-browser-mapping: 2.10.43
-      caniuse-lite: 1.0.30001805
+      caniuse-lite: 1.0.30001806
       electron-to-chromium: 1.5.389
       node-releases: 2.0.51
       update-browserslist-db: 1.2.3(browserslist@4.28.6)
@@ -15346,8 +15339,6 @@ snapshots:
   camelcase@5.3.1: {}
 
   camelcase@6.3.0: {}
-
-  caniuse-lite@1.0.30001805: {}
 
   caniuse-lite@1.0.30001806: {}
 
@@ -19373,7 +19364,7 @@ snapshots:
       less: 4.6.7
       ora: 9.4.1
       piscina: 5.2.0
-      postcss: 8.5.16
+      postcss: 8.5.20
       rollup-plugin-dts: 6.4.1(rollup@4.62.2)(typescript@6.0.3)
       rxjs: 7.8.2
       sass: 1.101.0
@@ -19916,32 +19907,32 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-import@15.1.0(postcss@8.5.16):
+  postcss-import@15.1.0(postcss@8.5.20):
     dependencies:
-      postcss: 8.5.16
+      postcss: 8.5.20
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.12
 
-  postcss-js@4.1.0(postcss@8.5.16):
+  postcss-js@4.1.0(postcss@8.5.20):
     dependencies:
       camelcase-css: 2.0.1
-      postcss: 8.5.16
+      postcss: 8.5.20
 
-  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.16)(tsx@4.23.1)(yaml@2.9.0):
+  postcss-load-config@6.0.1(jiti@1.21.7)(postcss@8.5.20)(tsx@4.23.1)(yaml@2.9.0):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 1.21.7
-      postcss: 8.5.16
+      postcss: 8.5.20
       tsx: 4.23.1
       yaml: 2.9.0
 
   postcss-media-query-parser@0.2.3: {}
 
-  postcss-nested@6.2.0(postcss@8.5.16):
+  postcss-nested@6.2.0(postcss@8.5.20):
     dependencies:
-      postcss: 8.5.16
+      postcss: 8.5.20
       postcss-selector-parser: 6.1.4
 
   postcss-safe-parser@7.0.1(postcss@8.5.20):
@@ -19954,12 +19945,6 @@ snapshots:
       util-deprecate: 1.0.2
 
   postcss-value-parser@4.2.0: {}
-
-  postcss@8.5.16:
-    dependencies:
-      nanoid: 3.3.16
-      picocolors: 1.1.1
-      source-map-js: 1.2.1
 
   postcss@8.5.20:
     dependencies:
@@ -21146,11 +21131,11 @@ snapshots:
       normalize-path: 3.0.0
       object-hash: 3.0.0
       picocolors: 1.1.1
-      postcss: 8.5.16
-      postcss-import: 15.1.0(postcss@8.5.16)
-      postcss-js: 4.1.0(postcss@8.5.16)
-      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.16)(tsx@4.23.1)(yaml@2.9.0)
-      postcss-nested: 6.2.0(postcss@8.5.16)
+      postcss: 8.5.20
+      postcss-import: 15.1.0(postcss@8.5.20)
+      postcss-js: 4.1.0(postcss@8.5.20)
+      postcss-load-config: 6.0.1(jiti@1.21.7)(postcss@8.5.20)(tsx@4.23.1)(yaml@2.9.0)
+      postcss-nested: 6.2.0(postcss@8.5.20)
       postcss-selector-parser: 6.1.4
       resolve: 1.22.12
       sucrase: 3.35.1
