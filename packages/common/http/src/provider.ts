@@ -14,12 +14,7 @@ import {
   Provider,
 } from '@angular/core';
 
-import {
-  ɵHTTP_CLIENT_IS_DELEGATING,
-  HttpBackend,
-  HttpHandler,
-  HttpInterceptorHandler,
-} from './backend';
+import {HttpBackend, HttpHandler, HttpInterceptorHandler} from './backend';
 import {HttpClient} from './client';
 import {FetchBackend} from './fetch';
 import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, legacyInterceptorFnFactory} from './interceptor';
@@ -297,13 +292,6 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
         }
         return handlerFromParent!;
       },
-    },
-    {
-      provide: ɵHTTP_CLIENT_IS_DELEGATING,
-      // `HttpBackend` can be overridden by later providers, so derive this flag from the
-      // effective backend rather than assuming that this feature's backend is still active.
-      useFactory: () =>
-        inject(HttpBackend) === inject(HttpHandler, {skipSelf: true, optional: true}),
     },
   ]);
 }
