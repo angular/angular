@@ -528,6 +528,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
         this.getRewrittenSrc(),
         rewrittenSrcset,
         this.sizes,
+        this.imgElement.getAttribute('crossorigin'),
       );
     }
   }

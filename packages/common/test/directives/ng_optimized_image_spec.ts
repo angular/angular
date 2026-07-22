@@ -67,7 +67,7 @@ describe('Image directive', () => {
           ],
         });
 
-        const template = `<img ngSrc="${src}" width="150" height="50" priority sizes="10vw" ngSrcset="100w">`;
+        const template = `<img ngSrc="${src}" width="150" height="50" priority sizes="10vw" ngSrcset="100w" crossorigin="anonymous">`;
         TestBed.overrideComponent(TestComponent, {set: {template: template}});
 
         const _document = TestBed.inject(DOCUMENT);
@@ -98,6 +98,7 @@ describe('Image directive', () => {
         expect(preloadLink!.getAttribute('imagesizes')).toEqual('10vw');
         expect(preloadLink!.getAttribute('imagesrcset')).toEqual(`${rewrittenSrc}?width=100 100w`);
         expect(preloadLink!.getAttribute('fetchpriority')).toEqual('high');
+        expect(preloadLink!.getAttribute('crossorigin')).toEqual('anonymous');
 
         preloadLink!.remove();
       });
@@ -133,13 +134,47 @@ describe('Image directive', () => {
 
         const preloadImages = TestBed.inject(PRELOADED_IMAGES);
 
-        expect(preloadImages.has(rewrittenSrc)).toBeTruthy();
+        expect(preloadImages.has(`${rewrittenSrc}:null`)).toBeTruthy();
 
         const preloadLinks = head.querySelectorAll(`link[href="${rewrittenSrc}"]`);
 
         expect(preloadLinks.length).toEqual(1);
 
         preloadLinks[0]!.remove();
+      });
+
+      it('should create separate preload links for images with different CORS modes', async () => {
+        if (!isBrowser) return;
+
+        const src = 'preload-cors/img.png';
+        const rewrittenSrc = `https://angular.dev/${src}`;
+
+        setupTestingModule({
+          extraProviders: [
+            {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+            {
+              provide: IMAGE_LOADER,
+              useValue: (config: ImageLoaderConfig) => `https://angular.dev/${config.src}`,
+            },
+          ],
+        });
+
+        const template = `
+          <img ngSrc="${src}" width="150" height="50" priority>
+          <img ngSrc="${src}" width="150" height="50" priority crossorigin="anonymous">
+        `;
+        TestBed.overrideComponent(TestComponent, {set: {template}});
+
+        const _document = TestBed.inject(DOCUMENT);
+        const fixture = TestBed.createComponent(TestComponent);
+        await fixture.whenStable();
+
+        const preloadLinks = _document.head.querySelectorAll(`link[href="${rewrittenSrc}"]`);
+        expect(preloadLinks.length).toEqual(2);
+        expect(preloadLinks[0]!.hasAttribute('crossorigin')).toBeFalse();
+        expect(preloadLinks[1]!.getAttribute('crossorigin')).toEqual('anonymous');
+
+        preloadLinks.forEach((link) => link.remove());
       });
 
       it('should warn when the number of preloaded images is larger than the limit', () => {
