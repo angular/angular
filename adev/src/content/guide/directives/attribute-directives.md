@@ -16,7 +16,7 @@ Attribute directives are useful when you want to package this kind of behavior i
 
 A custom attribute directive is a JavaScript class with the `@Directive()` decorator. The decorator's `selector` defines the attribute that applies the directive. The square brackets make this an attribute selector, so the directive matches elements that carry the attribute. By convention, use a prefix such as `app` to avoid naming collisions:
 
-```angular-ts
+```ts
 import {Directive} from '@angular/core';
 
 @Directive({

@@ -22,7 +22,7 @@ Suppose you want elements to highlight when the user hovers over them with a mou
 
 The following `appHighlight` directive sets the host element's background color when the mouse enters and clears it when the mouse leaves:
 
-```angular-ts
+```ts
 import {Directive, signal} from '@angular/core';
 
 @Directive({

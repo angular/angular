@@ -69,7 +69,7 @@ A structural directive is a directive class that injects two dependencies:
 
 The directive controls rendering by creating, or not creating, embedded views from the template in the view container. The complete `SelectDirective` looks like this:
 
-```angular-ts
+```ts
 import {Directive, TemplateRef, ViewContainerRef, inject, input} from '@angular/core';
 
 export interface DataSource<T> {
@@ -175,7 +175,7 @@ There are two narrowings which are possible with input guards:
 
 To narrow the input expression by defining a type assertion function:
 
-```angular-ts
+```ts
 // This directive only renders its template if the actor is a user.
 // You want to assert that within the template, the type of the `actor`
 // expression is narrowed to `User`.
@@ -195,7 +195,7 @@ Type-checking will behave within the template as if the `ngTemplateGuard_actor` 
 
 Some directives only render their templates when an input is truthy. It's not possible to capture the full semantics of truthiness in a type assertion function, so instead a literal type of `'binding'` can be used to signal to the template type-checker that the binding expression itself should be used as the guard:
 
-```angular-ts
+```ts
 @Directive(...)
 class CustomIf {
   condition = input.required<boolean>();
@@ -212,7 +212,7 @@ If your structural directive provides a context to the instantiated template, yo
 
 For the `SelectDirective` described above, you can implement an `ngTemplateContextGuard` to correctly specify the data type, even if the data source is generic.
 
-```angular-ts
+```ts
 // Declare an interface for the template context:
 export interface SelectTemplateContext<T> {
   $implicit: T;
