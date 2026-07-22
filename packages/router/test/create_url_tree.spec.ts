@@ -134,6 +134,62 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual('/%2Fone/two%2Fthree');
   });
 
+  describe('leading empty path command serialization', () => {
+    it('should serialize absolute navigations with one leading slash', () => {
+      const t = router.createUrlTree(['/', '', '', 'attacker.example', 'collect']);
+
+      expect(serializer.serialize(t)).toEqual('/attacker.example/collect');
+    });
+
+    it('should serialize a primary outlet string with one leading slash', async () => {
+      await router.navigateByUrl('/safe');
+      const t = router.createUrlTree([{outlets: {primary: '/attacker.example/collect'}}]);
+
+      expect(serializer.serialize(t)).toEqual('/attacker.example/collect');
+    });
+
+    it('should serialize a primary outlet array with one leading slash', () => {
+      const t = router.createUrlTree([{outlets: {primary: ['', 'attacker.example', 'collect']}}]);
+
+      expect(serializer.serialize(t)).toEqual('/attacker.example/collect');
+    });
+
+    it('should serialize parent-relative commands with one leading slash', async () => {
+      router.resetConfig([{path: 'source', component: class {}}]);
+      await router.navigateByUrl('/source');
+      const t = create(router.routerState.root.firstChild!, [
+        '../',
+        '',
+        'attacker.example',
+        'collect',
+      ]);
+
+      expect(serializer.serialize(t)).toEqual('/attacker.example/collect');
+    });
+
+    it('should preserve an escaped slash after an empty path command', () => {
+      const t = router.createUrlTree(['/', '', {segmentPath: '/'}]);
+
+      expect(serializer.serialize(t)).toEqual('/%2F');
+    });
+
+    it('should serialize final empty path commands as the root URL', () => {
+      const t = router.createUrlTree(['/', '', '']);
+
+      expect(serializer.serialize(t)).toEqual('/');
+    });
+
+    it('should not normalize a leading empty path command in a secondary outlet', () => {
+      const t = router.createUrlTree(['/', {outlets: {right: ['', 'child']}}]);
+
+      expect(t.root.children['right'].segments.map((segment) => segment.path)).toEqual([
+        '',
+        'child',
+      ]);
+      expect(serializer.serialize(t)).toEqual('/(right:/child)');
+    });
+  });
+
   describe('named outlets', () => {
     it('should preserve secondary segments', async () => {
       const p = serializer.parse('/a/11/b(right:c)');
