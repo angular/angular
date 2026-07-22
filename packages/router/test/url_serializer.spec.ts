@@ -13,11 +13,14 @@ import {
   encodeUriQuery,
   encodeUriSegment,
   serializePath,
+  UrlSegment,
   UrlSegmentGroup,
 } from '../src/url_tree';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();
+  const protocolRelativeUrlError =
+    /NG04019: Cannot serialize a UrlTree that would produce a protocol-relative URL/;
 
   it('should parse the root url', () => {
     const tree = url.parse('/');
@@ -444,6 +447,33 @@ describe('url serializer', () => {
 
     it('should preserve query params and fragments after normalizing leading slashes', () => {
       expect(url.serialize(url.parse('///test?foo=bar#frag'))).toEqual('/test?foo=bar#frag');
+    });
+  });
+
+  describe('leading empty path segments', () => {
+    it('should reject a parsed primary outlet that would serialize as protocol-relative', () => {
+      const tree = url.parse('/(primary://attacker.example/collect)?token=RESET_TOKEN');
+
+      expect(() => url.serialize(tree)).toThrowError(protocolRelativeUrlError);
+    });
+
+    it('should reject multiple leading empty primary segments', () => {
+      const tree = url.parse('/attacker.example/collect');
+      tree.root.children[PRIMARY_OUTLET].segments.unshift(
+        new UrlSegment('', {}),
+        new UrlSegment('', {}),
+      );
+
+      expect(() => url.serialize(tree)).toThrowError(protocolRelativeUrlError);
+    });
+
+    it('should reject unsafe trees with secondary outlets, query params, and fragments', () => {
+      const tree = url.parse(
+        '/attacker.example/collect(popup:compose)?token=RESET_TOKEN#OAUTH_TOKEN',
+      );
+      tree.root.children[PRIMARY_OUTLET].segments.unshift(new UrlSegment('', {}));
+
+      expect(() => url.serialize(tree)).toThrowError(protocolRelativeUrlError);
     });
   });
 
