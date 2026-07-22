@@ -1,4 +1,4 @@
-﻿# Binding dynamic text, properties and attributes
+# Binding dynamic text, properties and attributes
 
 In Angular, a **binding** creates a dynamic connection between a component's template and its data. This connection ensures that changes to the component's data automatically update the rendered template.
 
