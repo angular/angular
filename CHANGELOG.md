@@ -1,3 +1,29 @@
+<a name="22.1.0-rc.0"></a>
+# 22.1.0-rc.0 (2026-07-22)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d14696e430](https://github.com/angular/angular/commit/d14696e4308c5cd95cf2184cae3582b52f7c7cf3) | fix | preserve crossorigin on image preloads |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3499a1321b](https://github.com/angular/angular/commit/3499a1321bfe4801c38744ddb500715486680366) | fix | ensure SVG animation attributeName is checked case-insensitively |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3497c9b943](https://github.com/angular/angular/commit/3497c9b943748d0f21587fcdc1482215f857fa28) | fix |  ensure `pending` status propagates to the root form in signal forms |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3192dccaa3](https://github.com/angular/angular/commit/3192dccaa3e1488f8bf351864ea48e44a21246aa) | fix | prevent transfer cache key collisions |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [49672c437b](https://github.com/angular/angular/commit/49672c437b440564e9c20b77a7ff151fbf316706) | fix | correctly migrate ngClass with mixed space-separated keys |
+| [223e40279f](https://github.com/angular/angular/commit/223e40279f3f6df979a323f79cb370528366c24a) | fix | preserve NgClass import on partial migration |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.8"></a>
 # 22.0.8 (2026-07-22)
 ### common
