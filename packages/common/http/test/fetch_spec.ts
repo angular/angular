@@ -810,23 +810,6 @@ class InfiniteStreamFetchFactory extends FetchFactory {
   };
 }
 
-// class FiniteChunkFetchFactory extends FetchFactory {
-//   override fetch = async (_input: RequestInfo | URL, _init?: RequestInit): Promise<Response> => {
-//     const stream = new ReadableStream<Uint8Array>({
-//       start: (controller) => {
-//         controller.enqueue(new TextEncoder().encode('ok'));
-//         controller.close();
-//       },
-//     });
-
-//     return new Response(stream, {
-//       status: HttpStatusCode.Ok,
-//       statusText: 'OK',
-//       headers: {'Content-Type': 'text/plain'},
-//     });
-//   };
-// }
-
 const finiteChunkFetch = async (
   _input: RequestInfo | URL,
   _init?: RequestInit,

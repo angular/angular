@@ -70,6 +70,9 @@ export const HTTP_FETCH_IMPLEMENTATION = new InjectionToken<typeof globalThis.fe
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'HTTP_FETCH_IMPLEMENTATION' : '',
   {
     providedIn: 'platform',
+    // We use an arrow function to always reference the current global implementation of `fetch`.
+    // This is helpful for cases when the global `fetch` implementation is modified by external code,
+    // see https://github.com/angular/angular/issues/57527.
     factory:
       () =>
       (...args) =>
@@ -90,9 +93,6 @@ export const HTTP_FETCH_IMPLEMENTATION = new InjectionToken<typeof globalThis.fe
  */
 @Service()
 export class FetchBackend implements HttpBackend {
-  // We use an arrow function to always reference the current global implementation of `fetch`.
-  // This is helpful for cases when the global `fetch` implementation is modified by external code,
-  // see https://github.com/angular/angular/issues/57527.
   private readonly fetchImpl = inject(HTTP_FETCH_IMPLEMENTATION);
   private readonly ngZone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
