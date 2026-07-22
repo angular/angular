@@ -538,7 +538,7 @@ describe('provideHttpClient', () => {
       req.flush('');
     });
 
-    it('should not inherit the delegation marker in independent child contexts', () => {
+    it('should inherit root interceptors in independent child contexts', () => {
       TestBed.configureTestingModule({
         providers: [
           provideHttpClient(),

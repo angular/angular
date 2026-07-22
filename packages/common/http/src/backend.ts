@@ -12,7 +12,6 @@ import {
   EnvironmentInjector,
   inject,
   Injectable,
-  InjectionToken,
   untracked,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
@@ -47,11 +46,6 @@ import {
 export abstract class HttpBackend implements HttpHandler {
   abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
-
-/** Indicates that the current `HttpClient` delegates requests to its parent. */
-export const ɵHTTP_CLIENT_IS_DELEGATING = new InjectionToken<boolean>(
-  typeof ngDevMode !== 'undefined' && ngDevMode ? 'ɵHTTP_CLIENT_IS_DELEGATING ' : '',
-);
 
 let fetchBackendWarningDisplayed = false;
 
@@ -105,7 +99,8 @@ export class HttpInterceptorHandler implements HttpHandler {
 
   handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {
     if (this.chain === null) {
-      const isDelegating = this.injector.get(ɵHTTP_CLIENT_IS_DELEGATING, false, {self: true});
+      const parentHandler = this.injector.get(HttpHandler, null, {skipSelf: true});
+      const isDelegating = parentHandler !== null && this.backend === parentHandler;
       const rootInterceptorFns = this.injector.get(
         HTTP_ROOT_INTERCEPTOR_FNS,
         [],
