@@ -106,7 +106,7 @@ You can provide the following schema for type validation of these values.
 
 ```json {header: "schema.json"}
 {
-  "$schema": "http://json-schema.org/schema",
+  "$schema": "https://json-schema.org/schema",
   "type": "object",
   "properties": {
     "source": {
@@ -120,7 +120,7 @@ You can provide the following schema for type validation of these values.
 ```
 
 HELPFUL: This is a minimal example, but the use of a schema for validation can be very powerful.
-For more information, see the [JSON schemas website](http://json-schema.org).
+For more information, see the [JSON schemas website](https://json-schema.org).
 
 To link our builder implementation with its schema and name, you need to create a _builder definition_ file, which you can point to in `package.json`.
 

@@ -341,7 +341,7 @@ Embedded videos are created with `docs-video` and just need a `src` and `alt`:
 
 ## Charts & Graphs
 
-Write diagrams and charts using [Mermaid](http://mermaid.js.org/) by setting the code language to `mermaid`, all theming is built-in.
+Write diagrams and charts using [Mermaid](https://mermaid.js.org/) by setting the code language to `mermaid`, all theming is built-in.
 
 ```mermaid
     graph TD;
