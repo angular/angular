@@ -983,10 +983,14 @@ const _polyfillHost = '-shadowcsshost';
 const _polyfillHostContext = '-shadowcsscontext';
 // Matches text content with no parentheses, e.g., "foo"
 const _noParens = '[^)(]*';
-// Matches content with at most ONE level of nesting, e.g., "a(b)c"
-const _level1Parens = String.raw`(?:\(${_noParens}\)|${_noParens})+?`;
+// Matches content with at most ONE level of nesting, e.g., "a(b)c". Each run of
+// non-paren characters is anchored between the mandatory `(`/`)` delimiters, so the
+// alternatives never overlap. The previous `(?:\(x\)|x)+?` form let the inner `[^)(]*`
+// match the same characters in exponentially many ways, so a selector with an
+// unbalanced `(` (e.g. `:host(aaaa…`) forced catastrophic backtracking.
+const _level1Parens = String.raw`${_noParens}(?:\(${_noParens}\)${_noParens})*`;
 // Matches content with at most TWO levels of nesting, e.g., "a(b(c)d)e"
-const _level2Parens = String.raw`(?:\(${_level1Parens}\)|${_noParens})+?`;
+const _level2Parens = String.raw`${_noParens}(?:\(${_level1Parens}\)${_noParens})*`;
 const _parenSuffix = String.raw`(?:\((${_level2Parens})\))`;
 const nthRegex = new RegExp(String.raw`(:nth-[-\w]+)` + _parenSuffix, 'g');
 const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix + '?([^,{]*)', 'gim');
