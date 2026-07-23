@@ -169,3 +169,43 @@ export declare class TestDir {
     static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, { "name": { "alias": "name"; "required": true; "isSignal": true; }; "name2": { "alias": "name2"; "required": true; "isSignal": true; }; "genericTransform": { "alias": "genericTransform"; "required": true; "isSignal": true; }; "genericTransform2": { "alias": "genericTransform2"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: signal_apis.js
+ ****************************************************************************************************/
+import { booleanAttribute, Directive, input, model, output } from '@angular/core';
+import * as i0 from "@angular/core";
+export class SignalApisDirective {
+    // Signal input, required signal input, aliased + transformed input.
+    value = input('', /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "value" }] : /* istanbul ignore next */ []));
+    id = input.required(/* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "id" }] : /* istanbul ignore next */ []));
+    disabled = input(false, { ...(ngDevMode ? { debugName: "disabled" } : /* istanbul ignore next */ {}), alias: 'isDisabled', transform: booleanAttribute });
+    // Two-way model and an event output.
+    checked = model(false, /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "checked" }] : /* istanbul ignore next */ []));
+    changed = output();
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SignalApisDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: SignalApisDirective, isStandalone: true, selector: "[signalApis]", inputs: { value: { classPropertyName: "value", publicName: "value", isSignal: true, isRequired: false, transformFunction: null }, id: { classPropertyName: "id", publicName: "id", isSignal: true, isRequired: true, transformFunction: null }, disabled: { classPropertyName: "disabled", publicName: "isDisabled", isSignal: true, isRequired: false, transformFunction: null }, checked: { classPropertyName: "checked", publicName: "checked", isSignal: true, isRequired: false, transformFunction: null } }, outputs: { checked: "checkedChange", changed: "changed" }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SignalApisDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[signalApis]',
+                }]
+        }], propDecorators: { value: [{ type: i0.Input, args: [{ isSignal: true, alias: "value", required: false }] }], id: [{ type: i0.Input, args: [{ isSignal: true, alias: "id", required: true }] }], disabled: [{ type: i0.Input, args: [{ isSignal: true, alias: "isDisabled", required: false }] }], checked: [{ type: i0.Input, args: [{ isSignal: true, alias: "checked", required: false }] }, { type: i0.Output, args: ["checkedChange"] }], changed: [{ type: i0.Output, args: ["changed"] }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: signal_apis.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class SignalApisDirective {
+    value: import("@angular/core").InputSignal<string>;
+    id: import("@angular/core").InputSignal<string>;
+    disabled: import("@angular/core").InputSignalWithTransform<boolean, unknown>;
+    checked: import("@angular/core").ModelSignal<boolean>;
+    changed: import("@angular/core").OutputEmitterRef<string>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SignalApisDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SignalApisDirective, "[signalApis]", never, { "value": { "alias": "value"; "required": false; "isSignal": true; }; "id": { "alias": "id"; "required": true; "isSignal": true; }; "disabled": { "alias": "isDisabled"; "required": false; "isSignal": true; }; "checked": { "alias": "checked"; "required": false; "isSignal": true; }; }, { "checked": "checkedChange"; "changed": "changed"; }, never, never, true, never>;
+}
+

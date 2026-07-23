@@ -276,6 +276,28 @@
           "failureMessage": "Incorrect generated template."
         }
       ]
+    },
+    {
+      "description": "should handle an SVG xlink:href attribute binding",
+      "inputFiles": ["svg_xlink_href.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid SVG xlink:href binding",
+          "files": ["svg_xlink_href.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
+    },
+    {
+      "description": "should trust static security-sensitive resource-URL attributes as constants",
+      "inputFiles": ["trusted_constant_urls.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid trusted constant resource URL",
+          "files": ["trusted_constant_urls.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
     }
   ]
 }

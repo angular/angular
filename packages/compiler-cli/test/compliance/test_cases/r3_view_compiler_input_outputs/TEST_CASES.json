@@ -55,6 +55,17 @@
         "full compile",
         "linked compile"
       ]
+    },
+    {
+      "description": "should declare inputs with transform functions (booleanAttribute, numberAttribute and a custom function)",
+      "inputFiles": ["input_transforms.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid input transform encoding",
+          "files": ["input_transforms.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
     }
   ]
 }

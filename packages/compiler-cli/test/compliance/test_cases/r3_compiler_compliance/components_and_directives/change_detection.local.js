@@ -1,0 +1,6 @@
+…
+export class OnPushComponent {
+  static ɵfac = function OnPushComponent_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || OnPushComponent)(); };
+  static ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({ type: OnPushComponent, selectors: [["on-push"]], … encapsulation: 3, changeDetection: ChangeDetectionStrategy.OnPush });
+}
+…

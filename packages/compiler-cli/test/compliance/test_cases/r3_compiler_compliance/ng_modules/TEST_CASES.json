@@ -176,6 +176,116 @@
         }
       ],
       "compilationModeFilter": ["full compile", "local compile"]
+    },
+    {
+      "description": "should define an NgModule and injector with `useClass`, `useExisting`, `useValue`, `multi` and `useFactory` providers",
+      "inputFiles": ["injector_providers.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid injector providers",
+          "files": ["injector_providers.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
+    },
+    {
+      "description": "should define the JIT NgModule scope with declarations, imports and exports",
+      "inputFiles": ["module_scope.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid NgModule scope",
+          "files": ["module_scope.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
+    },
+    {
+      "description": "should keep a same-file `forRoot()` `ModuleWithProviders` call in the injector and unwrap the module in the scope",
+      "inputFiles": ["module_with_providers.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ModuleWithProviders handling",
+          "files": ["module_with_providers.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
+    },
+    {
+      "description": "should preserve nested-array and constant module imports in the injector and flatten them in the scope",
+      "inputFiles": ["nested_array_imports.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid nested-array import handling",
+          "files": ["nested_array_imports.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
+    },
+    {
+      "description": "should add a re-exported (exports-only) module to the injector imports",
+      "inputFiles": ["reexport_only.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid re-exported module handling",
+          "files": ["reexport_only.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
+    },
+    {
+      "description": "should exclude standalone declarables from the injector imports but keep them in the scope",
+      "inputFiles": ["standalone_imports.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid standalone import handling",
+          "files": ["standalone_imports.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
+    },
+    {
+      "description": "should keep a `forwardRef` module import in the injector and lower it to a closure in the scope",
+      "inputFiles": ["forwardref_imports.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid forwardRef import handling",
+          "files": ["forwardref_imports.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
+    },
+    {
+      "description": "should respect imported module order when selecting Pipe (last imported Pipe is used)",
+      "inputFiles": ["pipe_precedence_imports.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid pipe resolution precedence for imported modules",
+          "files": ["pipe_precedence_imports.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
+    },
+    {
+      "description": "should order directives and components from imported modules before local declarations",
+      "inputFiles": ["declarations_ordering.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid directive/component ordering in component dependencies",
+          "files": ["declarations_ordering.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
+    },
+    {
+      "description": "should unwrap forwardRef module in NgModule exports to injector imports",
+      "inputFiles": ["forward_ref_export_module.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid forwardRef module handling in NgModule exports",
+          "files": ["forward_ref_export_module.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }

@@ -170,6 +170,17 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support multi-slot content projection with an ngProjectAs attribute",
+      "inputFiles": ["ng_project_as_multi_slot.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid content projection",
+          "files": ["ng_project_as_multi_slot.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }

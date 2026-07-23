@@ -1547,3 +1547,67 @@ export declare class MyApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_all_triggers.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HeavyComponent {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HeavyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HeavyComponent, isStandalone: true, selector: "heavy-cmp", ngImport: i0, template: 'heavy', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HeavyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'heavy-cmp',
+                    template: 'heavy',
+                }]
+        }] });
+export class AppComponent {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: AppComponent, isStandalone: true, selector: "app-root", ngImport: i0, template: `
+    <button #trigger>load</button>
+    @defer (on interaction(trigger); prefetch on idle) {
+      <heavy-cmp />
+    } @placeholder (minimum 500ms) {
+      <span>placeholder</span>
+    } @loading (after 100ms; minimum 1s) {
+      <span>loading</span>
+    } @error {
+      <span>error</span>
+    }
+  `, isInline: true, deferBlockDependencies: [() => [HeavyComponent]] });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'app-root',
+                    imports: [HeavyComponent],
+                    template: `
+    <button #trigger>load</button>
+    @defer (on interaction(trigger); prefetch on idle) {
+      <heavy-cmp />
+    } @placeholder (minimum 500ms) {
+      <span>placeholder</span>
+    } @loading (after 100ms; minimum 1s) {
+      <span>loading</span>
+    } @error {
+      <span>error</span>
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_all_triggers.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HeavyComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<HeavyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<HeavyComponent, "heavy-cmp", never, {}, {}, never, never, true, never>;
+}
+export declare class AppComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AppComponent, "app-root", never, {}, {}, never, never, true, never>;
+}
+

@@ -529,3 +529,61 @@ export declare class TestComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<TestComponent, "test", never, {}, {}, never, ["basic", "*", "footer", "structural"], true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: ng_project_as_multi_slot.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class CardComponent {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CardComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: CardComponent, isStandalone: true, selector: "card-cmp", ngImport: i0, template: `
+    <div class="header"><ng-content select="[card-title]" /></div>
+    <div class="body"><ng-content /></div>
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CardComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'card-cmp',
+                    template: `
+    <div class="header"><ng-content select="[card-title]" /></div>
+    <div class="body"><ng-content /></div>
+  `,
+                }]
+        }] });
+export class AppComponent {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AppComponent, isStandalone: true, selector: "app-root", ngImport: i0, template: `
+    <card-cmp>
+      <h1 ngProjectAs="[card-title]">Title</h1>
+      <p>Body</p>
+    </card-cmp>
+  `, isInline: true, dependencies: [{ kind: "component", type: CardComponent, selector: "card-cmp" }] });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'app-root',
+                    imports: [CardComponent],
+                    template: `
+    <card-cmp>
+      <h1 ngProjectAs="[card-title]">Title</h1>
+      <p>Body</p>
+    </card-cmp>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: ng_project_as_multi_slot.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class CardComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<CardComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<CardComponent, "card-cmp", never, {}, {}, never, ["[card-title]", "*"], true, never>;
+}
+export declare class AppComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AppComponent, "app-root", never, {}, {}, never, never, true, never>;
+}
+

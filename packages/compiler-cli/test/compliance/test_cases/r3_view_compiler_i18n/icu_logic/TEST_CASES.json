@@ -244,6 +244,28 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle a plural ICU expression",
+      "inputFiles": ["plural_icu.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ICU plural compilation",
+          "files": ["plural_icu.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
+    },
+    {
+      "description": "should handle a select ICU nested inside a plural ICU",
+      "inputFiles": ["select_in_plural_icu.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid nested ICU compilation",
+          "files": ["select_in_plural_icu.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }

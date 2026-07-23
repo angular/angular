@@ -192,6 +192,17 @@
           "files": ["mixed_one_way_two_way_property_order.js"]
         }
       ]
+    },
+    {
+      "description": "should generate two-way binding instructions for a signal model",
+      "inputFiles": ["two_way_model_binding.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid two-way model binding",
+          "files": ["two_way_model_binding.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }
