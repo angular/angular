@@ -76,13 +76,13 @@
     "karma-coverage": "2.2.1",
     "karma-jasmine": "5.1.0",
     "karma-jasmine-html-reporter": "2.2.0",
-    "marked": "18.0.6",
+    "marked": "18.0.7",
     "mermaid": "11.16.0",
     "ngx-progressbar": "14.0.0",
     "playwright-core": "1.61.1",
     "preact": "10.29.7",
     "preact-render-to-string": "6.7.0",
-    "prettier": "3.9.5",
+    "prettier": "3.9.6",
     "property-information": "^7.1.0",
     "rxjs": "7.8.2",
     "shiki": "4.3.1",
@@ -98,7 +98,7 @@
   "devDependencies": {
     "autoprefixer": "10.5.4",
     "karma": "~6.4.4",
-    "postcss": "8.5.20",
+    "postcss": "8.5.22",
     "tailwindcss": "3.4.19"
   }
 }
