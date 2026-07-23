@@ -23,7 +23,7 @@ import {
   TypeCheckingConfig,
   TypeCtorMetadata,
 } from '@angular/compiler';
-import MagicString from 'magic-string';
+import {MagicString} from 'magic-string';
 import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, ngErrorCode} from '../../../../src/ngtsc/diagnostics';

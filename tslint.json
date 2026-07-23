@@ -20,7 +20,6 @@
           "typescript/lib/tsserverlibrary",
           "typescript",
           "minimist",
-          "magic-string",
           "semver",
           "yargs",
           "glob",

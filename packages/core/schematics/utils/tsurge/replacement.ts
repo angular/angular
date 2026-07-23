@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import MagicString from 'magic-string';
+import {MagicString} from 'magic-string';
 import {ProjectFile} from './project_paths';
 
 /** A text replacement for the given file. */
