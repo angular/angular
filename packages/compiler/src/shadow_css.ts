@@ -596,18 +596,21 @@ export class ShadowCss {
       let selector = rule.selector;
       let content = rule.content;
       if (rule.selector[0] !== '@') {
-        selector = this._scopeSelector({
-          selector,
-          scopeSelector,
-          hostSelector,
-          isParentSelector: true,
-        });
+        if (rule.isBlock) {
+          selector = this._scopeSelector({
+            selector,
+            scopeSelector,
+            hostSelector,
+            isParentSelector: true,
+          });
+          content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
+        }
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
         content = this._stripScopingSelectors(rule.content);
       }
-      return new CssRule(selector, content);
+      return new CssRule(selector, content, rule.isBlock);
     });
   }
 
@@ -637,7 +640,7 @@ export class ShadowCss {
       const selector = rule.selector
         .replace(_shadowDeepSelectors, ' ')
         .replace(_polyfillHostNoCombinatorRe, ' ');
-      return new CssRule(selector, rule.content);
+      return new CssRule(selector, rule.content, rule.isBlock);
     });
   }
 
@@ -748,7 +751,7 @@ export class ShadowCss {
     const _scopeSelectorPart = (p: string) => {
       let scopedP = p.trim();
 
-      if (!scopedP) {
+      if (!scopedP || scopedP === '&') {
         return p;
       }
 
@@ -1021,7 +1024,7 @@ const _commentWithHashPlaceHolderRe = new RegExp(COMMENT_PLACEHOLDER, 'g');
 
 const BLOCK_PLACEHOLDER = '%BLOCK%';
 const _ruleRe = new RegExp(
-  `(\\s*(?:${COMMENT_PLACEHOLDER}\\s*)*)([^;\\{\\}]+?)(\\s*)((?:{%BLOCK%}?\\s*;?)|(?:\\s*;))`,
+  `(\\s*(?:${COMMENT_PLACEHOLDER}\\s*)*)([^;\\{\\}]+?)(\\s*)((?:{%BLOCK%}?\\s*;?)|(?:\\s*;)|$)`,
   'g',
 );
 const CONTENT_PAIRS = new Map([['{', '}']]);
@@ -1029,10 +1032,14 @@ const CONTENT_PAIRS = new Map([['{', '}']]);
 const COMMA_IN_PLACEHOLDER = '%COMMA_IN_PLACEHOLDER%';
 const SEMI_IN_PLACEHOLDER = '%SEMI_IN_PLACEHOLDER%';
 const COLON_IN_PLACEHOLDER = '%COLON_IN_PLACEHOLDER%';
+const LBRACE_IN_PLACEHOLDER = '%LBRACE_IN_PLACEHOLDER%';
+const RBRACE_IN_PLACEHOLDER = '%RBRACE_IN_PLACEHOLDER%';
 
 const _cssCommaInPlaceholderReGlobal = new RegExp(COMMA_IN_PLACEHOLDER, 'g');
 const _cssSemiInPlaceholderReGlobal = new RegExp(SEMI_IN_PLACEHOLDER, 'g');
 const _cssColonInPlaceholderReGlobal = new RegExp(COLON_IN_PLACEHOLDER, 'g');
+const _cssLbraceInPlaceholderReGlobal = new RegExp(LBRACE_IN_PLACEHOLDER, 'g');
+const _cssRbraceInPlaceholderReGlobal = new RegExp(RBRACE_IN_PLACEHOLDER, 'g');
 
 // Matches any CSS variable name, defined by a double-hyphen followed by any valid ident.
 // https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
@@ -1067,8 +1074,9 @@ export function namespaceCssVariables(cssText: string): string {
 
 export class CssRule {
   constructor(
-    public selector: string,
-    public content: string,
+    readonly selector: string,
+    readonly content: string,
+    readonly isBlock: boolean,
   ) {}
 }
 
@@ -1081,12 +1089,14 @@ export function processRules(input: string, ruleCallback: (rule: CssRule) => Css
     let content = '';
     let suffix = m[4];
     let contentPrefix = '';
+    let hasBlock = false;
     if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
       content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
       suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
       contentPrefix = '{';
+      hasBlock = true;
     }
-    const rule = ruleCallback(new CssRule(selector, content));
+    const rule = ruleCallback(new CssRule(selector, content, hasBlock));
     return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
   });
   return unescapeInStrings(escapedResult);
@@ -1155,6 +1165,8 @@ const ESCAPE_IN_STRING_MAP: {[key: string]: string} = {
   ';': SEMI_IN_PLACEHOLDER,
   ',': COMMA_IN_PLACEHOLDER,
   ':': COLON_IN_PLACEHOLDER,
+  '{': LBRACE_IN_PLACEHOLDER,
+  '}': RBRACE_IN_PLACEHOLDER,
 };
 
 /**
@@ -1225,6 +1237,8 @@ function unescapeInStrings(input: string): string {
   let result = input.replace(_cssCommaInPlaceholderReGlobal, ',');
   result = result.replace(_cssSemiInPlaceholderReGlobal, ';');
   result = result.replace(_cssColonInPlaceholderReGlobal, ':');
+  result = result.replace(_cssLbraceInPlaceholderReGlobal, '{');
+  result = result.replace(_cssRbraceInPlaceholderReGlobal, '}');
   return result;
 }
 
