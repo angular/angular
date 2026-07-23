@@ -77,6 +77,7 @@ export type CreateOp =
   | I18nContextOp
   | I18nAttributesOp
   | DeclareLetOp
+  | ConditionalMetadataOp
   | AnimationListenerOp
   | AnimationStringOp
   | AnimationOp
@@ -527,6 +528,45 @@ export function createConditionalBranchCreateOp(
     startSourceSpan,
     wholeSourceSpan,
     ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Debug metadata for a conditional control flow block.
+ */
+export interface ConditionalMetadataOp extends Op<CreateOp> {
+  kind: OpKind.ConditionalMetadata;
+  targetSlot: SlotHandle;
+  conditionalKind: 'if' | 'switch';
+  branchCount: number;
+  defaultBranchIndex: number | null;
+  expression: string | null;
+  branchExpressions: Array<string | null | string[]>;
+  hasExhaustiveCheck: boolean;
+  sourceSpan: ParseSourceSpan;
+}
+
+export function createConditionalMetadataOp(
+  targetSlot: SlotHandle,
+  conditionalKind: 'if' | 'switch',
+  branchCount: number,
+  defaultBranchIndex: number | null,
+  expression: string | null,
+  branchExpressions: Array<string | null | string[]>,
+  sourceSpan: ParseSourceSpan,
+  hasExhaustiveCheck = false,
+): ConditionalMetadataOp {
+  return {
+    kind: OpKind.ConditionalMetadata,
+    targetSlot,
+    conditionalKind,
+    branchCount,
+    defaultBranchIndex,
+    expression,
+    branchExpressions,
+    hasExhaustiveCheck,
+    sourceSpan,
     ...NEW_OP,
   };
 }

@@ -77,6 +77,8 @@ export type HydrationStatus =
 export enum ControlFlowBlockType {
   Defer,
   For,
+  If,
+  Switch,
 }
 
 export interface ControlFlowBlock {
@@ -109,6 +111,24 @@ export interface ForLoopBlock extends ControlFlowBlock {
   hasEmptyBlock: boolean;
   items: Descriptor[];
   trackExpression: string;
+}
+
+export interface IfBlock extends ControlFlowBlock {
+  type: ControlFlowBlockType.If;
+  branchCount: number;
+  activeBranchIndex: number | null;
+  hasElseBlock: boolean;
+  conditionExpressions: Array<string | null>;
+}
+
+export interface SwitchBlock extends ControlFlowBlock {
+  type: ControlFlowBlockType.Switch;
+  caseCount: number;
+  activeCaseIndex: number | null;
+  defaultCaseIndex: number | null;
+  expression: string | null;
+  caseExpressions: string[][];
+  hasExhaustiveCheck: boolean;
 }
 
 export type ChangeDetection = 'ng-on-push' | 'ng-eager' | 'acx-on-push' | 'acx-default';
@@ -307,7 +327,7 @@ export interface DirectiveProfile {
 export interface ElementProfile {
   directives: DirectiveProfile[];
   children: ElementProfile[];
-  type: 'element' | 'defer' | 'for';
+  type: 'element' | 'defer' | 'for' | 'if' | 'switch';
 }
 
 export interface ProfilerFrame {

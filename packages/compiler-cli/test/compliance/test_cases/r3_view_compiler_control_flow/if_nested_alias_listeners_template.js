@@ -25,6 +25,7 @@ function MyApp_Conditional_0_Conditional_1_Conditional_1_Template(rf, ctx) {
 	  });
 	  $r3$.ɵɵelementEnd();
 	  $r3$.ɵɵconditionalCreate(1, MyApp_Conditional_0_Conditional_1_Conditional_1_Template, 1, 0, "button");
+	  (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(1, "if", 1, null, "value()", ["value()"]);
 	}
 	if (rf & 2) {
 	  let $MyApp_Conditional_0_Conditional_1_contFlowTmp$;
@@ -45,6 +46,7 @@ function MyApp_Conditional_0_Conditional_1_Conditional_1_Template(rf, ctx) {
 	  });
 	  $r3$.ɵɵelementEnd();
 	  $r3$.ɵɵconditionalCreate(1, MyApp_Conditional_0_Conditional_1_Template, 2, 1);
+	  (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(1, "if", 1, null, "value()", ["value()"]);
 	}
 	if (rf & 2) {
 	  let $MyApp_Conditional_0_contFlowTmp$;
@@ -57,6 +59,7 @@ function MyApp_Conditional_0_Conditional_1_Conditional_1_Template(rf, ctx) {
   function MyApp_Template(rf, ctx) {
 	if (rf & 1) {
 	  $r3$.ɵɵconditionalCreate(0, MyApp_Conditional_0_Template, 2, 1);
+	  (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(0, "if", 1, null, "value()", ["value()"]);
 	}
 	if (rf & 2) {
 	  let $MyApp_contFlowTmp$;

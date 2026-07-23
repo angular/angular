@@ -9,6 +9,7 @@
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import {Identifiers} from '../../../render3/r3_identifiers';
+import {devOnlyGuardedExpression} from '../../../render3/util';
 import * as ir from '../ir';
 
 // This file contains helpers for generating calls to Ivy instructions. In particular, each
@@ -509,6 +510,38 @@ export function conditionalBranchCreate(
     args.pop();
   }
   return call(Identifiers.conditionalBranchCreate, args, sourceSpan);
+}
+
+export function conditionalMetadata(
+  slot: number,
+  kind: 'if' | 'switch',
+  branchCount: number,
+  defaultBranchIndex: number | null,
+  expression: string | null,
+  branchExpressions: Array<string | null | string[]>,
+  sourceSpan: ParseSourceSpan,
+  hasExhaustiveCheck = false,
+): ir.CreateOp {
+  const args = [
+    o.literal(slot),
+    o.literal(kind),
+    o.literal(branchCount),
+    o.literal(defaultBranchIndex),
+    o.literal(expression),
+    o.literalArr(
+      branchExpressions.map((branchExpression) =>
+        Array.isArray(branchExpression)
+          ? o.literalArr(branchExpression.map((expression) => o.literal(expression)))
+          : o.literal(branchExpression),
+      ),
+    ),
+  ];
+  if (hasExhaustiveCheck) {
+    args.push(o.literal(hasExhaustiveCheck));
+  }
+
+  const expr = o.importExpr(Identifiers.conditionalMetadata).callFn(args, sourceSpan);
+  return ir.createStatementOp(new o.ExpressionStatement(devOnlyGuardedExpression(expr)));
 }
 
 export function repeaterCreate(

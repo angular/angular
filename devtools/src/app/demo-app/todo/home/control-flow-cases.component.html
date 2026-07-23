@@ -1,0 +1,122 @@
+<section class="control-flow-cases" aria-label="Control flow validation cases">
+  <div class="case-grid">
+    <article class="case-card">
+      <h3>&#64;if alias with nested narrowing</h3>
+      @if (selectedProfile; as profile) {
+        @if (profile.role === 'admin' && profile.quota.remaining > 10) {
+          <app-rendered-text [text]="'Admin ' + profile.name + ' has quota.'" />
+        } @else {
+          <app-rendered-text class="muted" text="Profile exists without admin quota." />
+        }
+      } @else {
+        <app-rendered-text class="muted" text="No profile selected." />
+      }
+    </article>
+
+    <article class="case-card">
+      <h3>&#64;if else-if chain with expressions</h3>
+      @if (ifCase === 'ready' && (selectedProfile?.quota?.remaining ?? 0) > 10) {
+        <app-rendered-text text="Ready with quota." />
+      } @else if (ifCase === 'error' || selectedProfile?.role === 'viewer') {
+        <app-rendered-text class="danger" text="Blocked or viewer-only state." />
+      } @else if (ifCase === 'loading' && selectedProfile?.tasks !== 0) {
+        <app-rendered-text text="Loading assigned work." />
+      } @else {
+        <app-rendered-text class="muted" text="Fallback branch." />
+      }
+    </article>
+
+    <article class="case-card">
+      <h3>&#64;switch with grouped cases and default</h3>
+      @switch (filterCase) {
+        @case ('all')
+        @case ('active') {
+          <app-rendered-text text="Shared all/active branch." />
+        }
+        @case ('completed') {
+          <app-rendered-text text="Completed branch." />
+        }
+        @default {
+          <app-rendered-text class="muted" text="Default branch for archived." />
+        }
+      }
+    </article>
+
+    <article class="case-card">
+      <h3>&#64;switch case expressions</h3>
+      @switch (priorityScore + priorityOffset) {
+        @case (criticalPriority) {
+          <app-rendered-text class="danger" text="Critical priority." />
+        }
+        @case (warningPriority) {
+          <app-rendered-text text="Warning priority." />
+        }
+        @default {
+          <app-rendered-text class="muted" text="Unmatched priority expression." />
+        }
+      }
+    </article>
+
+    <article class="case-card">
+      <h3>&#64;switch type narrowing</h3>
+      @let narrowed = narrowedSwitchValue;
+      @switch (narrowed.kind) {
+        @case ('text') {
+          <app-rendered-text [text]="'Text length: ' + narrowed.text.length" />
+        }
+        @case ('count') {
+          <app-rendered-text [text]="'Count doubled: ' + narrowed.count * 2" />
+        }
+        @case ('flag') {
+          <app-rendered-text
+            [text]="'Flag is ' + (narrowed.enabled ? 'enabled' : 'disabled') + '.'"
+          />
+        }
+      }
+    </article>
+
+    <article class="case-card">
+      <h3>Exhaustive &#64;switch default never</h3>
+      @switch (exhaustiveNeverCase) {
+        @case ('loggedOut') {
+          <app-rendered-text class="muted" text="Logged out branch." />
+        }
+        @case ('loading') {
+          <app-rendered-text text="Loading branch." />
+        }
+        @case ('loggedIn') {
+          <app-rendered-text text="Logged in branch." />
+        }
+        @default never;
+      }
+    </article>
+
+    <article class="case-card">
+      <h3>&#64;switch without default and no match</h3>
+      @switch (noDefaultCase) {
+        @case ('draft') {
+          <app-rendered-text text="Draft branch." />
+        }
+        @case ('queued') {
+          <app-rendered-text text="Queued branch." />
+        }
+      }
+      <app-rendered-text class="muted" text="No branch renders for the expired value." />
+    </article>
+
+    <article class="case-card">
+      <h3>&#64;switch default before cases</h3>
+      @switch (defaultFirstCase) {
+        @default {
+          <app-rendered-text class="muted" text="Default appears before the explicit cases." />
+        }
+        @case ('retry') {
+          <app-rendered-text text="Retry branch." />
+        }
+        @case ('success') {
+          <app-rendered-text text="Success branch." />
+        }
+      }
+    </article>
+  </div>
+</section>

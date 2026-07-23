@@ -38,6 +38,11 @@ import {LiveCollection, reconcile} from '../list_reconciliation';
 import {destroyLView} from '../node_manipulation';
 import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
+import {
+  ConditionalBlockKind,
+  ConditionalBranchExpression,
+  setConditionalBlockMetadata,
+} from '../util/control_flow_metadata';
 import {getConstant, getTNode} from '../util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
@@ -148,6 +153,38 @@ export function ɵɵconditionalBranchCreate(
     localRefExtractor,
   );
   return ɵɵconditionalBranchCreate;
+}
+
+/**
+ * Attaches debug metadata to a conditional control flow block (`@if` or `@switch`).
+ *
+ * @param index The index of the first branch container in the data array.
+ * @param kind The control flow block kind.
+ * @param branchCount The number of branch containers in this block.
+ * @param defaultBranchIndex The `@else` or `@default` branch index, if one exists.
+ * @param expression The primary expression evaluated by the block.
+ * @param branchExpressions The expressions evaluated by each branch.
+ * @param hasExhaustiveCheck Whether the switch block has an exhaustive type check.
+ * @codeGenApi
+ */
+export function ɵɵconditionalMetadata(
+  index: number,
+  kind: ConditionalBlockKind,
+  branchCount: number,
+  defaultBranchIndex: number | null = null,
+  expression: string | null = null,
+  branchExpressions: ConditionalBranchExpression[] = [],
+  hasExhaustiveCheck = false,
+): void {
+  const tNode = getExistingTNode(getTView(), HEADER_OFFSET + index);
+  setConditionalBlockMetadata(tNode, {
+    kind,
+    branchCount,
+    defaultBranchIndex,
+    expression,
+    branchExpressions,
+    hasExhaustiveCheck,
+  });
 }
 
 /**

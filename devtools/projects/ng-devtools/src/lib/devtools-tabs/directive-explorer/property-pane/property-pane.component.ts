@@ -11,6 +11,7 @@ import {DirectivePosition} from '../../../../../../protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
 import {PropertyPaneHeaderComponent} from './property-pane-header/property-pane-header.component';
+import {ConditionalViewComponent} from './conditional-view/conditional-view.component';
 import {DeferViewComponent} from './defer-view/defer-view.component';
 import {ForLoopViewComponent} from './for-loop-view/for-loop-view.component';
 import {PropertyViewComponent} from './property-view/property-view.component';
@@ -25,6 +26,7 @@ import {BlockType} from '../../../shared/utils/control-flow';
   imports: [
     PropertyPaneHeaderComponent,
     PropertyViewComponent,
+    ConditionalViewComponent,
     DeferViewComponent,
     ForLoopViewComponent,
   ],

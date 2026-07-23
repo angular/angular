@@ -28,6 +28,7 @@ function MyApp_Conditional_1_Conditional_2_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵtext(0);
     $r3$.ɵɵconditionalCreate(1, MyApp_Conditional_1_Conditional_2_Conditional_1_Template, 1, 0)(2, MyApp_Conditional_1_Conditional_2_Conditional_2_Template, 1, 4);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(1, "if", 2, null, "foo", ["foo", "value()"]);
   }
   if (rf & 2) {
     let $tmp_5_0$;
@@ -42,6 +43,7 @@ function MyApp_Conditional_1_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵtext(0);
     $r3$.ɵɵconditionalCreate(1, MyApp_Conditional_1_Conditional_1_Template, 1, 0)(2, MyApp_Conditional_1_Conditional_2_Template, 3, 4);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(1, "if", 2, null, "foo", ["foo", "value()"]);
   }
   if (rf & 2) {
     let $tmp_3_0$;
@@ -57,6 +59,7 @@ function MyApp_Conditional_1_Template(rf, ctx) {
 function MyApp_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵconditionalCreate(0, MyApp_Conditional_0_Template, 1, 0)(1, MyApp_Conditional_1_Template, 3, 3);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(0, "if", 2, null, "foo", ["foo", "value()"]);
   }
   if (rf & 2) {
     let $tmp_0_0$;

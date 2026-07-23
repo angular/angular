@@ -625,6 +625,24 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
 
         ir.OpList.replace(op, ng.attachSourceLocation(op.templatePath, locationsLiteral));
         break;
+      case ir.OpKind.ConditionalMetadata:
+        if (op.targetSlot.slot === null) {
+          throw new Error('No slot was assigned for conditional metadata');
+        }
+        ir.OpList.replace(
+          op,
+          ng.conditionalMetadata(
+            op.targetSlot.slot,
+            op.conditionalKind,
+            op.branchCount,
+            op.defaultBranchIndex,
+            op.expression,
+            op.branchExpressions,
+            op.sourceSpan,
+            op.hasExhaustiveCheck,
+          ),
+        );
+        break;
       case ir.OpKind.ControlCreate:
         ir.OpList.replace(op, ng.controlCreate(op.sourceSpan));
         break;

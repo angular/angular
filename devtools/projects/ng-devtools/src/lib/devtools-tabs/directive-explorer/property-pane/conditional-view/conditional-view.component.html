@@ -1,0 +1,25 @@
+@if (primaryExpression(); as expression) {
+  <mat-toolbar class="section-heading">Expression</mat-toolbar>
+  <div class="details">
+    <span class="pill">{{ expression }}</span>
+  </div>
+}
+
+<mat-toolbar class="section-heading">Rendered block</mat-toolbar>
+<div class="details">
+  @if (renderedBlock(); as block) {
+    <span class="pill flagged">{{ block }}</span>
+  } @else {
+    <em>{{ emptyRenderedBlockLabel() }}</em>
+  }
+</div>
+
+<mat-toolbar class="section-heading">Declared blocks</mat-toolbar>
+<div class="details">
+  @for (block of declaredBlocks(); track $index) {
+    <span class="pill">{{ block }}</span>
+  }
+</div>
+
+<mat-toolbar class="section-heading">State</mat-toolbar>
+<div class="details">{{ state() }}</div>
