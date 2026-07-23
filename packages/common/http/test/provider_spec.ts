@@ -267,6 +267,19 @@ describe('provideHttpClient', () => {
   });
 
   describe('xsrf protection', () => {
+    it('should enable xsrf protection for the root-provided HttpClient', () => {
+      TestBed.configureTestingModule({
+        providers: [provideHttpClientTesting(), {provide: PLATFORM_ID, useValue: 'test'}],
+      });
+
+      setXsrfToken('abcdefg');
+
+      TestBed.inject(HttpClient).post('/test', '', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      expect(req.request.headers.get('X-XSRF-TOKEN')).toEqual('abcdefg');
+      req.flush('');
+    });
+
     it('should enable xsrf protection by default', () => {
       TestBed.configureTestingModule({
         providers: [
@@ -317,7 +330,7 @@ describe('provideHttpClient', () => {
 
       TestBed.inject(HttpClient).post('/test', '', {responseType: 'text'}).subscribe();
       const req = TestBed.inject(HttpTestingController).expectOne('/test');
-      expect(req.request.headers.has('X-Custom-Xsrf-Header')).toBeFalse();
+      expect(req.request.headers.has('X-XSRF-TOKEN')).toBeFalse();
       req.flush('');
     });
 
