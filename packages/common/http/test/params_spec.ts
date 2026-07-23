@@ -180,6 +180,15 @@ describe('HttpUrlEncodedParams', () => {
       const body2 = new HttpParams({fromString: 'a=1 2 3&b=mail@test&c=3_^[]$&d=eq=1&e=1+1'});
       expect(body2.toString()).toEqual('a=1%202%203&b=mail@test&c=3_%5E%5B%5D$&d=eq=1&e=1%2B1');
     });
+
+    it('should keep `=` encoded in a key so the pair round-trips', () => {
+      const body = new HttpParams().set('filter=admin', 'true');
+      expect(body.toString()).toEqual('filter%3Dadmin=true');
+
+      const reparsed = new HttpParams({fromString: body.toString()});
+      expect(reparsed.keys()).toEqual(['filter=admin']);
+      expect(reparsed.get('filter=admin')).toEqual('true');
+    });
   });
 
   describe('toString', () => {
