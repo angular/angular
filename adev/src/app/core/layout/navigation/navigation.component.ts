@@ -9,7 +9,7 @@
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {ConnectedPosition, ConnectionPositionPair} from '@angular/cdk/overlay';
 import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
-import {Component, PLATFORM_ID, inject, signal} from '@angular/core';
+import {Component, PLATFORM_ID, computed, inject, injectAsync, onIdle, signal} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
@@ -28,6 +28,7 @@ import {ANGULAR_LINKS} from '../../constants/links';
 import {PAGE_PREFIX} from '../../constants/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
+import type {AngryAngie} from '../../services/angry-angie.service';
 
 type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
@@ -80,6 +81,13 @@ export class Navigation {
   protected readonly theme = this.themeManager.theme;
   protected readonly openedMenu = signal<MenuType | null>(null);
 
+  private readonly angryAngieLoader = injectAsync(
+    () => import('../../services/angry-angie.service').then((m) => m.AngryAngie),
+    {prefetch: onIdle},
+  );
+  private readonly angryAngie = signal<AngryAngie | null>(null);
+  protected readonly showAngryAngie = computed(() => this.angryAngie()?.show() ?? false);
+
   protected readonly currentDocsVersion = this.versionManager.currentDocsVersion;
   protected readonly currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
 
@@ -104,10 +112,19 @@ export class Navigation {
     this.listenToRouteChange();
     this.preventToScrollContentWhenSecondaryNavIsOpened();
     this.closeMobileNavOnPrimaryRouteChange();
+
+    this.angryAngieLoader().then(
+      (angryAngie) => this.angryAngie.set(angryAngie),
+      () => {},
+    );
   }
 
   protected setTheme(theme: Theme): void {
     this.themeManager.setTheme(theme);
+  }
+
+  protected registerThemeTap(): void {
+    this.angryAngie()?.registerTap();
   }
 
   protected openVersionMenu($event: MouseEvent): void {

@@ -1,0 +1,66 @@
+.adev-angry-angie {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-easter-egg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  img {
+    display: block;
+    width: min(340px, 60vw);
+    height: auto;
+    animation: adev-angry-angie-shake 0.8s ease-in-out 0.35s 3;
+  }
+}
+
+.adev-angry-angie--entering {
+  animation: adev-angry-angie-in 0.35s ease-out;
+}
+
+.adev-angry-angie--leaving {
+  animation: adev-angry-angie-out 0.3s ease-in forwards;
+}
+
+@keyframes adev-angry-angie-in {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes adev-angry-angie-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
+@keyframes adev-angry-angie-shake {
+  from,
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translate3d(-8px, 0, 0);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translate3d(8px, 0, 0);
+  }
+}
