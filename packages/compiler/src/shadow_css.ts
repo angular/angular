@@ -1021,7 +1021,13 @@ const _commentWithHashPlaceHolderRe = new RegExp(COMMENT_PLACEHOLDER, 'g');
 
 const BLOCK_PLACEHOLDER = '%BLOCK%';
 const _ruleRe = new RegExp(
-  `(\\s*(?:${COMMENT_PLACEHOLDER}\\s*)*)([^;\\{\\}]+?)(\\s*)((?:{%BLOCK%}?\\s*;?)|(?:\\s*;))`,
+  // The lookahead (?=[^;{}]*[;{]) ensures the regex fails fast on malformed CSS
+  // that lacks a terminator, preventing O(k²) backtracking when many comment
+  // placeholders are followed by content with no closing `;' or `{'.
+  // Group 1 uses a flat alternation instead of nested \s* quantifiers.
+  // Group 2 requires a non-whitespace lead so the boundary with group 1 is
+  // unambiguous and the engine cannot redistribute spaces between the two groups.
+  `(?=[^;\{\}]*[;\{])((?:${COMMENT_PLACEHOLDER}|\s)*)([^;\{\}\s][^;\{\}]*?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))`,
   'g',
 );
 const CONTENT_PAIRS = new Map([['{', '}']]);
