@@ -36,7 +36,7 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  */
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  config: {when: NoInfer<LogicFn<TValue, boolean, TPathKind>>},
+  config?: {when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>},
 ): void;
 
 /**
@@ -46,20 +46,21 @@ export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
  */
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  logic: NoInfer<LogicFn<TValue, boolean, TPathKind>>,
+  logic?: NoInfer<LogicFn<TValue, boolean, TPathKind>>,
 ): void;
 
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  configOrLogic:
-    | {when: NoInfer<LogicFn<TValue, boolean, TPathKind>>}
+  configOrLogic?:
+    | {when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>}
     | NoInfer<LogicFn<TValue, boolean, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  const logic = typeof configOrLogic === 'function' ? configOrLogic : configOrLogic.when;
+  const logic =
+    typeof configOrLogic === 'function' ? configOrLogic : (configOrLogic?.when ?? (() => true));
 
   pathNode.builder.addHiddenRule(logic);
 }
