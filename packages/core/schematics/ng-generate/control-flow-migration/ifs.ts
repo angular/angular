@@ -75,8 +75,15 @@ export function migrateIf(template: string): {
 }
 
 function migrateNgIf(etm: ElementToMigrate, tmpl: string, offset: number): Result {
-  const matchThen = etm.attr.value.match(/[^\w\d];?\s*then/gm);
-  const matchElse = etm.attr.value.match(/[^\w\d];?\s*else/gm);
+  // The negative lookahead (?![\w$]) ensures `then`/`else` are matched only as
+  // whole keywords. Without it, an else/then template reference name that merely
+  // *starts* with `then`/`else` (e.g. `else thenBlock`) is misidentified as the
+  // `then` keyword, since `[^\w$];?\s*then` also matches the `then` prefix of
+  // `thenBlock`. `$` is included alongside `\w` (which already covers digits)
+  // since it is a valid identifier character in JS/template reference names
+  // (e.g. `#then$`), but is not part of `\w`.
+  const matchThen = etm.attr.value.match(/[^\w$];?\s*then(?![\w$])/gm);
+  const matchElse = etm.attr.value.match(/[^\w$];?\s*else(?![\w$])/gm);
 
   if (etm.thenAttr !== undefined || etm.elseAttr !== undefined) {
     // bound if then / if then else
