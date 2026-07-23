@@ -123,8 +123,7 @@ export const enum IcuCreateOpCode {
  * ```
  */
 export interface IcuCreateOpCodes
-  extends Array<number | string | ELEMENT_MARKER | ICU_MARKER | null>,
-    I18nDebug {
+  extends Array<number | string | ELEMENT_MARKER | ICU_MARKER | null>, I18nDebug {
   __brand__: 'I18nCreateOpCodes';
 }
 
@@ -213,7 +212,7 @@ export interface I18nDebug {
  *
  * for(var i=0; i<i18nCreateOpCodes.length; i++) {
  *   const opcode = i18NCreateOpCodes[i++];
- *   const index = opcode >> I18nCreateOpCode.SHIFT;
+ *   const index = opcode >>> I18nCreateOpCode.SHIFT;
  *   const text = i18NCreateOpCodes[i];
  *   let node: Text|Comment;
  *   if (opcode & I18nCreateOpCode.COMMENT === I18nCreateOpCode.COMMENT) {
