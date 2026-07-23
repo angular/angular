@@ -45,10 +45,7 @@
           "failureMessage": "Incorrect definition"
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "linked compile"
-      ]
+      "compilationModeFilter": ["full compile", "linked compile"]
     },
     {
       "description": "should not capture the transform function in the compiled JS for signal inputs",
