@@ -30,12 +30,14 @@ import {
 import {
   BODY,
   CACHE_OPTIONS,
+  EVENT_RESPONSE_TYPE,
   HEADERS,
   HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+  REDIRECTED,
+  REQ_URL,
   RESPONSE_TYPE,
   STATUS,
   STATUS_TEXT,
-  REQ_URL,
   transferCacheInterceptorFn,
   withHttpTransferCache,
   generateHash,
@@ -54,6 +56,11 @@ interface RequestParams {
   credentials?: RequestCredentials;
   cache?: RequestCache;
   body?: RequestBody;
+}
+
+interface ResponseOptions {
+  redirected?: boolean;
+  responseType?: ResponseType;
 }
 
 type RequestBody =
@@ -302,20 +309,27 @@ describe('TransferCache', () => {
       url: string,
       body: RequestBody,
       params?: RequestParams,
+      responseOptions?: ResponseOptions,
     ): string;
     function makeRequestAndExpectOne(
       url: string,
       body: RequestBody,
       params?: RequestParams & {observe: 'response'},
+      responseOptions?: ResponseOptions,
     ): HttpResponse<string>;
-    function makeRequestAndExpectOne(url: string, body: RequestBody, params?: RequestParams): any {
+    function makeRequestAndExpectOne(
+      url: string,
+      body: RequestBody,
+      params?: RequestParams,
+      responseOptions?: ResponseOptions,
+    ): any {
       let response!: any;
       TestBed.inject(HttpClient)
         .request(params?.method ?? 'GET', url, params)
         .subscribe((r) => (response = r));
       TestBed.inject(HttpTestingController)
         .expectOne(url)
-        .flush(body, {headers: params?.responseHeaders ?? params?.headers});
+        .flush(body, {headers: params?.responseHeaders ?? params?.headers, ...responseOptions});
       return response;
     }
 
@@ -408,8 +422,24 @@ describe('TransferCache', () => {
     });
 
     it('should stop storing HTTP calls in `TransferState` after application becomes stable', async () => {
-      makeRequestAndExpectOne('/test-1', 'foo');
-      makeRequestAndExpectOne('/test-2', 'buzz');
+      makeRequestAndExpectOne(
+        '/test-1',
+        'foo',
+        {},
+        {
+          responseType: 'default',
+          redirected: true,
+        },
+      );
+      makeRequestAndExpectOne(
+        '/test-2',
+        'buzz',
+        {},
+        {
+          responseType: 'cors',
+          redirected: false,
+        },
+      );
 
       isStable.next(true);
 
@@ -426,6 +456,8 @@ describe('TransferCache', () => {
           [STATUS_TEXT]: 'OK',
           [REQ_URL]: '/test-1',
           [RESPONSE_TYPE]: 'json',
+          [REDIRECTED]: true,
+          [EVENT_RESPONSE_TYPE]: 'default',
         },
         'ceddc6689dc1f2fc3a0b8c364b6e00a79b99a149f27e84da87cec03d44c150c8': {
           [BODY]: 'buzz',
@@ -434,14 +466,48 @@ describe('TransferCache', () => {
           [STATUS_TEXT]: 'OK',
           [REQ_URL]: '/test-2',
           [RESPONSE_TYPE]: 'json',
+          [REDIRECTED]: false,
+          [EVENT_RESPONSE_TYPE]: 'cors',
+        },
+      });
+    });
+
+    it('should NOT store redirected and responseType in transfer state when using XHR', async () => {
+      // XHR-based requests do not populate `redirected` or `responseType` on the HttpResponse,
+      // so those fields should be omitted from the cached entry to avoid bloating TransferState.
+      makeRequestAndExpectOne('/test-xhr', 'foo');
+
+      isStable.next(true);
+      await timeout();
+
+      const transferState = TestBed.inject(TransferState);
+      const stateJson = JSON.parse(transferState.toJson()) as Record<string, unknown>;
+
+      expect(stateJson).toEqual({
+        'f5ec817a9aa3d4b788d6624a845ffbfb247d82c0e48beba163d0a7947bdcb0c2': {
+          [BODY]: 'foo',
+          [HEADERS]: {},
+          [STATUS]: 200,
+          [STATUS_TEXT]: 'OK',
+          [REQ_URL]: '/test-xhr',
+          [RESPONSE_TYPE]: 'json',
         },
       });
     });
 
     it(`should use calls from cache when present and application is not stable`, () => {
-      makeRequestAndExpectOne('/test-1', 'foo');
+      makeRequestAndExpectOne(
+        '/test-1',
+        'foo',
+        {observe: 'response'},
+        {redirected: true, responseType: 'cors'},
+      );
       // Do the same call, this time it should served from cache.
-      makeRequestAndExpectNone('/test-1');
+      const cachedResponse = makeRequestAndExpectNone('/test-1');
+
+      expect(cachedResponse.body).toBe('foo');
+      expect(cachedResponse.redirected).toBeTrue();
+      expect(cachedResponse.responseType).toBe('cors');
     });
 
     it(`should not use calls from cache when present and application is stable`, async () => {
