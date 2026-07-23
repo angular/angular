@@ -79,6 +79,17 @@
           "failureMessage": "Incorrect definition"
         }
       ]
+    },
+    {
+      "description": "should capture signal input, required input, model and output members",
+      "inputFiles": ["signal_apis.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid signal API encoding",
+          "files": ["signal_apis.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
     }
   ]
 }

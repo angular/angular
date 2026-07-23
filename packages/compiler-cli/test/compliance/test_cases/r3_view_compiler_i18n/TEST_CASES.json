@@ -34,6 +34,17 @@
       "inputFiles": [
         "icu_and_i18n.ts"
       ]
+    },
+    {
+      "description": "should support an i18n message with `meaning|description@@id` metadata and placeholders",
+      "inputFiles": ["message_metadata_placeholders.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid i18n $localize message",
+          "files": ["message_metadata_placeholders.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }

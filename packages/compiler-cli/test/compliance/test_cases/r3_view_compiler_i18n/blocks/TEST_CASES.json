@@ -80,6 +80,17 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support i18n inside an @if/@else block",
+      "inputFiles": ["conditional_placeholders.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid i18n + control flow compilation",
+          "files": ["conditional_placeholders.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }

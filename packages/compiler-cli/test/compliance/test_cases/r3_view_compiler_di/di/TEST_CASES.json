@@ -188,6 +188,17 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should encode the `@Optional`, `@Self`, `@SkipSelf`, `@Host` and `@Attribute` injection flags in a directive factory",
+      "inputFiles": ["directive_injection.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid directive DI factory",
+          "files": ["directive_injection.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }

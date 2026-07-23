@@ -195,6 +195,39 @@
         }
       ],
       "compilationModeFilter": ["full compile", "instruction compile"]
+    },
+    {
+      "description": "should omit the default `OnPush` change detection in full mode, keep it in local mode, and emit `ShadowDom` encapsulation",
+      "inputFiles": ["change_detection.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid change detection / encapsulation metadata",
+          "files": ["change_detection.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
+    },
+    {
+      "description": "should read a directive through a view query on a template reference bound via `exportAs`",
+      "inputFiles": ["export_as_query.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid exportAs / template-ref query",
+          "files": ["export_as_query.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
+    },
+    {
+      "description": "should inherit the definition and factory for a directive that extends a base directive in another file",
+      "inputFiles": ["cross_file_inheritance.ts", "cross_file_inheritance_base.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid cross-file inheritance",
+          "files": ["cross_file_inheritance.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
     }
   ]
 }

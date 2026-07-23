@@ -75,6 +75,17 @@
           "failureMessage": "Incorrect service"
         }
       ]
+    },
+    {
+      "description": "should compile a service with `providedIn` set to `'platform'`, `'any'` and a module type",
+      "inputFiles": ["provided_in_variants.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid providedIn injectable",
+          "files": ["provided_in_variants.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }

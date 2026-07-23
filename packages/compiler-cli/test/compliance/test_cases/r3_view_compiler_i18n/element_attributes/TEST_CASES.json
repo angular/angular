@@ -196,6 +196,17 @@
           "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
+    },
+    {
+      "description": "should support interpolated i18n attributes (i18n-title/i18n-aria-label)",
+      "inputFiles": ["i18n_attributes.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid i18n attributes compilation",
+          "files": ["i18n_attributes.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }

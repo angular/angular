@@ -107,6 +107,17 @@
           "failureMessage": "Invalid host binding code"
         }
       ]
+    },
+    {
+      "description": "should generate host style/class instructions for [class]/[style] maps, a [style.width.px] unit binding and a [class.active] binding",
+      "inputFiles": ["host_style_class_bindings.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host style/class bindings",
+          "files": ["host_style_class_bindings.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
     }
   ]
 }
