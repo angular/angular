@@ -192,10 +192,10 @@ export class HttpHeaders {
 
   private copyFrom(other: HttpHeaders) {
     other.init();
-    Array.from(other.headers.keys()).forEach((key) => {
-      this.headers.set(key, other.headers.get(key)!);
+    for (const [key, values] of other.headers.entries()) {
+      this.headers.set(key, values.slice());
       this.normalizedNames.set(key, other.normalizedNames.get(key)!);
-    });
+    }
   }
 
   private clone(update: Update): HttpHeaders {
@@ -223,16 +223,17 @@ export class HttpHeaders {
         this.headers.set(key, base);
         break;
       case 'd':
-        const toDelete = update.value as string | undefined;
-        if (!toDelete) {
+        const toDelete = update.value;
+        if (toDelete === undefined) {
           this.headers.delete(key);
           this.normalizedNames.delete(key);
         } else {
+          const valuesToDelete = Array.isArray(toDelete) ? toDelete : [toDelete];
           let existing = this.headers.get(key);
           if (!existing) {
             return;
           }
-          existing = existing.filter((value) => toDelete.indexOf(value) === -1);
+          existing = existing.filter((value) => valuesToDelete.indexOf(value) === -1);
           if (existing.length === 0) {
             this.headers.delete(key);
             this.normalizedNames.delete(key);
