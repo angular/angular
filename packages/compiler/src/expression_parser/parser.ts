@@ -898,7 +898,13 @@ class _ParseAST {
       if (!this.consumeOptionalCharacter(chars.$COLON)) {
         const end = this.inputIndex;
         const expression = this.input.substring(start, end);
-        this.error(`Conditional expression ${expression} requires all 3 expressions`);
+        let errorMessage = `Conditional expression ${expression} requires all 3 expressions`;
+        if (this.detectPossibleUnescapedQuotes(this.input)) {
+          errorMessage +=
+            `. The expression may contain quotes that were not escaped correctly. ` +
+            `Use "\\\\"" or '\\\\'' to escape quotes in inline templates`;
+        }
+        this.error(errorMessage);
         no = new EmptyExpr(this.span(start), this.sourceSpan(start));
       } else {
         no = this.parsePipe();
@@ -907,6 +913,12 @@ class _ParseAST {
     } else {
       return result;
     }
+  }
+
+  private detectPossibleUnescapedQuotes(input: string): boolean {
+    // Look for 3+ consecutive quotes (e.g., ''') which is never valid.
+    // This pattern occurs when 'text\'' becomes 'text'' in inline templates.
+    return /'{3,}|"{3,}/.test(input);
   }
 
   private parseLogicalOr(): AST {
