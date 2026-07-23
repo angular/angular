@@ -89,7 +89,7 @@ const OPTIMIZED_ZONE_EVENT_TASK_DATA: EventTaskData = {
 export const zoneSymbolEventNames: any = Object.create(null);
 export const globalSources: any = {};
 
-const EVENT_NAME_SYMBOL_REGX = new RegExp('^' + ZONE_SYMBOL_PREFIX + '(\\w+)(true|false)$');
+const EVENT_NAME_SYMBOL_REGX = new RegExp('^' + ZONE_SYMBOL_PREFIX + '([\\s\\S]+)(true|false)$');
 const IMMEDIATE_PROPAGATION_SYMBOL = zoneSymbol('propagationStopped');
 
 function prepareEventNames(eventName: string, eventNameToString?: (eventName: string) => string) {
