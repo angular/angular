@@ -947,6 +947,69 @@ describe('SVG <script> bindings', () => {
   });
 });
 
+describe('HTML URL component sanitization', () => {
+  function expectNonExecutableUrl(element: HTMLAnchorElement | HTMLAreaElement) {
+    expect(element.protocol).not.toBe('javascript:');
+    expect(element.href.startsWith('javascript:')).toBeFalse();
+  }
+
+  it('should sanitize protocol setters after sanitized href writes on <a>', async () => {
+    @Component({
+      template: '<a [href]="url" [protocol]="protocol">link</a>',
+    })
+    class TestCmp {
+      url = 'javascript://%0Aalert(1)';
+      protocol = 'javascript:';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    const link = fixture.nativeElement.querySelector('a');
+    expect(link.href).toContain('unsafe');
+    expectNonExecutableUrl(link);
+  });
+
+  it('should sanitize split URL protocol setters on <a>', async () => {
+    @Component({
+      template: '<a [href]="baseHref" [protocol]="protocol" [pathname]="pathname">link</a>',
+    })
+    class TestCmp {
+      baseHref = 'foo://example.test/';
+      protocol = 'javascript:';
+      pathname = '/%0Aalert(2)';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    const link = fixture.nativeElement.querySelector('a');
+    expect(link.href).toContain('example.test');
+    expectNonExecutableUrl(link);
+  });
+
+  it('should sanitize protocol setters after sanitized href writes on <area>', async () => {
+    @Component({
+      template: `
+        <map name="pov">
+          <area shape="rect" coords="0,0,320,80" [href]="href" [protocol]="protocol" />
+        </map>
+      `,
+    })
+    class TestCmp {
+      href = 'javascript://%0Aalert(3)';
+      protocol = 'javascript:';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    const area = fixture.nativeElement.querySelector('area');
+    expect(area.href).toContain('unsafe');
+    expectNonExecutableUrl(area);
+  });
+});
+
 describe('SVG <a> link sanitization', () => {
   it('should sanitize dynamic `href` bindings on <svg:a>', () => {
     @Component({
