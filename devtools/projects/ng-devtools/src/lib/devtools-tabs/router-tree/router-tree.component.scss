@@ -117,4 +117,12 @@
 .unsupported-version {
   width: 50%;
   margin: auto;
+  text-align: center;
+
+  img {
+    display: block;
+    height: 160px;
+    width: auto;
+    margin: 0 auto 1rem;
+  }
 }
