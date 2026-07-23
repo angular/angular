@@ -453,8 +453,7 @@ ${nodes.map((node) => `"${node.sourceSpan.toString()}"`).join('\n')}
   }
 }
 
-const _CUSTOM_PH_EXP =
-  /\/\/[\s\S]*i18n[\s\S]*\([\s\S]*ph[\s\S]*=[\s\S]*("|')([\s\S]*?)\1[\s\S]*\)/g;
+const _CUSTOM_PH_EXP = /\/\/\s*i18n\s*\(\s*ph\s*=\s*("|')((?:(?!\1)[\s\S])*)\1\s*\)/g;
 
 function extractPlaceholderName(input: string): string {
   return input.split(_CUSTOM_PH_EXP)[2];
