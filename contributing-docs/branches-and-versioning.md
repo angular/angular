@@ -28,23 +28,26 @@ referred to as the **active patch branch**.
 
 ## Major releases lifecycle
 
-Angular releases a major version roughly every six months. Following a major release, we move
+Angular releases a major version roughly every twelve months. Following a major release, we move
 through a consistent lifecycle to the next major release, and repeat. At a high level, this
 process proceeds as follows:
 
 - A major release occurs. The `main` branch now represents the next minor version.
-- Six weeks later, a minor release occurs. The `main` branch now represents the next minor
-  version.
-- Six weeks later, a second minor release occurs. The `main` branch now represents the next major
+- Eight weeks later, a minor release occurs. The `main` branch now represents the next minor
+  version. This process repeats 4 times.
+- Eight weeks later, the last minor release occurs. The `main` branch now represents the next major
   version.
 - Three months later, a major release occurs and the process repeats.
 
+NOTE: Until Angular v22, Angular had a major release every six months, with 1-3 minor releases for each major release.
+
 ### Example
 
-- Angular publishes `11.0.0`. At this point in time, the `main` branch represents `11.1.0`.
-- Six weeks later, we publish `11.1.0` and `main` represents `11.2.0`.
-- Six weeks later, we publish `11.2.0` and `main` represents `12.0.0`.
-- Three months later, this cycle repeats with the publication of `12.0.0`.
+- Angular publishes `22.0.0`. At this point in time, the `main` branch represents `22.1.0`.
+- Eight weeks later, we publish `22.1.0` and `main` represents `22.2.0`.
+- The last step repeats until 22.4.0 is published and `main` represents `22.5.0`.
+- Eight weeks later, we publish `22.5.0` and `main` represents `23.0.0`.
+- Three months later, this cycle repeats with the publication of `23.0.0`.
 
 ### Feature freeze and release candidates
 
