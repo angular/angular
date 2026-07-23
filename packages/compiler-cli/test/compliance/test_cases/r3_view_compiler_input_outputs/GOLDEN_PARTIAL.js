@@ -172,3 +172,49 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: input_transforms.js
+ ****************************************************************************************************/
+import { booleanAttribute, Directive, Input, numberAttribute } from '@angular/core';
+import * as i0 from "@angular/core";
+function toUpper(value) {
+    return value.toUpperCase();
+}
+export class WithTransformsDirective {
+    disabled = false;
+    size = 0;
+    label = '';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: WithTransformsDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "16.1.0", version: "0.0.0-PLACEHOLDER", type: WithTransformsDirective, isStandalone: true, selector: "[withTransforms]", inputs: { disabled: ["disabled", "disabled", booleanAttribute], size: ["size", "size", numberAttribute], label: ["labelText", "label", toUpper] }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: WithTransformsDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[withTransforms]',
+                }]
+        }], propDecorators: { disabled: [{
+                type: Input,
+                args: [{ transform: booleanAttribute }]
+            }], size: [{
+                type: Input,
+                args: [{ transform: numberAttribute }]
+            }], label: [{
+                type: Input,
+                args: [{ alias: 'labelText', transform: toUpper }]
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: input_transforms.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class WithTransformsDirective {
+    disabled: boolean;
+    size: number;
+    label: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<WithTransformsDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<WithTransformsDirective, "[withTransforms]", never, { "disabled": { "alias": "disabled"; "required": false; }; "size": { "alias": "size"; "required": false; }; "label": { "alias": "labelText"; "required": false; }; }, {}, never, never, true, never>;
+    static ngAcceptInputType_disabled: unknown;
+    static ngAcceptInputType_size: unknown;
+    static ngAcceptInputType_label: string;
+}
+

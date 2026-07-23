@@ -1202,3 +1202,94 @@ export declare class MyComponent2 {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent2, "my-comp-2", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: host_decorators.js
+ ****************************************************************************************************/
+import { Directive, HostBinding, HostListener } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostStuffDirective {
+    active = false;
+    label = 'x';
+    get isActive() {
+        return this.active;
+    }
+    ariaLabel = this.label;
+    onClick(event) { }
+    onResize() { }
+    onEnter() { }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostStuffDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostStuffDirective, isStandalone: true, selector: "[hostStuff]", host: { listeners: { "mouseenter": "onEnter()", "click": "onClick($event)", "window:resize": "onResize()" }, properties: { "attr.role": "\"button\"", "class.is-active": "this.isActive", "attr.aria-label": "this.ariaLabel" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostStuffDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostStuff]',
+                    host: {
+                        '[attr.role]': '"button"',
+                        '(mouseenter)': 'onEnter()',
+                    },
+                }]
+        }], propDecorators: { isActive: [{
+                type: HostBinding,
+                args: ['class.is-active']
+            }], ariaLabel: [{
+                type: HostBinding,
+                args: ['attr.aria-label']
+            }], onClick: [{
+                type: HostListener,
+                args: ['click', ['$event']]
+            }], onResize: [{
+                type: HostListener,
+                args: ['window:resize']
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_decorators.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostStuffDirective {
+    active: boolean;
+    label: string;
+    get isActive(): boolean;
+    ariaLabel: string;
+    onClick(event: Event): void;
+    onResize(): void;
+    onEnter(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostStuffDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostStuffDirective, "[hostStuff]", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: sanitization_ambiguous_url.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+// An attribute-only selector: the directive can be placed on ANY element, so `src`/`href` belong
+// to both the URL and RESOURCE_URL security contexts. The compiler must defer the choice to
+// runtime via ɵɵsanitizeUrlOrResourceUrl.
+export class AmbiguousUrlDirective {
+    value = '';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AmbiguousUrlDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AmbiguousUrlDirective, isStandalone: true, selector: "[ambiguousUrl]", host: { properties: { "attr.src": "value", "attr.href": "value" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AmbiguousUrlDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[ambiguousUrl]',
+                    host: {
+                        '[attr.src]': 'value',
+                        '[attr.href]': 'value',
+                    },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: sanitization_ambiguous_url.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class AmbiguousUrlDirective {
+    value: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AmbiguousUrlDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<AmbiguousUrlDirective, "[ambiguousUrl]", never, {}, {}, never, never, true, never>;
+}
+

@@ -1,0 +1,6 @@
+…
+export class ChildDirective extends BaseDirective {
+  static ɵfac = /*@__PURE__*/ (() => { let ɵChildDirective_BaseFactory; return function ChildDirective_Factory(__ngFactoryType__) { return (ɵChildDirective_BaseFactory || (ɵChildDirective_BaseFactory = i0.ɵɵgetInheritedFactory(ChildDirective)))(__ngFactoryType__ || ChildDirective); }; })();
+  static ɵdir = /*@__PURE__*/ i0.ɵɵdefineDirective({ type: ChildDirective, selectors: [["", "child", ""]], standalone: false, features: [i0.ɵɵInheritDefinitionFeature] });
+}
+…

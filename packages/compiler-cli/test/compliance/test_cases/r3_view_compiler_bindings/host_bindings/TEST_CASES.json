@@ -310,6 +310,28 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support host bindings declared with @HostBinding and @HostListener merged with the host object",
+      "inputFiles": ["host_decorators.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host bindings merge",
+          "files": ["host_decorators.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
+    },
+    {
+      "description": "should support host bindings that sanitize an ambiguous src/href on an attribute-only directive",
+      "inputFiles": ["sanitization_ambiguous_url.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ambiguous-URL host sanitizer",
+          "files": ["sanitization_ambiguous_url.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile", "local compile"]
     }
   ]
 }

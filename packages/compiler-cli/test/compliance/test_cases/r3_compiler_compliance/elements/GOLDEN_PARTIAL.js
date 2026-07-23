@@ -780,3 +780,63 @@ export declare class MyComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: svg_xlink_href.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class AppComponent {
+    icon = '';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AppComponent, isStandalone: true, selector: "app-root", ngImport: i0, template: `<svg><use [attr.xlink:href]="icon"></use></svg>`, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'app-root',
+                    template: `<svg><use [attr.xlink:href]="icon"></use></svg>`,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: svg_xlink_href.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class AppComponent {
+    icon: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AppComponent, "app-root", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: trusted_constant_urls.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class AppComponent {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AppComponent, isStandalone: true, selector: "app-root", ngImport: i0, template: `
+    <iframe src="https://www.example.com/embed"></iframe>
+    <embed src="https://www.example.com/plugin" />
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'app-root',
+                    template: `
+    <iframe src="https://www.example.com/embed"></iframe>
+    <embed src="https://www.example.com/plugin" />
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: trusted_constant_urls.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class AppComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AppComponent, "app-root", never, {}, {}, never, never, true, never>;
+}
+

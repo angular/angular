@@ -817,3 +817,41 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: i18n_attributes.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class AppComponent {
+    name = 'world';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AppComponent, isStandalone: true, selector: "app-root", ngImport: i0, template: `<div
+    i18n-title
+    i18n-aria-label
+    title="Hello {{ name }}"
+    aria-label="Label {{ name }}"
+  ></div>`, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'app-root',
+                    template: `<div
+    i18n-title
+    i18n-aria-label
+    title="Hello {{ name }}"
+    aria-label="Label {{ name }}"
+  ></div>`,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: i18n_attributes.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class AppComponent {
+    name: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AppComponent, "app-root", never, {}, {}, never, never, true, never>;
+}
+

@@ -935,3 +935,71 @@ export declare class MyComponent {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-comp", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: plural_icu.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class AppComponent {
+    count = 0;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AppComponent, isStandalone: true, selector: "app-root", ngImport: i0, template: `<div i18n>{count, plural, =0 {no items} =1 {one item} other {{{count}} items}}</div>`, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'app-root',
+                    template: `<div i18n>{count, plural, =0 {no items} =1 {one item} other {{{count}} items}}</div>`,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: plural_icu.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class AppComponent {
+    count: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AppComponent, "app-root", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: select_in_plural_icu.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class AppComponent {
+    count = 0;
+    gender = 'other';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AppComponent, isStandalone: true, selector: "app-root", ngImport: i0, template: `<div i18n>
+    {count, plural,
+      =0 {zero}
+      other {{gender, select, male {he} female {she} other {they}} has {{count}}}
+    }
+  </div>`, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'app-root',
+                    template: `<div i18n>
+    {count, plural,
+      =0 {zero}
+      other {{gender, select, male {he} female {she} other {they}} has {{count}}}
+    }
+  </div>`,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: select_in_plural_icu.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class AppComponent {
+    count: number;
+    gender: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AppComponent, "app-root", never, {}, {}, never, never, true, never>;
+}
+

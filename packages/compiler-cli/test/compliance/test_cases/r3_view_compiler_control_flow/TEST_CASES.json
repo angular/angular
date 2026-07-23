@@ -805,6 +805,17 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should generate a @for block with a track function and an @empty block",
+      "inputFiles": ["for_track_fn_with_empty.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid @for repeater compilation",
+          "files": ["for_track_fn_with_empty.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }

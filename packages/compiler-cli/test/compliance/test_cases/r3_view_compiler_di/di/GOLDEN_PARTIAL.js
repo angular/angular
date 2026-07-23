@@ -435,3 +435,47 @@ export declare class MyModule {
 }
 export {};
 
+/****************************************************************************************************
+ * PARTIAL FILE: directive_injection.js
+ ****************************************************************************************************/
+import { Attribute, Directive, ElementRef, Host, Inject, InjectionToken, Optional, Self, SkipSelf, } from '@angular/core';
+import * as i0 from "@angular/core";
+export const TOKEN = new InjectionToken('TOKEN');
+export class WithDepsDirective {
+    constructor(element, name, token, self, host) { }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: WithDepsDirective, deps: [{ token: i0.ElementRef }, { token: 'name', attribute: true }, { token: TOKEN, optional: true }, { token: i0.ElementRef, self: true }, { token: i0.ElementRef, host: true, skipSelf: true }], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: WithDepsDirective, isStandalone: true, selector: "[withDeps]", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: WithDepsDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[withDeps]',
+                }]
+        }], ctorParameters: () => [{ type: i0.ElementRef }, { type: undefined, decorators: [{
+                    type: Attribute,
+                    args: ['name']
+                }] }, { type: undefined, decorators: [{
+                    type: Inject,
+                    args: [TOKEN]
+                }, {
+                    type: Optional
+                }] }, { type: i0.ElementRef, decorators: [{
+                    type: Self
+                }] }, { type: i0.ElementRef, decorators: [{
+                    type: SkipSelf
+                }, {
+                    type: Host
+                }] }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: directive_injection.d.ts
+ ****************************************************************************************************/
+import { ElementRef, InjectionToken } from '@angular/core';
+import * as i0 from "@angular/core";
+export declare const TOKEN: InjectionToken<string>;
+export declare class WithDepsDirective {
+    constructor(element: ElementRef, name: string, token: string | null, self: ElementRef, host: ElementRef);
+    static ɵfac: i0.ɵɵFactoryDeclaration<WithDepsDirective, [null, { attribute: "name"; }, { optional: true; }, { self: true; }, { host: true; skipSelf: true; }]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<WithDepsDirective, "[withDeps]", never, {}, {}, never, never, true, never>;
+}
+
