@@ -99,11 +99,15 @@ export class HttpInterceptorHandler implements HttpHandler {
 
   handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {
     if (this.chain === null) {
+      const parentHandler = this.injector.get(HttpHandler, null, {skipSelf: true});
+      const isDelegating = parentHandler !== null && this.backend === parentHandler;
+      const rootInterceptorFns = this.injector.get(
+        HTTP_ROOT_INTERCEPTOR_FNS,
+        [],
+        isDelegating ? {self: true} : undefined,
+      );
       const dedupedInterceptorFns = Array.from(
-        new Set([
-          ...this.injector.get(HTTP_INTERCEPTOR_FNS),
-          ...this.injector.get(HTTP_ROOT_INTERCEPTOR_FNS, []),
-        ]),
+        new Set([...this.injector.get(HTTP_INTERCEPTOR_FNS), ...rootInterceptorFns]),
       );
 
       // Note: interceptors are wrapped right-to-left so that final execution order is

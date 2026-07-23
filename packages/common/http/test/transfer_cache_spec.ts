@@ -10,6 +10,8 @@ import {DOCUMENT} from '../../index';
 import {
   ApplicationRef,
   Component,
+  createEnvironmentInjector,
+  EnvironmentInjector,
   Injectable,
   PLATFORM_ID,
   TransferState,
@@ -26,6 +28,8 @@ import {
   HttpRequest,
   HttpResponse,
   provideHttpClient,
+  withInterceptors,
+  withRequestsMadeViaParent,
 } from '../public_api';
 import {
   BODY,
@@ -292,6 +296,124 @@ describe('TransferCache', () => {
 
       expect(firstNext).toHaveBeenCalledTimes(1);
       expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('withRequestsMadeViaParent()', () => {
+    let childInjector: EnvironmentInjector;
+
+    beforeEach(() => {
+      globalThis['ngServerMode'] = true;
+
+      TestBed.configureTestingModule({
+        providers: [
+          TransferState,
+          withHttpTransferCache({
+            filter: (request) => !request.headers.has('X-API-Key'),
+          }),
+          provideHttpClient(
+            withInterceptors([
+              (request, next) => {
+                if (request.url === '/private') {
+                  request = request.clone({
+                    setHeaders: {Authorization: 'Bearer server-token'},
+                  });
+                } else if (request.url === '/secret') {
+                  request = request.clone({setHeaders: {'X-API-Key': 'secret-a'}});
+                } else if (request.url === '/public-alias') {
+                  request = request.clone({url: '/public'});
+                }
+
+                return next(request);
+              },
+            ]),
+          ),
+          provideHttpClientTesting(),
+        ],
+      });
+
+      childInjector = createEnvironmentInjector(
+        [
+          provideHttpClient(
+            withInterceptors([
+              (request, next) =>
+                next(request.clone({setHeaders: {'X-Trace-Id': 'feature-request'}})),
+            ]),
+            withRequestsMadeViaParent(),
+          ),
+        ],
+        TestBed.inject(EnvironmentInjector),
+      );
+    });
+
+    afterEach(() => {
+      childInjector.destroy();
+      TestBed.inject(HttpTestingController).verify();
+      globalThis['ngServerMode'] = undefined;
+    });
+
+    it('should evaluate cache eligibility and keys after parent interceptors', () => {
+      const httpClient = childInjector.get(HttpClient);
+      const httpTestingController = TestBed.inject(HttpTestingController);
+      const transferState = TestBed.inject(TransferState);
+
+      let privateResponse: unknown;
+      httpClient.get('/private').subscribe((response) => (privateResponse = response));
+      const privateRequest = httpTestingController.expectOne('/private');
+      expect(privateRequest.request.headers.get('Authorization')).toBe('Bearer server-token');
+      expect(privateRequest.request.headers.get('X-Trace-Id')).toBe('feature-request');
+      privateRequest.flush({internalSecret: 'server-only'});
+
+      expect(privateResponse).toEqual({internalSecret: 'server-only'});
+      expect(JSON.parse(transferState.toJson())).toEqual({});
+
+      let publicResponse: unknown;
+      httpClient.get('/public-alias').subscribe((response) => (publicResponse = response));
+      httpTestingController.expectOne('/public').flush({message: 'public'});
+
+      publicResponse = undefined;
+      httpClient.get('/public-alias').subscribe((response) => (publicResponse = response));
+      httpTestingController.expectNone('/public');
+      expect(publicResponse).toEqual({message: 'public'});
+    });
+
+    it('should evaluate cache filters after parent interceptors', () => {
+      const httpClient = childInjector.get(HttpClient);
+      const httpTestingController = TestBed.inject(HttpTestingController);
+      const transferState = TestBed.inject(TransferState);
+
+      let response: unknown;
+      httpClient.get('/secret').subscribe((value) => (response = value));
+      const request = httpTestingController.expectOne('/secret');
+      expect(request.request.headers.get('X-API-KEY')).toBe('secret-a');
+      request.flush({internalSecret: 'secret-only'});
+
+      expect(response).toEqual({internalSecret: 'secret-only'});
+      expect(JSON.parse(transferState.toJson())).toEqual({});
+    });
+
+    it('should evaluate cache eligibility through multiple parent clients', () => {
+      const grandchildInjector = createEnvironmentInjector(
+        [provideHttpClient(withRequestsMadeViaParent())],
+        childInjector,
+      );
+
+      try {
+        const httpClient = grandchildInjector.get(HttpClient);
+        const httpTestingController = TestBed.inject(HttpTestingController);
+        const transferState = TestBed.inject(TransferState);
+
+        let privateResponse: unknown;
+        httpClient.get('/private').subscribe((response) => (privateResponse = response));
+        const privateRequest = httpTestingController.expectOne('/private');
+        expect(privateRequest.request.headers.get('Authorization')).toBe('Bearer server-token');
+        privateRequest.flush({internalSecret: 'server-only'});
+
+        expect(privateResponse).toEqual({internalSecret: 'server-only'});
+        expect(JSON.parse(transferState.toJson())).toEqual({});
+      } finally {
+        grandchildInjector.destroy();
+      }
     });
   });
 

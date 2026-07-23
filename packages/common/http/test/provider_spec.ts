@@ -37,12 +37,14 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable, from} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
-import {HttpInterceptorFn} from '../src/interceptor';
+import {HTTP_ROOT_INTERCEPTOR_FNS, HttpInterceptorFn} from '../src/interceptor';
 import {
   HttpFeature,
   HttpFeatureKind,
   provideHttpClient,
+  withFetch,
   withInterceptors,
   withInterceptorsFromDi,
   withJsonpSupport,
@@ -439,18 +441,59 @@ describe('provideHttpClient', () => {
           req.flush('');
         });
 
-        it('should be able to connect to a legacy-provided HttpClient context', () => {
+        it('should include root interceptors in independent child contexts', () => {
           TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
-            providers: [provideLegacyInterceptor('parent')],
+            providers: [
+              provideHttpClient(...commonHttpFeatures),
+              {
+                provide: HTTP_ROOT_INTERCEPTOR_FNS,
+                useValue: makeLiteralTagInterceptorFn('root'),
+                multi: true,
+              },
+              provideHttpClientTesting(),
+            ],
+          });
+
+          const child = createEnvironmentInjector(
+            [
+              provideHttpClient(withInterceptors([makeLiteralTagInterceptorFn('child')])),
+              {
+                provide: HttpBackend,
+                useFactory: () => inject(HttpBackend, {skipSelf: true}),
+              },
+            ],
+            TestBed.inject(EnvironmentInjector),
+          );
+
+          child.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+          const req = TestBed.inject(HttpTestingController).expectOne('/test');
+          expect(req.request.headers.get('X-Tag')).toEqual('child,root');
+          req.flush('');
+        });
+
+        it('should run root interceptors once in the parent request and response chain', () => {
+          const order: string[] = [];
+
+          TestBed.configureTestingModule({
+            providers: [
+              provideHttpClient(
+                ...commonHttpFeatures,
+                withInterceptors([makeOrderedTagInterceptorFn('parent', order)]),
+              ),
+              {
+                provide: HTTP_ROOT_INTERCEPTOR_FNS,
+                useValue: makeOrderedTagInterceptorFn('root', order),
+                multi: true,
+              },
+              provideHttpClientTesting(),
+            ],
           });
 
           const child = createEnvironmentInjector(
             [
               provideHttpClient(
-                ...commonHttpFeatures,
                 withRequestsMadeViaParent(),
-                withInterceptors([makeLiteralTagInterceptorFn('child')]),
+                withInterceptors([makeOrderedTagInterceptorFn('child', order)]),
               ),
             ],
             TestBed.inject(EnvironmentInjector),
@@ -458,11 +501,112 @@ describe('provideHttpClient', () => {
 
           child.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
           const req = TestBed.inject(HttpTestingController).expectOne('/test');
-          expect(req.request.headers.get('X-Tag')).toEqual('child,parent');
+          expect(req.request.headers.get('X-Tag')).toEqual('child,parent,root');
+          expect(order).toEqual(['child:request', 'parent:request', 'root:request']);
           req.flush('');
+          expect(order).toEqual([
+            'child:request',
+            'parent:request',
+            'root:request',
+            'root:response',
+            'parent:response',
+            'child:response',
+          ]);
         });
       });
     }
+
+    it('should be able to connect to a legacy-provided HttpClient context', () => {
+      TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule],
+        providers: [provideLegacyInterceptor('parent')],
+      });
+
+      const child = createEnvironmentInjector(
+        [
+          provideHttpClient(
+            withRequestsMadeViaParent(),
+            withInterceptors([makeLiteralTagInterceptorFn('child')]),
+          ),
+        ],
+        TestBed.inject(EnvironmentInjector),
+      );
+
+      child.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+      const req = TestBed.inject(HttpTestingController).expectOne('/test');
+      expect(req.request.headers.get('X-Tag')).toEqual('child,parent');
+      req.flush('');
+    });
+
+    it('should inherit root interceptors in independent child contexts', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          {
+            provide: HTTP_ROOT_INTERCEPTOR_FNS,
+            useValue: makeLiteralTagInterceptorFn('root'),
+            multi: true,
+          },
+          provideHttpClientTesting(),
+        ],
+      });
+
+      const delegatingParent = createEnvironmentInjector(
+        [provideHttpClient(withRequestsMadeViaParent())],
+        TestBed.inject(EnvironmentInjector),
+      );
+      const independentChild = createEnvironmentInjector(
+        [
+          provideHttpClient(withInterceptors([makeLiteralTagInterceptorFn('child')])),
+          {provide: HttpBackend, useValue: TestBed.inject(HttpBackend)},
+        ],
+        delegatingParent,
+      );
+
+      try {
+        independentChild.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+        const req = TestBed.inject(HttpTestingController).expectOne('/test');
+        expect(req.request.headers.get('X-Tag')).toEqual('child,root');
+        req.flush('');
+      } finally {
+        independentChild.destroy();
+        delegatingParent.destroy();
+      }
+    });
+
+    it('should inherit root interceptors when a custom provider overrides delegation', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          {
+            provide: HTTP_ROOT_INTERCEPTOR_FNS,
+            useValue: makeLiteralTagInterceptorFn('root'),
+            multi: true,
+          },
+          provideHttpClientTesting(),
+        ],
+      });
+
+      const child = createEnvironmentInjector(
+        [
+          provideHttpClient(
+            withRequestsMadeViaParent(),
+            withInterceptors([makeLiteralTagInterceptorFn('child')]),
+          ),
+          {provide: HttpBackend, useValue: TestBed.inject(HttpBackend)},
+        ],
+        TestBed.inject(EnvironmentInjector),
+      );
+
+      try {
+        child.get(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+        const req = TestBed.inject(HttpTestingController).expectOne('/test');
+        expect(req.request.headers.get('X-Tag')).toEqual('child,root');
+        req.flush('');
+      } finally {
+        child.destroy();
+      }
+    });
   });
 
   describe('compatibility with Http NgModules', () => {
@@ -651,6 +795,19 @@ function provideLegacyInterceptor(tag: string): Provider {
 
 function makeLiteralTagInterceptorFn(tag: string): HttpInterceptorFn {
   return (req, next) => next(addTagToRequest(req, tag));
+}
+
+function makeOrderedTagInterceptorFn(tag: string, order: string[]): HttpInterceptorFn {
+  return (req, next) => {
+    order.push(`${tag}:request`);
+    return next(addTagToRequest(req, tag)).pipe(
+      tap((event) => {
+        if (event instanceof HttpResponse) {
+          order.push(`${tag}:response`);
+        }
+      }),
+    );
+  };
 }
 
 function makeTokenTagInterceptorFn(tag: InjectionToken<string>): HttpInterceptorFn {
