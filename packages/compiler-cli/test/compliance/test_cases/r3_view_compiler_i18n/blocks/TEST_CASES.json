@@ -3,9 +3,7 @@
   "cases": [
     {
       "description": "should support @if blocks",
-      "inputFiles": [
-        "conditional.ts"
-      ],
+      "inputFiles": ["conditional.ts"],
       "expectations": [
         {
           "files": [
@@ -14,18 +12,13 @@
               "expected": "conditional_template.js"
             }
           ],
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should support @switch blocks",
-      "inputFiles": [
-        "switch.ts"
-      ],
+      "inputFiles": ["switch.ts"],
       "expectations": [
         {
           "files": [
@@ -34,18 +27,13 @@
               "expected": "switch_template.js"
             }
           ],
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should support @for blocks",
-      "inputFiles": [
-        "for.ts"
-      ],
+      "inputFiles": ["for.ts"],
       "expectations": [
         {
           "files": [
@@ -54,18 +42,13 @@
               "expected": "for_template.js"
             }
           ],
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should support @defer blocks",
-      "inputFiles": [
-        "defer.ts"
-      ],
+      "inputFiles": ["defer.ts"],
       "expectations": [
         {
           "files": [
@@ -74,10 +57,7 @@
               "expected": "defer_template.js"
             }
           ],
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     }

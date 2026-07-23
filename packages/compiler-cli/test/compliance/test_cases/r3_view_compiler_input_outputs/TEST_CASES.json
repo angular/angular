@@ -3,9 +3,7 @@
   "cases": [
     {
       "description": "should declare inputs/outputs on a component",
-      "inputFiles": [
-        "component.ts"
-      ],
+      "inputFiles": ["component.ts"],
       "expectations": [
         {
           "files": [
@@ -20,9 +18,7 @@
     },
     {
       "description": "should declare inputs/outputs on a directive",
-      "inputFiles": [
-        "directive.ts"
-      ],
+      "inputFiles": ["directive.ts"],
       "expectations": [
         {
           "files": [
@@ -37,9 +33,7 @@
     },
     {
       "description": "should declare inputs with transform functions",
-      "inputFiles": [
-        "input_transform.ts"
-      ],
+      "inputFiles": ["input_transform.ts"],
       "expectations": [
         {
           "files": [
@@ -51,10 +45,7 @@
           "failureMessage": "Incorrect directive definition"
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "linked compile"
-      ]
+      "compilationModeFilter": ["full compile", "linked compile"]
     }
   ]
 }
