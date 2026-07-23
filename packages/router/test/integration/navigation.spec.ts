@@ -60,6 +60,18 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
     return TestBed.inject(Router);
   }
   describe('navigation', () => {
+    it('recognizes the route represented by the serialized URL', async () => {
+      const router = setup([
+        {path: ':tenant/admin', component: SimpleCmp},
+        {path: 'admin', component: SimpleCmp},
+      ]);
+
+      await router.navigateByUrl('/(primary://admin)');
+
+      expect(router.url).toBe('/admin');
+      expect(router.routerState.snapshot.root.firstChild?.routeConfig?.path).toBe('admin');
+    });
+
     it('should navigate to the current URL', async () => {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({onSameUrlNavigation: 'reload'}))],
