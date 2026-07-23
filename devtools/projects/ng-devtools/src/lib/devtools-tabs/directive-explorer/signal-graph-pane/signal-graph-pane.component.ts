@@ -9,6 +9,7 @@
 import {
   Component,
   computed,
+  effect,
   inject,
   input,
   linkedSignal,
@@ -44,6 +45,25 @@ export class SignalGraphPaneComponent {
   protected readonly signalGraph = inject(SignalGraphManager);
   private readonly appOperations = inject(ApplicationOperations);
   private readonly frameManager = inject(FrameManager);
+
+  constructor() {
+    effect(() => {
+      const element = this.signalGraph.element();
+      const graph = this.signalGraph.graph();
+      if (element && graph) {
+        const frame = this.frameManager.selectedFrame();
+        this.appOperations.getActiveSignalBreakpoints(frame!).then((positions) => {
+          const activeIds = new Set<string>();
+          for (const pos of positions) {
+            if (JSON.stringify(pos.element) === JSON.stringify(element)) {
+              activeIds.add(pos.signalId);
+            }
+          }
+          this.activeBreakpoints.set(activeIds);
+        });
+      }
+    });
+  }
 
   protected readonly close = output<void>();
 
@@ -86,6 +106,14 @@ export class SignalGraphPaneComponent {
 
   protected readonly detailsVisible = signal(false);
 
+  // Track active breakpoints for the currently inspected component graph.
+  protected readonly activeBreakpoints = signal(new Set<string>());
+
+  protected hasBreakpoint(node: DevtoolsSignalGraphNode | undefined): boolean {
+    if (!node) return false;
+    return this.activeBreakpoints().has(node.id);
+  }
+
   protected empty = computed(() => !(this.signalGraph.graph()?.nodes.length! > 0));
 
   onNodeClick(node: DevtoolsSignalGraphNode) {
@@ -102,6 +130,38 @@ export class SignalGraphPaneComponent {
       },
       frame!,
     );
+  }
+
+  setBreakpoint(node: DevtoolsSignalGraphNode) {
+    const frame = this.frameManager.selectedFrame();
+    this.appOperations.setSignalBreakpoint(
+      {
+        element: this.signalGraph.element()!,
+        signalId: node.id,
+      },
+      frame!,
+    );
+    this.activeBreakpoints.update((set) => {
+      const newSet = new Set(set);
+      newSet.add(node.id);
+      return newSet;
+    });
+  }
+
+  removeBreakpoint(node: DevtoolsSignalGraphNode) {
+    const frame = this.frameManager.selectedFrame();
+    this.appOperations.removeSignalBreakpoint(
+      {
+        element: this.signalGraph.element()!,
+        signalId: node.id,
+      },
+      frame!,
+    );
+    this.activeBreakpoints.update((set) => {
+      const newSet = new Set(set);
+      newSet.delete(node.id);
+      return newSet;
+    });
   }
 
   expandCluster(clusterId: string) {
