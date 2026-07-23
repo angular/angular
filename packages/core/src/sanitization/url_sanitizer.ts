@@ -36,13 +36,34 @@ import {XSS_SECURITY_URL} from '../error_details_base_url';
  * This regular expression was taken from the Closure sanitization library.
  */
 const SAFE_URL_PATTERN = /^(?!javascript:)(?:[a-z0-9+.-]+:|[^&:\/?#]*(?:[\/?#]|$))/i;
+
+/**
+ * A pattern that matches `data:` URLs with MIME types that can execute scripts
+ * when navigated to or embedded. These are explicitly blocked to prevent XSS.
+ *
+ * Blocked MIME types:
+ * - `text/html`, `application/xhtml+xml` — rendered as HTML documents with full script execution
+ * - `text/javascript`, `application/javascript` — executed as JavaScript directly
+ * - `image/svg+xml` — SVG documents can embed and execute scripts when opened as a document
+ *
+ * All other `data:` URLs (e.g. `data:text/csv`, `data:application/pdf`,
+ * `data:application/json`) remain allowed, preserving common patterns such as
+ * client-side file generation for download via `<a [href]="..." download>`.
+ */
+const UNSAFE_DATA_URL_PATTERN =
+  /^data:(?:text\/html|application\/xhtml\+xml|text\/javascript|application\/javascript|image\/svg\+xml)[,;]/i;
+
 export function _sanitizeUrl(url: string): string {
   url = String(url);
-  if (url.match(SAFE_URL_PATTERN)) return url;
-
+  if (UNSAFE_DATA_URL_PATTERN.test(url)) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.warn(`WARNING: sanitizing unsafe URL value ${url} (see ${XSS_SECURITY_URL})`);
+    }
+    return 'unsafe:' + url;
+  }
+  if (SAFE_URL_PATTERN.test(url)) return url;
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     console.warn(`WARNING: sanitizing unsafe URL value ${url} (see ${XSS_SECURITY_URL})`);
   }
-
   return 'unsafe:' + url;
 }
