@@ -3,51 +3,34 @@
   "cases": [
     {
       "description": "should handle single icus",
-      "inputFiles": [
-        "single_icu.ts"
-      ],
+      "inputFiles": ["single_icu.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should properly escape quotes in content",
-      "inputFiles": [
-        "escape_quotes.ts"
-      ],
+      "inputFiles": ["escape_quotes.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should support ICU-only templates",
-      "inputFiles": [
-        "icu_only.ts"
-      ],
+      "inputFiles": ["icu_only.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should generate i18n instructions for icus generated outside of i18n blocks",
-      "inputFiles": [
-        "bare_icu.ts"
-      ],
+      "inputFiles": ["bare_icu.ts"],
       "expectations": [
         {
           "files": [
@@ -56,192 +39,124 @@
               "expected": "bare_icu.js"
             }
           ],
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle icus with html",
-      "inputFiles": [
-        "html_content.ts"
-      ],
+      "inputFiles": ["html_content.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle icus with expressions",
-      "inputFiles": [
-        "expressions.ts"
-      ],
+      "inputFiles": ["expressions.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle multiple icus in one block",
-      "inputFiles": [
-        "multiple_icus.ts"
-      ],
+      "inputFiles": ["multiple_icus.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle multiple icus that share same placeholder",
-      "inputFiles": [
-        "shared_placeholder.ts"
-      ],
+      "inputFiles": ["shared_placeholder.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle nested icus",
-      "inputFiles": [
-        "nested_icus.ts"
-      ],
+      "inputFiles": ["nested_icus.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "nested with interpolations in \"other\" blocks",
-      "inputFiles": [
-        "nested_icu_in_other_block.ts"
-      ],
+      "inputFiles": ["nested_icu_in_other_block.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle icus in different contexts",
-      "inputFiles": [
-        "different_contexts.ts"
-      ],
+      "inputFiles": ["different_contexts.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle icus with interpolations",
-      "inputFiles": [
-        "icu_with_interpolations.ts"
-      ],
+      "inputFiles": ["icu_with_interpolations.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle icus with named interpolations",
-      "inputFiles": [
-        "named_interpolations.ts"
-      ],
+      "inputFiles": ["named_interpolations.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should attach metadata in case an ICU represents the whole message",
-      "inputFiles": [
-        "metadata.ts"
-      ],
+      "inputFiles": ["metadata.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should produce proper messages when `select` or `plural` keywords have spaces after them",
-      "inputFiles": [
-        "keyword_spaces.ts"
-      ],
+      "inputFiles": ["keyword_spaces.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle ICUs with element tags, as the root message",
-      "inputFiles": [
-        "root_icu_with_elements.ts"
-      ],
+      "inputFiles": ["root_icu_with_elements.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handles ICUs with html content that has interpolated attributes",
-      "inputFiles": [
-        "attribute_interpolation.ts"
-      ],
+      "inputFiles": ["attribute_interpolation.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     }
