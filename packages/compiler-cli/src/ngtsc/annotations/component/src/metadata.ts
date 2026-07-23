@@ -98,11 +98,13 @@ export interface ComponentAnalysisData {
   foreignImports: ForeignComponentMeta[] | null;
   rawDeferredImports: ts.Expression | null;
   resolvedDeferredImports: Reference<ClassDeclaration>[] | null;
+  resolvedDeferredImportsByBlock: Map<string, Reference<ClassDeclaration>[]> | null;
 
   /**
    * Map of symbol name -> import path for types from `@Component.deferredImports` field.
    */
   explicitlyDeferredTypes: R3DeferPerComponentDependency[] | null;
+  explicitlyDeferredTypesByBlock: Map<string, R3DeferPerComponentDependency[]> | null;
 
   schemas: SchemaMetadata[] | null;
 

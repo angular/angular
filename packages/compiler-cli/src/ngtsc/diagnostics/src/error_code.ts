@@ -738,4 +738,19 @@ export enum ErrorCode {
    * Meanwhile, this error is thrown to indicate a current unavailability.
    */
   LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION = 11003,
+
+  /**
+   * Raised when a `@defer` block is missing a `deps` parameter but `deferredImports` is an object.
+   */
+  DEFER_BLOCK_MISSING_DEPS_PARAMETER = 11100,
+
+  /**
+   * Raised when a `@defer` block specifies a `deps` parameter that does not match any entry in `deferredImports`.
+   */
+  DEFER_BLOCK_UNKNOWN_DEPS_PARAMETER = 11101,
+
+  /**
+   * Raised when a `@defer` block specifies a `deps` parameter but `deferredImports` is not an object.
+   */
+  DEFER_BLOCK_INVALID_DEPS_PARAMETER = 11102,
 }
