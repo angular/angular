@@ -56,7 +56,7 @@ export function writeToDirectiveInput<T>(
     // delegating to features like `NgOnChanges`.
     if (inputSignalNode !== null && inputSignalNode.transformFn !== undefined) {
       value = inputSignalNode.transformFn(value);
-    } else if (transform !== null) {
+    } else if (transform != null) {
       // If there is a decorator input transform, run it.
       value = transform.call(instance, value);
     }
