@@ -1,0 +1,23 @@
+load("//tools:defaults.bzl", "ts_project")
+
+ts_project(
+    name = "src",
+    srcs = glob([
+        "*.ts",
+        "handlers/*.ts",
+    ]),
+    visibility = [
+        "//vscode-ng-language-service/server:__subpackages__",
+    ],
+    deps = [
+        "//:node_modules/@angular/language-service",
+        "//:node_modules/typescript",
+        "//vscode-ng-language-service/common",
+        "//vscode-ng-language-service/server:node_modules/@types/node",
+        "//vscode-ng-language-service/server:node_modules/vscode-css-languageservice",
+        "//vscode-ng-language-service/server:node_modules/vscode-html-languageservice",
+        "//vscode-ng-language-service/server:node_modules/vscode-languageserver",
+        "//vscode-ng-language-service/server:node_modules/vscode-languageserver-textdocument",
+        "//vscode-ng-language-service/server:node_modules/vscode-uri",
+    ],
+)

@@ -1,0 +1,21 @@
+load("//adev/shared-docs:defaults.bzl", "js_library")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "ai",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/assets/images:what_is_angular.svg",
+        "//adev/src/context",
+        "//packages/core/resources:best-practices.md",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
+    visibility = ["//adev/src/content:__pkg__"],
+)

@@ -1,0 +1,10 @@
+<!-- #docplaster -->
+<h2>Auto Height Example</h2>
+
+<button type="button" (click)="toggle()">Toggle Open/Close</button>
+
+<div class="container" [@openClose]="isOpen() ? true : false">
+  <div class="content">
+    <p>The box is now {{ isOpen() ? 'Open' : 'Closed' }}!</p>
+  </div>
+</div>

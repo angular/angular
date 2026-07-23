@@ -1,0 +1,80 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+  border: 2px solid #e9ecef;
+}
+
+.container h2 {
+  font-size: 3em;
+  margin: 0 0 8px 0;
+  color: #1976d2;
+  font-weight: 300;
+}
+
+h1 {
+  margin-bottom: 16px;
+}
+
+p {
+  color: #666;
+  margin-bottom: 32px;
+}
+
+.container .even-odd-indicator {
+  display: inline-block;
+  padding: 4px 12px;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.even-odd-indicator.even {
+  background: #e8f5e8;
+  color: #2e7d32;
+}
+
+.even-odd-indicator.odd {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+button {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background: #1976d2;
+  color: white;
+  font-size: 1.5em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background: #1565c0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+  transform: translateY(0);
+}

@@ -1,0 +1,14 @@
+<mat-toolbar class="section-heading">Track expression</mat-toolbar>
+<div class="details">
+  <span class="pill">{{ forLoop().trackExpression }}</span>
+</div>
+
+@if (forLoop().hasEmptyBlock) {
+  <mat-toolbar class="section-heading">&#64;empty block</mat-toolbar>
+  <div class="details">Block defined</div>
+}
+
+<mat-toolbar class="section-heading">Collection ({{ forLoop().items.length }} items)</mat-toolbar>
+<div class="object-tree">
+  <ng-object-tree-explorer [dataSource]="collectionNodes()" [childrenAccessor]="childrenAccessor" />
+</div>

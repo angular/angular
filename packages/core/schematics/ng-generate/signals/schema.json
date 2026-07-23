@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AngularSignalMigration",
+  "title": "Angular Signals migration",
+  "type": "object",
+  "properties": {
+    "migrations": {
+      "type": "array",
+      "default": [
+        "inputs",
+        "outputs",
+        "queries"
+      ],
+      "items": {
+        "type": "string",
+        "enum": [
+          "inputs",
+          "outputs",
+          "queries"
+        ]
+      },
+      "description": "Signals-related migrations that should be run",
+      "x-prompt": {
+        "message": "Which migrations do you want to run?",
+        "type": "list",
+        "multiselect": true,
+        "items": [
+          {
+            "value": "inputs",
+            "label": "Convert `@Input` to the signal-based `input`"
+          },
+          {
+            "value": "outputs",
+            "label": "Convert `@Output` to the new `output` function"
+          },
+          {
+            "value": "queries",
+            "label": "Convert `@ViewChild`/`@ViewChildren` and `@ContentChild`/`@ContentChildren` to the signal-based `viewChild`/`viewChildren` and `contentChild`/`contentChildren`"
+          }
+        ]
+      }
+    },
+    "path": {
+      "type": "string",
+      "description": "Path to the directory that should be migrated.",
+      "x-prompt": "Which directory do you want to migrate?",
+      "default": "./"
+    },
+    "analysisDir": {
+      "type": "string",
+      "description": "Path to the directory that should be analyzed. Useful for larger projects if the analysis takes too long and the analysis scope can be narrowed.",
+      "default": "./"
+    },
+    "bestEffortMode": {
+      "type": "boolean",
+      "description": "Whether to eagerly migrate as much as possible, ignoring problematic patterns that would otherwise prevent migration.",
+      "x-prompt": "Do you want to migrate as much as possible, even if it may break your build?",
+      "default": false
+    },
+    "insertTodos": {
+      "type": "boolean",
+      "description": "Whether the migration should add TODOs for code that could not be migrated",
+      "default": false
+    }
+  }
+}

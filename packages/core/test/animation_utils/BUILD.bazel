@@ -1,0 +1,14 @@
+load("//tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "animation_utils",
+    testonly = True,
+    srcs = [
+        "tick_animation_frames.ts",
+    ],
+    deps = [
+        "//packages/core/testing",
+    ],
+)

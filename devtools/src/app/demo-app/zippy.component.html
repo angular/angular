@@ -1,0 +1,6 @@
+<section>
+  <header (click)="visible = !visible">{{ title() }}</header>
+  <div [hidden]="!visible">
+    <ng-content> </ng-content>
+  </div>
+</section>

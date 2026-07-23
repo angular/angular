@@ -1,0 +1,35 @@
+.prop-action-btn {
+  position: relative;
+  border-radius: 50%;
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--quaternary-contrast);
+  background-color: transparent;
+  vertical-align: middle;
+  padding: 0;
+  top: -1px;
+  cursor: pointer;
+
+  &:not(:last-child) {
+    margin-right: 0.25rem;
+  }
+
+  &:hover {
+    $color: color-mix(in srgb, var(--dynamic-blue-02) 80%, var(--full-contrast) 20%);
+    background: $color;
+    outline: 2px solid $color;
+    color: var(--septenary-contrast);
+  }
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    top: 0;
+  }
+}

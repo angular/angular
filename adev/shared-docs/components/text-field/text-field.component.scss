@@ -1,0 +1,17 @@
+// search field
+.docs-text-field {
+  font-size: 1.125rem;
+}
+
+// filter field on api reference list
+docs-icon + .docs-text-field {
+  font-size: 1rem;
+}
+
+button {
+  color: var(--secondary-contrast);
+
+  &:hover {
+    color: var(--vivid-pink);
+  }
+}

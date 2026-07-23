@@ -1,0 +1,16 @@
+load("@bazel_lib//lib:copy_file.bzl", "copy_file")
+
+copy_file(
+    name = "package_json_template",
+    src = "package.json",
+    out = "package.json.template",
+)
+
+filegroup(
+    name = "files",
+    srcs = glob(
+        ["**/*"],
+        exclude = ["package.json"],
+    ) + [":package_json_template"],
+    visibility = ["//visibility:public"],
+)

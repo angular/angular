@@ -1,0 +1,46 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project", "sass_binary", "ts_project", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:private"])
+
+ng_project(
+    name = "tab-group",
+    srcs = [
+        "tab-group.component.ts",
+    ],
+    assets = [
+        ":tab-group.component.css",
+        "tab-group.component.html",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/viewers:__pkg__",
+    ],
+    deps = [
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/platform-browser",
+    ],
+)
+
+sass_binary(
+    name = "style",
+    src = "tab-group.component.scss",
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":tab-group",
+        "//adev:node_modules/@angular/core",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

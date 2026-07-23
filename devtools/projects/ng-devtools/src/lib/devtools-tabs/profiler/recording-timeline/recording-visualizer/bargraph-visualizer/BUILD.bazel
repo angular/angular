@@ -1,0 +1,27 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "bargraph-visualizer_styles",
+    src = "bargraph-visualizer.component.scss",
+)
+
+ng_project(
+    name = "bargraph-visualizer",
+    srcs = [
+        "bargraph-visualizer.component.ts",
+    ],
+    angular_assets = [
+        "bargraph-visualizer.component.html",
+        ":bargraph-visualizer_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/bargraph-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer:recording-visualizer-types",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/bargraph-visualizer/bar-chart",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/profile-formatter",
+        "//devtools/projects/protocol",
+    ],
+)

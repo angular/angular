@@ -1,0 +1,101 @@
+h2 {
+  margin-left: 1rem;
+}
+
+[ngAccordionGroup] {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+h3:not(:first-of-type) {
+  border-top: 1px solid #ccc;
+}
+
+[ngAccordionTrigger] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s;
+}
+
+[ngAccordionTrigger]:hover {
+  background-color: #f6f8fa;
+}
+
+[ngAccordionTrigger]:focus-visible {
+  outline: 2px solid #4285f4;
+  outline-offset: -2px;
+}
+
+[ngAccordionTrigger][aria-expanded='true'] {
+  color: #4285f4;
+}
+
+.expand-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin-left: 1rem;
+}
+
+.expand-icon::before,
+.expand-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  transition: 0.3s ease-out;
+}
+
+.expand-icon::after {
+  transform: rotate(90deg);
+}
+
+.expand-icon__expanded::before {
+  transform: translateY(-50%) rotate(-90deg);
+  opacity: 0;
+}
+
+.expand-icon__expanded::after {
+  transform: translateY(-50%) rotate(0);
+  background-color: #4285f4;
+}
+
+[ngAccordionPanel] p {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #ccc;
+  font-size: 0.875rem;
+}
+
+code {
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+  background-color: #f6f8fa;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875em;
+}

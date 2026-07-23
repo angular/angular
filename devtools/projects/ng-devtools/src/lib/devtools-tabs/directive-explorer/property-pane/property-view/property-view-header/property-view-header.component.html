@@ -1,0 +1,20 @@
+<mat-toolbar>
+  {{ directive() }}
+  <span class="button-wrapper">
+    <button
+      (click)="handlelogInstance($event)"
+      [matTooltip]="'Log directive instance to console'"
+      [attr.aria-label]="'Log directive instance to console'"
+    >
+      <mat-icon> terminal </mat-icon>
+    </button>
+    <button
+      [disabled]="disableViewSourceButton()"
+      (click)="handleViewSource($event)"
+      [matTooltip]="viewSourceTooltip()"
+      [attr.aria-label]="viewSourceTooltip()"
+    >
+      <mat-icon> code </mat-icon>
+    </button>
+  </span>
+</mat-toolbar>

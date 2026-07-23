@@ -1,0 +1,69 @@
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@devinfra//bazel/validation:defs.bzl", "validate_ts_version_matching")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("//tools:defaults.bzl", "copy_to_bin")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "LICENSE",
+    "package.json",
+])
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+filegroup(
+    # filegroup is needed so that this package.json file can be a dep
+    # in a js_library target, which doesn't allow source file deps
+    name = "package_json",
+    srcs = ["package.json"],
+)
+
+validate_ts_version_matching(
+    module_bazel = "MODULE.bazel",
+    package_json = "package.json",
+)
+
+alias(
+    name = "tsconfig.json",
+    actual = "//packages:tsconfig-build.json",
+)
+
+copy_to_bin(
+    name = "angularjs_scripts",
+    srcs = [
+        # We also declare the unminified AngularJS files since these can be used for
+        # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
+        "//:node_modules/angular-1.5",
+        "//:node_modules/angular-1.6",
+        "//:node_modules/angular-1.7",
+        "//:node_modules/angular-mocks-1.5",
+        "//:node_modules/angular-mocks-1.6",
+        "//:node_modules/angular-mocks-1.7",
+        "//:node_modules/angular-mocks-1.8",
+        "//:node_modules/angular-1.8",
+    ],
+)
+
+# Detect if the build is running under --stamp
+config_setting(
+    name = "stamp",
+    values = {"stamp": "true"},
+)
+
+# When enabled, this flag substitutes dependency versions with snapshot repositories
+# for all packages in this repository. Note that this does not apply to peer
+# dependencies, as they must be installed directly.
+bool_flag(
+    name = "enable_language_server_snapshot_repo_deps",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "language_server_package_json_use_snapshot_repo_deps",
+    flag_values = {
+        ":enable_language_server_snapshot_repo_deps": "true",
+    },
+)

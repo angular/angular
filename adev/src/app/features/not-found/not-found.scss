@@ -1,0 +1,199 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+:host {
+  display: block;
+  padding-top: var(--layout-padding);
+  padding-bottom: var(--layout-padding);
+}
+
+.docs-viewer {
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+  box-sizing: border-box;
+  padding-inline: var(--layout-padding);
+}
+
+.docs-not-found {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-block: 1.5rem 0;
+}
+
+.docs-not-found__angie {
+  flex: none;
+  width: clamp(143px, 16.5vw, 187px);
+  height: auto;
+}
+
+.docs-not-found__bubble {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 56ch;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: 1.25rem;
+  background: var(--septenary-contrast);
+
+  // Tail pointing back toward Angie.
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 2.5rem;
+    inset-inline-start: -0.45rem;
+    width: 1rem;
+    height: 1rem;
+    background: inherit;
+    transform: rotate(45deg);
+  }
+
+  h1 {
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+@include mq.for-phone-only {
+  // Keep Angie and the bubble side by side, just scale both down to fit.
+  .docs-not-found {
+    gap: 0.75rem;
+  }
+
+  .docs-not-found__angie {
+    width: clamp(96px, 27vw, 138px);
+  }
+
+  .docs-not-found__bubble {
+    padding: 1rem 1.25rem;
+
+    // Small Angie is centered against a taller bubble, so center the tail on her.
+    &::before {
+      inset-block-start: 50%;
+      transform: translateY(-50%) rotate(45deg);
+    }
+  }
+}
+
+.enter-animation {
+  animation: slide-fade 1s;
+}
+@keyframes slide-fade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.docs-search-results {
+  list-style-type: none;
+  padding-inline: 0;
+  padding-block-start: 1rem;
+  padding-block-end: 1rem;
+  margin: 0;
+  max-width: 750px;
+
+  .docs-search-result {
+    border-inline-start: 2px solid var(--senary-contrast);
+    margin-inline-start: 1rem;
+    display: block;
+    font-size: 0.875rem;
+
+    .docs-search-result-icon {
+      display: inline-block;
+
+      i {
+        display: flex;
+        align-items: center;
+        font-size: 1.2rem;
+      }
+    }
+
+    /**
+      * This rule needs ng-deep to be applied to elements that are created via a [innerHTML] binding
+      */
+    ::ng-deep {
+      mark {
+        background: #e62600;
+        background: var(--red-to-orange-horizontal-gradient);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+    }
+
+    a {
+      color: var(--secondary-contrast);
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem;
+      gap: 0.5rem;
+    }
+
+    &__label,
+    &__sub-label,
+    &__content {
+      transition: color 0.3s ease;
+    }
+
+    &__label,
+    &__sub-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0;
+    }
+
+    &__label {
+      font-weight: 600;
+      flex-wrap: wrap;
+
+      &__package {
+        font-size: 0.75rem;
+      }
+    }
+
+    &__content,
+    &__category {
+      margin: 0;
+    }
+
+    &__sub-label,
+    &__content {
+      margin-block-start: 0.375rem;
+      margin-inline-start: 2rem;
+      color: var(--quaternary-contrast);
+    }
+
+    &__category {
+      font-weight: 400;
+      color: var(--quaternary-contrast);
+    }
+
+    &.active {
+      background-color: var(--septenary-contrast); // stylelint-disable-line
+    }
+
+    &:hover,
+    &.active {
+      background-color: var(--octonary-contrast); // stylelint-disable-line
+      border-inline-start: 2px solid var(--primary-contrast);
+
+      .docs-search-result__label,
+      .docs-search-result__sub-label,
+      .docs-search-result__content {
+        color: var(--primary-contrast);
+      }
+    }
+  }
+}

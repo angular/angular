@@ -1,0 +1,56 @@
+load("//tools:defaults.bzl", "ng_package", "ts_project", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "compiler",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = ":compiler",
+    tsconfig = "//packages:tsconfig_build",
+)
+
+ng_package(
+    srcs = [
+        "package.json",
+    ],
+    package = "@angular/compiler",
+    side_effect_entry_points = [
+        "@angular/compiler",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    use_no_sub = True,
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//adev:__pkg__",
+        "//devtools/tools/angular-optimization:__subpackages__",
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/core/test/bundling:__subpackages__",
+        "//packages/core/test/playground/zone-signal-input:__pkg__",
+        "//packages/language-service/test:__pkg__",
+    ],
+    deps = [
+        ":compiler",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+)

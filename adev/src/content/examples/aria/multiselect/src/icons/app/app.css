@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font);
+}
+
+.select {
+  display: flex;
+  position: relative;
+  align-items: center;
+  color: color-mix(in srgb, var(--hot-pink) 90%, var(--primary-contrast));
+  background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--hot-pink) 80%, transparent);
+  /* Modernized additions for div-trigger Select: */
+  height: 2.5rem;
+  padding: 0 3.5rem;
+  cursor: pointer;
+  box-sizing: border-box;
+  width: 16rem;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+
+.select span {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.select:hover {
+  background-color: color-mix(in srgb, var(--hot-pink) 15%, transparent);
+}
+
+.select[aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.selected-label-icon {
+  font-size: 1.25rem;
+}
+
+.select:focus,
+.select:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--hot-pink) 50%, transparent);
+}
+
+.combobox-label {
+  gap: 1rem;
+  left: 1rem;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  pointer-events: none;
+}
+
+.example-arrow {
+  right: 1rem;
+  position: absolute;
+  pointer-events: none;
+  transition: transform 150ms ease-in-out;
+}
+
+.select[aria-expanded='true'] .example-arrow {
+  transform: rotate(180deg);
+}
+
+.example-popup-container {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 8px;
+  border-radius: 0.5rem;
+  background-color: var(--septenary-contrast);
+  font-size: 0.9rem;
+  max-height: 11rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  animation: smoothPopupOpen 150ms ease-out forwards;
+  transform-origin: top;
+}
+
+@keyframes smoothPopupOpen {
+  0% {
+    max-height: 0;
+    opacity: 0;
+  }
+  16.7% {
+    opacity: 1;
+  }
+  100% {
+    max-height: 11rem;
+    opacity: 1;
+  }
+}
+
+.example-popup-container.closing {
+  animation: smoothPopupClose 150ms ease-in forwards;
+}
+
+@keyframes smoothPopupClose {
+  0% {
+    max-height: 11rem;
+    opacity: 1;
+  }
+  100% {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+[ngListbox] {
+  gap: 2px;
+  height: 100%;
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+  outline: none;
+}
+
+[ngOption] {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  margin: 1px;
+  padding: 0 1rem;
+  min-height: 2.25rem;
+  border-radius: 0.5rem;
+  outline: none;
+}
+
+[ngOption]:hover {
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+}
+
+[ngOption][data-active='true'] {
+  outline-offset: -2px;
+  outline: 2px solid color-mix(in srgb, var(--hot-pink) 50%, transparent);
+}
+
+[ngOption][aria-selected='true'] {
+  color: var(--hot-pink);
+  background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
+}
+
+.example-option-icon {
+  font-size: 1.25rem;
+  padding-right: 1rem;
+}
+
+[ngOption]:not([aria-selected='true']) .example-option-check {
+  display: none;
+}
+
+.example-option-icon,
+.example-option-check {
+  font-size: 0.9rem;
+}
+
+.example-option-text {
+  flex: 1;
+}

@@ -1,0 +1,32 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "component-inspector",
+    srcs = ["component-inspector.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "component-inspector.spec.ts",
+    ],
+    deps = [
+        ":component-inspector",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
+)

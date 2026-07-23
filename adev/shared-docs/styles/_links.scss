@@ -1,0 +1,9 @@
+@mixin external-link-with-icon() {
+  &::after {
+    display: inline-block;
+    content: '\e89e'; // codepoint for "open_in_new"
+    font-family: 'Material Symbols Outlined';
+    margin-left: 0.2rem;
+    vertical-align: middle;
+  }
+}

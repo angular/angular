@@ -1,0 +1,35 @@
+@mixin resets {
+  .docs-example-viewer-preview {
+    // stylelint-disable-next-line
+    all: initial;
+    display: block;
+    padding: 1rem;
+    border-block-start: 1px solid var(--senary-contrast);
+
+    // These styles reset the example styles so that global styles from the rest of the
+    // page don't affect them, however they can be somewhat aggressive. To prevent them from
+    // affecting structural styles like the CDK overlay's positioning CSS, we include
+    // them in the global stylesheet, as early as possible.
+    code::before,
+    code,
+    pre,
+    a,
+    i,
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    ol,
+    ul,
+    li,
+    hr,
+    input,
+    select,
+    table {
+      all: revert;
+    }
+  }
+}

@@ -1,0 +1,31 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "directive-forest",
+    srcs = [
+        "index.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/tree-strategies",
+    ],
+)
+
+ts_project(
+    name = "core-enums",
+    srcs = ["core-enums.ts"],
+)
+
+ts_project(
+    name = "manager",
+    srcs = [
+        "manager.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/identity-tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/protocol",
+    ],
+)

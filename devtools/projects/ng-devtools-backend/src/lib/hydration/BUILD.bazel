@@ -1,0 +1,14 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "hydration-highlighting",
+    srcs = ["hydration-highlighting.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
+        "//devtools/projects/protocol",
+    ],
+)

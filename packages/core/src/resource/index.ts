@@ -1,0 +1,16 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+export * from './api';
+export {debounced} from './debounce';
+export {resourceFromSnapshots} from './from_snapshots';
+export {
+  isInParamsFunction as ɵisInParamsFunction,
+  resource,
+  setInParamsFunction as ɵsetInParamsFunction,
+} from './resource';

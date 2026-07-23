@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "copy_to_bin", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+copy_to_bin(
+    name = "collection_json",
+    srcs = [
+        "collection.json",
+    ],
+)
+
+filegroup(
+    name = "package_assets",
+    srcs = [
+        "collection.json",
+        "package.json",
+    ],
+    visibility = ["//packages/localize:__subpackages__"],
+)
+
+npm_package(
+    srcs = [
+        ":package_assets",
+        "//packages/localize/schematics/ng-add:assets",
+    ],
+)

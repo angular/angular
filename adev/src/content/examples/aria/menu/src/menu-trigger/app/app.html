@@ -1,0 +1,97 @@
+<button ngMenuTrigger #origin #trigger="ngMenuTrigger" [menu]="formatMenu()">Open Menu</button>
+
+<ng-template
+  [cdkConnectedOverlayOpen]="trigger.expanded()"
+  [cdkConnectedOverlay]="{origin, usePopover: 'inline'}"
+  [cdkConnectedOverlayPositions]="[
+    {originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4},
+  ]"
+  cdkAttachPopoverAsChild
+>
+  <div ngMenu class="menu" #formatMenu="ngMenu">
+    <ng-template ngMenuContent>
+      <div ngMenuItem value="Mark as read">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >mark_email_read</span
+        >
+        <span class="label">Mark as read</span>
+      </div>
+
+      <div ngMenuItem value="Snooze">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">snooze</span>
+        <span class="label">Snooze</span>
+      </div>
+
+      <div role="separator" aria-orientation="horizontal" class="separator"></div>
+
+      <div
+        ngMenuItem
+        class="menu-item"
+        value="Categorize"
+        #categorizeItem
+        [submenu]="categorizeMenu()"
+      >
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >category</span
+        >
+        <span class="label">Categorize</span>
+        <span class="icon material-symbols-outlined arrow" translate="no" aria-hidden="true"
+          >arrow_right</span
+        >
+      </div>
+
+      <ng-template
+        [cdkConnectedOverlayOpen]="formatMenu.visible()"
+        [cdkConnectedOverlay]="{origin: categorizeItem, usePopover: 'inline'}"
+        [cdkConnectedOverlayPositions]="[
+          {originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: 6},
+        ]"
+        cdkAttachPopoverAsChild
+      >
+        <div ngMenu class="menu" #categorizeMenu="ngMenu">
+          <ng-template ngMenuContent>
+            <div ngMenuItem value="Mark as important">
+              <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >label_important</span
+              >
+              <span class="label">Mark as important</span>
+            </div>
+
+            <div ngMenuItem value="Star">
+              <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >star</span
+              >
+              <span class="label">Star</span>
+            </div>
+
+            <div ngMenuItem value="Label">
+              <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >label</span
+              >
+              <span class="label">Label</span>
+            </div>
+          </ng-template>
+        </div>
+      </ng-template>
+
+      <div role="separator" aria-orientation="horizontal" class="separator"></div>
+
+      <div ngMenuItem value="Archive">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >archive</span
+        >
+        <span class="label">Archive</span>
+      </div>
+
+      <div ngMenuItem value="Report spam">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">report</span>
+        <span class="label">Report spam</span>
+      </div>
+
+      <div ngMenuItem value="Delete">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">delete</span>
+        <span class="label">Delete</span>
+      </div>
+    </ng-template>
+  </div>
+</ng-template>

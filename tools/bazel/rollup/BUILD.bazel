@@ -1,0 +1,12 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+
+js_library(
+    name = "path-plugin",
+    srcs = [
+        "path-plugin.cjs",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:node_modules/get-tsconfig",
+    ],
+)

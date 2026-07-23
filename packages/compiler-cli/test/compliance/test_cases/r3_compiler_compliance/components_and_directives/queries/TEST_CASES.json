@@ -1,0 +1,166 @@
+{
+  "$schema": "../../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should support view queries with directives",
+      "inputFiles": [
+        "some.directive.ts",
+        "view_query_for_directive.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ViewQuery declaration",
+          "files": [
+            "view_query_for_directive.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support view queries with forwardRefs",
+      "inputFiles": [
+        "view_query_forward_ref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ViewQuery declaration",
+          "files": [
+            "view_query_forward_ref.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support view queries with local refs",
+      "inputFiles": [
+        "view_query_for_local_ref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ViewQuery declaration",
+          "files": [
+            "view_query_for_local_ref.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support static view queries",
+      "inputFiles": [
+        "some.directive.ts",
+        "static_view_query.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ViewQuery declaration",
+          "files": [
+            "static_view_query.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support view queries with read tokens specified",
+      "inputFiles": [
+        "some.directive.ts",
+        "view_query_read_token.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ViewQuery declaration",
+          "files": [
+            "view_query_read_token.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support content queries with directives",
+      "inputFiles": [
+        "some.directive.ts",
+        "content_query_for_directive.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ContentQuery declaration",
+          "files": [
+            "content_query_for_directive.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support content queries with forwardRefs",
+      "inputFiles": [
+        "content_query_forward_ref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ContentQuery declaration",
+          "files": [
+            "content_query_forward_ref.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support content queries with local refs",
+      "inputFiles": [
+        "content_query_for_local_ref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ContentQuery declaration",
+          "files": [
+            "content_query_for_local_ref.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support static content queries",
+      "inputFiles": [
+        "some.directive.ts",
+        "static_content_query.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ContentQuery declaration",
+          "files": [
+            "static_content_query.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support content queries with read tokens specified",
+      "inputFiles": [
+        "some.directive.ts",
+        "content_query_read_token.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ContentQuery declaration",
+          "files": [
+            "content_query_read_token.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support query emitDistinctChangesOnly flag",
+      "inputFiles": [
+        "some.directive.ts",
+        "query_with_emit_distinct_changes_only.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid ContentQuery declaration",
+          "files": [
+            "query_with_emit_distinct_changes_only.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

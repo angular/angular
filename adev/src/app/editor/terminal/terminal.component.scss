@@ -1,0 +1,20 @@
+// Note: disabling the @angular/no-import rule here as it's meant to disable
+// SASS imports, here we're importing a CSS asset
+//
+// stylelint-disable-next-line @angular/no-import
+@import '@xterm/xterm/css/xterm.css';
+
+.docs-tutorial-terminal {
+  display: block;
+  // adjust height for terminal tabs
+  height: calc(100% - 49px);
+  overflow: hidden;
+}
+
+.docs-tutorial-terminal-only {
+  height: 100%;
+}
+
+.adev-terminal-output {
+  height: 100%;
+}

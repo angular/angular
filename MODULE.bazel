@@ -1,0 +1,165 @@
+"""Rules/toolchains for angular with Bazel."""
+
+module(
+    name = "angular",
+)
+
+bazel_dep(name = "rules_pkg", version = "1.2.0")
+bazel_dep(name = "rules_nodejs", version = "6.7.5")
+bazel_dep(name = "aspect_rules_ts", version = "3.9.2")
+bazel_dep(name = "aspect_rules_js", version = "3.2.3")
+bazel_dep(name = "aspect_rules_esbuild", version = "0.26.0")
+bazel_dep(name = "aspect_rules_jasmine", version = "2.0.4")
+bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
+bazel_dep(name = "bazel_lib", version = "3.5.0")
+bazel_dep(name = "tar.bzl", version = "0.10.7")
+bazel_dep(name = "yq.bzl", version = "0.3.6")
+bazel_dep(name = "rules_angular")
+git_override(
+    module_name = "rules_angular",
+    commit = "db445dccfe48aad20be6ee3df456df91660ff217",
+    remote = "https://github.com/angular/rules_angular.git",
+)
+
+bazel_dep(name = "devinfra")
+git_override(
+    module_name = "devinfra",
+    commit = "daa0b5ecd15668d12163f70d4c9836ada70808c9",
+    remote = "https://github.com/angular/dev-infra.git",
+)
+
+bazel_dep(name = "rules_sass")
+git_override(
+    module_name = "rules_sass",
+    commit = "f153cb9242233738c3e6eca6554ae4cb864b0def",
+    remote = "https://github.com/angular/rules_sass.git",
+)
+
+bazel_dep(name = "rules_browsers")
+git_override(
+    module_name = "rules_browsers",
+    commit = "3a6bd40f9be945dc51c976a21424c656448f9b09",
+    remote = "https://github.com/angular/rules_browsers.git",
+)
+
+yq = use_extension("@yq.bzl//yq:extensions.bzl", "yq")
+use_repo(yq, "yq_toolchains")
+
+node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
+node.toolchain(
+    node_repositories = {
+        "22.23.1-darwin_arm64": ("node-v22.23.1-darwin-arm64.tar.gz", "node-v22.23.1-darwin-arm64", "ef28d8fab2c0e4314522d4bb1b7173270aa3937e93b92cb7de79c112ac1fa953"),
+        "22.23.1-darwin_amd64": ("node-v22.23.1-darwin-x64.tar.gz", "node-v22.23.1-darwin-x64", "b8da981b8a0b1241b70249204916da76c63573ddf5814dbd2d1e41069105cb81"),
+        "22.23.1-linux_arm64": ("node-v22.23.1-linux-arm64.tar.xz", "node-v22.23.1-linux-arm64", "0294e8b915ab75f92c7513d2fcb830ae06e10684e6c603e99a87dbf8835389c1"),
+        "22.23.1-linux_ppc64le": ("node-v22.23.1-linux-ppc64le.tar.xz", "node-v22.23.1-linux-ppc64le", "a645bcb7bbc498d09ba9249b5c6414aa6d0a461d8854afc61e32096646ba5e66"),
+        "22.23.1-linux_s390x": ("node-v22.23.1-linux-s390x.tar.xz", "node-v22.23.1-linux-s390x", "f16b5636ba925b462e627c5e0ef47de3255bf4a7b38d56db58e2cf165df19c3c"),
+        "22.23.1-linux_amd64": ("node-v22.23.1-linux-x64.tar.xz", "node-v22.23.1-linux-x64", "9749e988f437343b7fa832c69ded82a312e41a03116d766797ac14f6f9eee578"),
+        "22.23.1-windows_amd64": ("node-v22.23.1-win-x64.zip", "node-v22.23.1-win-x64", "7df0bc9375723f4a86b3aa1b7cc73342423d9677a8df4538aca31a049e309c29"),
+    },
+    node_version = "22.23.1",
+)
+use_repo(node, "nodejs_toolchains")
+use_repo(node, "nodejs_darwin_amd64")
+use_repo(node, "nodejs_darwin_arm64")
+use_repo(node, "nodejs_linux_amd64")
+use_repo(node, "nodejs_linux_arm64")
+use_repo(node, "nodejs_linux_ppc64le")
+use_repo(node, "nodejs_linux_s390x")
+use_repo(node, "nodejs_windows_amd64")
+
+pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
+pnpm.pnpm(
+    name = "pnpm",
+    pnpm_version = "11.15.1",
+    pnpm_version_integrity = "sha512-gTULB+U8lTigLx8jA7QpD6LXvgTlbiqXDEzEtBfcdh3hlu2r1J1Vx9yVgNuBAHxEFD5OPX5GKzAA0jwlUSLQZQ==",
+)
+use_repo(pnpm, "pnpm")
+
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
+npm.npm_translate_lock(
+    name = "npm",
+    data = [
+        "//:.pnpmfile.cjs",
+        "//:package.json",
+        "//:pnpm-workspace.yaml",
+        "//adev:package.json",
+        "//adev/shared-docs:package.json",
+        "//adev/shared-docs/pipeline/api-gen:package.json",
+        "//devtools:package.json",
+        "//integration:package.json",
+        "//modules:package.json",
+        "//packages/animations:package.json",
+        "//packages/benchpress:package.json",
+        "//packages/common:package.json",
+        "//packages/compiler:package.json",
+        "//packages/compiler-cli:package.json",
+        "//packages/compiler-cli/linker/babel/test:package.json",
+        "//packages/core:package.json",
+        "//packages/core/test/bundling:package.json",
+        "//packages/elements:package.json",
+        "//packages/forms:package.json",
+        "//packages/language-service:package.json",
+        "//packages/localize:package.json",
+        "//packages/platform-browser:package.json",
+        "//packages/platform-browser-dynamic:package.json",
+        "//packages/platform-server:package.json",
+        "//packages/router:package.json",
+        "//packages/service-worker:package.json",
+        "//packages/upgrade:package.json",
+        "//tools/bazel/rules_angular_store:package.json",
+        "//vscode-ng-language-service/integration/project:package.json",
+    ],
+    lifecycle_hooks = {
+        # sleep requires node-gyp rebuild but the native module is not needed in Bazel;
+        # disable the install hook to avoid failing builds when node-gyp is unavailable.
+        "sleep": [],
+    },
+    pnpm_lock = "//:pnpm-lock.yaml",
+)
+use_repo(npm, "npm")
+
+rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext")
+rules_ts_ext.deps(
+    name = "angular_npm_typescript",
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/6.0.2 | jq -r '.dist.integrity'
+    ts_integrity = "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
+    ts_version = "6.0.3",
+)
+use_repo(rules_ts_ext, **{"npm_typescript": "angular_npm_typescript"})
+
+# TODO: Figure out how to make ng_project update whenever the packages/core::pkg target changes.
+rules_angular = use_extension("@rules_angular//setup:extensions.bzl", "rules_angular")
+rules_angular.setup(
+    name = "angular_rules_angular_configurable_deps",
+    angular_compiler_cli = "//:node_modules/@angular/compiler-cli",
+    typescript = "//:node_modules/typescript",
+)
+use_repo(rules_angular, rules_angular_configurable_deps = "angular_rules_angular_configurable_deps")
+
+register_toolchains(
+    "@devinfra//bazel/git-toolchain:git_linux_toolchain",
+    "@devinfra//bazel/git-toolchain:git_macos_x86_toolchain",
+    "@devinfra//bazel/git-toolchain:git_macos_arm64_toolchain",
+    "@devinfra//bazel/git-toolchain:git_windows_toolchain",
+)
+
+CLDR_VERSION = "47"
+
+cldr_json_data = use_repo_rule("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_json_data_repository")
+
+cldr_json_data(
+    name = "cldr_json_data",
+    urls = {
+        "https://github.com/unicode-org/cldr-json/releases/download/%s.0.0/cldr-%s.0.0-json-full.zip" % (CLDR_VERSION, CLDR_VERSION): "bbb9a9aac2dfc534bd18288678a5984023d11d22f712f3c33425f3214bd1def6",
+    },
+)
+
+cldr_xml_data = use_repo_rule("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_xml_data_repository")
+
+cldr_xml_data(
+    name = "cldr_xml_data",
+    urls = {
+        "https://github.com/unicode-org/cldr/releases/download/release-%s/core.zip" % CLDR_VERSION: "d5ee2abac64158c04884a722f8ef4830ea22b6c74aac20185be2838db8eda788",
+    },
+)

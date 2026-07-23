@@ -1,0 +1,61 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "signals-visualizer_styles",
+    src = "signals-visualizer.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "signals-visualizer",
+    srcs = [
+        "signals-visualizer.component.ts",
+        "signals-visualizer.ts",
+        "visualizer-types.ts",
+    ],
+    angular_assets = [
+        "signals-visualizer.component.html",
+        ":signals-visualizer_styles",
+    ],
+    deps = [
+        ":signal-node-filter-fn-generator",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools:node_modules/@types/d3",
+        "//devtools:node_modules/d3",
+        "//devtools:node_modules/dagre-d3-es",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/ng-devtools/src/lib/shared/filter",
+        "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "signal-node-filter-fn-generator",
+    srcs = ["signal-node-filter-fn-generator.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/shared/filter",
+        "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "signal-node-filter-fn-generator_test",
+    srcs = ["signal-node-filter-fn-generator.spec.ts"],
+    deps = [
+        ":signal-node-filter-fn-generator",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":signal-node-filter-fn-generator_test",
+    ],
+)

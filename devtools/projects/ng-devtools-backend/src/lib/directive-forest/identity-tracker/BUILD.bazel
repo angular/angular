@@ -1,0 +1,32 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "identity-tracker",
+    srcs = [
+        "identity-tracker.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "identity-tracker.spec.ts",
+    ],
+    deps = [
+        ":identity-tracker",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

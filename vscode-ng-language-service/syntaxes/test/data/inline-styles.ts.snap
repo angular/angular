@@ -1,0 +1,157 @@
+>/* clang-format off */
+#^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng
+>
+>@Component({
+#^^^^^^^^^^^^^ inline-styles.ng
+>//// Property key/value test
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng
+>  styles: [ '.example { width: 100px; }' ],
+#^^ inline-styles.ng
+#  ^^^^^^ inline-styles.ng meta.object-literal.key.ts
+#        ^ inline-styles.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#         ^ inline-styles.ng
+#          ^ inline-styles.ng meta.array.literal.ts meta.brace.square.ts
+#           ^ inline-styles.ng
+#            ^ inline-styles.ng string
+#             ^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                                       ^ inline-styles.ng string
+#                                        ^ inline-styles.ng
+#                                         ^ inline-styles.ng meta.array.literal.ts meta.brace.square.ts
+#                                          ^^ inline-styles.ng
+>
+>//// Multiple styles test
+#^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng
+>  styles: [
+#^^ inline-styles.ng
+#  ^^^^^^ inline-styles.ng meta.object-literal.key.ts
+#        ^ inline-styles.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#         ^ inline-styles.ng
+#          ^ inline-styles.ng meta.array.literal.ts meta.brace.square.ts
+>    '.example { width: 100px; }',
+#^^^^ inline-styles.ng
+#    ^ inline-styles.ng string
+#     ^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                               ^ inline-styles.ng string
+#                                ^^ inline-styles.ng
+>    '.example { height: 100px; }',
+#^^^^ inline-styles.ng
+#    ^ inline-styles.ng string
+#     ^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                                ^ inline-styles.ng string
+#                                 ^^ inline-styles.ng
+>  ],
+#^^ inline-styles.ng
+#  ^ inline-styles.ng meta.array.literal.ts meta.brace.square.ts
+#   ^^ inline-styles.ng
+>
+>//// String delimiter tests
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng
+>  styles: [ `.example { width: 100px; }` ],
+#^^ inline-styles.ng
+#  ^^^^^^ inline-styles.ng meta.object-literal.key.ts
+#        ^ inline-styles.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#         ^ inline-styles.ng
+#          ^ inline-styles.ng meta.array.literal.ts meta.brace.square.ts
+#           ^ inline-styles.ng
+#            ^ inline-styles.ng string
+#             ^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                                       ^ inline-styles.ng string
+#                                        ^ inline-styles.ng
+#                                         ^ inline-styles.ng meta.array.literal.ts meta.brace.square.ts
+#                                          ^^ inline-styles.ng
+>  styles: [ ".example { width: 100px; }" ],
+#^^ inline-styles.ng
+#  ^^^^^^ inline-styles.ng meta.object-literal.key.ts
+#        ^ inline-styles.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#         ^ inline-styles.ng
+#          ^ inline-styles.ng meta.array.literal.ts meta.brace.square.ts
+#           ^ inline-styles.ng
+#            ^ inline-styles.ng string
+#             ^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                                       ^ inline-styles.ng string
+#                                        ^ inline-styles.ng
+#                                         ^ inline-styles.ng meta.array.literal.ts meta.brace.square.ts
+#                                          ^^ inline-styles.ng
+>  styles: [ '.example { width: 100px; }' ],
+#^^ inline-styles.ng
+#  ^^^^^^ inline-styles.ng meta.object-literal.key.ts
+#        ^ inline-styles.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#         ^ inline-styles.ng
+#          ^ inline-styles.ng meta.array.literal.ts meta.brace.square.ts
+#           ^ inline-styles.ng
+#            ^ inline-styles.ng string
+#             ^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                                       ^ inline-styles.ng string
+#                                        ^ inline-styles.ng
+#                                         ^ inline-styles.ng meta.array.literal.ts meta.brace.square.ts
+#                                          ^^ inline-styles.ng
+>
+>//// Parenthesization tests
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng
+>  styles: ( (( [ ( '.example { width: 100px; }' ) ] )) ),
+#^^ inline-styles.ng
+#  ^^^^^^ inline-styles.ng meta.object-literal.key.ts
+#        ^ inline-styles.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#         ^ inline-styles.ng
+#          ^ inline-styles.ng meta.brace.round.ts
+#           ^^^^^^^ inline-styles.ng
+#                  ^ inline-styles.ng
+#                   ^ inline-styles.ng string
+#                    ^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                                              ^ inline-styles.ng string
+#                                               ^ inline-styles.ng
+#                                                ^ inline-styles.ng meta.brace.round.ts
+#                                                 ^^^^^^^ inline-styles.ng
+#                                                        ^^ inline-styles.ng
+>//// styles string
+#^^^^^^^^^^^^^^^^^^^ inline-styles.ng
+>  styles: ( ((  ( '.example { width: 100px; }' )  )) ),
+#^^ inline-styles.ng
+#  ^^^^^^ inline-styles.ng meta.object-literal.key.ts
+#        ^ inline-styles.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#         ^ inline-styles.ng
+#          ^ inline-styles.ng meta.brace.round.ts
+#           ^^^^^^ inline-styles.ng
+#                 ^ inline-styles.ng
+#                  ^ inline-styles.ng string
+#                   ^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                                             ^ inline-styles.ng string
+#                                              ^ inline-styles.ng
+#                                               ^ inline-styles.ng meta.brace.round.ts
+#                                                ^^^^^^ inline-styles.ng
+#                                                      ^^ inline-styles.ng
+>  styles:  `.example { width: 100px; }` ,
+#^^ inline-styles.ng
+#  ^^^^^^ inline-styles.ng meta.object-literal.key.ts
+#        ^ inline-styles.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#         ^^ inline-styles.ng
+#           ^ inline-styles.ng string
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                                      ^ inline-styles.ng string
+#                                       ^ inline-styles.ng
+#                                        ^^ inline-styles.ng
+>  styles:  ".example { width: 100px; }" ,
+#^^ inline-styles.ng
+#  ^^^^^^ inline-styles.ng meta.object-literal.key.ts
+#        ^ inline-styles.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#         ^^ inline-styles.ng
+#           ^ inline-styles.ng string
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                                      ^ inline-styles.ng string
+#                                       ^ inline-styles.ng
+#                                        ^^ inline-styles.ng
+>  styles:  '.example { width: 100px; }' ,
+#^^ inline-styles.ng
+#  ^^^^^^ inline-styles.ng meta.object-literal.key.ts
+#        ^ inline-styles.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#         ^^ inline-styles.ng
+#           ^ inline-styles.ng string
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng source.css.scss
+#                                      ^ inline-styles.ng string
+#                                       ^ inline-styles.ng
+#                                        ^^ inline-styles.ng
+>})
+#^^^ inline-styles.ng
+>export class TMComponent{}
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-styles.ng
+>

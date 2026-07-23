@@ -1,0 +1,69 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "lib",
+    srcs = ["index.ts"],
+    deps = [
+        ":client_event_subscribers",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/state-serializer",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "version",
+    srcs = ["version.ts"],
+)
+
+zoneless_web_test_suite(
+    name = "client_event_subscribers_test",
+    deps = [
+        ":client_event_subscribers_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "client_event_subscribers_test_lib",
+    srcs = [
+        "client-event-subscribers.spec.ts",
+    ],
+    deps = [
+        ":client_event_subscribers",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/identity-tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+    ],
+)
+
+ts_project(
+    name = "client_event_subscribers",
+    srcs = ["client-event-subscribers.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
+        "//devtools/projects/ng-devtools-backend/src/lib/console:set-console-reference",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/hydration:hydration-highlighting",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
+        "//devtools/projects/ng-devtools-backend/src/lib/router-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/state-serializer",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:serialization",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:signal-graph-ref",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+    ],
+)

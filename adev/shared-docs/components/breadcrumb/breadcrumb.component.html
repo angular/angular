@@ -1,0 +1,13 @@
+@for (breadcrumb of breadcrumbItems(); track $index) {
+  <div class="docs-breadcrumb">
+    @if (breadcrumb.path) {
+      @if (breadcrumb.isExternal) {
+        <a [href]="breadcrumb.path">{{ breadcrumb.label }}</a>
+      } @else {
+        <a [routerLink]="'/' + breadcrumb.path">{{ breadcrumb.label }}</a>
+      }
+    } @else {
+      <span>{{ breadcrumb.label }}</span>
+    }
+  </div>
+}

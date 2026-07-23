@@ -1,0 +1,82 @@
+.highlight-demo {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.demo-section {
+  margin-bottom: 40px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.product-card {
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.price {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #059669;
+  margin: 8px 0;
+}
+
+.intensity {
+  font-size: 0.9em;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.text-examples {
+  margin: 20px 0;
+}
+
+.text-examples p {
+  padding: 12px;
+  margin: 16px 0;
+  border-radius: 4px;
+}
+
+.text-examples button {
+  padding: 12px 24px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 16px 8px;
+}
+
+.info-box {
+  padding: 20px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.info-box h4 {
+  margin-top: 0;
+  color: #374151;
+}
+
+h1, h2, h3 {
+  color: #111827;
+  margin-top: 0;
+}
+
+p {
+  color: #6b7280;
+  line-height: 1.5;
+}

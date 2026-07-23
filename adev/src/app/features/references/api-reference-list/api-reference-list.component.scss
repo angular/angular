@@ -1,0 +1,175 @@
+:host {
+  padding: var(--layout-padding);
+  display: block;
+
+  container: api-ref-page / inline-size;
+
+  header {
+    margin-block-end: 2.75rem;
+
+    // small page label: "Getting Started"
+    h6 {
+      color: var(--quaternary-contrast);
+      font-weight: 500;
+      font-size: 0.875rem;
+      margin: 0;
+    }
+
+    p {
+      max-width: 78ch;
+      color: var(--secondary-contrast);
+    }
+  }
+
+  .adev-reference-list-filter {
+    border-block-end: 1px solid var(--senary-contrast);
+    padding-block-end: 2rem;
+    margin-block-end: 1rem;
+    -webkit-tap-highlight-color: transparent;
+
+    .adev-reference-list-type-filter-label {
+      margin-block: 1rem;
+    }
+
+    .adev-reference-list-type-filter {
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      margin-block: 0;
+      padding-inline: 0;
+      cursor: pointer;
+      width: 100%;
+      gap: 0.5rem;
+
+      @container api-ref-page (max-width: 775px) {
+        grid-template-columns: repeat(5, 1fr);
+      }
+      @container api-ref-page (max-width: 600px) {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 500px;
+      }
+      @container api-ref-page (max-width: 500px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      @container api-ref-page (max-width: 350px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      li {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        padding: 0.3rem;
+        font-size: 0.875rem;
+        color: var(--quaternary-contrast);
+        font-weight: 500;
+        text-transform: capitalize;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+        transition:
+          color 0.3s ease,
+          background 0.3s ease,
+          border 0.3s ease;
+
+        &:hover {
+          color: var(--primary-contrast);
+          border: 1px solid var(--senary-contrast);
+        }
+
+        &.adev-reference-list-type-filter-item-active {
+          background: var(--septenary-contrast);
+          border: 1px solid var(--quinary-contrast);
+          color: var(--primary-contrast);
+        }
+
+        .docs-api-item-label-full {
+          white-space: nowrap;
+        }
+      }
+    }
+
+    .adev-reference-list-query-filter {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+
+      * {
+        box-sizing: border-box;
+      }
+
+      docs-text-field,
+      docs-select {
+        width: 100%;
+        max-width: 350px;
+      }
+
+      @container api-ref-page (max-width: 600px) {
+        flex-direction: column;
+        align-items: stretch;
+
+        docs-text-field,
+        docs-select {
+          width: 100%;
+          max-width: 500px;
+        }
+      }
+    }
+
+    .adev-reference-list-status {
+      display: flex;
+      align-items: center;
+      margin-top: 1rem;
+
+      ::ng-deep .mat-mdc-chip-listbox {
+        @container api-ref-page (max-width: 600px) {
+          width: 100%;
+          max-width: 500px;
+
+          .mdc-evolution-chip-set__chips {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-left: 0;
+          }
+
+          .mat-mdc-chip-option {
+            min-width: 0;
+            width: 100%;
+            margin: 0;
+          }
+        }
+
+        @container api-ref-page (max-width: 350px) {
+          .mdc-evolution-chip-set__chips {
+            grid-template-columns: 1fr;
+          }
+        }
+      }
+    }
+  }
+
+  .adev-reference-list-empty {
+    text-align: center;
+    margin-block-start: 2rem;
+    flex-basis: 100%;
+
+    p {
+      font-size: 1rem;
+    }
+  }
+
+  .adev-reference-list-empty-angie {
+    display: block;
+    width: 180px;
+    height: auto;
+    aspect-ratio: 1;
+    margin-block: 0 1rem;
+    margin-inline: auto;
+  }
+
+  adev-api-items-section {
+    width: 100%;
+  }
+}

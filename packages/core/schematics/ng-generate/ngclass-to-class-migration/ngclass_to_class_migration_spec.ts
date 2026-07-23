@@ -1,0 +1,1301 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {normalize, virtualFs} from '@angular-devkit/core';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
+import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
+import {HostTree} from '@angular-devkit/schematics';
+import {resolve} from 'path';
+
+describe('NgClass migration', () => {
+  let runner: SchematicTestRunner;
+  let host: TempScopedNodeJsSyncHost;
+  let tree: UnitTestTree;
+
+  function writeFile(filePath: string, contents: string) {
+    host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
+  }
+
+  function runMigration(options?: {path?: string; migrateSpaceSeparatedKey?: boolean}) {
+    return runner.runSchematic('ngclass-to-class', options, tree);
+  }
+
+  const collectionJsonPath = resolve('../../collection.json');
+  beforeEach(() => {
+    runner = new SchematicTestRunner('test', collectionJsonPath);
+    host = new TempScopedNodeJsSyncHost();
+    tree = new UnitTestTree(new HostTree(host));
+    writeFile('/tsconfig.json', '{}');
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {t: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}}},
+      }),
+    );
+  });
+
+  it('should handle a file that is present in multiple projects', async () => {
+    writeFile('/tsconfig-2.json', '{}');
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {
+          a: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}},
+          b: {root: '', architect: {build: {options: {tsConfig: './tsconfig-2.json'}}}},
+        },
+      }),
+    );
+
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'admin': isAdmin}">
+            <p>it works</p>
+          </div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain('<div [class.admin]="isAdmin">');
+  });
+
+  it('should remove NgClass import when no longer needed', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'admin': isAdmin}">
+            <p>it works</p>
+          </div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain('[class.admin]="isAdmin"');
+    expect(content).not.toContain("import {NgClass} from '@angular/common';");
+    expect(content).not.toContain('imports:');
+  });
+
+  it('should preserve NgClass import when unconverted [ngClass] bindings remain', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+          imports: [NgClass],
+          template: \`
+            <div [ngClass]="{ active: isActive }">migrated</div>
+            <div [ngClass]="['class-a', condition ? 'class-b' : '']">skipped (array)</div>
+          \`,
+        })
+        export class App {
+          isActive = true;
+          condition = true;
+        }
+      `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain('[class.active]="isActive"');
+    // The array binding should remain as [ngClass].
+    expect(content).toContain("[ngClass]=\"['class-a', condition ? 'class-b' : '']\"");
+    // NgClass import must be preserved since [ngClass] still exists in the template.
+    expect(content).toContain("import {NgClass} from '@angular/common';");
+    expect(content).toContain('imports: [NgClass]');
+  });
+
+  it('should preserve the shared NgClass import when one of several components in the same file is only partially migrated', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+
+        @Component({
+          selector: 'fully-migrated',
+          imports: [NgClass],
+          template: \`<div [ngClass]="{ active: isActive }">migrated</div>\`,
+        })
+        export class FullyMigrated {
+          isActive = true;
+        }
+
+        @Component({
+          selector: 'partially-migrated',
+          imports: [NgClass],
+          template: \`
+            <div [ngClass]="{ active: isActive }">migrated</div>
+            <div [ngClass]="['class-a', condition ? 'class-b' : '']">skipped (array)</div>
+          \`,
+        })
+        export class PartiallyMigrated {
+          isActive = true;
+          condition = true;
+        }
+      `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/app.component.ts');
+    // Split the file so each component's decorator/template can be asserted on independently -
+    // both components still contain the literal text `imports: [NgClass]` in their source before
+    // migration, so a plain `content.includes(...)` check on the whole file can't distinguish
+    // between them.
+    const partiallyMigratedIndex = content.indexOf("selector: 'partially-migrated'");
+    const fullyMigratedSection = content.slice(0, partiallyMigratedIndex);
+    const partiallyMigratedSection = content.slice(partiallyMigratedIndex);
+
+    // The fully migratable component's [ngClass] should be converted, and its own `imports`
+    // array should no longer list `NgClass` since it doesn't need it anymore.
+    expect(fullyMigratedSection).toContain('[class.active]="isActive"');
+    expect(fullyMigratedSection).not.toContain('imports:');
+
+    // The partially migrated component keeps its unconvertible binding as [ngClass], and its
+    // own `imports` array must still list `NgClass`.
+    expect(partiallyMigratedSection).toContain('[class.active]="isActive"');
+    expect(partiallyMigratedSection).toContain(
+      "[ngClass]=\"['class-a', condition ? 'class-b' : '']\"",
+    );
+    expect(partiallyMigratedSection).toContain('imports: [NgClass]');
+
+    // Because `PartiallyMigrated` still needs `NgClass`, the shared top-level import statement
+    // must be preserved even though `FullyMigrated` no longer needs it.
+    expect(content).toContain("import {NgClass} from '@angular/common';");
+  });
+
+  it('should preserve the shared NgClass import when one of several components in the same file is completely skipped', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+
+        @Component({
+          selector: 'fully-migrated',
+          imports: [NgClass],
+          template: \`<div [ngClass]="{ active: isActive }">migrated</div>\`,
+        })
+        export class FullyMigrated {
+          isActive = true;
+        }
+
+        @Component({
+          selector: 'completely-skipped',
+          imports: [NgClass],
+          template: \`
+            <div [ngClass]="dynamicVar">skipped (dynamic)</div>
+          \`,
+        })
+        export class CompletelySkipped {
+          dynamicVar = 'class-a';
+        }
+      `,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/app.component.ts');
+    const skippedIndex = content.indexOf("selector: 'completely-skipped'");
+    const fullyMigratedSection = content.slice(0, skippedIndex);
+    const completelySkippedSection = content.slice(skippedIndex);
+
+    expect(fullyMigratedSection).toContain('[class.active]="isActive"');
+    expect(fullyMigratedSection).not.toContain('imports:');
+
+    expect(completelySkippedSection).toContain('[ngClass]="dynamicVar"');
+    expect(completelySkippedSection).toContain('imports: [NgClass]');
+
+    expect(content).toContain("import {NgClass} from '@angular/common';");
+  });
+
+  describe('No change cases', () => {
+    it('should not change static HTML elements', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <button id="123"></button>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain('<button id="123"></button>');
+    });
+
+    it('should not change existing [class] bindings', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [class.active]="isActive"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain('<div [class.active]="isActive"></div>');
+    });
+
+    it('should change empty ngClass binding', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain('<div [class]=""></div>');
+    });
+
+    it('should not change ngClass with empty string key', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain('<div [class]=""></div>');
+    });
+
+    it('should migrate string literal values in object syntax', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+          imports: [NgClass],
+          template: \`
+            <div [ngClass]="{foo: 'bar'}"></div>
+          \`
+        })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [class.foo]="'bar'"></div>`);
+    });
+
+    it('should change ngClass with empty array', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="[]"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain('<div [class]=""></div>');
+    });
+
+    it('should not split and migrate multiple classes in one key without option', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`<div [ngClass]="{'class1 class2': condition}"></div>`);
+    });
+  });
+
+  describe('Simple ngClass object migrations', () => {
+    it('should migrate single condition', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'active': isActive}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain('<div [class.active]="isActive"></div>');
+    });
+
+    it('should migrate a binded object with multiple keys to class bindings', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1': condition1, 'class2': condition2}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(
+        `<div [class]="{'class1': condition1, 'class2': condition2}"></div>`,
+      );
+    });
+
+    it('should migrate quoted class names for multiple conditions', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'admin-panel': isAdmin, 'user-dense': isDense}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(
+        `<div [class]="{'admin-panel': isAdmin, 'user-dense': isDense}"></div>`,
+      );
+    });
+
+    it('should migrate single condition with ngClass not binding', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div ngClass="foo"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div class="foo"></div>`);
+    });
+
+    it('should migrate single condition with ngClass binding', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{foo}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain('<div [class.foo]="foo"></div>');
+    });
+  });
+
+  describe('Complex and multi-element migrations', () => {
+    it('should not migrate a space-separated key mixed with a regular key to [class] binding by default', async () => {
+      // Regression test for https://github.com/angular/angular/issues/69833 — [class]="{...}"
+      // object syntax does not support space-separated key names, so without
+      // `migrateSpaceSeparatedKey` the binding must be left as [ngClass].
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': condition, 'class3': anotherCondition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(
+        `<div [ngClass]="{'class1 class2': condition, 'class3': anotherCondition}"></div>`,
+      );
+      expect(content).not.toContain('[class]=');
+    });
+
+    it('should migrate keys with extra whitespace for multiple conditions', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'  class1  ': condition, 'class2': anotherCondition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(
+        `<div [class]="{'  class1  ': condition, 'class2': anotherCondition}"></div>`,
+      );
+    });
+
+    it('should migrate multiple ngClass bindings across multiple elements', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1': condition1, 'class2': condition2}"></div>
+          <div [ngClass]="{'class3': condition3}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`
+          <div [class]="{'class1': condition1, 'class2': condition2}"></div>
+          <div [class.class3]="condition3"></div>
+      `);
+    });
+  });
+
+  describe('Import array management', () => {
+    it('should keep imports array when NgClass is removed but other imports remain', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass, NgFor, NgIf} from '@angular/common';
+        @Component({
+        imports: [NgClass, NgFor, NgIf],
+        template: \`
+          <div [ngClass]="{'admin': isAdmin}">
+            <p *ngFor="let item of items">{{item}}</p>
+          </div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain('[class.admin]="isAdmin"');
+      expect(content).toContain('imports: [NgFor, NgIf]');
+      expect(content).not.toContain('NgClass');
+      expect(content).toContain("import {NgFor, NgIf} from '@angular/common';");
+    });
+
+    it('should remove NgClass from middle of imports array', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass, NgFor, NgIf} from '@angular/common';
+        @Component({
+        imports: [NgFor, NgClass, NgIf],
+        template: \`
+          <div [ngClass]="{'admin': isAdmin}">
+            <p *ngFor="let item of items">{{item}}</p>
+          </div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain('imports: [NgFor, NgIf]');
+      expect(content).not.toContain('imports: [NgFor, , NgIf]'); // No double comma
+    });
+
+    it('should remove NgClass from end of imports array', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass, NgFor, NgIf} from '@angular/common';
+        @Component({
+        imports: [NgFor, NgIf, NgClass],
+        template: \`
+          <div [ngClass]="{'admin': isAdmin}">
+            <p *ngFor="let item of items">{{item}}</p>
+          </div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain('imports: [NgFor, NgIf]');
+      expect(content).not.toContain('imports: [NgFor, NgIf,]'); // No trailing comma
+    });
+
+    it('should handle multiline imports array formatting with NgClass at the end', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+
+        @Component({
+        template: \`<div [ngClass]="{'admin': isAdmin}"></div>\`,
+        imports: [NgClass],
+        })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`@Component({
+        template: \`<div [class.admin]="isAdmin"></div>\`,
+        })
+        export class Cmp {}`);
+    });
+
+    it('should handle multiline imports array formatting', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass, NgFor, NgIf} from '@angular/common';
+        @Component({
+        imports: [
+          NgFor,
+          NgClass,
+          NgIf
+        ],
+        template: \`
+          <div [ngClass]="{'admin': isAdmin}">
+            <p *ngFor="let item of items">{{item}}</p>
+          </div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain('imports: [');
+      expect(content).toContain('NgFor,');
+      expect(content).toContain('NgIf');
+      expect(content).not.toContain('NgClass');
+    });
+
+    it('should remove imports and trailing comma with only ngClass imported', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+
+        @Component({
+        imports: [NgClass],
+        template: \`<div [ngClass]="{'admin': isAdmin}"></div>\`
+        })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`@Component({
+        template: \`<div [class.admin]="isAdmin"></div>\`
+        })
+        export class Cmp {}`);
+    });
+
+    it('should migrate when NgClass is provided by CommonModule and remove CommonModule', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        @Component({
+          imports: [CommonModule],
+          template: \`
+            <div [ngClass]="{'admin': isAdmin, dense: density === 'high'}">
+              <p>{{item}}</p>
+            </div>
+          \`
+        })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`[class]="{'admin': isAdmin, dense: density === 'high'}"`);
+      expect(content).not.toContain('imports: [CommonModule]');
+      expect(content).not.toContain("import {CommonModule} from '@angular/common';");
+    });
+
+    it('should migrate when NgClass is provided by CommonModule but not remove CommonModule', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        @Component({
+          standalone: true,
+          imports: [CommonModule],
+          template: \`
+            <div *ngIf='condition' [ngClass]="{'admin': isAdmin, dense: density === 'high'}">
+              <p>{{item}}</p>
+            </div>
+          \`
+        })
+        export class Cmp {
+          isAdmin = true;
+          condition = true;
+        }
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`[class]="{'admin': isAdmin, dense: density === 'high'}"`);
+      expect(content).toContain('imports: [CommonModule]');
+      expect(content).toContain("import {CommonModule} from '@angular/common';");
+    });
+
+    it('should not remove CommonModule when a component has no [ngClass] but still uses *ngIf', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        @Component({
+          standalone: true,
+          imports: [CommonModule],
+          template: \`
+            <div *ngIf="condition">
+              <p>{{item}}</p>
+            </div>
+          \`
+        })
+        export class Cmp {
+          condition = true;
+        }
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      // No [ngClass] binding exists, so nothing should be migrated in the template...
+      expect(content).toContain('*ngIf="condition"');
+      // ...but the component still needs `CommonModule` for `*ngIf`, so it must not be removed
+      // from either the `imports` array or the top-level import statement.
+      expect(content).toContain('imports: [CommonModule]');
+      expect(content).toContain("import {CommonModule} from '@angular/common';");
+    });
+
+    it('should not remove CommonModule from a skipped component (no [ngClass]) when another component in the same file is migrated', async () => {
+      // Regression test: when ComponentA is fully migrated and ComponentB has no [ngClass]
+      // at all but uses *ngIf (via CommonModule), the migration must not strip CommonModule
+      // from ComponentB because it was "completely skipped" (zero ngClass bindings).
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass, CommonModule} from '@angular/common';
+
+        @Component({
+          standalone: true,
+          imports: [NgClass],
+          template: \`<div [ngClass]="{'admin': isAdmin}"></div>\`
+        })
+        export class CmpA {}
+
+        @Component({
+          standalone: true,
+          imports: [CommonModule],
+          template: \`<div *ngIf="condition"><p>{{item}}</p></div>\`
+        })
+        export class CmpB {
+          condition = true;
+        }
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      // CmpA should have been migrated — NgClass removed, [class.admin] used
+      expect(content).toContain('[class.admin]="isAdmin"');
+      expect(content).not.toContain('imports: [NgClass]');
+
+      // CmpB was completely skipped (no [ngClass]), so CommonModule must be preserved
+      expect(content).toContain('imports: [CommonModule]');
+      expect(content).toContain("import {CommonModule} from '@angular/common';");
+      // The *ngIf binding must remain untouched
+      expect(content).toContain('*ngIf="condition"');
+    });
+  });
+
+  describe('Non-migratable and edge cases', () => {
+    it('should not migrate invalid object literal syntax', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{foo isActive}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`<div [ngClass]="{foo isActive}"></div>`);
+    });
+
+    it('should not migrate string literal class list', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="'class1 class2'"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [ngClass]="'class1 class2'"></div>`);
+    });
+
+    it('should not migrate dynamic variable bindings', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="dynamicClassObject"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [ngClass]="dynamicClassObject"></div>`);
+    });
+
+    it('should not migrate function call bindings', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="getClasses()"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div [ngClass]="getClasses()"></div>`);
+    });
+
+    it('should not migrate when NgClass import is missing', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        @Component({
+        template: \`
+          <div [ngClass]="{'active': isActive, 'disabled': !isEnabled}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(
+        `<div [ngClass]="{'active': isActive, 'disabled': !isEnabled}"></div>`,
+      );
+      expect(content).not.toContain(`[class.active]`);
+      expect(content).not.toContain(`[class.disabled]`);
+    });
+
+    it('should not migrate when NgClass not binding import is missing', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        @Component({
+        template: \`
+          <div ngClass="foo"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+      expect(content).toContain(`<div ngClass="foo"></div>`);
+      expect(content).not.toContain(`[class.foo]`);
+    });
+  });
+
+  it('should not migrate key separated with space', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: false});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [ngClass]="{'class1 class2': condition}"></div>`);
+  });
+});
+
+describe('migrateSpaceSeparatedKey option', () => {
+  let runner: SchematicTestRunner;
+  let host: TempScopedNodeJsSyncHost;
+  let tree: UnitTestTree;
+
+  function writeFile(filePath: string, contents: string) {
+    host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
+  }
+
+  function runMigration(options?: {path?: string; migrateSpaceSeparatedKey?: boolean}) {
+    return runner.runSchematic('ngclass-to-class', options, tree);
+  }
+
+  const collectionJsonPath = resolve('../../collection.json');
+  beforeEach(() => {
+    runner = new SchematicTestRunner('test', collectionJsonPath);
+    host = new TempScopedNodeJsSyncHost();
+    tree = new UnitTestTree(new HostTree(host));
+    writeFile('/tsconfig.json', '{}');
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {t: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}}},
+      }),
+    );
+  });
+
+  it('should split and migrate multiple classes in one key', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [class.class1]="condition" [class.class2]="condition"></div>`);
+  });
+
+  it('should expand mixed space-separated and regular keys individually', async () => {
+    // Regression test for https://github.com/angular/angular/issues/69833
+    // The object has one key with spaces ('class1 class2') and one plain key ('class3'),
+    // each with a different condition. The [class]="..." fallback cannot represent
+    // space-separated key names, so every entry must be emitted as [class.X]="condition".
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': condition, 'class3': condition2}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(
+      `<div [class.class1]="condition" [class.class2]="condition" [class.class3]="condition2"></div>`,
+    );
+  });
+
+  it('should not expand when a space-separated key is mixed with an empty-string key', async () => {
+    // Expanding every binding as [class.${key}] would produce the invalid `[class.]` binding
+    // for the empty key, so the whole binding must be left unchanged instead.
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': condition, '': condition2}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(
+      `<div [ngClass]="{'class1 class2': condition, '': condition2}"></div>`,
+    );
+    expect(content).not.toContain('[class.]');
+  });
+
+  it('should not expand when a space-separated key expansion produces a duplicate class name', async () => {
+    // 'class1 class2': first expands to class1/class2, and the separate 'class1' key would
+    // collide with the expanded class1 binding, producing two conflicting [class.class1]
+    // bindings on the same element. The binding must be left unchanged instead.
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': first, class1: second}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [ngClass]="{'class1 class2': first, class1: second}"></div>`);
+  });
+
+  it('should not expand a space-separated key whose expanded class name contains a dot', async () => {
+    // `[class.a.b]` is parsed by Angular as binding to property `a`, silently discarding
+    // everything after the first dot — expanding 'a.b c' would produce a binding that
+    // silently applies the wrong class. The whole binding must be left unchanged instead.
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'a.b c': condition, 'd': condition2}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [ngClass]="{'a.b c': condition, 'd': condition2}"></div>`);
+    expect(content).not.toContain('[class.a');
+  });
+
+  it('should treat a tab as a class-name separator', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1\\tclass2': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [class.class1]="condition" [class.class2]="condition"></div>`);
+  });
+
+  it('should treat a newline as a class-name separator', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1\\nclass2': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [class.class1]="condition" [class.class2]="condition"></div>`);
+  });
+
+  it('should not expand when a shorthand property collides with an expanded space-separated key', async () => {
+    // The shorthand `class1` binding and the `class1` produced by splitting
+    // 'class1 class2' would collide, producing two conflicting [class.class1] bindings.
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{class1, 'class1 class2': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [ngClass]="{class1, 'class1 class2': condition}"></div>`);
+  });
+
+  it('should expand a space-separated key mixed with a numeric-looking class name', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'1foo bar': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(`<div [class.1foo]="condition" [class.bar]="condition"></div>`);
+  });
+
+  it('should not migrate when a computed property key is mixed with a space-separated key', async () => {
+    writeFile(
+      '/app.component.ts',
+      `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{[dynamicKey]: condition, 'class1 class2': condition2}"></div>
+        \` })
+        export class Cmp {}
+      `,
+    );
+
+    await runMigration({migrateSpaceSeparatedKey: true});
+
+    const content = tree.readContent('/app.component.ts');
+
+    expect(content).toContain(
+      `<div [ngClass]="{[dynamicKey]: condition, 'class1 class2': condition2}"></div>`,
+    );
+  });
+});

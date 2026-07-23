@@ -1,0 +1,17 @@
+load("//adev/shared-docs:defaults.bzl", "js_library")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "performance",
+    srcs = glob([
+        "*.md",
+    ]),
+    mermaid_blocks = True,
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
+    visibility = ["//adev/src/content/best-practices:__pkg__"],
+)

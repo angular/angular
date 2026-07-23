@@ -1,0 +1,25 @@
+load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
+load("//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html.bzl", "render_api_to_html")
+
+filegroup(
+    name = "cdk_extracted_apis",
+    srcs = glob(
+        ["*.json"],
+        exclude = ["_*.json"],
+    ),
+    visibility = ["//visibility:public"],
+)
+
+render_api_to_html(
+    name = "cdk_docs",
+    srcs = [":cdk_extracted_apis"],
+    visibility = ["//visibility:public"],
+)
+
+generate_api_manifest(
+    name = "docs_api_manifest",
+    srcs = [
+        ":cdk_extracted_apis",
+    ],
+    visibility = ["//visibility:public"],
+)

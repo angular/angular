@@ -1,0 +1,14 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "tab-update",
+    srcs = [
+        "index.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/rxjs",
+    ],
+)

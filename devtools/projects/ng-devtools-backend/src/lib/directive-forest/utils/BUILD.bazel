@@ -1,0 +1,16 @@
+load("//devtools/tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "control-flow",
+    srcs = [
+        "control-flow.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/state-serializer",
+        "//devtools/projects/protocol",
+    ],
+)
