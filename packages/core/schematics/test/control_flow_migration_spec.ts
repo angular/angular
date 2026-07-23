@@ -465,6 +465,125 @@ describe('control flow migration (ng update)', () => {
       );
     });
 
+    it('should migrate an if else case where the else template reference name starts with `then`', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          data: any;
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<ng-container *ngIf="data.teamMember; else thenBlock">`,
+          `  <h2>Hello team member!</h2>`,
+          `</ng-container>`,
+          `<ng-template #thenBlock>`,
+          `  <h2>No team member</h2>`,
+          `</ng-template>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe(
+        [
+          `@if (data.teamMember) {`,
+          `  <h2>Hello team member!</h2>`,
+          `} @else {`,
+          `  <h2>No team member</h2>`,
+          `}\n`,
+        ].join('\n'),
+      );
+    });
+
+    it('should migrate an if then case where the then template reference name starts with `else`', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          data: any;
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<ng-container *ngIf="data.teamMember; then elseyBlock"></ng-container>`,
+          `<ng-template #elseyBlock>`,
+          `  <h2>Then content</h2>`,
+          `</ng-template>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe(
+        [`@if (data.teamMember) {`, `  <h2>Then content</h2>`, `}\n`].join('\n'),
+      );
+    });
+
+    it('should migrate an if then else case where template reference names start with `then`/`else`', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          data: any;
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<ng-container *ngIf="data.teamMember; then thenyBlock; else elseyBlock"></ng-container>`,
+          `<ng-template #thenyBlock>`,
+          `  <h2>Then content</h2>`,
+          `</ng-template>`,
+          `<ng-template #elseyBlock>`,
+          `  <h2>Else content</h2>`,
+          `</ng-template>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+
+      expect(content).toBe(
+        [
+          `@if (data.teamMember) {`,
+          `  <h2>Then content</h2>`,
+          `} @else {`,
+          `  <h2>Else content</h2>`,
+          `}\n`,
+        ].join('\n'),
+      );
+    });
+
     it('should migrate an if case on a container', async () => {
       writeFile(
         '/comp.ts',
