@@ -981,6 +981,48 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     },
                 }]
         }] });
+export class HostBindingCustomSrcdocDir {
+    evil = 'evil';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomSrcdocDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingCustomSrcdocDir, isStandalone: true, selector: "safe-srcdoc-carrier", host: { properties: { "attr.srcdoc": "evil" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomSrcdocDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'safe-srcdoc-carrier',
+                    host: {
+                        '[attr.srcdoc]': 'evil',
+                    },
+                }]
+        }] });
+export class HostBindingCustomSrcDir {
+    evil = 'evil';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomSrcDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingCustomSrcDir, isStandalone: true, selector: "safe-src-carrier", host: { properties: { "attr.src": "evil" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomSrcDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'safe-src-carrier',
+                    host: {
+                        '[attr.src]': 'evil',
+                    },
+                }]
+        }] });
+export class HostBindingCustomDataDir {
+    evil = 'evil';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomDataDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingCustomDataDir, isStandalone: true, selector: "safe-data-carrier", host: { properties: { "attr.data": "evil" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomDataDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'safe-data-carrier',
+                    host: {
+                        '[attr.data]': 'evil',
+                    },
+                }]
+        }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: sanitization.d.ts
@@ -1007,6 +1049,21 @@ export declare class HostBindingSvgAnimateDir {
     evil: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingSvgAnimateDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingSvgAnimateDir, "animateMotion[hostBindingSvgAnimateDir]", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingCustomSrcdocDir {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingCustomSrcdocDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingCustomSrcdocDir, "safe-srcdoc-carrier", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingCustomSrcDir {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingCustomSrcDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingCustomSrcDir, "safe-src-carrier", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingCustomDataDir {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingCustomDataDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingCustomDataDir, "safe-data-carrier", never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************

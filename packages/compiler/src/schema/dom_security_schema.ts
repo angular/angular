@@ -56,8 +56,8 @@ type SecuritySchema = Record<
 >;
 
 let _SECURITY_SCHEMA!: SecuritySchema;
-const SVG_NAMESPACE = 'svg';
-const MATH_ML_NAMESPACE = 'math';
+export const SVG_NAMESPACE = 'svg';
+export const MATH_ML_NAMESPACE = 'math';
 const NO_NAMESPACE = '';
 const MATCH_ALL_ELEMENTS = '*';
 const createNullObj = () => Object.create(null);

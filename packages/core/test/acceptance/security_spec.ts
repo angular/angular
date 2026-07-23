@@ -9,11 +9,15 @@
 import {NgIf} from '@angular/common';
 import {DomSanitizer} from '@angular/platform-browser';
 import {
+  ApplicationRef,
   Component,
+  ComponentRef,
   createComponent,
   Directive,
   EnvironmentInjector,
   inject,
+  inputBinding,
+  Input,
   provideZoneChangeDetection,
   TemplateRef,
   Type,
@@ -24,6 +28,9 @@ import {
 import {RuntimeErrorCode} from '../../src/errors';
 import {global} from '../../src/util/global';
 import {ComponentFixture, TestBed} from '../../testing';
+
+const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg';
+const MATH_ML_NAMESPACE_URI = 'http://www.w3.org/1998/Math/MathML';
 
 describe('comment node text escaping', () => {
   // see: https://html.spec.whatwg.org/multipage/syntax.html#comments
@@ -872,6 +879,391 @@ describe('innerHTML processing', () => {
   });
 });
 
+describe('host binding sanitization', () => {
+  const HOST_BINDING_URL = 'http://server/asset';
+  const HOST_BINDING_UNSAFE_URL = 'javascript:custom-data';
+  const UNSAFE_HTML = `<script>evil</script>` + '<p>safe</p>';
+  const SANITIZED_HTML = '<p>safe</p>';
+  const resourceUrlError = /NG0904: unsafe value used in a resource URL context.*/;
+
+  async function expectHostBinding(options: {
+    tagName: string;
+    attrName: string;
+    value: string;
+    expected?: string;
+    expectedError?: RegExp;
+    namespace?: string;
+    componentSelector?: string;
+  }): Promise<void> {
+    // Avoid duplicate selector generation.
+    const randomIdentifier = Math.floor(Math.random() * 100);
+
+    const {
+      tagName,
+      attrName,
+      value,
+      expected,
+      expectedError,
+      namespace,
+      componentSelector = `dynamic-host-${randomIdentifier}`,
+    } = options;
+
+    @Directive({
+      selector: `[safe-data-carrier-${randomIdentifier}]`,
+      host: {[`[attr.${attrName}]`]: 'val'},
+    })
+    class CarrierDirective {
+      val = value;
+    }
+
+    @Component({
+      selector: componentSelector,
+      template: '',
+    })
+    class DynamicComponent {}
+
+    const hostElement = namespace
+      ? document.createElementNS(namespace, tagName)
+      : document.createElement(tagName);
+
+    let componentRef: ComponentRef<DynamicComponent> | undefined;
+
+    @Component({
+      template: '',
+    })
+    class AppHost {
+      private appRef = inject(ApplicationRef);
+      private environmentInjector = inject(EnvironmentInjector);
+
+      constructor() {
+        componentRef = createComponent(DynamicComponent, {
+          hostElement,
+          environmentInjector: this.environmentInjector,
+          directives: [CarrierDirective],
+        });
+        this.appRef.attachView(componentRef.hostView);
+      }
+    }
+
+    const fixture = TestBed.createComponent(AppHost);
+
+    try {
+      if (expectedError) {
+        await expectAsync(fixture.whenStable()).toBeRejectedWithError(expectedError);
+      } else {
+        await fixture.whenStable();
+        expect(hostElement.getAttribute(attrName)).toBe(expected ?? null);
+      }
+    } finally {
+      componentRef?.destroy();
+    }
+  }
+
+  it('should not sanitize resource URL attribute names on non-resource concrete hosts', async () => {
+    await expectHostBinding({
+      tagName: 'div',
+      attrName: 'data',
+      value: HOST_BINDING_URL,
+      expected: HOST_BINDING_URL,
+    });
+    await expectHostBinding({
+      tagName: 'div',
+      attrName: 'data',
+      value: HOST_BINDING_UNSAFE_URL,
+      expected: HOST_BINDING_UNSAFE_URL,
+    });
+  });
+
+  it('should sanitize href host bindings on SVG links', async () => {
+    await expectHostBinding({
+      tagName: 'a',
+      attrName: 'href',
+      value: HOST_BINDING_UNSAFE_URL,
+      expected: `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+      namespace: SVG_NAMESPACE_URI,
+    });
+  });
+
+  it('should not sanitize href host bindings on non-link SVG elements', async () => {
+    await expectHostBinding({
+      tagName: 'rect',
+      attrName: 'href',
+      value: HOST_BINDING_UNSAFE_URL,
+      expected: HOST_BINDING_UNSAFE_URL,
+      namespace: SVG_NAMESPACE_URI,
+    });
+  });
+
+  it('should sanitize xlink:href host bindings on SVG links', async () => {
+    await expectHostBinding({
+      tagName: 'a',
+      attrName: 'xlink:href',
+      value: HOST_BINDING_UNSAFE_URL,
+      expected: `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+      namespace: SVG_NAMESPACE_URI,
+    });
+  });
+
+  it('should sanitize href host bindings on MathML elements', async () => {
+    await expectHostBinding({
+      tagName: 'mi',
+      attrName: 'href',
+      value: HOST_BINDING_UNSAFE_URL,
+      expected: `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+      namespace: MATH_ML_NAMESPACE_URI,
+    });
+  });
+
+  it('should sanitize href host bindings on dynamic SVG hosts as URLs', async () => {
+    await expectHostBinding({
+      tagName: 'a',
+      attrName: 'href',
+      value: HOST_BINDING_UNSAFE_URL,
+      expected: `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+      namespace: SVG_NAMESPACE_URI,
+    });
+  });
+
+  it('should sanitize href host bindings on dynamic MathML hosts as URLs', async () => {
+    await expectHostBinding({
+      tagName: 'base',
+      attrName: 'href',
+      value: HOST_BINDING_UNSAFE_URL,
+      expected: `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+      namespace: MATH_ML_NAMESPACE_URI,
+    });
+  });
+
+  it('should sanitize a dynamic directive host binding against the concrete host element', async () => {
+    @Component({
+      selector: 'iframe',
+      template: '',
+    })
+    class DynamicIframeHostComponent {}
+
+    @Directive({
+      selector: 'safe-srcdoc-carrier',
+      host: {'[attr.srcdoc]': 'srcdoc'},
+    })
+    class SafeSrcdocCarrierDirective {
+      @Input() srcdoc = '';
+    }
+
+    @Component({
+      template: '',
+      imports: [DynamicIframeHostComponent],
+    })
+    class App {
+      componentRef: ComponentRef<DynamicIframeHostComponent>;
+
+      private viewContainerRef = inject(ViewContainerRef);
+      private environmentInjector = inject(EnvironmentInjector);
+
+      constructor() {
+        this.componentRef = this.viewContainerRef.createComponent(DynamicIframeHostComponent, {
+          environmentInjector: this.environmentInjector,
+          directives: [
+            {
+              type: SafeSrcdocCarrierDirective,
+              bindings: [inputBinding('srcdoc', () => UNSAFE_HTML)],
+            },
+          ],
+        });
+      }
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const iframe = fixture.componentInstance.componentRef.location
+      .nativeElement as HTMLIFrameElement;
+    expect(iframe.getAttribute('srcdoc')).toBe(SANITIZED_HTML);
+    expect(iframe.getAttribute('srcdoc')).not.toContain('<script>');
+  });
+
+  it('should not sanitize iframe-only host bindings on non-iframe concrete hosts', async () => {
+    await expectHostBinding({
+      tagName: 'div',
+      attrName: 'srcdoc',
+      value: UNSAFE_HTML,
+      expected: UNSAFE_HTML,
+    });
+  });
+
+  it('should not sanitize form-only URL host bindings on non-form concrete hosts', async () => {
+    await expectHostBinding({
+      tagName: 'div',
+      attrName: 'action',
+      value: HOST_BINDING_URL,
+      expected: HOST_BINDING_URL,
+    });
+    await expectHostBinding({
+      tagName: 'div',
+      attrName: 'action',
+      value: HOST_BINDING_UNSAFE_URL,
+      expected: HOST_BINDING_UNSAFE_URL,
+    });
+  });
+
+  it('should sanitize form-only URL host bindings on form concrete hosts', async () => {
+    await expectHostBinding({
+      tagName: 'form',
+      attrName: 'action',
+      value: HOST_BINDING_URL,
+      expected: HOST_BINDING_URL,
+    });
+    await expectHostBinding({
+      tagName: 'form',
+      attrName: 'action',
+      value: HOST_BINDING_UNSAFE_URL,
+      expected: `unsafe:${HOST_BINDING_UNSAFE_URL}`,
+    });
+  });
+
+  it('should sanitize a host directive host binding against the concrete host element', async () => {
+    @Directive({
+      selector: 'safe-srcdoc-host',
+      host: {'[attr.srcdoc]': 'srcdoc'},
+    })
+    class SafeSrcdocHostDirective {
+      srcdoc = UNSAFE_HTML;
+    }
+
+    @Directive({
+      selector: '[safe-srcdoc-host-carrier]',
+      hostDirectives: [SafeSrcdocHostDirective],
+    })
+    class SafeSrcdocHostCarrierDirective {}
+
+    @Component({
+      template: '<iframe safe-srcdoc-host-carrier></iframe>',
+      imports: [SafeSrcdocHostCarrierDirective],
+    })
+    class App {}
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const iframe = fixture.nativeElement.querySelector('iframe') as HTMLIFrameElement;
+    expect(iframe.getAttribute('srcdoc')).toBe(SANITIZED_HTML);
+    expect(iframe.getAttribute('srcdoc')).not.toContain('<script>');
+  });
+
+  it('should sanitize an inherited host binding against the concrete host element', async () => {
+    @Directive({
+      selector: 'base-srcdoc-carrier',
+      host: {'[attr.srcdoc]': 'srcdoc'},
+    })
+    class BaseSrcdocCarrierDirective {
+      srcdoc = UNSAFE_HTML;
+    }
+
+    @Directive({
+      selector: '[derived-srcdoc-carrier]',
+    })
+    class DerivedSrcdocCarrierDirective extends BaseSrcdocCarrierDirective {}
+
+    @Component({
+      template: '<iframe derived-srcdoc-carrier></iframe>',
+      imports: [DerivedSrcdocCarrierDirective],
+    })
+    class App {}
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const iframe = fixture.nativeElement.querySelector('iframe') as HTMLIFrameElement;
+    expect(iframe.getAttribute('srcdoc')).toBe(SANITIZED_HTML);
+    expect(iframe.getAttribute('srcdoc')).not.toContain('<script>');
+  });
+
+  it('should reject dynamic directive host bindings against concrete resource URL sinks', async () => {
+    @Component({
+      selector: 'iframe',
+      template: '',
+    })
+    class DynamicIframeHostComponent {}
+
+    @Directive({
+      selector: 'src-carrier',
+      host: {'[attr.src]': 'src'},
+    })
+    class SrcCarrierDirective {
+      @Input() src = '';
+    }
+
+    @Component({
+      template: '',
+      imports: [DynamicIframeHostComponent],
+    })
+    class App {
+      private viewContainerRef = inject(ViewContainerRef);
+      private environmentInjector = inject(EnvironmentInjector);
+
+      constructor() {
+        this.viewContainerRef.createComponent(DynamicIframeHostComponent, {
+          environmentInjector: this.environmentInjector,
+          directives: [
+            {
+              type: SrcCarrierDirective,
+              bindings: [inputBinding('src', () => HOST_BINDING_URL)],
+            },
+          ],
+        });
+      }
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await expectAsync(fixture.whenStable()).toBeRejectedWithError(resourceUrlError);
+  });
+
+  it('should reject security-sensitive attribute host bindings on concrete dynamic iframe hosts', async () => {
+    await expectHostBinding({
+      tagName: 'iframe',
+      attrName: 'sandbox',
+      value: '',
+      expectedError:
+        /NG0910: Angular has detected that the `sandbox` was applied as a binding to the <iframe>/,
+    });
+  });
+
+  it('should reject security-sensitive attribute host bindings on concrete dynamic SVG animation hosts', async () => {
+    await expectHostBinding({
+      tagName: 'animate',
+      attrName: 'attributeName',
+      value: 'href',
+      expectedError:
+        /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
+      namespace: SVG_NAMESPACE_URI,
+    });
+  });
+
+  it('should sanitize pure :not selector host bindings against a concrete hostElement', async () => {
+    await expectHostBinding({
+      tagName: 'iframe',
+      attrName: 'srcdoc',
+      value: UNSAFE_HTML,
+      expected: SANITIZED_HTML,
+      componentSelector: ':not(iframe)',
+    });
+  });
+
+  it('should reject object data host bindings against concrete resource URL sinks', async () => {
+    await expectHostBinding({
+      tagName: 'object',
+      attrName: 'data',
+      value: HOST_BINDING_URL,
+      expectedError: resourceUrlError,
+    });
+    await expectHostBinding({
+      tagName: 'object',
+      attrName: 'data',
+      value: HOST_BINDING_UNSAFE_URL,
+      expectedError: resourceUrlError,
+    });
+  });
+});
+
 describe('Component host element validation', () => {
   it('should throw an error when dynamically creating a component with a script selector', () => {
     @Component({
@@ -916,7 +1308,7 @@ describe('Component host element validation', () => {
     })
     class MySvgSink {}
 
-    const svgScriptHost = document.createElementNS('http://www.w3.org/2000/svg', 'script');
+    const svgScriptHost = document.createElementNS(SVG_NAMESPACE_URI, 'script');
     document.head.appendChild(svgScriptHost);
 
     try {
