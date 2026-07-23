@@ -5,7 +5,7 @@ description: Explains the mental model and architecture of the code under `packa
 
 # Signal Forms Architecture
 
-The `packages/forms/signals` directory contains an experimental, signal-based forms API for Angular.
+The `packages/forms/signals` directory contains the signal-based forms API for Angular.
 This system differs significantly from the existing Reactive and Template-driven forms.
 
 ## Mental Model
@@ -36,27 +36,27 @@ The central internal class representing a single field in the form graph. It agg
 
 - `structure`: Manages parent/child relationships and signal slicing.
 - `validationState`: Computes `valid`, `invalid`, `errors` signals.
-- `nodeState`: Tracks `touched`, `dirty`, `pristine`.
+- `nodeState`: Tracks `touched`, `dirty`, and derived logical state.
 - `metadataState`: Stores metadata like `min`, `max`, `required`.
 - `submitState`: Tracks submission status and server errors.
 
-### 2. `ValidationState` (`src/field/validation.ts`)
+### 2. `FieldValidationState` (`src/field/validation.ts`)
 
-Manages the complexity of validation:
+Implements `ValidationState` and manages the complexity of validation:
 
 - **Synchronous Errors**: Derived from schema rules.
 - **Asynchronous Errors**: Handled via signals, including 'pending' states.
 - **Tree Errors**: Errors that bubble up or are targeted at specific fields.
 - **Submission Errors**: Server-side errors injected imperatively via `submit()`.
 
-### 3. `FormField` Directive (`src/directive/form_field_directive.ts`)
+### 3. `FormField` Directive (`src/directive/form_field.ts`)
 
 The bridge between the `FieldNode` and the DOM.
 
 - Selector: `[formField]`
 - It supports:
   - **Native Elements**: `<input>`, `<select>`, `<textarea>`.
-  - **Custom Controls**: Components implementing `FormUiControl` or `FormValueControl`.
+  - **Custom Controls**: Components implementing `FormValueControl` or `FormCheckboxControl`.
   - **Legacy Interop**: Components implementing `ControlValueAccessor` (via `InteropNgControl`).
 
 ### 4. `Schema` (`src/api/structure.ts` & `src/api/rules`)
@@ -69,7 +69,7 @@ Defines the behavior.
 
 ## Data Flow
 
-1.  **Read**: `form.field.value()` reads directly from the underlying signal (projected to the specific path).
+1.  **Read**: `form.field().value()` reads directly from the underlying signal (projected to the specific path).
 2.  **Write**: Writing to the form (e.g., via UI) updates the underlying signal.
 3.  **Validation**: A computed effect observes the value signal and runs validators defined in the schema.
 
@@ -97,7 +97,7 @@ const userForm = form(user, userRules); // OR apply(userForm, userRules)
 - `packages/forms/signals/src/api/structure.ts`: Public API entry points (`form`, `apply`).
 - `packages/forms/signals/src/api/control.ts`: Interfaces for custom controls (`FormUiControl`).
 - `packages/forms/signals/src/field/node.ts`: The `FieldNode` implementation.
-- `packages/forms/signals/src/directive/form_field_directive.ts`: The `[formField]` directive.
+- `packages/forms/signals/src/directive/form_field.ts`: The `[formField]` directive.
 
 ## Supplemental Information
 
