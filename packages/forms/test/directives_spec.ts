@@ -38,9 +38,11 @@ import {
   ValueChangeEvent,
 } from '../index';
 import {selectValueAccessor} from '../src/directives/shared';
+import {RuntimeErrorCode} from '../src/errors';
 import {composeValidators} from '../src/validators';
 import {useAutoTick, timeout} from '@angular/private/testing';
 import {asyncValidator} from './util';
+import { expect } from '@angular/private/testing/matchers';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue: any;
@@ -373,6 +375,35 @@ describe('Form Directives', () => {
       loginControlDir.valueAccessor = new DummyControlValueAccessor();
     });
 
+    async function expectNoUnhandledRejections(fn: () => void): Promise<void> {
+      const rejections: unknown[] = [];
+      const handler = (e: PromiseRejectionEvent) => {
+        rejections.push(e.reason);
+        e.preventDefault();
+      };
+      window.addEventListener('unhandledrejection', handler);
+
+      fn();
+      await timeout();
+
+      window.removeEventListener('unhandledrejection', handler);
+      expect(rejections).toEqual([]);
+    }
+
+    async function expectDeferredRegistrationError(fn: () => void): Promise<void> {
+      const errorPromise = new Promise<unknown>((_, reject) => {
+        const handler = (e: PromiseRejectionEvent) => {
+          e.preventDefault();
+          reject(e.reason);
+        };
+        window.addEventListener('unhandledrejection', handler, {once: true});
+      });
+      fn();
+      await expectAsync(errorPromise).toBeRejectedWith(
+        jasmine.objectContaining({code: RuntimeErrorCode.NGFORM_MISSING_CONTAINER}),
+      );
+    }
+
     it('should reexport control properties', () => {
       expect(form.control).toBe(formModel);
       expect(form.value).toBe(formModel.value);
@@ -428,6 +459,126 @@ describe('Form Directives', () => {
       });
 
       // should update the form's value and validity
+    });
+
+    describe('issue #69440: deferred registration after container teardown', () => {
+      it('should not register a nested control destroyed before deferred registration runs', async () => {
+        const groupDir = new NgModelGroup(form, [], []);
+        groupDir.name = 'gone';
+
+        const controlDir = new NgModel(groupDir, null!, null!, [defaultAccessor]);
+        controlDir.name = 'field';
+        controlDir.valueAccessor = new DummyControlValueAccessor();
+
+        await expectNoUnhandledRejections(() => {
+          form.addFormGroup(groupDir);
+          form.addControl(controlDir);
+          controlDir.ngOnDestroy();
+          groupDir.ngOnDestroy();
+        });
+
+        expect(formModel.get(['gone'])).toBeNull();
+        expect(formModel.get(['gone', 'field'])).toBeNull();
+        expect((controlDir as any)._registered).toBe(false);
+      });
+
+      it('should not register a nested ngModelGroup destroyed before deferred registration runs', async () => {
+        const outerGroupDir = new NgModelGroup(form, [], []);
+        outerGroupDir.name = 'gone';
+
+        const innerGroupDir = new NgModelGroup(outerGroupDir, [], []);
+        innerGroupDir.name = 'inner';
+
+        await expectNoUnhandledRejections(() => {
+          form.addFormGroup(outerGroupDir);
+          form.addFormGroup(innerGroupDir);
+          innerGroupDir.ngOnDestroy();
+          outerGroupDir.ngOnDestroy();
+        });
+
+        expect(formModel.get(['gone'])).toBeNull();
+        expect(formModel.get(['gone', 'inner'])).toBeNull();
+      });
+
+      it('should not register a nested control when its parent group is destroyed first', async () => {
+        const groupDir = new NgModelGroup(form, [], []);
+        groupDir.name = 'gone';
+
+        const controlDir = new NgModel(groupDir, null!, null!, [defaultAccessor]);
+        controlDir.name = 'field';
+        controlDir.valueAccessor = new DummyControlValueAccessor();
+
+        await expectNoUnhandledRejections(() => {
+          form.addFormGroup(groupDir);
+          form.addControl(controlDir);
+          groupDir.ngOnDestroy();
+          controlDir.ngOnDestroy();
+        });
+
+        expect(formModel.get(['gone'])).toBeNull();
+        expect(formModel.get(['gone', 'field'])).toBeNull();
+      });
+    });
+
+    describe('issue #69440: parent removed before deferred child registration', () => {
+      it('should throw in dev mode when parent group is removed before deferred child registration runs', async () => {
+        const groupDir = new NgModelGroup(form, [], []);
+        groupDir.name = 'gone';
+
+        const controlDir = new NgModel(groupDir, null!, null!, [defaultAccessor]);
+        controlDir.name = 'field';
+        controlDir.valueAccessor = new DummyControlValueAccessor();
+
+        await expectDeferredRegistrationError(() => {
+          form.addFormGroup(groupDir);
+          form.removeFormGroup(groupDir);
+          form.addControl(controlDir);
+        });
+
+        expect((controlDir as any)._destroyed).toBe(false);
+        expect((groupDir as any)._destroyed).toBe(false);
+        expect(formModel.get(['gone'])).toBeNull();
+        expect(formModel.get(['gone', 'field'])).toBeNull();
+        expect((controlDir as any)._registered).toBe(false);
+      });
+
+      it('should throw in dev mode when parent group is removed before deferred nested group registration runs', async () => {
+        const outerGroupDir = new NgModelGroup(form, [], []);
+        outerGroupDir.name = 'gone';
+
+        const innerGroupDir = new NgModelGroup(outerGroupDir, [], []);
+        innerGroupDir.name = 'inner';
+
+        await expectDeferredRegistrationError(() => {
+          form.addFormGroup(outerGroupDir);
+          form.removeFormGroup(outerGroupDir);
+          form.addFormGroup(innerGroupDir);
+        });
+
+        expect((innerGroupDir as any)._destroyed).toBe(false);
+        expect((outerGroupDir as any)._destroyed).toBe(false);
+        expect(formModel.get(['gone'])).toBeNull();
+        expect(formModel.get(['gone', 'inner'])).toBeNull();
+      });
+    });
+
+    describe('issue #69440: misconfigured nested registration', () => {
+      it('should throw in dev mode when a nested control registers without a parent group', async () => {
+        const groupDir = new NgModelGroup(form, [], []);
+        groupDir.name = 'gone';
+
+        const controlDir = new NgModel(groupDir, null!, null!, [defaultAccessor]);
+        controlDir.name = 'field';
+        controlDir.valueAccessor = new DummyControlValueAccessor();
+
+        await expectDeferredRegistrationError(() => {
+          form.addControl(controlDir);
+        });
+
+        expect((controlDir as any)._destroyed).toBe(false);
+        expect(formModel.get(['gone', 'field'])).toBeNull();
+        expect((controlDir as any)._registered).toBe(false);
+      });
     });
 
     it('should set up sync validator', async () => {

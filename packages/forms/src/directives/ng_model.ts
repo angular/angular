@@ -182,6 +182,9 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   /** @internal */
   _registered = false;
 
+  /** @internal */
+  _destroyed = false;
+
   /**
    * Internal reference to the view model value.
    * @docs-private
@@ -282,6 +285,8 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   /** @docs-private */
   ngOnDestroy(): void {
+    this._destroyed = true;
+    this._registered = false;
     this.formDirective?.removeControl(this);
   }
 
@@ -340,6 +345,9 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _setUpControl(): void {
+    if (this._destroyed) {
+      return;
+    }
     this._setUpdateStrategy();
     this._isStandalone() ? this._setUpStandalone() : this.formDirective.addControl(this);
     this._registered = true;
