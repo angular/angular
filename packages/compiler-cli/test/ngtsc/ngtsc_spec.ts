@@ -12,7 +12,7 @@ import {NgtscProgram} from '../../src/ngtsc/program';
 import {CompilerOptions} from '../../src/transformers/api';
 import {createCompilerHost} from '../../src/transformers/compiler_host';
 
-import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
+import {ErrorCode, ERROR_DETAILS_PAGE_BASE_URL, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
@@ -3777,9 +3777,8 @@ runInEachFileSystem((os: string) => {
 
           const errors = env.driveDiagnostics();
           expect(errors.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'notInjectable' of class 'Test'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'notInjectable' of class 'Test'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(errors[0].relatedInformation!.length).toBe(1);
           expect(errors[0].relatedInformation![0].messageText).toBe(
@@ -3803,9 +3802,8 @@ runInEachFileSystem((os: string) => {
 
           const errors = env.driveDiagnostics();
           expect(errors.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'notInjectable' of class 'Test'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'notInjectable' of class 'Test'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(errors[0].relatedInformation!.length).toBe(1);
           expect(errors[0].relatedInformation![0].messageText).toBe(
@@ -3836,10 +3834,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider changing the type-only import to a regular import, ` +
-              `or use the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider changing the type-only import to a regular import, or use the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(2);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3874,10 +3870,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider changing the type-only import to a regular import, ` +
-              `or use the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider changing the type-only import to a regular import, or use the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(2);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3905,9 +3899,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(1);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3934,9 +3927,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(1);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3962,9 +3954,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(2);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -3995,10 +3986,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of ` +
-              `class 'MyService'.\n` +
-              `  Consider using the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation!.length).toBe(1);
           expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -4022,10 +4011,8 @@ runInEachFileSystem((os: string) => {
 
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-            `No suitable injection token for parameter 'param' of class 'MyService'.\n` +
-              `  Consider adding a type to the parameter or ` +
-              `use the @Inject decorator to specify an injection token.`,
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+            /No suitable injection token for parameter 'param' of class 'MyService'\. Find more at .*\n  Consider adding a type to the parameter or use the @Inject decorator to specify an injection token\./,
           );
           expect(diags[0].relatedInformation).toBeUndefined();
         });
@@ -6759,9 +6746,8 @@ runInEachFileSystem((os: string) => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toBe(
-          `No suitable injection token for parameter 'foo' of class 'MyService'.\n` +
-            `  Consider using the @Inject decorator to specify an injection token.`,
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toMatch(
+          /No suitable injection token for parameter 'foo' of class 'MyService'\. Find more at .*\n  Consider using the @Inject decorator to specify an injection token\./,
         );
         expect(diags[0].relatedInformation!.length).toBe(2);
         expect(diags[0].relatedInformation![0].messageText).toBe(
@@ -7297,9 +7283,8 @@ runInEachFileSystem((os: string) => {
         expect(diagnostics.length).toEqual(1);
         const error = diagnostics[0];
         expect(error.code).toBe(ngErrorCode(ErrorCode.IMPORT_CYCLE_DETECTED));
-        expect(error.messageText).toEqual(
-          'One or more import cycles would need to be created to compile this component, ' +
-            'which is not supported by the current compiler configuration.',
+        expect(error.messageText).toMatch(
+          /One or more import cycles would need to be created to compile this component, which is not supported by the current compiler configuration\. Find more at .*/,
         );
         const _abs = absoluteFrom;
         expect(error.relatedInformation?.map((diag) => diag.messageText)).toEqual([
@@ -7325,7 +7310,82 @@ runInEachFileSystem((os: string) => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(`No directive found with exportAs 'unknownTarget'.`);
+        expect(diags[0].messageText).toMatch(
+          /No directive found with exportAs 'unknownTarget'\. Find more at .*/,
+        );
+      });
+    });
+
+    describe('diagnostic guide links', () => {
+      it('should add error guide links only to diagnostics that have guides', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<not-known>{{value | missingPipe}}</not-known>',
+          })
+          export class Cmp {
+            value = '';
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        const schemaDiag = diags.find(
+          (diag) => diag.code === ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT),
+        );
+        expect(schemaDiag).toBeDefined();
+        expect(ts.flattenDiagnosticMessageText(schemaDiag!.messageText, '\n')).toContain(
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG8001`,
+        );
+
+        const pipeDiag = diags.find((diag) => diag.code === ngErrorCode(ErrorCode.MISSING_PIPE));
+        expect(pipeDiag).toBeDefined();
+        expect(ts.flattenDiagnosticMessageText(pipeDiag!.messageText, '\n')).not.toContain(
+          'Find more at',
+        );
+      });
+
+      it('should add an error guide link to multiple component match diagnostics', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: '[stroked-button]',
+            template: '',
+          })
+          export class StrokedBtn {}
+
+          @Component({
+            selector: '[raised-button]',
+            template: '',
+          })
+          export class RaisedBtn {}
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<button stroked-button raised-button></button>',
+            imports: [StrokedBtn, RaisedBtn],
+          })
+          export class Cmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        const multipleComponentsDiag = diags.find(
+          (diag) => diag.code === ngErrorCode(ErrorCode.MULTIPLE_MATCHING_COMPONENTS),
+        );
+        expect(multipleComponentsDiag).toBeDefined();
+        expect(
+          ts.flattenDiagnosticMessageText(multipleComponentsDiag!.messageText, '\n'),
+        ).toContain(`Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG8023`);
       });
     });
 
@@ -10623,8 +10683,8 @@ runInEachFileSystem((os: string) => {
           const diags = env.driveDiagnostics();
 
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toBe(
-            'Selector of a component that uses ViewEncapsulation.ShadowDom must contain a hyphen.',
+          expect(diags[0].messageText).toMatch(
+            /Selector of a component that uses ViewEncapsulation\.ShadowDom must contain a hyphen\. Find more at .*/,
           );
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'cmp'`);
         });
@@ -10645,8 +10705,8 @@ runInEachFileSystem((os: string) => {
           const diags = env.driveDiagnostics();
 
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toBe(
-            'Selector of a ShadowDom-encapsulated component must all be in lower case.',
+          expect(diags[0].messageText).toMatch(
+            /Selector of a ShadowDom-encapsulated component must all be in lower case\. Find more at .*/,
           );
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'my-Comp'`);
         });
@@ -10667,8 +10727,8 @@ runInEachFileSystem((os: string) => {
           const diags = env.driveDiagnostics();
 
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toBe(
-            'Selector of a ShadowDom-encapsulated component must start with a lower case letter.',
+          expect(diags[0].messageText).toMatch(
+            /Selector of a ShadowDom-encapsulated component must start with a lower case letter\. Find more at .*/,
           );
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'123-comp'`);
         });
@@ -10689,8 +10749,8 @@ runInEachFileSystem((os: string) => {
           const diags = env.driveDiagnostics();
 
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toBe(
-            'Selector of a ShadowDom-encapsulated component must start with a lower case letter.',
+          expect(diags[0].messageText).toMatch(
+            /Selector of a ShadowDom-encapsulated component must start with a lower case letter\. Find more at .*/,
           );
           expect(getDiagnosticSourceCode(diags[0])).toBe(`'-comp'`);
         });
