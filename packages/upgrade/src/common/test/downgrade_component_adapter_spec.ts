@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Compiler, Component, Injector, NgModule, TestabilityRegistry} from '@angular/core';
+import {Compiler, Component, Injector, NgModule, TestabilityRegistry, input, reflectComponentType} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import * as angular from '../src/angular1';
@@ -84,50 +84,50 @@ withEachNg1Version(() => {
       });
     });
 
+    class mockScope implements angular.IScope {
+      private destroyListeners: (() => void)[] = [];
+
+      $new() {
+        return this;
+      }
+      $watch(exp: angular.Ng1Expression, fn?: (a1?: any, a2?: any) => void) {
+        return () => {};
+      }
+      $on(event: string, fn?: (event?: any, ...args: any[]) => void) {
+        if (event === '$destroy' && fn) {
+          this.destroyListeners.push(fn);
+        }
+        return () => {};
+      }
+      $destroy() {
+        let listener: (() => void) | undefined;
+        while ((listener = this.destroyListeners.shift())) listener();
+      }
+      $apply(exp?: angular.Ng1Expression) {
+        return () => {};
+      }
+      $digest() {
+        return () => {};
+      }
+      $evalAsync(exp: angular.Ng1Expression, locals?: any) {
+        return () => {};
+      }
+      $$childTail!: angular.IScope;
+      $$childHead!: angular.IScope;
+      $$nextSibling!: angular.IScope;
+      [key: string]: any;
+      $id = 'mockScope';
+      $parent!: angular.IScope;
+      $root!: angular.IScope;
+      $$phase: any;
+    }
+
     describe('testability', () => {
       let adapter: DowngradeComponentAdapter;
       let content: string;
       let compiler: Compiler;
       let registry: TestabilityRegistry;
       let element: angular.IAugmentedJQuery;
-
-      class mockScope implements angular.IScope {
-        private destroyListeners: (() => void)[] = [];
-
-        $new() {
-          return this;
-        }
-        $watch(exp: angular.Ng1Expression, fn?: (a1?: any, a2?: any) => void) {
-          return () => {};
-        }
-        $on(event: string, fn?: (event?: any, ...args: any[]) => void) {
-          if (event === '$destroy' && fn) {
-            this.destroyListeners.push(fn);
-          }
-          return () => {};
-        }
-        $destroy() {
-          let listener: (() => void) | undefined;
-          while ((listener = this.destroyListeners.shift())) listener();
-        }
-        $apply(exp?: angular.Ng1Expression) {
-          return () => {};
-        }
-        $digest() {
-          return () => {};
-        }
-        $evalAsync(exp: angular.Ng1Expression, locals?: any) {
-          return () => {};
-        }
-        $$childTail!: angular.IScope;
-        $$childHead!: angular.IScope;
-        $$nextSibling!: angular.IScope;
-        [key: string]: any;
-        $id = 'mockScope';
-        $parent!: angular.IScope;
-        $root!: angular.IScope;
-        $$phase: any;
-      }
 
       function getAdaptor(): DowngradeComponentAdapter {
         let attrs = undefined as any;
@@ -176,6 +176,7 @@ withEachNg1Version(() => {
           NewComponent,
           wrapCallback,
           /* unsafelyOverwriteSignalInputs */ false,
+          /* initializeInputsSynchronously */ false,
         );
       }
 
@@ -204,6 +205,201 @@ withEachNg1Version(() => {
         expect(registry.getAllTestabilities().length).toEqual(1);
         element.remove!();
         expect(registry.getAllTestabilities().length).toEqual(0);
+      });
+    });
+
+    describe('initializeInputsSynchronously', () => {
+      let compiler: Compiler;
+
+      beforeEach(() => {
+        compiler = TestBed.inject(Compiler);
+      });
+
+      it('should initialize signal inputs synchronously when initializeInputsSynchronously is true', () => {
+        let attrs = {
+          '[val]': "'hello'",
+          $observe(attr: string, fn: Function) {
+            return () => {};
+          },
+          hasOwnProperty(attr: string) {
+            return attr === '[val]' || attr === '$observe';
+          },
+        } as any;
+        let scope = new mockScope();
+        let ngModel = undefined as any;
+        let parentInjector = TestBed.inject(Injector);
+        let $compile = undefined as any;
+        let $parse = (expr: string) => {
+          return (s: any) => {
+            if (expr.startsWith("'") && expr.endsWith("'")) {
+              return expr.slice(1, -1);
+            }
+            return s[expr] || expr;
+          };
+        };
+        let wrapCallback = (cb: any) => cb;
+
+        @Component({
+          selector: 'comp',
+          template: '',
+          standalone: false,
+        })
+        class TestComponent {
+          val = input.required<string>();
+        }
+
+        @NgModule({
+          declarations: [TestComponent],
+        })
+        class TestModule {}
+
+        const modFactory = compiler.compileModuleSync(TestModule);
+        const module = modFactory.create(parentInjector);
+
+        // Wire up JIT inputs
+        (TestComponent as any).ɵcmp.inputs = {val: ['val', 1 /* InputFlags.SignalBased */]};
+
+        const adapter = new DowngradeComponentAdapter(
+          angular.element('<div></div>'),
+          attrs,
+          scope,
+          ngModel,
+          module.injector,
+          parentInjector,
+          $compile,
+          $parse,
+          TestComponent,
+          wrapCallback,
+          /* unsafelyOverwriteSignalInputs */ false,
+          /* initializeInputsSynchronously */ true,
+        );
+
+        const ref = adapter.createComponentAndSetup([]);
+        // The required signal input is initialized synchronously immediately after creation,
+        // so calling val() must succeed.
+        expect(ref.instance.val()).toBe('hello');
+      });
+
+      it('should fail to initialize required signal inputs when initializeInputsSynchronously is false', () => {
+        let attrs = {
+          '[val]': "'hello'",
+          $observe(attr: string, fn: Function) {
+            return () => {};
+          },
+          hasOwnProperty(attr: string) {
+            return attr === '[val]' || attr === '$observe';
+          },
+        } as any;
+        let scope = new mockScope();
+        let ngModel = undefined as any;
+        let parentInjector = TestBed.inject(Injector);
+        let $compile = undefined as any;
+        let $parse = (expr: string) => {
+          return (s: any) => {
+            if (expr.startsWith("'") && expr.endsWith("'")) {
+              return expr.slice(1, -1);
+            }
+            return s[expr] || expr;
+          };
+        };
+        let wrapCallback = (cb: any) => cb;
+
+        @Component({
+          selector: 'comp',
+          template: '',
+          standalone: false,
+        })
+        class TestComponent {
+          val = input.required<string>();
+        }
+
+        @NgModule({
+          declarations: [TestComponent],
+        })
+        class TestModule {}
+
+        const modFactory = compiler.compileModuleSync(TestModule);
+        const module = modFactory.create(parentInjector);
+
+        // Wire up JIT inputs
+        (TestComponent as any).ɵcmp.inputs = {val: ['val', 1 /* InputFlags.SignalBased */]};
+
+        const adapter = new DowngradeComponentAdapter(
+          angular.element('<div></div>'),
+          attrs,
+          scope,
+          ngModel,
+          module.injector,
+          parentInjector,
+          $compile,
+          $parse,
+          TestComponent,
+          wrapCallback,
+          /* unsafelyOverwriteSignalInputs */ false,
+          /* initializeInputsSynchronously */ false,
+        );
+
+        const ref = adapter.createComponentAndSetup([]);
+        // The required signal input is not initialized synchronously, so calling val() must throw.
+        expect(() => ref.instance.val()).toThrowError(/NG0950/);
+      });
+
+      it('should fail to initialize required signal inputs when initializeInputsSynchronously is true but no binding is provided', () => {
+        let attrs = {
+          $observe(attr: string, fn: Function) {
+            return () => {};
+          },
+          hasOwnProperty(attr: string) {
+            return attr === '$observe';
+          },
+        } as any;
+        let scope = new mockScope();
+        let ngModel = undefined as any;
+        let parentInjector = TestBed.inject(Injector);
+        let $compile = undefined as any;
+        let $parse = (expr: string) => {
+          return (s: any) => s[expr] || expr;
+        };
+        let wrapCallback = (cb: any) => cb;
+
+        @Component({
+          selector: 'comp',
+          template: '',
+          standalone: false,
+        })
+        class TestComponent {
+          val = input.required<string>();
+        }
+
+        @NgModule({
+          declarations: [TestComponent],
+        })
+        class TestModule {}
+
+        const modFactory = compiler.compileModuleSync(TestModule);
+        const module = modFactory.create(parentInjector);
+
+        // Wire up JIT inputs
+        (TestComponent as any).ɵcmp.inputs = {val: ['val', 1 /* InputFlags.SignalBased */]};
+
+        const adapter = new DowngradeComponentAdapter(
+          angular.element('<div></div>'),
+          attrs,
+          scope,
+          ngModel,
+          module.injector,
+          parentInjector,
+          $compile,
+          $parse,
+          TestComponent,
+          wrapCallback,
+          /* unsafelyOverwriteSignalInputs */ false,
+          /* initializeInputsSynchronously */ true,
+        );
+
+        const ref = adapter.createComponentAndSetup([]);
+        // The required signal input has no binding value, so calling val() must still throw.
+        expect(() => ref.instance.val()).toThrowError(/NG0950/);
       });
     });
   });

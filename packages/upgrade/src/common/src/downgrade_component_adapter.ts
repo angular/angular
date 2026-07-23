@@ -61,6 +61,7 @@ export class DowngradeComponentAdapter {
     private component: Type<any>,
     private wrapCallback: <T>(cb: () => T) => () => T,
     private readonly unsafelyOverwriteSignalInputs: boolean,
+    private readonly initializeInputsSynchronously: boolean,
   ) {
     this.componentScope = scope.$new();
   }
@@ -109,6 +110,44 @@ export class DowngradeComponentAdapter {
       projectableNodes,
       hostElement: this.element[0] as Element,
     });
+
+    // Required signal inputs throw an `NG0950` error if they are read before a value is
+    // available. Under certain conditions (such as when `propagateDigest` is set to false),
+    // Angular change detection runs synchronously during component creation. Setting the
+    // initial input values synchronously via `setInput` ensures that these required inputs
+    // are initialized before change detection runs, avoiding these crashes.
+    if (this.initializeInputsSynchronously) {
+      const inputs = reflectComponentType(this.component)?.inputs ?? [];
+      const attrs = this.attrs;
+      for (const input of inputs) {
+        const bindingDef = new PropertyBinding(input.propName, input.templateName);
+        let expr: string | null = null;
+        let value: any = undefined;
+        let hasValue = false;
+        if (attrs.hasOwnProperty(bindingDef.attr)) {
+          value = attrs[bindingDef.attr];
+          hasValue = true;
+        } else {
+          if (attrs.hasOwnProperty(bindingDef.bindAttr)) {
+            expr = attrs[bindingDef.bindAttr];
+          } else if (attrs.hasOwnProperty(bindingDef.bracketAttr)) {
+            expr = attrs[bindingDef.bracketAttr];
+          } else if (attrs.hasOwnProperty(bindingDef.bindonAttr)) {
+            expr = attrs[bindingDef.bindonAttr];
+          } else if (attrs.hasOwnProperty(bindingDef.bracketParenAttr)) {
+            expr = attrs[bindingDef.bracketParenAttr];
+          }
+          if (expr !== null) {
+            const parsedExpr = this.$parse(expr);
+            value = parsedExpr(this.scope, undefined);
+            hasValue = true;
+          }
+        }
+        if (hasValue) {
+          componentRef.setInput(input.templateName, value);
+        }
+      }
+    }
     const viewChangeDetector = componentRef.injector.get(ChangeDetectorRef);
     const changeDetector = componentRef.changeDetectorRef;
 

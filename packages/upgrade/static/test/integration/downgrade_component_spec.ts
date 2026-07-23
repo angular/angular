@@ -1173,6 +1173,45 @@ withEachNg1Version(() => {
           ),
       );
     }));
+
+    it('should initialize signal inputs synchronously when `initializeInputsSynchronously` is true', waitForAsync(() => {
+      const ng1Module = angular.module_('ng1', []).run(($rootScope: angular.IScope) => {
+        $rootScope['val'] = 'hello';
+      });
+
+      @Component({
+        selector: 'ng2',
+        template: 'Value: {{val()}}',
+        changeDetection: ChangeDetectionStrategy.Eager,
+        standalone: false,
+      })
+      class Ng2Component {
+        val = input.required<string>();
+      }
+
+      @NgModule({declarations: [Ng2Component], imports: [BrowserModule, UpgradeModule]})
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      // Wire up the input() signal for JIT tests. AOT compilation handles this automatically.
+      (Ng2Component as any).ɵcmp.inputs = {val: ['val', 1 /* InputFlags.SignalBased */]};
+
+      ng1Module.directive(
+        'ng2',
+        downgradeComponent({
+          component: Ng2Component,
+          initializeInputsSynchronously: true,
+          propagateDigest: false,
+        }),
+      );
+
+      const element = html(`<div><ng2 [val]="val"></ng2></div>`);
+
+      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+        expect(multiTrim(document.body.textContent)).toEqual('Value: hello');
+      });
+    }));
   });
 
   describe('standalone', () => {
