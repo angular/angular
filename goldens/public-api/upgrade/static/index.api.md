@@ -25,6 +25,7 @@ export function downgradeComponent(info: {
     component: Type<any>;
     downgradedModule?: string;
     propagateDigest?: boolean;
+    initializeInputsSynchronously?: boolean;
     inputs?: string[];
     outputs?: string[];
     selectors?: string[];
