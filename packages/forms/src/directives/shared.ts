@@ -265,6 +265,12 @@ export function cleanUpValidators(
 
 function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
   dir.valueAccessor!.registerOnChange((newValue: any) => {
+    // The directive may have been reattached to a different control since this callback was
+    // registered. `cleanUpControl` disconnects the previous pipeline by registering a noop,
+    // but value accessors that accumulate callbacks passed to `registerOnChange` (instead of
+    // replacing them) may still invoke this stale callback. See #68744.
+    if (dir.control !== control) return;
+
     control._pendingValue = newValue;
     control._pendingChange = true;
     control._pendingDirty = true;
@@ -275,6 +281,9 @@ function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
 
 function setUpBlurPipeline(control: FormControl, dir: NgControl): void {
   dir.valueAccessor!.registerOnTouched(() => {
+    // See the comment in `setUpViewChangePipeline` on why this check is needed.
+    if (dir.control !== control) return;
+
     control._pendingTouched = true;
 
     if (control.updateOn === 'blur' && control._pendingChange) updateControl(control, dir);
