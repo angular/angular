@@ -15,10 +15,10 @@ import {
 
 import {RuntimeErrorCode} from '../errors';
 
-export function invalidPipeArgumentError(type: Type<any>, value: Object) {
+export function invalidPipeArgumentError(type: Type<any>, value: string) {
   return new RuntimeError(
     RuntimeErrorCode.INVALID_PIPE_ARGUMENT,
-    ngDevMode && `InvalidPipeArgument: '${value}' for pipe '${stringify(type)}'`,
+    ngDevMode ? `InvalidPipeArgument: '${value}' for pipe '${stringify(type)}'` : value,
   );
 }
 
