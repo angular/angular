@@ -491,15 +491,27 @@ describe('SignalFormControl', () => {
       expect(form.dirty).toBe(false);
     });
 
-    it('should throw when boxed value is passed to reset', () => {
+    it('should set the value and disable the control when a boxed value is passed to reset', () => {
       const form = createSignalFormControl(10);
-      expect(() => form.reset({value: 20, disabled: true})).toThrowError(
-        /Imperatively changing enabled\/disabled status in form control is not supported/,
-      );
 
-      expect(() => form.reset({value: 20, disabled: false})).toThrowError(
-        /Imperatively changing enabled\/disabled status in form control is not supported/,
-      );
+      form.reset({value: 20, disabled: true});
+
+      expect(form.value).toBe(20);
+      expect(form.disabled).toBe(true);
+      expect(form.status).toBe('DISABLED');
+    });
+
+    it('should set the value and re-enable the control when a boxed value is passed to reset', () => {
+      const form = createSignalFormControl(10);
+
+      form.disable();
+      expect(form.disabled).toBe(true);
+
+      form.reset({value: 20, disabled: false});
+
+      expect(form.value).toBe(20);
+      expect(form.disabled).toBe(false);
+      expect(form.status).toBe('VALID');
     });
 
     it('should NOT unbox value in reset if it has extra keys', () => {
@@ -539,21 +551,143 @@ describe('SignalFormControl', () => {
     });
   });
 
+  describe('disable and enable', () => {
+    it('should disable and re-enable the control', () => {
+      const form = createSignalFormControl(10);
+
+      expect(form.disabled).toBe(false);
+      expect(form.enabled).toBe(true);
+
+      form.disable();
+
+      expect(form.disabled).toBe(true);
+      expect(form.enabled).toBe(false);
+      expect(form.status).toBe('DISABLED');
+
+      form.enable();
+
+      expect(form.disabled).toBe(false);
+      expect(form.enabled).toBe(true);
+      expect(form.status).toBe('VALID');
+    });
+
+    it('should call registered onDisabledChange callbacks on disable() and enable()', () => {
+      const form = createSignalFormControl(10);
+      const callback = jasmine.createSpy('onDisabledChange');
+
+      form.registerOnDisabledChange(callback);
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick();
+
+      expect(callback).toHaveBeenCalledWith(false);
+      callback.calls.reset();
+
+      form.disable();
+      appRef.tick();
+
+      expect(callback).toHaveBeenCalledWith(true);
+      callback.calls.reset();
+
+      form.enable();
+      appRef.tick();
+
+      expect(callback).toHaveBeenCalledWith(false);
+    });
+
+    it('should NOT re-enable the control when a disabled rule from the schema is active', () => {
+      const form = createSignalFormControl(20, (p) => {
+        disabled(p, {when: ({value}) => value() > 15});
+      });
+
+      expect(form.disabled).toBe(true);
+
+      form.enable();
+
+      expect(form.disabled).toBe(true);
+      expect(form.status).toBe('DISABLED');
+    });
+
+    it('should restore previously-set dirty and touched state after disable() then enable()', () => {
+      const form = createSignalFormControl(10);
+      const appRef = TestBed.inject(ApplicationRef);
+
+      form.markAsDirty();
+      form.markAsTouched();
+      appRef.tick();
+
+      expect(form.dirty).toBe(true);
+      expect(form.touched).toBe(true);
+
+      form.disable();
+      appRef.tick();
+
+      expect(form.dirty).toBe(false);
+      expect(form.touched).toBe(false);
+
+      form.enable();
+      appRef.tick();
+
+      expect(form.dirty).toBe(true);
+      expect(form.touched).toBe(true);
+    });
+
+    it('should still emit a later status change after a same-tick disable/enable that nets to no change', () => {
+      const form = createSignalFormControl<number | undefined>(10, (p) => {
+        required(p);
+      });
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick();
+
+      const statuses: FormControlStatus[] = [];
+      form.statusChanges.subscribe((status: FormControlStatus) => statuses.push(status));
+
+      form.disable({emitEvent: false});
+      form.enable();
+      appRef.tick();
+
+      statuses.length = 0;
+
+      form.setValue(undefined);
+      appRef.tick();
+
+      expect(statuses).toEqual(['INVALID']);
+    });
+
+    it('should NOT emit statusChanges when a boxed reset disables with emitEvent false', () => {
+      const form = createSignalFormControl(10);
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick();
+
+      const statuses: FormControlStatus[] = [];
+      form.statusChanges.subscribe((status: FormControlStatus) => statuses.push(status));
+
+      form.reset({value: 20, disabled: true}, {emitEvent: false});
+      appRef.tick();
+
+      expect(statuses).toEqual([]);
+      expect(form.disabled).toBe(true);
+      expect(form.value).toBe(20);
+    });
+
+    it('should emit exactly one status per disable() and enable() transition', () => {
+      const form = createSignalFormControl(10);
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick();
+
+      const statuses: FormControlStatus[] = [];
+      form.statusChanges.subscribe((status: FormControlStatus) => statuses.push(status));
+
+      form.disable();
+      appRef.tick();
+      expect(statuses).toEqual(['DISABLED']);
+
+      form.enable();
+      appRef.tick();
+      expect(statuses).toEqual(['DISABLED', 'VALID']);
+    });
+  });
+
   describe('unsupported methods', () => {
-    it('should throw error when calling disable()', () => {
-      const form = createSignalFormControl(10);
-      expect(() => form.disable()).toThrowError(
-        /Imperatively changing enabled\/disabled status in form control is not supported/,
-      );
-    });
-
-    it('should throw error when calling enable()', () => {
-      const form = createSignalFormControl(10);
-      expect(() => form.enable()).toThrowError(
-        /Imperatively changing enabled\/disabled status in form control is not supported/,
-      );
-    });
-
     it('should throw error when calling setValidators()', () => {
       const form = createSignalFormControl(10);
       expect(() => form.setValidators(null)).toThrowError(
