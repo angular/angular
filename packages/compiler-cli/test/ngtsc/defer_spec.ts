@@ -801,11 +801,11 @@ runInEachFileSystem(() => {
             \`,
           })
           export class TestCmp {
-            // Type-only reference
+            // Type-only reference (fine — no class predicate)
             query = viewChild<Cmp>('ref');
 
-            // Directy reference
-            otherQuery = viewChild(Cmp);
+            // Direct value reference prevents lazy loading without triggering a query diagnostic
+            static readonly cmpType = Cmp;
           }
         `,
         );
@@ -1722,6 +1722,7 @@ runInEachFileSystem(() => {
       });
 
       it('should count whitespace as a root node when preserveWhitespaces is enabled', () => {
+
         env.write(
           '/test.ts',
           `
@@ -1740,6 +1741,196 @@ runInEachFileSystem(() => {
         expect(diags[0].messageText).toBe(
           'Trigger with no target can only be placed on an @defer that has a @placeholder block with exactly one root element node',
         );
+      });
+    });
+
+    describe('DEFERRED_COMPONENT_USED_IN_QUERY diagnostic', () => {
+      it('should report when viewChild uses a defer-only component class as predicate', () => {
+        env.write(
+          'deferred-cmp.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({selector: 'deferred-cmp', template: ''})
+          export class DeferredCmp {}
+        `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, viewChild} from '@angular/core';
+          import {DeferredCmp} from './deferred-cmp';
+
+          @Component({
+            imports: [DeferredCmp],
+            template: \`
+              @defer {
+                <deferred-cmp />
+              }
+            \`,
+          })
+          export class AppCmp {
+            child = viewChild(DeferredCmp);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFERRED_COMPONENT_USED_IN_QUERY));
+        expect(diags[0].messageText as string).toContain('DeferredCmp');
+        expect(diags[0].messageText as string).toContain('@defer');
+      });
+
+      it('should not report when viewChild uses a string-based predicate', () => {
+        env.write(
+          'deferred-cmp.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({selector: 'deferred-cmp', template: ''})
+          export class DeferredCmp {}
+        `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, viewChild} from '@angular/core';
+          import {DeferredCmp} from './deferred-cmp';
+
+          @Component({
+            imports: [DeferredCmp],
+            template: \`
+              @defer {
+                <deferred-cmp #ref />
+              }
+            \`,
+          })
+          export class AppCmp {
+            child = viewChild<DeferredCmp>('ref');
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report when the component is also used outside the defer block', () => {
+        env.write(
+          'some-cmp.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({selector: 'some-cmp', template: ''})
+          export class SomeCmp {}
+        `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, viewChild} from '@angular/core';
+          import {SomeCmp} from './some-cmp';
+
+          @Component({
+            imports: [SomeCmp],
+            template: \`
+              <some-cmp />
+              @defer {
+                <some-cmp />
+              }
+            \`,
+          })
+          export class AppCmp {
+            child = viewChild(SomeCmp);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should report when contentChild uses a defer-only component class as predicate', () => {
+        env.write(
+          'deferred-cmp.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({selector: 'deferred-cmp', template: ''})
+          export class DeferredCmp {}
+        `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, contentChild} from '@angular/core';
+          import {DeferredCmp} from './deferred-cmp';
+
+          @Component({
+            imports: [DeferredCmp],
+            template: \`
+              @defer {
+                <deferred-cmp />
+              }
+            \`,
+          })
+          export class AppCmp {
+            child = contentChild(DeferredCmp);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFERRED_COMPONENT_USED_IN_QUERY));
+      });
+
+      it('should report one diagnostic per offending query', () => {
+        env.write(
+          'deferred-a.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({selector: 'deferred-a', template: ''})
+          export class DeferredA {}
+        `,
+        );
+
+        env.write(
+          'deferred-b.ts',
+          `
+          import {Component} from '@angular/core';
+          @Component({selector: 'deferred-b', template: ''})
+          export class DeferredB {}
+        `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, viewChild} from '@angular/core';
+          import {DeferredA} from './deferred-a';
+          import {DeferredB} from './deferred-b';
+
+          @Component({
+            imports: [DeferredA, DeferredB],
+            template: \`
+              @defer {
+                <deferred-a />
+                <deferred-b />
+              }
+            \`,
+          })
+          export class AppCmp {
+            childA = viewChild(DeferredA);
+            childB = viewChild(DeferredB);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags.every((d) => d.code === ngErrorCode(ErrorCode.DEFERRED_COMPONENT_USED_IN_QUERY))).toBeTrue();
       });
     });
   });

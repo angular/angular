@@ -29,8 +29,10 @@ import {
   makeBindingParser,
   MatchSource,
   outputAst as o,
+  MaybeForwardRefExpression,
   R3ComponentDeferMetadata,
   R3ComponentMetadata,
+  R3QueryMetadata,
   R3DeferPerComponentDependency,
   R3DirectiveDependencyMetadata,
   R3ForeignComponentMetadata,
@@ -1382,6 +1384,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           analysis,
           eagerlyUsed,
         );
+        this.checkDeferredQueryDiagnostics(analysis, data, eagerlyUsed, diagnostics);
         data.hasDirectiveDependencies =
           !analysis.meta.isStandalone ||
           allDependencies.some(({kind, ref}) => {
@@ -2352,6 +2355,76 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
         component: new o.WrappedNodeExpr(rawExpression),
       } satisfies R3ForeignComponentMetadata;
     });
+  }
+
+  /**
+   * Emits a diagnostic for each view/content query whose predicate is a component class that is
+   * only used inside `@defer` blocks. Such a reference prevents the component from being lazily
+   * loaded and the developer should switch to a string-based query with a local ref instead.
+   */
+  private checkDeferredQueryDiagnostics(
+    analysis: Readonly<ComponentAnalysisData>,
+    data: ComponentResolutionData,
+    eagerlyUsedDecls: Set<ClassDeclaration>,
+    diagnostics: ts.Diagnostic[],
+  ): void {
+    // Build a map of class decl → dep for components that appear exclusively inside @defer blocks.
+    const deferOnlyDeps = new Map<ClassDeclaration, DeferredComponentDependency>();
+    for (const [, deps] of data.deferPerBlockDependencies) {
+      for (const dep of deps) {
+        if (!eagerlyUsedDecls.has(dep.declaration.node)) {
+          deferOnlyDeps.set(dep.declaration.node, dep);
+        }
+      }
+    }
+    if (deferOnlyDeps.size === 0) return;
+
+    const checkQueryList = (queries: R3QueryMetadata[]) => {
+      for (const query of queries) {
+        // string[] predicate means viewChild('ref') — already the good path, skip it.
+        if (Array.isArray(query.predicate)) continue;
+
+        // We gotta unwrap the compiler IR to get back to the real TS node.
+        const expr = (query.predicate as MaybeForwardRefExpression<o.Expression>).expression;
+        if (!(expr instanceof o.WrappedNodeExpr)) continue;
+
+        // This could be a plain identifier (Cmp) or a qualified name (ns.Cmp): let's handle both.
+        const tsNode = (expr as o.WrappedNodeExpr<ts.Expression>).node;
+        const identifier =
+          ts.isIdentifier(tsNode)
+            ? tsNode
+            : ts.isPropertyAccessExpression(tsNode) && ts.isIdentifier(tsNode.name)
+              ? tsNode.name
+              : null;
+        if (identifier === null) continue;
+
+        // Resolve the identifier all the way back to its class declaration.
+        const decl = this.reflector.getDeclarationOfIdentifier(identifier);
+        if (decl === null || !isNamedClassDeclaration(decl.node)) continue;
+
+        const dep = deferOnlyDeps.get(decl.node as ClassDeclaration);
+        if (dep === undefined) continue;
+
+        // We got a hit — this class lives exclusively behind @defer but is used as a class predicate,
+        // which keeps the import eager and kills the whole point of deferring it.
+        const className = (decl.node as ts.ClassDeclaration).name!.text;
+        const selector = this.metaReader.getDirectiveMetadata(dep.declaration)?.selector;
+        const selectorHint = selector ? ` \`<${selector} #ref />\`` : ' the element';
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.DEFERRED_COMPONENT_USED_IN_QUERY,
+            tsNode,
+            `Query \`${query.propertyName}\` references \`${className}\`, which is only used ` +
+              `inside a \`@defer\` block. This type reference prevents \`${className}\` from ` +
+              `being lazily loaded. Add a template reference variable to${selectorHint} and use ` +
+              `a string-based query instead: \`viewChild<${className}>('ref')\`.`,
+          ),
+        );
+      }
+    };
+
+    checkQueryList(analysis.meta.viewQueries);
+    checkQueryList(analysis.meta.queries);
   }
 
   /**

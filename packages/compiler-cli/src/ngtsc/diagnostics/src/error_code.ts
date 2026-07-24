@@ -486,6 +486,13 @@ export enum ErrorCode {
   CONFLICTING_CONTENT_AND_PROPERTY = 8029,
 
   /**
+   * A `viewChild` or `contentChild` query uses a component class as its predicate, but that
+   * component is only used inside a `@defer` block. The class reference prevents the component
+   * from being lazily loaded. Use a string-based query with a template reference variable instead.
+   */
+  DEFERRED_COMPONENT_USED_IN_QUERY = 8030,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
