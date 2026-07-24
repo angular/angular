@@ -112,6 +112,8 @@ export function typescriptLibDts(): TestFile {
       type Partial<T> = { [P in keyof T]?: T[P]; };
       type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
       type NonNullable<T> = T extends null | undefined ? never : T;
+      // Approximation of TypeScript's intrinsic NoInfer for the minimal test lib.
+      type NoInfer<T> = [T][T extends any ? 0 : never];
 
       // The following native type declarations are required for proper type inference
       declare interface Function {

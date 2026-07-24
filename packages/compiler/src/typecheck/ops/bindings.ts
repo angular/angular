@@ -77,6 +77,12 @@ export interface TcbDirectiveUnsetInput {
    * The name of a field on the directive for which no input binding is present.
    */
   field: string;
+
+  /**
+   * Whether the unset field is a signal input. Unbound signal inputs are omitted from the type
+   * constructor call so they do not poison generic inference with `any` and defeat `NoInfer`.
+   */
+  isSignal: boolean;
 }
 
 export type TcbDirectiveInput = TcbDirectiveBoundInput | TcbDirectiveUnsetInput;
