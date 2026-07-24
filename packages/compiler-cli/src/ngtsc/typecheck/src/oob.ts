@@ -434,8 +434,8 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     const blockName = controlFlowNode.nameSpan.toString().trim();
     const lines = [
       `Node matches the "${slotSelector}" slot of the "${componentName}" component, but will not be projected into the specific slot because the surrounding ${blockName} has more than one node at its root. To project the node in the right slot, you can:\n`,
-      `1. Wrap the content of the ${blockName} block in an <ng-container/> that matches the "${slotSelector}" selector.`,
-      `2. Split the content of the ${blockName} block across multiple ${blockName} blocks such that each one only has a single projectable node at its root.`,
+      `1. Wrap the content of the ${blockName} block in an <ng-container ngProjectAs="${slotSelector}"> to explicitly target the "${slotSelector}" slot. Use this when all nodes in the block should be projected into the same slot.`,
+      `2. Split the content of the ${blockName} block across multiple ${blockName} blocks such that each one only has a single projectable node at its root. Use this when nodes in the block target different slots.`,
       `3. Remove all content from the ${blockName} block, except for the node being projected.`,
     ];
 
