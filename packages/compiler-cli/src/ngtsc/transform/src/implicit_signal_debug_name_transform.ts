@@ -232,6 +232,7 @@ const signalFunctions: ReadonlyMap<string, PackageName> = new Map([
   ['contentChild', 'core'],
   ['contentChildren', 'core'],
   ['effect', 'core'],
+  ['toSignal', 'core'],
   ['resource', 'core'],
   ['httpResource', 'common'],
 ]);
