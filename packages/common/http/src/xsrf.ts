@@ -16,8 +16,8 @@ import {
 } from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {HttpHandler} from './backend';
-import {HttpHandlerFn, HttpInterceptor} from './interceptor';
+import type {HttpHandler} from './backend';
+import type {HttpHandlerFn, HttpInterceptor} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 

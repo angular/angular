@@ -20,6 +20,7 @@ import type {HttpHandler} from './backend';
 
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
+import {xsrfInterceptorFn} from './xsrf';
 
 /**
  * Intercepts and handles an `HttpRequest` or `HttpResponse`.
@@ -200,7 +201,7 @@ export const HTTP_INTERCEPTORS = new InjectionToken<readonly HttpInterceptor[]>(
  */
 export const HTTP_INTERCEPTOR_FNS = new InjectionToken<readonly HttpInterceptorFn[]>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'HTTP_INTERCEPTOR_FNS' : '',
-  {factory: () => []},
+  {factory: () => [xsrfInterceptorFn]},
 );
 
 /**
