@@ -9,7 +9,7 @@
 // 3p-only-start
 import {
   NavigationNavigateOptions,
-  NavigationTypeString,
+  NavigationType,
   NavigationOptions,
   NavigateEvent,
   NavigationCurrentEntryChangeEvent,
@@ -79,6 +79,8 @@ export class FakeNavigation implements Navigation {
    * @internal
    */
   eventTarget: EventTarget;
+
+  readonly activation: NavigationActivation | null = null;
 
   /** The next unique id for created entries. Replace recreates this id. */
   private nextId = 0;
@@ -179,7 +181,7 @@ export class FakeNavigation implements Navigation {
     const fromUrl = new URL(this.currentEntry.url!);
     const toUrl = new URL(url, this.currentEntry.url!);
 
-    let navigationType: NavigationTypeString;
+    let navigationType: NavigationType;
     if (!options?.history || options.history === 'auto') {
       // Auto defaults to push, but if the URLs are the same, is a replace.
       if (fromUrl.toString() === toUrl.toString()) {
@@ -231,7 +233,7 @@ export class FakeNavigation implements Navigation {
   }
 
   private pushOrReplaceState(
-    navigationType: NavigationTypeString,
+    navigationType: NavigationType,
     data: unknown,
     _title: string,
     url?: string,
@@ -617,13 +619,15 @@ export class FakeNavigation implements Navigation {
   }
 
   set oncurrententrychange(
-    _handler: // tslint:disable-next-line:no-any
+    _handler:
+      // tslint:disable-next-line:no-any
       ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null,
   ) {
     throw new Error('unimplemented');
   }
 
-  get oncurrententrychange(): // tslint:disable-next-line:no-any
+  get oncurrententrychange():
+    // tslint:disable-next-line:no-any
     ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null {
     throw new Error('unimplemented');
   }
@@ -816,7 +820,7 @@ function dispatchNavigateEvent({
   canIntercept: boolean;
   userInitiated: boolean;
   hashChange: boolean;
-  navigationType: NavigationTypeString;
+  navigationType: NavigationType;
   destination: FakeNavigationDestination;
   info: unknown;
   sameDocument: boolean;
@@ -846,7 +850,7 @@ function dispatchNavigateEvent({
   event.sameDocument = sameDocument;
 
   let precommitHandlers: Array<(controller: NavigationPrecommitController) => Promise<void>> = [];
-  let handlers: Array<() => Promise<void>> = [];
+  let handlers: Array<() => PromiseLike<void> | void> = [];
 
   // https://whatpr.org/html/10919/nav-history-apis.html#dom-navigateevent-intercept
   event.intercept = function (
@@ -962,7 +966,14 @@ function dispatchNavigateEvent({
       }
     }
     (navigation.transition as InternalNavigationTransition)?.committedResolve();
-    const promisesList: Array<Promise<unknown>> = handlers.map((handler) => handler());
+    const promisesList: Array<PromiseLike<unknown>> = [];
+    for (const handler of handlers) {
+      const handlerResult = handler();
+
+      if (handlerResult) {
+        promisesList.push(handlerResult);
+      }
+    }
     promisesList.push(result.committed);
     Promise.all(promisesList)
       .then(() => {
@@ -1134,7 +1145,7 @@ function createFakeNavigationCurrentEntryChangeEvent({
   navigationType,
 }: {
   from: FakeNavigationHistoryEntry;
-  navigationType: NavigationTypeString;
+  navigationType: NavigationType;
 }) {
   const event = new Event('currententrychange', {
     bubbles: false,
@@ -1176,8 +1187,8 @@ function createHashChangeEvent(newURL: string, oldURL: string) {
 export class FakeNavigationDestination implements NavigationDestination {
   url: string;
   readonly sameDocument: boolean;
-  readonly key: string | null;
-  readonly id: string | null;
+  readonly key: string;
+  readonly id: string;
   readonly index: number;
 
   state?: unknown;
@@ -1204,8 +1215,8 @@ export class FakeNavigationDestination implements NavigationDestination {
     this.sameDocument = sameDocument;
     this.state = state;
     this.historyState = historyState;
-    this.key = key;
-    this.id = id;
+    this.key = key ?? '';
+    this.id = id ?? '';
     this.index = index;
   }
 
@@ -1238,7 +1249,7 @@ class InternalNavigationTransition implements NavigationTransition {
   constructor(
     readonly from: NavigationHistoryEntry,
     readonly to: NavigationDestination,
-    readonly navigationType: NavigationTypeString,
+    readonly navigationType: NavigationType,
   ) {
     this.finished = new Promise<void>((resolve, reject) => {
       this.finishedReject = reject;
@@ -1303,7 +1314,7 @@ class InternalNavigationResult {
 
 /** Internal options for performing a navigate. */
 interface InternalNavigateOptions {
-  navigationType: NavigationTypeString;
+  navigationType: NavigationType;
   cancelable: boolean;
   canIntercept: boolean;
   userInitiated: boolean;

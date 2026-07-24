@@ -17,7 +17,7 @@ export {
   type NavigationReloadOptions as ɵNavigationReloadOptions,
   type NavigationResult as ɵNavigationResult,
   type NavigationTransition as ɵNavigationTransition,
-  type NavigationTypeString as ɵNavigationTypeString,
+  type NavigationType as ɵNavigationType,
   type NavigationUpdateCurrentEntryOptions as ɵNavigationUpdateCurrentEntryOptions,
 } from '../primitives/dom-navigation';
 export {maybeUnwrapDefaultExport as ɵmaybeUnwrapDefaultExport} from './util/default_export';

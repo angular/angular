@@ -162,8 +162,8 @@ describe('navigation', () => {
           signal: jasmine.any(AbortSignal),
           destination: jasmine.objectContaining({
             url: 'https://test.com/test',
-            key: null,
-            id: null,
+            key: '',
+            id: '',
             index: -1,
             sameDocument: false,
           }),
@@ -235,8 +235,8 @@ describe('navigation', () => {
           signal: jasmine.any(AbortSignal),
           destination: jasmine.objectContaining({
             url: 'https://test.com/test',
-            key: null,
-            id: null,
+            key: '',
+            id: '',
             index: -1,
             sameDocument: false,
           }),
@@ -1515,8 +1515,8 @@ describe('navigation', () => {
             signal: jasmine.any(AbortSignal),
             destination: jasmine.objectContaining({
               url: 'https://test.com/test',
-              key: null,
-              id: null,
+              key: '',
+              id: '',
               index: -1,
               sameDocument: true,
             }),
@@ -1571,8 +1571,8 @@ describe('navigation', () => {
             signal: jasmine.any(AbortSignal),
             destination: jasmine.objectContaining({
               url: 'https://test.com/test',
-              key: null,
-              id: null,
+              key: '',
+              id: '',
               index: -1,
               sameDocument: true,
             }),
