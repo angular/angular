@@ -297,6 +297,14 @@ describe('HTML sanitizer', () => {
   });
 
   if (isDOMParserAvailable()) {
+    it('should reject markup that never stabilizes when reparsed', () => {
+      // The tokenizer never leaves the PLAINTEXT state, so every reparse appends another
+      // literal `</plaintext>` and the markup has no fixed point.
+      expect(() => sanitizeHtml(defaultDoc, '<plaintext>a')).toThrowError(
+        /Failed to sanitize html because the input is unstable/,
+      );
+    });
+
     it('should work even if DOMParser returns a null body', () => {
       // Simulate `DOMParser.parseFromString()` returning a null body.
       // See https://github.com/angular/angular/issues/39834

@@ -307,7 +307,6 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
     inertBodyHelper = inertBodyHelper || getInertBodyHelper(defaultDoc);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
     let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
-    inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
 
     // mXSS protection. Repeatedly parse the document to make sure it stabilizes, so that a browser
     // trying to auto-correct incorrect HTML cannot cause formerly inert HTML to become dangerous.
@@ -321,8 +320,8 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
       mXSSAttempts--;
 
       unsafeHtml = parsedHtml;
-      parsedHtml = inertBodyElement!.innerHTML;
       inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
+      parsedHtml = inertBodyElement!.innerHTML;
     } while (unsafeHtml !== parsedHtml);
 
     const sanitizer = new SanitizingHtmlSerializer();
