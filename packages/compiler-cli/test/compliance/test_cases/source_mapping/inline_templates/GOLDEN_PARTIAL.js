@@ -1265,7 +1265,7 @@ export declare class TestCmp {
 /****************************************************************************************************
  * PARTIAL FILE: ng_if_templated.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestCmp {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
@@ -1287,24 +1287,39 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     standalone: false
                 }]
         }] });
+export class TestCmpModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, declarations: [TestCmp] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [TestCmp], schemas: [NO_ERRORS_SCHEMA] }]
+        }] });
 //# sourceMappingURL=ng_if_templated.js.map
 /****************************************************************************************************
  * PARTIAL FILE: ng_if_templated.js.map
  ****************************************************************************************************/
-{"version":3,"file":"ng_if_templated.js","sourceRoot":"","sources":["../ng_if_templated.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAC,MAAM,eAAe,CAAC;;AAWxC,MAAM,OAAO,OAAO;kHAAP,OAAO;sGAAP,OAAO,qEAPN;;;;mBAIK;;sGAGN,OAAO;kBATnB,SAAS;mBAAC;oBACP,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE;;;;mBAIK;oBACf,UAAU,EAAE,KAAK;iBACpB"}
+{"version":3,"file":"ng_if_templated.js","sourceRoot":"","sources":["../ng_if_templated.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,gBAAgB,EAAC,MAAM,eAAe,CAAC;;AAWpE,MAAM,OAAO,OAAO;kHAAP,OAAO;sGAAP,OAAO,qEAPN;;;;mBAIK;;sGAGN,OAAO;kBATnB,SAAS;mBAAC;oBACP,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE;;;;mBAIK;oBACf,UAAU,EAAE,KAAK;iBACpB;;AAMD,MAAM,OAAO,aAAa;kHAAb,aAAa;mHAAb,aAAa,iBALb,OAAO;mHAKP,aAAa;;sGAAb,aAAa;kBADzB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,CAAC,EAAE,OAAO,EAAE,CAAC,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: ng_if_templated.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestCmp {
+    showMessage: () => boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never>;
+}
+export declare class TestCmpModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<TestCmpModule, [typeof TestCmp], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<TestCmpModule>;
 }
 
 /****************************************************************************************************
  * PARTIAL FILE: ng_if_templated.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestCmp {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
@@ -1326,18 +1341,33 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     standalone: false
                 }]
         }] });
+export class TestCmpModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, declarations: [TestCmp] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [TestCmp], schemas: [NO_ERRORS_SCHEMA] }]
+        }] });
 //# sourceMappingURL=ng_if_templated.js.map
 /****************************************************************************************************
  * PARTIAL FILE: ng_if_templated.js.map
  ****************************************************************************************************/
-{"version":3,"file":"ng_if_templated.js","sourceRoot":"","sources":["../ng_if_templated.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAC,MAAM,eAAe,CAAC;;AAWxC,MAAM,OAAO,OAAO;kHAAP,OAAO;sGAAP,OAAO,qEAPN;;;;mBAIK;;sGAGN,OAAO;kBATnB,SAAS;mBAAC;oBACP,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE;;;;mBAIK;oBACf,UAAU,EAAE,KAAK;iBACpB"}
+{"version":3,"file":"ng_if_templated.js","sourceRoot":"","sources":["../ng_if_templated.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,gBAAgB,EAAC,MAAM,eAAe,CAAC;;AAWpE,MAAM,OAAO,OAAO;kHAAP,OAAO;sGAAP,OAAO,qEAPN;;;;mBAIK;;sGAGN,OAAO;kBATnB,SAAS;mBAAC;oBACP,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE;;;;mBAIK;oBACf,UAAU,EAAE,KAAK;iBACpB;;AAMD,MAAM,OAAO,aAAa;kHAAb,aAAa;mHAAb,aAAa,iBALb,OAAO;mHAKP,aAAa;;sGAAb,aAAa;kBADzB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,CAAC,EAAE,OAAO,EAAE,CAAC,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: ng_if_templated.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestCmp {
+    showMessage: () => boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never>;
+}
+export declare class TestCmpModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<TestCmpModule, [typeof TestCmp], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<TestCmpModule>;
 }
 
 /****************************************************************************************************
@@ -1405,7 +1435,7 @@ export declare class TestCmp {
 /****************************************************************************************************
  * PARTIAL FILE: ng_for_templated.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestCmp {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
@@ -1419,24 +1449,39 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     standalone: false
                 }]
         }] });
+export class TestCmpModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, declarations: [TestCmp] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [TestCmp], schemas: [NO_ERRORS_SCHEMA] }]
+        }] });
 //# sourceMappingURL=ng_for_templated.js.map
 /****************************************************************************************************
  * PARTIAL FILE: ng_for_templated.js.map
  ****************************************************************************************************/
-{"version":3,"file":"ng_for_templated.js","sourceRoot":"","sources":["../ng_for_templated.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAC,MAAM,eAAe,CAAC;;AAOxC,MAAM,OAAO,OAAO;kHAAP,OAAO;sGAAP,OAAO,qEAHN,wEAAwE;;sGAGzE,OAAO;kBALnB,SAAS;mBAAC;oBACP,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,wEAAwE;oBAClF,UAAU,EAAE,KAAK;iBACpB"}
+{"version":3,"file":"ng_for_templated.js","sourceRoot":"","sources":["../ng_for_templated.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,gBAAgB,EAAC,MAAM,eAAe,CAAC;;AAOpE,MAAM,OAAO,OAAO;kHAAP,OAAO;sGAAP,OAAO,qEAHN,wEAAwE;;sGAGzE,OAAO;kBALnB,SAAS;mBAAC;oBACP,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,wEAAwE;oBAClF,UAAU,EAAE,KAAK;iBACpB;;AAMD,MAAM,OAAO,aAAa;kHAAb,aAAa;mHAAb,aAAa,iBALb,OAAO;mHAKP,aAAa;;sGAAb,aAAa;kBADzB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,CAAC,EAAE,OAAO,EAAE,CAAC,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: ng_for_templated.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestCmp {
+    items: any[];
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never>;
+}
+export declare class TestCmpModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<TestCmpModule, [typeof TestCmp], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<TestCmpModule>;
 }
 
 /****************************************************************************************************
  * PARTIAL FILE: ng_for_templated.js
  ****************************************************************************************************/
-import { Component } from '@angular/core';
+import { Component, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestCmp {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
@@ -1450,18 +1495,33 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     standalone: false
                 }]
         }] });
+export class TestCmpModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, declarations: [TestCmp] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmpModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [TestCmp], schemas: [NO_ERRORS_SCHEMA] }]
+        }] });
 //# sourceMappingURL=ng_for_templated.js.map
 /****************************************************************************************************
  * PARTIAL FILE: ng_for_templated.js.map
  ****************************************************************************************************/
-{"version":3,"file":"ng_for_templated.js","sourceRoot":"","sources":["../ng_for_templated.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAC,MAAM,eAAe,CAAC;;AAOxC,MAAM,OAAO,OAAO;kHAAP,OAAO;sGAAP,OAAO,qEAHN,wEAAwE;;sGAGzE,OAAO;kBALnB,SAAS;mBAAC;oBACP,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,wEAAwE;oBAClF,UAAU,EAAE,KAAK;iBACpB"}
+{"version":3,"file":"ng_for_templated.js","sourceRoot":"","sources":["../ng_for_templated.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,gBAAgB,EAAC,MAAM,eAAe,CAAC;;AAOpE,MAAM,OAAO,OAAO;kHAAP,OAAO;sGAAP,OAAO,qEAHN,wEAAwE;;sGAGzE,OAAO;kBALnB,SAAS;mBAAC;oBACP,QAAQ,EAAE,UAAU;oBACpB,QAAQ,EAAE,wEAAwE;oBAClF,UAAU,EAAE,KAAK;iBACpB;;AAMD,MAAM,OAAO,aAAa;kHAAb,aAAa;mHAAb,aAAa,iBALb,OAAO;mHAKP,aAAa;;sGAAb,aAAa;kBADzB,QAAQ;mBAAC,EAAC,YAAY,EAAE,CAAC,OAAO,CAAC,EAAE,OAAO,EAAE,CAAC,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: ng_for_templated.d.ts
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestCmp {
+    items: any[];
     static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, false, never>;
+}
+export declare class TestCmpModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmpModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<TestCmpModule, [typeof TestCmp], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<TestCmpModule>;
 }
 
 /****************************************************************************************************

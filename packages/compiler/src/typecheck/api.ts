@@ -288,4 +288,9 @@ export interface TypeCheckingConfig {
    * Whether to descend into the bodies of control flow blocks (`@if`, `@switch` and `@for`).
    */
   checkControlFlowBodies: boolean;
+
+  /**
+   * Whether to check if unknown properties are bound to `<ng-template>`.
+   */
+  checkTypeOfNgTemplateBindings: boolean;
 }
