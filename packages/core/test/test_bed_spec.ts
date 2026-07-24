@@ -428,6 +428,20 @@ describe('TestBed with Standalone types', () => {
     expect(fixture.nativeElement.innerHTML).toBe('Overridden');
   });
 
+  it('should preserve default change detection when overriding components', () => {
+    @Component({
+      template: 'Original',
+    })
+    class DefaultCmp {}
+
+    const onPushBefore = (DefaultCmp as any).ɵcmp.onPush;
+    TestBed.overrideComponent(DefaultCmp, {set: {template: 'Overridden'}});
+    TestBed.createComponent(DefaultCmp);
+    const onPushAfter = (DefaultCmp as any).ɵcmp.onPush;
+
+    expect(onPushAfter).withContext('ɵcmp.OnPush after override').toBe(onPushBefore);
+  });
+
   it('should allow overriding the set of directives and pipes used in a standalone component', () => {
     @Directive({
       selector: '[dir]',
