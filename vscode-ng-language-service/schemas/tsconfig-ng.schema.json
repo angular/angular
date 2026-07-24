@@ -12,11 +12,6 @@
     "angularCompilerOptions": {
       "type": "object",
       "properties": {
-        "allowEmptyCodegenFiles": {
-          "type": "boolean",
-          "description": "Generate all possible generated files. This option is not used anymore.",
-          "deprecated": true
-        },
         "annotateForClosureCompiler": {
           "type": "boolean",
           "description": "Insert JSDoc type annotations needed by Closure Compiler."
