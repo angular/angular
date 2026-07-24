@@ -23,7 +23,7 @@ import {
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatTab, MatTabGroup, MatTabLabel} from '@angular/material/tabs';
 import {Title} from '@angular/platform-browser';
-import {debounceTime, from, map, switchMap} from 'rxjs';
+import {debounceTime, filter, from, map, switchMap, take} from 'rxjs';
 
 import {TerminalType} from '../terminal/terminal-handler.service';
 
@@ -37,6 +37,7 @@ import {NodeRuntimeState} from '../node-runtime-state.service';
 import {StackBlitzOpener} from '../stackblitz-opener.service';
 import {CodeMirrorEditor} from './code-mirror-editor.service';
 import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
+import {NodeRuntimeSandbox} from '../node-runtime-sandbox.service';
 
 export const REQUIRED_FILES = new Set([
   'src/main.ts',
@@ -81,6 +82,9 @@ export class CodeEditor {
   private readonly title = inject(Title);
   private readonly location = inject(Location);
   private readonly environmentInjector = inject(EnvironmentInjector);
+  private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox, {
+    optional: true,
+  });
 
   private readonly errors$ = this.diagnosticsState.diagnostics$.pipe(
     // Display errors one second after code update
@@ -169,8 +173,28 @@ export class CodeEditor {
     };
 
     // Listen for postMessage from preview iframe (Vite error overlay)
+    // Track the trusted preview origin once the WebContainer dev server starts.
+    // The preview runs on a dynamic *.webcontainer.io subdomain (cross-origin)
+    let trustedPreviewOrigin: string | null = null;
+    
+    if (this.nodeRuntimeSandbox) {
+    this.nodeRuntimeSandbox.previewUrl$
+       .pipe(
+         filter((url): url is string => !!url),
+         take(1),
+         takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe((url) => {
+          trustedPreviewOrigin = new URL(url).origin;
+       });
+    }
     const handlePostMessage = (event: MessageEvent) => {
-      // Check if this is an openFileAtLocation message
+      if (
+        !trustedPreviewOrigin || 
+        event.origin !== trustedPreviewOrigin ||
+      ) {
+        return;
+      }
       if (event.data?.type === 'openFileAtLocation') {
         const {file, line, character} = event.data;
         openFile(file, line, character);
