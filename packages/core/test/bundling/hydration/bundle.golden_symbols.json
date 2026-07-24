@@ -138,6 +138,7 @@
       "HttpResponseBase",
       "HydrationFeatureKind",
       "ID",
+      "INCREMENTAL_HYDRATION_BOOTSTRAP",
       "INJECTOR",
       "INJECTOR",
       "INJECTOR_DEF_TYPES",

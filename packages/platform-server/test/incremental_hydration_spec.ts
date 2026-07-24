@@ -21,6 +21,7 @@ import {
   PLATFORM_ID,
   Provider,
   QueryList,
+  ɵresetIncrementalHydrationRuntimeForTests as resetIncrementalHydrationRuntimeForTests,
   ɵresetIncrementalHydrationEnabledWarnedForTests as resetIncrementalHydrationEnabledWarnedForTests,
   signal,
   ɵTimerScheduler as TimerScheduler,
@@ -1304,6 +1305,65 @@ describe('platform-server partial hydration integration', () => {
 
           // Internal cleanup before we do server->client transition in this test.
           resetTViewsFor(SimpleComponent);
+
+          ////////////////////////////////
+          const doc = getDocument();
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+            hydrationFeatures,
+          });
+          appRef.tick();
+          await appRef.whenStable();
+
+          expect(activeObservers.length).toBe(1);
+          expect(activeObservers[0].options).toEqual({rootMargin: '123px', threshold: 0.5});
+        });
+
+        it('should create an IntersectionObserver for a nested routed viewport block', async () => {
+          @Component({
+            selector: 'routed',
+            template: `
+              @defer (hydrate on interaction) {
+                <main>
+                  @defer (hydrate on viewport({rootMargin: '123px', threshold: 0.5})) {
+                    <article>defer block rendered!</article>
+                  } @placeholder {
+                    <span>Inner block placeholder</span>
+                  }
+                </main>
+              } @placeholder {
+                <span>Outer block placeholder</span>
+              }
+            `,
+          })
+          class RoutedComponent {}
+
+          @Component({
+            selector: 'app',
+            imports: [RouterOutlet],
+            template: '<router-outlet />',
+          })
+          class SimpleComponent {}
+
+          const providers = [
+            {provide: APP_ID, useValue: 'custom-app-id'},
+            {provide: PlatformLocation, useClass: MockPlatformLocation},
+            provideRouter([{path: '', component: RoutedComponent}]),
+          ] as unknown as Provider[];
+          const hydrationFeatures = () => [withIncrementalHydration()];
+
+          const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(
+            '"__nghDeferData__":{"d0":{"r":1,"s":2},"d1":{"r":1,"s":2,"t":[{"trigger":2,"intersectionObserverOptions":{"rootMargin":"123px","threshold":0.5}}],"p":"d0"}}',
+          );
+
+          // Internal cleanup before we do server->client transition in this test.
+          resetTViewsFor(SimpleComponent, RoutedComponent);
+          // The root view has no hydration triggers, so verify that the routed view activates a
+          // cold client runtime.
+          resetIncrementalHydrationRuntimeForTests();
 
           ////////////////////////////////
           const doc = getDocument();
@@ -3068,6 +3128,9 @@ describe('platform-server partial hydration integration', () => {
       expect(ssrContents).toContain(`<p id="hydrated">nope</p>`);
 
       resetTViewsFor(SimpleComponent, LazyCmp);
+      // The immediate trigger is nested in a lazy route, so verify that it is discovered with a
+      // cold client runtime.
+      resetIncrementalHydrationRuntimeForTests();
 
       const doc = getDocument();
       const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
