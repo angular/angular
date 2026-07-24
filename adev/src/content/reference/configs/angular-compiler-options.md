@@ -201,8 +201,7 @@ When `true`, enables [strict template type checking](tools/cli/template-typechec
 
 The strictness flags that this option enables allow you to turn on and off specific types of strict template type checking.
 See [troubleshooting template errors](tools/cli/template-typecheck#troubleshooting-template-errors).
-
-When you use the Angular CLI command `ng new --strict`, it is set to `true` in the new project's configuration.
+Default is `true`.
 
 ### `strictStandalone`
 
