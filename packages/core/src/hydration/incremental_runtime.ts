@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {Injector} from '../di';
 import {DehydratedBlockRegistry} from '../defer/registry';
 import {processAndInitTriggers} from '../defer/triggering';
+import type {Injector} from '../di';
+import {InjectionToken} from '../di/injection_token';
+import {INJECTOR} from '../render3/interfaces/view';
+import {getLView} from '../render3/state';
 import {performanceMarkFeature} from '../util/performance';
 import {gatherDeferBlocksCommentNodes} from './node_lookup_utils';
 import {
@@ -34,6 +37,18 @@ let _runIncrementalHydrationBootstrap: (injector: Injector, doc: Document) => vo
  */
 let isIncrementalHydrationRuntimeActive = false;
 
+interface IncrementalHydrationBootstrapState {
+  requested: boolean;
+  activated: boolean;
+  injector: Injector;
+  document: Document;
+}
+
+export const INCREMENTAL_HYDRATION_BOOTSTRAP =
+  new InjectionToken<IncrementalHydrationBootstrapState>(
+    typeof ngDevMode === 'undefined' || ngDevMode ? 'INCREMENTAL_HYDRATION_BOOTSTRAP' : '',
+  );
+
 /**
  * Returns the `DehydratedBlockRegistry` used by incremental hydration, or
  * `null` if the runtime has not been activated.
@@ -43,39 +58,60 @@ export function createDehydratedBlockRegistry(): DehydratedBlockRegistry | null 
 }
 
 /**
- * Runs the incremental-hydration bootstrap routine (defer-block scanning,
- * trigger initialization, jsaction wiring). Called from `APP_BOOTSTRAP_LISTENER`.
- * No-op until the runtime is activated.
+ * Runs incremental hydration bootstrap once application bootstrap and the
+ * compiler-generated runtime activation have both occurred.
  */
-export function runIncrementalHydrationBootstrap(injector: Injector, doc: Document): void {
-  _runIncrementalHydrationBootstrap(injector, doc);
+export function runIncrementalHydrationBootstrap(state: IncrementalHydrationBootstrapState): void {
+  if (state.requested && state.activated) {
+    _runIncrementalHydrationBootstrap(state.injector, state.document);
+  }
 }
 
 /**
  * Activates the incremental-hydration runtime.
  *
- * Emitted by the Angular compiler at the top level of every component file
- * whose template contains a `@defer (hydrate ...)` trigger. The first call
- * swaps in real implementations; subsequent calls are no-ops.
+ * Emitted by the Angular compiler before the first hydrating `@defer` block in
+ * a creation block. The first call swaps in the real implementations. Every
+ * client call also notifies the current application that the runtime is
+ * available.
  *
  * @codeGenApi
  */
 export function ɵɵenableIncrementalHydrationRuntime(): void {
-  if (isIncrementalHydrationRuntimeActive) {
-    return;
+  if (!isIncrementalHydrationRuntimeActive) {
+    isIncrementalHydrationRuntimeActive = true;
+
+    enableRetrieveDeferBlockDataImpl();
+
+    performanceMarkFeature('NgIncrementalHydration');
+
+    _dehydratedBlockRegistryFactory = () => new DehydratedBlockRegistry();
+
+    _runIncrementalHydrationBootstrap = (injector, doc) => {
+      const deferBlockData = processBlockData(injector);
+      const commentsByBlockId = gatherDeferBlocksCommentNodes(doc, doc.body);
+      processAndInitTriggers(injector, deferBlockData, commentsByBlockId);
+      appendDeferBlocksToJSActionMap(doc, injector);
+    };
   }
-  isIncrementalHydrationRuntimeActive = true;
 
-  enableRetrieveDeferBlockDataImpl();
+  if (typeof ngServerMode === 'undefined' || !ngServerMode) {
+    const injector = getLView()[INJECTOR];
+    const state = injector.get(INCREMENTAL_HYDRATION_BOOTSTRAP, null, {optional: true});
+    if (state !== null && !state.activated) {
+      state.activated = true;
+      runIncrementalHydrationBootstrap(state);
+    }
+  }
+}
 
-  performanceMarkFeature('NgIncrementalHydration');
-
-  _dehydratedBlockRegistryFactory = () => new DehydratedBlockRegistry();
-
-  _runIncrementalHydrationBootstrap = (injector, doc) => {
-    const deferBlockData = processBlockData(injector);
-    const commentsByBlockId = gatherDeferBlocksCommentNodes(doc, doc.body);
-    processAndInitTriggers(injector, deferBlockData, commentsByBlockId);
-    appendDeferBlocksToJSActionMap(doc, injector);
-  };
+/**
+ * Resets module-level runtime activation for tests that run SSR and client hydration in the same
+ * process. This is not a full hydration reset and should only be used when cold client activation
+ * is part of the behavior under test.
+ */
+export function resetIncrementalHydrationRuntimeForTests(): void {
+  isIncrementalHydrationRuntimeActive = false;
+  _dehydratedBlockRegistryFactory = () => null;
+  _runIncrementalHydrationBootstrap = () => {};
 }
