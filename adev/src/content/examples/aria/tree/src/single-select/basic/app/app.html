@@ -16,9 +16,13 @@
       [(expanded)]="node.expanded"
       #treeItem="ngTreeItem"
     >
-      <span aria-hidden="true" class="material-symbols-outlined expand-icon" translate="no">{{
-        node.children ? 'chevron_right' : ''
-      }}</span>
+      <span
+        aria-hidden="true"
+        class="material-symbols-outlined expand-icon"
+        [class.hidden]="!node.children"
+        translate="no"
+        >chevron_right</span
+      >
       <span aria-hidden="true" class="material-symbols-outlined" translate="no">{{
         node.children ? 'folder' : 'docs'
       }}</span>
