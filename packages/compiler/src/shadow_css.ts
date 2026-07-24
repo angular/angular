@@ -487,6 +487,10 @@ export class ShadowCss {
     yield text.slice(prev);
   }
 
+  private _hasBothHostAndHostContext(part: string): boolean {
+    return part.includes(_polyfillHost) && part.includes(_polyfillHostContext);
+  }
+
   /*
    * convert a rule like :host-context(.foo) > .bar { }
    *
@@ -503,91 +507,218 @@ export class ShadowCss {
    * .foo<scopeName> .bar { ... }
    */
   private _convertColonHostContext(cssText: string): string {
-    // Splits up the selectors on their top-level commas, processes the :host-context in them
-    // individually and stitches them back together. This ensures that individual selectors don't
-    // affect each other.
-    const results: string[] = [];
-    for (const part of this._splitOnTopLevelCommas(cssText, false)) {
-      results.push(this._convertColonHostContextInSelectorPart(part));
+    if (!cssText.includes(_polyfillHostContext)) {
+      return cssText;
     }
-    return results.join(',');
+    return processRules(cssText, (rule) => {
+      if (rule.selector.startsWith('@')) {
+        if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
+          return new CssRule(
+            rule.selector,
+            this._convertColonHostContext(rule.content),
+            rule.isBlock,
+          );
+        }
+        return rule;
+      }
+      const results: string[] = [];
+      for (const part of this._splitOnTopLevelCommas(rule.selector, false)) {
+        if (this._hasBothHostAndHostContext(part)) {
+          results.push(this._convertColonHostContextLegacy(part));
+        } else {
+          results.push(this._convertColonHostContextModern(part));
+        }
+      }
+      // Only recurse into content if there might be any child blocks.
+      const content =
+        rule.isBlock && rule.content.includes('{')
+          ? this._convertColonHostContext(rule.content)
+          : rule.content;
+      return new CssRule(results.join(','), content, rule.isBlock);
+    });
   }
 
-  private _convertColonHostContextInSelectorPart(cssText: string): string {
-    return cssText.replace(_cssColonHostContextReGlobal, (selectorText, pseudoPrefix) => {
-      // We have captured a selector that contains a `:host-context` rule.
+  /**
+   * Converts `:host-context` selectors the same way as before, for selectors that contain both
+   * `:host` and `:host-context`. A selector before `:host-context` stays only in front of the
+   * first generated selector.
+   */
+  private _convertColonHostContextLegacy(cssText: string): string {
+    return cssText.replace(_cssColonHostContextReGlobal, (selectorText) => {
+      const {contextSelectorGroups, remainingSelectorText, pseudoPrefix, pseudoSuffix} =
+        this._parseHostContext(selectorText);
 
-      // For backward compatibility `:host-context` may contain a comma separated list of selectors.
-      // Each context selector group will contain a list of host-context selectors that must match
-      // an ancestor of the host.
-      // (Normally `contextSelectorGroups` will only contain a single array of context selectors.)
-      const contextSelectorGroups: string[][] = [[]];
-
-      // There may be more than `:host-context` in this selector so `selectorText` could look like:
-      // `:host-context(.one):host-context(.two)`.
-      // Loop until every :host-context in the compound selector has been processed.
-      let startIndex = selectorText.indexOf(_polyfillHostContext);
-      while (startIndex !== -1) {
-        const afterPrefix = selectorText.substring(startIndex + _polyfillHostContext.length);
-
-        if (!afterPrefix || afterPrefix[0] !== '(') {
-          // Edge case of :host-context with no parens (e.g. `:host-context .inner`)
-          selectorText = afterPrefix;
-          startIndex = selectorText.indexOf(_polyfillHostContext);
-          continue;
-        }
-
-        // Extract comma-separated selectors between the parentheses
-        const newContextSelectors: string[] = [];
-        let endIndex = 0; // Index of the closing paren of the :host-context()
-        for (const selector of this._splitOnTopLevelCommas(afterPrefix.substring(1), true)) {
-          endIndex = endIndex + selector.length + 1;
-          const trimmed = selector.trim();
-          if (trimmed) {
-            newContextSelectors.push(trimmed);
-          }
-        }
-
-        // We must duplicate the current selector group for each of these new selectors.
-        // For example if the current groups are:
-        // ```
-        // [
-        //   ['a', 'b', 'c'],
-        //   ['x', 'y', 'z'],
-        // ]
-        // ```
-        // And we have a new set of comma separated selectors: `:host-context(m,n)` then the new
-        // groups are:
-        // ```
-        // [
-        //   ['a', 'b', 'c', 'm'],
-        //   ['x', 'y', 'z', 'm'],
-        //   ['a', 'b', 'c', 'n'],
-        //   ['x', 'y', 'z', 'n'],
-        // ]
-        // ```
-        const contextSelectorGroupsLength = contextSelectorGroups.length;
-        repeatGroups(contextSelectorGroups, newContextSelectors.length);
-        for (let i = 0; i < newContextSelectors.length; i++) {
-          for (let j = 0; j < contextSelectorGroupsLength; j++) {
-            contextSelectorGroups[j + i * contextSelectorGroupsLength].push(newContextSelectors[i]);
-          }
-        }
-
-        // Update the `selectorText` and see repeat to see if there are more `:host-context`s.
-        selectorText = afterPrefix.substring(endIndex + 1);
-        startIndex = selectorText.indexOf(_polyfillHostContext);
-      }
-
-      // The context selectors now must be combined with each other to capture all the possible
-      // selectors that `:host-context` can match. See `_combineHostContextSelectors()` for more
-      // info about how this is done.
       return contextSelectorGroups
         .map((contextSelectors) =>
-          _combineHostContextSelectors(contextSelectors, selectorText, pseudoPrefix),
+          _combineHostContextSelectors(
+            contextSelectors,
+            remainingSelectorText,
+            pseudoPrefix,
+            pseudoSuffix,
+          ),
         )
         .join(', ');
     });
+  }
+
+  /**
+   * Converts `:host-context` selectors and repeats any selector before them (e.g. `.foo`) in
+   * every generated permutation. A compound attached directly to `:host-context` stays on the
+   * host element, e.g. `div:host-context(.bar) .zot` becomes
+   * `div.bar<scopeName> .zot, .bar div<scopeName> .zot`.
+   *
+   * @param cssText A single selector without top-level commas.
+   * @returns The selector with `:host-context` converted.
+   */
+  private _convertColonHostContextModern(cssText: string): string {
+    return cssText.replace(
+      _cssColonHostContextReGlobal,
+      (...args: (string | number | undefined)[]) => {
+        const match = args[0] as string;
+        const offset = args[args.length - 2] as number;
+        const prefix = cssText.slice(0, offset);
+        const isNonDistributablePrefix = _nonDistributablePrefixRe.test(prefix);
+        const {contextSelectorGroups, remainingSelectorText, pseudoPrefix, pseudoSuffix} =
+          this._parseHostContext(match);
+
+        let ancestorPrefix = '';
+        let compoundHostPrefix = '';
+        if (prefix && !isNonDistributablePrefix) {
+          const split = _splitPrefixAtLastTopLevelCombinator(prefix);
+          if (split !== null) {
+            ancestorPrefix = split.ancestor;
+            compoundHostPrefix = split.compound;
+          }
+        }
+
+        const allPermutations: string[] = [];
+        for (const contextSelectors of contextSelectorGroups) {
+          const combined = _combineHostContextSelectors(
+            contextSelectors,
+            remainingSelectorText,
+            pseudoPrefix,
+            pseudoSuffix,
+            compoundHostPrefix,
+          );
+          for (const part of this._splitOnTopLevelCommas(combined, false)) {
+            const trimmed = part.trimStart();
+            if (trimmed) {
+              allPermutations.push(trimmed);
+            }
+          }
+        }
+
+        return (
+          allPermutations
+            // The outer `cssText.replace()` keeps the text before the match (`prefix`), so the first
+            // permutation (index 0) already has `ancestorPrefix` in front of it.
+            .map((part, index) => (index === 0 ? part : ancestorPrefix + part))
+            .join(', ')
+        );
+      },
+    );
+  }
+
+  /**
+   * Parses `:host-context` selector text into constituent context selector groups,
+   * remaining selector text, and an optional pseudo-class wrapper (e.g., `:where(` or `:is(`).
+   *
+   * A wrapper around a single `:host-context(...)` and nothing else, such as
+   * `:where(:host-context(.a))`, stays attached to that unit. Any other wrapper, such as the
+   * `:where(` in `:where(:host-context(.a) .b)`, is emitted as plain text in front of the result,
+   * and its closing paren stays in `remainingSelectorText`.
+   *
+   * @param selectorText The selector string containing `:host-context`.
+   * @returns The parsed result containing selector groups and remaining text.
+   */
+  private _parseHostContext(selectorText: string): HostContextParseResult {
+    const units: HostContextUnit[] = [];
+    let leadingText = '';
+
+    let startIndex = selectorText.indexOf(_polyfillHostContext);
+    while (startIndex !== -1) {
+      const afterPrefixIndex = startIndex + _polyfillHostContext.length;
+      const closeParenIndex = _findMatchingParen(selectorText, afterPrefixIndex);
+      if (closeParenIndex === -1) {
+        break;
+      }
+
+      const innerArgs = selectorText.substring(afterPrefixIndex + 1, closeParenIndex);
+      const wrapper = _findWrapperAround(selectorText, startIndex, closeParenIndex);
+      // If the first unit is preceded by a `:where(` or `:is(` (`startIndex > 0`) that wraps more
+      // than just this unit (`!wrapper`), e.g. `:where(:host-context(.a) .b)`, keep that opening
+      // wrapper as `leadingText` so long as its closing `)` is not dropped before a later unit.
+      if (!wrapper && units.length === 0 && startIndex > 0) {
+        const wrapperCloseIndex = _findMatchingParen(selectorText, selectorText.indexOf('('));
+        if (
+          wrapperCloseIndex !== -1 &&
+          !selectorText.substring(wrapperCloseIndex).includes(_polyfillHostContext)
+        ) {
+          leadingText = selectorText.substring(0, startIndex).trim();
+        }
+      }
+
+      units.push({
+        innerArgs: innerArgs.trim(),
+        wrapper: wrapper?.prefix ?? '',
+      });
+
+      const nextIndex = (wrapper?.closeParenIndex ?? closeParenIndex) + 1;
+      selectorText = selectorText.substring(nextIndex);
+
+      startIndex = selectorText.indexOf(_polyfillHostContext);
+    }
+
+    // When every unit has the same wrapper, wrap each generated selector once instead.
+    const allUnitsShareSameWrapper =
+      units.length > 0 &&
+      units.every((unit) => unit.wrapper !== '' && unit.wrapper === units[0].wrapper);
+    const pseudoPrefix = allUnitsShareSameWrapper ? units[0].wrapper : leadingText;
+    const pseudoSuffix = allUnitsShareSameWrapper ? ')' : '';
+
+    const contextSelectorGroups: string[][] = [[]];
+    for (const unit of units) {
+      const formattedUnit =
+        unit.wrapper && !allUnitsShareSameWrapper
+          ? `${unit.wrapper}${unit.innerArgs})`
+          : unit.innerArgs;
+
+      const newContextSelectors: string[] = [];
+      for (const selector of this._splitOnTopLevelCommas(formattedUnit, false)) {
+        const trimmed = selector.trim();
+        if (trimmed) {
+          newContextSelectors.push(trimmed);
+        }
+      }
+
+      // We must duplicate the current selector group for each of these new selectors.
+      // For example if the current groups are:
+      // ```
+      // [
+      //   ['a', 'b', 'c'],
+      //   ['x', 'y', 'z'],
+      // ]
+      // ```
+      // And we have a new set of comma separated selectors: `:host-context(m,n)` then the new
+      // groups are:
+      // ```
+      // [
+      //   ['a', 'b', 'c', 'm'],
+      //   ['x', 'y', 'z', 'm'],
+      //   ['a', 'b', 'c', 'n'],
+      //   ['x', 'y', 'z', 'n'],
+      // ]
+      // ```
+      const contextSelectorGroupsLength = contextSelectorGroups.length;
+      repeatGroups(contextSelectorGroups, newContextSelectors.length);
+      for (let i = 0; i < newContextSelectors.length; i++) {
+        for (let j = 0; j < contextSelectorGroupsLength; j++) {
+          contextSelectorGroups[j + i * contextSelectorGroupsLength].push(newContextSelectors[i]);
+        }
+      }
+    }
+
+    return {contextSelectorGroups, remainingSelectorText: selectorText, pseudoPrefix, pseudoSuffix};
   }
 
   // change a selector like 'div' to 'name div'
@@ -981,10 +1112,33 @@ class SafeSelector {
   }
 }
 
-const _cssScopedPseudoFunctionPrefix = '(:(where|is)\\()?';
+interface HostContextParseResult {
+  readonly contextSelectorGroups: readonly string[][];
+  readonly remainingSelectorText: string;
+  /** Text emitted before each generated selector, e.g. `:where(`. */
+  readonly pseudoPrefix: string;
+  /** Text emitted right after the host marker, e.g. `)`. Empty if the `)` is in the remainder. */
+  readonly pseudoSuffix: string;
+}
+
+interface HostContextUnit {
+  readonly innerArgs: string;
+  /** Opening of a `:where(` or `:is(` that wraps only this unit, or an empty string. */
+  readonly wrapper: string;
+}
+
+const _cssScopedPseudoFunctionPrefix = '(:(where|is)\\(\\s*)?';
 const _cssPrefixWithPseudoSelectorFunction = /:(where|is)\(/gi;
+const _whereOrIsSuffixRe = /(:(?:where|is)\()\s*$/i;
+const _combinatorCharRe = /[\s>+~]/;
+// Matches a `:host-context` prefix that must not be distributed across permutations:
+// - A host or host-context marker. Literal `:host` text can remain too: `:host-context` without
+//   arguments is never replaced with a marker, and `:host(.a, .b)` with several arguments is
+//   restored verbatim by `_convertColonHost`.
+// - A deep combinator (`>>>`, `/deep/`, `::ng-deep`). Scoping splits the selector on it later,
+//   which would corrupt the repeated prefix and leak the host marker into the output.
+const _nonDistributablePrefixRe = /-shadowcss|:host|>>>|\/deep\/|::ng-deep/;
 const _polyfillHost = '-shadowcsshost';
-// note: :host-context pre-processed to -shadowcsshostcontext.
 const _polyfillHostContext = '-shadowcsscontext';
 // Matches text content with no parentheses, e.g., "foo"
 const _noParens = '[^)(]*';
@@ -1277,8 +1431,37 @@ function unescapeQuotes(str: string, isQuoted: boolean): string {
 }
 
 /**
- * Combine the `contextSelectors` with the `hostMarker` and the `otherSelectors`
- * to create a selector that matches the same as `:host-context()`.
+ * Finds a `:where(...)` or `:is(...)` that wraps exactly the text from `start` to `end`
+ * (inclusive), allowing whitespace just inside its parentheses.
+ *
+ * @param text The selector text to inspect.
+ * @param start The index of the first wrapped character.
+ * @param end The index of the last wrapped character.
+ * @returns The wrapper's opening text (e.g. `:where(`) and the index of its closing paren, or null
+ *     if the text is not wrapped this way.
+ */
+function _findWrapperAround(
+  text: string,
+  start: number,
+  end: number,
+): {prefix: string; closeParenIndex: number} | null {
+  const match = text.substring(0, start).match(_whereOrIsSuffixRe);
+  if (!match) {
+    return null;
+  }
+
+  const prefix = match[1];
+  const closeParenIndex = _findMatchingParen(text, match.index! + prefix.length - 1);
+  if (closeParenIndex === -1 || text.substring(end + 1, closeParenIndex).trim() !== '') {
+    return null;
+  }
+
+  return {prefix, closeParenIndex};
+}
+
+/**
+ * Combines context selectors with the host marker and remaining selectors
+ * to generate host-context target selectors.
  *
  * Given a single context selector `A` we need to output selectors that match on the host and as an
  * ancestor of the host:
@@ -1297,27 +1480,33 @@ function unescapeQuotes(str: string, isQuoted: boolean): string {
  *
  * And so on...
  *
- * @param contextSelectors an array of context selectors that will be combined.
- * @param otherSelectors the rest of the selectors that are not context selectors.
+ * @param contextSelectors The list of context selectors to combine.
+ * @param otherSelectors The remaining portion of the selector.
+ * @param pseudoPrefix Optional text placed before each selector (e.g. ':where(' or ':is(').
+ * @param pseudoSuffix Optional text placed right after the host marker (e.g. ')').
+ * @param hostPrefix Optional compound placed on the host in ancestor permutations (e.g. 'div').
+ * @returns The combined CSS selector string.
  */
 function _combineHostContextSelectors(
-  contextSelectors: string[],
+  contextSelectors: readonly string[],
   otherSelectors: string,
   pseudoPrefix = '',
+  pseudoSuffix = '',
+  hostPrefix = '',
 ): string {
   const hostMarker = _polyfillHostNoCombinator;
-  _polyfillHostRe.lastIndex = 0; // reset the regex to ensure we get an accurate test
-  const otherSelectorsHasHost = _polyfillHostRe.test(otherSelectors);
+  const otherSelectorsHasHost = otherSelectors.includes(_polyfillHost);
 
   // If there are no context selectors then just output a host marker
   if (contextSelectors.length === 0) {
     return hostMarker + otherSelectors;
   }
 
-  const combined: string[] = [contextSelectors.pop() || ''];
-  while (contextSelectors.length > 0) {
+  const selectors = [...contextSelectors];
+  const combined: string[] = [selectors.pop() || ''];
+  while (selectors.length > 0) {
     const length = combined.length;
-    const contextSelector = contextSelectors.pop();
+    const contextSelector = selectors.pop();
     for (let i = 0; i < length; i++) {
       const previousSelectors = combined[i];
       // Add the new selector as a descendant of the previous selectors
@@ -1331,12 +1520,92 @@ function _combineHostContextSelectors(
   // Finally connect the selector to the `hostMarker`s: either acting directly on the host
   // (A<hostMarker>) or as an ancestor (A <hostMarker>).
   return combined
-    .map((s) =>
-      otherSelectorsHasHost
-        ? `${pseudoPrefix}${s}${otherSelectors}`
-        : `${pseudoPrefix}${s}${hostMarker}${otherSelectors}, ${pseudoPrefix}${s} ${hostMarker}${otherSelectors}`,
-    )
+    .map((selector) => {
+      if (otherSelectorsHasHost) {
+        return `${pseudoPrefix}${selector}${pseudoSuffix}${otherSelectors}`;
+      }
+      const direct = `${selector}${hostMarker}`;
+      const ancestor = `${selector} ${hostPrefix}${hostMarker}`;
+      return `${pseudoPrefix}${direct}${pseudoSuffix}${otherSelectors}, ${pseudoPrefix}${ancestor}${pseudoSuffix}${otherSelectors}`;
+    })
     .join(',');
+}
+
+/**
+ * Finds the index of the matching closing parenthesis for an opening parenthesis at openIndex.
+ *
+ * @param text The text string to search within.
+ * @param openIndex The index of the opening parenthesis.
+ * @returns The index of the matching closing parenthesis, or -1 if not found.
+ */
+function _findMatchingParen(text: string, openIndex: number): number {
+  let depth = 0;
+  let inQuote: string | null = null;
+  for (let i = openIndex; i < text.length; i++) {
+    const char = text[i];
+    if (char === '\\') {
+      i++;
+      continue;
+    }
+    if (inQuote !== null) {
+      if (char === inQuote) {
+        inQuote = null;
+      }
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      inQuote = char;
+      continue;
+    }
+    if (char === '(') {
+      depth++;
+    } else if (char === ')') {
+      depth--;
+      if (depth === 0) {
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+
+/**
+ * Splits a selector prefix at the last top-level combinator (outside parentheses, brackets, and
+ * escapes) into the ancestor portion and the trailing compound attached to `:host-context`.
+ *
+ * Returns `null` when parentheses are unbalanced (e.g. `:not(:host-context(.a))`), so callers can
+ * avoid distributing an unclosed functional pseudo-class across permutations.
+ */
+function _splitPrefixAtLastTopLevelCombinator(
+  prefix: string,
+): {ancestor: string; compound: string} | null {
+  const safePrefix = new SafeSelector(prefix);
+  const content = safePrefix.content();
+  let parenDepth = 0;
+  let lastCombinatorEnd = 0;
+
+  for (let i = 0; i < content.length; i++) {
+    const char = content[i];
+    if (char === '(') {
+      parenDepth++;
+    } else if (char === ')') {
+      parenDepth--;
+      if (parenDepth < 0) {
+        return null;
+      }
+    } else if (parenDepth === 0 && _combinatorCharRe.test(char)) {
+      lastCombinatorEnd = i + 1;
+    }
+  }
+
+  if (parenDepth !== 0) {
+    return null;
+  }
+
+  return {
+    ancestor: safePrefix.restore(content.slice(0, lastCombinatorEnd)),
+    compound: safePrefix.restore(content.slice(lastCombinatorEnd)),
+  };
 }
 
 /**
