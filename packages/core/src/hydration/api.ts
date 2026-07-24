@@ -44,6 +44,7 @@ import {
 } from './i18n';
 import {
   createDehydratedBlockRegistry,
+  INCREMENTAL_HYDRATION_BOOTSTRAP,
   runIncrementalHydrationBootstrap,
 } from './incremental_runtime';
 import {
@@ -353,21 +354,31 @@ export function withIncrementalHydration(): Provider[] {
   ];
 
   if (typeof ngServerMode === 'undefined' || !ngServerMode) {
-    providers.push({
-      provide: APP_BOOTSTRAP_LISTENER,
-      useFactory: () => {
-        const injector = inject(Injector);
-        const doc = inject(DOCUMENT);
-
-        return () => {
-          // No-op when the incremental-hydration runtime has not been
-          // activated. When activated, performs defer-block scanning,
-          // trigger initialization, and jsaction wiring.
-          runIncrementalHydrationBootstrap(injector, doc);
-        };
+    providers.push(
+      {
+        provide: INCREMENTAL_HYDRATION_BOOTSTRAP,
+        useFactory: () => ({
+          requested: false,
+          activated: false,
+          injector: inject(Injector),
+          document: inject(DOCUMENT),
+        }),
       },
-      multi: true,
-    });
+      {
+        provide: APP_BOOTSTRAP_LISTENER,
+        useFactory: () => {
+          const state = inject(INCREMENTAL_HYDRATION_BOOTSTRAP);
+
+          return () => {
+            if (!state.requested) {
+              state.requested = true;
+              runIncrementalHydrationBootstrap(state);
+            }
+          };
+        },
+        multi: true,
+      },
+    );
   }
 
   return providers;
