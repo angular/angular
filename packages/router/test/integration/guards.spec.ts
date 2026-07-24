@@ -44,6 +44,7 @@ import {
   RunGuardsAndResolvers,
   Data,
   RouterModule,
+  RouterOutlet,
   NavigationCancellationCode,
   RouteConfigLoadStart,
   RouteConfigLoadEnd,
@@ -1185,6 +1186,65 @@ export function guardsIntegrationSuite() {
         await advance(fixture);
 
         expect(log[0].component).toBeInstanceOf(AdminComponent);
+      });
+
+      it('should pass correct component to canDeactivate when using named outlets in componentless parent routes', async () => {
+        @Component({
+          selector: 'outer',
+          template: '<router-outlet name="inner"></router-outlet>',
+          standalone: true,
+          imports: [RouterOutlet],
+        })
+        class OuterCmp {}
+
+        @Component({selector: 'inner1', template: '', standalone: true})
+        class Inner1Cmp {}
+
+        @Component({selector: 'inner2', template: '', standalone: true})
+        class Inner2Cmp {}
+
+        const router: Router = TestBed.inject(Router);
+        const fixture = await createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {
+            path: '',
+            component: OuterCmp,
+            children: [
+              {
+                path: 'one',
+                children: [
+                  {
+                    path: '',
+                    outlet: 'inner',
+                    component: Inner1Cmp,
+                    canDeactivate: [recordingDeactivate],
+                  },
+                ],
+              },
+              {
+                path: 'two',
+                children: [
+                  {
+                    path: '',
+                    outlet: 'inner',
+                    component: Inner2Cmp,
+                    canDeactivate: [recordingDeactivate],
+                  },
+                ],
+              },
+            ],
+          },
+        ]);
+
+        router.navigateByUrl('/one');
+        await advance(fixture);
+
+        router.navigateByUrl('/two');
+        await advance(fixture);
+
+        expect(log.length).toBe(1);
+        expect(log[0].component).toBeInstanceOf(Inner1Cmp);
       });
 
       it('should not create a route state if navigation is canceled', async () => {
