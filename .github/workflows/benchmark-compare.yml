@@ -18,52 +18,121 @@ jobs:
           token: ${{secrets.BENCHMARK_COMPARE_MEMBERSHIP_GITHUB_TOKEN}}
           exit: true
 
+      - name: Resolve pull request head
+        id: pr-head
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+
+          command_line="${COMMENT_BODY%%$'\n'*}"
+          command_line="${command_line%$'\r'}"
+          pr_api="repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"
+          head_repo="$(gh api "$pr_api" --jq '.head.repo.full_name')"
+          current_head_sha="$(gh api "$pr_api" --jq '.head.sha' | tr '[:upper:]' '[:lower:]')"
+
+          {
+            echo "repository=${head_repo}"
+            echo "sha=${current_head_sha}"
+            echo "command_line=${command_line}"
+          } >> "$GITHUB_OUTPUT"
+
+          if [[ ! "$command_line" =~ (^|[[:space:]])sha=([0-9a-fA-F]{40})([[:space:]]|$) ]]; then
+            confirmation_command="${command_line} sha=${current_head_sha}"
+            delimiter="CONFIRMATION_COMMAND_${current_head_sha}"
+            {
+              echo "confirmed=false"
+              echo "confirmation-command<<${delimiter}"
+              echo "$confirmation_command"
+              echo "${delimiter}"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          expected_head_sha="${BASH_REMATCH[2],,}"
+          if [[ "$current_head_sha" != "$expected_head_sha" ]]; then
+            confirmation_command="${command_line//sha=${BASH_REMATCH[2]}/sha=${current_head_sha}}"
+            delimiter="CONFIRMATION_COMMAND_${current_head_sha}"
+            {
+              echo "confirmed=false"
+              echo "confirmation-command<<${delimiter}"
+              echo "$confirmation_command"
+              echo "${delimiter}"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "confirmed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Request pinned benchmark confirmation
+        if: steps.pr-head.outputs.confirmed != 'true'
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
+        with:
+          issue-number: ${{github.event.issue.number}}
+          token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
+          body: |
+            To run this benchmark, confirm the current PR head with:
+
+            ```
+            ${{steps.pr-head.outputs.confirmation-command}}
+            ```
+
+            If the PR changes before the command is re-run, this workflow will ask for a new confirmation.
+
       # Indicate that the benchmark command was received.
       - uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
+        if: steps.pr-head.outputs.confirmed == 'true'
         with:
           comment-id: ${{github.event.comment.id}}
           token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
           reactions: 'rocket'
 
-      - uses: alessbell/pull-request-comment-branch@ef3408c9757d05f89cb525036383033a313758a0 # v2.1.0
-        id: comment-branch
-
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        if: steps.pr-head.outputs.confirmed == 'true'
         with:
           # Specify repository as the PR branch might be from a fork.
-          repository: ${{steps.comment-branch.outputs.head_owner}}/${{steps.comment-branch.outputs.head_repo}}
-          # Checkout the pull request and assume it being trusted given we've checked
-          # that the action was triggered by a team member.
-          ref: ${{steps.comment-branch.outputs.head_sha}}
+          repository: ${{steps.pr-head.outputs.repository}}
+          # Checkout the PR head SHA that was explicitly authorized in the benchmark command.
+          ref: ${{steps.pr-head.outputs.sha}}
 
       # We cannot use `angular/dev-infra/github-actions/npm/checkout-and-setup-node` here
       # because it does not support checking out from a fork (as it lacks a `repository` input).
       # Thus, we checkout and setup Node/pnpm manually.
       - name: Setup Node.js
+        if: steps.pr-head.outputs.confirmed == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: '.nvmrc'
 
       - name: Install pnpm
+        if: steps.pr-head.outputs.confirmed == 'true'
         uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
 
-      - run: pnpm install --frozen-lockfile
+      - if: steps.pr-head.outputs.confirmed == 'true'
+        run: pnpm install --frozen-lockfile
 
       - name: Setup Bazel
+        if: steps.pr-head.outputs.confirmed == 'true'
         uses: angular/dev-infra/github-actions/bazel/setup@442c2fcbf06a321b5196b4c5fc70e78a49242958
 
       - uses: angular/dev-infra/github-actions/bazel/configure-remote@442c2fcbf06a321b5196b4c5fc70e78a49242958
+        if: steps.pr-head.outputs.confirmed == 'true'
         with:
           bazelrc: ./.bazelrc.user
 
       - name: Preparing benchmark for GitHub action
+        if: steps.pr-head.outputs.confirmed == 'true'
         id: info
         env:
           # Untrusted input used in an executable code, must be wrapped as an env var to prevent injections
-          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_BODY: ${{ steps.pr-head.outputs.command_line }}
         run: pnpm benchmarks prepare-for-github-action "$COMMENT_BODY"
 
-      - env:
+      - if: steps.pr-head.outputs.confirmed == 'true'
+        env:
           COMPARE_SHA: ${{steps.info.outputs.compareSha}}
           BENCHMARK_TARGET: ${{steps.info.outputs.benchmarkTarget}}
         run: pnpm benchmarks run-compare "$COMPARE_SHA" "$BENCHMARK_TARGET"
@@ -71,6 +140,7 @@ jobs:
         name: Running benchmark
 
       - uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
+        if: steps.pr-head.outputs.confirmed == 'true'
         with:
           issue-number: ${{github.event.issue.number}}
           token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'

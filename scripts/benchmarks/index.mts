@@ -82,7 +82,7 @@ async function promptForBenchmarkTarget(): Promise<string> {
  * e.g. command information or fetching/resolving Git refs of the comparison range.
  *
  * This is a helper used by the GitHub action to perform benchmark
- * comparisons. Commands follow the format of: `/benchmark-compare <sha> <target>`.
+ * comparisons. Commands follow the format of: `/benchmark-compare <sha> <target> sha=<pr-head-sha>`.
  */
 async function prepareForGitHubAction(commentBody: string): Promise<void> {
   const matches = /\/[^ ]+ ([^ ]+) ([^ ]+)/.exec(commentBody);
