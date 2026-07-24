@@ -30,7 +30,7 @@ import {ReuseTutorialsRouteStrategy} from '../features/tutorial/tutorials-route-
 import {AppScroller} from '../app-scroller';
 import {Subject} from 'rxjs/internal/Subject';
 import {HttpErrorResponse} from '@angular/common/http';
-import {WINDOW} from '@angular/docs';
+import {currentTextFragmentUrl, WINDOW} from '@angular/docs';
 import {merge, map} from 'rxjs';
 
 const transitionCreated = new Subject<void>();
@@ -134,7 +134,9 @@ const initializeNavigationAdapter = () => {
     }
     if (e instanceof NavigationStart) {
       intercept = true;
-      window.history.replaceState(window.history.state, '', window.location.href);
+      if (currentTextFragmentUrl(window) === undefined) {
+        window.history.replaceState(window.history.state, '', window.location.href);
+      }
       intercept = false;
     } else if (
       // viewtransition happens before NavigateEnd
