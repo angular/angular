@@ -5791,6 +5791,30 @@ describe('field directive', () => {
 
       expect(field().dirty()).toBe(true);
     });
+
+    it('native date input is not dirty after initial validity animation', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="date" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal(''), (p) => {
+          required(p, {message: 'required field'});
+        });
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const field = fix.componentInstance.f;
+
+      expect(field().dirty()).toBe(false);
+      act(() => {
+        input.dispatchEvent(
+          new AnimationEvent('animationstart', {animationName: 'ng-invalid', bubbles: true}),
+        );
+      });
+      expect(field().dirty()).toBe(false);
+    });
   });
 
   it('should throw for invalid field directive host', () => {

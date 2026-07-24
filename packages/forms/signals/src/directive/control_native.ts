@@ -30,6 +30,7 @@ import {
   setNativeDomProperty,
 } from './native';
 import {observeSelectMutations} from './select';
+import {ControlValueSignal} from '../field/node';
 
 export function nativeControlCreate(
   host: ControlDirectiveHost,
@@ -47,7 +48,8 @@ export function nativeControlCreate(
     // Read from the model value
     () => parent.state().value(),
     // Write to the buffered "control value"
-    (rawValue: unknown) => parent.state().controlValue.set(rawValue),
+    (rawValue: unknown, markAsDirty: boolean) =>
+      (parent.state().controlValue as ControlValueSignal<unknown>).set(rawValue, markAsDirty),
     // Our parse function doesn't care about the raw value that gets passed in,
     // It just reads the newly parsed value directly off the input element.
     (_rawValue: unknown) => getNativeControlValue(input, parent.state().value, validityMonitor),
@@ -66,7 +68,9 @@ export function nativeControlCreate(
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
-    validityMonitor.watchValidity(parent.destroyRef, input, () => parser.setRawValue(undefined));
+    validityMonitor.watchValidity(parent.destroyRef, input, () =>
+      parser.setRawValue(undefined, false),
+    );
   }
 
   parent.registerAsBinding();
