@@ -107,7 +107,7 @@ We analyzed your package.json, there are some packages to update:
 
 If you pass the command a set of libraries to update, it updates those libraries, their peer dependencies, and the peer dependencies that depend on them.
 
-HELPFUL: If there are inconsistencies \(for example, if peer dependencies cannot be matched by a simple [semver](https://semver.io) range\), the command generates an error and does not change anything in the workspace.
+HELPFUL: If there are inconsistencies \(for example, if peer dependencies cannot be matched by a simple [semver](https://semver.org) range\), the command generates an error and does not change anything in the workspace.
 
 We recommend that you do not force an update of all dependencies by default.
 Try updating specific dependencies first.
