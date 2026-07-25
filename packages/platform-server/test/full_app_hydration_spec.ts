@@ -211,6 +211,47 @@ describe('platform-server full application hydration integration', () => {
         expect(ssrContents).not.toContain(extraChildNodes);
         expect(ssrContents).toContain('<app ngh="0"><div>Some content</div></app>');
       });
+
+      it('should not serialize null, undefined, or NaN property values into attributes during SSR (fixes #69785)', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <input id="input-null" [value]="nullValue" />
+            <input id="input-undefined" [value]="undefinedValue" />
+            <input id="input-nan" [value]="nanValue" />
+            <input id="input-zero" [value]="zeroValue" />
+            <input id="input-empty" [value]="emptyValue" />
+            <input id="input-str" [value]="strValue" />
+            <img id="img-null" [src]="nullValue" />
+            <a id="a-null" [href]="nullValue"></a>
+            <div id="div-null" [hidden]="nullValue"></div>
+          `,
+        })
+        class AppComponent {
+          nullValue: string | null = null;
+          undefinedValue: string | undefined = undefined;
+          nanValue: number = NaN;
+          zeroValue: number = 0;
+          emptyValue: string = '';
+          strValue: string = 'hello';
+        }
+
+        const html = await ssr(AppComponent);
+        const ssrContents = getAppContents(html);
+
+        // Disallowed string representations
+        expect(ssrContents).not.toContain('value="null"');
+        expect(ssrContents).not.toContain('value="undefined"');
+        expect(ssrContents).not.toContain('value="NaN"');
+        expect(ssrContents).not.toContain('src="null"');
+        expect(ssrContents).not.toContain('href="null"');
+        expect(ssrContents).not.toContain('hidden="null"');
+
+        // Valid values should be preserved
+        expect(ssrContents).toContain('id="input-zero" value="0"');
+        expect(ssrContents).toContain('id="input-empty" value=""');
+        expect(ssrContents).toContain('id="input-str" value="hello"');
+      });
     });
 
     describe('hydration', () => {

@@ -454,6 +454,15 @@ class DefaultDomRenderer2 implements Renderer2 {
     (typeof ngDevMode === 'undefined' || ngDevMode) &&
       this.throwOnSyntheticProps &&
       checkNoSyntheticProp(name, 'property');
+
+    if (
+      typeof ngServerMode !== 'undefined' &&
+      ngServerMode &&
+      (value == null || Number.isNaN(value))
+    ) {
+      return el.removeAttribute?.(name);
+    }
+
     el[name] = value;
   }
 
