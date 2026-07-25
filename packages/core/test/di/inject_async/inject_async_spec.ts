@@ -337,3 +337,73 @@ describe('injectAsync', () => {
     });
   });
 });
+
+describe('injectAsync - {scope: "self"}', () => {
+  const TOKEN = new InjectionToken<string>('TOKEN');
+
+  // A plain `@Injectable` (no `providedIn`), so it can be tree-shaken into the dynamic chunk.
+  @Injectable()
+  class LazyDialog {
+    readonly token = inject(TOKEN);
+  }
+
+  it('provides an unprovided class at the caller scope, resolving component-level providers', async () => {
+    @Component({
+      template: '',
+      providers: [{provide: TOKEN, useValue: 'from-host'}],
+    })
+    class HostComponent {
+      readonly loadDialog = injectAsync(() => Promise.resolve(LazyDialog), {scope: 'self'});
+    }
+
+    TestBed.configureTestingModule({imports: [HostComponent]});
+    const fixture = TestBed.createComponent(HostComponent);
+    const dialog = await fixture.componentInstance.loadDialog();
+
+    expect(dialog).toBeInstanceOf(LazyDialog);
+    expect(dialog.token).toBe('from-host');
+  });
+
+  it('ties the lazy instance lifecycle to the caller component', async () => {
+    let destroyed = false;
+
+    @Injectable()
+    class HostBoundService {
+      ngOnDestroy() {
+        destroyed = true;
+      }
+    }
+
+    @Component({template: ''})
+    class HostComponent {
+      readonly loadService = injectAsync(() => Promise.resolve(HostBoundService), {scope: 'self'});
+    }
+
+    TestBed.configureTestingModule({imports: [HostComponent]});
+    const fixture = TestBed.createComponent(HostComponent);
+    await fixture.componentInstance.loadService();
+    expect(destroyed).toBe(false);
+
+    fixture.destroy();
+    expect(destroyed).toBe(true);
+  });
+
+  it('still lets a component-level override of the lazy token win (mocking preserved)', async () => {
+    @Injectable()
+    class MockDialog {}
+
+    @Component({
+      template: '',
+      providers: [{provide: LazyDialog, useClass: MockDialog}],
+    })
+    class HostComponent {
+      readonly loadDialog = injectAsync(() => Promise.resolve(LazyDialog), {scope: 'self'});
+    }
+
+    TestBed.configureTestingModule({imports: [HostComponent]});
+    const fixture = TestBed.createComponent(HostComponent);
+    const dialog = await fixture.componentInstance.loadDialog();
+
+    expect(dialog).toBeInstanceOf(MockDialog);
+  });
+});

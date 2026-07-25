@@ -7,6 +7,8 @@
  */
 
 import {IDLE_SERVICE} from '../defer/idle_service';
+import {Type} from '../interface/type';
+import {DestroyRef} from '../linker/destroy_ref';
 import {DefaultExport, maybeUnwrapDefaultExport} from '../util/default_export';
 import {promiseWithResolvers} from '../util/promise_with_resolvers';
 import {assertInInjectionContext} from './contextual';
@@ -64,6 +66,7 @@ export function injectAsync<T>(
   }
 
   const injector = inject(Injector);
+  const scope = options?.scope;
 
   let loadedPromise: Promise<InjectAsyncLoaderResult<T>> | null = null;
   const load = () => {
@@ -81,7 +84,49 @@ export function injectAsync<T>(
   }
 
   // We can't use `inject` later on because of the async nature of the loader
-  return () => load().then((loadedToken) => injector.get(maybeUnwrapDefaultExport(loadedToken))!);
+  return () =>
+    load().then((loadedToken) =>
+      resolveInjectAsyncToken(maybeUnwrapDefaultExport(loadedToken), injector, scope),
+    );
+}
+
+/**
+ * Sentinel returned by `Injector.get` when the token is not provided anywhere up the chain. A fresh
+ * object reference, so it can never collide with an actual provided value (including `null`).
+ */
+const NOT_PROVIDED = {};
+
+/**
+ * Resolves the loaded `token` against the caller's `injector`.
+ *
+ * With the default `scope`, this is a plain `injector.get(token)` - throwing `NG0201` if the token
+ * is not provided, exactly as before. With `scope: 'self'`, the token is resolved up the chain first
+ * (so an ancestor/component provider or a `TestBed` override still wins) and, only if it is not
+ * provided anywhere, the loaded class is lazily provided at the caller's scope, with its lifecycle
+ * tied to the caller.
+ */
+function resolveInjectAsyncToken<T>(
+  token: ProviderToken<T>,
+  injector: Injector,
+  scope: 'self' | undefined,
+): T {
+  if (scope !== 'self') {
+    return injector.get(token)!;
+  }
+
+  const existing = injector.get(token, NOT_PROVIDED as unknown as T);
+  if ((existing as unknown) !== NOT_PROVIDED) {
+    return existing;
+  }
+
+  const scoped = Injector.create({
+    providers: [{provide: token, useClass: token as Type<T>}],
+    parent: injector,
+  });
+  // Tie the child injector's lifecycle to the caller: when the caller is destroyed the instance is
+  // destroyed too (`ngOnDestroy` / `DestroyRef.onDestroy` fire), like a component-provided service.
+  injector.get(DestroyRef).onDestroy(() => scoped.destroy());
+  return scoped.get(token);
 }
 
 /**
@@ -97,6 +142,18 @@ export interface InjectAsyncOptions {
    *
    */
   prefetch?: PrefetchTrigger;
+
+  /**
+   * Controls what happens when the loaded token is not provided anywhere up the injector chain.
+   *
+   * - When omitted (the default), the token is resolved with `injector.get` and an `NG0201` error
+   *   is thrown if it is not provided anywhere - the existing behavior.
+   * - `'self'` resolves the token up the chain first (so an ancestor/component provider or a
+   *   `TestBed` override still wins) and, only if it is not provided anywhere, lazily provides the
+   *   loaded class at the caller's injector scope, tying its lifecycle to the caller. Requires the
+   *   loader to resolve to a concrete class.
+   */
+  scope?: 'self';
 }
 
 /**

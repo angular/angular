@@ -925,6 +925,7 @@ export function injectAsync<T>(loader: () => Promise<DefaultExport<ProviderToken
 // @public
 export interface InjectAsyncOptions {
     prefetch?: PrefetchTrigger;
+    scope?: 'self';
 }
 
 // @public
