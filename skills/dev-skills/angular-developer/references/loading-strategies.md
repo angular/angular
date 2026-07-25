@@ -24,7 +24,7 @@ Use `loadComponent` to fetch the component on demand.
 ```ts
 {
   path: 'admin',
-  loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent)`,
+  loadComponent: () => import('./admin').then(m => m.Admin),
 }
 ```
 
@@ -38,6 +38,8 @@ Use `loadChildren` to fetch a set of routes.
   loadChildren: () => import('./settings/settings.routes'),
 }
 ```
+
+Return the `import()` promise directly only when the loaded file uses a `default` export.
 
 ## Injection Context and Lazy Loading
 
