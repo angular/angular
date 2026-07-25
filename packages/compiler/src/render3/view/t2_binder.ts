@@ -1096,6 +1096,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     deferred.prefetchTriggers.when?.value.visit(this);
     deferred.hydrateTriggers.when?.value.visit(this);
     deferred.hydrateTriggers.never?.visit(this);
+    deferred.loaded?.visit(this);
     deferred.placeholder && this.visitNode(deferred.placeholder);
     deferred.loading && this.visitNode(deferred.loading);
     deferred.error && this.visitNode(deferred.error);

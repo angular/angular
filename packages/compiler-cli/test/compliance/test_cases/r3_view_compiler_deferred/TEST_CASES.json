@@ -423,6 +423,22 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate a defer block with a `loaded` callback",
+      "inputFiles": ["deferred_with_loaded_callback.ts"],
+      "compilationModeFilter": ["full compile"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_loaded_callback_template.js",
+              "generated": "deferred_with_loaded_callback.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

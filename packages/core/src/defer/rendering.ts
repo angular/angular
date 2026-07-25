@@ -315,9 +315,21 @@ function applyDeferBlockState(
 
     // Invoke user-registered `loaded` callbacks only on a successful `Complete`
     // transition (not on `Error`), matching the `loaded` template semantics.
-    if (newState === DeferBlockState.Complete && Array.isArray(lDetails[ON_LOADED_FNS])) {
+    // The callbacks are skipped on the server: the block would also complete
+    // during client-side hydration and the callbacks would fire twice otherwise.
+    if (
+      (typeof ngServerMode === 'undefined' || !ngServerMode) &&
+      newState === DeferBlockState.Complete &&
+      Array.isArray(lDetails[ON_LOADED_FNS])
+    ) {
       for (const callback of lDetails[ON_LOADED_FNS]) {
-        callback();
+        // A callback might throw: route the error through the `ErrorHandler`
+        // (as event listeners do) rather than aborting the rendering process.
+        try {
+          callback();
+        } catch (error) {
+          handleUncaughtError(hostLView, error);
+        }
       }
       lDetails[ON_LOADED_FNS] = null;
     }

@@ -5301,6 +5301,181 @@ describe('@defer', () => {
       expect(fixture.componentInstance.loadedCallCount).toBe(0);
     });
 
+    it('should invoke the loaded callback when the defer block is nested in an `@if`', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Deferred content',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @if (show) {
+            @defer (on immediate; loaded onDeferredLoaded()) {
+              <nested-cmp />
+            } @placeholder {
+              Placeholder
+            }
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        show = true;
+        loadedCallCount = 0;
+        onDeferredLoaded() {
+          this.loadedCallCount++;
+        }
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [dynamicImportOf(NestedCmp)];
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(0);
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedCallCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toContain('Deferred content');
+    });
+
+    it('should pass `@for` loop context variables to the loaded callback', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Deferred content',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @for (item of items; track item) {
+            @defer (on immediate; loaded onDeferredLoaded(item)) {
+              <nested-cmp />
+            } @placeholder {
+              Placeholder
+            }
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        items = ['a', 'b'];
+        loadedItems: string[] = [];
+        onDeferredLoaded(item: string) {
+          this.loadedItems.push(item);
+        }
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [dynamicImportOf(NestedCmp)];
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedItems).toEqual([]);
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.loadedItems).toEqual(['a', 'b']);
+    });
+
+    it('should invoke other loaded callbacks when one of them throws', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Deferred content',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class NestedCmp {}
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (on immediate; loaded onFirstLoaded()) {
+            <nested-cmp />
+          } @placeholder {
+            Placeholder 1
+          }
+          @defer (on immediate; loaded onSecondLoaded()) {
+            <nested-cmp />
+          } @placeholder {
+            Placeholder 2
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        secondCallCount = 0;
+        onFirstLoaded() {
+          throw new Error('loaded callback error');
+        }
+        onSecondLoaded() {
+          this.secondCallCount++;
+        }
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [dynamicImportOf(NestedCmp)];
+        },
+      };
+
+      TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
+        providers: [
+          ...COMMON_PROVIDERS,
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // The throwing callback must not prevent rendering or the other block's callback.
+      expect(fixture.componentInstance.secondCallCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toContain('Deferred content');
+    });
+
     it('should work with `on timer` trigger', async () => {
       @Component({
         selector: 'nested-cmp',

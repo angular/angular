@@ -890,11 +890,16 @@ export function ɵɵdeferHydrateOnViewport(options?: IntersectionObserverInit) {
 /**
  * Registers a callback to be invoked when the defer block
  * transitions to the Complete state.
+ *
+ * The callback is invoked synchronously right after the deferred content is
+ * created and inserted into the DOM, but before that content has been change
+ * detected for the first time. It is not invoked on the server and it does not
+ * fire when the block transitions to the Error state.
  * @codeGenApi
  */
 export function ɵɵdeferOnLoaded(fn: () => void) {
   const lView = getLView();
-  const tNode = getSelectedTNode();
+  const tNode = getCurrentTNode()!;
   const lDetails = getLDeferBlockDetails(lView, tNode);
 
   if (!Array.isArray(lDetails[ON_LOADED_FNS])) {

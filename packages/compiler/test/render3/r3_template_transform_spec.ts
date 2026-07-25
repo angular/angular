@@ -1758,6 +1758,12 @@ describe('R3 template transform', () => {
           parse('@defer (loaded onLoaded(); loaded onOtherLoaded()) {hello}'),
         ).toThrowError(/@defer block can only have one "loaded" parameter/);
       });
+
+      it('should report a pipe in a `loaded` expression', () => {
+        expect(() => parse('@defer (loaded onLoaded(value | somePipe)){hello}')).toThrowError(
+          /Pipes are not allowed in the "loaded" callback of a @defer block/,
+        );
+      });
     });
   });
 

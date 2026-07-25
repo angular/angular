@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ASTWithSource} from '../expression_parser/ast';
+import {AST, ASTWithSource, BindingPipe, RecursiveAstVisitor} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
@@ -48,7 +48,7 @@ const WHEN_PARAMETER_PATTERN = /^when\s/;
 const ON_PARAMETER_PATTERN = /^on\s/;
 
 /** Pattern to identify a `loaded` parameter in a block. */
-const LOADED_PARAMETER_PATTERN = /^loaded\s/;
+const LOADED_PARAMETER_PATTERN = /^loaded(\s|$)/;
 
 /**
  * Predicate function that determines if a block with
@@ -67,12 +67,8 @@ export function createDeferredBlock(
 ): {node: t.DeferredBlock; errors: ParseError[]} {
   const errors: ParseError[] = [];
   const {placeholder, loading, error} = parseConnectedBlocks(connectedBlocks, errors, visitor);
-  const {triggers, prefetchTriggers, hydrateTriggers, loadedExpression} = parsePrimaryTriggers(
-    ast,
-    bindingParser,
-    errors,
-    placeholder,
-  );
+  const {triggers, prefetchTriggers, hydrateTriggers, loadedExpression, loadedSourceSpan} =
+    parsePrimaryTriggers(ast, bindingParser, errors, placeholder);
 
   // The `defer` block has a main span encompassing all of the connected branches as well.
   let lastEndSourceSpan = ast.endSourceSpan;
@@ -97,6 +93,7 @@ export function createDeferredBlock(
     loading,
     error,
     loadedExpression,
+    loadedSourceSpan,
     ast.nameSpan,
     sourceSpanWithConnectedBlocks,
     ast.sourceSpan,
@@ -278,6 +275,7 @@ function parsePrimaryTriggers(
   const prefetchTriggers: t.DeferredBlockTriggers = {};
   const hydrateTriggers: t.DeferredBlockTriggers = {};
   let loadedExpression: ASTWithSource | null = null;
+  let loadedSourceSpan: ParseSourceSpan | null = null;
 
   for (const param of ast.parameters) {
     // The lexer ignores the leading spaces so we can assume
@@ -314,12 +312,26 @@ function parsePrimaryTriggers(
             ),
           );
         } else {
-          loadedExpression = bindingParser.parseBinding(
+          const parsed = bindingParser.parseBinding(
             param.expression.slice(start),
             false,
             param.sourceSpan,
             param.sourceSpan.start.offset + start,
           );
+          if (PipeDetector.containsPipe(parsed)) {
+            errors.push(
+              new ParseError(
+                param.sourceSpan,
+                'Pipes are not allowed in the "loaded" callback of a @defer block',
+              ),
+            );
+          } else {
+            loadedExpression = parsed;
+            loadedSourceSpan = new ParseSourceSpan(
+              param.sourceSpan.start.moveBy(start),
+              param.sourceSpan.end,
+            );
+          }
         }
       }
     } else {
@@ -336,5 +348,21 @@ function parsePrimaryTriggers(
     );
   }
 
-  return {triggers, prefetchTriggers, hydrateTriggers, loadedExpression};
+  return {triggers, prefetchTriggers, hydrateTriggers, loadedExpression, loadedSourceSpan};
+}
+
+/** Visitor that determines whether an expression contains a pipe. */
+class PipeDetector extends RecursiveAstVisitor {
+  hasPipe = false;
+
+  static containsPipe(ast: AST): boolean {
+    const visitor = new PipeDetector();
+    visitor.visit(ast);
+    return visitor.hasPipe;
+  }
+
+  override visitPipe(ast: BindingPipe, context: any): void {
+    this.hasPipe = true;
+    super.visitPipe(ast, context);
+  }
 }

@@ -844,12 +844,9 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 
   // Ingest the `loaded` callback expression if present.
   if (deferBlock.loaded !== null) {
-    const loadedExpr = convertAst(
-      deferBlock.loaded,
-      unit.job,
-      convertSourceSpan(deferBlock.loaded.span, deferBlock.sourceSpan),
-    );
-    const loadedOp = ir.createDeferOnLoadedOp(deferXref, loadedExpr, deferBlock.sourceSpan);
+    const loadedSourceSpan = deferBlock.loadedSourceSpan ?? deferBlock.sourceSpan;
+    const loadedExpr = convertAst(deferBlock.loaded, unit.job, loadedSourceSpan);
+    const loadedOp = ir.createDeferOnLoadedOp(deferXref, loadedExpr, loadedSourceSpan);
     unit.create.push(loadedOp);
   }
 }
