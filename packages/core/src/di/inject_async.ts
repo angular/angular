@@ -7,12 +7,14 @@
  */
 
 import {IDLE_SERVICE} from '../defer/idle_service';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {DestroyRef} from '../linker/destroy_ref';
 import {DefaultExport, maybeUnwrapDefaultExport} from '../util/default_export';
 import {promiseWithResolvers} from '../util/promise_with_resolvers';
+import {stringify} from '../util/stringify';
 import {assertInInjectionContext} from './contextual';
-import {Injector} from './injector';
+import {DestroyableInjector, Injector} from './injector';
 import {inject} from './injector_compatibility';
 import {ProviderToken} from './provider_token';
 
@@ -22,7 +24,7 @@ type InjectAsyncLoaderResult<T> = ProviderToken<T> | DefaultExport<ProviderToken
  * A helper function that allows to inject dependencies asynchronously,
  * which can be useful in cases when the dependency is not needed immediately and can be loaded lazily.
  *
- * NOTE: To enable lazy loading, the injected service must be auto-provided. This means it should be decorated with either `@Injectable({providedIn: 'root'})` or `@Service()`.
+ * NOTE: By default, the injected service must be auto-provided. This means it should be decorated with either `@Injectable({providedIn: 'root'})` or `@Service()`. Alternatively, the `{scope: 'self'}` option allows a plain `@Injectable()` class that is not provided anywhere to be lazily provided at the caller's injector scope.
  *
  * @param loader A function that returns a promise resolving to the injectable service
  * @param options Configuration options for the async injection
@@ -67,6 +69,9 @@ export function injectAsync<T>(
 
   const injector = inject(Injector);
   const scope = options?.scope;
+  // With `scope: 'self'` the `DestroyRef` must be captured eagerly: by the time the loader
+  // resolves, the caller might already be destroyed and its injector unusable.
+  const destroyRef = scope === 'self' ? inject(DestroyRef) : null;
 
   let loadedPromise: Promise<InjectAsyncLoaderResult<T>> | null = null;
   const load = () => {
@@ -83,11 +88,58 @@ export function injectAsync<T>(
       .catch(() => {});
   }
 
+  // The injector that self-provides the loaded class, created at most once per `injectAsync`
+  // call-site so that repeated invocations of the returned function resolve the same instance.
+  let scopedInjector: DestroyableInjector | null = null;
+
+  const resolveToken = (token: ProviderToken<T>): T => {
+    if (scope !== 'self') {
+      return injector.get(token)!;
+    }
+
+    if (scopedInjector !== null) {
+      return scopedInjector.get(token);
+    }
+
+    if (destroyRef!.destroyed) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INJECTOR_ALREADY_DESTROYED,
+        ngDevMode &&
+          `injectAsync: cannot resolve ${stringify(token)} because the injection ` +
+            `context that called \`injectAsync\` has already been destroyed.`,
+      );
+    }
+
+    // Resolve up the chain first, so that an ancestor/component provider
+    // or a `TestBed` override still wins over self-provisioning.
+    const existing = injector.get(token, NOT_PROVIDED as unknown as T);
+    if ((existing as unknown) !== NOT_PROVIDED) {
+      return existing;
+    }
+
+    if (ngDevMode && typeof token !== 'function') {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INJECTION_TOKEN,
+        `injectAsync: the token loaded with \`scope: 'self'\` must be a class ` +
+          `so that it can be self-provided, but got: ${stringify(token)}. ` +
+          `Provide the token in an injector instead.`,
+      );
+    }
+
+    scopedInjector = Injector.create({
+      providers: [{provide: token, useClass: token as Type<T>}],
+      parent: injector,
+    });
+    // Tie the child injector's lifecycle to the caller: when the caller is destroyed the instance
+    // is destroyed too (`ngOnDestroy` / `DestroyRef.onDestroy` fire), like a component-provided
+    // service.
+    const scoped = scopedInjector;
+    destroyRef!.onDestroy(() => scoped.destroy());
+    return scopedInjector.get(token);
+  };
+
   // We can't use `inject` later on because of the async nature of the loader
-  return () =>
-    load().then((loadedToken) =>
-      resolveInjectAsyncToken(maybeUnwrapDefaultExport(loadedToken), injector, scope),
-    );
+  return () => load().then((loadedToken) => resolveToken(maybeUnwrapDefaultExport(loadedToken)));
 }
 
 /**
@@ -95,39 +147,6 @@ export function injectAsync<T>(
  * object reference, so it can never collide with an actual provided value (including `null`).
  */
 const NOT_PROVIDED = {};
-
-/**
- * Resolves the loaded `token` against the caller's `injector`.
- *
- * With the default `scope`, this is a plain `injector.get(token)` - throwing `NG0201` if the token
- * is not provided, exactly as before. With `scope: 'self'`, the token is resolved up the chain first
- * (so an ancestor/component provider or a `TestBed` override still wins) and, only if it is not
- * provided anywhere, the loaded class is lazily provided at the caller's scope, with its lifecycle
- * tied to the caller.
- */
-function resolveInjectAsyncToken<T>(
-  token: ProviderToken<T>,
-  injector: Injector,
-  scope: 'self' | undefined,
-): T {
-  if (scope !== 'self') {
-    return injector.get(token)!;
-  }
-
-  const existing = injector.get(token, NOT_PROVIDED as unknown as T);
-  if ((existing as unknown) !== NOT_PROVIDED) {
-    return existing;
-  }
-
-  const scoped = Injector.create({
-    providers: [{provide: token, useClass: token as Type<T>}],
-    parent: injector,
-  });
-  // Tie the child injector's lifecycle to the caller: when the caller is destroyed the instance is
-  // destroyed too (`ngOnDestroy` / `DestroyRef.onDestroy` fire), like a component-provided service.
-  injector.get(DestroyRef).onDestroy(() => scoped.destroy());
-  return scoped.get(token);
-}
 
 /**
  * Interface for `options` argument used within `injectAsync` call.
@@ -151,7 +170,8 @@ export interface InjectAsyncOptions {
    * - `'self'` resolves the token up the chain first (so an ancestor/component provider or a
    *   `TestBed` override still wins) and, only if it is not provided anywhere, lazily provides the
    *   loaded class at the caller's injector scope, tying its lifecycle to the caller. Requires the
-   *   loader to resolve to a concrete class.
+   *   loader to resolve to a concrete class. Each `injectAsync` call-site self-provides at most one
+   *   instance: repeated invocations of the returned function resolve the same instance.
    */
   scope?: 'self';
 }

@@ -406,4 +406,70 @@ describe('injectAsync - {scope: "self"}', () => {
 
     expect(dialog).toBeInstanceOf(MockDialog);
   });
+
+  it('resolves the same instance across repeated and concurrent invocations', async () => {
+    let instances = 0;
+
+    @Injectable()
+    class CountingService {
+      constructor() {
+        instances++;
+      }
+    }
+
+    @Component({template: ''})
+    class HostComponent {
+      readonly loadService = injectAsync(() => Promise.resolve(CountingService), {scope: 'self'});
+    }
+
+    TestBed.configureTestingModule({imports: [HostComponent]});
+    const fixture = TestBed.createComponent(HostComponent);
+
+    // Two concurrent invocations followed by a later one must all
+    // resolve the same self-provided instance.
+    const [a, b] = await Promise.all([
+      fixture.componentInstance.loadService(),
+      fixture.componentInstance.loadService(),
+    ]);
+    const c = await fixture.componentInstance.loadService();
+
+    expect(a).toBeInstanceOf(CountingService);
+    expect(b).toBe(a);
+    expect(c).toBe(a);
+    expect(instances).toBe(1);
+  });
+
+  it('rejects with a clear error when first resolved after the caller was destroyed', async () => {
+    @Injectable()
+    class LateService {}
+
+    @Component({template: ''})
+    class HostComponent {
+      readonly loadService = injectAsync(() => Promise.resolve(LateService), {scope: 'self'});
+    }
+
+    TestBed.configureTestingModule({imports: [HostComponent]});
+    const fixture = TestBed.createComponent(HostComponent);
+    const loadService = fixture.componentInstance.loadService;
+
+    fixture.destroy();
+
+    await expectAsync(loadService()).toBeRejectedWithError(/NG0205.*already been destroyed/);
+  });
+
+  it('throws a clear error when the loaded token is not a class', async () => {
+    const UNPROVIDED = new InjectionToken<string>('UNPROVIDED');
+
+    @Component({template: ''})
+    class HostComponent {
+      readonly loadValue = injectAsync(() => Promise.resolve(UNPROVIDED), {scope: 'self'});
+    }
+
+    TestBed.configureTestingModule({imports: [HostComponent]});
+    const fixture = TestBed.createComponent(HostComponent);
+
+    await expectAsync(fixture.componentInstance.loadValue()).toBeRejectedWithError(
+      /NG0204.*must be a class/,
+    );
+  });
 });
