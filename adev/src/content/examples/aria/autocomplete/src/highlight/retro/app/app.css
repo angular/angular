@@ -2,6 +2,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 :host {
+  --win95-gray: #c0c0c0;
+  --win95-dark-gray: #808080;
+  --win95-light: #ffffff;
+  --win95-shadow: #000000;
+
   display: flex;
   justify-content: center;
   font-size: 0.6rem;
