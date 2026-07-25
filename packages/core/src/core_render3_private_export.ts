@@ -122,6 +122,7 @@ export {
   ɵɵdeferOnIdle,
   ɵɵdeferOnImmediate,
   ɵɵdeferOnInteraction,
+  ɵɵdeferOnLoaded,
   ɵɵdeferOnTimer,
   ɵɵdeferOnViewport,
   ɵɵdeferPrefetchOnHover,

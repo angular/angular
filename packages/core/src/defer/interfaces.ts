@@ -243,6 +243,7 @@ export const SSR_UNIQUE_ID = 6;
 export const SSR_BLOCK_STATE = 7;
 export const ON_COMPLETE_FNS = 8;
 export const HYDRATE_TRIGGER_CLEANUP_FNS = 9;
+export const ON_LOADED_FNS = 10;
 
 /**
  * Describes instance-specific defer block data.
@@ -304,6 +305,13 @@ export interface LDeferBlockDetails extends Array<unknown> {
    * List of cleanup functions for hydrate triggers.
    */
   [HYDRATE_TRIGGER_CLEANUP_FNS]: VoidFunction[] | null;
+
+  /**
+   * A set of callbacks registered via the `loaded` parameter, to be invoked
+   * only when the block successfully transitions to the `Complete` state
+   * (not on `Error`, unlike `ON_COMPLETE_FNS`).
+   */
+  [ON_LOADED_FNS]: VoidFunction[] | null;
 }
 
 /**

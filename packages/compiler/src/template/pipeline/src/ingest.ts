@@ -841,6 +841,17 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 
   unit.create.push(deferOnOps);
   unit.update.push(deferWhenOps);
+
+  // Ingest the `loaded` callback expression if present.
+  if (deferBlock.loaded !== null) {
+    const loadedExpr = convertAst(
+      deferBlock.loaded,
+      unit.job,
+      convertSourceSpan(deferBlock.loaded.span, deferBlock.sourceSpan),
+    );
+    const loadedOp = ir.createDeferOnLoadedOp(deferXref, loadedExpr, deferBlock.sourceSpan);
+    unit.create.push(loadedOp);
+  }
 }
 
 function calcDeferBlockFlags(deferBlockDetails: t.DeferredBlock): ir.TDeferDetailsFlags | null {

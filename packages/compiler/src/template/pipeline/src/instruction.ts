@@ -413,6 +413,13 @@ export function deferOn(
   return call(instructionToCall, args, sourceSpan);
 }
 
+export function deferOnLoaded(
+  fn: o.Expression,
+  sourceSpan: ParseSourceSpan | null,
+): ir.CreateOp {
+  return call(Identifiers.deferOnLoaded, [fn], sourceSpan);
+}
+
 export function projectionDef(def: o.Expression | null): ir.CreateOp {
   return call(Identifiers.projectionDef, def ? [def] : [], null);
 }

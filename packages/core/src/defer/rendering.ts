@@ -37,6 +37,7 @@ import {
   LOADING_AFTER_CLEANUP_FN,
   NEXT_DEFER_BLOCK_STATE,
   ON_COMPLETE_FNS,
+  ON_LOADED_FNS,
   SSR_BLOCK_STATE,
   STATE_IS_FROZEN_UNTIL,
   TDeferBlockDetails,
@@ -310,6 +311,15 @@ function applyDeferBlockState(
         callback();
       }
       lDetails[ON_COMPLETE_FNS] = null;
+    }
+
+    // Invoke user-registered `loaded` callbacks only on a successful `Complete`
+    // transition (not on `Error`), matching the `loaded` template semantics.
+    if (newState === DeferBlockState.Complete && Array.isArray(lDetails[ON_LOADED_FNS])) {
+      for (const callback of lDetails[ON_LOADED_FNS]) {
+        callback();
+      }
+      lDetails[ON_LOADED_FNS] = null;
     }
   }
 

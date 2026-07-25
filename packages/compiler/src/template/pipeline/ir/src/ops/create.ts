@@ -64,6 +64,7 @@ export type CreateOp =
   | ExtractedAttributeOp
   | DeferOp
   | DeferOnOp
+  | DeferOnLoadedOp
   | ConditionalCreateOp
   | ConditionalBranchCreateOp
   | RepeaterCreateOp
@@ -1569,6 +1570,49 @@ export function createDeferOnOp(
     defer,
     trigger,
     modifier,
+    sourceSpan,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * Represents an operation that registers a callback to be invoked when a `@defer` block
+ * transitions to the Complete state.
+ */
+export interface DeferOnLoadedOp extends Op<CreateOp> {
+  kind: OpKind.DeferOnLoaded;
+
+  /**
+   * The xref of the defer block this loaded callback belongs to.
+   */
+  deferXref: XrefId;
+
+  /**
+   * The function expression wrapping the loaded callback. Filled during reification.
+   */
+  loadedFn: o.Expression | null;
+
+  /**
+   * The parsed method call expression (e.g. `ctx.onDeferredLoaded()`).
+   */
+  loadedExpr: o.Expression;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create a `DeferOnLoadedOp`.
+ */
+export function createDeferOnLoadedOp(
+  deferXref: XrefId,
+  loadedExpr: o.Expression,
+  sourceSpan: ParseSourceSpan,
+): DeferOnLoadedOp {
+  return {
+    kind: OpKind.DeferOnLoaded,
+    deferXref,
+    loadedFn: null,
+    loadedExpr,
     sourceSpan,
     ...NEW_OP,
   };

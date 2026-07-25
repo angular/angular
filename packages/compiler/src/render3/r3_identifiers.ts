@@ -191,6 +191,7 @@ export class Identifiers {
     name: 'ɵɵdeferEnableTimerScheduling',
     moduleName: CORE,
   };
+  static deferOnLoaded: o.ExternalReference = {name: 'ɵɵdeferOnLoaded', moduleName: CORE};
   static enableIncrementalHydrationRuntime: o.ExternalReference = {
     name: 'ɵɵenableIncrementalHydrationRuntime',
     moduleName: CORE,
