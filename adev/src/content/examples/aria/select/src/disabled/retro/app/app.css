@@ -8,6 +8,7 @@
 
   font-family: 'Press Start 2P';
   --retro-button-color: color-mix(in srgb, var(--hot-pink) 80%, var(--page-background));
+  --retro-pressed-tint: #fbfbfb;
   --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
   --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
   --retro-elevated-shadow:
@@ -28,6 +29,10 @@
     inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--tertiary-contrast),
     0px 4px 0px 0px var(--tertiary-contrast), -4px 0px 0px 0px var(--tertiary-contrast),
     0px -4px 0px 0px var(--tertiary-contrast), 0px 0px 0px 0px var(--tertiary-contrast);
+}
+
+:host-context(.docs-dark-mode) {
+  --retro-pressed-tint: #151417;
 }
 
 .select,
@@ -66,7 +71,7 @@
 .select:not([aria-disabled='true']):active {
   transform: translate(4px, 4px);
   box-shadow: var(--retro-pressed-shadow);
-  background-color: color-mix(in srgb, var(--retro-button-color) 60%, var(--gray-50));
+  background-color: color-mix(in srgb, var(--retro-button-color) 60%, var(--retro-pressed-tint));
 }
 
 .select[aria-disabled='true'] {
