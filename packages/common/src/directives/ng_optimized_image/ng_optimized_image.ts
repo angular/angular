@@ -1244,9 +1244,17 @@ function assertNonZeroRenderedHeight(
   renderer: Renderer2,
   destroyRef: DestroyRef,
 ) {
-  const callback = () => {
-    removeLoadListenerFn();
-    removeErrorListenerFn();
+  const check = () => {
+    if (destroyRef.destroyed) {
+      return;
+    }
+    // A memory-cached image can fire `load` before its view is attached to the
+    // document, and a detached element always reports a zero height. Defer the
+    // check until the element is connected and participates in layout.
+    if (!img.isConnected) {
+      requestAnimationFrame(check);
+      return;
+    }
     const renderedHeight = img.clientHeight;
     if (dir.fill && renderedHeight === 0) {
       console.warn(
@@ -1260,6 +1268,12 @@ function assertNonZeroRenderedHeight(
         ),
       );
     }
+  };
+
+  const callback = () => {
+    removeLoadListenerFn();
+    removeErrorListenerFn();
+    check();
   };
 
   const removeLoadListenerFn = renderer.listen(img, 'load', callback);
