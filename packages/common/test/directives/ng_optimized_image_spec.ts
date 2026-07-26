@@ -1059,6 +1059,11 @@ describe('Image directive', () => {
   });
 
   describe('fill mode', () => {
+    // Resolves after the deferred zero-height recheck had a chance to run.
+    function nextRecheck(): Promise<void> {
+      return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+    }
+
     it('should allow unsized images in fill mode', () => {
       setupTestingModule();
 
@@ -1067,6 +1072,90 @@ describe('Image directive', () => {
         const fixture = createTestComponent(template);
         fixture.detectChanges();
       }).not.toThrow();
+    });
+    it('should warn when a connected fill-mode image renders with a zero height', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const img = fixture.nativeElement.querySelector('img')!;
+      Object.defineProperty(img, 'clientHeight', {value: 0, configurable: true});
+      expect(img.isConnected).toBe(true);
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+      img.dispatchEvent(new Event('load'));
+
+      expect(consoleWarnSpy.calls.count()).toBe(1);
+      expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
+        /NG02952.*the height of the fill-mode image is zero/,
+      );
+    });
+    it('should defer the zero-height check for an image that loads while detached and not warn once it attaches with a height', async () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const img = fixture.nativeElement.querySelector('img')!;
+      // A memory-cached image can fire `load` before its view is attached to
+      // the document, and a detached element always reports a zero height.
+      Object.defineProperty(img, 'clientHeight', {value: 0, configurable: true});
+      Object.defineProperty(img, 'isConnected', {value: false, configurable: true});
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+      img.dispatchEvent(new Event('load'));
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
+
+      // The view attaches and the image lays out normally.
+      Object.defineProperty(img, 'isConnected', {value: true, configurable: true});
+      Object.defineProperty(img, 'clientHeight', {value: 350, configurable: true});
+      await nextRecheck();
+
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
+    });
+
+    it('should still warn when an image that loaded while detached attaches with a zero height', async () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const img = fixture.nativeElement.querySelector('img')!;
+      Object.defineProperty(img, 'clientHeight', {value: 0, configurable: true});
+      Object.defineProperty(img, 'isConnected', {value: false, configurable: true});
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+      img.dispatchEvent(new Event('load'));
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
+
+      // The view attaches, but the containing element is genuinely zero-height.
+      Object.defineProperty(img, 'isConnected', {value: true, configurable: true});
+      await nextRecheck();
+
+      expect(consoleWarnSpy.calls.count()).toBe(1);
+      expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
+        /NG02952.*the height of the fill-mode image is zero/,
+      );
+    });
+
+    it('should stop the deferred zero-height check when the view is destroyed', async () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" fill>';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const img = fixture.nativeElement.querySelector('img')!;
+      Object.defineProperty(img, 'clientHeight', {value: 0, configurable: true});
+      Object.defineProperty(img, 'isConnected', {value: false, configurable: true});
+
+      const consoleWarnSpy = spyOn(console, 'warn');
+      img.dispatchEvent(new Event('load'));
+
+      fixture.destroy();
+      await nextRecheck();
+
+      expect(consoleWarnSpy).not.toHaveBeenCalled();
     });
     it('should throw if width is provided for fill mode image', () => {
       setupTestingModule();
