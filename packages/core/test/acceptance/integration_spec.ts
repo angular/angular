@@ -40,7 +40,8 @@ import {getLViewById} from '../../src/render3/interfaces/lview_tracking';
 import {isLView} from '../../src/render3/interfaces/type_checks';
 import {ID, LView, PARENT, TVIEW} from '../../src/render3/interfaces/view';
 import {getLView} from '../../src/render3/state';
-import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
+import {TestBed} from '../../testing';
+import {timeout} from '@angular/private/testing';
 
 describe('acceptance integration tests', () => {
   beforeEach(() => {
@@ -2890,8 +2891,8 @@ describe('acceptance integration tests', () => {
         {{ $any(val)?.foo!.bar }}
       `,
       standalone: false,
-    
-      changeDetection: ChangeDetectionStrategy.Eager,})
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
     class Comp {
       val: any = null;
 
@@ -3487,7 +3488,7 @@ describe('acceptance integration tests', () => {
   });
 
   describe('animations', () => {
-    it('should apply triggers for a list of items when they are sorted and reSorted', fakeAsync(() => {
+    it('should apply triggers for a list of items when they are sorted and reSorted', async () => {
       interface Item {
         value: any;
         id: number;
@@ -3567,11 +3568,11 @@ describe('acceptance integration tests', () => {
       elements = queryAll(fixture.nativeElement, 'animation-comp');
       expect(elements.length).toEqual(5);
       expect(elements.map((e) => e.textContent?.trim())).toEqual(['1', '2', '4', '5', '3']);
-      completeAnimations();
+      await completeAnimations();
 
       fixture.componentInstance.showWarningMessage = true;
       fixture.detectChanges();
-      completeAnimations();
+      await completeAnimations();
 
       elements = queryAll(fixture.nativeElement, 'animation-comp');
       expect(elements.length).toEqual(0);
@@ -3582,9 +3583,9 @@ describe('acceptance integration tests', () => {
 
       elements = queryAll(fixture.nativeElement, 'animation-comp');
       expect(elements.length).toEqual(5);
-    }));
+    });
 
-    it('should insert and remove views in the correct order when animations are present', fakeAsync(() => {
+    it('should insert and remove views in the correct order when animations are present', async () => {
       @Component({
         animations: [
           trigger('root', [transition('* => *', [])]),
@@ -3653,7 +3654,7 @@ describe('acceptance integration tests', () => {
       });
       const fixture = TestBed.createComponent(Cmp);
       fixture.detectChanges();
-      completeAnimations();
+      await completeAnimations();
       const comp = fixture.componentInstance;
       expect(comp.log).toEqual([
         'root', // insertion of the inner-comp content
@@ -3663,7 +3664,7 @@ describe('acceptance integration tests', () => {
       comp.log = [];
       comp.showIfContents = false;
       fixture.detectChanges();
-      completeAnimations();
+      await completeAnimations();
 
       expect(comp.log).toEqual([
         'host', // insertion of the inner-comp content
@@ -3674,20 +3675,20 @@ describe('acceptance integration tests', () => {
       comp.log = [];
       comp.showRoot = false;
       fixture.detectChanges();
-      completeAnimations();
+      await completeAnimations();
 
       expect(comp.log).toEqual([
         'root', // removal the root div container
         'host', // removal of the inner-comp content
         'inner', // removal of the inner comp element
       ]);
-    }));
+    });
   });
 
   describe('arrow functions', () => {
     it('should support a basic arrow function in an event listener', () => {
       @Component({
-        template: `<button (click)="value.update(prev => prev + 1)">Increment</button>`,
+        template: `<button (click)="value.update((prev) => prev + 1)">Increment</button>`,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -3715,7 +3716,9 @@ describe('acceptance integration tests', () => {
             @if (true) {
               @let grandchild = 'grandchild';
               <button
-                (click)="value.update(prev => prev + '->' + grandchild + '->' + child + '->' + parent)"
+                (click)="
+                  value.update((prev) => prev + '->' + grandchild + '->' + child + '->' + parent)
+                "
               >
                 Assign
               </button>
@@ -3740,7 +3743,7 @@ describe('acceptance integration tests', () => {
 
     it('should support an arrow function in a binding', () => {
       @Component({
-        template: `Result: {{((a) => a + b)(1)}}`,
+        template: `Result: {{ ((a) => a + b)(1) }}`,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -3860,7 +3863,12 @@ describe('acceptance integration tests', () => {
 
             @if (true) {
               Result:
-              {{(a => b => c => d => a + b + c + d + componentProp + topLevelLet + nestedLet)(1)(2)(3)(4)}}
+              {{
+                (
+                  (a) => (b) => (c) => (d) =>
+                    a + b + c + d + componentProp + topLevelLet + nestedLet
+                )(1)(2)(3)(4)
+              }}
             }
           }
         `,
@@ -3884,7 +3892,7 @@ describe('acceptance integration tests', () => {
       @Component({
         template: `
           @if (true) {
-            Result: {{(() => componentProp?.a?.b?.c?.()?.()?.()?.())()}}.
+            Result: {{ (() => componentProp?.a?.b?.c?.()?.()?.()?.())() }}.
           }
         `,
 
@@ -3932,7 +3940,7 @@ describe('acceptance integration tests', () => {
       }
 
       @Component({
-        template: `<button test [callback]="() => prop = prop + 1"></button> `,
+        template: `<button test [callback]="() => (prop = prop + 1)"></button> `,
         imports: [TestDir],
 
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -3953,7 +3961,7 @@ describe('acceptance integration tests', () => {
 
     it('should be able to use $event in an arrow function', () => {
       @Component({
-        template: `<button (click)="value.update(prev => $event.type + prev)">Click</button>`,
+        template: `<button (click)="value.update((prev) => $event.type + prev)">Click</button>`,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -3974,7 +3982,7 @@ describe('acceptance integration tests', () => {
       @Component({
         template: `
           @for (item of items; track $index) {
-            {{ item }}: {{(() => prefix + ($even ? 'even' : 'odd'))()}}
+            {{ item }}: {{ (() => prefix + ($even ? 'even' : 'odd'))() }}
           }
         `,
 
@@ -3999,11 +4007,11 @@ describe('acceptance integration tests', () => {
   });
 });
 
-function completeAnimations() {
-  flushMicrotasks();
+async function completeAnimations() {
+  await timeout(0);
   const log = MockAnimationDriver.log as MockAnimationPlayer[];
   log.forEach((player) => player.finish());
-  flushMicrotasks();
+  await timeout(0);
 }
 
 function arraySwap(arr: any[], indexA: number, indexB: number): void {

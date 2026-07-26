@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "angular_jasmine_test", "js_binary", "js_run_binary", "ng_project", "ng_web_test_suite", "ts_project")
+load("//tools:defaults.bzl", "js_binary", "js_run_binary", "ng_project", "ts_project", "zoneless_jasmine_test", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -61,28 +61,28 @@ ng_project(
     deps = TEST_DEPS,
 )
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "test",
     data = [
         ":test_lib",
     ],
 )
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "test_jit",
     data = [
         ":test_jit_lib",
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "test_web",
     deps = [
         ":test_lib",
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "test_jit_web",
     deps = [
         ":test_jit_lib",
