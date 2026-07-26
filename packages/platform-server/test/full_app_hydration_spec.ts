@@ -211,6 +211,26 @@ describe('platform-server full application hydration integration', () => {
         expect(ssrContents).not.toContain(extraChildNodes);
         expect(ssrContents).toContain('<app ngh="0"><div>Some content</div></app>');
       });
+
+      it('should serialize input values correctly for both null and normal non-empty values during SSR', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <input id="input-null" [value]="nullValue" />
+            <input id="input-normal" [value]="normalValue" />
+          `,
+        })
+        class AppComponent {
+          nullValue: string | null = null;
+          normalValue = 'hello';
+        }
+
+        const html = await ssr(AppComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).not.toContain('value="null"');
+        expect(ssrContents).toContain('id="input-normal" value="hello"');
+      });
     });
 
     describe('hydration', () => {
