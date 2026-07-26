@@ -15,7 +15,7 @@ import {
   ɵTracingService as TracingService,
   ɵTracingSnapshot as TracingSnapshot,
 } from '../../src/core';
-import {fakeAsync, TestBed} from '../../testing';
+import {TestBed} from '../../testing';
 
 describe('TracingService', () => {
   beforeEach(() => {
@@ -86,7 +86,7 @@ describe('TracingService', () => {
     expect(actions).toEqual([TracingAction.CHANGE_DETECTION, TracingAction.CHANGE_DETECTION]);
   });
 
-  it('should take a snapshot after `afterRender`', fakeAsync(() => {
+  it('should take a snapshot after `afterRender`', async () => {
     TestBed.configureTestingModule({
       providers: [{provide: TracingService, useValue: mockTracingService}],
     });
@@ -107,9 +107,9 @@ describe('TracingService', () => {
       TracingAction.CHANGE_DETECTION,
       TracingAction.AFTER_NEXT_RENDER,
     ]);
-  }));
+  });
 
-  it('should be able to wrap event listeners through the tracing service', fakeAsync(() => {
+  it('should be able to wrap event listeners through the tracing service', async () => {
     TestBed.configureTestingModule({
       providers: [{provide: TracingService, useValue: mockTracingService}],
     });
@@ -120,7 +120,7 @@ describe('TracingService', () => {
     }
 
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(listeners).toEqual([
       {event: 'click', handler: jasmine.any(Function)},
@@ -129,10 +129,10 @@ describe('TracingService', () => {
     expect(clickCount).toBe(0);
 
     fixture.nativeElement.querySelector('button').click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(clickCount).toBe(1);
-  }));
+  });
 
   it('should trace component creations', () => {
     TestBed.configureTestingModule({
