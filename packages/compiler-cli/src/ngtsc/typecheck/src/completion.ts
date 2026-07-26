@@ -275,6 +275,9 @@ export class CompletionEngine {
     // `context` template - they just need to be converted to `Completion`s.
     for (const node of this.data.boundTarget.getEntitiesInScope(context)) {
       if (node instanceof TmplAstReference) {
+        if (node.isSynthetic) {
+          continue;
+        }
         templateContext.set(node.name, {
           kind: CompletionKind.Reference,
           node,

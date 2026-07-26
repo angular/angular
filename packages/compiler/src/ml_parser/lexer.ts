@@ -12,6 +12,7 @@ import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../pa
 import {NAMED_ENTITIES} from './entities';
 import {TagContentType, TagDefinition} from './tags';
 import {
+  AttributeNameToken,
   ComponentOpenStartToken,
   IncompleteComponentOpenToken,
   IncompleteTagOpenToken,
@@ -154,6 +155,7 @@ const SUPPORTED_BLOCKS = [
   '@loading',
   '@error',
   '@content',
+  '@template',
 ] as const;
 
 const INTERPOLATION = {start: '{{', end: '}}'} as const;
@@ -177,6 +179,8 @@ class _Tokenizer {
   private readonly _tokenizeBlocks: boolean;
   private readonly _tokenizeLet: boolean;
   private readonly _selectorlessEnabled: boolean;
+  private readonly _file: ParseSourceFile;
+  private readonly _options: TokenizeOptions;
   tokens: Token[] = [];
   errors: ParseError[] = [];
   nonNormalizedIcuExpressions: Token[] = [];
@@ -191,6 +195,8 @@ class _Tokenizer {
     private _getTagDefinition: (tagName: string) => TagDefinition,
     options: TokenizeOptions,
   ) {
+    this._file = _file;
+    this._options = options;
     this._tokenizeIcu = options.tokenizeExpansionForms || false;
     this._leadingTriviaCodePoints =
       options.leadingTriviaChars && options.leadingTriviaChars.map((c) => c.codePointAt(0) || 0);
@@ -363,11 +369,15 @@ class _Tokenizer {
     this._endToken([]);
   }
 
-  private _consumeBlockParameters() {
+  private _consumeBlockParameters(stopQuote?: number) {
     // Trim the whitespace until the first parameter.
     this._attemptCharCodeUntilFn(isBlockParameterChar);
 
-    while (this._cursor.peek() !== chars.$RPAREN && this._cursor.peek() !== chars.$EOF) {
+    while (
+      this._cursor.peek() !== chars.$RPAREN &&
+      this._cursor.peek() !== chars.$EOF &&
+      this._cursor.peek() !== stopQuote
+    ) {
       this._beginToken(TokenType.BLOCK_PARAMETER);
       const start = this._cursor.clone();
       let inQuote: number | null = null;
@@ -376,7 +386,9 @@ class _Tokenizer {
       // Consume the parameter until the next semicolon or brace.
       // Note that we skip over semicolons/braces inside of strings.
       while (
-        (this._cursor.peek() !== chars.$SEMICOLON && this._cursor.peek() !== chars.$EOF) ||
+        (this._cursor.peek() !== chars.$SEMICOLON &&
+          this._cursor.peek() !== chars.$EOF &&
+          this._cursor.peek() !== stopQuote) ||
         inQuote !== null
       ) {
         const char = this._cursor.peek();
@@ -676,18 +688,34 @@ class _Tokenizer {
   }
 
   private _peekStr(chars: string): boolean {
-    const len = chars.length;
-    if (this._cursor.charsLeft() < len) {
+    return this._cursorStartsWith(this._cursor, chars);
+  }
+
+  private _cursorStartsWith(cursor: CharacterCursor, value: string): boolean {
+    const len = value.length;
+    if (cursor.charsLeft() < len) {
       return false;
     }
-    const cursor = this._cursor.clone();
+    cursor = cursor.clone();
     for (let i = 0; i < len; i++) {
-      if (cursor.peek() !== chars.charCodeAt(i)) {
+      if (cursor.peek() !== value.charCodeAt(i)) {
         return false;
       }
       cursor.advance();
     }
     return true;
+  }
+
+  private _peekStrFollowedBy(value: string, predicate: (code: number) => boolean): boolean {
+    if (!this._peekStr(value)) {
+      return false;
+    }
+
+    const cursor = this._cursor.clone();
+    for (let i = 0; i < value.length; i++) {
+      cursor.advance();
+    }
+    return predicate(cursor.peek());
   }
 
   private _isBlockStart(): boolean {
@@ -1026,16 +1054,16 @@ class _Tokenizer {
   }
 
   private _consumeAttribute() {
-    this._consumeAttributeName();
+    const attributeName = this._consumeAttributeName();
     this._attemptCharCodeUntilFn(isNotWhitespace);
     if (this._attemptCharCode(chars.$EQ)) {
       this._attemptCharCodeUntilFn(isNotWhitespace);
-      this._consumeAttributeValue();
+      this._consumeAttributeValue(this._isPropertyBinding(attributeName));
     }
     this._attemptCharCodeUntilFn(isNotWhitespace);
   }
 
-  private _consumeAttributeName() {
+  private _consumeAttributeName(): AttributeNameToken {
     const attrNameStart = this._cursor.peek();
     if (attrNameStart === chars.$SQ || attrNameStart === chars.$DQ) {
       throw this._createError(_unexpectedCharacterErrorMsg(attrNameStart), this._cursor.getSpan());
@@ -1084,13 +1112,20 @@ class _Tokenizer {
     }
 
     const prefixAndName = this._consumePrefixAndName(nameEndPredicate);
-    this._endToken(prefixAndName);
+    return this._endToken(prefixAndName) as AttributeNameToken;
   }
 
-  private _consumeAttributeValue() {
+  private _consumeAttributeValue(allowInlineTemplate: boolean) {
     if (this._cursor.peek() === chars.$SQ || this._cursor.peek() === chars.$DQ) {
       const quoteChar = this._cursor.peek();
       this._consumeQuote(quoteChar);
+      if (allowInlineTemplate && this._consumeInlineTemplateAttributeValue(quoteChar)) {
+        this._consumeQuote(quoteChar);
+        return;
+      }
+      const misplacedTemplateStart = allowInlineTemplate
+        ? this._findMisplacedInlineTemplateStart(quoteChar)
+        : null;
       // In an attribute then end of the attribute value and the premature end to an interpolation
       // are both triggered by the `quoteChar`.
       const endPredicate = () => this._cursor.peek() === quoteChar;
@@ -1100,6 +1135,14 @@ class _Tokenizer {
         endPredicate,
         endPredicate,
       );
+      if (misplacedTemplateStart !== null) {
+        this.errors.push(
+          this._createError(
+            'Anonymous @template must be the complete value of a property binding.',
+            misplacedTemplateStart.getSpan(),
+          ),
+        );
+      }
       this._consumeQuote(quoteChar);
     } else {
       const endPredicate = () => isNameEnd(this._cursor.peek());
@@ -1110,6 +1153,180 @@ class _Tokenizer {
         endPredicate,
       );
     }
+  }
+
+  private _isPropertyBinding(attributeName: AttributeNameToken): boolean {
+    const name = attributeName.parts[1];
+    return (name.startsWith('[') && name.endsWith(']')) || name.startsWith('bind-');
+  }
+
+  private _findMisplacedInlineTemplateStart(quoteChar: number): CharacterCursor | null {
+    const cursor = this._cursor.clone();
+    let expressionQuote: number | null = null;
+
+    while (cursor.peek() !== quoteChar && cursor.peek() !== chars.$EOF) {
+      const code = cursor.peek();
+      if (code === chars.$BACKSLASH) {
+        cursor.advance();
+        if (cursor.peek() !== chars.$EOF) {
+          cursor.advance();
+        }
+        continue;
+      }
+      if (expressionQuote !== null) {
+        if (code === expressionQuote) {
+          expressionQuote = null;
+        }
+        cursor.advance();
+        continue;
+      }
+      if (chars.isQuote(code)) {
+        expressionQuote = code;
+        cursor.advance();
+        continue;
+      }
+
+      const startsTemplate =
+        this._cursorStartsWith(cursor, '@template') &&
+        this._cursorStartsWithTemplateBoundary(cursor, '@template');
+      if (startsTemplate) {
+        return cursor;
+      }
+      cursor.advance();
+    }
+    return null;
+  }
+
+  private _cursorStartsWithTemplateBoundary(cursor: CharacterCursor, value: string): boolean {
+    const boundaryCursor = cursor.clone();
+    for (let i = 0; i < value.length; i++) {
+      boundaryCursor.advance();
+    }
+    const code = boundaryCursor.peek();
+    return chars.isWhitespace(code) || code === chars.$LPAREN || code === chars.$LBRACE;
+  }
+
+  private _consumeInlineTemplateAttributeValue(quoteChar: number): boolean {
+    const initialCursor = this._cursor.clone();
+    this._attemptCharCodeUntilFn(isNotWhitespace);
+    const templateStart = this._cursor.clone();
+
+    const startsAnonymousTemplate = this._peekStrFollowedBy(
+      '@template',
+      (code) =>
+        chars.isWhitespace(code) ||
+        code === chars.$LPAREN ||
+        code === chars.$LBRACE ||
+        code === quoteChar,
+    );
+    if (!startsAnonymousTemplate) {
+      this._cursor = initialCursor;
+      return false;
+    }
+
+    this._beginToken(TokenType.INLINE_TEMPLATE_START, templateStart);
+    this._requireStr('@template');
+    this._endToken([]);
+    this._attemptCharCodeUntilFn(isNotWhitespace);
+
+    if (this._attemptCharCode(chars.$LPAREN)) {
+      this._consumeBlockParameters(quoteChar);
+      this._attemptCharCodeUntilFn(isNotWhitespace);
+      if (!this._attemptCharCode(chars.$RPAREN)) {
+        this.errors.push(
+          this._createError(
+            'Anonymous @template context parameters must end with ")".',
+            this._cursor.getSpan(templateStart),
+          ),
+        );
+        this._attemptCharCodeUntilFn((code) => code === quoteChar || code === chars.$EOF);
+        return true;
+      }
+      this._attemptCharCodeUntilFn(isNotWhitespace);
+    }
+
+    this._beginToken(TokenType.BLOCK_OPEN_END);
+    if (!this._attemptCharCode(chars.$LBRACE)) {
+      this.errors.push(
+        this._createError(
+          'Anonymous @template expression must have a template body.',
+          this._cursor.getSpan(templateStart),
+        ),
+      );
+      this._attemptCharCodeUntilFn((code) => code === quoteChar || code === chars.$EOF);
+      return true;
+    }
+    this._endToken([]);
+
+    const bodyStart = this._cursor.getSpan().start;
+    const bodyResult = tokenize(this._file.content, this._file.url, this._getTagDefinition, {
+      ...this._options,
+      range: {
+        startPos: bodyStart.offset,
+        startLine: bodyStart.line,
+        startCol: bodyStart.col,
+        endPos: this._file.content.length,
+      },
+    });
+
+    let blockDepth = 0;
+    let closingToken: Token | null = null;
+    for (const token of bodyResult.tokens) {
+      if (token.type === TokenType.BLOCK_OPEN_START) {
+        blockDepth++;
+      } else if (token.type === TokenType.BLOCK_CLOSE) {
+        if (blockDepth === 0) {
+          closingToken = token;
+          break;
+        }
+        blockDepth--;
+      }
+
+      if (token.type !== TokenType.EOF) {
+        this.tokens.push(token);
+      }
+    }
+
+    if (closingToken === null) {
+      throw this._createError(
+        'Unclosed anonymous @template expression.',
+        this._cursor.getSpan(templateStart),
+      );
+    }
+
+    this.errors.push(
+      ...bodyResult.errors.filter(
+        (error) => error.span.start.offset < closingToken.sourceSpan.start.offset,
+      ),
+    );
+    this.nonNormalizedIcuExpressions.push(
+      ...bodyResult.nonNormalizedIcuExpressions.filter(
+        (token) => token.sourceSpan.start.offset < closingToken.sourceSpan.start.offset,
+      ),
+    );
+
+    const closingOffset = closingToken.sourceSpan.end.offset;
+    while (this._cursor.getSpan().start.offset < closingOffset) {
+      this._cursor.advance();
+    }
+    this.tokens.push({
+      type: TokenType.INLINE_TEMPLATE_END,
+      parts: [],
+      sourceSpan: closingToken.sourceSpan,
+    });
+
+    this._attemptCharCodeUntilFn(isNotWhitespace);
+    if (this._cursor.peek() !== quoteChar) {
+      this.errors.push(
+        this._createError(
+          'Anonymous @template must be the complete value of a property binding.',
+          this._cursor.getSpan(),
+        ),
+      );
+      this._attemptCharCodeUntilFn((code) => code === quoteChar || code === chars.$EOF);
+    }
+
+    return true;
   }
 
   private _consumeQuote(quoteChar: number) {

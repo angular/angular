@@ -538,9 +538,13 @@ class TemplateSymbolVisitor extends TmplAstRecursiveVisitor {
     this.addSymbol(symbol);
     this.pushChildren(symbol);
 
+    tmplAstVisitAll(this, element.inlineTemplates);
+
     // Add references as children
     for (const ref of element.references) {
-      ref.visit(this);
+      if (!ref.isSynthetic) {
+        ref.visit(this);
+      }
     }
 
     // Visit child elements
@@ -559,9 +563,13 @@ class TemplateSymbolVisitor extends TmplAstRecursiveVisitor {
     this.addSymbol(symbol);
     this.pushChildren(symbol);
 
+    tmplAstVisitAll(this, component.inlineTemplates);
+
     // Add references as children
     for (const ref of component.references) {
-      ref.visit(this);
+      if (!ref.isSynthetic) {
+        ref.visit(this);
+      }
     }
 
     // Visit child elements
@@ -600,9 +608,13 @@ class TemplateSymbolVisitor extends TmplAstRecursiveVisitor {
     this.addSymbol(symbol);
     this.pushChildren(symbol);
 
+    tmplAstVisitAll(this, template.inlineTemplates);
+
     // Add references and variables as children
     for (const ref of template.references) {
-      ref.visit(this);
+      if (!ref.isSynthetic) {
+        ref.visit(this);
+      }
     }
     for (const variable of template.variables) {
       this.addTemplateVariableSymbol(variable, structuralDirective !== null);

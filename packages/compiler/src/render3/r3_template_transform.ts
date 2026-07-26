@@ -34,6 +34,7 @@ import {
   isConnectedIfLoopBlock,
 } from './r3_control_flow';
 import {createDeferredBlock, isConnectedDeferLoopBlock} from './r3_deferred_blocks';
+import {createInlineTemplate, createTemplateBlock, isTemplateBlock} from './r3_template_blocks';
 import {I18N_ICU_VAR_PREFIX} from './view/i18n/util';
 
 const BIND_NAME_REGEXP = /^(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*)$/;
@@ -94,11 +95,15 @@ export function htmlAstToRender3Ast(
   bindingParser: BindingParser,
   options: Render3ParseOptions,
 ): Render3ParseResult {
-  const transformer = new HtmlAstToIvyAst(bindingParser, options);
+  const source = htmlNodes[0]?.sourceSpan.start.file.content ?? '';
+  const transformer = new HtmlAstToIvyAst(bindingParser, options, source);
   const ivyNodes = html.visitAll(transformer, htmlNodes, htmlNodes);
 
   // Errors might originate in either the binding parser or the html to ivy transformer
-  const allErrors = bindingParser.errors.concat(transformer.errors);
+  const allErrors = bindingParser.errors.concat(
+    transformer.errors,
+    validateTemplateReferenceConflicts(ivyNodes),
+  );
 
   const result: Render3ParseResult = {
     nodes: ivyNodes,
@@ -111,6 +116,74 @@ export function htmlAstToRender3Ast(
     result.commentNodes = transformer.commentNodes;
   }
   return result;
+}
+
+function validateTemplateReferenceConflicts(nodes: t.Node[]): ParseError[] {
+  const errors: ParseError[] = [];
+
+  const validateReferences = (references: t.Reference[], scope: Map<string, t.Reference>) => {
+    for (const reference of references) {
+      if (reference.isSynthetic) {
+        continue;
+      }
+
+      const previous = scope.get(reference.name);
+      const conflictsWithTemplateDeclaration =
+        previous !== undefined &&
+        (previous.isTemplateDeclaration || reference.isTemplateDeclaration);
+      if (conflictsWithTemplateDeclaration) {
+        errors.push(
+          new ParseError(
+            reference.keySpan,
+            `Reference "#${reference.name}" is defined more than once`,
+          ),
+        );
+      } else if (previous === undefined) {
+        scope.set(reference.name, reference);
+      }
+    }
+  };
+
+  const validateNodes = (currentNodes: t.Node[], scope: Map<string, t.Reference>): void => {
+    for (const node of currentNodes) {
+      if (node instanceof t.Element || node instanceof t.Component) {
+        validateNodes(node.inlineTemplates, scope);
+        node.directives.forEach((directive) => validateReferences(directive.references, scope));
+        validateReferences(node.references, scope);
+        validateNodes(node.children, scope);
+      } else if (node instanceof t.Template) {
+        validateNodes(node.inlineTemplates, scope);
+        node.directives.forEach((directive) => validateReferences(directive.references, scope));
+        validateReferences(node.references, scope);
+        validateNodes(node.children, new Map());
+      } else if (node instanceof t.IfBlock) {
+        node.branches.forEach((branch) => validateNodes(branch.children, new Map()));
+      } else if (node instanceof t.ForLoopBlock) {
+        validateNodes(node.children, new Map());
+        if (node.empty !== null) {
+          validateNodes(node.empty.children, new Map());
+        }
+      } else if (node instanceof t.SwitchBlock) {
+        node.groups.forEach((group) => validateNodes(group.children, new Map()));
+      } else if (node instanceof t.DeferredBlock) {
+        validateNodes(node.children, new Map());
+        if (node.placeholder !== null) {
+          validateNodes(node.placeholder.children, new Map());
+        }
+        if (node.loading !== null) {
+          validateNodes(node.loading.children, new Map());
+        }
+        if (node.error !== null) {
+          validateNodes(node.error.children, new Map());
+        }
+      } else if (node instanceof t.Content || node instanceof t.ContentBlock) {
+        validateNodes(node.children, new Map());
+      }
+    }
+  };
+
+  validateNodes(nodes, new Map());
+  return errors;
 }
 
 class HtmlAstToIvyAst implements html.Visitor {
@@ -127,11 +200,21 @@ class HtmlAstToIvyAst implements html.Visitor {
    * These are typically blocks connected to other blocks or text nodes between connected blocks.
    */
   private processedNodes = new Set<html.Block | html.Text>();
+  private inlineTemplateIndex = 0;
 
   constructor(
     private bindingParser: BindingParser,
     private options: Render3ParseOptions,
+    private source: string,
   ) {}
+
+  private allocateInlineTemplateReferenceName(): string {
+    let referenceName = `_ngInlineTemplate${this.inlineTemplateIndex++}`;
+    while (this.source.includes(referenceName)) {
+      referenceName = `_ngInlineTemplate${this.inlineTemplateIndex++}`;
+    }
+    return referenceName;
+  }
 
   // HTML visitor
   visitElement(element: html.Element): t.Node | null {
@@ -170,6 +253,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       references,
       variables,
       templateVariables,
+      inlineTemplates,
       elementHasInlineTemplate,
       parsedProperties,
       templateParsedProperties,
@@ -284,6 +368,9 @@ class HtmlAstToIvyAst implements html.Visitor {
     }
     if (isI18nRootElement) {
       this.inI18nBlock = false;
+    }
+    if (parsedElement instanceof t.Element || parsedElement instanceof t.Template) {
+      parsedElement.inlineTemplates.push(...inlineTemplates);
     }
     return parsedElement;
   }
@@ -402,6 +489,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       boundEvents,
       references,
       templateVariables,
+      inlineTemplates,
       elementHasInlineTemplate,
       parsedProperties,
       templateParsedProperties,
@@ -464,6 +552,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     if (isI18nRootElement) {
       this.inI18nBlock = false;
     }
+    node.inlineTemplates.push(...inlineTemplates);
     return node;
   }
 
@@ -487,6 +576,13 @@ class HtmlAstToIvyAst implements html.Visitor {
     // Connected blocks may have been processed as a part of the previous block.
     if (this.processedNodes.has(block)) {
       return null;
+    }
+
+    if (isTemplateBlock(block.name)) {
+      const result = createTemplateBlock(block, this);
+
+      this.errors.push(...result.errors);
+      return result.node;
     }
 
     let result: {node: t.Node | null; errors: ParseError[]} | null = null;
@@ -638,6 +734,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     const i18nAttrsMeta: Record<string, i18n.I18nMeta> = {};
     const templateParsedProperties: ParsedProperty[] = [];
     const templateVariables: t.Variable[] = [];
+    const inlineTemplates: t.Template[] = [];
 
     // Whether the element has any *-attribute
     let elementHasInlineTemplate = false;
@@ -652,7 +749,32 @@ class HtmlAstToIvyAst implements html.Visitor {
         i18nAttrsMeta[attribute.name] = attribute.i18n;
       }
 
-      if (attribute.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      if (attribute.inlineTemplate !== undefined) {
+        const referenceName = this.allocateInlineTemplateReferenceName();
+        const result = createInlineTemplate(attribute.inlineTemplate, referenceName, this);
+        this.errors.push(...result.errors);
+
+        if (result.node !== null) {
+          inlineTemplates.push(result.node);
+          hasBinding = this.parseAttribute(
+            isTemplateElement,
+            new html.Attribute(
+              attribute.name,
+              referenceName,
+              attribute.sourceSpan,
+              attribute.keySpan,
+              attribute.valueSpan,
+              undefined,
+              attribute.i18n,
+            ),
+            [],
+            parsedProperties,
+            boundEvents,
+            variables,
+            references,
+          );
+        }
+      } else if (attribute.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
         // *-attributes
         if (elementHasInlineTemplate) {
           this.reportError(
@@ -713,6 +835,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       references,
       variables,
       templateVariables,
+      inlineTemplates,
       elementHasInlineTemplate,
       parsedProperties,
       templateParsedProperties,

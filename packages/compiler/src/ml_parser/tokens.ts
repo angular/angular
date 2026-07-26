@@ -28,6 +28,8 @@ export const enum TokenType {
   ATTR_QUOTE,
   ATTR_VALUE_TEXT,
   ATTR_VALUE_INTERPOLATION,
+  INLINE_TEMPLATE_START,
+  INLINE_TEMPLATE_END,
   DOC_TYPE,
   EXPANSION_FORM_START,
   EXPANSION_CASE_VALUE,
@@ -73,6 +75,8 @@ export type Token =
   | AttributeQuoteToken
   | AttributeValueTextToken
   | AttributeValueInterpolationToken
+  | InlineTemplateStartToken
+  | InlineTemplateEndToken
   | DocTypeToken
   | ExpansionFormStartToken
   | ExpansionCaseValueToken
@@ -197,6 +201,16 @@ export interface AttributeValueInterpolationToken extends TokenBase {
   parts:
     | [startMarker: string, expression: string, endMarker: string]
     | [startMarker: string, expression: string];
+}
+
+export interface InlineTemplateStartToken extends TokenBase {
+  type: TokenType.INLINE_TEMPLATE_START;
+  parts: [];
+}
+
+export interface InlineTemplateEndToken extends TokenBase {
+  type: TokenType.INLINE_TEMPLATE_END;
+  parts: [];
 }
 
 export interface DocTypeToken extends TokenBase {

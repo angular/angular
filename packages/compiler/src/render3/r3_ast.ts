@@ -158,6 +158,8 @@ export class BoundEvent implements Node {
 }
 
 export class Element implements Node {
+  readonly inlineTemplates: Template[] = [];
+
   constructor(
     public name: string,
     public attributes: TextAttribute[],
@@ -607,6 +609,8 @@ export class LetDeclaration implements Node {
 }
 
 export class Component implements Node {
+  readonly inlineTemplates: Template[] = [];
+
   constructor(
     public componentName: string,
     public tagName: string | null,
@@ -646,6 +650,8 @@ export class Directive implements Node {
 }
 
 export class Template implements Node {
+  readonly inlineTemplates: Template[] = [];
+
   constructor(
     // tagName is the name of the container element, if applicable.
     // `null` is a special case for when there is a structural directive on an `ng-template` so
@@ -709,6 +715,8 @@ export class Reference implements Node {
     public sourceSpan: ParseSourceSpan,
     readonly keySpan: ParseSourceSpan,
     public valueSpan?: ParseSourceSpan,
+    readonly isSynthetic: boolean = false,
+    readonly isTemplateDeclaration: boolean = false,
   ) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitReference(this);
@@ -786,6 +794,7 @@ export interface Visitor<Result = any> {
 
 export class RecursiveVisitor implements Visitor<void> {
   visitElement(element: Element): void {
+    visitAll(this, element.inlineTemplates);
     visitAll(this, element.attributes);
     visitAll(this, element.inputs);
     visitAll(this, element.outputs);
@@ -794,6 +803,7 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, element.references);
   }
   visitTemplate(template: Template): void {
+    visitAll(this, template.inlineTemplates);
     visitAll(this, template.attributes);
     visitAll(this, template.inputs);
     visitAll(this, template.outputs);
@@ -842,6 +852,7 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, content.children);
   }
   visitComponent(component: Component): void {
+    visitAll(this, component.inlineTemplates);
     visitAll(this, component.attributes);
     visitAll(this, component.inputs);
     visitAll(this, component.outputs);

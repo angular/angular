@@ -280,6 +280,10 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
  * Ingest an element AST from the template into the given `ViewCompilation`.
  */
 function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
+  for (const inlineTemplate of element.inlineTemplates) {
+    ingestTemplate(unit, inlineTemplate);
+  }
+
   if (
     element.i18n !== undefined &&
     !(element.i18n instanceof i18n.Message || element.i18n instanceof i18n.TagPlaceholder)
@@ -408,6 +412,10 @@ function ingestForeignComponent(
  * Ingest an `ng-template` node from the AST into the given `ViewCompilation`.
  */
 function ingestTemplate(unit: ViewCompilationUnit, tmpl: t.Template): void {
+  for (const inlineTemplate of tmpl.inlineTemplates) {
+    ingestTemplate(unit, inlineTemplate);
+  }
+
   if (
     tmpl.i18n !== undefined &&
     !(tmpl.i18n instanceof i18n.Message || tmpl.i18n instanceof i18n.TagPlaceholder)

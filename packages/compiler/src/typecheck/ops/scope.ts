@@ -468,6 +468,9 @@ export class Scope {
 
   private appendNode(node: Node): void {
     if (node instanceof Element) {
+      for (const inlineTemplate of node.inlineTemplates) {
+        this.appendNode(inlineTemplate);
+      }
       const opIndex = this.opQueue.push(new TcbElementOp(this.tcb, this, node)) - 1;
       this.elementOpMap.set(node, opIndex);
       if (this.tcb.env.config.controlFlowPreventingContentProjection !== 'suppress') {
@@ -479,6 +482,9 @@ export class Scope {
       this.appendChildren(node);
       this.checkAndAppendReferencesOfNode(node);
     } else if (node instanceof Template) {
+      for (const inlineTemplate of node.inlineTemplates) {
+        this.appendNode(inlineTemplate);
+      }
       // Template children are rendered in a child scope.
       this.appendDirectivesAndInputsOfElementLikeNode(node);
       this.appendOutputsOfElementLikeNode(node, node.inputs, node.outputs);
@@ -492,6 +498,9 @@ export class Scope {
       }
       this.checkAndAppendReferencesOfNode(node);
     } else if (node instanceof Component) {
+      for (const inlineTemplate of node.inlineTemplates) {
+        this.appendNode(inlineTemplate);
+      }
       this.appendComponentNode(node);
     } else if (node instanceof DeferredBlock) {
       this.appendDeferredBlock(node);

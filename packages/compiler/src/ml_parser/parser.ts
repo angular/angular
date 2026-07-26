@@ -32,6 +32,8 @@ import {
   IncompleteLetToken,
   IncompleteTagOpenToken,
   InElementCommentToken,
+  InlineTemplateEndToken,
+  InlineTemplateStartToken,
   InterpolatedAttributeToken,
   InterpolatedTextToken,
   LetEndToken,
@@ -652,12 +654,19 @@ class _TreeBuilder {
     const valueTokens: InterpolatedAttributeToken[] = [];
     let valueStartSpan: ParseSourceSpan | undefined = undefined;
     let valueEnd: ParseLocation | undefined = undefined;
+    let inlineTemplate: html.InlineTemplate | undefined;
     // NOTE: We need to use a new variable `nextTokenType` here to hide the actual type of
     // `_peek.type` from TS. Otherwise TS will narrow the type of `_peek.type` preventing it from
     // being able to consider `ATTR_VALUE_INTERPOLATION` as an option. This is because TS is not
     // able to see that `_advance()` will actually mutate `_peek`.
     const nextTokenType = this._peek.type as TokenType;
-    if (nextTokenType === TokenType.ATTR_VALUE_TEXT) {
+    if (nextTokenType === TokenType.INLINE_TEMPLATE_START) {
+      inlineTemplate = this._consumeInlineTemplate();
+      if (inlineTemplate !== undefined) {
+        valueStartSpan = inlineTemplate.sourceSpan;
+        valueEnd = attrEnd = inlineTemplate.sourceSpan.end;
+      }
+    } else if (nextTokenType === TokenType.ATTR_VALUE_TEXT) {
       valueStartSpan = this._peek.sourceSpan;
       valueEnd = this._peek.sourceSpan.end;
       while (
@@ -700,6 +709,65 @@ class _TreeBuilder {
       valueSpan,
       valueTokens.length > 0 ? valueTokens : undefined,
       undefined,
+      inlineTemplate,
+    );
+  }
+
+  private _consumeInlineTemplate(): html.InlineTemplate | undefined {
+    const startToken = this._advance<InlineTemplateStartToken>();
+    const parameters: html.BlockParameter[] = [];
+
+    while (this._peek.type === TokenType.BLOCK_PARAMETER) {
+      const parameter = this._advance<BlockParameterToken>();
+      parameters.push(new html.BlockParameter(parameter.parts[0], parameter.sourceSpan));
+    }
+
+    const openToken = this._advanceIf(TokenType.BLOCK_OPEN_END);
+    if (openToken === null) {
+      this.errors.push(
+        TreeError.create(
+          null,
+          startToken.sourceSpan,
+          'Anonymous @template expression must have a template body.',
+        ),
+      );
+      return undefined;
+    }
+
+    const bodyTokens: Token[] = [];
+    while (this._peek.type !== TokenType.INLINE_TEMPLATE_END && this._peek.type !== TokenType.EOF) {
+      bodyTokens.push(this._advance());
+    }
+
+    if (this._peek.type !== TokenType.INLINE_TEMPLATE_END) {
+      this.errors.push(
+        TreeError.create(null, startToken.sourceSpan, 'Unclosed anonymous @template expression.'),
+      );
+      return undefined;
+    }
+
+    const endToken = this._advance<InlineTemplateEndToken>();
+    bodyTokens.push({type: TokenType.EOF, parts: [], sourceSpan: endToken.sourceSpan});
+    const bodyParser = new _TreeBuilder(bodyTokens, this.tagDefinitionResolver);
+    bodyParser.build();
+    this.errors.push(...bodyParser.errors);
+
+    const startSourceSpan = new ParseSourceSpan(
+      startToken.sourceSpan.start,
+      openToken.sourceSpan.end,
+      startToken.sourceSpan.fullStart,
+    );
+    const sourceSpan = new ParseSourceSpan(
+      startToken.sourceSpan.start,
+      endToken.sourceSpan.end,
+      startToken.sourceSpan.fullStart,
+    );
+    return new html.InlineTemplate(
+      parameters,
+      bodyParser.rootNodes,
+      sourceSpan,
+      startSourceSpan,
+      endToken.sourceSpan,
     );
   }
 

@@ -23,6 +23,7 @@ class R3AstHumanizer implements t.Visitor<void> {
       res.push('#selfClosing');
     }
     this.visitAll([
+      element.inlineTemplates,
       element.attributes,
       element.inputs,
       element.outputs,
@@ -39,6 +40,7 @@ class R3AstHumanizer implements t.Visitor<void> {
     }
     this.result.push(res);
     this.visitAll([
+      template.inlineTemplates,
       template.attributes,
       template.inputs,
       template.outputs,
@@ -517,6 +519,188 @@ describe('R3 template transform', () => {
         ['Template'],
         ['Variable', 'a', 'b'],
       ]);
+    });
+
+    describe('@template declarations', () => {
+      it('should parse a named template declaration', () => {
+        expectFromHtml('@template item {Hello {{name}}}').toEqual([
+          ['Template'],
+          ['Reference', 'item', ''],
+          ['BoundText', 'Hello {{ name }}'],
+        ]);
+      });
+
+      it('should parse template context variables', () => {
+        expectFromHtml(
+          '@template item(let value; let index = index) { {{value}}: {{index}} }',
+        ).toEqual([
+          ['Template'],
+          ['Reference', 'item', ''],
+          ['Variable', 'value', ''],
+          ['Variable', 'index', 'index'],
+          ['BoundText', ' {{ value }}: {{ index }} '],
+        ]);
+
+        const {nodes} = parse('@template item(let index = index) {}');
+        const template = nodes[0] as t.Template;
+        expect(template.variables[0].keySpan.toString()).toBe('index');
+        expect(template.variables[0].keySpan.start.offset).toBe(19);
+        expect(template.variables[0].valueSpan?.toString()).toBe('index');
+        expect(template.variables[0].valueSpan?.start.offset).toBe(27);
+      });
+
+      it('should allow whitespace other than spaces before the template name', () => {
+        expectFromHtml('@template\titem {Content}').toEqual([
+          ['Template'],
+          ['Reference', 'item', ''],
+          ['Text', 'Content'],
+        ]);
+      });
+
+      it('should support control flow inside a template declaration', () => {
+        expectFromHtml('@template item {@if (visible) {<span>Content</span>}}').toEqual([
+          ['Template'],
+          ['Reference', 'item', ''],
+          ['IfBlock'],
+          ['IfBlockBranch', 'visible'],
+          ['Element', 'span'],
+          ['Text', 'Content'],
+        ]);
+      });
+
+      it('should support template declarations inside control flow blocks', () => {
+        expectFromHtml('@if (visible) {@template item {Content}}').toEqual([
+          ['IfBlock'],
+          ['IfBlockBranch', 'visible'],
+          ['Template'],
+          ['Reference', 'item', ''],
+          ['Text', 'Content'],
+        ]);
+      });
+
+      it('should support nested template declarations', () => {
+        expectFromHtml('@template outer {@template inner {Content}}').toEqual([
+          ['Template'],
+          ['Reference', 'outer', ''],
+          ['Template'],
+          ['Reference', 'inner', ''],
+          ['Text', 'Content'],
+        ]);
+      });
+
+      it('should support multiple template declarations', () => {
+        expectFromHtml('@template first {One} @template second {Two}').toEqual([
+          ['Template'],
+          ['Reference', 'first', ''],
+          ['Text', 'One'],
+          ['Template'],
+          ['Reference', 'second', ''],
+          ['Text', 'Two'],
+        ]);
+      });
+
+      it('should report a missing template name', () => {
+        expect(() => parse('@template {Content}')).toThrowError(
+          /@template declaration must have a name/,
+        );
+      });
+
+      it('should report an invalid template name', () => {
+        expect(() => parse('@template 123item {Content}')).toThrowError(
+          /@template name must be a valid JavaScript identifier/,
+        );
+      });
+
+      it('should report an invalid context declaration', () => {
+        expect(() => parse('@template item(value) {Content}')).toThrowError(
+          /@template context variables must start with "let"/,
+        );
+      });
+
+      it('should report duplicate context declarations', () => {
+        expect(() => parse('@template item(let value; let value) {Content}')).toThrowError(
+          /Duplicate context variable "value" in @template declaration/,
+        );
+      });
+
+      it('should not treat an invalid declaration as a duplicate of a later valid one', () => {
+        const {nodes} = parse('@template item(invalid) {} @template item {Valid}', {
+          ignoreError: true,
+        });
+
+        expectFromR3Nodes(nodes).toEqual([
+          ['Template'],
+          ['Reference', 'item', ''],
+          ['Text', 'Valid'],
+        ]);
+      });
+
+      it('should report duplicate declarations after creating the Render3 AST', () => {
+        expect(() => parse('@template item {One} @template item {Two}')).toThrowError(
+          /Reference "#item" is defined more than once/,
+        );
+      });
+
+      it('should report conflicts with regular template references', () => {
+        expect(() => parse('<div #item></div> @template item {Content}')).toThrowError(
+          /Reference "#item" is defined more than once/,
+        );
+        expect(() => parse('@template item {Content} <ng-template #item />')).toThrowError(
+          /Reference "#item" is defined more than once/,
+        );
+      });
+
+      it('should allow the same declaration name in distinct embedded-view scopes', () => {
+        expectFromHtml('@if (visible) {@template item {Local}} @template item {Root}').toEqual([
+          ['IfBlock'],
+          ['IfBlockBranch', 'visible'],
+          ['Template'],
+          ['Reference', 'item', ''],
+          ['Text', 'Local'],
+          ['Template'],
+          ['Reference', 'item', ''],
+          ['Text', 'Root'],
+        ]);
+      });
+    });
+
+    describe('anonymous inline @template expressions', () => {
+      it('should lower an anonymous template to a template reference binding', () => {
+        expectFromHtml(
+          '<cmp [content]="@template(let item; let index = index) {' +
+            '<div class="item">{{index}}: {{item}}</div>' +
+            '}" />',
+        ).toEqual([
+          ['Element', 'cmp', '#selfClosing'],
+          ['Template'],
+          ['Reference', '_ngInlineTemplate0', ''],
+          ['Variable', 'item', ''],
+          ['Variable', 'index', 'index'],
+          ['Element', 'div'],
+          ['TextAttribute', 'class', 'item'],
+          ['BoundText', '{{ index }}: {{ item }}'],
+          ['BoundAttribute', BindingType.Property, 'content', '_ngInlineTemplate0'],
+        ]);
+      });
+
+      it('should allocate independent references and avoid user-defined names', () => {
+        expectFromHtml(
+          '<div #_ngInlineTemplate0></div>' +
+            '<cmp [header]="@template {Header}" [content]="@template {Content}" />',
+        ).toEqual([
+          ['Element', 'div'],
+          ['Reference', '_ngInlineTemplate0', ''],
+          ['Element', 'cmp', '#selfClosing'],
+          ['Template'],
+          ['Reference', '_ngInlineTemplate1', ''],
+          ['Text', 'Header'],
+          ['Template'],
+          ['Reference', '_ngInlineTemplate2', ''],
+          ['Text', 'Content'],
+          ['BoundAttribute', BindingType.Property, 'header', '_ngInlineTemplate1'],
+          ['BoundAttribute', BindingType.Property, 'content', '_ngInlineTemplate2'],
+        ]);
+      });
     });
 
     it('should parse attributes', () => {

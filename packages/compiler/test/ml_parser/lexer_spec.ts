@@ -1743,6 +1743,34 @@ describe('HtmlLexer', () => {
   });
 
   describe('attributes', () => {
+    it('should tokenize an anonymous template as a property binding value', () => {
+      expect(
+        tokenizeAndHumanizeParts(
+          '<cmp [content]="@template {<div class="item">{{title}}</div>}" />',
+        ),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'cmp'],
+        [TokenType.ATTR_NAME, '', '[content]'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.INLINE_TEMPLATE_START],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.TAG_OPEN_START, '', 'div'],
+        [TokenType.ATTR_NAME, '', 'class'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'item'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', 'title', '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.TAG_CLOSE, '', 'div'],
+        [TokenType.INLINE_TEMPLATE_END],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END_VOID],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should parse attributes without prefix', () => {
       expect(tokenizeAndHumanizeParts('<t a>')).toEqual([
         [TokenType.TAG_OPEN_START, '', 't'],
@@ -3419,6 +3447,27 @@ describe('HtmlLexer', () => {
   });
 
   describe('blocks', () => {
+    it('should parse a named template declaration', () => {
+      expect(
+        tokenizeAndHumanizeParts(
+          '@template item(let value; let index = index) {<span>{{value}}</span>}',
+        ),
+      ).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'template item'],
+        [TokenType.BLOCK_PARAMETER, 'let value'],
+        [TokenType.BLOCK_PARAMETER, 'let index = index'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.TAG_OPEN_START, '', 'span'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', 'value', '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.TAG_CLOSE, '', 'span'],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should parse a block without parameters', () => {
       const expected = [
         [TokenType.BLOCK_OPEN_START, 'if'],

@@ -7666,6 +7666,117 @@ suppress
       });
     });
 
+    describe('@template declarations', () => {
+      it('should type-check lexical expressions inside the template body', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, input, TemplateRef} from '@angular/core';
+
+            @Component({
+              selector: 'template-consumer',
+              template: '',
+            })
+            export class TemplateConsumer {
+              template = input.required<TemplateRef<unknown>>();
+            }
+
+            @Component({
+              imports: [TemplateConsumer],
+              template: \`
+                <template-consumer [template]="item" />
+
+                @template item {
+                  {{title.missing}}
+                }
+              \`,
+            })
+            export class TestCmp {
+              title = 'Angular';
+            }
+          `,
+        );
+
+        const diagnostics = env
+          .driveDiagnostics()
+          .map((diagnostic) => ts.flattenDiagnosticMessageText(diagnostic.messageText, ''));
+
+        expect(diagnostics).toEqual([`Property 'missing' does not exist on type 'string'.`]);
+      });
+
+      it('should type-check lexical expressions inside an anonymous template body', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, input, TemplateRef} from '@angular/core';
+
+            @Component({
+              selector: 'template-consumer',
+              template: '',
+            })
+            export class TemplateConsumer {
+              template = input.required<TemplateRef<unknown>>();
+            }
+
+            @Component({
+              imports: [TemplateConsumer],
+              template: \`
+                <template-consumer
+                  [template]="@template {
+                    {{title.missing}}
+                  }"
+                />
+              \`,
+            })
+            export class TestCmp {
+              title = 'Angular';
+            }
+          `,
+        );
+
+        const diagnostics = env
+          .driveDiagnostics()
+          .map((diagnostic) => ts.flattenDiagnosticMessageText(diagnostic.messageText, ''));
+
+        expect(diagnostics).toEqual([`Property 'missing' does not exist on type 'string'.`]);
+      });
+
+      it('should preserve ng-template context typing behavior for anonymous templates', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, input, TemplateRef} from '@angular/core';
+
+            interface Item {
+              name: string;
+            }
+
+            @Component({
+              selector: 'template-consumer',
+              template: '',
+            })
+            export class TemplateConsumer {
+              template = input.required<TemplateRef<{$implicit: Item}>>();
+            }
+
+            @Component({
+              imports: [TemplateConsumer],
+              template: \`
+                <template-consumer
+                  [template]="@template(let item) {
+                    {{item.nonExistingProperty}}
+                  }"
+                />
+              \`,
+            })
+            export class TestCmp {}
+          `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+    });
+
     describe('@let declarations', () => {
       beforeEach(() =>
         env.tsconfig({

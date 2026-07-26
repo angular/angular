@@ -547,6 +547,9 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   ) {
     const isTemplate = node instanceof TmplAstTemplate;
     const isDirective = node instanceof TmplAstDirective;
+    if (!isDirective) {
+      this.visitAll(node.inlineTemplates);
+    }
     this.visitAll(node.attributes);
     if (!isDirective) {
       this.visitAll(node.directives);
@@ -568,7 +571,7 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     if (isTemplate) {
       this.visitAll(node.templateAttrs);
     }
-    this.visitAll(node.references);
+    this.visitAll(node.references.filter((reference) => !reference.isSynthetic));
     if (isTemplate) {
       this.visitAll(node.variables);
     }

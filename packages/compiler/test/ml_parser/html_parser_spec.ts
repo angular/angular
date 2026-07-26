@@ -302,6 +302,126 @@ describe('HtmlParser', () => {
     });
 
     describe('attributes', () => {
+      it('should parse an anonymous template in a property binding', () => {
+        const result = parser.parse(
+          '<cmp [content]="@template(let item; let index = index) {' +
+            '<div class="item">{{index}}: {{item}}</div>' +
+            '}" />',
+          'TestComp',
+        );
+
+        expect(humanizeErrors(result.errors)).toEqual([]);
+        const element = result.rootNodes[0] as html.Element;
+        const inlineTemplate = element.attrs[0].inlineTemplate;
+        expect(inlineTemplate).toBeInstanceOf(html.InlineTemplate);
+        expect(inlineTemplate?.parameters.map((parameter) => parameter.expression)).toEqual([
+          'let item',
+          'let index = index',
+        ]);
+        expect(inlineTemplate?.children[0]).toBeInstanceOf(html.Element);
+        expect((inlineTemplate?.children[0] as html.Element).attrs[0].value).toBe('item');
+      });
+
+      it('should allow regular template syntax and nested quotes in an anonymous template', () => {
+        const result = parser.parse(
+          `<cmp [content]='@template {
+            @if (visible()) {
+              <button (click)="select('primary')">{{title}}</button>
+              <app-card [data]="{name: title, enabled: true}" />
+            }
+          }' />`,
+          'TestComp',
+        );
+
+        expect(humanizeErrors(result.errors)).toEqual([]);
+        const element = result.rootNodes[0] as html.Element;
+        const inlineTemplate = element.attrs[0].inlineTemplate;
+        expect(inlineTemplate).toBeInstanceOf(html.InlineTemplate);
+        expect(inlineTemplate?.children.some((node) => node instanceof html.Block)).toBe(true);
+      });
+
+      it('should allow whitespace around an anonymous template', () => {
+        const result = parser.parse('<cmp [content]=" \n\t@template\t{Content}\n " />', 'TestComp');
+
+        expect(humanizeErrors(result.errors)).toEqual([]);
+        const element = result.rootNodes[0] as html.Element;
+        expect(element.attrs[0].inlineTemplate).toBeInstanceOf(html.InlineTemplate);
+      });
+
+      it('should require an anonymous template to be the complete binding value', () => {
+        for (const template of [
+          '<cmp [content]="@template {Content} || fallback" />',
+          '<cmp [content]="prefix + @template {Content}" />',
+        ]) {
+          const errors = humanizeErrors(parser.parse(template, 'TestComp').errors);
+          expect(
+            errors.some((error) =>
+              error.includes(
+                'Anonymous @template must be the complete value of a property binding.',
+              ),
+            ),
+          )
+            .withContext(JSON.stringify(errors))
+            .toBe(true);
+        }
+      });
+
+      it('should allow @template text in an ordinary string expression', () => {
+        const result = parser.parse('<cmp [content]="\'@template {Content}\'" />', 'TestComp');
+
+        expect(humanizeErrors(result.errors)).toEqual([]);
+        const element = result.rootNodes[0] as html.Element;
+        expect(element.attrs[0].inlineTemplate).toBeUndefined();
+      });
+
+      it('should not recognize an identifier that starts with @template', () => {
+        const result = parser.parse('<cmp [content]="@templateFactory" />', 'TestComp');
+
+        expect(humanizeErrors(result.errors)).toEqual([]);
+        const element = result.rootNodes[0] as html.Element;
+        expect(element.attrs[0].inlineTemplate).toBeUndefined();
+        expect(element.attrs[0].value).toBe('@templateFactory');
+      });
+
+      it('should report intentional diagnostics for incomplete anonymous templates', () => {
+        const cases = [
+          ['<cmp [content]="@template" />', 'must have a template body'],
+          ['<cmp [content]="@template()" />', 'must have a template body'],
+          ['<cmp [content]="@template(" />', 'context parameters must end with ")"'],
+          ['<cmp [content]="@template {" />', 'Unclosed anonymous @template expression'],
+        ];
+
+        for (const [template, expectedMessage] of cases) {
+          const errors = humanizeErrors(parser.parse(template, 'TestComp').errors);
+          expect(
+            errors.some((error) =>
+              error.some((part: unknown) => `${part}`.includes(expectedMessage)),
+            ),
+          )
+            .withContext(`${template}: ${JSON.stringify(errors)}`)
+            .toBe(true);
+        }
+      });
+
+      it('should diagnose invalid quotes inside a nested event binding', () => {
+        const result = parser.parse(
+          '<cmp [content]="@template {' +
+            '<button (click)="select("primary")">Select</button>' +
+            '}" />',
+          'TestComp',
+        );
+        const errors = humanizeErrors(result.errors);
+
+        expect(errors.length).toBeGreaterThan(0);
+        expect(
+          errors.some((error) =>
+            error.some((part: unknown) =>
+              `${part}`.includes('complete value of a property binding'),
+            ),
+          ),
+        ).toBe(false);
+      });
+
       it('should parse attributes on regular elements case sensitive', () => {
         expect(humanizeDom(parser.parse('<div kEy="v" key2=v2></div>', 'TestComp'))).toEqual([
           [html.Element, 'div', 0],

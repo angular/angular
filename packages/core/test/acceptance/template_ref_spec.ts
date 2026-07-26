@@ -14,10 +14,204 @@ import {
   ViewChild,
   ViewContainerRef,
   ChangeDetectionStrategy,
+  inject,
+  Input,
+  signal,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('TemplateRef', () => {
+  describe('@template declarations', () => {
+    interface TemplateContext {
+      $implicit: string;
+      index: number;
+    }
+
+    const receivedTemplates: TemplateRef<TemplateContext>[] = [];
+
+    @Component({
+      selector: 'template-consumer',
+      template: '',
+      standalone: false,
+    })
+    class TemplateConsumer {
+      private readonly viewContainerRef = inject(ViewContainerRef);
+
+      @Input()
+      set first(template: TemplateRef<TemplateContext>) {
+        receivedTemplates.push(template);
+        this.viewContainerRef.createEmbeddedView(template, {$implicit: 'Frodo', index: 0});
+      }
+
+      @Input()
+      set second(template: TemplateRef<TemplateContext>) {
+        receivedTemplates.push(template);
+        this.viewContainerRef.createEmbeddedView(template, {$implicit: 'Bilbo', index: 1});
+      }
+    }
+
+    @Component({
+      template: `
+        <template-consumer [first]="item" [second]="item" />
+
+        @template item(let value; let index = index) {
+          {{prefix()}} {{index}}: {{value}};
+        }
+      `,
+      standalone: false,
+    })
+    class TemplateDeclarationApp {
+      readonly prefix = signal('Name');
+    }
+
+    @Component({
+      template: `
+        <template-consumer
+          [first]="@template(let value; let index = index) {
+            <span class="item">{{prefix()}} {{index}}: {{value}};</span>
+          }"
+          [second]="@template(let value; let index = index) {
+            <span class="item">{{prefix()}} {{index}}: {{value}};</span>
+          }"
+        />
+      `,
+      standalone: false,
+    })
+    class InlineTemplateApp {
+      readonly prefix = signal('Name');
+    }
+
+    const anonymousViews: ReturnType<ViewContainerRef['createEmbeddedView']>[] = [];
+    let createdItems = 0;
+    let destroyedItems = 0;
+
+    @Component({
+      selector: 'inline-template-item',
+      template: '{{label()}}',
+      standalone: false,
+    })
+    class InlineTemplateItem {
+      readonly label = signal('Item');
+
+      constructor() {
+        createdItems++;
+      }
+
+      ngOnDestroy(): void {
+        destroyedItems++;
+      }
+    }
+
+    @Component({
+      selector: 'inline-template-capture',
+      template: '',
+      standalone: false,
+    })
+    class InlineTemplateCapture {
+      private readonly viewContainerRef = inject(ViewContainerRef);
+
+      @Input()
+      set content(template: TemplateRef<unknown>) {
+        anonymousViews.push(
+          this.viewContainerRef.createEmbeddedView(template),
+          this.viewContainerRef.createEmbeddedView(template),
+        );
+      }
+    }
+
+    @Component({
+      template: `
+        <inline-template-capture
+          [content]="@template {
+            <inline-template-item />
+            <button (click)="select()">Select {{selectionCount()}}</button>
+          }"
+        />
+      `,
+      standalone: false,
+    })
+    class InlineTemplateLifecycleApp {
+      readonly selectionCount = signal(0);
+
+      select(): void {
+        this.selectionCount.update((count) => count + 1);
+      }
+    }
+
+    beforeEach(() => {
+      receivedTemplates.splice(0);
+      anonymousViews.splice(0);
+      createdItems = 0;
+      destroyedItems = 0;
+    });
+
+    it('should expose a stable TemplateRef that creates independent embedded views', async () => {
+      TestBed.configureTestingModule({declarations: [TemplateConsumer, TemplateDeclarationApp]});
+      const fixture = TestBed.createComponent(TemplateDeclarationApp);
+
+      await fixture.whenStable();
+
+      expect(receivedTemplates.length).toBe(2);
+      expect(receivedTemplates[0]).toBe(receivedTemplates[1]);
+      expect(fixture.nativeElement.textContent).toContain('Name 0: Frodo;');
+      expect(fixture.nativeElement.textContent).toContain('Name 1: Bilbo;');
+
+      fixture.componentInstance.prefix.set('Person');
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.textContent).toContain('Person 0: Frodo;');
+      expect(fixture.nativeElement.textContent).toContain('Person 1: Bilbo;');
+    });
+
+    it('should expose stable anonymous TemplateRefs with normal inner HTML quoting', async () => {
+      TestBed.configureTestingModule({declarations: [TemplateConsumer, InlineTemplateApp]});
+      const fixture = TestBed.createComponent(InlineTemplateApp);
+
+      await fixture.whenStable();
+
+      expect(receivedTemplates.length).toBe(2);
+      expect(receivedTemplates[0]).not.toBe(receivedTemplates[1]);
+      expect(fixture.nativeElement.textContent).toContain('Name 0: Frodo;');
+      expect(fixture.nativeElement.textContent).toContain('Name 1: Bilbo;');
+
+      fixture.componentInstance.prefix.set('Person');
+      await fixture.whenStable();
+
+      expect(receivedTemplates.length).toBe(2);
+      expect(fixture.nativeElement.textContent).toContain('Person 0: Frodo;');
+      expect(fixture.nativeElement.textContent).toContain('Person 1: Bilbo;');
+    });
+
+    it('should support events and independent view destruction', async () => {
+      TestBed.configureTestingModule({
+        declarations: [InlineTemplateCapture, InlineTemplateItem, InlineTemplateLifecycleApp],
+      });
+      const fixture = TestBed.createComponent(InlineTemplateLifecycleApp);
+
+      await fixture.whenStable();
+
+      expect(anonymousViews.length).toBe(2);
+      expect(createdItems).toBe(2);
+
+      fixture.nativeElement.querySelector('button').click();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toContain('Select 1');
+
+      anonymousViews[0].destroy();
+      await fixture.whenStable();
+      expect(destroyedItems).toBe(1);
+      expect(fixture.nativeElement.querySelectorAll('inline-template-item').length).toBe(1);
+
+      fixture.componentInstance.selectionCount.set(2);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toContain('Select 2');
+
+      anonymousViews[1].destroy();
+      await fixture.whenStable();
+      expect(destroyedItems).toBe(2);
+    });
+  });
+
   describe('rootNodes', () => {
     @Component({
       template: `<ng-template #templateRef></ng-template>`,

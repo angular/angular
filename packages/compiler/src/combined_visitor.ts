@@ -23,6 +23,7 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
   }
 
   visitElement(element: t.Element): void {
+    this.visitAllTemplateNodes(element.inlineTemplates);
     this.visitAllTemplateNodes(element.attributes);
     this.visitAllTemplateNodes(element.inputs);
     this.visitAllTemplateNodes(element.outputs);
@@ -32,6 +33,7 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
   }
 
   visitTemplate(template: t.Template): void {
+    this.visitAllTemplateNodes(template.inlineTemplates);
     this.visitAllTemplateNodes(template.attributes);
     this.visitAllTemplateNodes(template.inputs);
     this.visitAllTemplateNodes(template.outputs);
@@ -135,6 +137,7 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
   }
 
   visitComponent(component: t.Component): void {
+    this.visitAllTemplateNodes(component.inlineTemplates);
     this.visitAllTemplateNodes(component.attributes);
     this.visitAllTemplateNodes(component.inputs);
     this.visitAllTemplateNodes(component.outputs);

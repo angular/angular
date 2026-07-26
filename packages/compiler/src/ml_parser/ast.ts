@@ -25,6 +25,7 @@ export type Node =
   | Text
   | Block
   | BlockParameter
+  | InlineTemplate
   | Component
   | Directive
   | StartTagComment;
@@ -90,11 +91,29 @@ export class Attribute extends NodeWithI18n {
     public valueSpan: ParseSourceSpan | undefined,
     public valueTokens: InterpolatedAttributeToken[] | undefined,
     i18n: I18nMeta | undefined,
+    public inlineTemplate?: InlineTemplate,
   ) {
     super(sourceSpan, i18n);
   }
   override visit(visitor: Visitor, context: any): any {
     return visitor.visitAttribute(this, context);
+  }
+}
+
+export class InlineTemplate extends NodeWithI18n {
+  constructor(
+    public parameters: BlockParameter[],
+    public children: Node[],
+    sourceSpan: ParseSourceSpan,
+    public startSourceSpan: ParseSourceSpan,
+    public endSourceSpan: ParseSourceSpan,
+    i18n?: I18nMeta,
+  ) {
+    super(sourceSpan, i18n);
+  }
+
+  override visit(visitor: Visitor, context: unknown): unknown {
+    return visitor.visitInlineTemplate?.(this, context);
   }
 }
 
@@ -234,6 +253,7 @@ export interface Visitor {
   visitExpansionCase(expansionCase: ExpansionCase, context: any): any;
   visitBlock(block: Block, context: any): any;
   visitBlockParameter(parameter: BlockParameter, context: any): any;
+  visitInlineTemplate?(template: InlineTemplate, context: unknown): unknown;
   visitLetDeclaration(decl: LetDeclaration, context: any): any;
   visitComponent(component: Component, context: any): any;
   visitDirective(directive: Directive, context: any): any;
@@ -268,6 +288,13 @@ export class RecursiveVisitor implements Visitor {
   }
 
   visitAttribute(ast: Attribute, context: any): any {}
+  visitInlineTemplate(ast: InlineTemplate, context: unknown): unknown {
+    this.visitChildren(context, (visit) => {
+      visit(ast.parameters);
+      visit(ast.children);
+    });
+    return undefined;
+  }
   visitStartTagComment(ast: StartTagComment, context: any): any {}
   visitText(ast: Text, context: any): any {}
   visitComment(ast: Comment, context: any): any {}

@@ -163,8 +163,7 @@ export function findMatchingDirectivesAndPipes(template: string, directiveSelect
 
 /** Object used to match template nodes to directives. */
 export type DirectiveMatcher<DirectiveT extends DirectiveMeta> =
-  | SelectorMatcher<DirectiveT[]>
-  | SelectorlessMatcher<DirectiveT>;
+  SelectorMatcher<DirectiveT[]> | SelectorlessMatcher<DirectiveT>;
 
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
@@ -369,6 +368,7 @@ class Scope implements Visitor {
   }
 
   visitTemplate(template: Template) {
+    template.inlineTemplates.forEach((node) => node.visit(this));
     template.directives.forEach((node) => node.visit(this));
 
     // References on a <ng-template> are defined in the outer scope, so capture them before
@@ -468,6 +468,7 @@ class Scope implements Visitor {
   visitUnknownBlock(block: UnknownBlock) {}
 
   private visitElementLike(node: Element | Component) {
+    node.inlineTemplates.forEach((current) => current.visit(this));
     node.directives.forEach((current) => current.visit(this));
     node.references.forEach((current) => this.visitReference(current));
     node.children.forEach((current) => current.visit(this));
@@ -662,6 +663,8 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitComponent(node: Component): void {
+    node.inlineTemplates.forEach((template) => template.visit(this));
+
     if (this.directiveMatcher instanceof SelectorlessMatcher) {
       const componentMatches = this.directiveMatcher.match(node.componentName);
 
@@ -689,6 +692,8 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   private visitElementOrTemplate(node: Element | Template): void {
+    node.inlineTemplates.forEach((template) => template.visit(this));
+
     const matchedDirectives: DirectiveT[] = [];
 
     if (this.directiveMatcher instanceof SelectorMatcher) {
@@ -1065,6 +1070,8 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
   }
 
   override visitTemplate(template: Template) {
+    template.inlineTemplates.forEach(this.visitNode);
+
     // First, visit inputs, outputs and template attributes of the template node.
     template.inputs.forEach(this.visitNode);
     template.outputs.forEach(this.visitNode);
