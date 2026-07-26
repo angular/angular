@@ -80,10 +80,12 @@ describe('JsonpClientBackend', () => {
     backend
       .handle(SAMPLE_REQ)
       .pipe(toArray())
-      .subscribe(undefined, (err: HttpErrorResponse) => {
-        expect(err.status).toBe(0);
-        expect(err.error).toBe(error);
-        done();
+      .subscribe({
+        error: (err: HttpErrorResponse) => {
+          expect(err.status).toBe(0);
+          expect(err.error).toBe(error);
+          done();
+        },
       });
     document.mockError(error);
   });
@@ -188,11 +190,13 @@ describe('JsonpClientBackend', () => {
         ),
       ).toThrowError(`NG02812: ${JSONP_ERR_HEADERS_NOT_SUPPORTED}`));
     it('when callback is never called', (done) => {
-      backend.handle(SAMPLE_REQ).subscribe(undefined, (err: HttpErrorResponse) => {
-        expect(err.status).toBe(0);
-        expect(err.error instanceof Error).toEqual(true);
-        expect(err.error.message).toEqual(JSONP_ERR_NO_CALLBACK);
-        done();
+      backend.handle(SAMPLE_REQ).subscribe({
+        error: (err: HttpErrorResponse) => {
+          expect(err.status).toBe(0);
+          expect(err.error instanceof Error).toEqual(true);
+          expect(err.error.message).toEqual(JSONP_ERR_NO_CALLBACK);
+          done();
+        },
       });
       document.mockLoad();
     });
