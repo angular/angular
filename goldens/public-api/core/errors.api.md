@@ -100,6 +100,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_SKIP_HYDRATION_HOST = -504,
     // (undocumented)
+    INVALID_STYLE_PROP_VALUE = -318,
+    // (undocumented)
     LOOP_TRACK_DUPLICATE_KEYS = -955,
     // (undocumented)
     LOOP_TRACK_RECREATE = -956,

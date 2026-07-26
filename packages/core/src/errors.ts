@@ -66,6 +66,7 @@ export const enum RuntimeErrorCode {
   NO_BINDING_TARGET = 315,
   INVALID_BINDING_TARGET = 316,
   INVALID_SET_INPUT_CALL = 317,
+  INVALID_STYLE_PROP_VALUE = -318,
 
   // Bootstrap Errors
   MULTIPLE_PLATFORMS = 400,

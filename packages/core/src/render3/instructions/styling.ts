@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {SafeValue, unwrapSafeValue} from '../../sanitization/bypass';
+import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
+import {
+  BypassType,
+  getSanitizationBypassType,
+  SafeValue,
+  unwrapSafeValue,
+} from '../../sanitization/bypass';
 import {KeyValueArray, keyValueArrayGet, keyValueArraySet} from '../../util/array_utils';
 import {
   assertDefined,
@@ -216,6 +222,9 @@ export function checkStylingProperty(
     stylingFirstUpdatePass(tView, prop, bindingIndex, isClassBased);
   }
   if (value !== NO_CHANGE && bindingUpdated(lView, bindingIndex, value)) {
+    if (ngDevMode && !isClassBased) {
+      warnInvalidStylePropValue(prop, value);
+    }
     const tNode = tView.data[getSelectedIndex()] as TNode;
     updateStyling(
       tView,
@@ -227,6 +236,36 @@ export function checkStylingProperty(
       isClassBased,
       bindingIndex,
     );
+  }
+}
+
+function warnInvalidStylePropValue(prop: string, value: unknown): void {
+  if (
+    value == null ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    getSanitizationBypassType(value) === BypassType.Style
+  ) {
+    return;
+  }
+
+  console.warn(
+    formatRuntimeError(
+      RuntimeErrorCode.INVALID_STYLE_PROP_VALUE,
+      `\`[style.${prop}]\` was bound to an invalid value. ` +
+        `Expected a string, number, SafeValue, null, or undefined, but received ` +
+        `\`${typeof value}\` (\`${stringifyInvalidStylePropValue(value)}\`).`,
+    ),
+  );
+}
+
+function stringifyInvalidStylePropValue(value: unknown): string {
+  try {
+    return stringify(value);
+  } catch {
+    // Invalid values may have throwing accessors or conversion methods. A development diagnostic
+    // must not interrupt the binding update when the value cannot be represented in the warning.
+    return '[unstringifiable value]';
   }
 }
 
@@ -687,10 +726,7 @@ export function toStylingKeyValueArray(
   if (value == null /*|| value === undefined */ || value === '') return EMPTY_ARRAY as any;
   const styleKeyValueArray: KeyValueArray<any> = [] as any;
   const unwrappedValue = unwrapSafeValue(value) as
-    | string
-    | string[]
-    | Set<string>
-    | {[key: string]: any};
+    string | string[] | Set<string> | {[key: string]: any};
   if (Array.isArray(unwrappedValue)) {
     for (let i = 0; i < unwrappedValue.length; i++) {
       keyValueArraySet(styleKeyValueArray, unwrappedValue[i], true);
@@ -726,6 +762,7 @@ export function toStylingKeyValueArray(
  * @param value The value to set.
  */
 export function styleKeyValueArraySet(keyValueArray: KeyValueArray<any>, key: string, value: any) {
+  ngDevMode && warnInvalidStylePropValue(key, value);
   keyValueArraySet(keyValueArray, key, unwrapSafeValue(value));
 }
 
@@ -997,7 +1034,7 @@ function normalizeSuffix(
     // As it produce invalid CSS, which the browsers will automatically omit but Domino will not.
     // Example: `"left": "px;"` instead of `"left": ""`.
   } else if (typeof suffix === 'string') {
-    value = value + suffix;
+    value = unwrapSafeValue(value) + suffix;
   } else if (typeof value === 'object') {
     value = stringify(unwrapSafeValue(value));
   }
