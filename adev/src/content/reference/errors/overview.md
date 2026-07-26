@@ -15,6 +15,7 @@
 | `NG0300`  | [Selector Collision](errors/NG0300)                                                  |
 | `NG0301`  | [Export Not Found](errors/NG0301)                                                    |
 | `NG0302`  | [Pipe Not Found](errors/NG0302)                                                      |
+| `NG0318`  | [Invalid style property binding value](errors/NG0318)                                |
 | `NG0401`  | [Missing platform](errors/NG0401)                                                    |
 | `NG0403`  | [Bootstrapped NgModule doesn't specify which component to initialize](errors/NG0403) |
 | `NG0500`  | [Hydration Node Mismatch](errors/NG0500)                                             |
