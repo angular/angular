@@ -2,7 +2,7 @@
   // We only target non-nested kbd elements
   kbd:not(:has(kbd)) {
     position: relative;
-    color: var(---tertiary-contrast);
+    color: var(--tertiary-contrast);
     border: 1px solid var(--quinary-contrast);
     box-shadow:
       0 1px 0 rgba(0, 0, 0, 0.2),
