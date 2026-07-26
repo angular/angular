@@ -59,7 +59,7 @@ import {
   getInjectorProviders,
   getInjectorResolutionPath,
 } from '../../src/render3/util/injector_discovery_utils';
-import {fakeAsync} from '../../testing';
+
 import {TestBed} from '../../testing/src/test_bed';
 
 describe('setProfiler', () => {
@@ -936,14 +936,14 @@ describe('getInjectorProviders', () => {
     expect(myServiceProviderRecord!.token).toBe(MyService);
   });
 
-  it('should be able to determine providers in an injector that was created manually', fakeAsync(() => {
+  it('should be able to determine providers in an injector that was created manually', () => {
     class MyService {}
     const injector = Injector.create({providers: [MyService]}) as EnvironmentInjector;
     const providers = getInjectorProviders(injector);
     expect(providers.length).toBe(1);
     expect(providers[0].token).toBe(MyService);
     expect(providers[0].provider).toBe(MyService);
-  }));
+  });
 
   it('should be able to get injector providers for element injectors created by components rendering in an ngFor', () => {
     class MyService {}
