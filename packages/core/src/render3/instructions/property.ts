@@ -30,6 +30,8 @@ import {
  *        renaming as part of minification.
  * @param value New value to write.
  * @param sanitizer An optional function used to sanitize the value.
+ * @param exactDomPropertyName Whether to preserve `propName` instead of applying native DOM
+ *        property-name mappings. Used for properties declared by custom elements manifests.
  * @returns This function returns itself so that it may be chained
  * (e.g. `property('name', ctx.name)('title', ctx.title)`)
  *
@@ -39,13 +41,22 @@ export function ɵɵproperty<T>(
   propName: string,
   value: T,
   sanitizer?: SanitizerFn | null,
+  exactDomPropertyName = false,
 ): typeof ɵɵproperty {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
     const tNode = getSelectedTNode();
-    setPropertyAndInputs(tNode, lView, propName, value, lView[RENDERER], sanitizer);
+    setPropertyAndInputs(
+      tNode,
+      lView,
+      propName,
+      value,
+      lView[RENDERER],
+      sanitizer,
+      exactDomPropertyName,
+    );
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
   }
   return ɵɵproperty;

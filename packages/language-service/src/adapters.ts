@@ -26,6 +26,25 @@ import {isTypeScriptFile} from './utils';
 
 const PRE_COMPILED_STYLE_EXTENSIONS = ['.scss', '.sass', '.less', '.styl'];
 
+interface ReadResourceVersion {
+  kind: 'read';
+  scriptVersion: string;
+  projectVersion: string;
+  modifiedTime: number | undefined;
+  fileSize: number | undefined;
+  /**
+   * A content hash is only needed when TypeScript declines to retain the resource's contents in
+   * its `ScriptInfo` snapshot (for example, for non-TypeScript files over its size limit).
+   */
+  contentHash: string | undefined;
+}
+
+interface MissingResourceVersion {
+  kind: 'missing';
+}
+
+type ResourceVersion = ReadResourceVersion | MissingResourceVersion;
+
 export class LanguageServiceAdapter implements NgCompilerAdapter {
   readonly entryPoint = null;
   readonly constructionDiagnostics: ts.Diagnostic[] = [];
@@ -34,11 +53,21 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
   readonly rootDirs: AbsoluteFsPath[];
 
   /**
-   * Map of resource filenames to the version of the file last read via `readResource`.
+   * The adapter outlives the `NgCompiler` instances created per program change; this slot lets
+   * the manifest loader reuse Custom Elements Manifest load results across them instead of
+   * re-parsing and re-validating unchanged manifests on every edit.
+   */
+  readonly customElementsManifestCache: NonNullable<
+    NgCompilerAdapter['customElementsManifestCache']
+  > = {entry: null};
+
+  /**
+   * Map of resource filenames to the version last read via `readResource`, or to an observation
+   * that a configured resource did not yet exist.
    *
    * Used to implement `getModifiedResourceFiles`.
    */
-  private readonly lastReadResourceVersion = new Map<string, string>();
+  private readonly lastReadResourceVersion = new Map<string, ResourceVersion>();
 
   constructor(private readonly project: ts.server.Project) {
     this.rootDirs = getRootDirs(this, project.getCompilationSettings());
@@ -71,6 +100,15 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
       }
     }
     return fallbackResolve?.(url, fromFile) ?? null;
+  }
+
+  recordResourceDependency(fileName: AbsoluteFsPath): void {
+    if (!this.project.projectService.host.fileExists(fileName)) {
+      // Do not call `readResource` for an absent path: the compiler must retain its "not found"
+      // diagnostic rather than attempting to parse an empty resource. Polling this small set of
+      // explicitly configured paths lets a later creation trigger a resource-only compilation.
+      this.lastReadResourceVersion.set(fileName, {kind: 'missing'});
+    }
   }
 
   isShim(sf: ts.SourceFile): boolean {
@@ -117,16 +155,21 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
       console.error(`readResource() should not be called on TS file: ${fileName}`);
       return '';
     }
-    // Calling getScriptSnapshot() will actually create a ScriptInfo if it does
-    // not exist! The same applies for getScriptVersion().
-    // getScriptInfo() will not create one if it does not exist.
-    // In this case, we *want* a script info to be created so that we could
-    // keep track of its version.
-    const version = this.project.getScriptVersion(fileName);
-    this.lastReadResourceVersion.set(fileName, version);
-    const scriptInfo = this.project.getScriptInfo(fileName);
+    // `Project.getScriptVersion()` creates a `ScriptInfo` and immediately asks it for a snapshot.
+    // For large non-TypeScript files, TypeScript expects the info to already belong to a project
+    // when it applies its oversized-file policy. Create and attach it explicitly first.
+    let scriptInfo = this.project.getScriptInfo(fileName);
+    if (scriptInfo === undefined) {
+      scriptInfo = this.project.projectService.getOrCreateScriptInfoForNormalizedPath(
+        ts.server.toNormalizedPath(fileName),
+        false,
+        undefined,
+        ts.ScriptKind.Unknown,
+        false,
+        this.project.projectService.host,
+      );
+    }
     if (!scriptInfo) {
-      // This should not happen because it would have failed already at `getScriptVersion`.
       console.error(`Failed to get script info when trying to read ${fileName}`);
       return '';
     }
@@ -137,18 +180,90 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
     if (!this.project.isRoot(scriptInfo)) {
       this.project.addRoot(scriptInfo);
     }
+
+    let content: string;
+    let contentHash: string | undefined;
     const snapshot = scriptInfo.getSnapshot();
-    return snapshot.getText(0, snapshot.getLength());
+    if (scriptInfo.isScriptOpen()) {
+      content = snapshot.getText(0, snapshot.getLength());
+    } else {
+      // A closed resource is owned by the filesystem. Read it directly because TypeScript uses an
+      // empty snapshot for oversized non-TypeScript files. Open resources must continue to use the
+      // snapshot above so that unsaved editor changes win over disk contents.
+      content = this.readResourceFromDisk(fileName);
+      if (snapshot.getLength() !== content.length) {
+        contentHash = this.hashResourceContent(content);
+      }
+    }
+
+    const host = this.project.projectService.host;
+    this.lastReadResourceVersion.set(fileName, {
+      kind: 'read',
+      scriptVersion: scriptInfo.getLatestVersion(),
+      projectVersion: this.project.getProjectVersion(),
+      modifiedTime: host.getModifiedTime?.(fileName)?.getTime(),
+      fileSize: host.getFileSize?.(fileName),
+      contentHash,
+    });
+    return content;
   }
 
   getModifiedResourceFiles(): Set<string> | undefined {
     const modifiedFiles = new Set<string>();
+    const host = this.project.projectService.host;
+    const projectVersion = this.project.getProjectVersion();
     for (const [fileName, oldVersion] of this.lastReadResourceVersion) {
-      if (this.project.getScriptVersion(fileName) !== oldVersion) {
+      if (oldVersion.kind === 'missing') {
+        if (host.fileExists(fileName)) {
+          modifiedFiles.add(fileName);
+        }
+        continue;
+      }
+      const scriptInfo = this.project.getScriptInfo(fileName);
+      if (scriptInfo === undefined || scriptInfo.getLatestVersion() !== oldVersion.scriptVersion) {
         modifiedFiles.add(fileName);
+        continue;
+      }
+
+      if (oldVersion.contentHash === undefined || scriptInfo.isScriptOpen()) {
+        continue;
+      }
+
+      const modifiedTime = host.getModifiedTime?.(fileName)?.getTime();
+      const fileSize = host.getFileSize?.(fileName);
+      if (modifiedTime !== oldVersion.modifiedTime || fileSize !== oldVersion.fileSize) {
+        modifiedFiles.add(fileName);
+        continue;
+      }
+
+      // A watcher-driven project update catches same-size edits even on filesystems with coarse
+      // mtimes. Hosts without file metadata (including the LS test host) use the hash every time.
+      if (modifiedTime === undefined || projectVersion !== oldVersion.projectVersion) {
+        const contentHash = this.hashResourceContent(this.readResourceFromDisk(fileName));
+        oldVersion.projectVersion = projectVersion;
+        oldVersion.modifiedTime = modifiedTime;
+        oldVersion.fileSize = fileSize;
+        if (contentHash !== oldVersion.contentHash) {
+          // A missing manifest is rejected before `readResource` runs. Record the observed hash
+          // here so that recreating the file can produce a second resource-change ticket.
+          oldVersion.contentHash = contentHash;
+          modifiedFiles.add(fileName);
+        }
       }
     }
     return modifiedFiles.size > 0 ? modifiedFiles : undefined;
+  }
+
+  private hashResourceContent(content: string): string {
+    return this.project.projectService.host.createHash?.(content) ?? content;
+  }
+
+  private readResourceFromDisk(fileName: string): string {
+    // The file can disappear between compiler requests. Some server hosts throw from `readFile`
+    // for a missing file instead of returning `undefined`.
+    return this.project.projectService.host.fileExists(fileName)
+      ? (this.project.readFile(fileName) ?? '')
+      : '';
   }
 }
 

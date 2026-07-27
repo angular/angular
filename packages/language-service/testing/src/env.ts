@@ -92,6 +92,13 @@ export class LanguageServiceTestEnv {
     return this.projects.get(name);
   }
 
+  notifyFileChange(path: string, eventKind: ts.FileWatcherEventKind): void {
+    this.host.invokeFileWatcher(path, eventKind);
+    // Delivering watcher events is where a real editor host yields to the server event loop, so
+    // TypeScript's deferred (throttled) project updates run here — and only here.
+    this.host.flushPendingTimers();
+  }
+
   getTextFromTsSpan(fileName: string, span: ts.TextSpan): string | null {
     const scriptInfo = this.projectService.getScriptInfo(fileName);
     if (scriptInfo === undefined) {
