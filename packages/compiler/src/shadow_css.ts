@@ -602,6 +602,10 @@ export class ShadowCss {
           hostSelector,
           isParentSelector: true,
         });
+
+        // TODO(crisbeto): this is temporary to help us land #69885.
+        // Strip ::ng-deep from nested content.
+        content = rule.content.replace(_shadowDeepSelectors, ' ');
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {

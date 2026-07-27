@@ -31,4 +31,70 @@ describe('ShadowCss, ng-deep', () => {
     css = ':host > ::ng-deep > .x {}';
     expect(shim(css, 'contenta', 'h')).toEqualCss('[h] > > .x {}');
   });
+
+  // TODO(crisbeto): this is temporary until we land #69885.
+  it('should strip ::ng-deep from nested selectors', () => {
+    const css = `
+      .parent {
+        ::ng-deep .child {
+          color: red;
+        }
+
+        .wrapper {
+          &::ng-deep .inner {
+            color: blue;
+          }
+
+          &:hover ::ng-deep .inner-hover {
+            color: green;
+          }
+
+          .deep {
+            ::ng-deep .deepest {
+              color: yellow;
+            }
+          }
+        }
+      }
+
+      @media screen and (max-width: 600px) {
+        .media-parent {
+          ::ng-deep .media-child {
+            color: purple;
+          }
+        }
+      }
+    `;
+    expect(shim(css, 'contenta')).toEqualCss(`
+      .parent[contenta] {
+        .child {
+          color: red;
+        }
+
+        .wrapper {
+          & .inner {
+            color: blue;
+          }
+
+          &:hover .inner-hover {
+            color: green;
+          }
+
+          .deep {
+            .deepest {
+              color: yellow;
+            }
+          }
+        }
+      }
+
+      @media screen and (max-width: 600px) {
+        .media-parent[contenta] {
+          .media-child {
+            color: purple;
+          }
+        }
+      }
+    `);
+  });
 });
