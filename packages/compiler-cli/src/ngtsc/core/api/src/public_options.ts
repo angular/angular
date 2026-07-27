@@ -206,6 +206,61 @@ export interface TypeCheckingOptions {
    * Defaults to `false` unless `strictTemplates` is set.
    */
   strictLiteralTypes?: boolean;
+
+  /**
+   * Custom Elements Manifest files that describe web components used in templates.
+   *
+   * See https://github.com/webcomponents/custom-elements-manifest for the manifest format.
+   *
+   * Each entry accepts one of these forms:
+   * - A path relative to the project's tsconfig, such as `./custom-elements.json`.
+   * - A JSON module specifier, such as `@my/lib/custom-elements.json`.
+   * - A package name, such as `@my/lib`, whose `package.json` has a `customElements` field.
+   *
+   * Angular recognizes declared tags and members without `CUSTOM_ELEMENTS_SCHEMA`. It reports
+   * unknown property bindings and excludes readonly fields. `CUSTOM_ELEMENTS_SCHEMA` can allow
+   * other hyphenated tags without disabling property checks on manifest tags. The language service
+   * uses manifest types, defaults, documentation, and deprecation status for completions and hovers.
+   *
+   * With `strictTemplates` or `strictInputTypes`, Angular checks binding values against validated
+   * manifest types and uses declared event types for `$event`. Supported type text includes
+   * primitive keywords, literal unions, inline object types, arrays, and named types with usable
+   * `type.references`. References default to the manifest package and containing module. Global
+   * types require `package: "global:"`. Package manifests can also type local element references.
+   *
+   * `strictAttributeTypes` checks static attributes against string literal unions. Other static
+   * attribute types have no general CEM conversion rule. Interpolation produces strings, and
+   * `[attr.name]` uses Angular's attribute serialization without manifest value checks. Attribute
+   * declarations do not imply properties. The language service offers static and `[attr.name]`
+   * completions, with literal value suggestions for string unions.
+   *
+   * Template bindings preserve exact manifest property names. Directive host bindings use native
+   * DOM name mappings because they compile without the component's manifest configuration.
+   * Manifest properties have no two-way binding completions. Use a property binding and an event
+   * handler to extract values from event objects.
+   *
+   * Unresolved type references produce NG4011. Unsupported type text and ambiguous class exports
+   * produce NG4013. Affected bindings retain schema checks, and element references use
+   * `HTMLElement`. NG4014 reports invalid CEM relationships without discarding unrelated metadata
+   * or creating missing records.
+   * Tags with unresolved declarations have no custom members. A configured replacement manifest
+   * can correct metadata from a library.
+   *
+   * Manifest edits invalidate template checking when the host reports a resource change.
+   * Changes in dependency directories depend on the host's watch policy.
+   *
+   * See https://angular.dev/reference/configs/angular-compiler-options#customelementsmanifests
+   * for detailed checking rules and diagnostics.
+   */
+  customElementsManifests?: string[];
+
+  /**
+   * How warnings about the configured Custom Elements Manifests are reported.
+   *
+   * The default, `'summary'`, groups warnings of the same kind per manifest with a count and
+   * examples. `'verbose'` reports each affected declaration or reference.
+   */
+  customElementsManifestsDiagnostics?: 'summary' | 'verbose';
 }
 
 /**

@@ -139,7 +139,7 @@ class TcbExprTranslator implements AstVisitor {
       node.wrapForTypeChecker();
       return node.print();
     });
-    return new TcbExpr(`"" + ${exprs.join(' + ')}`);
+    return new TcbExpr(`"" + ${exprs.join(' + ')}`).addParseSpanInfo(ast.sourceSpan);
   }
 
   visitKeyedRead(ast: KeyedRead): TcbExpr {

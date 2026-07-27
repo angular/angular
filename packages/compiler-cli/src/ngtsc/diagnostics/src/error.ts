@@ -64,6 +64,25 @@ export function makeDiagnostic(
   };
 }
 
+/**
+ * Creates a diagnostic that is not attached to any source file, for problems with the compiler
+ * configuration or with resources it references.
+ */
+export function makeConfigDiagnostic(
+  code: ErrorCode,
+  messageText: string,
+  category: ts.DiagnosticCategory = ts.DiagnosticCategory.Error,
+): ts.Diagnostic {
+  return {
+    category,
+    code: ngErrorCode(code),
+    file: undefined,
+    start: undefined,
+    length: undefined,
+    messageText,
+  };
+}
+
 export function makeDiagnosticChain(
   messageText: string,
   next?: ts.DiagnosticMessageChain[],

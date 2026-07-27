@@ -7,6 +7,7 @@
  */
 
 import {
+  ɵCustomElementsManifestProperty as CustomElementsManifestProperty,
   CssSelector,
   MatchSource,
   SelectorMatcher,
@@ -75,6 +76,14 @@ export enum AttributeCompletionKind {
 }
 
 /**
+ * Manifest metadata used in completions and hovers for elements and their members.
+ */
+export type CustomElementsManifestEntryInfo = Pick<
+  CustomElementsManifestProperty,
+  'deprecated' | 'description' | 'typeText' | 'default'
+>;
+
+/**
  * Completion of an attribute from the DOM schema.
  */
 export interface DomAttributeCompletion {
@@ -90,7 +99,16 @@ export interface DomAttributeCompletion {
    * we only want to provide DOM attributes when there is an Angular syntax associated with them
    * (`[propertyName]=""`).
    */
-  isAlsoProperty: true;
+  isAlsoProperty: boolean;
+
+  /** Whether this attribute was explicitly declared by a Custom Elements Manifest. */
+  isCustomElementsManifestAttribute?: boolean;
+
+  /** Documentation for the HTML attribute declared by a Custom Elements Manifest. */
+  attributeManifestInfo?: CustomElementsManifestEntryInfo;
+
+  /** Documentation for the same-named property declared by a Custom Elements Manifest. */
+  propertyManifestInfo?: CustomElementsManifestEntryInfo;
 }
 
 /**
@@ -103,6 +121,9 @@ export interface DomPropertyCompletion {
    * Name of the DOM property
    */
   property: string;
+
+  /** Documentation from the manifest property, when available. */
+  manifestInfo?: CustomElementsManifestEntryInfo;
 }
 
 export interface DomEventCompletion {
@@ -112,6 +133,9 @@ export interface DomEventCompletion {
    * Name of the DOM event
    */
   eventName: string;
+
+  /** Documentation from the manifest event, when available. */
+  manifestInfo?: CustomElementsManifestEntryInfo;
 }
 
 /**
@@ -404,28 +428,127 @@ export function buildAttributeCompletionTable(
 
   // Finally, add any DOM attributes not already covered by inputs.
   if (element instanceof TmplAstElement) {
-    for (const {attribute, property} of checker.getPotentialDomBindings(element.name)) {
+    // Include manifest documentation and deprecation metadata in DOM completions.
+    const tagName = element.name;
+    const manifestIndex = checker.getCustomElementsManifestIndex();
+
+    for (const {attribute, property} of checker.getPotentialDomBindings(tagName)) {
       const isAlsoProperty = attribute === property;
       if (!table.has(attribute) && isAlsoProperty) {
         table.set(attribute, {
           kind: AttributeCompletionKind.DomAttribute,
           attribute,
           isAlsoProperty,
+          propertyManifestInfo: toManifestEntryInfo(manifestIndex?.getProperty(tagName, property)),
         });
       }
     }
-    for (const event of checker.getPotentialDomEvents(element.name)) {
-      table.set(event, {
+    if (manifestIndex !== null) {
+      for (const manifestAttribute of manifestIndex.getSchema(tagName)?.attributes ?? []) {
+        const attribute = manifestAttribute.name;
+        const existing = table.get(attribute);
+        if (existing !== undefined && existing.kind !== AttributeCompletionKind.DomAttribute) {
+          // Angular inputs, outputs, and selector attributes take precedence over manifest entries.
+          continue;
+        }
+        // Retain declared and inherited properties when adding manifest attribute metadata.
+        table.set(attribute, {
+          kind: AttributeCompletionKind.DomAttribute,
+          attribute,
+          isAlsoProperty:
+            existing?.isAlsoProperty === true || manifestIndex.hasProperty(tagName, attribute),
+          isCustomElementsManifestAttribute: true,
+          attributeManifestInfo: toManifestEntryInfo(manifestAttribute),
+          propertyManifestInfo:
+            toManifestEntryInfo(manifestIndex.getProperty(tagName, attribute)) ??
+            existing?.propertyManifestInfo,
+        });
+      }
+    }
+    for (const event of checker.getPotentialDomEvents(tagName)) {
+      if (table.get(event)?.kind === AttributeCompletionKind.DirectiveOutput) {
+        continue;
+      }
+      // Separate event keys from property and attribute keys so names can overlap without losing entries.
+      table.set(`(${event})`, {
         kind: AttributeCompletionKind.DomEvent,
         eventName: event,
+        manifestInfo: toManifestEntryInfo(manifestIndex?.getEvent(tagName, event)),
       });
     }
   }
   return table;
 }
 
+/**
+ * Checks whether a manifest entry has metadata to display in completions or hovers.
+ */
+export function hasCustomElementsManifestDocs(
+  entry: CustomElementsManifestEntryInfo | null | undefined,
+): entry is CustomElementsManifestEntryInfo {
+  return (
+    entry != null &&
+    (entry.deprecated !== undefined ||
+      entry.description !== undefined ||
+      entry.typeText !== undefined ||
+      entry.default !== undefined)
+  );
+}
+
+/** Returns the entry when it has display metadata. */
+function toManifestEntryInfo(
+  entry: CustomElementsManifestEntryInfo | null | undefined,
+): CustomElementsManifestEntryInfo | undefined {
+  return hasCustomElementsManifestDocs(entry) ? entry : undefined;
+}
+
+/**
+ * Converts manifest documentation to the format used by completion details and quick info.
+ */
+export function getCustomElementsManifestDisplayInfo(
+  info: CustomElementsManifestEntryInfo | null | undefined,
+): {documentation?: ts.SymbolDisplayPart[]; tags?: ts.JSDocTagInfo[]} {
+  if (info == null) {
+    return {};
+  }
+  const documentation: ts.SymbolDisplayPart[] = [];
+  if (info.description !== undefined) {
+    documentation.push({kind: 'text', text: info.description});
+  }
+  if (info.default !== undefined) {
+    if (documentation.length > 0) {
+      documentation.push({kind: 'lineBreak', text: '\n\n'});
+    }
+    documentation.push({kind: 'text', text: `Default: ${info.default}`});
+  }
+  return {
+    documentation: documentation.length > 0 ? documentation : undefined,
+    tags:
+      info.deprecated !== undefined
+        ? [
+            {
+              name: 'deprecated',
+              text:
+                typeof info.deprecated === 'string'
+                  ? [{kind: 'text', text: info.deprecated}]
+                  : undefined,
+            },
+          ]
+        : undefined,
+  };
+}
+
 function buildSnippet(insertSnippet: true | undefined, text: string): string | undefined {
   return insertSnippet ? `${text.replace(/\$/gi, '\\$')}="$1"` : undefined;
+}
+
+/** Returns the deprecated completion modifier when the manifest marks an entry as deprecated. */
+export function manifestKindModifiers(
+  info: CustomElementsManifestEntryInfo | null | undefined,
+): string | undefined {
+  return info?.deprecated !== undefined
+    ? ts.ScriptElementKindModifier.deprecatedModifier
+    : undefined;
 }
 
 /**
@@ -569,6 +692,26 @@ export function addAttributeCompletionEntries(
       break;
     }
     case AttributeCompletionKind.DomAttribute: {
+      if (isAttributeContext && completion.isCustomElementsManifestAttribute) {
+        entries.push({
+          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+          name: completion.attribute,
+          insertText: buildSnippet(insertSnippet, completion.attribute),
+          isSnippet: insertSnippet,
+          sortText: completion.attribute,
+          replacementSpan,
+          kindModifiers: manifestKindModifiers(completion.attributeManifestInfo),
+        });
+        entries.push({
+          kind: unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+          name: `[attr.${completion.attribute}]`,
+          insertText: buildSnippet(insertSnippet, `[attr.${completion.attribute}]`),
+          isSnippet: insertSnippet,
+          sortText: completion.attribute + '_1',
+          replacementSpan,
+          kindModifiers: manifestKindModifiers(completion.attributeManifestInfo),
+        });
+      }
       if ((isAttributeContext || insertSnippet) && completion.isAlsoProperty) {
         // Offer a completion of a property binding to the DOM property.
         entries.push({
@@ -578,8 +721,9 @@ export function addAttributeCompletionEntries(
           isSnippet: insertSnippet,
           // In the case of DOM attributes, the property binding should sort after the attribute
           // binding.
-          sortText: completion.attribute + '_1',
+          sortText: completion.attribute + '_2',
           replacementSpan,
+          kindModifiers: manifestKindModifiers(completion.propertyManifestInfo),
         });
       }
       break;
@@ -593,6 +737,7 @@ export function addAttributeCompletionEntries(
           isSnippet: insertSnippet,
           sortText: completion.property,
           replacementSpan,
+          kindModifiers: manifestKindModifiers(completion.manifestInfo),
         });
       }
       break;
@@ -605,6 +750,7 @@ export function addAttributeCompletionEntries(
         isSnippet: insertSnippet,
         sortText: completion.eventName,
         replacementSpan,
+        kindModifiers: manifestKindModifiers(completion.manifestInfo),
       });
       break;
     }

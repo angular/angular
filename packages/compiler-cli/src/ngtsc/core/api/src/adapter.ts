@@ -84,6 +84,25 @@ export interface NgCompilerAdapter
    * Resolved list of root directories explicitly set in, or inferred from, the tsconfig.
    */
   readonly rootDirs: ReadonlyArray<AbsoluteFsPath>;
+
+  /**
+   * Caches manifest load results across `NgCompiler` instances. Long-lived hosts provide this
+   * storage. The manifest loader owns the entry and checks file contents before reuse.
+   */
+  readonly customElementsManifestCache?: CustomElementsManifestCache;
+
+  /**
+   * Tracks a resource path, including missing files. Hosts use it to detect resource creation
+   * and metadata changes without a TypeScript program update.
+   */
+  recordResourceDependency?(fileName: AbsoluteFsPath): void;
+}
+
+/**
+ * Storage for the manifest loader's cache, shared across `NgCompiler` instances.
+ */
+export interface CustomElementsManifestCache {
+  entry: unknown;
 }
 
 export interface SourceFileTypeIdentifier {
