@@ -47,6 +47,10 @@ export function convertI18nBindings(job: CompilationJob): void {
             );
           }
 
+          if (op.kind === ir.OpKind.Property && op.exactDomPropertyName) {
+            i18nAttributesForElem.exactDomPropertyNames.push(op.name);
+          }
+
           const ops: ir.UpdateOp[] = [];
           for (let i = 0; i < op.expression.expressions.length; i++) {
             const expr = op.expression.expressions[i];

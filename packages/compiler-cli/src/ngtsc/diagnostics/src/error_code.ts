@@ -214,6 +214,53 @@ export enum ErrorCode {
   CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED = 4006,
 
   /**
+   * Raised when an entry of the `customElementsManifests` compiler option cannot be resolved to a
+   * Custom Elements Manifest file, or the file cannot be read.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_NOT_FOUND = 4007,
+
+  /**
+   * Raised when a Custom Elements Manifest referenced by the `customElementsManifests` compiler option
+   * cannot be parsed.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID = 4008,
+
+  /**
+   * Warns when a manifest declares an invalid custom element name, such as a native HTML tag.
+   * The loader skips the declaration.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_TAG_NAME = 4009,
+
+  /**
+   * Warns when declarations share a tag name. The loader keeps the first declaration and skips
+   * later ones.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_DUPLICATE_TAG = 4010,
+
+  /**
+   * Warns when a manifest type reference cannot resolve to TypeScript declarations.
+   * Affected properties and events retain schema checks. Element instances use `HTMLElement`.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_UNRESOLVABLE_TYPE_REFERENCE = 4011,
+
+  /**
+   * Raised when `customElementsManifests` is not an array of non-empty strings.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_OPTION = 4012,
+
+  /**
+   * Warns when manifest type metadata is unusable for template checking, including ambiguous
+   * JavaScript exports. The declaration remains known, but the affected checks omit the type.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_UNUSABLE_TYPE = 4013,
+
+  /**
+   * Warns when a manifest entry violates a CEM relationship used by Angular.
+   * The loader retains unrelated valid declarations.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_STRUCTURE = 4014,
+
+  /**
    * Raised when a host expression has a parse error, such as a host listener or host binding
    * expression containing a pipe.
    */

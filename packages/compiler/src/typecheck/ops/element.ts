@@ -40,7 +40,17 @@ export class TcbElementOp extends TcbOp {
     idNode.addParseSpanInfo(this.element.startSourceSpan || this.element.sourceSpan);
 
     // Add the declaration of the element using document.createElement.
-    const initializer = new TcbExpr(`document.createElement("${this.element.name}")`);
+    let initializer = new TcbExpr(`document.createElement("${this.element.name}")`);
+    if (this.tcb.env.config.checkTypeOfDomReferences) {
+      const instanceCheckType =
+        this.tcb.env.config.customElementsManifestIndex?.getInstanceCheckType(this.element.name) ??
+        null;
+      if (instanceCheckType !== null) {
+        initializer = new TcbExpr(
+          `document.createElement("${this.element.name}") as unknown as (${instanceCheckType})`,
+        );
+      }
+    }
     initializer.addParseSpanInfo(this.element.startSourceSpan || this.element.sourceSpan);
     const stmt = new TcbExpr(`var ${idNode.print()} = ${initializer.print()}`);
     stmt.addParseSpanInfo(this.element.startSourceSpan || this.element.sourceSpan);

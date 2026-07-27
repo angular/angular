@@ -345,15 +345,25 @@ export class Session {
     const suggestStrictModeDiag = diags.find((d) => d.code === -9910001);
 
     if (suggestStrictModeDiag) {
-      const configFilePath: string = project.getConfigFilePath();
-      this.connection.sendNotification(SuggestStrictMode, {
-        configFilePath,
-        message: suggestStrictModeDiag.messageText,
-      });
+      if (!this.renameDisabledProjects.has(project)) {
+        this.connection.sendNotification(SuggestStrictMode, {
+          configFilePath: project.getConfigFilePath(),
+          message: ts.flattenDiagnosticMessageText(suggestStrictModeDiag.messageText, '\n'),
+        });
+      }
       this.renameDisabledProjects.add(project);
     } else {
       this.renameDisabledProjects.delete(project);
     }
+
+    // These diagnostics describe project configuration, including manifest failures that can
+    // disable template checks. Publish them on the config rather than on each open template.
+    this.connection.sendDiagnostics({
+      uri: filePathToUri(project.getConfigFilePath()),
+      diagnostics: diags
+        .filter((diag) => diag !== suggestStrictModeDiag)
+        .map((diag) => tsDiagnosticToLspDiagnostic(diag, this.projectService)),
+    });
   }
 
   /**
@@ -469,6 +479,7 @@ export class Session {
    * @param reason Trace to explain why diagnostics is triggered
    */
   private async sendPendingDiagnostics(files: string[], reason: string) {
+    const checkedProjects = new Set<ts.server.Project>();
     for (let i = 0; i < files.length; ++i) {
       const fileName = files[i];
       const result = this.getLSAndScriptInfo(fileName);
@@ -491,6 +502,12 @@ export class Session {
       diagnostics.push(...result.languageService.getSuggestionDiagnostics(fileName));
       if (isDebugMode) {
         console.timeEnd(suggestionLabel);
+      }
+
+      const project = this.getDefaultProjectForScriptInfo(result.scriptInfo);
+      if (project !== null && !checkedProjects.has(project)) {
+        checkedProjects.add(project);
+        this.handleCompilerOptionsDiagnostics(project);
       }
 
       // Need to send diagnostics even if it's empty otherwise editor state will

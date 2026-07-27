@@ -8,6 +8,7 @@
 
 import {splitNsName} from '../../../../ml_parser/tags';
 import * as o from '../../../../output/output_ast';
+import {normalizeCustomElementTagName} from '../../../../schema/custom_elements_manifest_schema';
 import * as ir from '../../ir';
 import {CompilationJob, CompilationJobKind, TemplateCompilationMode} from '../compilation';
 import {isAriaAttribute} from '../util/attributes';
@@ -24,6 +25,30 @@ function lookupElement(
     throw new Error('All attributes should have an element-like target.');
   }
   return el;
+}
+
+/**
+ * Whether a binding on `target` names a manifest property that Angular's HTML mapping would rename.
+ * See `CompilationJob.customElementPropertyNames`.
+ */
+function isExactDomPropertyName(
+  job: CompilationJob,
+  target: ir.ElementOrContainerOps | undefined,
+  propertyName: string,
+): boolean {
+  if (
+    job.customElementPropertyNames === null ||
+    target === undefined ||
+    (target.kind !== ir.OpKind.Element && target.kind !== ir.OpKind.ElementStart) ||
+    target.tag === null
+  ) {
+    return false;
+  }
+  return (
+    job.customElementPropertyNames
+      .get(normalizeCustomElementTagName(target.tag))
+      ?.has(propertyName) === true
+  );
 }
 
 export function specializeBindings(job: CompilationJob): void {
@@ -140,6 +165,7 @@ export function specializeBindings(job: CompilationJob): void {
                 op.templateKind,
                 op.i18nContext,
                 op.i18nMessage,
+                isExactDomPropertyName(job, elements.get(op.target), op.name),
                 op.sourceSpan,
               ),
             );
@@ -166,6 +192,7 @@ export function specializeBindings(job: CompilationJob): void {
               op.templateKind,
               op.i18nContext,
               op.i18nMessage,
+              isExactDomPropertyName(job, elements.get(op.target), op.name),
               op.sourceSpan,
             ),
           );

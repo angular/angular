@@ -101,6 +101,22 @@ function createComponentDefinitionMap(
     definitionMap.set('minVersion', o.literal('17.0.0'));
   }
 
+  // Require a linker that supports customElementPropertyNames. Older linkers would ignore the
+  // field and remap property names. This version must be at least as high as any version set above.
+  if (meta.customElementPropertyNames !== null && meta.customElementPropertyNames !== undefined) {
+    definitionMap.set('minVersion', o.literal('22.2.0'));
+    definitionMap.set(
+      'customElementPropertyNames',
+      o.literalMap(
+        Array.from(meta.customElementPropertyNames, ([tagName, propertyNames]) => ({
+          key: tagName,
+          value: o.literalArr(Array.from(propertyNames, (propertyName) => o.literal(propertyName))),
+          quoted: true,
+        })),
+      ),
+    );
+  }
+
   definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
   definitionMap.set('dependencies', compileUsedDependenciesMetadata(meta));
   definitionMap.set('viewProviders', meta.viewProviders);
