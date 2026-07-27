@@ -454,6 +454,7 @@ function applyUpdateOpCodes(
                       value,
                       lView[RENDERER],
                       sanitizeFn,
+                      updateOpCodes.exactDomPropertyNames?.includes(propName) === true,
                     );
                   } finally {
                     setSelectedIndex(prevSelectedIndex);

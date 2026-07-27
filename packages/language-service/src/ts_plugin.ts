@@ -354,6 +354,10 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     ngLS.ensureProjectAnalyzed();
   }
 
+  function getCustomElementsManifestResolutionPaths(): string[] {
+    return ngLS.getCustomElementsManifestResolutionPaths();
+  }
+
   function getAngularInlayHints(
     fileName: string,
     span: ts.TextSpan,
@@ -372,6 +376,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   return {
     ...tsLS,
     ensureProjectAnalyzed,
+    getCustomElementsManifestResolutionPaths,
     getSyntacticDiagnostics,
     getSemanticDiagnostics,
     getSuggestionDiagnostics,

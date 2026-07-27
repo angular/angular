@@ -1472,6 +1472,225 @@ export class InputComponent {
   });
 
   describe('compiler options', () => {
+    it('should watch the configured manifest and refresh unchanged templates after edits', async () => {
+      client.dispose();
+      client = createConnection({useClientSideFileWatcher: true});
+      const registrations: lsp.Registration[] = [];
+      let resourceRegistered!: () => void;
+      const registered = new Promise<void>((resolve) => (resourceRegistered = resolve));
+      client.onRequest(lsp.RegistrationRequest.type, (params) => {
+        registrations.push(...params.registrations);
+        if (params.registrations.some((r) => r.method === 'textDocument/didOpen')) {
+          resourceRegistered();
+        }
+        return null;
+      });
+      client.onRequest(lsp.UnregistrationRequest.type, () => null);
+      const diagnosticsFor = createDiagnosticsWaiter(client);
+      client.listen();
+      await initializeServer(client, {
+        workspace: {
+          configuration: true,
+          didChangeWatchedFiles: {dynamicRegistration: true, relativePatternSupport: true},
+        },
+        textDocument: {synchronization: {dynamicRegistration: true}},
+      });
+      const root = makeTempDir();
+      const projectRoot = join(root, basename(PROJECT_PATH));
+      await cp(PROJECT_PATH, projectRoot, {
+        recursive: true,
+        mode: fs.constants.COPYFILE_FICLONE,
+        filter: (src) => src !== TSCONFIG && src !== APP_COMPONENT,
+      });
+      const manifestPath = join(root, 'catalog [v2].data');
+      const componentPath = join(projectRoot, 'app/app.component.ts');
+      const templatePath = join(projectRoot, 'app/resource.html');
+      const config = JSON.parse(await readFile(TSCONFIG, 'utf8'));
+      config.angularCompilerOptions.customElementsManifests = ['../catalog [v2].data'];
+      await writeFile(join(projectRoot, 'tsconfig.json'), JSON.stringify(config));
+      const manifest = (type: string) =>
+        JSON.stringify({
+          schemaVersion: '1.0.0',
+          modules: [
+            {
+              kind: 'javascript-module',
+              path: 'element.js',
+              declarations: [
+                {
+                  kind: 'class',
+                  name: 'ExampleElement',
+                  customElement: true,
+                  tagName: 'example-element',
+                  members: [{kind: 'field', name: 'value', type: {text: type}}],
+                },
+              ],
+            },
+          ],
+        });
+      await writeFile(manifestPath, manifest('number'));
+      await writeFile(templatePath, '<example-element [value]="1"></example-element>');
+      await writeFile(
+        componentPath,
+        `
+        import {Component} from '@angular/core';
+        @Component({selector: 'my-app', standalone: false, templateUrl: './resource.html'})
+        export class AppComponent {}
+      `,
+      );
+      const initial = diagnosticsFor(templatePath, (d) => d.length === 0);
+      openTextDocument(client, componentPath);
+      openTextDocument(client, templatePath);
+      await initial;
+      await registered;
+      const watching = registrations.find((r) => r.method === 'workspace/didChangeWatchedFiles');
+      expect(watching?.registerOptions.watchers).toContain(
+        jasmine.objectContaining({
+          globPattern: {baseUri: pathToFileURL(root).href, pattern: 'catalog [[]v2[]].data'},
+        }),
+      );
+      expect(registrations.map((r) => r.method)).not.toContain('textDocument/completion');
+
+      const diskError = diagnosticsFor(templatePath, (d) => d.some((error) => error.code === 2322));
+      await writeFile(manifestPath, manifest('string'));
+      client.sendNotification(lsp.DidChangeWatchedFilesNotification.type, {
+        changes: [{uri: pathToFileURL(manifestPath).href, type: lsp.FileChangeType.Changed}],
+      });
+      await diskError;
+
+      const opened = diagnosticsFor(templatePath, (d) => d.length === 0);
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: pathToFileURL(manifestPath).href,
+          languageId: 'plaintext',
+          version: 1,
+          text: manifest('number'),
+        },
+      });
+      await opened;
+      expect(await readFile(manifestPath, 'utf8')).toBe(manifest('string'));
+
+      // A language-mode change can overlap static and resource synchronization registrations.
+      const text = manifest('number');
+      const start = text.indexOf('number');
+      const changed = diagnosticsFor(templatePath, (d) => d.some((error) => error.code === 2322));
+      const change = {
+        textDocument: {uri: pathToFileURL(manifestPath).href, version: 2},
+        contentChanges: [
+          {
+            range: {start: {line: 0, character: start}, end: {line: 0, character: start + 6}},
+            text: 'boolean',
+          },
+        ],
+      };
+      client.sendNotification(lsp.DidChangeTextDocumentNotification.type, change);
+      client.sendNotification(lsp.DidChangeTextDocumentNotification.type, change);
+      await changed;
+      // Applying the longer replacement twice would corrupt JSON and lose the value check.
+      const repaired = diagnosticsFor(templatePath, (d) => d.length === 0);
+      client.sendNotification(lsp.DidChangeTextDocumentNotification.type, {
+        textDocument: {uri: pathToFileURL(manifestPath).href, version: 3},
+        contentChanges: [{text: manifest('number')}],
+      });
+      await repaired;
+      const closed = diagnosticsFor(templatePath, (d) => d.some((error) => error.code === 2322));
+      client.sendNotification(lsp.DidCloseTextDocumentNotification.type, {
+        textDocument: {uri: pathToFileURL(manifestPath).href},
+      });
+      await closed;
+
+      // Config diagnostics must update even after all synchronized documents are closed.
+      for (const file of [componentPath, templatePath]) {
+        client.sendNotification(lsp.DidCloseTextDocumentNotification.type, {
+          textDocument: {uri: pathToFileURL(file).href},
+        });
+      }
+      const configWarning = diagnosticsFor(join(projectRoot, 'tsconfig.json'), (d) =>
+        d.some((error) => error.code === -994013),
+      );
+      await writeFile(manifestPath, manifest('MissingType'));
+      client.sendNotification(lsp.DidChangeWatchedFilesNotification.type, {
+        changes: [{uri: pathToFileURL(manifestPath).href, type: lsp.FileChangeType.Changed}],
+      });
+      await configWarning;
+    });
+
+    it('should publish manifest warnings and errors on the config and clear them after edits', async () => {
+      const projectRoot = join(makeTempDir(), basename(PROJECT_PATH));
+      await cp(PROJECT_PATH, projectRoot, {
+        recursive: true,
+        mode: fs.constants.COPYFILE_FICLONE,
+        filter: (src) => src !== TSCONFIG,
+      });
+      const configPath = join(projectRoot, 'tsconfig.json');
+      const manifestPath = join(projectRoot, 'custom-elements.json');
+      const config = JSON.parse(await readFile(TSCONFIG, 'utf8'));
+      config.angularCompilerOptions.customElementsManifests = ['./custom-elements.json'];
+      await writeFile(configPath, JSON.stringify(config));
+      const manifest = {
+        schemaVersion: '1.0.0',
+        modules: [
+          {
+            kind: 'javascript-module',
+            path: 'element.js',
+            declarations: [
+              {
+                kind: 'class',
+                name: 'ExampleElement',
+                customElement: true,
+                tagName: 'example-element',
+                members: [{kind: 'field', name: 'value', type: {text: 'MissingType'}}],
+              },
+            ],
+            exports: [
+              {
+                kind: 'custom-element-definition',
+                name: 'example-element',
+                declaration: {name: 'ExampleElement'},
+              },
+            ],
+          },
+        ],
+      };
+      await writeFile(manifestPath, JSON.stringify(manifest));
+
+      const initial = getDiagnosticsForFile(client, configPath);
+      openTextDocument(client, join(projectRoot, 'app/app.component.ts'));
+      const warnings = await initial;
+      expect(warnings).toHaveSize(1);
+      expect(warnings[0].code).toBe(-994013);
+      expect(warnings[0].severity).toBe(lsp.DiagnosticSeverity.Warning);
+      expect(warnings[0].message).toContain('MissingType');
+
+      manifest.modules[0].declarations[0].members[0].type.text = 'string';
+      const validText = JSON.stringify(manifest);
+      const fixed = getDiagnosticsForFile(client, configPath);
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: pathToFileURL(manifestPath).href,
+          languageId: 'json',
+          version: 1,
+          text: validText,
+        },
+      });
+      expect(await fixed).toEqual([]);
+
+      for (const [index, text] of ['{', validText].entries()) {
+        const changed = getDiagnosticsForFile(client, configPath);
+        client.sendNotification(lsp.DidChangeTextDocumentNotification.type, {
+          textDocument: {uri: pathToFileURL(manifestPath).href, version: index + 2},
+          contentChanges: [{text}],
+        });
+        const diagnostics = await changed;
+        if (text === '{') {
+          expect(diagnostics).toHaveSize(1);
+          expect(diagnostics[0].code).toBe(-994008);
+          expect(diagnostics[0].severity).toBe(lsp.DiagnosticSeverity.Error);
+        } else {
+          expect(diagnostics).toEqual([]);
+        }
+      }
+    });
+
     describe('strictTemplates: false', () => {
       let newProjectRoot: string;
       let TSCONFIG_PATH_TMP: string;
@@ -2763,6 +2982,33 @@ describe('code fixes', () => {
     });
   });
 });
+
+/**
+ * Returns a function that waits for the next diagnostics of a file that satisfy a predicate.
+ * Unlike `getDiagnosticsForFile`, it can wait for several files at once.
+ */
+function createDiagnosticsWaiter(
+  client: MessageConnection,
+): (
+  fileName: string,
+  predicate: (diagnostics: lsp.Diagnostic[]) => boolean,
+) => Promise<lsp.Diagnostic[]> {
+  const waiting: Array<{
+    uri: string;
+    predicate: (diagnostics: lsp.Diagnostic[]) => boolean;
+    resolve: (diagnostics: lsp.Diagnostic[]) => void;
+  }> = [];
+  client.onNotification(lsp.PublishDiagnosticsNotification.type, (params) => {
+    for (const entry of waiting.slice()) {
+      if (entry.uri === params.uri && entry.predicate(params.diagnostics)) {
+        waiting.splice(waiting.indexOf(entry), 1);
+        entry.resolve(params.diagnostics);
+      }
+    }
+  });
+  return (fileName, predicate) =>
+    new Promise((resolve) => waiting.push({uri: pathToFileURL(fileName).href, predicate, resolve}));
+}
 
 function onSuggestStrictMode(client: MessageConnection): Promise<string> {
   return new Promise((resolve) => {

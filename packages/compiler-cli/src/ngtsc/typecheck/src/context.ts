@@ -9,6 +9,7 @@
 import {
   BoundTarget,
   DirectiveMeta,
+  DomElementSchemaRegistry,
   DomSchemaChecker,
   generateTypeCheckBlock,
   OutOfBandDiagnosticRecorder,
@@ -45,7 +46,7 @@ import {
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
-import {RegistryDomSchemaChecker} from './dom';
+import {REGISTRY, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorderImpl} from './oob';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
@@ -209,6 +210,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     private host: TypeCheckingHost,
     private inlining: InliningMode,
     private perf: PerfRecorder,
+    private domSchemaRegistry: DomElementSchemaRegistry = REGISTRY,
   ) {
     if (inlining === InliningMode.Error && config.useInlineTypeConstructors) {
       // We cannot use inlining for type checking since this environment does not support it.
@@ -623,7 +625,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const shimPath = TypeCheckShimGenerator.shimFor(absoluteFromSourceFile(node.getSourceFile()));
     if (!fileData.shimData.has(shimPath)) {
       fileData.shimData.set(shimPath, {
-        domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),
+        domSchemaChecker: new RegistryDomSchemaChecker(
+          fileData.sourceManager,
+          this.domSchemaRegistry,
+        ),
         oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager, (name) =>
           this.compilerHost.getSourceFile(name, ts.ScriptTarget.Latest),
         ),

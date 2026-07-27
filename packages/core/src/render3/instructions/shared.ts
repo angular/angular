@@ -254,6 +254,7 @@ export function setPropertyAndInputs<T>(
   value: T,
   renderer: Renderer,
   sanitizer: SanitizerFn | null | undefined,
+  exactDomPropertyName = false,
 ): void {
   ngDevMode && assertNotSame(value, NO_CHANGE as any, 'Incoming value should never be NO_CHANGE.');
   const tView = lView[TVIEW];
@@ -267,7 +268,9 @@ export function setPropertyAndInputs<T>(
 
   // If the property is going to a DOM node, we have to remap it.
   if (tNode.type & TNodeType.AnyRNode) {
-    propName = mapPropName(propName);
+    if (!exactDomPropertyName) {
+      propName = mapPropName(propName);
+    }
   }
 
   setDomProperty(tNode, lView, propName, value, renderer, sanitizer);

@@ -123,8 +123,7 @@ export const enum IcuCreateOpCode {
  * ```
  */
 export interface IcuCreateOpCodes
-  extends Array<number | string | ELEMENT_MARKER | ICU_MARKER | null>,
-    I18nDebug {
+  extends Array<number | string | ELEMENT_MARKER | ICU_MARKER | null>, I18nDebug {
   __brand__: 'I18nCreateOpCodes';
 }
 
@@ -328,6 +327,11 @@ export enum I18nCreateOpCode {
  */
 export interface I18nUpdateOpCodes extends Array<string | number | SanitizerFn | null>, I18nDebug {
   __brand__: 'I18nUpdateOpCodes';
+  /**
+   * Property names that translated bindings set without renaming. Shared by all instances of the
+   * view.
+   */
+  exactDomPropertyNames?: readonly string[];
 }
 
 /**

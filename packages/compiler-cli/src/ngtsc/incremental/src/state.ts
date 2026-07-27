@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CustomElementsManifestIndex} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -74,6 +75,12 @@ export interface AnalyzedIncrementalState {
    * Map of source file paths to the version of this file as seen in the compilation.
    */
   versions: Map<AbsoluteFsPath, string> | null;
+
+  /**
+   * Custom Elements Manifest schemas used by the compilation, or `null` if none were loaded.
+   * They are validated against type declarations, so they can change without a file change.
+   */
+  customElementsManifestIndex: CustomElementsManifestIndex | null;
 }
 
 /**
@@ -112,6 +119,4 @@ export interface DeltaIncrementalState {
  * Discriminated by the `IncrementalStateKind` enum.
  */
 export type IncrementalState =
-  | AnalyzedIncrementalState
-  | DeltaIncrementalState
-  | FreshIncrementalState;
+  AnalyzedIncrementalState | DeltaIncrementalState | FreshIncrementalState;
