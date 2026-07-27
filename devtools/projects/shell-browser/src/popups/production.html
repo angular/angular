@@ -1,9 +1,5 @@
 <html>
   <head>
-    <link
-      href="../third_party/fonts.google.com/material-symbols-outlined/outlined.css"
-      rel="stylesheet"
-    />
     <style>
       * {
         margin: 0;
@@ -29,21 +25,26 @@
       .message {
         display: flex;
         align-items: center;
-        padding: 5px;
+        padding: 0 5px;
       }
 
       code {
-        font-size: 1em;
         font-family: monospace;
+        font-size: 0.9em;
+        background: #f1f1f1;
+        padding: 2px 6px;
+        border-radius: 4px;
       }
 
       p:not(:last-child) {
         margin-bottom: 10px;
       }
 
-      .material-symbols-outlined {
-        color: rgb(107, 107, 107);
-        margin-right: 10px;
+      .angie {
+        height: 56px;
+        width: auto;
+        margin-right: 12px;
+        flex-shrink: 0;
       }
     </style>
   </head>
@@ -52,7 +53,7 @@
     <div class="modal-content">
       <h4 class="header-text">Angular DevTools</h4>
       <div class="message">
-        <span class="material-symbols-outlined md-48">settings</span>
+        <img class="angie" src="../assets/angie-teaching.svg" alt="Angie illustration" />
         <section>
           <p>
             Angular application running in

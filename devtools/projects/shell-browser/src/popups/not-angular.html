@@ -1,9 +1,5 @@
 <html>
   <head>
-    <link
-      href="../third_party/fonts.google.com/material-symbols-outlined/outlined.css"
-      rel="stylesheet"
-    />
     <style>
       * {
         margin: 0;
@@ -29,7 +25,7 @@
       .message {
         display: flex;
         align-items: center;
-        padding: 5px;
+        padding: 0 5px;
       }
 
       code {
@@ -41,9 +37,11 @@
         margin-bottom: 10px;
       }
 
-      .material-symbols-outlined {
-        color: rgb(107, 107, 107);
-        margin-right: 7px;
+      .angie {
+        height: 56px;
+        width: auto;
+        margin-right: 12px;
+        flex-shrink: 0;
       }
     </style>
   </head>
@@ -52,7 +50,7 @@
     <div class="modal-content">
       <h4 class="header-text">Angular DevTools</h4>
       <div class="message">
-        <span class="material-symbols-outlined md-48">cancel</span>
+        <img class="angie" src="../assets/angie-sad.svg" alt="Angie illustration" />
         <p>This page is not using Angular, or it has a strict extension policy.</p>
       </div>
     </div>

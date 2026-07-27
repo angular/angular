@@ -1,9 +1,5 @@
 <html>
   <head>
-    <link
-      href="../third_party/fonts.google.com/material-symbols-outlined/outlined.css"
-      rel="stylesheet"
-    />
     <style>
       * {
         margin: 0;
@@ -21,19 +17,17 @@
         padding: 10px;
       }
 
-      .icon {
-        width: 20px;
-        margin-right: 16px;
-      }
-
       .message {
-        padding: 5px;
-      }
-
-      section {
         display: flex;
         align-items: center;
-        margin-bottom: 10px;
+        padding: 0 5px;
+      }
+
+      .angie {
+        height: 56px;
+        width: auto;
+        margin-right: 12px;
+        flex-shrink: 0;
       }
 
       code {
@@ -44,11 +38,6 @@
       p:not(:last-child) {
         margin-bottom: 10px;
       }
-
-      .material-symbols-outlined {
-        color: rgb(107, 107, 107);
-        margin-right: 7px;
-      }
     </style>
   </head>
 
@@ -56,12 +45,9 @@
     <div class="modal-content">
       <h4 class="header-text">Angular DevTools</h4>
       <div class="message">
+        <img class="angie" src="../assets/angie-orthos-back.svg" alt="Angie illustration" />
         <section>
-          <span class="material-symbols-outlined md-48">check</span>
           <p>This page is using Angular.</p>
-        </section>
-        <section>
-          <span class="material-symbols-outlined md-48">settings</span>
           <p>You can use DevTools with Angular v12+</p>
         </section>
       </div>
