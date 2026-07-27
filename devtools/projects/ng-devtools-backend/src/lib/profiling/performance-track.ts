@@ -16,9 +16,6 @@ type Method = keyof LifecycleProfile | 'changeDetection' | string;
 // Performance track global flag.
 let chromeDevToolsPerformanceTrackEnabled = false;
 
-/** Enable Angular's performance track in the Chrome DevTools profiler. */
-export const enablePerformanceTrack = () => (chromeDevToolsPerformanceTrackEnabled = true);
-
 /** Disable Angular's performance track in the Chrome DevTools profiler. */
 export const disablePerformanceTrack = () => (chromeDevToolsPerformanceTrackEnabled = false);
 
@@ -64,7 +61,7 @@ const endMark = (nodeName: string, method: Method) => {
   }
 };
 
-getProfiler().subscribe({
+const timingHooks = {
   onChangeDetectionStart(component: ComponentInstance): void {
     if (!performanceTrackEnabled()) {
       return;
@@ -101,4 +98,21 @@ getProfiler().subscribe({
     }
     endMark(getDirectiveName(component), output);
   },
-});
+};
+
+let performanceTrackInitialized = false;
+
+function initializePerformanceTrack(): void {
+  if (performanceTrackInitialized) {
+    return;
+  }
+
+  getProfiler().subscribe(timingHooks);
+  performanceTrackInitialized = true;
+}
+
+/** Enable Angular's performance track in the Chrome DevTools profiler. */
+export function enablePerformanceTrack(): void {
+  initializePerformanceTrack();
+  chromeDevToolsPerformanceTrackEnabled = true;
+}
