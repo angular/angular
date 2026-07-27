@@ -251,6 +251,11 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   i18nContext: XrefId | null;
   i18nMessage: i18n.Message | null;
 
+  /**
+   * Whether to write `name` to the DOM without HTML name mapping. Used for manifest properties.
+   */
+  exactDomPropertyName: boolean;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -267,6 +272,7 @@ export function createPropertyOp(
   templateKind: TemplateKind | null,
   i18nContext: XrefId | null,
   i18nMessage: i18n.Message | null,
+  exactDomPropertyName: boolean,
   sourceSpan: ParseSourceSpan,
 ): PropertyOp {
   return {
@@ -281,6 +287,7 @@ export function createPropertyOp(
     templateKind,
     i18nContext,
     i18nMessage,
+    exactDomPropertyName,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
@@ -331,6 +338,9 @@ export interface TwoWayPropertyOp
   i18nContext: XrefId | null;
   i18nMessage: i18n.Message | null;
 
+  /** See `PropertyOp.exactDomPropertyName`. */
+  exactDomPropertyName: boolean;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -346,6 +356,7 @@ export function createTwoWayPropertyOp(
   templateKind: TemplateKind | null,
   i18nContext: XrefId | null,
   i18nMessage: i18n.Message | null,
+  exactDomPropertyName: boolean,
   sourceSpan: ParseSourceSpan,
 ): TwoWayPropertyOp {
   return {
@@ -359,6 +370,7 @@ export function createTwoWayPropertyOp(
     templateKind,
     i18nContext,
     i18nMessage,
+    exactDomPropertyName,
     sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,

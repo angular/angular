@@ -206,6 +206,13 @@ export interface R3ComponentMetadata<
   DeclarationT extends R3TemplateDependency,
 > extends R3DirectiveMetadata {
   /**
+   * Exact JavaScript property names declared for custom elements, keyed by tag name.
+   *
+   * Manifest property names bypass Angular's HTML name mappings, such as `readonly` to `readOnly`.
+   */
+  customElementPropertyNames?: ReadonlyMap<string, ReadonlySet<string>> | null;
+
+  /**
    * Information about the component's template.
    */
   template: {

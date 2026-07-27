@@ -9,6 +9,7 @@
 import {
   AbsoluteSourceSpan,
   AST,
+  ɵCustomElementsManifestIndex as CustomElementsManifestIndex,
   ForeignComponentMeta,
   LiteralPrimitive,
   ParseSourceSpan,
@@ -311,6 +312,12 @@ export interface TemplateTypeChecker {
    * Retrieve any potential DOM events.
    */
   getPotentialDomEvents(tagName: string): string[];
+
+  /**
+   * Gets the configured manifest index, or `null` if none is configured. Includes declared
+   * members and documentation for editor tooling.
+   */
+  getCustomElementsManifestIndex(): CustomElementsManifestIndex | null;
 
   /**
    * Retrieve the type checking engine's metadata for the given directive class, if available.

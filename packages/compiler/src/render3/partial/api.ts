@@ -155,6 +155,9 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
  * Describes the shape of the object that the `ɵɵngDeclareComponent()` function accepts.
  */
 export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
+  /** Exact custom-element JavaScript property names, keyed by tag name. */
+  customElementPropertyNames?: {[tagName: string]: string[]};
+
   /**
    * The component's unparsed template string as opaque expression. The template is represented
    * using either a string literal or template literal without substitutions, but its value is

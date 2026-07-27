@@ -8,5 +8,6 @@
 
 export * from './src/buffer';
 export * from './src/env';
+export * from './src/host';
 export * from './src/project';
 export * from './src/util';

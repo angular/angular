@@ -2021,6 +2021,9 @@ export interface I18nAttributesOp extends Op<CreateOp>, ConsumesSlotOpTrait {
    * I18nAttributes instructions correspond to a const array with configuration information.
    */
   i18nAttributesConfig: ConstIndex | null;
+
+  /** Property names that must bypass native HTML name mapping. */
+  exactDomPropertyNames: string[];
 }
 
 export function createI18nAttributesOp(
@@ -2034,6 +2037,7 @@ export function createI18nAttributesOp(
     handle,
     target,
     i18nAttributesConfig: null,
+    exactDomPropertyNames: [],
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
   };

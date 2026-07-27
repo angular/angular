@@ -181,18 +181,22 @@ describe('type check blocks diagnostics', () => {
       const block = tcbWithSpans(TEMPLATE, PIPES);
       expect(block).toContain('var _pipe1 = null! as i0.TestPipe');
       expect(block).toContain(
-        '(_pipe1.transform /*7,11*/(((this).a /*3,4*/) /*3,4*/, ((this).b /*12,13*/) /*12,13*/) /*3,13*/);',
+        '"" + (_pipe1.transform /*7,11*/(((this).a /*3,4*/) /*3,4*/, ((this).b /*12,13*/) /*12,13*/) /*3,13*/) /*0,16*/;',
       );
     });
 
     describe('attaching multiple comments for multiple references', () => {
       it('should be correct for element refs', () => {
         const TEMPLATE = `<span #a></span>{{ a || a }}`;
-        expect(tcbWithSpans(TEMPLATE)).toContain('((_t1 /*19,20*/) || (_t1 /*24,25*/) /*19,25*/);');
+        expect(tcbWithSpans(TEMPLATE)).toContain(
+          '"" + ((_t1 /*19,20*/) || (_t1 /*24,25*/) /*19,25*/) /*16,28*/;',
+        );
       });
       it('should be correct for template vars', () => {
         const TEMPLATE = `<ng-template let-a='b'>{{ a || a }}</ng-template>`;
-        expect(tcbWithSpans(TEMPLATE)).toContain('((_t2 /*26,27*/) || (_t2 /*31,32*/) /*26,32*/);');
+        expect(tcbWithSpans(TEMPLATE)).toContain(
+          '"" + ((_t2 /*26,27*/) || (_t2 /*31,32*/) /*26,32*/) /*23,35*/;',
+        );
       });
       it('should be correct for directive refs', () => {
         const DIRECTIVES: TestDeclaration[] = [
@@ -205,7 +209,7 @@ describe('type check blocks diagnostics', () => {
         ];
         const TEMPLATE = `<my-cmp #a></my-cmp>{{ a || a }}`;
         expect(tcbWithSpans(TEMPLATE, DIRECTIVES)).toContain(
-          '((_t1 /*23,24*/) || (_t1 /*28,29*/) /*23,29*/);',
+          '"" + ((_t1 /*23,24*/) || (_t1 /*28,29*/) /*23,29*/) /*20,32*/;',
         );
       });
     });

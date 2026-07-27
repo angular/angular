@@ -131,6 +131,7 @@ function propertyBase(
   expression: o.Expression | ir.Interpolation,
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
+  exactDomPropertyName = false,
 ): ir.UpdateOp {
   const args: o.Expression[] = [o.literal(name)];
 
@@ -140,10 +141,25 @@ function propertyBase(
     args.push(expression);
   }
 
-  if (sanitizer !== null) {
-    args.push(sanitizer);
-  }
+  pushOptionalPropertyArgs(args, sanitizer, exactDomPropertyName);
   return call(instruction, args, sourceSpan);
+}
+
+/**
+ * Appends optional arguments to `property` and `twoWayProperty`. Uses `null` for an omitted
+ * sanitizer when the exact-name flag follows it.
+ */
+function pushOptionalPropertyArgs(
+  args: o.Expression[],
+  sanitizer: o.Expression | null,
+  exactDomPropertyName: boolean,
+): void {
+  if (sanitizer !== null || exactDomPropertyName) {
+    args.push(sanitizer ?? o.NULL_EXPR);
+  }
+  if (exactDomPropertyName) {
+    args.push(o.literal(true));
+  }
 }
 
 export function elementEnd(sourceSpan: ParseSourceSpan | null): ir.CreateOp {
@@ -600,8 +616,15 @@ export function i18nEnd(endSourceSpan: ParseSourceSpan | null): ir.CreateOp {
   return call(Identifiers.i18nEnd, [], endSourceSpan);
 }
 
-export function i18nAttributes(slot: number, i18nAttributesConfig: number): ir.CreateOp {
-  const args = [o.literal(slot), o.literal(i18nAttributesConfig)];
+export function i18nAttributes(
+  slot: number,
+  i18nAttributesConfig: number,
+  exactDomPropertyNames: string[],
+): ir.CreateOp {
+  const args: o.Expression[] = [o.literal(slot), o.literal(i18nAttributesConfig)];
+  if (exactDomPropertyNames.length > 0) {
+    args.push(o.literalArr(exactDomPropertyNames.map((name) => o.literal(name))));
+  }
   return call(Identifiers.i18nAttributes, args, null);
 }
 
@@ -618,8 +641,16 @@ export function property(
   expression: o.Expression | ir.Interpolation,
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
+  exactDomPropertyName = false,
 ): ir.UpdateOp {
-  return propertyBase(Identifiers.property, name, expression, sanitizer, sourceSpan);
+  return propertyBase(
+    Identifiers.property,
+    name,
+    expression,
+    sanitizer,
+    sourceSpan,
+    exactDomPropertyName,
+  );
 }
 
 export function control(sourceSpan: ParseSourceSpan | null): ir.UpdateOp {
@@ -635,11 +666,10 @@ export function twoWayProperty(
   expression: o.Expression,
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
+  exactDomPropertyName = false,
 ): ir.UpdateOp {
   const args = [o.literal(name), expression];
-  if (sanitizer !== null) {
-    args.push(sanitizer);
-  }
+  pushOptionalPropertyArgs(args, sanitizer, exactDomPropertyName);
   return call(Identifiers.twoWayProperty, args, sourceSpan);
 }
 

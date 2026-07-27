@@ -150,15 +150,20 @@ export function ɵɵi18n(index: number, messageIndex: number, subTemplateIndex?:
  * Marks a list of attributes as translatable.
  *
  * @param index A unique index in the static block
- * @param values
+ * @param attrsIndex Index of the translated attribute configuration in the constants array.
+ * @param exactDomPropertyNames Property names that bypass native HTML name mapping.
  *
  * @codeGenApi
  */
-export function ɵɵi18nAttributes(index: number, attrsIndex: number): void {
+export function ɵɵi18nAttributes(
+  index: number,
+  attrsIndex: number,
+  exactDomPropertyNames?: readonly string[],
+): void {
   const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
   const attrs = getConstant<string[]>(tView.consts, attrsIndex)!;
-  i18nAttributesFirstPass(tView, index + HEADER_OFFSET, attrs);
+  i18nAttributesFirstPass(tView, index + HEADER_OFFSET, attrs, exactDomPropertyNames);
 }
 
 /**
