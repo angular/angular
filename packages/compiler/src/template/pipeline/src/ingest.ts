@@ -75,6 +75,7 @@ export function ingestComponent(
   enableDebugLocations: boolean,
   legacyOptionalChaining: boolean,
   foreignImports: R3ForeignComponentMetadata[] | null,
+  customElementPropertyNames: ReadonlyMap<string, ReadonlySet<string>> | null,
 ): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
     componentName,
@@ -88,6 +89,7 @@ export function ingestComponent(
     enableDebugLocations,
     legacyOptionalChaining,
     foreignImports,
+    customElementPropertyNames,
   );
   ingestNodes(job.root, template);
   return job;

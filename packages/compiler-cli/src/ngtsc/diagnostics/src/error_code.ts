@@ -214,6 +214,53 @@ export enum ErrorCode {
   CONFIG_EMIT_DECLARATION_ONLY_UNSUPPORTED = 4006,
 
   /**
+   * Raised when a `customElementsManifests` entry does not resolve to a file, or the file cannot be
+   * read. The entry is skipped.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_NOT_FOUND = 4007,
+
+  /**
+   * Raised when a configured Custom Elements Manifest is not valid JSON, or is not an object with a
+   * string `schemaVersion` and a `modules` array. The file is skipped.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID = 4008,
+
+  /**
+   * Raised when a manifest declares a tag that is not a valid custom element name, such as a native
+   * tag name. The declaration is skipped.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_TAG_NAME = 4009,
+
+  /**
+   * Raised when two manifest declarations use the same tag. The first declaration is kept.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_DUPLICATE_TAG = 4010,
+
+  /**
+   * Raised when a manifest type reference does not resolve to TypeScript declarations. Affected
+   * values are not type-checked, and local references use `HTMLElement`.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_UNRESOLVABLE_TYPE_REFERENCE = 4011,
+
+  /**
+   * Raised when `customElementsManifests` is not an array of non-empty strings, or
+   * `customElementsManifestsDiagnostics` is not `'summary'` or `'verbose'`.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_OPTION = 4012,
+
+  /**
+   * Raised when manifest type metadata cannot be used for template checks, such as unsupported type
+   * text or an ambiguous class export. The declaration is kept without the affected type checks.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_UNUSABLE_TYPE = 4013,
+
+  /**
+   * Raised when manifest records are inconsistent, such as a property whose `attribute` is not
+   * listed in `attributes`. Other records are kept, and missing records are not created.
+   */
+  CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_STRUCTURE = 4014,
+
+  /**
    * Raised when a host expression has a parse error, such as a host listener or host binding
    * expression containing a pipe.
    */

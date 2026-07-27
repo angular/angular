@@ -7,6 +7,7 @@
  */
 
 import {
+  ɵCustomElementsManifestIndex as CustomElementsManifestIndex,
   generateIndexerAnalysis,
   IndexedComponent,
   IndexingContext,
@@ -26,6 +27,10 @@ import {
   ReferencesRegistry,
 } from '../../annotations';
 import {InjectableClassRegistry, JitDeclarationRegistry} from '../../annotations/common';
+import {
+  CustomElementsManifestsDiagnosticsMode,
+  loadCustomElementsManifests,
+} from '../../custom_elements_manifest';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {
   addDiagnosticDetails,
@@ -150,7 +155,7 @@ interface LazyCompilationState {
   dtsTransforms: DtsTransformRegistry;
   aliasingHost: AliasingHost | null;
   refEmitter: ReferenceEmitter;
-  templateTypeChecker: TemplateTypeChecker;
+  templateTypeChecker: TemplateTypeCheckerImpl;
   resourceRegistry: ResourceRegistry;
   extendedTemplateChecker: ExtendedTemplateChecker | null;
   templateSemanticsChecker: TemplateSemanticsChecker | null;
@@ -404,6 +409,21 @@ export class NgCompiler {
   private readonly emitDeclarationOnly: boolean;
   private readonly enableTemplateSourceLocations: boolean;
 
+  /** Valid manifest entries. Empty when the option is unset or malformed. */
+  private readonly customElementsManifests: readonly string[];
+
+  /** Custom elements from the configured manifests, or `null` if there are none. */
+  private customElementsManifestIndex: CustomElementsManifestIndex | null = null;
+
+  /** Files whose changes can change which manifests resolve or what they contain. */
+  private customElementsManifestResolutionPaths: Set<AbsoluteFsPath> = new Set();
+
+  /**
+   * Manifest load diagnostics. Kept separate from `constructionDiagnostics` so manifest changes
+   * can replace them and manifest errors do not disable unrelated checks.
+   */
+  private customElementsManifestDiagnostics: ts.Diagnostic[] = [];
+
   /**
    * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
    * new compilation uses a fresh `PerfRecorder`. Thus, classes created with a lifespan of the
@@ -492,6 +512,7 @@ export class NgCompiler {
       ...this.adapter.constructionDiagnostics,
       ...verifyCompatibleTypeCheckOptions(this.options),
       ...verifyEmitDeclarationOnly(this.options),
+      ...verifyCustomElementsManifestsOption(this.options),
     );
 
     this.currentProgram = inputProgram;
@@ -515,6 +536,17 @@ export class NgCompiler {
       moduleResolutionCache,
     );
     this.resourceManager = new AdapterResourceLoader(adapter, this.options);
+
+    this.customElementsManifests = getValidCustomElementsManifestsOption(this.options) ?? [];
+    if (this.customElementsManifests.length > 0) {
+      this.loadCustomElementsManifestSchemas(moduleResolutionCache);
+    }
+    // Schemas can change without a manifest edit, such as when a referenced declaration changes.
+    // Schemas that differ from the previous build discard its results.
+    this.incrementalCompilation.recordCustomElementsManifestIndex(
+      this.customElementsManifestIndex,
+      inputProgram,
+    );
     this.cycleAnalyzer = new CycleAnalyzer(
       new ImportGraph(inputProgram.getTypeChecker(), this.delegatingPerfRecorder),
     );
@@ -543,6 +575,37 @@ export class NgCompiler {
     return this.livePerfRecorder;
   }
 
+  /**
+   * Loads the configured manifests. Registers resolution paths as dependencies of every source
+   * file because manifest changes affect all templates. Build hosts use these paths for watches
+   * and incremental invalidation.
+   */
+  private loadCustomElementsManifestSchemas(
+    moduleResolutionCache: ts.ModuleResolutionCache | null,
+  ): void {
+    const manifestResult = loadCustomElementsManifests(
+      this.customElementsManifests,
+      resolve(this.options['basePath'] ?? this.adapter.getCurrentDirectory()),
+      this.options,
+      this.adapter,
+      moduleResolutionCache,
+      this.inputProgram,
+      getCustomElementsManifestsDiagnosticsMode(this.options),
+      this.adapter.customElementsManifestCache ?? null,
+    );
+    this.customElementsManifestIndex = manifestResult.index;
+    this.customElementsManifestResolutionPaths = manifestResult.resolutionPaths;
+    this.customElementsManifestDiagnostics = manifestResult.diagnostics;
+    for (const sourceFile of this.inputProgram.getSourceFiles()) {
+      if (sourceFile.isDeclarationFile || this.adapter.isShim(sourceFile)) {
+        continue;
+      }
+      for (const resolutionPath of this.customElementsManifestResolutionPaths) {
+        this.incrementalCompilation.depGraph.addResourceDependency(sourceFile, resolutionPath);
+      }
+    }
+  }
+
   private updateWithChangedResources(
     changedResources: Set<string>,
     perfRecorder: ActivePerfRecorder,
@@ -551,9 +614,43 @@ export class NgCompiler {
     this.delegatingPerfRecorder.target = perfRecorder;
 
     perfRecorder.inPhase(PerfPhase.ResourceUpdate, () => {
+      let manifestChanged = false;
+      for (const resourceFile of changedResources) {
+        if (this.customElementsManifestResolutionPaths.has(resolve(resourceFile))) {
+          manifestChanged = true;
+          break;
+        }
+      }
+      if (manifestChanged) {
+        // Reload the schemas and invalidate every component's type-check block. Keep the existing
+        // compilation, because a resource-only update can't rebuild its semantic dependency graph.
+        this.loadCustomElementsManifestSchemas(null);
+        this.incrementalCompilation.recordCustomElementsManifestIndex(
+          this.customElementsManifestIndex,
+          this.inputProgram,
+        );
+        this.resourceManager.invalidate();
+        if (this.compilation !== null) {
+          this.compilation.templateTypeChecker.updateCustomElementsManifestIndex(
+            this.customElementsManifestIndex,
+          );
+          for (const records of this.compilation.traitCompiler.getAnalyzedRecords().values()) {
+            for (const record of records) {
+              if (
+                ts.isClassDeclaration(record.node) &&
+                this.compilation.resourceRegistry.getTemplate(record.node) !== null
+              ) {
+                this.compilation.templateTypeChecker.invalidateClass(record.node);
+              }
+            }
+          }
+        }
+      }
+
       if (this.compilation === null) {
         // Analysis hasn't happened yet, so no update is necessary - any changes to resources will
-        // be captured by the initial analysis pass itself.
+        // be captured by the initial analysis pass itself. Manifests were reloaded above, because
+        // they are loaded before analysis.
         return;
       }
 
@@ -705,7 +802,9 @@ export class NgCompiler {
    * Get all setup-related diagnostics for this compilation.
    */
   getOptionDiagnostics(): ts.Diagnostic[] {
-    return this.constructionDiagnostics;
+    return this.customElementsManifestDiagnostics.length === 0
+      ? this.constructionDiagnostics
+      : [...this.constructionDiagnostics, ...this.customElementsManifestDiagnostics];
   }
 
   /**
@@ -1134,6 +1233,7 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
+        customElementsManifestIndex: this.customElementsManifestIndex,
       };
     } else {
       typeCheckingConfig = {
@@ -1167,6 +1267,7 @@ export class NgCompiler {
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
         checkUnknownElements: false,
+        customElementsManifestIndex: this.customElementsManifestIndex,
       };
     }
 
@@ -1570,6 +1671,7 @@ export class NgCompiler {
         this.emitDeclarationOnly,
         this.options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
         this.enableTemplateSourceLocations,
+        () => this.customElementsManifestIndex,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
@@ -1871,6 +1973,57 @@ function verifyEmitDeclarationOnly(options: NgCompilerOptions): ts.Diagnostic[] 
       messageText: 'TS compiler option "emitDeclarationOnly" is not supported.',
     }),
   ];
+}
+
+function verifyCustomElementsManifestsOption(options: NgCompilerOptions): ts.Diagnostic[] {
+  const diagnostics: ts.Diagnostic[] = [];
+  const value = (options as {customElementsManifests?: unknown}).customElementsManifests;
+  if (value !== undefined && getValidCustomElementsManifestsOption(options) === null) {
+    diagnostics.push(
+      makeConfigDiagnostic({
+        category: ts.DiagnosticCategory.Error,
+        code: ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_OPTION,
+        messageText:
+          'Angular compiler option "customElementsManifests" must be an array of non-empty strings.',
+      }),
+    );
+  }
+  const mode = readCustomElementsManifestsDiagnosticsOption(options);
+  if (mode !== undefined && mode !== 'summary' && mode !== 'verbose') {
+    diagnostics.push(
+      makeConfigDiagnostic({
+        category: ts.DiagnosticCategory.Error,
+        code: ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_INVALID_OPTION,
+        messageText:
+          'Angular compiler option "customElementsManifestsDiagnostics" must be "summary" or "verbose".',
+      }),
+    );
+  }
+  return diagnostics;
+}
+
+/** Reads `customElementsManifestsDiagnostics` as written in tsconfig, which may be any value. */
+function readCustomElementsManifestsDiagnosticsOption(options: NgCompilerOptions): unknown {
+  return (options as {customElementsManifestsDiagnostics?: unknown})
+    .customElementsManifestsDiagnostics;
+}
+
+function getCustomElementsManifestsDiagnosticsMode(
+  options: NgCompilerOptions,
+): CustomElementsManifestsDiagnosticsMode {
+  return readCustomElementsManifestsDiagnosticsOption(options) === 'verbose'
+    ? 'verbose'
+    : 'summary';
+}
+
+function getValidCustomElementsManifestsOption(
+  options: NgCompilerOptions,
+): readonly string[] | null {
+  const value = (options as {customElementsManifests?: unknown}).customElementsManifests;
+  return Array.isArray(value) &&
+    value.every((entry) => typeof entry === 'string' && entry.trim().length > 0)
+    ? value
+    : null;
 }
 
 function makeConfigDiagnostic({

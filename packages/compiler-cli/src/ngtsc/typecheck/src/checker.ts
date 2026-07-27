@@ -10,6 +10,7 @@ import {
   AbsoluteSourceSpan,
   AST,
   BoundTarget,
+  ɵCustomElementsManifestIndex as CustomElementsManifestIndex,
   CssSelector,
   DomElementSchemaRegistry,
   ExternalExpr,
@@ -113,6 +114,13 @@ import {
   TypeCheckingHost,
 } from './context';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
+import {REGISTRY} from './dom';
+
+/** DOM schema registries that include manifest custom elements, one per manifest index. */
+const CUSTOM_ELEMENTS_MANIFEST_REGISTRIES = new WeakMap<
+  CustomElementsManifestIndex,
+  DomElementSchemaRegistry
+>();
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
@@ -241,7 +249,6 @@ function getTcbLocationForSymbol(symbol: Symbol | BindingSymbol | ClassSymbol): 
   }
 }
 
-const REGISTRY = new DomElementSchemaRegistry();
 /**
  * Primary template type-checking engine, which performs type-checking using a
  * `TypeCheckingProgramStrategy` for type-checking program maintenance, and the
@@ -249,6 +256,23 @@ const REGISTRY = new DomElementSchemaRegistry();
  */
 export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   private state = new Map<AbsoluteFsPath, FileTypeCheckingData>();
+
+  /**
+   * The DOM schema registry for checks and completions: one shared registry per manifest index, or
+   * the default registry when no manifests are configured.
+   */
+  private get domSchemaRegistry(): DomElementSchemaRegistry {
+    const index = this.config.customElementsManifestIndex;
+    if (index === null) {
+      return REGISTRY;
+    }
+    let registry = CUSTOM_ELEMENTS_MANIFEST_REGISTRIES.get(index);
+    if (registry === undefined) {
+      registry = new DomElementSchemaRegistry(index);
+      CUSTOM_ELEMENTS_MANIFEST_REGISTRIES.set(index, registry);
+    }
+    return registry;
+  }
 
   /**
    * Stores the `CompletionEngine` which powers autocompletion for each component class.
@@ -289,6 +313,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   private isComplete = false;
   private priorResultsAdopted = false;
+
+  /**
+   * Replaces the manifest schemas used by later type-check blocks. Callers must also invalidate
+   * every component, because manifests affect all templates.
+   */
+  updateCustomElementsManifestIndex(index: CustomElementsManifestIndex | null): void {
+    this.config.customElementsManifestIndex = index;
+    this.elementTagCache.clear();
+  }
 
   constructor(
     private originalProgram: ts.Program,
@@ -1062,6 +1095,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       host,
       this.programDriver.inliningMode,
       this.perf,
+      this.domSchemaRegistry,
     );
   }
 
@@ -1484,8 +1518,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     const tagMap = new Map<string, PotentialDirective | null>();
+    const customElementsManifestTags = this.config.customElementsManifestIndex?.tagNames;
 
-    for (const tag of REGISTRY.allKnownElementNames()) {
+    for (const tag of this.domSchemaRegistry.allKnownElementNames()) {
       tagMap.set(tag, null);
     }
 
@@ -1497,9 +1532,21 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       }
 
       for (const selector of CssSelector.parse(directive.selector)) {
-        if (selector.element === null || tagMap.has(selector.element)) {
+        if (selector.element === null) {
           // Skip this directive if it doesn't match an element tag, or if another directive has
           // already been included with the same element name.
+          continue;
+        }
+
+        const isPlainElementSelector =
+          selector.attrs.length === 0 &&
+          selector.classNames.length === 0 &&
+          selector.notSelectors.length === 0;
+        const replacesManifestEntry =
+          tagMap.get(selector.element) === null &&
+          customElementsManifestTags?.has(selector.element) === true &&
+          isPlainElementSelector;
+        if (tagMap.has(selector.element) && !replacesManifestEntry) {
           continue;
         }
 
@@ -1512,15 +1559,22 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getPotentialDomBindings(tagName: string): {attribute: string; property: string}[] {
-    const attributes = REGISTRY.allKnownAttributesOfElement(tagName);
-    return attributes.map((attribute) => ({
+    const manifestIndex = this.config.customElementsManifestIndex;
+    return this.domSchemaRegistry.allKnownAttributesOfElement(tagName).map((attribute) => ({
       attribute,
-      property: REGISTRY.getMappedPropName(attribute),
+      // Manifest properties keep their names. Other attributes map to their DOM property names.
+      property: manifestIndex?.hasProperty(tagName, attribute)
+        ? attribute
+        : this.domSchemaRegistry.getMappedPropName(attribute),
     }));
   }
 
   getPotentialDomEvents(tagName: string): string[] {
-    return REGISTRY.allKnownEventsOfElement(tagName);
+    return this.domSchemaRegistry.allKnownEventsOfElement(tagName);
+  }
+
+  getCustomElementsManifestIndex(): CustomElementsManifestIndex | null {
+    return this.config.customElementsManifestIndex;
   }
 
   getPrimaryAngularDecorator(target: ts.ClassDeclaration): ts.Decorator | null {

@@ -50,6 +50,15 @@ export interface NgCompilerAdapter
     Pick<ExtendedTsCompilerHost, 'getCurrentDirectory' | ExtendedCompilerHostMethods>,
     SourceFileTypeIdentifier {
   /**
+   * Host for resolving Custom Elements Manifests and their type references, which are outside the
+   * TypeScript program. A wrapper whose resolver caches program imports, such as `NgCompilerHost`,
+   * passes its underlying host so these lookups see current files and can record the files they
+   * consulted. The underlying host's `resolveModuleNames` is still used when present.
+   */
+  readonly resourceResolutionHost?: ts.ModuleResolutionHost &
+    Pick<ts.CompilerHost, 'resolveModuleNames'>;
+
+  /**
    * A path to a single file which represents the entrypoint of an Angular Package Format library,
    * if the current program is one.
    *
@@ -84,6 +93,23 @@ export interface NgCompilerAdapter
    * Resolved list of root directories explicitly set in, or inferred from, the tsconfig.
    */
   readonly rootDirs: ReadonlyArray<AbsoluteFsPath>;
+
+  /**
+   * Lets the manifest loader reuse its result in the next `NgCompiler`, as in the language service.
+   * The loader owns the entry and checks the files the result depends on before reusing it.
+   */
+  readonly customElementsManifestCache?: CustomElementsManifestCache;
+
+  /**
+   * Records a file that a resource depends on, including a file that doesn't exist yet, so the host
+   * can report when it is created or changed even if the TypeScript program doesn't change.
+   */
+  recordResourceDependency?(fileName: AbsoluteFsPath): void;
+}
+
+/** Storage for the manifest loader's cache, shared across `NgCompiler` instances. */
+export interface CustomElementsManifestCache {
+  entry: unknown;
 }
 
 export interface SourceFileTypeIdentifier {
