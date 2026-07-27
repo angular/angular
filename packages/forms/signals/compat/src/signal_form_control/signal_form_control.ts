@@ -18,6 +18,7 @@ import {
 } from '@angular/core';
 import {
   AbstractControl,
+  AsyncValidatorFn,
   ControlEvent,
   FormArray,
   FormControlState,
@@ -27,6 +28,8 @@ import {
   PristineChangeEvent,
   StatusChangeEvent,
   TouchedChangeEvent,
+  ValidationErrors,
+  ValidatorFn,
   ValueChangeEvent,
 } from '@angular/forms';
 
@@ -439,27 +442,27 @@ export class SignalFormControl<T> extends AbstractControl {
     throw unsupportedDisableEnableError();
   }
 
-  override setValidators(_validators: any): void {
+  override setValidators(_validators: ValidatorFn | ValidatorFn[] | null): void {
     throw unsupportedValidatorsError();
   }
 
-  override setAsyncValidators(_validators: any): void {
+  override setAsyncValidators(_validators: AsyncValidatorFn | AsyncValidatorFn[] | null): void {
     throw unsupportedValidatorsError();
   }
 
-  override addValidators(_validators: any): void {
+  override addValidators(_validators: ValidatorFn | ValidatorFn[] | null): void {
     throw unsupportedValidatorsError();
   }
 
-  override addAsyncValidators(_validators: any): void {
+  override addAsyncValidators(_validators: AsyncValidatorFn | AsyncValidatorFn[] | null): void {
     throw unsupportedValidatorsError();
   }
 
-  override removeValidators(_validators: any): void {
+  override removeValidators(_validators: ValidatorFn | ValidatorFn[] | null): void {
     throw unsupportedValidatorsError();
   }
 
-  override removeAsyncValidators(_validators: any): void {
+  override removeAsyncValidators(_validators: AsyncValidatorFn | AsyncValidatorFn[] | null): void {
     throw unsupportedValidatorsError();
   }
 
@@ -471,7 +474,7 @@ export class SignalFormControl<T> extends AbstractControl {
     throw unsupportedValidatorsError();
   }
 
-  override setErrors(_errors: any, _opts?: {emitEvent?: boolean}): void {
+  override setErrors(_errors: ValidationErrors | null, _opts?: {emitEvent?: boolean}): void {
     throw unsupportedFeatureError(
       ngDevMode &&
         'Imperatively setting errors is not supported in signal forms. Errors are derived from validation rules.',
