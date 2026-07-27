@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ts_project")
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -20,4 +20,17 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
         "//devtools/projects/protocol",
     ],
+)
+
+ts_test_library(
+    name = "performance_track_test_lib",
+    srcs = ["performance-track.spec.ts"],
+    deps = [
+        ":profiling",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "performance_track_test",
+    deps = [":performance_track_test_lib"],
 )
