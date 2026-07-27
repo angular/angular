@@ -206,6 +206,87 @@ export interface TypeCheckingOptions {
    * Defaults to `false` unless `strictTemplates` is set.
    */
   strictLiteralTypes?: boolean;
+
+  /**
+   * A list of Custom Elements Manifest (`custom-elements.json`) locations describing web
+   * components used in templates.
+   *
+   * See https://github.com/webcomponents/custom-elements-manifest for the manifest format.
+   *
+   * Each entry may be:
+   * - a path relative to the project's tsconfig (e.g. `./custom-elements.json`),
+   * - a module specifier of a `.json` file within a package
+   *   (e.g. `@my/lib/custom-elements.json`), or
+   * - a bare package name (e.g. `@my/lib`), in which case the manifest is located via the
+   *   `customElements` field of the package's `package.json`.
+   *
+   * Elements declared in these manifests are treated as known elements during template
+   * type-checking: they don't produce "not a known element" diagnostics (NG8001), their declared
+   * members and events are recognized in bindings (NG8002, excluding `readonly` members), and they
+   * are offered by the language service in completions along with declared HTML attributes, value
+   * completions for string literal unions, displayed types/defaults, documentation, and
+   * deprecation status — all without adding
+   * `CUSTOM_ELEMENTS_SCHEMA`, which broadly allows otherwise-unknown hyphenated tags and
+   * properties. When both mechanisms are present, manifest-declared tags retain precise property
+   * checking while `CUSTOM_ELEMENTS_SCHEMA` continues to allow other hyphenated tags. Bindings to
+   * properties that a manifest does not declare are still reported.
+   *
+   * Under strict template type-checking (`strictTemplates`/`strictInputTypes`), binding values
+   * are additionally checked against the manifest's type information when it is trustworthy:
+   * self-contained type text (primitive keywords, literal unions, inline object types, and array
+   * syntax over those), or named types that the manifest's `type.references` entries locate in a
+   * package with TypeScript declarations. Named globals also require an explicit reference using
+   * `package: "global:"`.
+   * References without a package are local to the manifest package, references without a module
+   * are local to the containing manifest module, and platform globals use `package: "global:"`.
+   * Interpolated property values are checked after Angular's string serialization; use a property
+   * binding instead when assigning a non-string manifest property.
+   * `$event` in event bindings is likewise typed from the manifest's event types. With
+   * `strictAttributeTypes`, static manifest attributes are checked only when the manifest declares
+   * a string literal union. CEM does not define universal number or boolean converters, so those
+   * static spellings remain existence-checked while property bindings retain their full types.
+   * Bindings written as `[attr.name]` use Angular's general attribute
+   * serialization behavior and are not value-checked against manifest types. Other properties,
+   * attributes, and events are existence-checked only.
+   * Attribute-only declarations do not authorize same-named JavaScript property bindings, but the
+   * language service offers their `[attr.name]` form. Manifest JavaScript property names are
+   * preserved exactly during code generation rather than being passed through native HTML
+   * attribute-to-property name mappings.
+   * Directive host bindings are compiled without the consuming component's manifest configuration
+   * and continue to use native DOM property-name mappings; use component template bindings when an
+   * exact manifest property name differs from the native mapping.
+   * Package-based manifests can also provide the element class type for strict local template
+   * references. References to modules or exported names that cannot be resolved produce an NG4011
+   * warning and fall back to existence-only checking or `HTMLElement`; they do not produce errors
+   * on template bindings. Declared type text that the safe validator cannot use — including
+   * unsupported forms, named types without usable `type.references`, malformed text, and ambiguous
+   * element-instance export mappings — produces an NG4013 warning and uses the same narrow
+   * fallbacks. Angular does not replace rejected manifest type text with a type inferred from a
+   * `.d.ts` file. A corrected manifest controlled by the consumer can be configured instead of the
+   * vendor manifest.
+   * Recoverable inconsistencies in consumed CEM relationships produce an NG4014 warning and retain
+   * unrelated valid metadata. Missing attribute records are not synthesized, and definition-only
+   * tags without resolvable declarations use a closed empty-member schema.
+   *
+   * Manifest properties are not offered as two-way binding completions. DOM event listeners
+   * receive an event object, whereas Angular two-way binding assigns `$event` directly to the
+   * bound value; use an explicit property binding and event handler to extract event detail.
+   *
+   * Manifests are tracked as global compilation resources and edits are reloaded when the compiler
+   * host reports them as changed. Whether files in ignored dependency directories trigger a rebuild
+   * depends on the host's watch policy.
+   */
+  customElementsManifests?: string[];
+
+  /**
+   * How warnings about the configured Custom Elements Manifests are reported.
+   *
+   * In `'summary'` mode (the default), warnings of the same kind about one manifest — for
+   * example unresolvable type references in a large design system — are folded into a single
+   * diagnostic carrying a count and examples. In `'verbose'` mode every affected declaration or
+   * reference is reported individually.
+   */
+  customElementsManifestsDiagnostics?: 'summary' | 'verbose';
 }
 
 /**

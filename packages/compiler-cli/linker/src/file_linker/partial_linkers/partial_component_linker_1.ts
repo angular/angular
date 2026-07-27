@@ -179,6 +179,13 @@ export class PartialComponentLinkerVersion1<
     }
 
     const baseMeta = toR3DirectiveMeta(metaObj, this.code, this.sourceUrl, version);
+    const customElementPropertyNames = metaObj.has('customElementPropertyNames')
+      ? metaObj
+          .getObject('customElementPropertyNames')
+          .toMap(
+            (propertyNames) => new Set(propertyNames.getArray().map((name) => name.getString())),
+          )
+      : null;
     const deferBlockDependencies = this.createR3ComponentDeferMetadata(metaObj, template);
     let hasDirectiveDependencies = false;
 
@@ -256,6 +263,7 @@ export class PartialComponentLinkerVersion1<
       hasDirectiveDependencies: !baseMeta.isStandalone || hasDirectiveDependencies,
       foreignImports: null,
       enableTemplateSourceLocations: false,
+      customElementPropertyNames,
     };
   }
 

@@ -131,6 +131,7 @@ function propertyBase(
   expression: o.Expression | ir.Interpolation,
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
+  exactDomPropertyName = false,
 ): ir.UpdateOp {
   const args: o.Expression[] = [o.literal(name)];
 
@@ -140,8 +141,11 @@ function propertyBase(
     args.push(expression);
   }
 
-  if (sanitizer !== null) {
-    args.push(sanitizer);
+  if (sanitizer !== null || exactDomPropertyName) {
+    args.push(sanitizer ?? o.NULL_EXPR);
+  }
+  if (exactDomPropertyName) {
+    args.push(o.literal(true));
   }
   return call(instruction, args, sourceSpan);
 }
@@ -618,8 +622,16 @@ export function property(
   expression: o.Expression | ir.Interpolation,
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
+  exactDomPropertyName = false,
 ): ir.UpdateOp {
-  return propertyBase(Identifiers.property, name, expression, sanitizer, sourceSpan);
+  return propertyBase(
+    Identifiers.property,
+    name,
+    expression,
+    sanitizer,
+    sourceSpan,
+    exactDomPropertyName,
+  );
 }
 
 export function control(sourceSpan: ParseSourceSpan | null): ir.UpdateOp {
@@ -635,10 +647,14 @@ export function twoWayProperty(
   expression: o.Expression,
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
+  exactDomPropertyName = false,
 ): ir.UpdateOp {
   const args = [o.literal(name), expression];
-  if (sanitizer !== null) {
-    args.push(sanitizer);
+  if (sanitizer !== null || exactDomPropertyName) {
+    args.push(sanitizer ?? o.NULL_EXPR);
+  }
+  if (exactDomPropertyName) {
+    args.push(o.literal(true));
   }
   return call(Identifiers.twoWayProperty, args, sourceSpan);
 }

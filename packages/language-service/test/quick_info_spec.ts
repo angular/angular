@@ -1434,6 +1434,184 @@ describe('quick info', () => {
   }
 });
 
+describe('quick info for custom elements manifests', () => {
+  function setupWithManifest(template: string) {
+    const manifest = {
+      schemaVersion: '1.0.0',
+      modules: [
+        {
+          kind: 'javascript-module',
+          path: 'my-button.js',
+          declarations: [
+            {
+              kind: 'class',
+              name: 'MyButton',
+              customElement: true,
+              tagName: 'my-button',
+              description: 'A themed button.',
+              members: [
+                {
+                  kind: 'field',
+                  name: 'label',
+                  type: {text: 'string'},
+                  description: 'The button label.',
+                },
+                {
+                  kind: 'field',
+                  name: 'disabled',
+                  type: {text: 'boolean'},
+                  deprecated: 'Use aria-disabled instead.',
+                },
+                {
+                  kind: 'field',
+                  name: 'propertyOnlyName',
+                  type: {text: 'string'},
+                  description: 'Property-only documentation.',
+                },
+              ],
+              attributes: [
+                {
+                  name: 'label',
+                  fieldName: 'label',
+                  type: {text: 'string'},
+                  description: 'The label attribute.',
+                },
+                {
+                  name: 'attribute-only-name',
+                  type: {text: 'string'},
+                  description: 'Attribute-only documentation.',
+                },
+              ],
+              events: [
+                {
+                  name: 'activate',
+                  type: {text: 'UnresolvedActivateEvent'},
+                  description: 'Fired when the button activates.',
+                  deprecated: 'Use invoke instead.',
+                },
+                {
+                  name: 'click',
+                  type: {
+                    text: 'CustomEvent<{value: string}>',
+                    references: [{name: 'CustomEvent', package: 'global:', start: 0, end: 11}],
+                  },
+                  description: 'Fired when the custom button activates.',
+                },
+              ],
+            },
+          ],
+          exports: [
+            {
+              kind: 'custom-element-definition',
+              name: 'my-button',
+              declaration: {name: 'MyButton'},
+            },
+          ],
+        },
+      ],
+    };
+    const env = LanguageServiceTestEnv.setup();
+    const project = env.addProject(
+      'test-cem',
+      {
+        'custom-elements.json': JSON.stringify(manifest),
+        'app.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            templateUrl: './app.html',
+            selector: 'app-cmp',
+          })
+          export class AppCmp {}
+
+          @NgModule({
+            declarations: [AppCmp],
+          })
+          export class AppModule {}
+        `,
+        'app.html': template,
+      },
+      {customElementsManifests: ['./custom-elements.json']},
+    );
+    return project.openFile('app.html');
+  }
+
+  it('should include manifest documentation when hovering an element', () => {
+    const file = setupWithManifest(`<my-button label="go"></my-button>`);
+    file.moveCursorToText('<my-but¦ton label');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(toText(info.documentation)).toEqual('A themed button.');
+  });
+
+  it('should include manifest documentation when hovering a property binding', () => {
+    const file = setupWithManifest(`<my-button [label]="'go'"></my-button>`);
+    file.moveCursorToText('[lab¦el]');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(toText(info.documentation)).toEqual('The button label.');
+    expect(toText(info.displayParts)).toEqual('(property) label: string');
+  });
+
+  it('should prefer manifest attribute documentation for a static attribute', () => {
+    const file = setupWithManifest(`<my-button label="go"></my-button>`);
+    file.moveCursorToText('lab¦el="go"');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(toText(info.documentation)).toEqual('The label attribute.');
+    expect(toText(info.displayParts)).toEqual('(property) label: string');
+  });
+
+  it('should not use attribute documentation for an invalid property binding', () => {
+    const file = setupWithManifest(`<my-button [attribute-only-name]="'go'"></my-button>`);
+    file.moveCursorToText('[attribute-only-na¦me]');
+    expect(file.getQuickInfoAtPosition()).toBeUndefined();
+  });
+
+  it('should not use property documentation for an attr binding', () => {
+    const file = setupWithManifest(`<my-button [attr.propertyOnlyName]="'go'"></my-button>`);
+    file.moveCursorToText('[attr.propertyOnlyNa¦me]');
+    expect(file.getQuickInfoAtPosition()).toBeUndefined();
+  });
+
+  it('should surface deprecation when hovering a deprecated property', () => {
+    const file = setupWithManifest(`<my-button [disabled]="true"></my-button>`);
+    file.moveCursorToText('[disab¦led]');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(info.tags).toEqual([
+      jasmine.objectContaining({
+        name: 'deprecated',
+        text: [{kind: 'text', text: 'Use aria-disabled instead.'}],
+      }),
+    ]);
+  });
+
+  it('should include manifest documentation and deprecation when hovering an event', () => {
+    const file = setupWithManifest(`<my-button (activate)="onActivate()"></my-button>`);
+    file.moveCursorToText('(acti¦vate)');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(toText(info.displayParts)).toEqual('(event) activate: UnresolvedActivateEvent');
+    expect(toText(info.documentation)).toEqual('Fired when the button activates.');
+    expect(info.tags).toEqual([
+      jasmine.objectContaining({
+        name: 'deprecated',
+        text: [{kind: 'text', text: 'Use invoke instead.'}],
+      }),
+    ]);
+  });
+
+  it('should prefer manifest details when hovering an event that collides with a native event', () => {
+    const file = setupWithManifest(`<my-button (click)="onClick($event)"></my-button>`);
+    file.moveCursorToText('(cli¦ck)');
+    const info = file.getQuickInfoAtPosition()!;
+    expect(info).toBeDefined();
+    expect(toText(info.displayParts)).toEqual('(event) click: CustomEvent<{value: string}>');
+    expect(toText(info.documentation)).toEqual('Fired when the custom button activates.');
+  });
+});
+
 function toText(displayParts?: ts.SymbolDisplayPart[]): string {
   return (displayParts || []).map((p) => p.text).join('');
 }
