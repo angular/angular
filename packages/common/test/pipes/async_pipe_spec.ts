@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AsyncPipe} from '../../index';
 import {
   ChangeDetectorRef,
   Component,
@@ -16,8 +15,9 @@ import {
   signal,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {useAutoTick} from '@angular/private/testing';
 import {Observable, of, Subscribable, Unsubscribable} from 'rxjs';
-import {useAutoTick} from './util';
+import {AsyncPipe} from '../../index';
 
 describe('AsyncPipe', () => {
   let pipe: AsyncPipe;
