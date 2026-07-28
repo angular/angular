@@ -660,7 +660,7 @@ function parseICUBlock(pattern: string): IcuExpression {
 
   const parts = i18nParseTextIntoPartsAndICU(pattern) as string[];
   // Looking for (key block)+ sequence. One of the keys has to be "other".
-  for (let pos = 0; pos < parts.length; ) {
+  for (let pos = 0; pos < parts.length;) {
     let key = parts[pos++].trim();
     if (icuType === IcuType.plural) {
       // Key can be "=x", we just want "x"
