@@ -8461,7 +8461,7 @@ runInEachFileSystem((os: string) => {
         hostVars: 5,
         hostBindings: function UnsafeAttrsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrl)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
+            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrlOrResourceUrl)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
           }
         }
       `;
@@ -8517,14 +8517,14 @@ runInEachFileSystem((os: string) => {
         hostVars: 5,
         hostBindings: function UnsafePropsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵdomProperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.propAction, i0.ɵɵsanitizeUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
+            i0.ɵɵdomProperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.propAction, i0.ɵɵsanitizeUrlOrResourceUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
           }
         }
       `;
         expect(trim(jsContents)).toContain(trim(hostBindingsFn));
       });
 
-      it('should not generate sanitizers for URL properties in hostBindings fn in Component', () => {
+      it('should generate concrete-host URL sanitizers in hostBindings fn in Component', () => {
         env.write(
           `test.ts`,
           `
@@ -8552,8 +8552,40 @@ runInEachFileSystem((os: string) => {
         hostVars: 6,
         hostBindings: function FooCmp_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵdomProperty("src", ctx.srcProp)("href", ctx.hrefProp)("title", ctx.titleProp);
-            i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr)("title", ctx.titleAttr);
+            i0.ɵɵdomProperty("src", ctx.srcProp, i0.ɵɵsanitizeUrlOrResourceUrl)("href", ctx.hrefProp, i0.ɵɵsanitizeUrlOrResourceUrl)("title", ctx.titleProp);
+            i0.ɵɵattribute("src", ctx.srcAttr, i0.ɵɵsanitizeUrlOrResourceUrl)("href", ctx.hrefAttr, i0.ɵɵsanitizeUrlOrResourceUrl)("title", ctx.titleAttr);
+          }
+        }
+        `;
+        expect(trim(jsContents)).toContain(trim(hostBindingsFn));
+      });
+
+      it('should generate sanitizers for pure :not selector host bindings', () => {
+        env.write(
+          `test.ts`,
+          `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: ':not(iframe)',
+          template: '',
+          host: {
+            '[attr.srcdoc]': 'srcdoc',
+          }
+        })
+        class FooCmp {
+          srcdoc: any;
+        }
+      `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        const hostBindingsFn = `
+        hostVars: 1,
+        hostBindings: function FooCmp_HostBindings(rf, ctx) {
+          if (rf & 2) {
+            i0.ɵɵattribute("srcdoc", ctx.srcdoc, i0.ɵɵsanitizeHtml);
           }
         }
       `;

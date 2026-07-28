@@ -7,6 +7,7 @@
  */
 
 import {InternalInjectFlags} from '../di/interface/injector';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../sanitization/dom_security_schema';
 import {
   assertDefined,
   assertEqual,
@@ -31,7 +32,6 @@ import {
   TView,
   TViewType,
 } from './interfaces/view';
-import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 import {getTNode, walkUpViews} from './util/view_utils';
 
 /**
