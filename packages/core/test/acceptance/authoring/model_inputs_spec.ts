@@ -24,7 +24,7 @@ import {SIGNAL} from '../../../primitives/signals';
 import {TestBed} from '../../../testing';
 
 describe('model inputs', () => {
-  it('should support two-way binding to a signal', () => {
+  it('should support two-way binding to a signal', async () => {
     @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
@@ -54,7 +54,7 @@ describe('model inputs', () => {
 
     // Changing the value from the outside.
     host.value.set(3);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value()).toBe(3);
     expect(host.dir.value()).toBe(3);
   });
@@ -94,7 +94,7 @@ describe('model inputs', () => {
     expect(host.dir.value()).toBe(3);
   });
 
-  it('should support two-way binding a signal to a non-model input/output pair', () => {
+  it('should support two-way binding a signal to a non-model input/output pair', async () => {
     @Directive({selector: '[dir]'})
     class Dir {
       @Input() value = 0;
@@ -127,12 +127,12 @@ describe('model inputs', () => {
 
     // Changing the value from the outside.
     host.value.set(3);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value()).toBe(3);
     expect(host.dir.value).toBe(3);
   });
 
-  it('should support a one-way property binding to a model', () => {
+  it('should support a one-way property binding to a model', async () => {
     @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
@@ -158,19 +158,19 @@ describe('model inputs', () => {
 
     // Changing the value from within the directive.
     host.dir.value.set(2);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value).toBe(1);
     expect(host.dir.value()).toBe(2);
 
     // Changing the value from the outside.
     host.value = 3;
     fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value).toBe(3);
     expect(host.dir.value()).toBe(3);
   });
 
-  it('should emit to the change output when the model changes', () => {
+  it('should emit to the change output when the model changes', async () => {
     const emittedValues: number[] = [];
 
     @Directive({selector: '[dir]'})
@@ -197,20 +197,20 @@ describe('model inputs', () => {
     expect(emittedValues).toEqual([]);
 
     host.dir.value.set(1);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(emittedValues).toEqual([1]);
 
     // Same value should not emit.
     host.dir.value.set(1);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(emittedValues).toEqual([1]);
 
     host.dir.value.update((value) => value * 5);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(emittedValues).toEqual([1, 5]);
   });
 
-  it('should not emit to the change event when then property binding changes', () => {
+  it('should not emit to the change event when then property binding changes', async () => {
     const emittedValues: number[] = [];
 
     @Directive({selector: '[dir]'})
@@ -237,11 +237,11 @@ describe('model inputs', () => {
     expect(emittedValues).toEqual([]);
 
     host.value.set(2);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(emittedValues).toEqual([]);
   });
 
-  it('should support binding to the model input and output separately', () => {
+  it('should support binding to the model input and output separately', async () => {
     const emittedValues: number[] = [];
 
     @Directive({selector: '[dir]'})
@@ -271,19 +271,19 @@ describe('model inputs', () => {
     expect(emittedValues).toEqual([]);
 
     host.dir.value.set(2);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value()).toBe(1);
     expect(host.dir.value()).toBe(2);
     expect(emittedValues).toEqual([2]);
 
     host.value.set(3);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value()).toBe(3);
     expect(host.dir.value()).toBe(3);
     expect(emittedValues).toEqual([2]);
   });
 
-  it('should support two-way binding to a model with an alias', () => {
+  it('should support two-way binding to a model with an alias', async () => {
     @Directive({selector: '[dir]'})
     class Dir {
       value = model(0, {alias: 'alias'});
@@ -308,18 +308,18 @@ describe('model inputs', () => {
 
     // Changing the value from within the directive.
     host.dir.value.set(2);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value()).toBe(2);
     expect(host.dir.value()).toBe(2);
 
     // Changing the value from the outside.
     host.value.set(3);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value()).toBe(3);
     expect(host.dir.value()).toBe(3);
   });
 
-  it('should support binding to an aliased model input and output separately', () => {
+  it('should support binding to an aliased model input and output separately', async () => {
     const emittedValues: number[] = [];
 
     @Directive({selector: '[dir]'})
@@ -349,13 +349,13 @@ describe('model inputs', () => {
     expect(emittedValues).toEqual([]);
 
     host.dir.value.set(2);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value()).toBe(1);
     expect(host.dir.value()).toBe(2);
     expect(emittedValues).toEqual([2]);
 
     host.value.set(3);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value()).toBe(3);
     expect(host.dir.value()).toBe(3);
     expect(emittedValues).toEqual([2]);
@@ -384,7 +384,7 @@ describe('model inputs', () => {
     );
   });
 
-  it('should stop emitting to the output on destroy', () => {
+  it('should stop emitting to the output on destroy', async () => {
     let emittedEvents = 0;
 
     @Directive({selector: '[dir]'})
@@ -411,7 +411,7 @@ describe('model inputs', () => {
     expect(emittedEvents).toBe(0);
 
     modelRef.set(1);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(emittedEvents).toBe(1);
 
     fixture.destroy();
@@ -421,7 +421,7 @@ describe('model inputs', () => {
     expect(emittedEvents).toBe(1);
   });
 
-  it('should support inherited model inputs', () => {
+  it('should support inherited model inputs', async () => {
     @Directive()
     abstract class BaseDir {
       value = model(0);
@@ -449,18 +449,18 @@ describe('model inputs', () => {
 
     // Changing the value from within the directive.
     host.dir.value.set(2);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value()).toBe(2);
     expect(host.dir.value()).toBe(2);
 
     // Changing the value from the outside.
     host.value.set(3);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value()).toBe(3);
     expect(host.dir.value()).toBe(3);
   });
 
-  it('should reflect changes to a two-way-bound signal in the DOM', () => {
+  it('should reflect changes to a two-way-bound signal in the DOM', async () => {
     @Directive({
       selector: '[dir]',
       host: {
@@ -484,7 +484,7 @@ describe('model inputs', () => {
     }
 
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('Current value: 1');
 
     fixture.nativeElement.querySelector('button').click();
@@ -496,7 +496,7 @@ describe('model inputs', () => {
     expect(fixture.nativeElement.textContent).toContain('Current value: 3');
   });
 
-  it('should support ngOnChanges for two-way model bindings', () => {
+  it('should support ngOnChanges for two-way model bindings', async () => {
     const changes: SimpleChange[] = [];
 
     @Directive({selector: '[dir]'})
@@ -531,7 +531,7 @@ describe('model inputs', () => {
     ]);
 
     fixture.componentInstance.value.set(2);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(changes).toEqual([
       jasmine.objectContaining({
@@ -571,7 +571,7 @@ describe('model inputs', () => {
     expect(() => fixture.destroy()).not.toThrow();
   });
 
-  it('should support two-way binding to a signal @for loop variable', () => {
+  it('should support two-way binding to a signal @for loop variable', async () => {
     @Directive({selector: '[dir]'})
     class Dir {
       value = model(0);
@@ -605,7 +605,7 @@ describe('model inputs', () => {
 
     // Changing the value from the outside.
     host.values[0].set(3);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.values[0]()).toBe(3);
     expect(host.dir.value()).toBe(3);
   });

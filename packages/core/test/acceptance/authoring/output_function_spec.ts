@@ -153,7 +153,7 @@ describe('output() function', () => {
     );
   });
 
-  it('should run listeners outside of `emit` reactive context', () => {
+  it('should run listeners outside of `emit` reactive context', async () => {
     @Directive({
       selector: '[dir]',
     })
@@ -189,7 +189,7 @@ describe('output() function', () => {
 
     expect(dir.effectCount).toEqual(1);
     fixture.componentInstance.signalUnrelatedToDir.update((v) => v + 1);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(dir.effectCount).toEqual(1);
   });

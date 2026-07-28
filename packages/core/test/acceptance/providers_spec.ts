@@ -533,7 +533,7 @@ describe('providers', () => {
       });
     });
 
-    it('should call ngOnDestroy if host component is destroyed', () => {
+    it('should call ngOnDestroy if host component is destroyed', async () => {
       const logs: string[] = [];
 
       @Injectable()
@@ -574,7 +574,7 @@ describe('providers', () => {
 
       fixture.componentInstance.condition = false;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(logs).toEqual(['OnDestroy Token']);
     });
