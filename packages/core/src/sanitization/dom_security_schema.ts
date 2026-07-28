@@ -39,8 +39,8 @@ export enum SecurityContext {
  *  Map from tagName|propertyName to SecurityContext. Properties applying to all tags use '*'.
  */
 let _SECURITY_SCHEMA!: {[k: string]: SecurityContext};
-const SVG_NAMESPACE = 'svg';
-const MATH_ML_NAMESPACE = 'math';
+export const SVG_NAMESPACE = 'svg';
+export const MATH_ML_NAMESPACE = 'math';
 
 /**
  * @remarks Keep is a copy of DOM Security Schema.
@@ -71,6 +71,7 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     registerContext(SecurityContext.URL, MATH_ML_NAMESPACE, [
       // MathML namespace
       // https://crsrc.org/c/third_party/blink/renderer/core/sanitizer/sanitizer.cc;l=753-768;drc=b3eb16372dcd3317d65e9e0265015e322494edcd;bpv=1;bpt=1
+      ['*', ['href', 'xlink:href']],
       ['annotation', ['href', 'xlink:href']],
       ['annotation-xml', ['href', 'xlink:href']],
       ['maction', ['href', 'xlink:href']],
@@ -160,12 +161,36 @@ function registerContext(
   specs: readonly [tagName: string, attributeNames: readonly string[]][],
 ): void {
   for (const [element, attributeNames] of specs) {
-    let tagName =
-      namespace && element !== '*' && element !== 'unknown' ? `:${namespace}:${element}` : element;
+    let tagName = namespace && element !== 'unknown' ? `:${namespace}:${element}` : element;
     tagName = tagName.toLowerCase();
 
     for (const attr of attributeNames) {
       _SECURITY_SCHEMA[`${tagName}|${attr.toLowerCase()}`] = ctx;
     }
   }
+}
+
+export function checkSecurityContext(
+  tagName: string,
+  propName: string,
+  namespace?: string | null,
+): SecurityContext {
+  const schema = SECURITY_SCHEMA();
+  const normalizedTagName = tagName.toLowerCase();
+  const normalizedPropName = propName.toLowerCase();
+  const namespacedContext =
+    namespace && normalizedTagName !== '*' && normalizedTagName !== 'unknown'
+      ? schema[`:${namespace}:${normalizedTagName}|${normalizedPropName}`]
+      : undefined;
+  const namespacedWildcardContext = namespace
+    ? schema[`:${namespace}:*|${normalizedPropName}`]
+    : undefined;
+
+  return (
+    namespacedContext ??
+    namespacedWildcardContext ??
+    schema[`${normalizedTagName}|${normalizedPropName}`] ??
+    schema[`*|${normalizedPropName}`] ??
+    SecurityContext.NONE
+  );
 }
