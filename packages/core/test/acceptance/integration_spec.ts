@@ -27,6 +27,7 @@ import {
   provideZoneChangeDetection,
   QueryList,
   signal,
+  provideZonelessChangeDetection,
   TemplateRef,
   ViewChild,
   ViewChildren,
@@ -90,54 +91,54 @@ describe('acceptance integration tests', () => {
       );
     });
 
-    it('should add and remove DOM nodes when ng-container is a child of a regular element', () => {
+    it('should add and remove DOM nodes when ng-container is a child of a regular element', async () => {
       @Component({
         template:
-          '<ng-template [ngIf]="render"><div><ng-container>content</ng-container></div></ng-template>',
+          '<ng-template [ngIf]="render()"><div><ng-container>content</ng-container></div></ng-template>',
         standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        render = false;
+        render = signal(false);
       }
 
-      TestBed.configureTestingModule({declarations: [App], imports: [CommonModule]});
+      TestBed.configureTestingModule({declarations: [App], imports: [CommonModule], providers: [provideZonelessChangeDetection()]});
       const fixture = TestBed.createComponent(App);
 
       expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
 
-      fixture.componentInstance.render = true;
-      fixture.detectChanges();
+      fixture.componentInstance.render.set(true);
+      await fixture.whenStable();
       expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('<div>content</div>');
 
-      fixture.componentInstance.render = false;
-      fixture.detectChanges();
+      fixture.componentInstance.render.set(false);
+      await fixture.whenStable();
       expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
     });
 
-    it('should add and remove DOM nodes when ng-container is a child of an embedded view', () => {
+    it('should add and remove DOM nodes when ng-container is a child of an embedded view', async () => {
       @Component({
-        template: '<ng-container *ngIf="render">content</ng-container>',
+        template: '<ng-container *ngIf="render()">content</ng-container>',
         standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        render = false;
+        render = signal(false);
       }
 
-      TestBed.configureTestingModule({declarations: [App], imports: [CommonModule]});
+      TestBed.configureTestingModule({declarations: [App], imports: [CommonModule], providers: [provideZonelessChangeDetection()]});
       const fixture = TestBed.createComponent(App);
 
       expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
 
-      fixture.componentInstance.render = true;
-      fixture.detectChanges();
+      fixture.componentInstance.render.set(true);
+      await fixture.whenStable();
       expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('content');
 
-      fixture.componentInstance.render = false;
-      fixture.detectChanges();
+      fixture.componentInstance.render.set(false);
+      await fixture.whenStable();
       expect(stripHtmlComments(fixture.nativeElement.innerHTML)).toEqual('');
     });
 
@@ -427,48 +428,50 @@ describe('acceptance integration tests', () => {
   });
 
   describe('text bindings', () => {
-    it('should render "undefined" as ""', () => {
+    it('should render "undefined" as ""', async () => {
       @Component({
-        template: '{{name}}',
+        template: '{{name()}}',
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        name: string | undefined = 'benoit';
+        name = signal<string | undefined>('benoit');
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
+      TestBed.configureTestingModule({
+        declarations: [App],
+        providers: [provideZonelessChangeDetection()],
+      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toEqual('benoit');
 
-      fixture.componentInstance.name = undefined;
-      fixture.detectChanges();
+      fixture.componentInstance.name.set(undefined);
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.innerHTML).toEqual('');
     });
 
-    it('should render "null" as ""', () => {
+    it('should render "null" as ""', async () => {
       @Component({
-        template: '{{name}}',
+        template: '{{name()}}',
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        name: string | null = 'benoit';
+        name = signal<string | null>('benoit');
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
+      TestBed.configureTestingModule({
+        declarations: [App],
+        providers: [provideZonelessChangeDetection()],
+      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toEqual('benoit');
 
-      fixture.componentInstance.name = null;
-      fixture.detectChanges();
+      fixture.componentInstance.name.set(null);
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.innerHTML).toEqual('');
     });
@@ -597,129 +600,139 @@ describe('acceptance integration tests', () => {
   });
 
   describe('Siblings update', () => {
-    it('should handle a flat list of static/bound text nodes', () => {
+    it('should handle a flat list of static/bound text nodes', async () => {
       @Component({
-        template: 'Hello {{name}}!',
+        template: 'Hello {{name()}}!',
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        name = '';
+        name = signal('');
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
+      TestBed.configureTestingModule({
+        declarations: [App],
+        providers: [provideZonelessChangeDetection()],
+      });
       const fixture = TestBed.createComponent(App);
-
-      fixture.componentInstance.name = 'world';
       fixture.detectChanges();
+
+      fixture.componentInstance.name.set('world');
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.innerHTML).toEqual('Hello world!');
 
-      fixture.componentInstance.name = 'monde';
-      fixture.detectChanges();
+      fixture.componentInstance.name.set('monde');
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.innerHTML).toEqual('Hello monde!');
     });
 
-    it('should handle a list of static/bound text nodes as element children', () => {
+    it('should handle a list of static/bound text nodes as element children', async () => {
       @Component({
-        template: '<b>Hello {{name}}!</b>',
+        template: '<b>Hello {{name()}}!</b>',
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        name = '';
+        name = signal('');
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
+      TestBed.configureTestingModule({
+        declarations: [App],
+        providers: [provideZonelessChangeDetection()],
+      });
       const fixture = TestBed.createComponent(App);
+      fixture.detectChanges(); // initial bootstrap
 
-      fixture.componentInstance.name = 'world';
-      fixture.detectChanges();
+      fixture.componentInstance.name.set('world');
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.innerHTML).toEqual('<b>Hello world!</b>');
 
-      fixture.componentInstance.name = 'mundo';
-      fixture.detectChanges();
+      fixture.componentInstance.name.set('mundo');
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.innerHTML).toEqual('<b>Hello mundo!</b>');
     });
 
-    it('should render/update text node as a child of a deep list of elements', () => {
+    it('should render/update text node as a child of a deep list of elements', async () => {
       @Component({
-        template: '<b><b><b><b>Hello {{name}}!</b></b></b></b>',
+        template: '<b><b><b><b>Hello {{name()}}!</b></b></b></b>',
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        name = '';
+        name = signal('');
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
+      TestBed.configureTestingModule({
+        declarations: [App],
+        providers: [provideZonelessChangeDetection()],
+      });
       const fixture = TestBed.createComponent(App);
-
-      fixture.componentInstance.name = 'world';
       fixture.detectChanges();
+
+      fixture.componentInstance.name.set('world');
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.innerHTML).toEqual('<b><b><b><b>Hello world!</b></b></b></b>');
 
-      fixture.componentInstance.name = 'mundo';
-      fixture.detectChanges();
+      fixture.componentInstance.name.set('mundo');
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.innerHTML).toEqual('<b><b><b><b>Hello mundo!</b></b></b></b>');
     });
 
-    it('should update 2 sibling elements', () => {
+    it('should update 2 sibling elements', async () => {
       @Component({
-        template: '<b><span></span><span class="foo" [id]="id"></span></b>',
+        template: '<b><span></span><span class="foo" [id]="id()"></span></b>',
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        id = '';
+        id = signal('');
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
+      TestBed.configureTestingModule({
+        declarations: [App],
+        providers: [provideZonelessChangeDetection()],
+      });
       const fixture = TestBed.createComponent(App);
-
-      fixture.componentInstance.id = 'foo';
       fixture.detectChanges();
+
+      fixture.componentInstance.id.set('foo');
+      await fixture.whenStable();
       expect(fixture.nativeElement.innerHTML).toEqual(
         '<b><span></span><span class="foo" id="foo"></span></b>',
       );
 
-      fixture.componentInstance.id = 'bar';
-      fixture.detectChanges();
+      fixture.componentInstance.id.set('bar');
+      await fixture.whenStable();
       expect(fixture.nativeElement.innerHTML).toEqual(
         '<b><span></span><span class="foo" id="bar"></span></b>',
       );
     });
 
-    it('should handle sibling text node after element with child text node', () => {
+    it('should handle sibling text node after element with child text node', async () => {
       @Component({
-        template: '<p>hello</p>{{name}}',
+        template: '<p>hello</p>{{name()}}',
         standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
-        name = '';
+        name = signal('');
       }
 
-      TestBed.configureTestingModule({declarations: [App]});
+      TestBed.configureTestingModule({
+        declarations: [App],
+        providers: [provideZonelessChangeDetection()],
+      });
       const fixture = TestBed.createComponent(App);
-
-      fixture.componentInstance.name = 'world';
       fixture.detectChanges();
+
+      fixture.componentInstance.name.set('world');
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.innerHTML).toEqual('<p>hello</p>world');
 
-      fixture.componentInstance.name = 'mundo';
-      fixture.detectChanges();
+      fixture.componentInstance.name.set('mundo');
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.innerHTML).toEqual('<p>hello</p>mundo');
     });
@@ -905,54 +918,60 @@ describe('acceptance integration tests', () => {
 
   describe('element bindings', () => {
     describe('elementAttribute', () => {
-      it('should support attribute bindings', () => {
+      it('should support attribute bindings', async () => {
         @Component({
-          template: '<button [attr.title]="title"></button>',
+          template: '<button [attr.title]="title()"></button>',
           standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
-          title: string | null = '';
+          title = signal<string | null>('');
         }
 
-        TestBed.configureTestingModule({declarations: [App]});
+        TestBed.configureTestingModule({
+          declarations: [App],
+          providers: [provideZonelessChangeDetection()],
+        });
         const fixture = TestBed.createComponent(App);
-        fixture.componentInstance.title = 'Hello';
         fixture.detectChanges();
+
+        fixture.componentInstance.title.set('Hello');
+        await fixture.whenStable();
         // initial binding
         expect(fixture.nativeElement.innerHTML).toEqual('<button title="Hello"></button>');
 
         // update binding
-        fixture.componentInstance.title = 'Hi!';
-        fixture.detectChanges();
+        fixture.componentInstance.title.set('Hi!');
+        await fixture.whenStable();
         expect(fixture.nativeElement.innerHTML).toEqual('<button title="Hi!"></button>');
 
         // remove attribute
-        fixture.componentInstance.title = null;
-        fixture.detectChanges();
+        fixture.componentInstance.title.set(null);
+        await fixture.whenStable();
         expect(fixture.nativeElement.innerHTML).toEqual('<button></button>');
       });
 
-      it('should stringify values used attribute bindings', () => {
+      it('should stringify values used attribute bindings', async () => {
         @Component({
-          template: '<button [attr.title]="title"></button>',
+          template: '<button [attr.title]="title()"></button>',
           standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
-          title: any;
+          title = signal<any>(undefined);
         }
 
-        TestBed.configureTestingModule({declarations: [App]});
+        TestBed.configureTestingModule({
+          declarations: [App],
+          providers: [provideZonelessChangeDetection()],
+        });
         const fixture = TestBed.createComponent(App);
-        fixture.componentInstance.title = NaN;
         fixture.detectChanges();
+
+        fixture.componentInstance.title.set(NaN);
+        await fixture.whenStable();
         expect(fixture.nativeElement.innerHTML).toEqual('<button title="NaN"></button>');
 
-        fixture.componentInstance.title = {toString: () => 'Custom toString'};
-        fixture.detectChanges();
+        fixture.componentInstance.title.set({toString: () => 'Custom toString'});
+        await fixture.whenStable();
         expect(fixture.nativeElement.innerHTML).toEqual(
           '<button title="Custom toString"></button>',
         );
@@ -1116,163 +1135,172 @@ describe('acceptance integration tests', () => {
     });
 
     describe('elementStyle', () => {
-      it('should support binding to styles', () => {
+      it('should support binding to styles', async () => {
         @Component({
-          template: '<span [style.font-size]="size"></span>',
+          template: '<span [style.font-size]="size()"></span>',
           standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
-          size: string | null = '';
+          size = signal<string | null>('');
         }
 
-        TestBed.configureTestingModule({declarations: [App]});
+        TestBed.configureTestingModule({
+          declarations: [App],
+          providers: [provideZonelessChangeDetection()],
+        });
         const fixture = TestBed.createComponent(App);
-        fixture.componentInstance.size = '10px';
         fixture.detectChanges();
+
+        fixture.componentInstance.size.set('10px');
+        await fixture.whenStable();
         const span: HTMLElement = fixture.nativeElement.querySelector('span');
 
         expect(span.style.fontSize).toBe('10px');
 
-        fixture.componentInstance.size = '16px';
-        fixture.detectChanges();
+        fixture.componentInstance.size.set('16px');
+        await fixture.whenStable();
         expect(span.style.fontSize).toBe('16px');
 
-        fixture.componentInstance.size = null;
-        fixture.detectChanges();
+        fixture.componentInstance.size.set(null);
+        await fixture.whenStable();
         expect(span.style.fontSize).toBeFalsy();
       });
 
-      it('should support binding to styles with suffix', () => {
+      it('should support binding to styles with suffix', async () => {
         @Component({
-          template: '<span [style.font-size.px]="size"></span>',
+          template: '<span [style.font-size.px]="size()"></span>',
           standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
-          size: string | number | null = '';
+          size = signal<string | number | null>('');
         }
 
-        TestBed.configureTestingModule({declarations: [App]});
+        TestBed.configureTestingModule({
+          declarations: [App],
+          providers: [provideZonelessChangeDetection()],
+        });
         const fixture = TestBed.createComponent(App);
-        fixture.componentInstance.size = '100';
         fixture.detectChanges();
+
+        fixture.componentInstance.size.set('100');
+        await fixture.whenStable();
         const span: HTMLElement = fixture.nativeElement.querySelector('span');
 
         expect(span.style.fontSize).toEqual('100px');
 
-        fixture.componentInstance.size = 200;
-        fixture.detectChanges();
+        fixture.componentInstance.size.set(200);
+        await fixture.whenStable();
         expect(span.style.fontSize).toEqual('200px');
 
-        fixture.componentInstance.size = 0;
-        fixture.detectChanges();
+        fixture.componentInstance.size.set(0);
+        await fixture.whenStable();
         expect(span.style.fontSize).toEqual('0px');
 
-        fixture.componentInstance.size = null;
-        fixture.detectChanges();
+        fixture.componentInstance.size.set(null);
+        await fixture.whenStable();
         expect(span.style.fontSize).toBeFalsy();
       });
     });
 
     describe('class-based styling', () => {
-      it('should support CSS class toggle', () => {
+      it('should support CSS class toggle', async () => {
         @Component({
-          template: '<span [class.active]="value"></span>',
+          template: '<span [class.active]="value()"></span>',
           standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
-          value: any;
+          value = signal<any>(undefined);
         }
 
-        TestBed.configureTestingModule({declarations: [App]});
+        TestBed.configureTestingModule({
+          declarations: [App],
+          providers: [provideZonelessChangeDetection()],
+        });
         const fixture = TestBed.createComponent(App);
-        fixture.componentInstance.value = true;
         fixture.detectChanges();
+
+        fixture.componentInstance.value.set(true);
+        await fixture.whenStable();
         const span = fixture.nativeElement.querySelector('span');
 
         expect(span.getAttribute('class')).toEqual('active');
 
-        fixture.componentInstance.value = false;
-        fixture.detectChanges();
+        fixture.componentInstance.value.set(false);
+        await fixture.whenStable();
         expect(span.getAttribute('class')).toBeFalsy();
 
         // truthy values
-        fixture.componentInstance.value = 'a_string';
-        fixture.detectChanges();
-        expect(span.getAttribute('class')).toEqual('active');
-
-        fixture.componentInstance.value = 10;
-        fixture.detectChanges();
+        fixture.componentInstance.value.set(10);
+        await fixture.whenStable();
         expect(span.getAttribute('class')).toEqual('active');
 
         // falsy values
-        fixture.componentInstance.value = '';
-        fixture.detectChanges();
+        fixture.componentInstance.value.set('');
+        await fixture.whenStable();
         expect(span.getAttribute('class')).toBeFalsy();
 
-        fixture.componentInstance.value = 0;
-        fixture.detectChanges();
+        fixture.componentInstance.value.set(0);
+        await fixture.whenStable();
         expect(span.getAttribute('class')).toBeFalsy();
       });
 
-      it('should work correctly with existing static classes', () => {
+      it('should work correctly with existing static classes', async () => {
         @Component({
-          template: '<span class="existing" [class.active]="value"></span>',
+          template: '<span class="existing" [class.active]="value()"></span>',
           standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
-          value: any;
+          value = signal<any>(undefined);
         }
 
-        TestBed.configureTestingModule({declarations: [App]});
+        TestBed.configureTestingModule({
+          declarations: [App],
+          providers: [provideZonelessChangeDetection()],
+        });
         const fixture = TestBed.createComponent(App);
-        fixture.componentInstance.value = true;
         fixture.detectChanges();
+
+        fixture.componentInstance.value.set(true);
+        await fixture.whenStable();
         expect(fixture.nativeElement.innerHTML).toEqual('<span class="existing active"></span>');
 
-        fixture.componentInstance.value = false;
-        fixture.detectChanges();
+        fixture.componentInstance.value.set(false);
+        await fixture.whenStable();
         expect(fixture.nativeElement.innerHTML).toEqual('<span class="existing"></span>');
       });
 
-      it('should apply classes properly when nodes are components', () => {
+      it('should apply classes properly when nodes are components', async () => {
         @Component({
           selector: 'my-comp',
           template: 'Comp Content',
           standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MyComp {}
 
         @Component({
-          template: '<my-comp [class.active]="value"></my-comp>',
+          template: '<my-comp [class.active]="value()"></my-comp>',
           standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
-          value: any;
+          value = signal<any>(undefined);
         }
 
-        TestBed.configureTestingModule({declarations: [App, MyComp]});
+        TestBed.configureTestingModule({
+          declarations: [App, MyComp],
+          providers: [provideZonelessChangeDetection()],
+        });
         const fixture = TestBed.createComponent(App);
-        fixture.componentInstance.value = true;
         fixture.detectChanges();
+
+        fixture.componentInstance.value.set(true);
+        await fixture.whenStable();
         const compElement = fixture.nativeElement.querySelector('my-comp');
 
         expect(fixture.nativeElement.textContent).toContain('Comp Content');
         expect(compElement.getAttribute('class')).toBe('active');
 
-        fixture.componentInstance.value = false;
-        fixture.detectChanges();
+        fixture.componentInstance.value.set(false);
+        await fixture.whenStable();
         expect(compElement.getAttribute('class')).toBeFalsy();
       });
 
