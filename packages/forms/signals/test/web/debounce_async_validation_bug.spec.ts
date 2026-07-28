@@ -47,7 +47,6 @@ describe('debounced inside validateAsync bug', () => {
     }
 
     const fixture = TestBed.createComponent(DebounceBug);
-    fixture.detectChanges();
     await fixture.whenStable();
 
     // In a "zoneless and async-first" testing environment, just need to change something and wait
