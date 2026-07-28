@@ -75,7 +75,7 @@ describe('afterRenderEffect', () => {
     expect(log.length).toBe(0);
   });
 
-  it('should run when made dirty via signal', () => {
+  it('should run when made dirty via signal', async () => {
     const log: string[] = [];
     const appRef = TestBed.inject(ApplicationRef);
     const counter = signal(0);
@@ -93,12 +93,12 @@ describe('afterRenderEffect', () => {
     log.length = 0;
 
     counter.set(1);
-    appRef.tick();
+    await appRef.whenStable();
 
     expect(log).toEqual(['earlyRead: 1']);
   });
 
-  it('should not run when not actually dirty from signals', () => {
+  it('should not run when not actually dirty from signals', async () => {
     const log: string[] = [];
     const appRef = TestBed.inject(ApplicationRef);
     const counter = signal(0);
@@ -114,13 +114,13 @@ describe('afterRenderEffect', () => {
     log.length = 0;
 
     counter.set(2);
-    appRef.tick();
+    await appRef.whenStable();
 
     // Should not have run since `isEven()` didn't actually change despite becoming dirty.
     expect(log.length).toBe(0);
   });
 
-  it('should pass data from one phase to the next via signal', () => {
+  it('should pass data from one phase to the next via signal', async () => {
     const log: string[] = [];
     const appRef = TestBed.inject(ApplicationRef);
     const counter = signal(0);
@@ -138,20 +138,20 @@ describe('afterRenderEffect', () => {
 
     // isEven: false
     counter.set(1);
-    appRef.tick();
+    await appRef.whenStable();
 
     // isEven: true
     counter.set(2);
-    appRef.tick();
+    await appRef.whenStable();
 
     // No change (no log).
     counter.set(4);
-    appRef.tick();
+    await appRef.whenStable();
 
     expect(log).toEqual(['isEven: false', 'isEven: true']);
   });
 
-  it('should run cleanup functions before re-running phase effects', () => {
+  it('should run cleanup functions before re-running phase effects', async () => {
     const log: string[] = [];
     const appRef = TestBed.inject(ApplicationRef);
     const counter = signal(0);
@@ -179,19 +179,19 @@ describe('afterRenderEffect', () => {
 
     // A counter of 1 will clean up and rerun both effects.
     counter.set(1);
-    appRef.tick();
+    await appRef.whenStable();
     expect(log).toEqual(['cleanup earlyRead', 'earlyRead: 1', 'cleanup write', 'write: false']);
     log.length = 0;
 
     // A counter of 3 will clean up and rerun the earlyRead phase only.
     counter.set(3);
-    appRef.tick();
+    await appRef.whenStable();
     expect(log).toEqual(['cleanup earlyRead', 'earlyRead: 3']);
     log.length = 0;
 
     // A counter of 4 will then clean up and rerun both effects.
     counter.set(4);
-    appRef.tick();
+    await appRef.whenStable();
     expect(log).toEqual(['cleanup earlyRead', 'earlyRead: 4', 'cleanup write', 'write: true']);
   });
 
@@ -281,7 +281,7 @@ describe('afterRenderEffect', () => {
     expect(log).toEqual(['earlyRead: 0', 'earlyRead: 1']);
   });
 
-  it('should cause a re-run for hooks that re-dirty themselves', () => {
+  it('should cause a re-run for hooks that re-dirty themselves', async () => {
     const log: string[] = [];
     const appRef = TestBed.inject(ApplicationRef);
     const counter = signal(0);
@@ -300,15 +300,15 @@ describe('afterRenderEffect', () => {
       {injector: appRef.injector},
     );
 
-    appRef.tick();
+    await appRef.whenStable();
     log.length = 0;
 
     counter.set(1);
-    appRef.tick();
+    await appRef.whenStable();
     expect(log).toEqual(['counter: 1', 'counter: 0']);
   });
 
-  it('should cause a re-run for hooks that re-dirty earlier hooks', () => {
+  it('should cause a re-run for hooks that re-dirty earlier hooks', async () => {
     const log: string[] = [];
     const appRef = TestBed.inject(ApplicationRef);
     const counter = signal(0);
@@ -330,15 +330,15 @@ describe('afterRenderEffect', () => {
       {injector: appRef.injector},
     );
 
-    appRef.tick();
+    await appRef.whenStable();
     log.length = 0;
 
     counter.set(1);
-    appRef.tick();
+    await appRef.whenStable();
     expect(log).toEqual(['earlyRead: 1', 'write: 1', 'earlyRead: 0', 'write: 0']);
   });
 
-  it('should not run later hooks when an earlier hook is re-dirtied', () => {
+  it('should not run later hooks when an earlier hook is re-dirtied', async () => {
     const log: string[] = [];
     const appRef = TestBed.inject(ApplicationRef);
     const counter = signal(0);
@@ -358,11 +358,11 @@ describe('afterRenderEffect', () => {
       {injector: appRef.injector},
     );
 
-    appRef.tick();
+    await appRef.whenStable();
     log.length = 0;
 
     counter.set(1);
-    appRef.tick();
+    await appRef.whenStable();
     expect(log).toEqual(['earlyRead: 1', 'earlyRead: 0', 'write: 0']);
   });
 });

@@ -322,7 +322,7 @@ describe('outputs', () => {
     expect(counter).toBe(2);
   });
 
-  it('should work with an input and output of the same name', () => {
+  it('should work with an input and output of the same name', async () => {
     let counter = 0;
 
     @Directive({
@@ -358,7 +358,7 @@ describe('outputs', () => {
 
     fixture.componentInstance.change = false;
     fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(otherDir.change).toBe(false);
 

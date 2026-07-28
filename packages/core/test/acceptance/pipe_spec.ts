@@ -319,7 +319,7 @@ describe('pipe', () => {
     expect(fixture.nativeElement.textContent).toEqual('bob from duplicate 2');
   });
 
-  it('should support pipe in context of ternary operator', () => {
+  it('should support pipe in context of ternary operator', async () => {
     @Pipe({
       name: 'pipe',
       standalone: false,
@@ -348,7 +348,7 @@ describe('pipe', () => {
 
     fixture.componentInstance.condition = true;
     fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement).toHaveText('a');
   });
 
@@ -405,7 +405,7 @@ describe('pipe', () => {
   });
 
   describe('pure', () => {
-    it('should call pure pipes only if the arguments change', () => {
+    it('should call pure pipes only if the arguments change', async () => {
       @Component({
         template: '{{person.name | countingPipe}}',
         standalone: false,
@@ -423,30 +423,30 @@ describe('pipe', () => {
       // change from undefined -> null
       fixture.componentInstance.person.name = null;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('null state:0');
 
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('null state:0');
 
       // change from null -> some value
       fixture.componentInstance.person.name = 'bob';
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('bob state:1');
 
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('bob state:1');
 
       // change from some value -> some other value
       fixture.componentInstance.person.name = 'bart';
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('bart state:2');
 
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toEqual('bart state:2');
     });
   });
@@ -670,7 +670,7 @@ describe('pipe', () => {
       expect(fixture.nativeElement.textContent).toBe('MyComponent Title - Service Title');
     });
 
-    it('should inject the ChangeDetectorRef of the containing view when using pipe inside a component input', () => {
+    it('should inject the ChangeDetectorRef of the containing view when using pipe inside a component input', async () => {
       let pipeChangeDetectorRef: ChangeDetectorRef | undefined;
 
       @Component({
@@ -720,13 +720,13 @@ describe('pipe', () => {
       fixture.componentInstance.displayValue = 1;
       fixture.componentInstance.comp.displayValue = 1;
       pipeChangeDetectorRef!.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.textContent).toContain('Outer value: "1"');
       expect(fixture.nativeElement.textContent).toContain('Inner value: "0"');
     });
 
-    it('should inject the ChangeDetectorRef of the containing view when using pipe inside a component input which has child nodes', () => {
+    it('should inject the ChangeDetectorRef of the containing view when using pipe inside a component input which has child nodes', async () => {
       let pipeChangeDetectorRef: ChangeDetectorRef | undefined;
 
       @Component({
@@ -778,7 +778,7 @@ describe('pipe', () => {
       fixture.componentInstance.displayValue = 1;
       fixture.componentInstance.comp.displayValue = 1;
       pipeChangeDetectorRef!.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.textContent).toContain('Outer value: "1"');
       expect(fixture.nativeElement.textContent).toContain('Inner value: "0"');

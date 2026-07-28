@@ -85,7 +85,7 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.foundEl()).toBeTrue();
     });
 
-    it('should query for multiple elements in a template', () => {
+    it('should query for multiple elements in a template', async () => {
       @Component({
         template: `
           <div #el></div>
@@ -113,12 +113,12 @@ describe('queries as signals', () => {
 
       fixture.componentInstance.show = true;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.componentInstance.foundEl()).toBe(2);
 
       fixture.componentInstance.show = false;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.componentInstance.foundEl()).toBe(1);
     });
 
@@ -159,7 +159,7 @@ describe('queries as signals', () => {
       expect(result2).toBe(result1);
     });
 
-    it('should not mark signal as dirty when a child query result does not change', () => {
+    it('should not mark signal as dirty when a child query result does not change', async () => {
       let computeCount = 0;
 
       @Component({
@@ -185,12 +185,12 @@ describe('queries as signals', () => {
       // computed re-evaluation
       fixture.componentInstance.show = true;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.componentInstance.divEl()).toBe(divEl);
       expect(fixture.componentInstance.isThere()).toBe(1);
     });
 
-    it('should return the same array instance when there were no changes in results after view manipulation', () => {
+    it('should return the same array instance when there were no changes in results after view manipulation', async () => {
       @Component({
         template: `
           <div #el></div>
@@ -212,7 +212,7 @@ describe('queries as signals', () => {
 
       fixture.componentInstance.show = true;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       // subsequent reads should return the same result instance since the query results didn't
       // change
       const result2 = fixture.componentInstance.divEls();
@@ -273,7 +273,7 @@ describe('queries as signals', () => {
   });
 
   describe('content queries', () => {
-    it('should run content queries defined on components', () => {
+    it('should run content queries defined on components', async () => {
       @Component({
         selector: 'query-cmp',
         template: `{{ noOfEls() }}`,
@@ -313,16 +313,16 @@ describe('queries as signals', () => {
 
       fixture.componentInstance.show = true;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('4');
 
       fixture.componentInstance.show = false;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('3');
     });
 
-    it('should run content queries defined on directives', () => {
+    it('should run content queries defined on directives', async () => {
       @Directive({
         selector: '[query]',
         host: {'[textContent]': `noOfEls()`},
@@ -362,12 +362,12 @@ describe('queries as signals', () => {
 
       fixture.componentInstance.show = true;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('4');
 
       fixture.componentInstance.show = false;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.textContent).toBe('3');
     });
 
@@ -477,7 +477,7 @@ describe('queries as signals', () => {
   });
 
   describe('reactivity and performance', () => {
-    it('should not dirty a children query when a list of matches does not change - a view with matches', () => {
+    it('should not dirty a children query when a list of matches does not change - a view with matches', async () => {
       let recomputeCount = 0;
 
       @Component({
@@ -505,16 +505,16 @@ describe('queries as signals', () => {
       // trigger view manipulation that should dirty queries but not change the results
       fixture.componentInstance.show = true;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       fixture.componentInstance.show = false;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.componentInstance.foundElCount()).toBe(1);
       expect(recomputeCount).toBe(1);
     });
 
-    it('should not dirty a children query when a list of matches does not change - a view with another container', () => {
+    it('should not dirty a children query when a list of matches does not change - a view with another container', async () => {
       let recomputeCount = 0;
 
       @Component({
@@ -543,10 +543,10 @@ describe('queries as signals', () => {
       // trigger view manipulation that should dirty queries but not change the results
       fixture.componentInstance.show = true;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       fixture.componentInstance.show = false;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.componentInstance.foundElCount()).toBe(1);
       expect(recomputeCount).toBe(1);
@@ -586,7 +586,7 @@ describe('queries as signals', () => {
   });
 
   describe('mix of signal and decorator queries', () => {
-    it('should allow specifying both types of queries in one component', () => {
+    it('should allow specifying both types of queries in one component', async () => {
       @Component({
         template: `
           <div #el></div>
@@ -611,18 +611,18 @@ describe('queries as signals', () => {
 
       fixture.componentInstance.show = true;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.componentInstance.divElsSignal().length).toBe(2);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(2);
 
       fixture.componentInstance.show = false;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.componentInstance.divElsSignal().length).toBe(1);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
     });
 
-    it('should allow combination via inheritance of both types of queries in one component', () => {
+    it('should allow combination via inheritance of both types of queries in one component', async () => {
       @Component({
         template: `
           <div #el></div>
@@ -657,13 +657,13 @@ describe('queries as signals', () => {
 
       fixture.componentInstance.show = true;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.componentInstance.divElsSignal().length).toBe(2);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(2);
 
       fixture.componentInstance.show = false;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.componentInstance.divElsSignal().length).toBe(1);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
     });

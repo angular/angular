@@ -200,7 +200,7 @@ describe('exports', () => {
       );
     });
 
-    it('should support local refs in nested dynamic views', () => {
+    it('should support local refs in nested dynamic views', async () => {
       const fixture = initWithTemplate(
         AppComp,
         `
@@ -218,7 +218,7 @@ describe('exports', () => {
       fixture.componentInstance.outer = true;
       fixture.componentInstance.inner = true;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       // result should be <input value="one"><div>one <input value="two"><div>one - two</div></div>
       // but contains bindings comments for ngIf
