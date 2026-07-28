@@ -67,7 +67,7 @@ When the switched expression is nested within a union, you must explicitly speci
   template: `
     @switch (state.mode) {
       @case ('show') {
-        {{ state.menu }};
+        {{ state.menu }}
       }
       @case ('hide') {}
       @default never;
