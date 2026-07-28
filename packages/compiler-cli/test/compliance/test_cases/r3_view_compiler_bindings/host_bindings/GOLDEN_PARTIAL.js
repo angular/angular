@@ -934,10 +934,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                 }]
         }] });
 export class HostBindingCustomSrcdocDir {
-    evil = 'evil';
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomSrcdocDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingCustomSrcdocDir, isStandalone: true, selector: "safe-srcdoc-carrier", host: { properties: { "attr.srcdoc": "evil" } }, ngImport: i0 });
+    constructor() {
+        this.evil = 'evil';
+    }
 }
+HostBindingCustomSrcdocDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomSrcdocDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingCustomSrcdocDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingCustomSrcdocDir, isStandalone: true, selector: "safe-srcdoc-carrier", host: { properties: { "attr.srcdoc": "evil" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomSrcdocDir, decorators: [{
             type: Directive,
             args: [{
@@ -948,10 +950,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                 }]
         }] });
 export class HostBindingCustomSrcDir {
-    evil = 'evil';
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomSrcDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingCustomSrcDir, isStandalone: true, selector: "safe-src-carrier", host: { properties: { "attr.src": "evil" } }, ngImport: i0 });
+    constructor() {
+        this.evil = 'evil';
+    }
 }
+HostBindingCustomSrcDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomSrcDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingCustomSrcDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingCustomSrcDir, isStandalone: true, selector: "safe-src-carrier", host: { properties: { "attr.src": "evil" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomSrcDir, decorators: [{
             type: Directive,
             args: [{
@@ -962,10 +966,12 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                 }]
         }] });
 export class HostBindingCustomDataDir {
-    evil = 'evil';
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomDataDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingCustomDataDir, isStandalone: true, selector: "safe-data-carrier", host: { properties: { "attr.data": "evil" } }, ngImport: i0 });
+    constructor() {
+        this.evil = 'evil';
+    }
 }
+HostBindingCustomDataDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomDataDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingCustomDataDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingCustomDataDir, isStandalone: true, selector: "safe-data-carrier", host: { properties: { "attr.data": "evil" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingCustomDataDir, decorators: [{
             type: Directive,
             args: [{
