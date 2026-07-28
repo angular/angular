@@ -280,7 +280,7 @@ export class DirectiveForestComponent {
   }
 
   isEditingDirectiveState(event: Event): boolean {
-    return (event.target as Element).tagName === 'INPUT' || !this.selectedNode;
+    return (event.target as Element).tagName === 'INPUT' || !this.selectedNode();
   }
 
   handleFilter(filterFn: FilterFn): void {
