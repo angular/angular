@@ -6252,6 +6252,80 @@ describe('platform-server full application hydration integration', () => {
         });
       });
 
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when an element ' +
+          'instruction locates a Text node in production mode (ngDevMode off)',
+        async () => {
+          // Regression test. `locateOrCreateElementNodeImpl` always calls
+          // `hasSkipHydrationAttrOnRElement(native)`, which calls
+          // `native.hasAttribute(...)`. The `validateMatchingNode` check that would
+          // normally catch a "found a Text node instead of an <b> element" mismatch
+          // only runs in dev mode, so it's removed from production builds. Without
+          // the extra `nodeType` guard added for this fix, if hydration finds a Text
+          // node here instead of an Element (because the server-rendered DOM didn't
+          // match what the client's compiled template expected), production would
+          // hit `native.hasAttribute`, which doesn't exist on a Text node, and throw
+          // a raw TypeError instead of a coded RuntimeError.
+          @Component({
+            selector: 'app',
+            template: `
+              <div id="abc">
+                <p>This is an original content</p>
+                <b>Bold text</b>
+                <i>Italic text</i>
+              </div>
+            `,
+          })
+          class SimpleComponent {
+            private doc = inject(DOCUMENT);
+            private isServer = isPlatformServer(inject(PLATFORM_ID));
+            ngAfterViewInit() {
+              // Only change the DOM on the server, right before it gets serialized.
+              // The client's compiled template still expects a `<b>` element here,
+              // but the serialized (and later hydrated) DOM will have a plain Text
+              // node instead.
+              if (this.isServer) {
+                const b = this.doc.querySelector('b');
+                const text = this.doc.createTextNode('Not an element anymore!');
+                b?.parentNode?.replaceChild(text, b);
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          // Simulate a production build. `locateOrCreateElementNodeImpl` only calls
+          // `validateMatchingNode` when `ngDevMode` is truthy, so turning it off
+          // here means the full mismatch check is skipped, and only the new
+          // `nodeType` guard runs.
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            });
+            fail('Expected the hydration process to throw.');
+          } catch (e: unknown) {
+            const error = e as Error;
+            // This is the fixed behavior: a coded NG0500 RuntimeError, not a raw
+            // TypeError. Unlike other production RuntimeErrors, this one keeps a
+            // minimal message (the mismatched node's `nodeName` and `textContent`)
+            // rather than an empty one, since it's cheap (no DOM-printing machinery)
+            // and helps debugging a hydration mismatch that's otherwise invisible in prod.
+            expect(error instanceof TypeError).toBe(false);
+            expect(error.message).toBe('NG0500: #text ("Not an element anymore!")');
+            expect(error.message).not.toContain('hasAttribute is not a function');
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        },
+      );
+
       it('should if there are any third-party scripts that manipulate the DOM', async () => {
         @Component({
           selector: 'app',
