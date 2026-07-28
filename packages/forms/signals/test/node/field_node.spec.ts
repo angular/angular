@@ -1393,7 +1393,7 @@ describe('FieldNode', () => {
 
       const fixture = TestBed.createComponent(TestCmp);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(cmp.f().errorSummary()).toEqual([
         jasmine.objectContaining({kind: 'error-b'}),
@@ -1401,7 +1401,7 @@ describe('FieldNode', () => {
       ]);
     });
 
-    it('should sort bound errors before unbound errors', () => {
+    it('should sort bound errors before unbound errors', async () => {
       @Component({
         template: ` <input [formField]="f.a" /> `,
         imports: [FormField],
@@ -1415,7 +1415,7 @@ describe('FieldNode', () => {
 
       const fixture = TestBed.createComponent(TestCmp);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(cmp.f().errorSummary()).toEqual([
         jasmine.objectContaining({kind: 'error-a'}),
@@ -1423,7 +1423,7 @@ describe('FieldNode', () => {
       ]);
     });
 
-    it('should sort errors from nested fields by DOM position', () => {
+    it('should sort errors from nested fields by DOM position', async () => {
       @Component({
         template: `
           <input [formField]="f.group.child" />
@@ -1440,7 +1440,7 @@ describe('FieldNode', () => {
 
       const fixture = TestBed.createComponent(TestCmp);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(cmp.f().errorSummary()).toEqual([
         jasmine.objectContaining({kind: 'child'}),
