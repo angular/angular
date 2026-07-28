@@ -258,6 +258,8 @@ export class LogicContainer {
   readonly disabledReasons: ArrayMergeLogic<DisabledReason>;
   /** Logic that determines if the field is read-only. */
   readonly readonly: BooleanOrLogic;
+  /** Logic that forces validation to run even when the field is disabled or readonly. */
+  readonly forceValidate: BooleanOrLogic;
   /** Logic that produces synchronous validation errors for the field. */
   readonly syncErrors: ArrayMergeIgnoreLogic<ValidationError.WithFieldTree, null>;
   /** Logic that produces synchronous validation errors for the field's subtree. */
@@ -279,6 +281,7 @@ export class LogicContainer {
     this.hidden = new BooleanOrLogic(predicates);
     this.disabledReasons = new ArrayMergeLogic(predicates);
     this.readonly = new BooleanOrLogic(predicates);
+    this.forceValidate = new BooleanOrLogic(predicates);
     this.syncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError.WithFieldTree>(predicates);
     this.syncTreeErrors =
       ArrayMergeIgnoreLogic.ignoreNull<ValidationError.WithFieldTree>(predicates);
@@ -296,6 +299,7 @@ export class LogicContainer {
       this.hidden.hasRules() ||
       this.disabledReasons.hasRules() ||
       this.readonly.hasRules() ||
+      this.forceValidate.hasRules() ||
       this.syncErrors.hasRules() ||
       this.syncTreeErrors.hasRules() ||
       this.asyncErrors.hasRules() ||
@@ -341,6 +345,7 @@ export class LogicContainer {
     this.hidden.mergeIn(other.hidden);
     this.disabledReasons.mergeIn(other.disabledReasons);
     this.readonly.mergeIn(other.readonly);
+    this.forceValidate.mergeIn(other.forceValidate);
     this.syncErrors.mergeIn(other.syncErrors);
     this.syncTreeErrors.mergeIn(other.syncTreeErrors);
     this.asyncErrors.mergeIn(other.asyncErrors);

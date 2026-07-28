@@ -102,6 +102,7 @@ export type Debouncer<TValue, TPathKind extends PathKind = PathKind.Root> = (con
 // @public
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
     when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>;
+    validate?: boolean;
 }): void;
 
 // @public @deprecated
@@ -564,6 +565,7 @@ export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[];
 // @public
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+    validate?: boolean;
 }): void;
 
 // @public @deprecated
