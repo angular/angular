@@ -73,6 +73,35 @@ describe('NgModel with FVC', () => {
     expect(fixture.componentInstance.val()).toBe('from-fvc');
   });
 
+  it('should update ngModel value before template (valueChange) listener fires', async () => {
+    @Component({
+      template: `<template-fvc-input
+        [(ngModel)]="val"
+        (valueChange)="onValueChange()"
+        #model="ngModel"
+      />`,
+      imports: [TemplateFvcInput, FormsModule],
+    })
+    class TestCmp {
+      val = signal('initial');
+      observedDuringValueChange: string | undefined;
+      @ViewChild('model') model!: NgModel;
+
+      onValueChange() {
+        this.observedDuringValueChange = this.model.control.value;
+      }
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+    const component = fixture.componentInstance;
+    const fvc = fixture.debugElement.query(By.directive(TemplateFvcInput)).componentInstance;
+
+    act(() => fvc.value.set('from-fvc'));
+
+    expect(component.observedDuringValueChange).toBe('from-fvc');
+    expect(component.val()).toBe('from-fvc');
+  });
+
   it('should fall back to CVA when no FVC pattern is present', async () => {
     @Component({
       template: `<input [(ngModel)]="val" />`,
