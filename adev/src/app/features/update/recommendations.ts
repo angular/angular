@@ -2784,6 +2784,15 @@ export const RECOMMENDATIONS: Step[] = [
   {
     possibleIn: 2100,
     necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    material: true,
+    step: '21.0.0-cdk-overlay-top-layer-stacking',
+    action:
+      "CDK overlays can now render in the browser's native top layer, causing elements that previously appeared above Material overlays via `z-index` to render beneath them. You can restore the previous behavior by providing `OVERLAY_DEFAULT_CONFIG` from `@angular/cdk/overlay` with the value `{usePopover: false}`.",
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
     level: ApplicationComplexity.Advanced,
     step: '21.0.0-update-signal-input-access-in-custom-elements',
     action:
