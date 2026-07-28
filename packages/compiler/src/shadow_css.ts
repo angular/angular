@@ -597,6 +597,9 @@ export class ShadowCss {
       let content = rule.content;
       if (rule.selector[0] !== '@') {
         if (rule.isBlock) {
+          const selectorParts = selector.split(_selectorSplitRe);
+          const containsDeep = selectorParts.some((part) => _shadowDeepSelectors.test(part));
+
           selector = this._scopeSelector({
             selector,
             scopeSelector,
@@ -604,10 +607,12 @@ export class ShadowCss {
             isParentSelector: true,
           });
 
-          // Only recurse into content if there might be any child blocks.
-          content = rule.content.includes('{')
-            ? this._scopeSelectors(rule.content, scopeSelector, hostSelector)
-            : this._stripScopingSelectors(rule.content);
+          content =
+            // Only recurse into content if there might be any child blocks.
+            // TODO: support something like `.parent { ::ng-deep { .child {} } }`
+            !containsDeep && rule.content.includes('{')
+              ? this._scopeSelectors(rule.content, scopeSelector, hostSelector)
+              : this._stripScopingSelectors(rule.content);
         }
       } else if (scopedAtRuleIdentifiers.some((atRule) => rule.selector.startsWith(atRule))) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
@@ -666,15 +671,8 @@ export class ShadowCss {
     hostSelector: string;
     isParentSelector?: boolean;
   }): string {
-    // Split the selector into independent parts by `,` (comma) unless
-    // comma is within parenthesis, for example `:is(.one, two)`.
-    // Negative lookup after comma allows not splitting inside nested parenthesis,
-    // up to three levels (((,))).
-    const selectorSplitRe =
-      / ?,(?!(?:[^)(]*(?:\([^)(]*(?:\([^)(]*(?:\([^)(]*\)[^)(]*)*\)[^)(]*)*\)[^)(]*)*\))) ?/;
-
     return selector
-      .split(selectorSplitRe)
+      .split(_selectorSplitRe)
       .map((part) => part.split(_shadowDeepSelectors))
       .map((deepParts) => {
         const [shallowPart, ...otherParts] = deepParts;
@@ -1015,6 +1013,12 @@ const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s,]*)/;
 // Support for `>>>`, `deep`, `::ng-deep` is then also deprecated and will be removed in the future.
 // see https://github.com/angular/angular/pull/17677
 const _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)|(?:::ng-deep)/g;
+
+// Splits the selector into independent parts by `,` (comma) unless comma is within parenthesis,
+// for example `:is(.one, two)`. Negative lookup after comma allows not splitting inside nested
+// parenthesis, up to three levels (((,))).
+const _selectorSplitRe =
+  / ?,(?!(?:[^)(]*(?:\([^)(]*(?:\([^)(]*(?:\([^)(]*\)[^)(]*)*\)[^)(]*)*\)[^)(]*)*\))) ?/;
 const _selectorReSuffix = '([>\\s~+[.,{:][\\s\\S]*)?$';
 const _polyfillHostRe = /-shadowcsshost/gim;
 const _colonHostRe = /:host(?!\-context)/gim;

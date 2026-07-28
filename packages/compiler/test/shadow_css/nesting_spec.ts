@@ -419,4 +419,50 @@ describe('ShadowCss nesting', () => {
     const result = shim(css, 'contenta');
     expect(result).toEqualCss(expected);
   });
+
+  it('should disable encapsulation of nested selectors if the parent selector ends with ::ng-deep', () => {
+    expect(shim('.foo ::ng-deep { .bar { color: red; } }', 'contenta')).toEqualCss(
+      '.foo[contenta] { .bar { color: red; } }',
+    );
+
+    expect(shim('.foo ::ng-deep { .bar { .baz { color: red; } } }', 'contenta')).toEqualCss(
+      '.foo[contenta] { .bar { .baz { color: red; } } }',
+    );
+
+    // TODO: decide how we want to support this.
+    // More context: https://github.com/angular/angular/pull/69885/changes#r3708540973
+    // expect(shim('.foo ::ng-deep, .baz { .bar { color: red; } }', 'contenta')).toEqualCss(
+    //   '.foo[contenta] , .baz[contenta] { .bar { color: red; } }',
+    // );
+
+    expect(shim('.foo { .bar ::ng-deep { .baz { color: red; } } }', 'contenta')).toEqualCss(
+      '.foo[contenta] { .bar[contenta] { .baz { color: red; } } }',
+    );
+  });
+
+  it('should disable encapsulation of nested selectors if the parent selector starts with ::ng-deep', () => {
+    expect(shim('::ng-deep .foo { .bar { color: red; } }', 'contenta')).toEqualCss(
+      '.foo { .bar { color: red; } }',
+    );
+
+    expect(shim('::ng-deep .foo { .bar { .baz { color: red; } } }', 'contenta')).toEqualCss(
+      '.foo { .bar { .baz { color: red; } } }',
+    );
+
+    // TODO: decide how we want to support this.
+    // More context: https://github.com/angular/angular/pull/69885/changes#r3708540973
+    // expect(shim('::ng-deep .foo, .baz { .bar { color: red; } }', 'contenta')).toEqualCss(
+    //   '.foo, .baz[contenta] { .bar { color: red; } }',
+    // );
+
+    expect(shim('.foo { ::ng-deep .bar { .baz { color: red; } } }', 'contenta')).toEqualCss(
+      '.foo[contenta] { .bar { .baz { color: red; } } }',
+    );
+  });
+
+  it('should disable encapsulation of nested selectors if the parent selector contains ::ng-deep in the middle of the selector', () => {
+    expect(shim('.foo ::ng-deep .bar { .baz { color: red; } }', 'contenta')).toEqualCss(
+      '.foo[contenta] .bar { .baz { color: red; } }',
+    );
+  });
 });
