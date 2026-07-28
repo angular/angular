@@ -277,7 +277,7 @@ describe('TemplateRef', () => {
       @ViewChild('containerRef', {read: ViewContainerRef}) containerRef!: ViewContainerRef;
     }
 
-    it('should update if the context of a view ref is mutated', () => {
+    it('should update if the context of a view ref is mutated', async () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const context = {name: 'Frodo'};
@@ -294,7 +294,7 @@ describe('TemplateRef', () => {
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
     });
 
-    it('should update if the context of a view ref is replaced', () => {
+    it('should update if the context of a view ref is replaced', async () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
@@ -347,7 +347,7 @@ describe('TemplateRef', () => {
       expect(events).toEqual(['Frodo', 'Bilbo']);
     });
 
-    it('should warn if the context of an embedded view ref is replaced', () => {
+    it('should warn if the context of an embedded view ref is replaced', async () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
