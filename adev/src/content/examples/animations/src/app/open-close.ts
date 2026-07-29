@@ -70,7 +70,7 @@ export class OpenClose {
   // #docregion events1, events
   onAnimationEvent(event: AnimationEvent) {
     // #enddocregion events1, events
-    if (!this.logging) {
+    if (!this.logging()) {
       return;
     }
     // #docregion events

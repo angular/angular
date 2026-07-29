@@ -33,7 +33,7 @@ export class OpenCloseBooleanComponent {
 
   logging = input(false);
   onAnimationEvent(event: AnimationEvent) {
-    if (!this.logging) {
+    if (!this.logging()) {
       return;
     }
   }
