@@ -300,6 +300,9 @@ export type IgnoreUnknownProperties<T> = T extends Record<PropertyKey, unknown> 
 export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol;
 
 // @public
+export function isFieldTree(value: unknown): value is FieldTree<unknown>;
+
+// @public
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
     readonly index: Signal<number>;
 }
