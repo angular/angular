@@ -86,7 +86,7 @@ export function setClassMetadataAsync(
  */
 export function setClassMetadata(
   type: any,
-  decorators: any[] | null,
+  decorators: readonly any[] | null,
   ctorParameters: (() => any[]) | null,
   propDecorators: {[field: string]: any} | null,
 ): void {
@@ -97,7 +97,7 @@ export function setClassMetadata(
       if (clazz.hasOwnProperty('decorators') && clazz.decorators !== undefined) {
         clazz.decorators.push(...decorators);
       } else {
-        clazz.decorators = decorators;
+        clazz.decorators = decorators as any[];
       }
     }
     if (ctorParameters !== null) {
