@@ -1,3 +1,12 @@
+<a name="22.2.0-next.0"></a>
+# 22.2.0-next.0 (2026-07-29)
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d5e8b1ef7a](https://github.com/angular/angular/commit/d5e8b1ef7a02c84d4fd70a6b4d748ead9ff815bf) | feat | allow permanent hidden fields in signal forms |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.19"></a>
 # 21.2.19 (2026-07-29)
 ### compiler
