@@ -1,3 +1,22 @@
+<a name="21.2.19"></a>
+# 21.2.19 (2026-07-29)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e2660c3dee](https://github.com/angular/angular/commit/e2660c3deeccb86471f9c11b7e65ebcc89d84e9e) | fix | disallow i18n event attributes |
+| [7b884f585a](https://github.com/angular/angular/commit/7b884f585abf50480c271d234c892c141eb61e2c) | fix | restrict possible event handler check to property names longer than 2 characters |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [948a8d6831](https://github.com/angular/angular/commit/948a8d6831e8920b54663ec79421da95210e0e35) | fix | distinguish repeated transfer cache params |
+| [9949dccce1](https://github.com/angular/angular/commit/9949dccce164638597496a6b3881043117dfd1df) | fix | enable xsrf for root-provided HttpClient |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f34a93c946](https://github.com/angular/angular/commit/f34a93c946c017eff526cfb0c8d17f51e97f01e4) | fix | update domino to latest version |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.18"></a>
 # 21.2.18 (2026-07-08)
 ### compiler-cli
