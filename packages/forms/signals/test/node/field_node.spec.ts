@@ -1233,6 +1233,54 @@ describe('FieldNode', () => {
     });
   });
 
+  describe('validateHiddenFields option', () => {
+    it('should validate all hidden fields when set to true', () => {
+      const f = form(
+        signal({a: ''}),
+        (p) => {
+          hidden(p.a, {when: () => true});
+          required(p.a);
+        },
+        {injector: TestBed.inject(Injector), validateHiddenFields: true},
+      );
+
+      expect(f.a().hidden()).toBe(true);
+      expect(f.a().valid()).toBe(false);
+      expect(f.a().errors()).toEqual([requiredError({fieldTree: f.a})]);
+    });
+
+    it('should not validate hidden fields by default', () => {
+      const f = form(
+        signal({a: ''}),
+        (p) => {
+          hidden(p.a, {when: () => true});
+          required(p.a);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.a().hidden()).toBe(true);
+      expect(f.a().valid()).toBe(true);
+    });
+
+    it('should validate all hidden fields in the form, including children', () => {
+      const f = form(
+        signal({a: '', b: 'ok'}),
+        (p) => {
+          hidden(p, {when: () => true});
+          required(p.a);
+          required(p.b);
+        },
+        {injector: TestBed.inject(Injector), validateHiddenFields: true},
+      );
+
+      expect(f().hidden()).toBe(true);
+      expect(f.a().valid()).toBe(false);
+      expect(f.b().valid()).toBe(true);
+      expect(f().valid()).toBe(false);
+    });
+  });
+
   describe('validation', () => {
     it('should validate field', () => {
       const f = form(

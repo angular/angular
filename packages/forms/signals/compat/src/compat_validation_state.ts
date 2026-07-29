@@ -63,10 +63,11 @@ export class CompatValidationState implements ValidationState {
   // Compat fields can't have validation rules applied to them; however, there are other
   // features that depend on this property, such as `markAsTouched()`.
   readonly shouldSkipValidation = computed(() => {
-    if (this.node.hidden()) {
+    const {validateDisabledFields, validateReadonlyFields, validateHiddenFields} =
+      this.node.structure.fieldManager;
+    if (this.node.hidden() && !validateHiddenFields && !this.node.forceValidate()) {
       return true;
     }
-    const {validateDisabledFields, validateReadonlyFields} = this.node.structure.fieldManager;
     if (this.node.disabled() && !validateDisabledFields && !this.node.forceValidate()) {
       return true;
     }

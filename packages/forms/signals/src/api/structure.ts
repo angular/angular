@@ -75,6 +75,14 @@ export interface FormOptions<TModel> {
   validateReadonlyFields?: boolean;
 
   /**
+   * When `true`, validation runs for all hidden fields in this form, regardless of whether
+   * individual `hidden()` rules have `validate: true` set.
+   *
+   * Defaults to `false`.
+   */
+  validateHiddenFields?: boolean;
+
+  /**
    * Configuration options to expose this form as an experimental WebMCP AI agent tool.
    *
    * @experimental
@@ -234,6 +242,7 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
     options?.submission as FormSubmitOptions<unknown, unknown> | undefined,
     options?.validateDisabledFields,
     options?.validateReadonlyFields,
+    options?.validateHiddenFields,
   );
   const adapter = options?.adapter ?? new BasicFieldAdapter();
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);

@@ -364,10 +364,14 @@ export class FieldValidationState implements ValidationState {
    * or readonly.
    */
   readonly shouldSkipValidation = computed(() => {
-    if (this.node.hidden() || this.node.structure.isOrphaned()) {
+    if (this.node.structure.isOrphaned()) {
       return true;
     }
-    const {validateDisabledFields, validateReadonlyFields} = this.node.structure.fieldManager;
+    const {validateDisabledFields, validateReadonlyFields, validateHiddenFields} =
+      this.node.structure.fieldManager;
+    if (this.node.hidden() && !validateHiddenFields && !this.node.forceValidate()) {
+      return true;
+    }
     if (this.node.disabled() && !validateDisabledFields && !this.node.forceValidate()) {
       return true;
     }

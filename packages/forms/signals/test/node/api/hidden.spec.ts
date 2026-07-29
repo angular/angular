@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, hidden, validate} from '@angular/forms/signals';
+import {form, hidden, required, requiredError, validate} from '@angular/forms/signals';
 
 describe('hidden', () => {
   it('should initially be false', () => {
@@ -138,5 +138,45 @@ describe('hidden', () => {
 
     f.name().value.set('hidden-cat');
     expect(f.name().hidden()).toBe(true);
+  });
+
+  it('should still validate when validate: true is set', () => {
+    // Use an external signal for the hidden condition so the field value can stay empty
+    // (which fails the required validator), independent of the hidden state.
+    const isHidden = signal(false);
+    const f = form(
+      signal({name: ''}),
+      (p) => {
+        hidden(p.name, {when: () => isHidden(), validate: true});
+        required(p.name);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.name().hidden()).toBe(false);
+    expect(f.name().valid()).toBe(false);
+
+    isHidden.set(true);
+    expect(f.name().hidden()).toBe(true);
+    expect(f.name().valid()).toBe(false);
+    expect(f.name().errors()).toEqual([requiredError({fieldTree: f.name})]);
+  });
+
+  it('should not validate when validate is not set (default behavior)', () => {
+    const isHidden = signal(false);
+    const f = form(
+      signal({name: ''}),
+      (p) => {
+        hidden(p.name, {when: () => isHidden()});
+        required(p.name);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.name().valid()).toBe(false);
+
+    isHidden.set(true);
+    expect(f.name().hidden()).toBe(true);
+    expect(f.name().valid()).toBe(true);
   });
 });
