@@ -12,8 +12,14 @@ import {ApplicationOperations} from '../application-operations';
 import {AppOperationsMock} from './test-utils/app_operations_mock';
 import {ApplicationRef} from '@angular/core';
 
+interface MockSettingsData {
+  'item@test': string;
+  'first@test': string;
+  'second@test': string;
+}
+
 describe('SettingsStore', () => {
-  let settingsStore: SettingsStore;
+  let settingsStore: SettingsStore<MockSettingsData>;
   let getStoredSettings: () => {[key: string]: unknown};
 
   beforeEach(() => {
@@ -29,7 +35,7 @@ describe('SettingsStore', () => {
       ],
     });
 
-    settingsStore = TestBed.inject(SettingsStore);
+    settingsStore = TestBed.inject<SettingsStore<MockSettingsData>>(SettingsStore);
     getStoredSettings = () => appOperationsMock.getStoredSettings();
   });
 

@@ -22,10 +22,10 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
   private readonly _deepLinkInstanceId = inject(DEEP_LINK_INSTANCE_ID);
   private onProfilingStartedListener = () => {
-    this._messageBus.emit('enableTimingAPI');
+    this._messageBus.emit('enablePerformanceTrack');
   };
   private onProfilingStoppedListener = () => {
-    this._messageBus.emit('disableTimingAPI');
+    this._messageBus.emit('disablePerformanceTrack');
   };
 
   private readonly _deepLinkListener = (event: MessageEvent) => {

@@ -10,12 +10,12 @@ import {provideAppInitializer, inject, Provider, EnvironmentProviders} from '@an
 import {SETTINGS_STORE_KEY, SettingsStore} from '../application-services/settings_store';
 import {ApplicationOperations} from '../application-operations';
 import {Settings} from '../application-services/settings';
-
-const DATA_VERSION_KEY = '__v';
-
-// Note: Any changes to the settings items should be accompanied
-// by a migration along with a version bump.
-const LATEST_DATA_VERSION = 1;
+import {
+  DATA_VERSION_KEY,
+  LATEST_DATA_VERSION,
+  SettingsDataV1,
+  SettingsDataV2,
+} from './settings_versions';
 
 export function provideSettings(): (Provider | EnvironmentProviders)[] {
   let savedSettings: {[key: string]: unknown};
@@ -43,13 +43,14 @@ export function provideSettings(): (Provider | EnvironmentProviders)[] {
  * @param appOperations
  * @returns New migrated data object
  */
-function applyMigrations(
+export function applyMigrations(
   data: {[key: string]: unknown},
   appOperations: ApplicationOperations,
 ): {[key: string]: unknown} {
-  const dataCopy = structuredClone(data);
+  let dataCopy = structuredClone(data);
+  const dataVer = dataCopy[DATA_VERSION_KEY];
 
-  if (dataCopy[DATA_VERSION_KEY] === LATEST_DATA_VERSION) {
+  if (dataVer === LATEST_DATA_VERSION) {
     return dataCopy;
   }
 
@@ -91,6 +92,34 @@ function applyMigrations(
    */
 
   // APPLY ANY MIGRATIONS TO THE DATA HERE.
+
+  // V1 -> V2 migration
+  if (dataVer === 1) {
+    const currData = dataCopy as unknown as SettingsDataV1;
+    const newData: SettingsDataV2 = {
+      [DATA_VERSION_KEY]: 2,
+
+      // No change
+      'theme@general': currData['theme@general'],
+      'show_hydration_overlays@components': currData['show_hydration_overlays@components'],
+
+      // Convert `timing_api_enabled` (cat: `general`) key to `performance_track` (cat: `profiling`).
+      'performance_track@profiling': currData['timing_api_enabled@general'],
+
+      // Convert `activeTab` (cat: `general`) key to `active_tab` (cat: `general`).
+      'active_tab@general': currData['activeTab@general'],
+
+      // Change the category of `show_comment_nodes` (from `general` to `components`).
+      'show_comment_nodes@components': currData['show_comment_nodes@general'],
+
+      // Flags that are no longer needed:
+      // - router_graph_enabled@general
+      // - signal_graph_enabled@general
+      // - transfer_state_enabled@general
+    };
+
+    dataCopy = newData as unknown as {[key: string]: unknown};
+  }
 
   dataCopy[DATA_VERSION_KEY] = LATEST_DATA_VERSION;
   appOperations.setStorageItems({[SETTINGS_STORE_KEY]: dataCopy});

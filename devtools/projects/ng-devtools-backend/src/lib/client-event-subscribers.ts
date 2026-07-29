@@ -51,7 +51,7 @@ import {
   updateState,
 } from './directive-forest/component-tree/component-tree';
 import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
-import {disableTimingAPI, enableTimingAPI} from './profiling/timing-api';
+import {disablePerformanceTrack, enablePerformanceTrack} from './profiling/performance-track';
 import {getProfiler, Profiler} from './profiling/profiler';
 import {ComponentTreeNode} from './shared/interfaces';
 import {
@@ -111,8 +111,8 @@ export const subscribeToClientEvents = (
   messageBus.on('updateState', updateState);
   messageBus.on('logValue', logValue);
 
-  messageBus.on('enableTimingAPI', enableTimingAPI);
-  messageBus.on('disableTimingAPI', disableTimingAPI);
+  messageBus.on('enablePerformanceTrack', enablePerformanceTrack);
+  messageBus.on('disablePerformanceTrack', disablePerformanceTrack);
 
   messageBus.on('getInjectorProviders', getInjectorProvidersCallback(messageBus));
 
