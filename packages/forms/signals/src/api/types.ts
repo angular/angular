@@ -10,11 +10,7 @@ import {Injector, Signal, WritableSignal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import type {FormField} from '../directive/form_field';
 import type {MetadataKey, NgValidationError, ValidationError} from './rules';
-
-/**
- * Symbol used to retain generic type information when it would otherwise be lost.
- */
-declare const ɵɵTYPE: unique symbol;
+import type {ɵɵTYPE} from './symbols';
 
 /**
  * Options that can be specified when submitting a form.
@@ -177,8 +173,7 @@ export type TreeValidationResult<
  * @publicApi 22.0
  */
 export type ValidationResult<E extends ValidationError = ValidationError> =
-  | ValidationSuccess
-  | OneOrMany<E>;
+  ValidationSuccess | OneOrMany<E>;
 
 /**
  * An asynchronous validation result where all errors explicitly define their target field.
@@ -195,8 +190,7 @@ export type ValidationResult<E extends ValidationError = ValidationError> =
  * @publicApi 22.0
  */
 export type AsyncValidationResult<E extends ValidationError = ValidationError> =
-  | ValidationResult<E>
-  | 'pending';
+  ValidationResult<E> | 'pending';
 
 /**
  * A field accessor function that returns the state of the field.
@@ -783,8 +777,7 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
  * @publicApi 22.0
  */
 export type MaybeSchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
-  | (TModel & undefined)
-  | SchemaPathTree<Exclude<TModel, undefined>, TPathKind>;
+  (TModel & undefined) | SchemaPathTree<Exclude<TModel, undefined>, TPathKind>;
 
 /**
  * A reusable schema that defines behavior and rules for a form.
@@ -872,8 +865,7 @@ export type SchemaFn<TModel, TPathKind extends PathKind = PathKind.Root> = (
  * @publicApi 22.0
  */
 export type SchemaOrSchemaFn<TModel, TPathKind extends PathKind = PathKind.Root> =
-  | Schema<TModel>
-  | SchemaFn<TModel, TPathKind>;
+  Schema<TModel> | SchemaFn<TModel, TPathKind>;
 
 /**
  * A function that receives the `FieldContext` for the field the logic is bound to and returns
