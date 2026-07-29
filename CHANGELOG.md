@@ -1,3 +1,28 @@
+<a name="20.3.27"></a>
+
+# 20.3.27 (2026-07-29)
+
+### compiler
+
+| Commit                                                                                           | Type | Description                                                                      |
+| ------------------------------------------------------------------------------------------------ | ---- | -------------------------------------------------------------------------------- |
+| [5dbcd0ee16](https://github.com/angular/angular/commit/5dbcd0ee16011369bec00e10e22cbcae6ebabd7a) | fix  | disallow i18n event attributes                                                   |
+| [db0d4a1a39](https://github.com/angular/angular/commit/db0d4a1a39db2dc0773f3bc9d7a0e1cfc59fa251) | fix  | restrict possible event handler check to property names longer than 2 characters |
+
+### http
+
+| Commit                                                                                           | Type | Description                                |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------ |
+| [a64e2883e9](https://github.com/angular/angular/commit/a64e2883e9dc4abdac70209129be303de79e5b2b) | fix  | distinguish repeated transfer cache params |
+
+### platform-server
+
+| Commit                                                                                           | Type | Description                     |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------- |
+| [6f80cca0b8](https://github.com/angular/angular/commit/6f80cca0b8af23b37f24fb8ee0229b6901d01df2) | fix  | update domino to latest version |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.26"></a>
 
 # 20.3.26 (2026-07-08)
