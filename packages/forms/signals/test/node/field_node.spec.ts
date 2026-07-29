@@ -1137,6 +1137,102 @@ describe('FieldNode', () => {
     });
   });
 
+  describe('validateDisabledFields option', () => {
+    it('should validate all disabled fields when set to true', () => {
+      const f = form(
+        signal({a: ''}),
+        (p) => {
+          disabled(p.a);
+          required(p.a);
+        },
+        {injector: TestBed.inject(Injector), validateDisabledFields: true},
+      );
+
+      expect(f.a().disabled()).toBe(true);
+      expect(f.a().valid()).toBe(false);
+      expect(f.a().errors()).toEqual([requiredError({fieldTree: f.a})]);
+    });
+
+    it('should not validate disabled fields by default', () => {
+      const f = form(
+        signal({a: ''}),
+        (p) => {
+          disabled(p.a);
+          required(p.a);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.a().disabled()).toBe(true);
+      expect(f.a().valid()).toBe(true);
+    });
+
+    it('should validate all disabled fields in the form, including children', () => {
+      const f = form(
+        signal({a: '', b: 'ok'}),
+        (p) => {
+          disabled(p);
+          required(p.a);
+          required(p.b);
+        },
+        {injector: TestBed.inject(Injector), validateDisabledFields: true},
+      );
+
+      expect(f().disabled()).toBe(true);
+      expect(f.a().valid()).toBe(false);
+      expect(f.b().valid()).toBe(true);
+      expect(f().valid()).toBe(false);
+    });
+  });
+
+  describe('validateReadonlyFields option', () => {
+    it('should validate all readonly fields when set to true', () => {
+      const f = form(
+        signal({a: ''}),
+        (p) => {
+          readonly(p.a);
+          required(p.a);
+        },
+        {injector: TestBed.inject(Injector), validateReadonlyFields: true},
+      );
+
+      expect(f.a().readonly()).toBe(true);
+      expect(f.a().valid()).toBe(false);
+      expect(f.a().errors()).toEqual([requiredError({fieldTree: f.a})]);
+    });
+
+    it('should not validate readonly fields by default', () => {
+      const f = form(
+        signal({a: ''}),
+        (p) => {
+          readonly(p.a);
+          required(p.a);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.a().readonly()).toBe(true);
+      expect(f.a().valid()).toBe(true);
+    });
+
+    it('should validate all readonly fields in the form, including children', () => {
+      const f = form(
+        signal({a: '', b: 'ok'}),
+        (p) => {
+          readonly(p);
+          required(p.a);
+          required(p.b);
+        },
+        {injector: TestBed.inject(Injector), validateReadonlyFields: true},
+      );
+
+      expect(f().readonly()).toBe(true);
+      expect(f.a().valid()).toBe(false);
+      expect(f.b().valid()).toBe(true);
+      expect(f().valid()).toBe(false);
+    });
+  });
+
   describe('validation', () => {
     it('should validate field', () => {
       const f = form(

@@ -363,12 +363,19 @@ export class FieldValidationState implements ValidationState {
    * Indicates whether validation should be skipped for this field because it is hidden, disabled,
    * or readonly.
    */
-  readonly shouldSkipValidation = computed(
-    () =>
-      this.node.hidden() ||
-      this.node.structure.isOrphaned() ||
-      ((this.node.disabled() || this.node.readonly()) && !this.node.forceValidate()),
-  );
+  readonly shouldSkipValidation = computed(() => {
+    if (this.node.hidden() || this.node.structure.isOrphaned()) {
+      return true;
+    }
+    const {validateDisabledFields, validateReadonlyFields} = this.node.structure.fieldManager;
+    if (this.node.disabled() && !validateDisabledFields && !this.node.forceValidate()) {
+      return true;
+    }
+    if (this.node.readonly() && !validateReadonlyFields && !this.node.forceValidate()) {
+      return true;
+    }
+    return false;
+  });
 }
 
 /** Normalizes a validation result to a list of validation errors. */

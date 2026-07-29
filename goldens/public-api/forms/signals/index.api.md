@@ -218,6 +218,8 @@ export interface FormOptions<TModel> {
     injector?: Injector;
     name?: string;
     submission?: FormSubmitOptions<TModel, unknown>;
+    validateDisabledFields?: boolean;
+    validateReadonlyFields?: boolean;
 }
 
 // @public
