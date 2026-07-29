@@ -461,6 +461,38 @@ export declare class MyComponent {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: host_listener_property.js
+ ****************************************************************************************************/
+import { Directive, HostListener } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+    handleClick = ($event) => { };
+    handleBeforeUnload = ($event) => { };
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, host: { listeners: { "click": "handleClick($event)", "window:beforeunload": "handleBeforeUnload($event)" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Directive
+        }], propDecorators: { handleClick: [{
+                type: HostListener,
+                args: ['click', ['$event']]
+            }], handleBeforeUnload: [{
+                type: HostListener,
+                args: ['window:beforeunload', ['$event']]
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_listener_property.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    handleClick: ($event: any) => void;
+    private handleBeforeUnload;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyComponent, never, never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: event_arg_listener_implicit_meaning.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';

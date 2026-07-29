@@ -161,6 +161,21 @@
       ]
     },
     {
+      "description": "should generate host listeners for a decorator on a property holding a function",
+      "inputFiles": ["host_listener_property.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "host_listener_property_host_bindings.js",
+              "generated": "host_listener_property.js"
+            }
+          ],
+          "failureMessage": "Incorrect event listener"
+        }
+      ]
+    },
+    {
       "description": "should assume $event is referring to the event variable in a listener by default",
       "inputFiles": ["event_arg_listener_implicit_meaning.ts"],
       "expectations": [
