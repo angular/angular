@@ -623,4 +623,4 @@ export type RawScopeInfoFromDecorator =
   | ModuleWithProviders<any>
   | (() => Type<any>)
   | (() => ModuleWithProviders<any>)
-  | any[];
+  | readonly any[];
