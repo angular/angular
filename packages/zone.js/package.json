@@ -8,8 +8,8 @@
   "fesm2015": "./fesm2015/zone.js",
   "typings": "./zone.d.ts",
   "devDependencies": {
-    "@csstools/css-calc": "3.2.1",
-    "@csstools/css-color-parser": "4.1.9",
+    "@csstools/css-calc": "3.3.0",
+    "@csstools/css-color-parser": "4.1.10",
     "@externs/nodejs": "1.5.0",
     "@types/jasmine": "6.0.0",
     "@types/node": "^24.3.0",

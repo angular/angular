@@ -24,7 +24,7 @@
     "selenium-webdriver": "3.6.0",
     "source-map": "0.8.0",
     "tslib": "2.8.1",
-    "yargs": "18.0.0",
+    "yargs": "18.1.0",
     "zone.js": "0.16.2"
   }
 }
