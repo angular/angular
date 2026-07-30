@@ -102,7 +102,7 @@ export type Debouncer<TValue, TPathKind extends PathKind = PathKind.Root> = (con
 // @public
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
     when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>;
-    validate?: boolean;
+    validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }): void;
 
 // @public @deprecated
@@ -280,7 +280,7 @@ export interface FormValueControl<TValue> extends FormUiControl<TValue> {
 // @public
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config: {
     when: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
-    validate?: boolean;
+    validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }): void;
 
 // @public @deprecated
@@ -569,7 +569,7 @@ export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[];
 // @public
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
-    validate?: boolean;
+    validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }): void;
 
 // @public @deprecated
@@ -703,6 +703,9 @@ export interface SignalFormsConfig {
     classes?: {
         [className: string]: (formField: FormFieldBinding) => boolean;
     };
+    validateDisabledFields?: boolean;
+    validateHiddenFields?: boolean;
+    validateReadonlyFields?: boolean;
 }
 
 // @public

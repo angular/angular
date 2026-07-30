@@ -26,6 +26,7 @@ import {
   MinValidationError,
   NativeInputParseError,
   PatternValidationError,
+  provideSignalFormsConfig,
   readonly,
   required,
   requiredError,
@@ -972,11 +973,11 @@ describe('FieldNode', () => {
       ]);
     });
 
-    it('should still validate when validate: true is set', () => {
+    it('should still validate when validate is a function returning true', () => {
       const f = form(
         signal({a: ''}),
         (p) => {
-          disabled(p.a, {validate: true});
+          disabled(p.a, {validate: () => true});
           required(p.a);
         },
         {injector: TestBed.inject(Injector)},
@@ -1001,12 +1002,13 @@ describe('FieldNode', () => {
       expect(f.a().valid()).toBe(true);
     });
 
-    it('should validate conditionally disabled field when validate: true is set', () => {
+    it('should validate conditionally disabled field when validate is a function', () => {
       const isDisabled = signal(false);
+      const shouldValidate = signal(false);
       const f = form(
         signal({a: ''}),
         (p) => {
-          disabled(p.a, {when: isDisabled, validate: true});
+          disabled(p.a, {when: isDisabled, validate: () => shouldValidate()});
           required(p.a);
         },
         {injector: TestBed.inject(Injector)},
@@ -1016,6 +1018,10 @@ describe('FieldNode', () => {
       expect(f.a().valid()).toBe(false);
 
       isDisabled.set(true);
+      expect(f.a().disabled()).toBe(true);
+      expect(f.a().valid()).toBe(true);
+
+      shouldValidate.set(true);
       expect(f.a().disabled()).toBe(true);
       expect(f.a().valid()).toBe(false);
       expect(f.a().errors()).toEqual([requiredError({fieldTree: f.a})]);
@@ -1087,11 +1093,11 @@ describe('FieldNode', () => {
       expect(f().readonly()).toBe(true);
     });
 
-    it('should still validate when validate: true is set', () => {
+    it('should still validate when validate is a function returning true', () => {
       const f = form(
         signal(''),
         (p) => {
-          readonly(p, {validate: true});
+          readonly(p, {validate: () => true});
           required(p);
         },
         {injector: TestBed.inject(Injector)},
@@ -1116,12 +1122,13 @@ describe('FieldNode', () => {
       expect(f().valid()).toBe(true);
     });
 
-    it('should validate conditionally readonly field when validate: true is set', () => {
+    it('should validate conditionally readonly field when validate is a function', () => {
       const isReadonly = signal(false);
+      const shouldValidate = signal(false);
       const f = form(
         signal(''),
         (p) => {
-          readonly(p, {when: isReadonly, validate: true});
+          readonly(p, {when: isReadonly, validate: () => shouldValidate()});
           required(p);
         },
         {injector: TestBed.inject(Injector)},
@@ -1131,6 +1138,10 @@ describe('FieldNode', () => {
       expect(f().valid()).toBe(false);
 
       isReadonly.set(true);
+      expect(f().readonly()).toBe(true);
+      expect(f().valid()).toBe(true);
+
+      shouldValidate.set(true);
       expect(f().readonly()).toBe(true);
       expect(f().valid()).toBe(false);
       expect(f().errors()).toEqual([requiredError({fieldTree: f})]);
@@ -1278,6 +1289,119 @@ describe('FieldNode', () => {
       expect(f.a().valid()).toBe(false);
       expect(f.b().valid()).toBe(true);
       expect(f().valid()).toBe(false);
+    });
+  });
+
+  describe('provideSignalFormsConfig validate options', () => {
+    describe('validateDisabledFields', () => {
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [provideSignalFormsConfig({validateDisabledFields: true})],
+        });
+      });
+
+      it('should validate disabled fields globally when set in config', () => {
+        const f = form(
+          signal({a: ''}),
+          (p) => {
+            disabled(p.a);
+            required(p.a);
+          },
+          {injector: TestBed.inject(Injector)},
+        );
+
+        expect(f.a().disabled()).toBe(true);
+        expect(f.a().valid()).toBe(false);
+        expect(f.a().errors()).toEqual([requiredError({fieldTree: f.a})]);
+      });
+
+      it('should be overridden when form sets validateDisabledFields to false', () => {
+        const f = form(
+          signal({a: ''}),
+          (p) => {
+            disabled(p.a);
+            required(p.a);
+          },
+          {injector: TestBed.inject(Injector), validateDisabledFields: false},
+        );
+
+        expect(f.a().disabled()).toBe(true);
+        expect(f.a().valid()).toBe(true);
+      });
+    });
+
+    describe('validateReadonlyFields', () => {
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [provideSignalFormsConfig({validateReadonlyFields: true})],
+        });
+      });
+
+      it('should validate readonly fields globally when set in config', () => {
+        const f = form(
+          signal(''),
+          (p) => {
+            readonly(p);
+            required(p);
+          },
+          {injector: TestBed.inject(Injector)},
+        );
+
+        expect(f().readonly()).toBe(true);
+        expect(f().valid()).toBe(false);
+        expect(f().errors()).toEqual([requiredError({fieldTree: f})]);
+      });
+
+      it('should be overridden when form sets validateReadonlyFields to false', () => {
+        const f = form(
+          signal(''),
+          (p) => {
+            readonly(p);
+            required(p);
+          },
+          {injector: TestBed.inject(Injector), validateReadonlyFields: false},
+        );
+
+        expect(f().readonly()).toBe(true);
+        expect(f().valid()).toBe(true);
+      });
+    });
+
+    describe('validateHiddenFields', () => {
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [provideSignalFormsConfig({validateHiddenFields: true})],
+        });
+      });
+
+      it('should validate hidden fields globally when set in config', () => {
+        const f = form(
+          signal({a: ''}),
+          (p) => {
+            hidden(p.a, {when: () => true});
+            required(p.a);
+          },
+          {injector: TestBed.inject(Injector)},
+        );
+
+        expect(f.a().hidden()).toBe(true);
+        expect(f.a().valid()).toBe(false);
+        expect(f.a().errors()).toEqual([requiredError({fieldTree: f.a})]);
+      });
+
+      it('should be overridden when form sets validateHiddenFields to false', () => {
+        const f = form(
+          signal({a: ''}),
+          (p) => {
+            hidden(p.a, {when: () => true});
+            required(p.a);
+          },
+          {injector: TestBed.inject(Injector), validateHiddenFields: false},
+        );
+
+        expect(f.a().hidden()).toBe(true);
+        expect(f.a().valid()).toBe(true);
+      });
     });
   });
 
