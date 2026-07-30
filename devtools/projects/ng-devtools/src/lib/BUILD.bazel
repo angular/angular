@@ -36,6 +36,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/application-services:settings",
         "//devtools/projects/ng-devtools/src/lib/application-services:theme",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs",
+        "//devtools/projects/ng-devtools/src/lib/shared/angie",
         "//devtools/projects/protocol",
     ],
 )
