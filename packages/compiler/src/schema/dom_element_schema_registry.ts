@@ -444,10 +444,12 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
 
     const normalizedTag = normalizeTagName(tagName);
     propName = propName.toLowerCase();
+    const [namespace] = splitNsName(normalizedTag, false);
 
     const securitySchema = SECURITY_SCHEMA();
     const ctx =
       securitySchema[normalizedTag + '|' + propName] ??
+      (namespace ? securitySchema[`:${namespace}:*|${propName}`] : undefined) ??
       securitySchema['*|' + propName] ??
       SecurityContext.NONE;
 

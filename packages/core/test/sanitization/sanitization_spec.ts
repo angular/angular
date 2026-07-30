@@ -61,6 +61,13 @@ describe('sanitization', () => {
     ).toEqual('<img src="javascript:true">');
   });
 
+  it('should not sanitize html sinks on concrete hosts with no HTML context', () => {
+    const html = '<script>evil</script><p>safe</p>';
+
+    expect(ɵɵsanitizeHtml(html, 'div', 'srcdoc')).toBe(html);
+    expect(ɵɵsanitizeHtml(html, 'iframe', 'srcdoc').toString()).toBe('<p>safe</p>');
+  });
+
   it('should sanitize url', () => {
     expect(ɵɵsanitizeUrl('http://server')).toEqual('http://server');
     expect(ɵɵsanitizeUrl(new Wrap('http://server'))).toEqual('http://server');
@@ -111,7 +118,6 @@ describe('sanitization', () => {
     // making sure security schema we have on compiler side is in sync with the `getUrlSanitizer`
     // runtime function definition
     const schema = SECURITY_SCHEMA();
-    const contextsByProp: Map<string, Set<number>> = new Map();
     const sanitizerNameByContext: Map<number, Function> = new Map([
       [SecurityContext.URL, ɵɵsanitizeUrl],
       [SecurityContext.RESOURCE_URL, ɵɵsanitizeResourceUrl],
@@ -119,15 +125,9 @@ describe('sanitization', () => {
     Object.entries(schema).forEach(([key, context]) => {
       if (context === SecurityContext.URL || context === SecurityContext.RESOURCE_URL) {
         const [tag, prop] = key.split('|');
-        const contexts = contextsByProp.get(prop) || new Set<number>();
-        contexts.add(context);
-        contextsByProp.set(prop, contexts);
-        // check only in case a prop can be a part of both URL contexts
-        if (contexts.size === 2) {
-          expect(getUrlSanitizer(tag, prop))
-            .withContext(`key: ${key}, context: ${context}`)
-            .toEqual(sanitizerNameByContext.get(context)!);
-        }
+        expect(getUrlSanitizer(tag, prop))
+          .withContext(`key: ${key}, context: ${context}`)
+          .toEqual(sanitizerNameByContext.get(context)!);
       }
     });
   });
@@ -136,7 +136,8 @@ describe('sanitization', () => {
     expect(getUrlSanitizer('IFRAME', 'SRC')).toEqual(ɵɵsanitizeResourceUrl);
     expect(getUrlSanitizer('IFRAME', 'src')).toEqual(ɵɵsanitizeResourceUrl);
     expect(getUrlSanitizer('iframe', 'SRC')).toEqual(ɵɵsanitizeResourceUrl);
-    expect(getUrlSanitizer('ScRiPt', 'xLiNk:HrEf')).toEqual(ɵɵsanitizeUrl);
+
+    expect(getUrlSanitizer('DiV', 'DaTa')).toBeNull();
     expect(getUrlSanitizer('A', 'HREF')).toEqual(ɵɵsanitizeUrl);
   });
 
@@ -148,10 +149,6 @@ describe('sanitization', () => {
     expect(() => ɵɵsanitizeUrlOrResourceUrl('http://server', 'IFRAME', 'src')).toThrowError(ERROR);
 
     expect(() => ɵɵsanitizeUrlOrResourceUrl('http://server', 'iframe', 'SRC')).toThrowError(ERROR);
-
-    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'ScRiPt', 'xLiNk:HrEf')).toEqual(
-      'unsafe:javascript:true',
-    );
 
     expect(ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'A', 'HREF')).toEqual(
       'unsafe:javascript:true',
@@ -192,6 +189,8 @@ describe('sanitization', () => {
     expect(
       ɵɵsanitizeUrlOrResourceUrl(bypassSanitizationTrustUrl('javascript:true'), 'a', 'href'),
     ).toEqual('javascript:true');
+
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'div', 'data')).toBe('javascript:true');
   });
 
   it('should only trust constant strings from template literal tags without interpolation', () => {
