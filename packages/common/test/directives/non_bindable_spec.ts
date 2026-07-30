@@ -12,12 +12,6 @@ import {hasClass} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 
 describe('non-bindable', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [TestComponent, TestDirective],
-    });
-  });
-
   it('should not interpolate children', async () => {
     const template = '<div>{{text}}<span ngNonBindable>{{text}}</span></div>';
     const fixture = createTestComponent(template);
@@ -48,7 +42,6 @@ describe('non-bindable', () => {
 
 @Directive({
   selector: '[test-dec]',
-  standalone: false,
 })
 class TestDirective {
   constructor(el: ElementRef) {
@@ -59,7 +52,7 @@ class TestDirective {
 @Component({
   selector: 'test-cmp',
   template: '',
-  standalone: false,
+  imports: [TestDirective],
 })
 class TestComponent {
   text: string;
