@@ -25,7 +25,7 @@ describe('AsyncPipe', () => {
   useAutoTick();
 
   function getChangeDetectorRefSpy() {
-    return jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck', 'detectChanges']);
+    return jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck']);
   }
 
   beforeEach(() => {
@@ -296,7 +296,7 @@ describe('AsyncPipe', () => {
     });
   });
 
-  it('should be available as a standalone pipe', () => {
+  it('should be available as a standalone pipe', async () => {
     @Component({
       selector: 'test-component',
       imports: [AsyncPipe],
@@ -307,7 +307,7 @@ describe('AsyncPipe', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const content = fixture.nativeElement.textContent;
     expect(content).toBe('foo');
