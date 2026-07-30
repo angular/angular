@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: 'read'
-  id-token: 'write'
 
 defaults:
   run:
@@ -21,7 +20,7 @@ jobs:
       workflows: ${{ steps.workflows.outputs.workflows }}
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@442c2fcbf06a321b5196b4c5fc70e78a49242958
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@442c2fcbf06a321b5196b4c5fc70e78a49242958 # main
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - id: workflows
@@ -31,14 +30,17 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     needs: list
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     strategy:
       matrix:
         workflow: ${{ fromJSON(needs.list.outputs.workflows) }}
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@442c2fcbf06a321b5196b4c5fc70e78a49242958
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@442c2fcbf06a321b5196b4c5fc70e78a49242958 # main
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@442c2fcbf06a321b5196b4c5fc70e78a49242958
+        uses: angular/dev-infra/github-actions/bazel/setup@442c2fcbf06a321b5196b4c5fc70e78a49242958 # main
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       # We utilize the google-github-actions/auth action to allow us to get an active credential using workflow
@@ -50,4 +52,7 @@ jobs:
           project_id: 'internal-200822'
           workload_identity_provider: 'projects/823469418460/locations/global/workloadIdentityPools/measurables-tracking/providers/angular'
           service_account: 'measures-uploader@internal-200822.iam.gserviceaccount.com'
-      - run: pnpm ng-dev perf workflows --name ${{ matrix.workflow }} --commit-sha ${{github.sha}}
+      - run: pnpm ng-dev perf workflows --name "$WORKFLOW" --commit-sha "$COMMIT_SHA"
+        env:
+          WORKFLOW: ${{ matrix.workflow }}
+          COMMIT_SHA: ${{ github.sha }}
