@@ -290,7 +290,7 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
             'withRequestsMadeViaParent() can only be used when the parent injector also configures HttpClient',
           );
         }
-        return handlerFromParent!;
+        return handlerFromParent;
       },
     },
   ]);

@@ -377,6 +377,14 @@ describe('provideHttpClient', () => {
   });
 
   describe('withRequestsMadeViaParent()', () => {
+    it('should error when combined with a backend override', () => {
+      for (const backendFeature of [withFetch(), withXhr()]) {
+        expect(() => provideHttpClient(withRequestsMadeViaParent(), backendFeature)).toThrowError(
+          'Configuration error: withRequestsMadeViaParent() cannot be combined with withFetch() or withXhr() in the same call to provideHttpClient().',
+        );
+      }
+    });
+
     for (const backend of ['fetch', 'xhr']) {
       describe(`given '${backend}' backend`, () => {
         const commonHttpFeatures: HttpFeature<HttpFeatureKind>[] = [];
