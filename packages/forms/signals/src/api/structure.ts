@@ -16,7 +16,6 @@ import {
 } from '@angular/core';
 import {RuntimeErrorCode} from '../errors';
 import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
-import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {addDefaultField} from '../field/validation';
@@ -237,16 +236,13 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
   const [model, schema, options] = normalizeFormArgs<TModel>(args);
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
-  const globalConfig = runInInjectionContext(injector, () =>
-    inject(SIGNAL_FORMS_CONFIG, {optional: true}),
-  );
   const fieldManager = new FormFieldManager(
     injector,
     options?.name,
     options?.submission as FormSubmitOptions<unknown, unknown> | undefined,
-    options?.validateDisabledFields ?? globalConfig?.validateDisabledFields,
-    options?.validateReadonlyFields ?? globalConfig?.validateReadonlyFields,
-    options?.validateHiddenFields ?? globalConfig?.validateHiddenFields,
+    options?.validateDisabledFields,
+    options?.validateReadonlyFields,
+    options?.validateHiddenFields,
   );
   const adapter = options?.adapter ?? new BasicFieldAdapter();
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);

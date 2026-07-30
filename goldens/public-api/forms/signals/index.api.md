@@ -706,9 +706,6 @@ export interface SignalFormsConfig {
     classes?: {
         [className: string]: (formField: FormFieldBinding) => boolean;
     };
-    validateDisabledFields?: boolean;
-    validateHiddenFields?: boolean;
-    validateReadonlyFields?: boolean;
 }
 
 // @public

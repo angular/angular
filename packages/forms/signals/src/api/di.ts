@@ -22,33 +22,6 @@ export interface SignalFormsConfig {
   classes?: {
     [className: string]: (formField: FormFieldBinding) => boolean;
   };
-
-  /**
-   * When `true`, validation runs for all disabled fields globally, regardless of whether
-   * individual `disabled()` rules have `validate` set. Can be overridden per form via
-   * `FormOptions.validateDisabledFields`.
-   *
-   * Defaults to `false`.
-   */
-  validateDisabledFields?: boolean;
-
-  /**
-   * When `true`, validation runs for all readonly fields globally, regardless of whether
-   * individual `readonly()` rules have `validate` set. Can be overridden per form via
-   * `FormOptions.validateReadonlyFields`.
-   *
-   * Defaults to `false`.
-   */
-  validateReadonlyFields?: boolean;
-
-  /**
-   * When `true`, validation runs for all hidden fields globally, regardless of whether
-   * individual `hidden()` rules have `validate` set. Can be overridden per form via
-   * `FormOptions.validateHiddenFields`.
-   *
-   * Defaults to `false`.
-   */
-  validateHiddenFields?: boolean;
 }
 
 /**
