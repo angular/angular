@@ -4140,11 +4140,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toMatch(/^'my-foo' is not a known element:
-1. If 'my-foo' is an Angular component, then verify that it is part of this module.
-2. If 'my-foo' is a Web Component, configure its Custom Elements Manifest in 'angularCompilerOptions.customElementsManifests'.
-3. If no Custom Elements Manifest is available for 'my-foo', add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component.
-4. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component. Find more at .*$/);
+        expect(diags[0].messageText).toMatch(
+          /^'my-foo' is not a known element:\n1\. If 'my-foo' is an Angular component, then verify that it is part of this module\.\n2\. If 'my-foo' is a Web Component, configure its Custom Elements Manifest in 'angularCompilerOptions\.customElementsManifests'\.\n3\. If no Custom Elements Manifest is available for 'my-foo', add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule\.schemas' of this component\.\n4\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should have a descriptive error for unknown elements that contain a dash in standalone components', () => {
@@ -4165,11 +4163,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toMatch(/^'my-foo' is not a known element:
-1. If 'my-foo' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'my-foo' is a Web Component, configure its Custom Elements Manifest in 'angularCompilerOptions.customElementsManifests'.
-3. If no Custom Elements Manifest is available for 'my-foo', add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component.
-4. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. Find more at .*$/);
+        expect(diags[0].messageText).toMatch(
+          /^'my-foo' is not a known element:\n1\. If 'my-foo' is an Angular component, then verify that it is included in the '@Component\.imports' of this component\.\n2\. If 'my-foo' is a Web Component, configure its Custom Elements Manifest in 'angularCompilerOptions\.customElementsManifests'\.\n3\. If no Custom Elements Manifest is available for 'my-foo', add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component\.schemas' of this component\.\n4\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should check for unknown properties', () => {
@@ -4264,16 +4260,12 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toMatch(/^'custom-element' is not a known element:
-1. If 'custom-element' is an Angular component, then verify that it is part of this module.
-2. If 'custom-element' is a Web Component, configure its Custom Elements Manifest in 'angularCompilerOptions.customElementsManifests'.
-3. If no Custom Elements Manifest is available for 'custom-element', add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component.
-4. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component. Find more at .*$/);
-        expect(diags[1].messageText)
-          .toMatch(/^Can't bind to 'foo' since it isn't a known property of 'custom-element'.
-1. If 'custom-element' is an Angular component and it has 'foo' input, then verify that it is part of this module.
-2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
-3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component. Find more at .*$/);
+        expect(diags[0].messageText).toMatch(
+          /^'custom-element' is not a known element:\n1\. If 'custom-element' is an Angular component, then verify that it is part of this module\.\n2\. If 'custom-element' is a Web Component, configure its Custom Elements Manifest in 'angularCompilerOptions\.customElementsManifests'\.\n3\. If no Custom Elements Manifest is available for 'custom-element', add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule\.schemas' of this component\.\n4\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
+        expect(diags[1].messageText).toMatch(
+          /^Can't bind to 'foo' since it isn't a known property of 'custom-element'\.\n1\. If 'custom-element' is an Angular component and it has 'foo' input, then verify that it is part of this module\.\n2\. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule\.schemas' of this component to suppress this message\.\n3\. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should not produce diagnostics for custom-elements-style elements when using the CUSTOM_ELEMENTS_SCHEMA', () => {
