@@ -4912,6 +4912,62 @@ describe('reactive forms integration tests', () => {
       expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: sharedControl, count: 1});
     });
 
+    it('should not sync the previously bound control when the `formControl` input changes and the value accessor accumulates `registerOnChange` callbacks', () => {
+      @Component({
+        selector: 'accumulating-cva',
+        template: '<input type="text" [formControl]="innerControl" />',
+        providers: [
+          {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => AccumulatingCva), multi: true},
+        ],
+        standalone: false,
+      })
+      class AccumulatingCva implements ControlValueAccessor {
+        innerControl = new FormControl('');
+        writeValue(value: any): void {
+          this.innerControl.setValue(value);
+        }
+        // Callbacks are accumulated (instead of replaced) on each `registerOnChange` call,
+        // mimicking value accessors that subscribe to an inner control's `valueChanges`.
+        registerOnChange(fn: (value: any) => void): void {
+          this.innerControl.valueChanges.subscribe(fn);
+        }
+        registerOnTouched(fn: () => void): void {}
+      }
+
+      @Component({
+        template: '<accumulating-cva [formControl]="control"></accumulating-cva>',
+        standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class App {
+        control = new FormControl('A');
+      }
+
+      const fixture = initTest(App, AccumulatingCva);
+      fixture.detectChanges();
+
+      const controlA = fixture.componentInstance.control;
+      const controlB = new FormControl('B');
+
+      fixture.componentInstance.control = controlB;
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+
+      // Rebinding the directive writes `controlB`'s value into the view. The stale
+      // view-to-model callback registered for `controlA` must not pick that value up.
+      expect(controlA.value).toBe('A');
+      expect(controlB.value).toBe('B');
+      expect(controlB.dirty).toBe(false);
+
+      // View changes should only be propagated to the currently bound control.
+      const cva: AccumulatingCva = fixture.debugElement.query(
+        By.directive(AccumulatingCva),
+      ).componentInstance;
+      cva.innerControl.setValue('C');
+      expect(controlA.value).toBe('A');
+      expect(controlB.value).toBe('C');
+    });
+
     it('should clean up callbacks when FormControlDirective is destroyed (simple)', () => {
       // Scenario:
       // ---------
