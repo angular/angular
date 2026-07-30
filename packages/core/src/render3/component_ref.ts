@@ -25,6 +25,7 @@ import {ComponentFactoryResolver as AbstractComponentFactoryResolver} from '../l
 import {createElementRef, ElementRef} from '../linker/element_ref';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
+import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../sanitization/dom_security_schema';
 import {Sanitizer} from '../sanitization/sanitizer';
 
 import {assertComponentType} from './assert';
@@ -47,6 +48,7 @@ import {
   TElementContainerNode,
   TElementNode,
   TNode,
+  TNodeName,
   TNodeType,
 } from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
@@ -60,7 +62,6 @@ import {
   TVIEW,
   TViewType,
 } from './interfaces/view';
-import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 
 import {retrieveHydrationInfo} from '../hydration/utils';
 import {ChainedInjector} from './chained_injector';
@@ -362,7 +363,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         HEADER_OFFSET,
         rootLView,
         TNodeType.Element,
-        '#host',
+        TNodeName.DynamicHost,
         () => rootTView.directiveRegistry,
         true,
         0,
