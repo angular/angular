@@ -54,7 +54,7 @@ describe('I18nSelectPipe', () => {
       expect(pipe.transform('greeting', shadowedMapping)).toEqual('hello');
     });
 
-    it('should be available as a standalone pipe', () => {
+    it('should be available as a standalone pipe', async () => {
       @Component({
         selector: 'test-component',
         imports: [I18nSelectPipe],
@@ -66,7 +66,7 @@ describe('I18nSelectPipe', () => {
       }
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const content = fixture.nativeElement.textContent;
       expect(content).toBe('Invite them.');
