@@ -1,8 +1,6 @@
 # Accepting data with input properties
 
-TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
-
-TIP: If you're familiar with other web frameworks, input properties are similar to _props_.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular. If you're familiar with other web frameworks, input properties are similar to _props_.
 
 When you use a component, you commonly want to pass some data to it. A component specifies the data that it accepts by declaring
 **inputs**:
@@ -253,7 +251,7 @@ See [Custom events with outputs](guide/components/outputs) for more details on o
 
 ### Customizing model inputs
 
-You can mark a model input as required or provide an alias in the same way as a [standard input](guide/components/inputs).
+You can mark a model input as [required](#required-inputs) or provide an [alias](#input-aliases) in the same way as a standard input.
 
 Model inputs do not support input transforms.
 
