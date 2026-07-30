@@ -32333,7 +32333,10 @@ function envForceColor() {
   if (env2.FORCE_COLOR.length === 0) {
     return 1;
   }
-  const level = Math.min(Number.parseInt(env2.FORCE_COLOR, 10), 3);
+  if (!new RegExp("^\\d+$", "v").test(env2.FORCE_COLOR)) {
+    return;
+  }
+  const level = Math.min(Number(env2.FORCE_COLOR), 3);
   if (![0, 1, 2, 3].includes(level)) {
     return;
   }
@@ -32367,6 +32370,9 @@ function _supportsColor(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
       return 2;
     }
   }
+  if (forceColor !== void 0 && new RegExp("^\\d+$", "v").test(env2.FORCE_COLOR)) {
+    return forceColor;
+  }
   if ("TF_BUILD" in env2 && "AGENT_NAME" in env2) {
     return 1;
   }
@@ -32385,16 +32391,16 @@ function _supportsColor(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
     return 1;
   }
   if ("CI" in env2) {
-    if (["GITHUB_ACTIONS", "GITEA_ACTIONS", "CIRCLECI"].some((key) => key in env2)) {
+    if (["GITHUB_ACTIONS", "GITEA_ACTIONS", "CIRCLECI"].some((key) => Object.hasOwn(env2, key))) {
       return 3;
     }
-    if (["TRAVIS", "APPVEYOR", "GITLAB_CI", "BUILDKITE", "DRONE"].some((sign) => sign in env2) || env2.CI_NAME === "codeship") {
+    if (["TRAVIS", "APPVEYOR", "GITLAB_CI", "BUILDKITE", "DRONE"].some((sign) => Object.hasOwn(env2, sign)) || env2.CI_NAME === "codeship") {
       return 1;
     }
     return min;
   }
   if ("TEAMCITY_VERSION" in env2) {
-    return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env2.TEAMCITY_VERSION) ? 1 : 0;
+    return new RegExp("^(?:9\\.0*[1-9]\\d*\\.|\\d{2,}\\.)", "v").test(env2.TEAMCITY_VERSION) ? 1 : 0;
   }
   if (env2.COLORTERM === "truecolor") {
     return 3;
@@ -32409,7 +32415,7 @@ function _supportsColor(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
     return 3;
   }
   if ("TERM_PROGRAM" in env2) {
-    const version = Number.parseInt((env2.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
+    const version = Number((env2.TERM_PROGRAM_VERSION || "").split(".", 1)[0]);
     switch (env2.TERM_PROGRAM) {
       case "iTerm.app": {
         return version >= 3 ? 3 : 2;
@@ -32419,10 +32425,10 @@ function _supportsColor(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
       }
     }
   }
-  if (/-256(color)?$/i.test(env2.TERM)) {
+  if (new RegExp("-256(?:color)?$", "iv").test(env2.TERM)) {
     return 2;
   }
-  if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env2.TERM)) {
+  if (new RegExp("^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux", "iv").test(env2.TERM)) {
     return 1;
   }
   if ("COLORTERM" in env2) {
@@ -34194,6 +34200,130 @@ function isElectronApp() {
 function getProcessArgvBin() {
   return process.argv[getProcessArgvBinIndex()];
 }
+var segmenter2 = new Intl.Segmenter();
+var zeroWidthClusterRegex = new RegExp("^(?:\\p{Default_Ignorable_Code_Point}|\\p{Control}|\\p{Format}|\\p{Nonspacing_Mark}|\\p{Enclosing_Mark}|\\p{Surrogate})+$", "v");
+var leadingNonPrintingRegex = new RegExp("^[\\p{Default_Ignorable_Code_Point}\\p{Control}\\p{Format}\\p{Nonspacing_Mark}\\p{Enclosing_Mark}\\p{Surrogate}]+", "v");
+var spacingMarkRegex = new RegExp("\\p{Spacing_Mark}", "v");
+var rgiEmojiRegex = new RegExp("^\\p{RGI_Emoji}$", "v");
+var unqualifiedKeycapRegex = /^[\d#*]\u20E3$/;
+var extendedPictographicRegex = new RegExp("\\p{Extended_Pictographic}", "gu");
+function isDoubleWidthNonRgiEmojiSequence(segment) {
+  if (segment.length > 50) {
+    return false;
+  }
+  if (unqualifiedKeycapRegex.test(segment)) {
+    return true;
+  }
+  if (segment.includes("\u200D")) {
+    const pictographics = segment.match(extendedPictographicRegex);
+    return pictographics !== null && pictographics.length >= 2;
+  }
+  return false;
+}
+function baseVisible(segment) {
+  return segment.replace(leadingNonPrintingRegex, "");
+}
+function isZeroWidthCluster(segment) {
+  return zeroWidthClusterRegex.test(segment);
+}
+function isHangulLeadingJamo(codePoint) {
+  return codePoint >= 4352 && codePoint <= 4447 || codePoint >= 43360 && codePoint <= 43388;
+}
+function isHangulVowelJamo(codePoint) {
+  return codePoint >= 4448 && codePoint <= 4519 || codePoint >= 55216 && codePoint <= 55238;
+}
+function isHangulTrailingJamo(codePoint) {
+  return codePoint >= 4520 && codePoint <= 4607 || codePoint >= 55243 && codePoint <= 55291;
+}
+function isHangulJamo(codePoint) {
+  return isHangulLeadingJamo(codePoint) || isHangulVowelJamo(codePoint) || isHangulTrailingJamo(codePoint);
+}
+function hangulClusterWidth(visibleSegment, eastAsianWidthOptions) {
+  const codePoints = [];
+  for (const character of visibleSegment) {
+    if (zeroWidthClusterRegex.test(character)) {
+      continue;
+    }
+    codePoints.push(character.codePointAt(0));
+  }
+  if (codePoints.length === 0) {
+    return void 0;
+  }
+  let width = 0;
+  for (let index = 0; index < codePoints.length; index++) {
+    const codePoint = codePoints[index];
+    if (!isHangulJamo(codePoint)) {
+      if (width === 0) {
+        return void 0;
+      }
+      for (let remaining = index; remaining < codePoints.length; remaining++) {
+        width += eastAsianWidth(codePoints[remaining], eastAsianWidthOptions);
+      }
+      return width;
+    }
+    if (isHangulLeadingJamo(codePoint) && isHangulVowelJamo(codePoints[index + 1])) {
+      width += 2;
+      index += isHangulTrailingJamo(codePoints[index + 2]) ? 2 : 1;
+      continue;
+    }
+    width += eastAsianWidth(codePoint, eastAsianWidthOptions);
+  }
+  return width;
+}
+function trailingWidth(visibleSegment, eastAsianWidthOptions) {
+  let extra = 0;
+  let first = true;
+  for (const character of visibleSegment) {
+    if (first) {
+      first = false;
+      continue;
+    }
+    if (spacingMarkRegex.test(character) || character >= "\uFF00" && character <= "\uFFEF") {
+      extra += eastAsianWidth(character.codePointAt(0), eastAsianWidthOptions);
+    }
+  }
+  return extra;
+}
+function stringWidth2(input, options = {}) {
+  if (typeof input !== "string" || input.length === 0) {
+    return 0;
+  }
+  const {
+    ambiguousIsNarrow = true,
+    countAnsiEscapeCodes = false
+  } = options;
+  let string = input;
+  if (!countAnsiEscapeCodes && (string.includes("\x1B") || string.includes("\x9B"))) {
+    string = stripAnsi(string);
+  }
+  if (string.length === 0) {
+    return 0;
+  }
+  if (/^[\u0020-\u007E]*$/.test(string)) {
+    return string.length;
+  }
+  let width = 0;
+  const eastAsianWidthOptions = { ambiguousAsWide: !ambiguousIsNarrow };
+  for (const { segment } of segmenter2.segment(string)) {
+    if (isZeroWidthCluster(segment)) {
+      continue;
+    }
+    if (rgiEmojiRegex.test(segment) || isDoubleWidthNonRgiEmojiSequence(segment)) {
+      width += 2;
+      continue;
+    }
+    const visibleSegment = baseVisible(segment);
+    const hangulWidth = hangulClusterWidth(visibleSegment, eastAsianWidthOptions);
+    if (hangulWidth !== void 0) {
+      width += hangulWidth;
+      continue;
+    }
+    const codePoint = visibleSegment.codePointAt(0);
+    width += eastAsianWidth(codePoint, eastAsianWidthOptions);
+    width += trailingWidth(visibleSegment, eastAsianWidthOptions);
+  }
+  return width;
+}
 var node_default = {
   fs: {
     readFileSync: readFileSync22,
@@ -34416,7 +34546,7 @@ var esm_default = {
     const callerFile = (0, import_get_caller_file.default)(3);
     return callerFile.match(/^file:\/\//) ? fileURLToPath(callerFile) : callerFile;
   },
-  stringWidth,
+  stringWidth: stringWidth2,
   y18n: y18n_default({
     directory: resolve4(__dirname2, "../../../locales"),
     updateFiles: false
@@ -36193,6 +36323,8 @@ function mergeDeep2(config1, config2) {
   }
   Object.assign(target, config1);
   for (const key of Object.keys(config2)) {
+    if (key === "__proto__")
+      continue;
     if (isObject(config2[key]) && isObject(target[key])) {
       target[key] = mergeDeep2(config1[key], config2[key]);
     } else {
@@ -37241,7 +37373,7 @@ var YargsInstance = class {
   [kGetDollarZero]() {
     let $0 = "";
     let default$0;
-    if (/\b(node|iojs|electron)(\.exe)?$/.test(__classPrivateFieldGet(this, _YargsInstance_shim, "f").process.argv()[0])) {
+    if (/\b(node|iojs|electron|bun)(\.exe)?$/.test(__classPrivateFieldGet(this, _YargsInstance_shim, "f").process.argv()[0])) {
       default$0 = __classPrivateFieldGet(this, _YargsInstance_shim, "f").process.argv().slice(1, 2);
     } else {
       default$0 = __classPrivateFieldGet(this, _YargsInstance_shim, "f").process.argv().slice(0, 1);
@@ -65184,7 +65316,7 @@ content-type/dist/index.js:
   (* v8 ignore next -- @preserve *)
   (* v8 ignore else -- @preserve *)
 
-@angular/ng-dev/bundles/chunk-GE5YLAX7.mjs:
+@angular/ng-dev/bundles/chunk-QM7BPMX4.mjs:
   (*! Bundled license information:
   
   yargs-parser/build/lib/string-utils.js:
@@ -65225,7 +65357,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-M7XMYTYE.mjs:
+@angular/ng-dev/bundles/chunk-D7SBR34O.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
