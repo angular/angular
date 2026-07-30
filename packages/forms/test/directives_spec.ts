@@ -411,6 +411,36 @@ describe('Form Directives', () => {
       });
 
       // should update the form's value and validity
+
+      it('should not throw when a nested group is added after its container was removed', async () => {
+        // Reproduces https://github.com/angular/angular/issues/69440: `addControl` and
+        // `addFormGroup` register into the resolved container inside a deferred microtask.
+        // If an ancestor container is removed (also deferred) before that microtask runs,
+        // `_findContainer` resolves to `null` and registration must be a no-op rather than
+        // throwing.
+        const nestedControlGroupDir = new NgModelGroup(personControlGroupDir, [], []);
+        nestedControlGroupDir.name = 'nested';
+
+        const nestedLoginControlDir = new NgModel(nestedControlGroupDir, null!, null!, [
+          defaultAccessor,
+        ]);
+        nestedLoginControlDir.name = 'login';
+        nestedLoginControlDir.valueAccessor = new DummyControlValueAccessor();
+
+        form.addFormGroup(personControlGroupDir);
+        form.addFormGroup(nestedControlGroupDir);
+        await timeout();
+
+        // Removing `person` and adding `person.nested.login` are both scheduled as
+        // microtasks; the removal was queued first so it resolves first, leaving
+        // `person.nested` unresolvable by the time the add runs.
+        form.removeFormGroup(personControlGroupDir);
+        expect(() => form.addControl(nestedLoginControlDir)).not.toThrow();
+
+        await timeout();
+
+        expect(formModel.get(['person'])).toBeNull();
+      });
     });
 
     describe('removeControl & removeFormGroup', () => {
