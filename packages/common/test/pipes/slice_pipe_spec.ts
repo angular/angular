@@ -105,22 +105,22 @@ describe('SlicePipe', () => {
       TestBed.configureTestingModule({declarations: [TestComp], imports: [CommonModule]});
     });
 
-    it('should work with mutable arrays', () => {
+    it('should work with mutable arrays', async () => {
       const fixture = TestBed.createComponent(TestComp);
       const mutable: number[] = [1, 2];
       fixture.componentInstance.data = mutable;
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement).toHaveText('2');
 
       mutable.push(3);
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement).toHaveText('2,3');
     });
   });
 
-  it('should be available as a standalone pipe', () => {
+  it('should be available as a standalone pipe', async () => {
     @Component({
       selector: 'test-component',
       imports: [SlicePipe],
@@ -132,7 +132,7 @@ describe('SlicePipe', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const content = fixture.nativeElement.textContent;
     expect(content).toBe('Hello');

@@ -83,7 +83,7 @@ describe('DatePipe', () => {
       );
     });
 
-    it('should use format provided in component as default format when no format is passed in', () => {
+    it('should use format provided in component as default format when no format is passed in', async () => {
       @Component({
         selector: 'test-component',
         imports: [DatePipe],
@@ -95,13 +95,13 @@ describe('DatePipe', () => {
       }
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const content = fixture.nativeElement.textContent;
       expect(content).toBe('1/11/17');
     });
 
-    it('should use format provided in module as default format when no format is passed in', () => {
+    it('should use format provided in module as default format when no format is passed in', async () => {
       @Component({
         selector: 'test-component',
         imports: [DatePipe],
@@ -116,7 +116,7 @@ describe('DatePipe', () => {
         providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {dateFormat: 'shortDate'}}],
       });
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const content = fixture.nativeElement.textContent;
       expect(content).toBe('1/11/17');
@@ -171,7 +171,7 @@ describe('DatePipe', () => {
       expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '+0100')).toEqual('Jan 11, 2017');
     });
 
-    it('should use timezone provided in component as default timezone when no format is passed in', () => {
+    it('should use timezone provided in component as default timezone when no format is passed in', async () => {
       @Component({
         selector: 'test-component',
         imports: [DatePipe],
@@ -183,13 +183,13 @@ describe('DatePipe', () => {
       }
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const content = fixture.nativeElement.textContent;
       expect(content).toBe('Jan 10, 2017');
     });
 
-    it('should use timezone provided in module as default timezone when no format is passed in', () => {
+    it('should use timezone provided in module as default timezone when no format is passed in', async () => {
       @Component({
         selector: 'test-component',
         imports: [DatePipe],
@@ -204,14 +204,14 @@ describe('DatePipe', () => {
         providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone: '-1200'}}],
       });
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const content = fixture.nativeElement.textContent;
       expect(content).toBe('Jan 10, 2017');
     });
   });
 
-  it('should be available as a standalone pipe', () => {
+  it('should be available as a standalone pipe', async () => {
     @Component({
       selector: 'test-component',
       imports: [DatePipe],
@@ -222,7 +222,7 @@ describe('DatePipe', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const content = fixture.nativeElement.textContent;
     expect(content).toBe('Jan 11, 2017');
