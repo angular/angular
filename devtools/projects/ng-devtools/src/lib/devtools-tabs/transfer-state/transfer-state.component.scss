@@ -47,17 +47,14 @@
 
   .info-card {
     max-width: 32rem;
-    margin: 2rem auto 0;
+    margin: 1rem auto 0;
     padding: 1.5rem;
     background: var(--color-foreground);
     border: 1px solid var(--color-separator);
     border-radius: 0.5rem;
     text-align: center;
 
-    .info-angie {
-      display: block;
-      height: 120px;
-      width: auto;
+    ng-angie {
       margin: 0 auto 0.75rem;
     }
 

@@ -32,6 +32,7 @@ import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import {ObjectTreeExplorerComponent} from '../../shared/object-tree-explorer/object-tree-explorer.component';
 import {FlatNode} from '../../shared/object-tree-explorer/object-tree-types';
 import {buildValueTree} from './value-tree-builder';
+import {AngieComponent} from '../../shared/angie/angie.component';
 
 interface TransferStateItem {
   key: string;
@@ -86,6 +87,7 @@ function getByteSize(key: string, value: TransferStateValue): number | null {
     ButtonComponent,
     MatSnackBarModule,
     ObjectTreeExplorerComponent,
+    AngieComponent,
   ],
   templateUrl: './transfer-state.component.html',
   styleUrls: ['./transfer-state.component.scss'],

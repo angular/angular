@@ -26,6 +26,7 @@ import {SignalGraphManager} from '../signal-graph-manager/signal-graph-manager';
 import {DevtoolsSignalGraphNode} from '../../../shared/signal-graph';
 import {SignalsVisualizerComponent} from '../../../shared/signals-visualizer/signals-visualizer.component';
 import {ElementPosition} from '../../../../../../protocol';
+import {AngieComponent} from '../../../shared/angie/angie.component';
 
 type SelectedNodeSource = {
   element: ElementPosition | undefined;
@@ -36,7 +37,13 @@ type SelectedNodeSource = {
   templateUrl: './signal-graph-pane.component.html',
   selector: 'ng-signal-graph-pane',
   styleUrl: './signal-graph-pane.component.scss',
-  imports: [SignalsVisualizerComponent, SignalDetailsComponent, MatIcon, ButtonComponent],
+  imports: [
+    SignalsVisualizerComponent,
+    SignalDetailsComponent,
+    MatIcon,
+    ButtonComponent,
+    AngieComponent,
+  ],
 })
 export class SignalGraphPaneComponent {
   protected readonly visualizer = viewChild.required<SignalsVisualizerComponent>('visualizer');
