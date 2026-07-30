@@ -4938,7 +4938,7 @@ describe('hook order', () => {
 });
 
 describe('non-regression', () => {
-  it('should call lifecycle hooks for directives active on <ng-template>', () => {
+  it('should call lifecycle hooks for directives active on <ng-template>', async () => {
     let destroyed = false;
 
     @Directive({
@@ -4973,7 +4973,7 @@ describe('non-regression', () => {
 
     fixture.componentInstance.show = false;
     fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(destroyed).toBeTruthy();
   });
