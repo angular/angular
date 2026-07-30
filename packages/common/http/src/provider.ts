@@ -273,7 +273,8 @@ export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
  * "bubble up" until either reaching the root level or an `HttpClient` which was not configured with
  * this option.
  *
- * This feature is incompatible with the `withFetch` and `withXhr` features.
+ * This feature cannot be combined with `withFetch` or `withXhr` in the same
+ * `provideHttpClient()` call.
  *
  * @see [HTTP client setup](guide/http/setup#withrequestsmadeviaparent)
  * @see {@link provideHttpClient}
