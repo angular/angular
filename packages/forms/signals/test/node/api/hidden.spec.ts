@@ -140,6 +140,22 @@ describe('hidden', () => {
     expect(f.name().hidden()).toBe(true);
   });
 
+  it('it returns true when configOrLogic is omitted', () => {
+    const cat = signal({name: 'Pirojok-the-cat', age: 5});
+    const f = form(
+      cat,
+      (p) => {
+        hidden(p.name);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.name().hidden()).withContext('Name is permanently hidden').toBeTrue();
+
+    f.name().value.set('some-other-cat');
+    expect(f.name().hidden()).toBeTrue();
+  });
+
   it('should still validate when validate is a function returning true', () => {
     // Use an external signal for the hidden condition so the field value can stay empty
     // (which fails the required validator), independent of the hidden state.

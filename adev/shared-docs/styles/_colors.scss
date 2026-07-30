@@ -131,7 +131,7 @@ $gray-50: oklch(98.81% 0 0); // #fbfbfb
   --light-pink-to-light-purple-horizontal-gradient: linear-gradient(
     90deg,
     var(--light-pink) 0%,
-    var(--light-purple) 100%
+    var(--light-violet) 100%
   );
 
   --light-vivid-pink-to-light-electric-violet-horizontal-gradient: linear-gradient(
@@ -232,7 +232,8 @@ $gray-50: oklch(98.81% 0 0); // #fbfbfb
   // for the "unfilled" portion of the word that hasn't
   // been highlighted by the gradient
   --gray-unfilled: #{$gray-400};
-  --webgl-page-background: var(var(--page-background)) --webgl-gray-unfilled: #{$gray-400};
+  --webgl-page-background: var(--page-background);
+  --webgl-gray-unfilled: #{$gray-400};
 }
 
 @mixin dark-mode-definitions() {

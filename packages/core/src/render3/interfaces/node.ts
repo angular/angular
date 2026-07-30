@@ -17,6 +17,14 @@ import {RNode} from './renderer_dom';
 import type {LView, TView} from './view';
 
 /**
+ * Internal tag name used for a root host `TNode` when Angular creates a component against an
+ * existing host element. The concrete DOM tag is resolved from the native element at runtime.
+ */
+export const enum TNodeName {
+  DynamicHost = '#host',
+}
+
+/**
  * TNodeType corresponds to the {@link TNode} `type` property.
  *
  * NOTE: type IDs are such that we use each bit to denote a type. This is done so that we can easily

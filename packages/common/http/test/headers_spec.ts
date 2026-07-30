@@ -154,6 +154,34 @@ describe('HttpHeaders', () => {
       const fourth = third.delete('FOO');
       expect(fourth.has('foo')).toEqual(false);
     });
+
+    it('should delete only the exact matching string value', () => {
+      const headers = new HttpHeaders({
+        'X-Scopes': ['tenant:alpha', 'tenant:alpha:archive'],
+      });
+
+      const updated = headers.delete('X-Scopes', 'tenant:alpha:archive');
+
+      expect(updated.getAll('X-Scopes')).toEqual(['tenant:alpha']);
+    });
+
+    it('should delete only exact matching values from an array', () => {
+      const headers = new HttpHeaders({
+        'X-Scopes': ['tenant:alpha', 'tenant:alpha:archive'],
+      });
+
+      const updated = headers.delete('X-Scopes', ['tenant:alpha:archive']);
+
+      expect(updated.getAll('X-Scopes')).toEqual(['tenant:alpha']);
+    });
+
+    it('should treat an empty string as a value to delete', () => {
+      const headers = new HttpHeaders({foo: ['', 'bar']});
+
+      const updated = headers.delete('foo', '');
+
+      expect(updated.getAll('foo')).toEqual(['bar']);
+    });
   });
 
   describe('.append', () => {
@@ -163,6 +191,15 @@ describe('HttpHeaders', () => {
       const third = second.append('foo', 'baz');
       expect(third.get('foo')).toEqual('bar');
       expect(third.getAll('foo')).toEqual(['bar', 'baz']);
+    });
+
+    it('should not mutate a materialized source', () => {
+      const source = new HttpHeaders().set('foo', 'bar');
+      expect(source.getAll('foo')).toEqual(['bar']);
+
+      const clone = source.append('foo', 'baz');
+      expect(clone.getAll('foo')).toEqual(['bar', 'baz']);
+      expect(source.getAll('foo')).toEqual(['bar']);
     });
 
     it('should preserve the case of the first call', () => {

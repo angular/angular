@@ -469,7 +469,7 @@ describe('ControlValueAccessor', () => {
     expect(fixture.componentInstance.f().value()).toBe('typing');
   });
 
-  it('should not throw if the ControlValueAccessor implementation uses signals', () => {
+  it('should not throw if the ControlValueAccessor implementation uses signals', async () => {
     @Component({
       selector: 'signal-custom-control',
       template: `<input [value]="value()" [disabled]="disabled()" />`,
@@ -521,7 +521,7 @@ describe('ControlValueAccessor', () => {
     }
 
     const fixture = TestBed.createComponent(App);
-    expect(() => fixture.detectChanges()).not.toThrowError(/NG0600/);
+    await expectAsync(fixture.whenStable()).not.toBeRejectedWithError(/NG0600/);
 
     expect(() => fixture.componentInstance.disabled.set(true)).not.toThrowError(/NG0600/);
   });

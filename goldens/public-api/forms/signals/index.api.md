@@ -278,13 +278,13 @@ export interface FormValueControl<TValue> extends FormUiControl<TValue> {
 }
 
 // @public
-export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config: {
-    when: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: {
+    when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
     validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }): void;
 
 // @public @deprecated
-export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
+export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic?: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
 
 // @public
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
@@ -303,6 +303,9 @@ export type IgnoreUnknownProperties<T> = T extends Record<PropertyKey, unknown> 
 
 // @public
 export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol;
+
+// @public
+export function isFieldTree(value: unknown): value is FieldTree<unknown>;
 
 // @public
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {

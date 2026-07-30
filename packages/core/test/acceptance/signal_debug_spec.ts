@@ -27,7 +27,7 @@ import {
 import {setInjectorProfiler} from '../../src/render3/debug/injector_profiler';
 import type {DebugSignalGraphEdge, DebugSignalGraphNode} from '../../primitives/devtools';
 import {getSignalGraph} from '../../src/render3/util/signal_debug';
-import {fakeAsync, TestBed, tick} from '../../testing';
+import {TestBed} from '../../testing';
 
 describe('getSignalGraph', () => {
   beforeEach(() => {
@@ -58,16 +58,14 @@ describe('getSignalGraph', () => {
     }));
   }
 
-  it('should return the signal graph for a component with signals', fakeAsync(() => {
+  it('should return the signal graph for a component with signals', async () => {
     @Component({selector: 'component-with-signals', template: `{{ primitiveSignal() }}`})
     class WithSignals {
       primitiveSignal = signal(123, {debugName: 'primitiveSignal'});
     }
-    TestBed.configureTestingModule({imports: [WithSignals]});
     const fixture = TestBed.createComponent(WithSignals);
+    await fixture.whenStable();
 
-    tick();
-    fixture.detectChanges();
     const injector = fixture.componentRef.injector;
     const signalGraph = getSignalGraph(injector);
 
@@ -86,9 +84,9 @@ describe('getSignalGraph', () => {
     expect(signalNode).toBeDefined();
     expect(signalNode.label).toBe('primitiveSignal');
     expect(signalNode.value).toBe(123);
-  }));
+  });
 
-  it('should return the signal graph for a component with effects', fakeAsync(() => {
+  it('should return the signal graph for a component with effects', async () => {
     @Component({selector: 'component-with-effect', template: ``})
     class WithEffect {
       stateFromEffect = 0;
@@ -104,11 +102,10 @@ describe('getSignalGraph', () => {
         );
       }
     }
-    TestBed.configureTestingModule({imports: [WithEffect]});
+
     const fixture = TestBed.createComponent(WithEffect);
 
-    tick();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const injector = fixture.componentRef.injector;
     const signalGraph = getSignalGraph(injector);
@@ -130,9 +127,9 @@ describe('getSignalGraph', () => {
     const edgesWithNodes = mapEdgeIndicesIntoNodes(edges, nodes);
 
     expect(edgesWithNodes).toContain({consumer: effectNode, producer: signalNode});
-  }));
+  });
 
-  it('should return the signal graph for a component with a computed', fakeAsync(() => {
+  it('should return the signal graph for a component with a computed', async () => {
     @Component({selector: 'component-with-computed', template: `{{ computedSignal() }}`})
     class WithComputed {
       primitiveSignal = signal(123, {debugName: 'primitiveSignal'});
@@ -141,11 +138,9 @@ describe('getSignalGraph', () => {
         debugName: 'computedSignal',
       });
     }
-    TestBed.configureTestingModule({imports: [WithComputed]});
     const fixture = TestBed.createComponent(WithComputed);
 
-    tick();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const injector = fixture.componentRef.injector;
     const signalGraph = getSignalGraph(injector);
@@ -192,9 +187,9 @@ describe('getSignalGraph', () => {
       consumer: computedSignalNode,
       producer: primitiveSignal2Node,
     });
-  }));
+  });
 
-  it('should return the signal graph for a component with unused reactive nodes', fakeAsync(() => {
+  it('should return the signal graph for a component with unused reactive nodes', async () => {
     @Component({selector: 'component-with-unused-signal', template: ``})
     class WithUnusedReactiveNodes {
       primitiveSignal = signal(123, {debugName: 'primitiveSignal'});
@@ -202,11 +197,9 @@ describe('getSignalGraph', () => {
         debugName: 'computedSignal',
       });
     }
-    TestBed.configureTestingModule({imports: [WithUnusedReactiveNodes]});
     const fixture = TestBed.createComponent(WithUnusedReactiveNodes);
 
-    tick();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const injector = fixture.componentRef.injector;
     const signalGraph = getSignalGraph(injector);
@@ -214,19 +207,17 @@ describe('getSignalGraph', () => {
     const {nodes, edges} = signalGraph;
     expect(nodes.length).toBe(0);
     expect(edges.length).toBe(0);
-  }));
+  });
 
-  it('should return the signal graph for a component with no component effect signal dependencies', fakeAsync(() => {
+  it('should return the signal graph for a component with no component effect signal dependencies', async () => {
     @Component({selector: 'component-with-zero-effect', template: ``})
     class WithNoEffectSignalDependencies {
       primitiveSignal = signal(123, {debugName: 'primitiveSignal'});
       primitiveSignalEffect = effect(() => {}, {debugName: 'primitiveSignalEffect'});
     }
-    TestBed.configureTestingModule({imports: [WithNoEffectSignalDependencies]});
     const fixture = TestBed.createComponent(WithNoEffectSignalDependencies);
 
-    tick();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const injector = fixture.componentRef.injector;
     const signalGraph = getSignalGraph(injector);
@@ -234,16 +225,14 @@ describe('getSignalGraph', () => {
     const {nodes, edges} = signalGraph;
     expect(nodes.length).toBe(1); // 1 effect node detected
     expect(edges.length).toBe(0);
-  }));
+  });
 
-  it('should return the signal graph for a component with no signal dependencies in the template or component effects', fakeAsync(() => {
+  it('should return the signal graph for a component with no signal dependencies in the template or component effects', async () => {
     @Component({selector: 'component-with-no-effect-dependencies', template: ``})
     class WithNoEffectDependencies {}
-    TestBed.configureTestingModule({imports: [WithNoEffectDependencies]});
     const fixture = TestBed.createComponent(WithNoEffectDependencies);
 
-    tick();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const injector = fixture.componentRef.injector;
     const signalGraph = getSignalGraph(injector);
@@ -251,9 +240,9 @@ describe('getSignalGraph', () => {
     const {nodes, edges} = signalGraph;
     expect(nodes.length).toBe(0);
     expect(edges.length).toBe(0);
-  }));
+  });
 
-  it('should capture signals created in external services in the signal graph', fakeAsync(() => {
+  it('should capture signals created in external services in the signal graph', async () => {
     @Injectable()
     class ExternalService {
       oneTwoThree = signal(123, {debugName: 'oneTwoThree'});
@@ -277,11 +266,9 @@ describe('getSignalGraph', () => {
         );
       }
     }
-    TestBed.configureTestingModule({imports: [WithExternalService]});
     const fixture = TestBed.createComponent(WithExternalService);
 
-    tick();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const injector = fixture.componentRef.injector;
     const signalGraph = getSignalGraph(injector);
@@ -311,9 +298,9 @@ describe('getSignalGraph', () => {
       consumer: externalServiceEffectNode,
       producer: fourFiveSixNode,
     });
-  }));
+  });
 
-  it('should capture signals created in directives in the signal graph', () => {
+  it('should capture signals created in directives in the signal graph', async () => {
     @Directive({
       selector: '[myDirective]',
     })
@@ -335,9 +322,8 @@ describe('getSignalGraph', () => {
     })
     class WithDirective {}
 
-    TestBed.configureTestingModule({imports: [WithDirective]});
     const fixture = TestBed.createComponent(WithDirective);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const element = fixture.nativeElement.querySelector('#element-with-directive');
     // get the directive instance
@@ -366,7 +352,7 @@ describe('getSignalGraph', () => {
     expect(edgesWithNodes).toContain({consumer: barNode!, producer: fooNode!});
   });
 
-  it('should capture signals created in different directives in the signal graph', () => {
+  it('should capture signals created in different directives in the signal graph', async () => {
     @Directive({
       selector: '[myDirectiveA]',
     })
@@ -402,9 +388,9 @@ describe('getSignalGraph', () => {
     })
     class WithMultipleDirectives {}
 
-    TestBed.configureTestingModule({imports: [WithMultipleDirectives]});
     const fixture = TestBed.createComponent(WithMultipleDirectives);
-    fixture.detectChanges();
+    await fixture.whenStable();
+
     const element = fixture.nativeElement.querySelector('#element-with-directives');
     // get the directive instances
     const directiveInstances = getDirectives(element);
@@ -445,12 +431,12 @@ describe('getSignalGraph', () => {
     expect(edgesWithNodes).toContain({consumer: effectDNode!, producer: signalCNode!});
   });
 
-  it('should stop tracking effect when ref is destroyed', () => {
+  it('should stop tracking effect when ref is destroyed', async () => {
     @Component({template: ''})
     class App {}
 
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const injector = TestBed.inject(ApplicationRef).injector;
     expect(getFrameworkDIDebugData().resolverToEffects.has(injector)).toBe(false);
@@ -462,12 +448,12 @@ describe('getSignalGraph', () => {
     expect(getFrameworkDIDebugData().resolverToEffects.get(injector)?.length).toBe(0);
   });
 
-  it('should stop tracking afterRenderEffect when ref is destroyed', () => {
+  it('should stop tracking afterRenderEffect when ref is destroyed', async () => {
     @Component({template: ''})
     class App {}
 
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const injector = TestBed.inject(ApplicationRef).injector;
     expect(getFrameworkDIDebugData().resolverToEffects.has(injector)).toBe(false);

@@ -40,13 +40,7 @@ import {
   ViewChildren,
   ViewContainerRef,
 } from '../../src/core';
-import {
-  ComponentFixture,
-  ComponentFixtureAutoDetect,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '../../testing';
+import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '../../testing';
 
 describe('change detection', () => {
   beforeEach(() => {
@@ -121,7 +115,6 @@ describe('change detection', () => {
       @Component({
         selector: 'onpush',
         template: '',
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class OnPushComponent {
         checks = 0;
@@ -220,7 +213,6 @@ describe('change detection', () => {
 
       @Component({
         template: `<ng-template #vm="vm" viewManipulation></ng-template>`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
         imports: [ViewManipulation],
       })
       class App {}
@@ -230,7 +222,6 @@ describe('change detection', () => {
           <button (click)="noop()">Trigger change detection</button>
           <div>{{ increment() }}</div>
         `,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class DynamicComp {
         increment() {
@@ -272,7 +263,6 @@ describe('change detection', () => {
         selector: 'child',
         template: '<ng-container *viewManipulation>{{data()}}</ng-container>',
         imports: [ViewManipulation],
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class ChildComponent {
         data = data;
@@ -312,7 +302,6 @@ describe('change detection', () => {
       @Component({
         selector: `test-cmpt`,
         template: `{{ counter }}|<ng-template #vc></ng-template>`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class TestCmpt {
         counter = 0;
@@ -326,7 +315,6 @@ describe('change detection', () => {
       @Component({
         selector: 'dynamic-cmpt',
         template: `dynamic|{{ binding }}`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class DynamicCmpt {
         @Input() binding = 'binding';
@@ -429,7 +417,6 @@ describe('change detection', () => {
   describe('OnPush', () => {
     @Component({
       selector: 'my-comp',
-      changeDetection: ChangeDetectionStrategy.OnPush,
       template: `{{ doCheckCount }} - {{ name }} <button (click)="onClick()"></button>`,
       standalone: false,
     })
@@ -570,7 +557,6 @@ describe('change detection', () => {
       @Component({
         selector: 'button-parent',
         template: '{{ doCheckCount }} - <my-comp></my-comp>',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
       class ButtonParent implements DoCheck {
@@ -624,7 +610,7 @@ describe('change detection', () => {
       expect(fixture.nativeElement.textContent.trim()).toEqual('3 - 2 - Nancy');
     });
 
-    it('should check parent OnPush components when child directive on a template emits event', fakeAsync(() => {
+    it('should check parent OnPush components when child directive on a template emits event', async () => {
       @Directive({
         selector: '[emitter]',
         standalone: false,
@@ -642,7 +628,6 @@ describe('change detection', () => {
       @Component({
         selector: 'my-app',
         template: '{{message}} <ng-template emitter (event)="message = $event"></ng-template>',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
       class MyApp {
@@ -655,10 +640,10 @@ describe('change detection', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent.trim()).toEqual('initial message');
-      tick();
+      await fixture.whenStable();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent.trim()).toEqual('new message');
-    }));
+    });
   });
 
   describe('ChangeDetectorRef', () => {
@@ -666,7 +651,6 @@ describe('change detection', () => {
       @Component({
         selector: 'my-comp',
         template: '{{ name }}',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
       class MyComp implements DoCheck {
@@ -1193,7 +1177,6 @@ describe('change detection', () => {
         @Component({
           selector: 'on-push-comp',
           template: '{{ value }}',
-          changeDetection: ChangeDetectionStrategy.OnPush,
           standalone: false,
         })
         class OnPushComp {
@@ -1238,7 +1221,6 @@ describe('change detection', () => {
       @Component({
         selector: 'on-push-comp',
         template: '{{ value }}',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
       class OnPushComp implements DoCheck {
@@ -1255,7 +1237,6 @@ describe('change detection', () => {
 
       @Component({
         template: '{{ value }} - <on-push-comp></on-push-comp>',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
       class OnPushParent {
@@ -1317,7 +1298,6 @@ describe('change detection', () => {
       it('should ensure OnPush components in embedded views are checked', () => {
         @Component({
           template: '{{ value }} - <on-push-comp *ngIf="showing"></on-push-comp>',
-          changeDetection: ChangeDetectionStrategy.OnPush,
           standalone: false,
         })
         class EmbeddedViewParent {
@@ -1358,7 +1338,6 @@ describe('change detection', () => {
       it('async pipe should trigger CD for embedded views where the declaration and insertion views are different', () => {
         @Component({
           selector: 'insertion',
-          changeDetection: ChangeDetectionStrategy.OnPush,
           template: ` <ng-container [ngTemplateOutlet]="template"> </ng-container> `,
           standalone: false,
         })
@@ -1369,7 +1348,6 @@ describe('change detection', () => {
         // This component uses async pipe (which calls markForCheck) in a view that has different
         // insertion and declaration views.
         @Component({
-          changeDetection: ChangeDetectionStrategy.OnPush,
           template: `
             <insertion [template]="ref"></insertion>
             <ng-template #ref>
@@ -1537,7 +1515,6 @@ describe('change detection', () => {
         });
 
         @Component({
-          changeDetection: ChangeDetectionStrategy.OnPush,
           template: '{{state}}{{resolveReadPromise()}}',
         })
         class MyApp {
@@ -1617,7 +1594,6 @@ describe('change detection', () => {
 
           @Component({
             template: '{{state}}',
-            changeDetection: ChangeDetectionStrategy.OnPush,
           })
           class NotUnidirectionalDataFlow {
             state = 1;
@@ -1653,7 +1629,6 @@ describe('change detection', () => {
           it(`should be able to mark component as dirty from within ${hookName}`, () => {
             @Component({
               selector: 'on-push-comp',
-              changeDetection: ChangeDetectionStrategy.OnPush,
               template: `<p>{{ text }}</p>`,
               standalone: false,
             })
@@ -1705,7 +1680,6 @@ describe('change detection', () => {
         it(`should not be able to mark component as dirty from within ${hookName}`, () => {
           @Component({
             selector: 'on-push-comp',
-            changeDetection: ChangeDetectionStrategy.OnPush,
             template: `<p>{{ text }}</p>`,
             standalone: false,
           })
