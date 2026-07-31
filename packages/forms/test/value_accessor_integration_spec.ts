@@ -20,6 +20,7 @@ import {
   NgZone,
   Output,
   RendererFactory2,
+  signal,
   Type,
   ViewChild,
 } from '@angular/core';
@@ -658,6 +659,22 @@ describe('value accessors', () => {
         // programmatic change -> view
         expect(inputs[0].nativeElement.checked).toEqual(false);
         expect(inputs[1].nativeElement.checked).toEqual(true);
+      });
+
+      it('should update the checked state when a reused radio changes value', async () => {
+        const fixture = initTest(DynamicRadioForm);
+        await fixture.whenStable();
+
+        expect(getRadioCheckedStates(fixture)).toEqual([false, true]);
+
+        fixture.componentInstance.form.patchValue({answer: 'selected'});
+        fixture.componentInstance.options.set([
+          {id: 'new', value: 'other'},
+          {id: 'shared', value: 'selected'},
+        ]);
+        await fixture.whenStable();
+
+        expect(getRadioCheckedStates(fixture)).toEqual([false, true]);
       });
 
       it('should support an initial undefined value', () => {
@@ -2045,6 +2062,41 @@ class NgModelRangeForm {
 export class FormControlRadioButtons {
   form!: FormGroup;
   showRadio = new FormControl('yes');
+}
+
+interface RadioOption {
+  readonly id: string;
+  readonly value: string;
+}
+
+@Component({
+  selector: 'dynamic-radio-form',
+  template: `
+    <form [formGroup]="form">
+      @for (option of options(); track option.id) {
+        <input type="radio" formControlName="answer" [value]="option.value" />
+      }
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class DynamicRadioForm {
+  readonly form = new FormGroup({
+    answer: new FormControl('selected', {nonNullable: true}),
+  });
+  readonly options = signal<ReadonlyArray<RadioOption>>([
+    {id: 'shared', value: 'other'},
+    {id: 'old', value: 'selected'},
+  ]);
+}
+
+function getRadioCheckedStates(fixture: ComponentFixture<DynamicRadioForm>): boolean[] {
+  const element = fixture.nativeElement as HTMLElement;
+
+  return Array.from(element.querySelectorAll<HTMLInputElement>('input')).map(
+    (input) => input.checked,
+  );
 }
 
 @Component({
