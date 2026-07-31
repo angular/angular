@@ -27,6 +27,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:estimate-frame-rate",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/visualizer-controls",
+        "//devtools/projects/ng-devtools/src/lib/shared/angie",
         "//devtools/projects/protocol",
     ],
 )

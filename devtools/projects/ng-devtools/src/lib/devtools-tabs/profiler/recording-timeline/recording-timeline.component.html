@@ -1,6 +1,6 @@
 @if (!hasFrames() && visualizing()) {
   <div class="info">
-    <img src="/assets/angie-question.svg" alt="Angie illustration" />
+    <ng-angie type="question" size="md" />
     <p>There's no information to show.</p>
   </div>
 }
@@ -17,7 +17,7 @@
 
 @if (hasFrames() && !frame) {
   <div class="info">
-    <img src="/assets/angie-magnifying-glass.svg" alt="Angie illustration" />
+    <ng-angie type="magnifying-glass" size="md" />
     <p>Select a bar to preview a particular change detection cycle.</p>
   </div>
 } @else if (hasFrames() && frame) {

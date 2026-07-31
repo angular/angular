@@ -25,6 +25,7 @@ import {ButtonComponent} from '../../shared/button/button.component';
 import {SplitComponent} from '../../shared/split/split.component';
 import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
 import {FilterComponent, FilterFn} from '../../shared/filter/filter.component';
+import {AngieComponent} from '../../shared/angie/angie.component';
 
 const NODE_SNAP_SCALE = 0.6;
 const RUN_GUARDS_AND_RESOLVERS_OPTIONS: RunGuardsAndResolvers[] = [
@@ -48,6 +49,7 @@ const RUN_GUARDS_AND_RESOLVERS_OPTIONS: RunGuardsAndResolvers[] = [
     RouteDetailsRowComponent,
     ButtonComponent,
     FilterComponent,
+    AngieComponent,
   ],
 })
 export class RouterTreeComponent {

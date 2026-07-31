@@ -52,6 +52,7 @@
       padding-left: 0.75rem;
       margin-bottom: 0.25rem;
       color: var(--quaternary-contrast);
+      white-space: nowrap;
     }
 
     .token-filter {
@@ -89,9 +90,7 @@
     justify-content: center;
     text-align: center;
 
-    img {
-      height: 150px;
-      width: auto;
+    ng-angie {
       margin-bottom: 0.5rem;
     }
 

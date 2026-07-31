@@ -35,6 +35,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree/router-details-row",
+        "//devtools/projects/ng-devtools/src/lib/shared/angie",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
         "//devtools/projects/ng-devtools/src/lib/shared/filter",
         "//devtools/projects/ng-devtools/src/lib/shared/split",
