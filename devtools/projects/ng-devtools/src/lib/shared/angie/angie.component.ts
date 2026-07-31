@@ -8,7 +8,9 @@
 
 import {Component, computed, input} from '@angular/core';
 
-type AngieType = 'coding-01' | 'error' | 'orthos-back' | 'sad' | 'teaching';
+type AngieType =
+  'coding-01' | 'error' | 'magnifying-glass' | 'orthos-back' | 'question' | 'sad' | 'teaching';
+
 type AngieSize = 'sm' | 'md' | 'lg';
 
 const PX_SIZE: {[key in AngieSize]: number} = {

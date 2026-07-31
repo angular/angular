@@ -17,12 +17,13 @@ import {
   SerializedProviderRecord,
 } from '../../../../../../protocol';
 import {ButtonComponent} from '../../../shared/button/button.component';
+import {AngieComponent} from '../../../shared/angie/angie.component';
 
 @Component({
   selector: 'ng-injector-providers',
   templateUrl: './injector-providers.component.html',
   styleUrl: './injector-providers.component.scss',
-  imports: [MatTableModule, MatIcon, MatTooltip, ButtonComponent],
+  imports: [MatTableModule, MatIcon, MatTooltip, ButtonComponent, AngieComponent],
 })
 export class InjectorProvidersComponent {
   readonly injector = input.required<SerializedInjector>();

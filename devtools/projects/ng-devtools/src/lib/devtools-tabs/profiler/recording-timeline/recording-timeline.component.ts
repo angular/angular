@@ -19,6 +19,7 @@ import {FrameSelectorComponent} from './frame-selector/frame-selector.component'
 import {RecordingTimelineControlsComponent} from './recording-timeline-controls/recording-timeline-controls.component';
 import {VisualizerControlsComponent} from './visualizer-controls/visualizer-controls.component';
 import {estimateFrameRate} from './shared/estimate-frame-rate';
+import {AngieComponent} from '../../../shared/angie/angie.component';
 
 @Component({
   selector: 'ng-recording-timeline',
@@ -29,6 +30,7 @@ import {estimateFrameRate} from './shared/estimate-frame-rate';
     FrameSelectorComponent,
     RecordingVisualizerComponent,
     VisualizerControlsComponent,
+    AngieComponent,
   ],
 })
 export class RecordingTimelineComponent {

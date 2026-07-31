@@ -28,6 +28,7 @@ ng_project(
         "//devtools:node_modules/@types/d3",
         "//devtools:node_modules/d3",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree/injector-providers",
+        "//devtools/projects/ng-devtools/src/lib/shared/angie",
         "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button",
         "//devtools/projects/ng-devtools/src/lib/shared/split",
         "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split",
