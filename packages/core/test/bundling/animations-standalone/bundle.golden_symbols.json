@@ -550,6 +550,7 @@
       "getRuntimeErrorCode",
       "getSelectedIndex",
       "getSelectedTNode",
+      "getStyleDeclaration",
       "getStyleHost",
       "getTNode",
       "getTNodeFromLView",
