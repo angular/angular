@@ -101,9 +101,16 @@ export function provideHttpClient(
       featureKinds.has(HttpFeatureKind.CustomXsrfConfiguration)
     ) {
       throw new Error(
-        ngDevMode
-          ? `Configuration error: found both withXsrfConfiguration() and withNoXsrfProtection() in the same call to provideHttpClient(), which is a contradiction.`
-          : '',
+        `Configuration error: found both withXsrfConfiguration() and withNoXsrfProtection() in the same call to provideHttpClient(), which is a contradiction.`,
+      );
+    }
+
+    if (
+      featureKinds.has(HttpFeatureKind.RequestsMadeViaParent) &&
+      featureKinds.has(HttpFeatureKind.Fetch)
+    ) {
+      throw new Error(
+        `Configuration error: withRequestsMadeViaParent() cannot be combined with withFetch() in the same call to provideHttpClient().`,
       );
     }
   }
@@ -259,6 +266,8 @@ export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
  * `withRequestsMadeViaParent` to be used at multiple levels, which will cause the request to
  * "bubble up" until either reaching the root level or an `HttpClient` which was not configured with
  * this option.
+ *
+ * This feature cannot be combined with `withFetch` in the same `provideHttpClient()` call.
  *
  * @see [HTTP client setup](guide/http/setup#withrequestsmadeviaparent)
  * @see {@link provideHttpClient}
