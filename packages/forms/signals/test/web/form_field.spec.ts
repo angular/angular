@@ -4235,6 +4235,46 @@ describe('field directive', () => {
     expect(cmp.f().value()).toBe(ABC.B);
   });
 
+  it('synchronizes the checked state when a reused radio changes value', async () => {
+    interface RadioOption {
+      readonly id: string;
+      readonly value: string;
+    }
+
+    @Component({
+      imports: [FormField],
+      template: `
+        @for (option of options(); track option.id) {
+          <input type="radio" [formField]="f" [value]="option.value" />
+        }
+      `,
+    })
+    class TestCmp {
+      readonly f = form(signal('selected'), {name: 'test'});
+      readonly options = signal<ReadonlyArray<RadioOption>>([
+        {id: 'shared', value: 'other'},
+        {id: 'old', value: 'selected'},
+      ]);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const getCheckedStates = () =>
+      Array.from(
+        (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLInputElement>('input'),
+      ).map((input) => input.checked);
+
+    expect(getCheckedStates()).toEqual([false, true]);
+
+    fixture.componentInstance.options.set([
+      {id: 'new', value: 'other'},
+      {id: 'shared', value: 'selected'},
+    ]);
+    await fixture.whenStable();
+
+    expect(getCheckedStates()).toEqual([false, true]);
+  });
+
   it('synchronizes with a textarea', () => {
     @Component({
       imports: [FormField],
