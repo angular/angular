@@ -18,7 +18,7 @@ import {
   ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
   inject,
 } from '@angular/core';
-import type {Observable, Subscribable, Unsubscribable} from 'rxjs';
+import type {Observable, Subscribable, Unsubscribable, BehaviorSubject} from 'rxjs';
 
 import {invalidPipeArgumentError} from './utils';
 
@@ -172,6 +172,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   // TypeScript has a hard time matching Observable to Subscribable, for more information
   // see https://github.com/microsoft/TypeScript/issues/43643
 
+  transform<T>(obj: BehaviorSubject<T>): T;
   transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T>): T | null;
   transform<T>(obj: null | undefined): null;
   transform<T>(obj: Observable<T> | Subscribable<T> | PromiseLike<T> | null | undefined): T | null;
