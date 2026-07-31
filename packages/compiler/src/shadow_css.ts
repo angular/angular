@@ -1027,7 +1027,7 @@ const _ruleRe = new RegExp(
   // Group 1 uses a flat alternation instead of nested \s* quantifiers.
   // Group 2 requires a non-whitespace lead so the boundary with group 1 is
   // unambiguous and the engine cannot redistribute spaces between the two groups.
-  `(?=[^;\{\}]*[;\{])((?:${COMMENT_PLACEHOLDER}|\s)*)([^;\{\}\s][^;\{\}]*?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))`,
+  `(?=[^;\\{\\}]*[;\\{])((?:${COMMENT_PLACEHOLDER}|\\s)*)([^;\\{\\}\\s][^;\\{\\}]*?)(\\s*)((?:{%BLOCK%}?\\s*;?)|(?:\\s*;))`,
   'g',
 );
 const CONTENT_PAIRS = new Map([['{', '}']]);
