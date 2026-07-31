@@ -2544,6 +2544,14 @@ export const RECOMMENDATIONS: Step[] = [
   },
   {
     action:
+      'Remove the `allowSignalWrites` option from `effect()` calls. The option is deprecated and no longer required, as signal writes inside effects are allowed by default.',
+    level: ApplicationComplexity.Medium,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-remove-allow-signal-writes',
+  },
+  {
+    action:
       "In the application's project directory, run `ng update @angular/core@20 @angular/cli@20` to update your application to Angular v20.",
     level: ApplicationComplexity.Basic,
     necessaryAsOf: 2000,
