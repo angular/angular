@@ -34,7 +34,10 @@ function checkGoogler(): void {
     mode: 'no-cors',
     method: 'HEAD',
   })
-    .then(() => chrome.storage.local.set({isGoogler: true}))
+    .then((response) => {
+      // For non Googlers the Promise will resolve with status: 0/ok: false.
+      chrome.storage.local.set({isGoogler: response.status !== 0});
+    })
     .catch(() => chrome.storage.local.set({isGoogler: false}));
 }
 
