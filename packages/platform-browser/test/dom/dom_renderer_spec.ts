@@ -117,7 +117,7 @@ describe('DefaultDomRendererV2', () => {
         const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
         const control = fixture.nativeElement.querySelector('[data-control]') as HTMLElement;
 
-        expect((form as any).style).toBe(control);
+        expect(form.style as unknown as HTMLElement).toBe(control);
         expect(fixture.nativeElement.querySelector('[data-injected]')).toBeNull();
         expect(control.isConnected).toBeTrue();
         expect(form.getAttribute('style')).toContain(options.expectedStyle ?? 'color: red');
@@ -149,7 +149,7 @@ describe('DefaultDomRendererV2', () => {
         fixture.componentInstance.styles.set({});
         await fixture.whenStable();
 
-        expect((form as any).style).toBe(control);
+        expect(form.style as unknown as HTMLElement).toBe(control);
         expect(control.isConnected).toBeTrue();
         expect(form.getAttribute('style')).not.toContain(style);
       }
@@ -193,7 +193,7 @@ describe('DefaultDomRendererV2', () => {
 
         const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
         const controls = fixture.nativeElement.querySelectorAll('[data-control]');
-        const clobberedStyle = (form as any).style;
+        const clobberedStyle = form.style as unknown as RadioNodeList;
 
         expect(clobberedStyle.length).toBe(2);
         expect(clobberedStyle[0]).toBe(controls[0]);
@@ -261,7 +261,7 @@ describe('DefaultDomRendererV2', () => {
         const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
         const control = fixture.nativeElement.querySelector('[data-control]') as HTMLElement;
 
-        expect((form as any).style).toBe(control);
+        expect(form.style as unknown as HTMLElement).toBe(control);
         expect(fixture.nativeElement.querySelector('[data-injected]')).toBeNull();
         expect(control.isConnected).toBeTrue();
         expect(form.getAttribute('style')).toContain('color: red');
