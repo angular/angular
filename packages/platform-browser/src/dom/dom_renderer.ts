@@ -569,10 +569,15 @@ function describeDomNode(node: Node): string {
 }
 
 function getStyleDeclaration(el: any): CSSStyleDeclaration {
-  const localName = el.localName;
-  // `localName` omits namespace prefixes, but may itself be clobbered on form elements.
-  if (typeof localName === 'string' && localName !== 'form') {
-    return el.style;
+  const style = el.style;
+  // Named form controls expose an element or RadioNodeList here,
+  // neither of which has these methods.
+  if (
+    style != null &&
+    typeof style.setProperty === 'function' &&
+    typeof style.removeProperty === 'function'
+  ) {
+    return style;
   }
 
   for (

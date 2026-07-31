@@ -174,6 +174,34 @@ describe('DefaultDomRendererV2', () => {
         });
       });
 
+      it('should recover the style declaration when multiple controls clobber it', async () => {
+        @Component({
+          template: `
+            <form [style]="styles">
+              <input name="style" data-control />
+              <input name="style" data-control />
+            </form>
+          `,
+        })
+        class App {
+          readonly styles = {color: 'red', outerHTML: unsafeValue};
+        }
+
+        TestBed.resetTestingModule();
+        const fixture = TestBed.createComponent(App);
+        await fixture.whenStable();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const controls = fixture.nativeElement.querySelectorAll('[data-control]');
+        const clobberedStyle = (form as any).style;
+
+        expect(clobberedStyle.length).toBe(2);
+        expect(clobberedStyle[0]).toBe(controls[0]);
+        expect(fixture.nativeElement.querySelector('[data-injected]')).toBeNull();
+        expect(controls.length).toBe(2);
+        expect(form.getAttribute('style')).toContain('color: red');
+      });
+
       it('should recover the style declaration for style property bindings', async () => {
         await expectStyleBinding({
           template: `
