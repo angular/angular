@@ -627,6 +627,7 @@
       "getSegmentHead",
       "getSelectedIndex",
       "getSerializedContainerViews",
+      "getStyleDeclaration",
       "getStyleHost",
       "getSymbolIterator",
       "getTDeferBlockDetails",
