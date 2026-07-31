@@ -50,9 +50,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@24ba9709ca4bf6548bba6a9abfe2799e90645a60 # main
+        uses: angular/dev-infra/github-actions/bazel/setup@0bbe39b8353fb9fff9fac7cfe67befbcbc0bd9c9 # main
 
-      - uses: angular/dev-infra/github-actions/bazel/configure-remote@24ba9709ca4bf6548bba6a9abfe2799e90645a60 # main
+      - uses: angular/dev-infra/github-actions/bazel/configure-remote@0bbe39b8353fb9fff9fac7cfe67befbcbc0bd9c9 # main
         with:
           bazelrc: ./.bazelrc.user
 
