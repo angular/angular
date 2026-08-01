@@ -34,7 +34,7 @@ const enum EventParamType {
  * `ts.Expression`, with special handling of the `$event` variable that can be used within event
  * bindings.
  */
-export function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): TcbExpr {
+function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): TcbExpr {
   const translator = new TcbEventHandlerTranslator(tcb, scope);
   return translator.translate(ast);
 }

@@ -64,10 +64,7 @@ function toQueryFlags(query: R3QueryMetadata): number {
   );
 }
 
-export function getQueryPredicate(
-  query: R3QueryMetadata,
-  constantPool: ConstantPool,
-): o.Expression {
+function getQueryPredicate(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression {
   if (Array.isArray(query.predicate)) {
     let predicate: o.Expression[] = [];
     query.predicate.forEach((selector: string): void => {
