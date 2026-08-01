@@ -73,7 +73,7 @@ export function isIrExpression(expr: o.Expression): expr is Expression {
 /**
  * Base type used for all logical IR expressions.
  */
-export abstract class ExpressionBase extends o.Expression {
+abstract class ExpressionBase extends o.Expression {
   abstract readonly kind: ExpressionKind;
 
   constructor(sourceSpan: ParseSourceSpan | null = null) {

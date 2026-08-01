@@ -34,10 +34,6 @@ export function noUndefined<T>(val: T | undefined): T {
   return val === undefined ? null! : val;
 }
 
-export function error(msg: string): never {
-  throw new Error(`Internal Error: ${msg}`);
-}
-
 // Escape characters that have a special meaning in Regular Expressions
 export function escapeRegExp(s: string): string {
   return s.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');

@@ -29,7 +29,7 @@ const NG_I18N_CLOSURE_MODE = 'ngI18nClosureMode';
 const TRANSLATION_VAR_PREFIX = 'i18n_';
 
 /** Prefix of ICU expressions for post processing */
-export const I18N_ICU_MAPPING_PREFIX = 'I18N_EXP_';
+const I18N_ICU_MAPPING_PREFIX = 'I18N_EXP_';
 
 /**
  * The escape sequence used for message param values.
@@ -45,7 +45,7 @@ const CLOSURE_TRANSLATION_VAR_PREFIX = 'MSG_';
  * @param extra Additional local prefix that should be injected into translation var name
  * @returns Complete translation const prefix
  */
-export function getTranslationConstPrefix(extra: string): string {
+function getTranslationConstPrefix(extra: string): string {
   return `${CLOSURE_TRANSLATION_VAR_PREFIX}${extra}`.toUpperCase();
 }
 
@@ -53,7 +53,7 @@ export function getTranslationConstPrefix(extra: string): string {
  * Generate AST to declare a variable. E.g. `var I18N_1;`.
  * @param variable the name of the variable to declare.
  */
-export function declareI18nVariable(variable: o.ReadVarExpr): o.Statement {
+function declareI18nVariable(variable: o.ReadVarExpr): o.Statement {
   return new o.DeclareVarStmt(
     variable.name!,
     undefined,

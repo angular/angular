@@ -54,7 +54,7 @@ export function namespaceForKey(namespacePrefixKey: string | null): ir.Namespace
   return NAMESPACES.get(namespacePrefixKey) ?? ir.Namespace.HTML;
 }
 
-export function keyForNamespace(namespace: ir.Namespace): string | null {
+function keyForNamespace(namespace: ir.Namespace): string | null {
   const NAMESPACES = new Map([
     ['svg', ir.Namespace.SVG],
     ['math', ir.Namespace.Math],

@@ -48,7 +48,7 @@ export function isI18nRootNode(meta?: i18n.I18nMeta): meta is i18n.Message {
   return meta instanceof i18n.Message;
 }
 
-export function isSingleI18nIcu(meta?: i18n.I18nMeta): meta is i18n.I18nMeta & {nodes: [i18n.Icu]} {
+function isSingleI18nIcu(meta?: i18n.I18nMeta): meta is i18n.I18nMeta & {nodes: [i18n.Icu]} {
   return isI18nRootNode(meta) && meta.nodes.length === 1 && meta.nodes[0] instanceof i18n.Icu;
 }
 
@@ -186,7 +186,7 @@ function calcHostBindingSecurityContexts(
 
 // TODO: We should refactor the parser to use the same types and structures for host bindings as
 // with ordinary components. This would allow us to share a lot more ingestion code.
-export function ingestDomProperty(
+function ingestDomProperty(
   job: HostBindingCompilationJob,
   property: e.ParsedProperty,
   bindingKind: ir.BindingKind,
@@ -220,7 +220,7 @@ export function ingestDomProperty(
   );
 }
 
-export function ingestHostAttribute(
+function ingestHostAttribute(
   job: HostBindingCompilationJob,
   name: string,
   value: o.Expression,
@@ -244,7 +244,7 @@ export function ingestHostAttribute(
   job.root.update.push(attrBinding);
 }
 
-export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
+function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
   let eventBinding: ir.CreateOp;
   if (event.type === e.ParsedEventType.Animation) {
     eventBinding = ir.createAnimationListenerOp(
