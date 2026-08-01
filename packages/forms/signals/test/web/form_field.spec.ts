@@ -5469,6 +5469,76 @@ describe('field directive', () => {
       expect(cmp.f().value()).toBe('');
     });
 
+    it('should mark the field dirty when native UI clears the date to null without input event', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="date" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal('2024-01-01'));
+      }
+
+      const validityMonitor = configureTestValidityMonitor();
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // 1. Start with a valid date, pristine.
+      expect(cmp.f().value()).toBe('2024-01-01');
+      expect(cmp.f().dirty()).toBe(false);
+
+      // 2. Transition to bad input state (parse error; value/controlValue unchanged).
+      act(() => {
+        validityMonitor.setInputState(input, '', true);
+      });
+      expect(cmp.f().errors()).toEqual([jasmine.objectContaining({kind: 'parse'})]);
+      // Bad input didn't change the value, so still pristine.
+      expect(cmp.f().dirty()).toBe(false);
+
+      // 3. Native UI clears the date to empty WITHOUT an `input` event
+      //    (only the validity-monitor callback fires).
+      act(() => {
+        validityMonitor.setInputState(input, '', false);
+      });
+
+      // 4. Value is cleared and, because the value actually changed, the field is dirty.
+      expect(cmp.f().errors()).toEqual([]);
+      expect(cmp.f().value()).toBe('');
+      expect(cmp.f().dirty()).toBe(true);
+    });
+
+    it('should NOT be dirty when the initial validity animation fires on load', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="date" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal(''), (p) => {
+          required(p, {message: 'required field'});
+        });
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const field = fix.componentInstance.f;
+
+      // No user interaction yet.
+      expect(field().dirty()).toBe(false);
+      expect(field().touched()).toBe(false);
+
+      // Simulate the initial validity animation the browser fires on first paint.
+      // An empty required date field renders as `:invalid`, so `ng-invalid` fires.
+      act(() => {
+        input.dispatchEvent(
+          new AnimationEvent('animationstart', {animationName: 'ng-invalid', bubbles: true}),
+        );
+      });
+
+      // The value did not change, so the field must remain pristine.
+      expect(field().dirty()).toBe(false);
+      expect(field().touched()).toBe(false);
+    });
+
     it('should re-evaluate validity and value when native UI clears time input without input event', () => {
       @Component({
         imports: [FormField],
@@ -5790,6 +5860,30 @@ describe('field directive', () => {
       });
 
       expect(field().dirty()).toBe(true);
+    });
+
+    it('native date input is not dirty after initial validity animation', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="date" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal(''), (p) => {
+          required(p, {message: 'required field'});
+        });
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const field = fix.componentInstance.f;
+
+      expect(field().dirty()).toBe(false);
+      act(() => {
+        input.dispatchEvent(
+          new AnimationEvent('animationstart', {animationName: 'ng-invalid', bubbles: true}),
+        );
+      });
+      expect(field().dirty()).toBe(false);
     });
   });
 

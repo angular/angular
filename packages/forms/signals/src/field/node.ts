@@ -55,6 +55,7 @@ import {ValidationState} from './validation';
 
 export interface ControlValueSignal<T> extends WritableSignal<T> {
   rawSet(value: T): void;
+  set(value: T, markAsDirty?: boolean): void;
 }
 
 /**
@@ -117,8 +118,7 @@ export class FieldNode implements FieldState<unknown> {
    * first focusable binding in the DOM for any descendant node of this one.
    */
   private getBindingForFocus():
-    | (FormField<unknown> & {focus: (options?: FocusOptions) => void})
-    | undefined {
+    (FormField<unknown> & {focus: (options?: FocusOptions) => void}) | undefined {
     // First try to focus one of our own bindings.
     const own = this.formFieldBindings()
       .filter(
@@ -382,11 +382,13 @@ export class FieldNode implements FieldState<unknown> {
     const controlValue = linkedSignal(this.value) as ControlValueSignal<unknown>;
 
     controlValue.rawSet = controlValue.set;
-    controlValue.set = (newValue) => {
+    controlValue.set = (newValue, markAsDirty = true) => {
       // We intentionally allow same-value updates here to ensure that setting the control value
       // (even to the same value) still marks the control as dirty.
       controlValue.rawSet(newValue);
-      this.markAsDirty();
+      if (markAsDirty) {
+        this.markAsDirty();
+      }
       this.debounceSync();
     };
     const rawUpdate = controlValue.update;
