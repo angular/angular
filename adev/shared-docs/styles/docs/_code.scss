@@ -87,6 +87,7 @@ $code-font-size: 0.875rem;
       width: 100%;
 
       a:not(.docs-anchor) > & {
+        display: inline-block;
         position: relative;
         padding: 0 0.3rem;
         white-space: nowrap;
