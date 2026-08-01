@@ -20,7 +20,7 @@ import {ExpressionIdentifier} from '../comments';
  * A `TcbOp` which constructs an instance of a directive. For generic directives, generic
  * parameters are set to `any` type.
  */
-export abstract class TcbDirectiveTypeOpBase extends TcbOp {
+abstract class TcbDirectiveTypeOpBase extends TcbOp {
   constructor(
     protected tcb: Context,
     protected scope: Scope,

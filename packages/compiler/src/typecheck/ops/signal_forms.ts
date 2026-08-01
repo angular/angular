@@ -305,7 +305,7 @@ export function expandBoundAttributesForField(
   return boundInputs;
 }
 
-export function isFieldDirective(meta: TcbDirectiveMetadata): boolean {
+function isFieldDirective(meta: TcbDirectiveMetadata): boolean {
   if (meta.name !== 'FormField') {
     return false;
   }
