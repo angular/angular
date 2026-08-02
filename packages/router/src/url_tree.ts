@@ -661,7 +661,18 @@ class UrlParser {
       segments.push(this.parseSegment());
     }
 
-    while (this.peekStartsWith('/') && !this.peekStartsWith('//') && !this.peekStartsWith('/(')) {
+    while (this.peekStartsWith('/')) {
+      // Inside a parenthesised group `//` separates outlets, so it must be left for
+      // `parseParens` to consume. At the top level it carries no meaning, and stopping
+      // here without consuming it left the remainder of the URL — the rest of the path,
+      // the query string and the fragment — unparsed and silently discarded.
+      if (this.peekStartsWith('//')) {
+        if (depth > 0) break;
+        while (this.peekStartsWith('//')) {
+          this.consumeOptional('/');
+        }
+      }
+      if (this.peekStartsWith('/(')) break;
       this.capture('/');
       segments.push(this.parseSegment());
     }

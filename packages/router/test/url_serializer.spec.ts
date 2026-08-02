@@ -447,6 +447,40 @@ describe('url serializer', () => {
     });
   });
 
+  describe('redundant slashes inside a path', () => {
+    // A `//` outside a parenthesised outlet group used to stop segment parsing without
+    // consuming it. Neither of the parenthesis branches matched either, so everything
+    // after it — the rest of the path, the query string and the fragment — was left
+    // unparsed and silently dropped.
+    it('should not discard the rest of the path', () => {
+      expect(url.serialize(url.parse('/a//b'))).toEqual('/a/b');
+    });
+
+    it('should not discard query params or the fragment', () => {
+      const tree = url.parse('/a//b?x=1#frag');
+      expect(tree.queryParams).toEqual({x: '1'});
+      expect(tree.fragment).toEqual('frag');
+      expect(url.serialize(tree)).toEqual('/a/b?x=1#frag');
+    });
+
+    it('should collapse any number of redundant slashes', () => {
+      expect(url.serialize(url.parse('/a///b'))).toEqual('/a/b');
+      expect(url.serialize(url.parse('/a////b'))).toEqual('/a/b');
+    });
+
+    it('should still recognize an auxiliary outlet group after redundant slashes', () => {
+      expect(url.serialize(url.parse('/a//(aux:c)'))).toEqual(
+        url.serialize(url.parse('/a/(aux:c)')),
+      );
+    });
+
+    it('should keep `//` as the outlet separator inside parentheses', () => {
+      expect(url.serialize(url.parse('/one/(two//left:three)'))).toEqual(
+        '/one/(two//left:three)',
+      );
+    });
+  });
+
   describe('error handling', () => {
     it('should throw when invalid characters inside children', () => {
       expect(() => url.parse('/one/(left#one)')).toThrowError();
