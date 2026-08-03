@@ -161,6 +161,8 @@ export class FetchBackend implements HttpBackend {
     }
 
     if (response.body) {
+      const contentType = response.headers.get(CONTENT_TYPE_HEADER) ?? '';
+
       // Read Progress
       const contentLength = response.headers.get('content-length');
       const contentLengthValue = contentLength !== null ? Number(contentLength) : NaN;
@@ -223,7 +225,7 @@ export class FetchBackend implements HttpBackend {
             partialText =
               request.responseType === 'text'
                 ? (partialText ?? '') +
-                  (decoder ??= new TextDecoder()).decode(value, {stream: true})
+                  (decoder ??= getTextDecoder(contentType)).decode(value, {stream: true})
                 : undefined;
 
             const reportProgress = () =>
@@ -250,7 +252,6 @@ export class FetchBackend implements HttpBackend {
       // Combine all chunks.
       const chunksAll = this.concatChunks(chunks, receivedLength);
       try {
-        const contentType = response.headers.get(CONTENT_TYPE_HEADER) ?? '';
         body = this.parseBody(request, chunksAll, contentType, status);
       } catch (error) {
         // Body loading or parsing failed
@@ -322,7 +323,7 @@ export class FetchBackend implements HttpBackend {
     switch (request.responseType) {
       case 'json':
         // stripping the XSSI when present
-        const text = new TextDecoder().decode(binContent).replace(XSSI_PREFIX, '');
+        const text = getTextDecoder(contentType).decode(binContent).replace(XSSI_PREFIX, '');
         if (text === '') {
           return null;
         }
@@ -339,7 +340,7 @@ export class FetchBackend implements HttpBackend {
           throw e;
         }
       case 'text':
-        return new TextDecoder().decode(binContent);
+        return getTextDecoder(contentType).decode(binContent);
       case 'blob':
         return new Blob([binContent], {type: contentType});
       case 'arraybuffer':
@@ -452,4 +453,25 @@ function throwBodyTooLargeError(maxResponseSize: number): never {
     ngDevMode &&
       `Fetch response body exceeded the configured buffer limit (${maxResponseSize} bytes).`,
   );
+}
+
+const CHARSET_REGEX = /charset=\s*["']?([^;"'\s]+)["']?/i;
+
+/**
+ * Creates a `TextDecoder` instance using the charset extracted from the `Content-Type` header,
+ * falling back to the default (`utf-8`) if no valid charset is specified or supported.
+ */
+function getTextDecoder(contentType: string): TextDecoder {
+  const match = contentType.match(CHARSET_REGEX);
+  if (match !== null) {
+    try {
+      return new TextDecoder(match[1]);
+    } catch {
+      // Catching `RangeError` thrown by `new TextDecoder(...)` when the encoding label is invalid or
+      // unsupported. There is no synchronous inspection API on `TextDecoder` to verify whether an
+      // encoding is supported without executing the constructor, so catching the error is required
+      // before falling back to default UTF-8.
+    }
+  }
+  return new TextDecoder();
 }
