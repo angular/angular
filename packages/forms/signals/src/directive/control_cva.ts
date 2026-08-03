@@ -10,6 +10,7 @@ import {
   computed,
   signal,
   untracked,
+  ɵprivatelyTracked as privatelyTracked,
   type Signal,
   type WritableSignal,
   type ɵControlDirectiveHost as ControlDirectiveHost,
@@ -48,34 +49,36 @@ export function cvaControlCreate(
 
   const legacyValidators = parent.injector.get(NG_VALIDATORS, null, {optional: true, self: true});
   if (legacyValidators) {
-    let version: WritableSignal<number> | undefined;
+    privatelyTracked(() => {
+      let version: WritableSignal<number> | undefined;
 
-    for (const v of legacyValidators) {
-      if (isValidatorObject(v) && v.registerOnValidatorChange) {
-        version ??= signal(0);
-        v.registerOnValidatorChange(() => {
-          version!.update((n) => n + 1);
-        });
+      for (const v of legacyValidators) {
+        if (isValidatorObject(v) && v.registerOnValidatorChange) {
+          version ??= signal(0);
+          v.registerOnValidatorChange(() => {
+            version!.update((n) => n + 1);
+          });
+        }
       }
-    }
 
-    const validatorFns = legacyValidators.map((v) =>
-      typeof v === 'function' ? (v as ValidatorFn) : v.validate.bind(v),
-    );
-    const mergedValidator = Validators.compose(validatorFns);
+      const validatorFns = legacyValidators.map((v) =>
+        typeof v === 'function' ? (v as ValidatorFn) : v.validate.bind(v),
+      );
+      const mergedValidator = Validators.compose(validatorFns);
 
-    const parseErrors = computed(() => {
-      // Read the `version` signal to re-run the validator when legacy validators trigger their change callbacks.
-      version?.();
-      const errors = mergedValidator ? mergedValidator(parent.interopNgControl.control) : null;
-      return reactiveErrorsToSignalErrors(errors, parent.interopNgControl.control);
+      const parseErrors = computed(() => {
+        // Read the `version` signal to re-run the validator when legacy validators trigger their change callbacks.
+        version?.();
+        const errors = mergedValidator ? mergedValidator(parent.interopNgControl.control) : null;
+        return reactiveErrorsToSignalErrors(errors, parent.interopNgControl.control);
+      });
+      // We must cast here because `CompatValidationError` claims to have `fieldTree` statically (to
+      // satisfy `ValidationState` elsewhere), but at construction it is created without it and acts as
+      // `WithoutFieldTree` initially.
+      parent.parseErrorsSource.set(
+        parseErrors as unknown as Signal<readonly ValidationError.WithoutFieldTree[]>,
+      );
     });
-    // We must cast here because `CompatValidationError` claims to have `fieldTree` statically (to
-    // satisfy `ValidationState` elsewhere), but at construction it is created without it and acts as
-    // `WithoutFieldTree` initially.
-    parent.parseErrorsSource.set(
-      parseErrors as unknown as Signal<readonly ValidationError.WithoutFieldTree[]>,
-    );
   }
 
   parent.registerAsBinding({

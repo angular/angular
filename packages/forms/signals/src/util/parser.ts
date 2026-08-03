@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {type Signal, linkedSignal} from '@angular/core';
+import {type Signal, linkedSignal, ɵprivatelyTracked as privatelyTracked} from '@angular/core';
 import type {ValidationError} from '../api/rules';
 import {normalizeErrors} from '../api/rules/validation/util';
 import type {ParseResult} from '../api/transformed_value';
@@ -43,11 +43,13 @@ export function createParser<TValue, TRaw>(
   setValue: (value: TValue) => void,
   parse: (raw: TRaw) => ParseResult<TValue>,
 ): Parser<TRaw> {
-  const errors = linkedSignal({
-    source: getValue,
-    computation: () => [] as readonly ValidationError.WithoutFieldTree[],
-    equal: shallowArrayEquals,
-  });
+  const errors = privatelyTracked(() =>
+    linkedSignal({
+      source: getValue,
+      computation: () => [] as readonly ValidationError.WithoutFieldTree[],
+      equal: shallowArrayEquals,
+    }),
+  );
 
   const setRawValue = (rawValue: TRaw) => {
     const result = parse(rawValue);

@@ -47,6 +47,9 @@ export interface DevtoolsClusterNode {
 
   /** Index of a child/compound node of the cluster that acts as a preview of the whole cluster. */
   previewNode?: number;
+
+  /** Whether all nodes inside this cluster are privately tracked. */
+  isPrivate?: boolean;
 }
 
 export type DevtoolsSignalGraphNode = DevtoolsSignalNode | DevtoolsClusterNode;

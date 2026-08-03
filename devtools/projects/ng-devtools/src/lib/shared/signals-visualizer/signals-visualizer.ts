@@ -92,6 +92,7 @@ export class SignalsGraphVisualizer {
   private clustersStateChangeListeners: ((expandedClustersIds: Set<string>) => void)[] = [];
   private dependenciesHighlightListeners: ((e: DependenciesHighlightEvent) => void)[] = [];
   private expandedClustersIds = new Set<string>();
+  private showPrivate = false;
   private inputGraph: DevtoolsSignalGraph | null = null;
   private highlightedPath: {
     originNode: D3Selection | null;
@@ -342,7 +343,20 @@ export class SignalsGraphVisualizer {
     };
   }
 
+  setShowPrivate(show: boolean) {
+    if (this.showPrivate === show) {
+      return;
+    }
+    this.showPrivate = show;
+    if (this.inputGraph) {
+      this.render(this.inputGraph);
+    }
+  }
+
   private isNodeVisible(node: DevtoolsSignalGraphNode): boolean {
+    if (!this.showPrivate && (node as {isPrivate?: boolean}).isPrivate) {
+      return false;
+    }
     // Checks whether it's a:
     // 1. Standard signal node that's not part of a cluster
     // 2. Standard signal node that's part of an expanded cluster
@@ -476,19 +490,21 @@ export class SignalsGraphVisualizer {
     const newEdgeIds = new Set();
 
     for (const edge of signalGraph.edges) {
+      if (!this.showPrivate && edge.isPrivate) {
+        continue;
+      }
       const producerNode = signalGraph.nodes[edge.producer];
       const consumerNode = signalGraph.nodes[edge.consumer];
+      if (!this.isNodeVisible(producerNode) || !this.isNodeVisible(consumerNode)) {
+        continue;
+      }
       const producerId = producerNode.id;
       const consumerId = consumerNode.id;
 
       const edgeId = getEdgeId(producerId, consumerId);
       newEdgeIds.add(edgeId);
 
-      if (
-        !this.graph.hasEdge(producerId, consumerId, undefined) &&
-        this.isNodeVisible(producerNode) &&
-        this.isNodeVisible(consumerNode)
-      ) {
+      if (!this.graph.hasEdge(producerId, consumerId, undefined)) {
         const isClusterEdge = signalGraph.nodes.some(
           (node) =>
             isSignalNode(node) &&
@@ -508,11 +524,15 @@ export class SignalsGraphVisualizer {
 
     for (const edge of this.graph.edges()) {
       const edgeId = getEdgeId(edge.v, edge.w);
+      const producerNode = signalNodes.get(edge.v);
+      const consumerNode = signalNodes.get(edge.w);
 
       if (
         !newEdgeIds.has(edgeId) ||
-        !this.isNodeVisible(signalNodes.get(edge.v)!) ||
-        !this.isNodeVisible(signalNodes.get(edge.w)!)
+        !producerNode ||
+        !consumerNode ||
+        !this.isNodeVisible(producerNode) ||
+        !this.isNodeVisible(consumerNode)
       ) {
         this.graph.removeEdge(edge.v, edge.w, undefined);
       }

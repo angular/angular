@@ -15,6 +15,7 @@ export interface DebugSignalGraphNode {
   label?: string;
   value?: unknown;
   debuggableFn?: () => unknown;
+  isPrivate?: boolean;
 }
 
 export interface DebugSignalGraphEdge {
@@ -27,6 +28,11 @@ export interface DebugSignalGraphEdge {
    * Index of a signal node in the `nodes` array that is a producer of the signal consumed by the consumer node.
    */
   producer: number;
+
+  /**
+   * Whether the link between producer and consumer was created through a private tracking context.
+   */
+  isPrivate?: boolean;
 }
 
 /**

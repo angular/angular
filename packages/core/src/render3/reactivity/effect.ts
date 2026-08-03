@@ -11,8 +11,9 @@ import {
   consumerDestroy,
   isInNotificationPhase,
   setActiveConsumer,
-  BaseEffectNode,
   BASE_EFFECT_NODE,
+  BaseEffectNode,
+  onReactiveNodeCreated,
   runEffect,
 } from '../../../primitives/signals';
 import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
@@ -300,6 +301,7 @@ export function createViewEffect(
   fn: (onCleanup: EffectCleanupRegisterFn) => void,
 ): ViewEffectNode {
   const node = Object.create(VIEW_EFFECT_NODE) as ViewEffectNode;
+  onReactiveNodeCreated(node);
   node.view = view;
   node.zone = typeof Zone !== 'undefined' ? Zone.current : null;
   node.notifier = notifier;
@@ -318,6 +320,7 @@ export function createRootEffect(
   notifier: ChangeDetectionScheduler,
 ): RootEffectNode {
   const node = Object.create(ROOT_EFFECT_NODE) as RootEffectNode;
+  onReactiveNodeCreated(node);
   node.fn = createEffectFn(node, fn);
   node.scheduler = scheduler;
   node.notifier = notifier;

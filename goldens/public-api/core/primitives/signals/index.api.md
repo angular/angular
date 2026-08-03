@@ -67,6 +67,9 @@ export function finalizeConsumerAfterComputation(node: ReactiveNode): void;
 // @public (undocumented)
 export function getActiveConsumer(): ReactiveNode | null;
 
+// @public (undocumented)
+export function getPrivateTracking(): boolean;
+
 // @public
 export function installDevToolsSignalFormatter(): void;
 
@@ -103,6 +106,9 @@ export type PreviousValue<S, D> = {
     source: S;
     value: D;
 };
+
+// @public
+export function privatelyTracked<T>(fn: () => T): T;
 
 // @public
 export function producerAccessed(node: ReactiveNode): void;
@@ -184,6 +190,9 @@ export function setPostProducerCreatedFn(fn: ReactiveHookFn | null): ReactiveHoo
 
 // @public (undocumented)
 export function setPostSignalSetFn(fn: ReactiveHookFn | null): ReactiveHookFn | null;
+
+// @public (undocumented)
+export function setPrivateTracking(isPrivate: boolean): boolean;
 
 // @public (undocumented)
 export function setThrowInvalidWriteToSignalError(fn: <T>(node: SignalNode<T>) => never): void;

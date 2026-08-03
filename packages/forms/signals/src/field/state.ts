@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, signal, Signal} from '@angular/core';
+import {computed, ɵprivatelyTracked as privatelyTracked, signal, Signal} from '@angular/core';
 import type {FormField} from '../directive/form_field';
 import type {Debouncer, DisabledReason} from '../api/types';
 import {DEBOUNCER} from './debounce';
@@ -25,7 +25,7 @@ export class FieldNodeState {
    *
    * A field is considered directly touched when a user stops editing it for the first time (i.e. on blur)
    */
-  private readonly selfTouched = signal(false);
+  private readonly selfTouched = privatelyTracked(() => signal(false));
 
   /**
    * Indicates whether this field has been dirtied directly by the user (as opposed to indirectly by
@@ -33,7 +33,7 @@ export class FieldNodeState {
    *
    * A field is considered directly dirtied if a user changed the value of the field at least once.
    */
-  private readonly selfDirty = signal(false);
+  private readonly selfDirty = privatelyTracked(() => signal(false));
 
   /**
    * Marks this specific field as touched.
@@ -164,23 +164,25 @@ export class FieldNodeState {
    * An optional {@link Debouncer} factory for this field.
    */
   readonly debouncer: Signal<((signal: AbortSignal) => Promise<void> | void) | undefined> =
-    computed(() => {
-      if (this.node.logicNode.logic.hasMetadata(DEBOUNCER)) {
-        const debouncerLogic = this.node.logicNode.logic.getMetadata(DEBOUNCER);
-        const debouncer = debouncerLogic.compute(this.node.context);
+    privatelyTracked(() =>
+      computed(() => {
+        if (this.node.logicNode.logic.hasMetadata(DEBOUNCER)) {
+          const debouncerLogic = this.node.logicNode.logic.getMetadata(DEBOUNCER);
+          const debouncer = debouncerLogic.compute(this.node.context);
 
-        // Even if this field has a `debounce()` rule, it could be applied conditionally and currently
-        // inactive, in which case `compute()` will return undefined.
-        if (debouncer) {
-          return (signal) => debouncer(this.node.context, signal);
+          // Even if this field has a `debounce()` rule, it could be applied conditionally and currently
+          // inactive, in which case `compute()` will return undefined.
+          if (debouncer) {
+            return (signal) => debouncer(this.node.context, signal);
+          }
         }
-      }
 
-      // Fallback to the parent's debouncer, if any. If there is no debouncer configured all the way
-      // up to the root field, this simply returns `undefined` indicating that the operation should
-      // not be debounced.
-      return this.node.structure.parent?.nodeState.debouncer?.();
-    });
+        // Fallback to the parent's debouncer, if any. If there is no debouncer configured all the way
+        // up to the root field, this simply returns `undefined` indicating that the operation should
+        // not be debounced.
+        return this.node.structure.parent?.nodeState.debouncer?.();
+      }),
+    );
 
   /** Whether this field is considered non-interactive.
    *
@@ -189,7 +191,7 @@ export class FieldNodeState {
    * - It is disabled
    * - It is readonly
    */
-  private readonly isNonInteractive = computed(
-    () => this.hidden() || this.disabled() || this.readonly(),
+  private readonly isNonInteractive = privatelyTracked(() =>
+    computed(() => this.hidden() || this.disabled() || this.readonly()),
   );
 }

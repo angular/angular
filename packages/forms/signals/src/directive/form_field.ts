@@ -21,6 +21,7 @@ import {
   input,
   Renderer2,
   ɵRuntimeError as RuntimeError,
+  ɵprivatelyTracked as privatelyTracked,
   type Signal,
   signal,
   untracked,
@@ -168,9 +169,9 @@ export class FormField<T> {
   private readonly validityMonitor = inject(InputValidityMonitor);
 
   /** @internal */
-  readonly parseErrorsSource = signal<
-    Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
-  >(undefined);
+  readonly parseErrorsSource = privatelyTracked(() =>
+    signal<Signal<readonly ValidationError.WithoutFieldTree[]> | undefined>(undefined),
+  );
 
   /** A lazily instantiated fake `NgControl`. */
   private _interopNgControl: InteropNgControl | undefined;
@@ -182,14 +183,16 @@ export class FormField<T> {
   }
 
   /** @internal */
-  readonly parseErrors = computed<ValidationError.WithFormField[]>(
-    () =>
-      this.parseErrorsSource()?.().map((err) => ({
-        ...err,
-        fieldTree: untracked(this.state).fieldTree,
-        formField: this as FormField<unknown>,
-      })) ?? [],
-    {equal: shallowArrayEquals},
+  readonly parseErrors = privatelyTracked(() =>
+    computed<ValidationError.WithFormField[]>(
+      () =>
+        this.parseErrorsSource()?.().map((err) => ({
+          ...err,
+          fieldTree: untracked(this.state).fieldTree,
+          formField: this as FormField<unknown>,
+        })) ?? [],
+      {equal: shallowArrayEquals},
+    ),
   );
 
   /** Errors associated with this form field. */
@@ -251,32 +254,34 @@ export class FormField<T> {
    * if needed.
    */
   private installClassBindingEffect(): void {
-    const classes = Object.entries(this.config?.classes ?? {}).map(
-      ([className, computation]) => [className, computed(() => computation(this))] as const,
-    );
-    if (classes.length === 0) {
-      return;
-    }
+    privatelyTracked(() => {
+      const classes = Object.entries(this.config?.classes ?? {}).map(
+        ([className, computation]) => [className, computed(() => computation(this))] as const,
+      );
+      if (classes.length === 0) {
+        return;
+      }
 
-    // If we have class bindings to apply, set up an afterRenderEffect to apply them.
-    const bindings = createBindings<string>();
-    afterRenderEffect(
-      {
-        write: () => {
-          for (const [className, computation] of classes) {
-            const active = computation();
-            if (bindingUpdated(bindings, className, active)) {
-              if (active) {
-                this.renderer.addClass(this.element, className);
-              } else {
-                this.renderer.removeClass(this.element, className);
+      // If we have class bindings to apply, set up an afterRenderEffect to apply them.
+      const bindings = createBindings<string>();
+      afterRenderEffect(
+        {
+          write: () => {
+            for (const [className, computation] of classes) {
+              const active = computation();
+              if (bindingUpdated(bindings, className, active)) {
+                if (active) {
+                  this.renderer.addClass(this.element, className);
+                } else {
+                  this.renderer.removeClass(this.element, className);
+                }
               }
             }
-          }
+          },
         },
-      },
-      {injector: this.injector},
-    );
+        {injector: this.injector},
+      );
+    });
   }
 
   /**

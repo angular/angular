@@ -1,12 +1,13 @@
 import {Component, signal} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
+import {FormField, form} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css',
+  imports: [FormField],
+  template: `<input [formField]="f" />
+
+    {{ f().valid() }} - {{ f().value() }} - {{ f().dirty() }}`,
 })
 export class App {
-  protected readonly title = signal('dev-app');
+  f = form(signal('foo'));
 }

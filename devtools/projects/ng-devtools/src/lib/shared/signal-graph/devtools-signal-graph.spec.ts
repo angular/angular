@@ -724,4 +724,32 @@ describe('convertToDevtoolsSignalGraph', () => {
       },
     });
   });
+
+  it('should preserve isPrivate property on nodes and edges', () => {
+    const debugGraph: DebugSignalGraph = {
+      nodes: [
+        {
+          id: 'a',
+          kind: 'signal',
+          epoch: 1,
+          debuggable: true,
+          preview: dummyPreview,
+          isPrivate: true,
+        },
+        {
+          id: 'b',
+          kind: 'computed',
+          epoch: 1,
+          debuggable: false,
+          preview: dummyPreview,
+        },
+      ],
+      edges: [{producer: 0, consumer: 1, isPrivate: true}],
+    };
+    const graph = convertToDevtoolsSignalGraph(debugGraph);
+
+    expect(graph.nodes[0].isPrivate).toBe(true);
+    expect(graph.nodes[1].isPrivate).toBeUndefined();
+    expect(graph.edges[0].isPrivate).toBe(true);
+  });
 });

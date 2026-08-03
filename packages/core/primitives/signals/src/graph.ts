@@ -17,6 +17,17 @@ declare const ngDevMode: boolean | undefined;
  */
 let activeConsumer: ReactiveNode | null = null;
 let inNotificationPhase = false;
+let inPrivateTracking = false;
+
+export function setPrivateTracking(isPrivate: boolean): boolean {
+  const prev = inPrivateTracking;
+  inPrivateTracking = isPrivate;
+  return prev;
+}
+
+export function getPrivateTracking(): boolean {
+  return inPrivateTracking;
+}
 
 export type Version = number & {__brand: 'Version'};
 
@@ -82,6 +93,7 @@ export const REACTIVE_NODE: ReactiveNode = {
 interface ReactiveLink {
   producer: ReactiveNode;
   consumer: ReactiveNode;
+  isPrivate?: boolean;
 
   /**
    * Stores the epoch that holds when this link was observed, allowing subsequent observations of the same producer to
@@ -204,10 +216,26 @@ export interface ReactiveNode {
    * Used in Angular DevTools to identify the kind of signal.
    */
   kind: ReactiveNodeKind;
+
+  /**
+   * Whether this node was created within a privately tracked execution context.
+   */
+  isCreatedPrivate?: boolean;
 }
 
 /**
  * Called by implementations when a producer's signal is read.
+ */
+function isPrivateAccess(consumer: ReactiveNode, producer: ReactiveNode): boolean {
+  return (
+    inPrivateTracking ||
+    !!(consumer as {isCreatedPrivate?: boolean}).isCreatedPrivate ||
+    !!(producer as {isCreatedPrivate?: boolean}).isCreatedPrivate
+  );
+}
+
+/**
+ * Record that the producer node was accessed in the current consumer context.
  */
 export function producerAccessed(node: ReactiveNode): void {
   if (inNotificationPhase) {
@@ -230,6 +258,11 @@ export function producerAccessed(node: ReactiveNode): void {
   // If the last producer we accessed is the same as the current one, we can skip adding a new
   // link
   if (prevProducerLink !== undefined && prevProducerLink.producer === node) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      if (!isPrivateAccess(activeConsumer, node)) {
+        prevProducerLink.isPrivate = undefined;
+      }
+    }
     return;
   }
 
@@ -249,6 +282,9 @@ export function producerAccessed(node: ReactiveNode): void {
       activeConsumer.producersTail = nextProducerLink;
       nextProducerLink.lastReadVersion = node.version;
       nextProducerLink.knownValidAtEpoch = epoch;
+      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+        nextProducerLink.isPrivate = isPrivateAccess(activeConsumer, node) ? true : undefined;
+      }
       return;
     }
   }
@@ -262,6 +298,11 @@ export function producerAccessed(node: ReactiveNode): void {
     prevConsumerLink.consumer === activeConsumer &&
     (!isRecomputing || prevConsumerLink.knownValidAtEpoch === epoch)
   ) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      if (!isPrivateAccess(activeConsumer, node)) {
+        prevConsumerLink.isPrivate = undefined;
+      }
+    }
     return;
   }
 
@@ -282,6 +323,11 @@ export function producerAccessed(node: ReactiveNode): void {
     lastReadVersion: node.version,
     nextConsumer: undefined,
   };
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    if (isPrivateAccess(activeConsumer, node)) {
+      newLink.isPrivate = true;
+    }
+  }
   activeConsumer.producersTail = newLink;
   if (prevProducerLink !== undefined) {
     prevProducerLink.nextProducer = newLink;
@@ -573,7 +619,16 @@ function consumerIsLive(node: ReactiveNode): boolean {
   return node.consumerIsAlwaysLive || node.consumers !== undefined;
 }
 
+export function onReactiveNodeCreated(node: ReactiveNode): void {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+    if (inPrivateTracking) {
+      node.isCreatedPrivate = true;
+    }
+  }
+}
+
 export function runPostProducerCreatedFn(node: ReactiveNode): void {
+  onReactiveNodeCreated(node);
   postProducerCreatedFn?.(node);
 }
 

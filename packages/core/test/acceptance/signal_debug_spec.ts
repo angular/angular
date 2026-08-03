@@ -19,6 +19,7 @@ import {
   Injector,
   ApplicationRef,
   afterRenderEffect,
+  ɵprivatelyTracked as privatelyTracked,
 } from '../../src/core';
 import {
   getFrameworkDIDebugData,
@@ -463,5 +464,48 @@ describe('getSignalGraph', () => {
 
     ref.destroy();
     expect(getFrameworkDIDebugData().resolverToEffects.get(injector)?.length).toBe(0);
+  });
+
+  it('should correctly mark privately tracked signals in signal graph', async () => {
+    @Component({selector: 'component-with-private', template: ``})
+    class WithPrivate {
+      stateFromEffect = 0;
+      publicSignal = signal(123, {debugName: 'publicSignal'});
+      privateSignal = signal(456, {debugName: 'privateSignal'});
+
+      constructor() {
+        effect(
+          () => {
+            const pub = this.publicSignal();
+            const priv = privatelyTracked(() => this.privateSignal());
+            this.stateFromEffect = pub + priv;
+          },
+          {debugName: 'privateEffect'},
+        );
+      }
+    }
+
+    const fixture = TestBed.createComponent(WithPrivate);
+    await fixture.whenStable();
+
+    const injector = fixture.componentRef.injector;
+    const signalGraph = getSignalGraph(injector);
+
+    const {nodes, edges} = signalGraph;
+    expect(nodes.length).toBe(3);
+
+    const effectNode = nodes.find((node) => node.label === 'privateEffect')!;
+    const publicNode = nodes.find((node) => node.label === 'publicSignal')!;
+    const privateNode = nodes.find((node) => node.label === 'privateSignal')!;
+
+    expect(effectNode.isPrivate).toBeUndefined();
+    expect(publicNode.isPrivate).toBeUndefined();
+    expect(privateNode.isPrivate).toBe(true);
+
+    const publicEdge = edges.find((e) => e.producer === nodes.indexOf(publicNode))!;
+    const privateEdge = edges.find((e) => e.producer === nodes.indexOf(privateNode))!;
+
+    expect(publicEdge.isPrivate).toBeUndefined();
+    expect(privateEdge.isPrivate).toBe(true);
   });
 });

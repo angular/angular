@@ -188,3 +188,4 @@ export {performanceMarkFeature as ɵperformanceMarkFeature} from './util/perform
 export {promiseWithResolvers as ɵpromiseWithResolvers} from './util/promise_with_resolvers';
 export {stringify as ɵstringify, truncateMiddle as ɵtruncateMiddle} from './util/stringify';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider_flags';
+export {getSignalGraph as ɵgetSignalGraph} from './render3/util/signal_debug';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal} from '@angular/core';
+import {computed, ɵprivatelyTracked as privatelyTracked, Signal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {FieldNodeState} from '../../src/field/state';
 import {CompatFieldNode, getControlEventsSignal, getControlStatusSignal} from './compat_field_node';
@@ -29,7 +29,9 @@ export class CompatNodeState extends FieldNodeState {
     this.control = options.control;
     this.touched = getControlEventsSignal(options, (c) => c.touched);
     this.dirty = getControlEventsSignal(options, (c) => c.dirty);
-    const controlDisabled = getControlStatusSignal(options, (c) => c.disabled);
+    const controlDisabled = privatelyTracked(() =>
+      getControlStatusSignal(options, (c) => c.disabled),
+    );
 
     this.disabled = computed(() => {
       return controlDisabled() || this.disabledReasons().length > 0;

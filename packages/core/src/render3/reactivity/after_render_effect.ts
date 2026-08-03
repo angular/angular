@@ -11,6 +11,7 @@ import {
   consumerBeforeComputation,
   consumerDestroy,
   consumerPollProducersForChange,
+  onReactiveNodeCreated,
   producerAccessed,
   SIGNAL,
   SIGNAL_NODE,
@@ -210,6 +211,7 @@ export class AfterRenderEffectSequence extends AfterRenderSequence {
       }
 
       const node = Object.create(AFTER_RENDER_PHASE_EFFECT_NODE) as AfterRenderPhaseEffectNode;
+      onReactiveNodeCreated(node);
       node.sequence = this;
       node.phase = phase;
       node.userFn = effectHook;
