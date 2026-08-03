@@ -19,6 +19,7 @@ import {
   Injector,
   ApplicationRef,
   afterRenderEffect,
+  linkedSignal,
 } from '../../src/core';
 import {
   getFrameworkDIDebugData,
@@ -465,5 +466,111 @@ describe('getSignalGraph', () => {
 
     ref.destroy();
     expect(getFrameworkDIDebugData().resolverToEffects.get(injector)?.length).toBe(0);
+  });
+
+  describe('debuggableFn', () => {
+    it('should expose the computation of a computed', async () => {
+      const computation = () => 1;
+
+      @Component({selector: 'with-computed', template: `{{ computedSignal() }}`})
+      class WithComputed {
+        computedSignal = computed(computation, {debugName: 'computedSignal'});
+      }
+      const fixture = TestBed.createComponent(WithComputed);
+
+      await fixture.whenStable();
+
+      const {nodes} = getSignalGraph(fixture.componentRef.injector);
+      const node = nodes.find((n) => n.label === 'computedSignal')!;
+
+      expect(node.kind).toBe('computed');
+      expect(node.debuggableFn).toBe(computation);
+    });
+
+    it('should expose the computation of a linkedSignal', async () => {
+      const computation = (source: number) => source * 2;
+
+      @Component({selector: 'with-linked-signal', template: `{{ linked() }}`})
+      class WithLinkedSignal {
+        source = signal(1, {debugName: 'source'});
+        linked = linkedSignal({
+          source: this.source,
+          computation,
+          debugName: 'linked',
+        });
+      }
+      const fixture = TestBed.createComponent(WithLinkedSignal);
+
+      await fixture.whenStable();
+
+      const {nodes} = getSignalGraph(fixture.componentRef.injector);
+      const node = nodes.find((n) => n.label === 'linked')!;
+
+      expect(node.kind).toBe('linkedSignal');
+      expect(node.value).toBe(2);
+      expect(node.debuggableFn).toBe(computation);
+    });
+
+    it('should expose the callback of an effect', async () => {
+      const effectFn = () => {};
+
+      @Component({selector: 'with-effect', template: ``})
+      class WithEffect {
+        constructor() {
+          effect(effectFn, {debugName: 'myEffect'});
+        }
+      }
+      const fixture = TestBed.createComponent(WithEffect);
+
+      await fixture.whenStable();
+
+      const {nodes} = getSignalGraph(fixture.componentRef.injector);
+      const node = nodes.find((n) => n.label === 'myEffect')!;
+
+      expect(node.kind).toBe('effect');
+      expect(node.debuggableFn).toBe(effectFn);
+    });
+
+    it('should expose the user callback of an afterRenderEffect phase', async () => {
+      const phaseFn = () => {};
+
+      @Component({selector: 'with-after-render-effect', template: ``})
+      class WithAfterRenderEffect {
+        constructor() {
+          afterRenderEffect(phaseFn);
+        }
+      }
+      const fixture = TestBed.createComponent(WithAfterRenderEffect);
+
+      await fixture.whenStable();
+
+      const {nodes} = getSignalGraph(fixture.componentRef.injector);
+      const node = nodes.find((n) => n.kind === 'afterRenderEffectPhase')!;
+
+      expect(node).toBeDefined();
+      expect(node.debuggableFn).toBe(phaseFn);
+    });
+
+    it('should expose the user callback of an afterRenderEffect phase object with multiple phases', async () => {
+      const earlyReadFn = () => {};
+      const writeFn = () => {};
+
+      @Component({selector: 'with-after-render-effect-object', template: ``})
+      class WithAfterRenderEffectObject {
+        constructor() {
+          afterRenderEffect({earlyRead: earlyReadFn, write: writeFn});
+        }
+      }
+      const fixture = TestBed.createComponent(WithAfterRenderEffectObject);
+
+      await fixture.whenStable();
+
+      const {nodes} = getSignalGraph(fixture.componentRef.injector);
+      const phaseNodes = nodes.filter((n) => n.kind === 'afterRenderEffectPhase');
+
+      expect(phaseNodes.length).toBe(2);
+      expect(phaseNodes.map((n) => n.debuggableFn)).toContain(earlyReadFn);
+      expect(phaseNodes.map((n) => n.debuggableFn)).toContain(writeFn);
+    });
   });
 });

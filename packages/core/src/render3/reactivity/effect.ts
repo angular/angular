@@ -201,6 +201,8 @@ export interface EffectNode extends BaseEffectNode, SchedulableEffect {
   injector: Injector;
   notifier: ChangeDetectionScheduler;
 
+  userFn: (onCleanup: EffectCleanupRegisterFn) => void;
+
   onDestroyFns: (() => void)[] | null;
 }
 
@@ -212,7 +214,7 @@ export interface RootEffectNode extends EffectNode {
   scheduler: EffectScheduler;
 }
 
-export const EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 'notifier'> =
+export const EFFECT_NODE: Omit<EffectNode, 'fn' | 'userFn' | 'destroy' | 'injector' | 'notifier'> =
   /* @__PURE__ */ (() => ({
     ...BASE_EFFECT_NODE,
     cleanupFns: undefined,
@@ -251,48 +253,52 @@ export const EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 'noti
     },
   }))();
 
-export const ROOT_EFFECT_NODE: Omit<RootEffectNode, 'fn' | 'scheduler' | 'notifier' | 'injector'> =
-  /* @__PURE__ */ (() => ({
-    ...EFFECT_NODE,
-    consumerMarkedDirty(this: RootEffectNode) {
-      this.scheduler.schedule(this);
-      this.notifier.notify(NotificationSource.RootEffect);
-    },
-    destroy(this: RootEffectNode) {
-      consumerDestroy(this);
+export const ROOT_EFFECT_NODE: Omit<
+  RootEffectNode,
+  'fn' | 'userFn' | 'scheduler' | 'notifier' | 'injector'
+> = /* @__PURE__ */ (() => ({
+  ...EFFECT_NODE,
+  consumerMarkedDirty(this: RootEffectNode) {
+    this.scheduler.schedule(this);
+    this.notifier.notify(NotificationSource.RootEffect);
+  },
+  destroy(this: RootEffectNode) {
+    consumerDestroy(this);
 
-      if (this.onDestroyFns !== null) {
-        for (const fn of this.onDestroyFns) {
-          fn();
-        }
+    if (this.onDestroyFns !== null) {
+      for (const fn of this.onDestroyFns) {
+        fn();
       }
+    }
 
-      this.cleanup();
-      this.scheduler.remove(this);
-    },
-  }))();
+    this.cleanup();
+    this.scheduler.remove(this);
+  },
+}))();
 
-export const VIEW_EFFECT_NODE: Omit<ViewEffectNode, 'fn' | 'view' | 'injector' | 'notifier'> =
-  /* @__PURE__ */ (() => ({
-    ...EFFECT_NODE,
-    consumerMarkedDirty(this: ViewEffectNode): void {
-      this.view[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
-      markAncestorsForTraversal(this.view);
-      this.notifier.notify(NotificationSource.ViewEffect);
-    },
-    destroy(this: ViewEffectNode): void {
-      consumerDestroy(this);
+export const VIEW_EFFECT_NODE: Omit<
+  ViewEffectNode,
+  'fn' | 'userFn' | 'view' | 'injector' | 'notifier'
+> = /* @__PURE__ */ (() => ({
+  ...EFFECT_NODE,
+  consumerMarkedDirty(this: ViewEffectNode): void {
+    this.view[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
+    markAncestorsForTraversal(this.view);
+    this.notifier.notify(NotificationSource.ViewEffect);
+  },
+  destroy(this: ViewEffectNode): void {
+    consumerDestroy(this);
 
-      if (this.onDestroyFns !== null) {
-        for (const fn of this.onDestroyFns) {
-          fn();
-        }
+    if (this.onDestroyFns !== null) {
+      for (const fn of this.onDestroyFns) {
+        fn();
       }
+    }
 
-      this.cleanup();
-      this.view[EFFECTS]?.delete(this);
-    },
-  }))();
+    this.cleanup();
+    this.view[EFFECTS]?.delete(this);
+  },
+}))();
 
 export function createViewEffect(
   view: LView,
@@ -303,6 +309,7 @@ export function createViewEffect(
   node.view = view;
   node.zone = typeof Zone !== 'undefined' ? Zone.current : null;
   node.notifier = notifier;
+  node.userFn = fn;
   node.fn = createEffectFn(node, fn);
 
   view[EFFECTS] ??= new Set();
@@ -318,6 +325,7 @@ export function createRootEffect(
   notifier: ChangeDetectionScheduler,
 ): RootEffectNode {
   const node = Object.create(ROOT_EFFECT_NODE) as RootEffectNode;
+  node.userFn = fn;
   node.fn = createEffectFn(node, fn);
   node.scheduler = scheduler;
   node.notifier = notifier;

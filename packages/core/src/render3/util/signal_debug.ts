@@ -5,22 +5,29 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ReactiveLViewConsumer} from '../reactive_lview_consumer';
-import {assertTNode, assertLView} from '../assert';
-import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
-import {NodeInjector, getNodeInjectorTNode, getNodeInjectorLView} from '../di';
-import {REACTIVE_TEMPLATE_CONSUMER, HOST, LView, CONTEXT} from '../interfaces/view';
-import {EffectNode, EffectRefImpl} from '../reactivity/effect';
-import {Injector} from '../../di/injector';
-import {R3Injector} from '../../di/r3_injector';
-import {throwError} from '../../util/assert';
-import {ComputedNode, ReactiveNode, SIGNAL, SignalNode} from '../../../primitives/signals';
-import {isLView} from '../interfaces/type_checks';
 import type {
   DebugSignalGraph,
   DebugSignalGraphEdge,
   DebugSignalGraphNode,
 } from '../../../primitives/devtools';
+import {
+  ComputedNode,
+  LinkedSignalNode,
+  ReactiveNode,
+  SIGNAL,
+  SignalNode,
+} from '../../../primitives/signals';
+import { Injector } from '../../di/injector';
+import { R3Injector } from '../../di/r3_injector';
+import { throwError } from '../../util/assert';
+import { assertLView, assertTNode } from '../assert';
+import { getFrameworkDIDebugData } from '../debug/framework_injector_profiler';
+import { NodeInjector, getNodeInjectorLView, getNodeInjectorTNode } from '../di';
+import { isLView } from '../interfaces/type_checks';
+import { CONTEXT, HOST, LView, REACTIVE_TEMPLATE_CONSUMER } from '../interfaces/view';
+import { ReactiveLViewConsumer } from '../reactive_lview_consumer';
+import type { AfterRenderPhaseEffectNode } from '../reactivity/after_render_effect';
+import { EffectNode, EffectRefImpl } from '../reactivity/effect';
 
 function isComputedNode(node: ReactiveNode): node is ComputedNode<unknown> {
   return node.kind === 'computed';
@@ -36,6 +43,14 @@ function isEffectNode(node: ReactiveNode): node is EffectNode {
 
 function isSignalNode(node: ReactiveNode): node is SignalNode<unknown> {
   return node.kind === 'signal';
+}
+
+function isLinkedSignalNode(node: ReactiveNode): node is LinkedSignalNode<unknown, unknown> {
+  return node.kind === 'linkedSignal';
+}
+
+function isAfterRenderEffectPhaseNode(node: ReactiveNode): node is AfterRenderPhaseEffectNode {
+  return node.kind === 'afterRenderEffectPhase';
 }
 
 /**
@@ -86,6 +101,15 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         debuggableFn: consumer.computation,
         id,
       });
+    } else if (isLinkedSignalNode(consumer)) {
+      debugSignalGraphNodes.push({
+        label: consumer.debugName,
+        value: consumer.value,
+        kind: consumer.kind,
+        epoch: consumer.version,
+        debuggableFn: consumer.computation as () => unknown,
+        id,
+      });
     } else if (isSignalNode(consumer)) {
       debugSignalGraphNodes.push({
         label: consumer.debugName,
@@ -109,7 +133,15 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         label: consumer.debugName,
         kind: consumer.kind,
         epoch: consumer.version,
-        debuggableFn: consumer.fn,
+        debuggableFn: consumer.userFn as (() => unknown) | undefined,
+        id,
+      });
+    } else if (isAfterRenderEffectPhaseNode(consumer)) {
+      debugSignalGraphNodes.push({
+        label: consumer.debugName,
+        kind: consumer.kind,
+        epoch: consumer.version,
+        debuggableFn: consumer.userFn as () => unknown,
         id,
       });
     } else {
