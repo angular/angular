@@ -30,4 +30,8 @@ describe('cookies', () => {
     expect(parseCookieValue('token=whitespace%20', 'token')).toBe('whitespace ');
     expect(parseCookieValue('token=whitespace%0A', 'token')).toBe('whitespace\n');
   });
+  it('returns the raw value when it is not a valid percent-encoding', () => {
+    expect(parseCookieValue('token=100%done', 'token')).toBe('100%done');
+    expect(parseCookieValue('token=%', 'token')).toBe('%');
+  });
 });
