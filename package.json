@@ -104,7 +104,7 @@
     "angular-mocks-1.8": "npm:angular-mocks@1.8",
     "chalk": "^6.0.0",
     "diff": "^9.0.0",
-    "domino": "https://github.com/angular/domino.git#f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56",
+    "domino": "https://github.com/angular/domino.git#fc7e40ad7086087c8f55a2108e9edc5be76d2833",
     "esbuild": "0.28.1",
     "http-server": "^14.0.0",
     "jasmine": "6.3.0",
@@ -136,7 +136,7 @@
   "devDependencies": {
     "@actions/core": "^3.0.0",
     "@actions/github": "^9.0.0",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#2af985ddb942b5928dfb730a6b8efaccd1798846",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#dcf9b6776377d5d301e054111add3ef80f433b70",
     "@babel/plugin-transform-async-generator-functions": "^8.0.0",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^8.0.0",

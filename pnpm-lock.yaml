@@ -29,7 +29,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 22.2.0-next.0
-        version: 22.2.0-next.0(7d724e5121deeaa5330074d4d641203d)
+        version: 22.2.0-next.0(c9a7665ffdb1d075a74ea96f71aba5ae)
       '@angular/cdk':
         specifier: 22.1.0-rc.0
         version: 22.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -160,8 +160,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       domino:
-        specifier: https://github.com/angular/domino.git#f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56'
+        specifier: https://github.com/angular/domino.git#fc7e40ad7086087c8f55a2108e9edc5be76d2833
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/fc7e40ad7086087c8f55a2108e9edc5be76d2833'
       esbuild:
         specifier: 0.28.1
         version: 0.28.1
@@ -188,7 +188,7 @@ importers:
         version: 2.1.3
       karma-jasmine:
         specifier: ^5.0.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
       karma-sourcemap-loader:
         specifier: ^0.4.0
         version: 0.4.0
@@ -248,8 +248,8 @@ importers:
         specifier: ^9.0.0
         version: 9.1.1
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#2af985ddb942b5928dfb730a6b8efaccd1798846
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/2af985ddb942b5928dfb730a6b8efaccd1798846(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#dcf9b6776377d5d301e054111add3ef80f433b70
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/dcf9b6776377d5d301e054111add3ef80f433b70(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))
       '@babel/plugin-transform-async-generator-functions':
         specifier: ^8.0.0
         version: 8.0.1(@babel/core@8.0.1)
@@ -285,7 +285,7 @@ importers:
         version: 0.5.5
       conventional-changelog:
         specifier: ^8.0.0
-        version: 8.1.0(conventional-commits-filter@6.0.1)
+        version: 8.1.0
       cypress:
         specifier: 15.19.0
         version: 15.19.0
@@ -309,7 +309,7 @@ importers:
         version: 2.2.1(supports-color@11.0.0)
       karma-jasmine-html-reporter:
         specifier: ^2.2.0
-        version: 2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+        version: 2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
       prettier:
         specifier: ^3.8.0
         version: 3.9.5
@@ -555,10 +555,10 @@ importers:
         version: 2.2.1(supports-color@11.0.0)
       karma-jasmine:
         specifier: 5.1.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
       karma-jasmine-html-reporter:
         specifier: 2.2.0
-        version: 2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+        version: 2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
       marked:
         specifier: 18.0.7
         version: 18.0.7
@@ -1007,7 +1007,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 22.2.0-next.0
-        version: 22.2.0-next.0(7d724e5121deeaa5330074d4d641203d)
+        version: 22.2.0-next.0(c9a7665ffdb1d075a74ea96f71aba5ae)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1226,8 +1226,8 @@ importers:
         specifier: 3.7.2
         version: 3.7.2
       domino:
-        specifier: https://github.com/angular/domino.git#f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56'
+        specifier: https://github.com/angular/domino.git#fc7e40ad7086087c8f55a2108e9edc5be76d2833
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/fc7e40ad7086087c8f55a2108e9edc5be76d2833'
       esbuild-plugin-umd-wrapper:
         specifier: 3.0.0
         version: 3.0.0
@@ -1274,8 +1274,8 @@ importers:
   packages/zone.js/test/typings:
     dependencies:
       domino:
-        specifier: https://github.com/angular/domino.git#f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56'
+        specifier: https://github.com/angular/domino.git#fc7e40ad7086087c8f55a2108e9edc5be76d2833
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/fc7e40ad7086087c8f55a2108e9edc5be76d2833'
       zone.js:
         specifier: workspace:*
         version: link:../..
@@ -1589,8 +1589,8 @@ packages:
       '@angular/compiler':
         optional: true
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56':
-    resolution: {gitHosted: true, integrity: sha512-eVKFxSkVT6SaPLkXKvIGXeD0NuI8np1mc2rH3DebHbCURzAYOwNbbasKShP1AkxZqDsEIv75kIKEIJSfqiNaCw==, tarball: https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/fc7e40ad7086087c8f55a2108e9edc5be76d2833':
+    resolution: {gitHosted: true, integrity: sha512-9d6Jg2C0xBryY5tnA5nFMVTDeSSEZZIs/T9FUvyexVozwtc5yTFenG/XEn+vq3cgkpoaKpupCG3U/cPacfSK7w==, tarball: https://codeload.github.com/angular/domino/tar.gz/fc7e40ad7086087c8f55a2108e9edc5be76d2833}
     version: 2.1.6
 
   '@angular/material@22.1.0-rc.0':
@@ -1603,9 +1603,9 @@ packages:
       '@angular/platform-browser': ^22.0.0-0 || ^22.1.0-0 || ^22.2.0-0 || ^22.3.0-0 || ^23.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/2af985ddb942b5928dfb730a6b8efaccd1798846':
-    resolution: {gitHosted: true, integrity: sha512-m1WZEDpVmV+rlxZoeZaW2kobdjwjJozZYqXVkZeMEyZxKd+P5tHFw/mUxWPk6mHZjDcqA4l8maTD2aXkq8z0iQ==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/2af985ddb942b5928dfb730a6b8efaccd1798846}
-    version: 0.0.0-c279805293db7c28fe20709bc7ac3a3f3bbebb40
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/dcf9b6776377d5d301e054111add3ef80f433b70':
+    resolution: {gitHosted: true, integrity: sha512-0g6HpWQk3yfpDvOWO9O0HgjGQR/SJQ+e5KRUZV/yWorJuI73zHoaTPhVGzLKnvo9UF0oY++VvkKmpww0iuCo0Q==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/dcf9b6776377d5d301e054111add3ef80f433b70}
+    version: 0.0.0-0b701b31038419ad73422a9d9d3dff43a725a0d2
     hasBin: true
 
   '@angular/ssr@22.2.0-next.0':
@@ -3357,8 +3357,17 @@ packages:
   '@octokit/openapi-types@27.0.0':
     resolution: {integrity: sha512-whrdktVs1h6gtR+09+QsNk2+FO+49j6ga1c55YZudfEG+oKJVvJLQi3zkOm5JjiUXAagWK2tI2kTGKJ2Ys7MGA==}
 
+  '@octokit/openapi-types@28.0.0':
+    resolution: {integrity: sha512-0rFyLuyHvIj6uuZWuDslxkowFYdPXoNIkeAv4b27dzm2Tf4vGWXnPsMcxs7d65kLdMERgP3wc1AEPlqMz8e1cQ==}
+
   '@octokit/plugin-paginate-rest@14.0.0':
     resolution: {integrity: sha512-fNVRE7ufJiAA3XUrha2omTA39M6IXIc6GIZLvlbsm8QOQCYvpq/LkMNGyFlB1d8hTDzsAXa3OKtybdMAYsV/fw==}
+    engines: {node: '>= 20'}
+    peerDependencies:
+      '@octokit/core': '>=6'
+
+  '@octokit/plugin-paginate-rest@15.0.0':
+    resolution: {integrity: sha512-lw9A9YL5s4VPj+VEx8uMxaxQm2YTgrPDkrLEuZuu18R8TK3oPcXF4K6t52nx6xn1RcogZC9i188sAr/4XYJaQQ==}
     engines: {node: '>= 20'}
     peerDependencies:
       '@octokit/core': '>=6'
@@ -3371,6 +3380,12 @@ packages:
 
   '@octokit/plugin-rest-endpoint-methods@17.0.0':
     resolution: {integrity: sha512-B5yCyIlOJFPqUUeiD0cnBJwWJO8lkJs5d8+ze9QDP6SvfiXSz1BF+91+0MeI1d2yxgOhU/O+CvtiZ9jSkHhFAw==}
+    engines: {node: '>= 20'}
+    peerDependencies:
+      '@octokit/core': '>=6'
+
+  '@octokit/plugin-rest-endpoint-methods@18.0.0':
+    resolution: {integrity: sha512-1wM02pQTHEarWYij0Bb4gu8X8fBy2FJdI4HMTSFDxtYLbOkJErGVx5ywmM6jeS8tOmC0iCiRLrn6YsSIecUeOQ==}
     engines: {node: '>= 20'}
     peerDependencies:
       '@octokit/core': '>=6'
@@ -3389,6 +3404,9 @@ packages:
 
   '@octokit/types@16.0.0':
     resolution: {integrity: sha512-sKq+9r1Mm4efXW1FCk7hFSeJo4QKreL/tTbR0rz/qx/r1Oa2VV83LTA/H/MuCOX7uCIJmQVRKBcbmWoySjAnSg==}
+
+  '@octokit/types@17.0.0':
+    resolution: {integrity: sha512-ByP1v7YL5SMveFPP7+sj0/ZuWCOOg/Chs4NafOMpq6WNIM/hdGY0S7C0TCGDBWu1aGmOxmUIhMx3cO+IdwYZ1Q==}
 
   '@open-draft/deferred-promise@2.2.0':
     resolution: {integrity: sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==}
@@ -11698,7 +11716,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@22.2.0-next.0(7d724e5121deeaa5330074d4d641203d)':
+  '@angular/build@22.2.0-next.0(c9a7665ffdb1d075a74ea96f71aba5ae)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2202.0-next.0(chokidar@5.0.0)
@@ -11821,7 +11839,7 @@ snapshots:
     optionalDependencies:
       '@angular/compiler': link:packages/compiler
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56': {}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/fc7e40ad7086087c8f55a2108e9edc5be76d2833': {}
 
   '@angular/material@22.1.0-rc.0(@angular/cdk@22.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
@@ -11833,7 +11851,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/2af985ddb942b5928dfb730a6b8efaccd1798846(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/dcf9b6776377d5d301e054111add3ef80f433b70(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))':
     dependencies:
       '@actions/core': 3.0.1
       '@conventional-changelog/git-client': 3.1.0(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.1)
@@ -11845,12 +11863,12 @@ snapshots:
       '@octokit/core': 7.0.6
       '@octokit/graphql': 9.0.3
       '@octokit/graphql-schema': 15.26.1
-      '@octokit/openapi-types': 27.0.0
-      '@octokit/plugin-paginate-rest': 14.0.0(@octokit/core@7.0.6)
-      '@octokit/plugin-rest-endpoint-methods': 17.0.0(@octokit/core@7.0.6)
+      '@octokit/openapi-types': 28.0.0
+      '@octokit/plugin-paginate-rest': 15.0.0(@octokit/core@7.0.6)
+      '@octokit/plugin-rest-endpoint-methods': 18.0.0(@octokit/core@7.0.6)
       '@octokit/request-error': 7.1.0
       '@octokit/rest': 22.0.1
-      '@octokit/types': 16.0.0
+      '@octokit/types': 17.0.0
       '@pnpm/dependency-path': 1001.1.10
       '@types/cli-progress': 3.11.6
       '@types/ejs': 3.1.5
@@ -14130,10 +14148,17 @@ snapshots:
 
   '@octokit/openapi-types@27.0.0': {}
 
+  '@octokit/openapi-types@28.0.0': {}
+
   '@octokit/plugin-paginate-rest@14.0.0(@octokit/core@7.0.6)':
     dependencies:
       '@octokit/core': 7.0.6
       '@octokit/types': 16.0.0
+
+  '@octokit/plugin-paginate-rest@15.0.0(@octokit/core@7.0.6)':
+    dependencies:
+      '@octokit/core': 7.0.6
+      '@octokit/types': 17.0.0
 
   '@octokit/plugin-request-log@6.0.0(@octokit/core@7.0.6)':
     dependencies:
@@ -14143,6 +14168,11 @@ snapshots:
     dependencies:
       '@octokit/core': 7.0.6
       '@octokit/types': 16.0.0
+
+  '@octokit/plugin-rest-endpoint-methods@18.0.0(@octokit/core@7.0.6)':
+    dependencies:
+      '@octokit/core': 7.0.6
+      '@octokit/types': 17.0.0
 
   '@octokit/request-error@7.1.0':
     dependencies:
@@ -14167,6 +14197,10 @@ snapshots:
   '@octokit/types@16.0.0':
     dependencies:
       '@octokit/openapi-types': 27.0.0
+
+  '@octokit/types@17.0.0':
+    dependencies:
+      '@octokit/openapi-types': 28.0.0
 
   '@open-draft/deferred-promise@2.2.0': {}
 
@@ -16480,7 +16514,7 @@ snapshots:
     transitivePeerDependencies:
       - conventional-commits-filter
 
-  conventional-changelog@8.1.0(conventional-commits-filter@6.0.1):
+  conventional-changelog@8.1.0:
     dependencies:
       '@conventional-changelog/git-client': 3.1.0(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.1)
       '@simple-libs/hosted-git-info': 2.0.0
@@ -19421,13 +19455,13 @@ snapshots:
       is-wsl: 2.2.0
       which: 3.0.1
 
-  karma-jasmine-html-reporter@2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
+  karma-jasmine-html-reporter@2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)):
     dependencies:
       jasmine-core: 6.3.0
       karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
-      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
 
-  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
+  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)):
     dependencies:
       jasmine-core: 4.6.1
       karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
@@ -20011,7 +20045,7 @@ snapshots:
     dependencies:
       array-differ: 4.0.0
       array-union: 3.0.1
-      minimatch: 10.2.5
+      minimatch: 10.2.6
 
   mute-stdout@2.0.0: {}
 
