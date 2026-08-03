@@ -10,7 +10,7 @@ import {Component, computed, effect, input, linkedSignal, output, signal} from '
 import {ProfilerFrame} from '../../../../../../protocol';
 import {Observable} from 'rxjs';
 
-import {createFilter, Filter, noopFilter} from './filter';
+import {Filter, noopFilter} from './recording-timeline-controls/filter';
 import {mergeFrames} from './record-formatter/frame-merger';
 import {VisualizationMode} from './shared/visualization-mode';
 
@@ -18,7 +18,7 @@ import {RecordingVisualizerComponent} from './recording-visualizer/recording-vis
 import {FrameSelectorComponent} from './frame-selector/frame-selector.component';
 import {RecordingTimelineControlsComponent} from './recording-timeline-controls/recording-timeline-controls.component';
 import {VisualizerControlsComponent} from './visualizer-controls/visualizer-controls.component';
-import {estimateFrameRate} from './shared/estimate-frame-rate';
+import {calculateFrameRate} from './shared/calculate-frame-rate';
 import {AngieComponent} from '../../../shared/angie/angie.component';
 
 @Component({
@@ -46,7 +46,7 @@ export class RecordingTimelineComponent {
     return mergeFrames(indexes.map((index) => data[index]).filter(Boolean));
   });
 
-  private readonly _filter = signal<Filter>(noopFilter);
+  private readonly filter = signal<Filter>(noopFilter);
   protected readonly visualizing = signal(false);
 
   // Ensure that `allFrames` is always cleaned if the stream changes.
@@ -58,11 +58,11 @@ export class RecordingTimelineComponent {
   });
 
   protected readonly frames = computed(() => {
-    const filter = this._filter();
+    const filter = this.filter();
     return this.allFrames().filter((node) => filter(node));
   });
 
-  readonly currentFrameRate = computed(() => estimateFrameRate(this.frame()?.duration ?? 0));
+  readonly currentFrameRate = computed(() => calculateFrameRate(this.frame()?.duration ?? 0));
 
   readonly hasFrames = computed(() => this.allFrames().length > 0);
 
@@ -81,7 +81,7 @@ export class RecordingTimelineComponent {
     });
   }
 
-  setFilter(filter: string): void {
-    this._filter.set(createFilter(filter));
+  setFilter(filter: Filter): void {
+    this.filter.set(filter);
   }
 }
