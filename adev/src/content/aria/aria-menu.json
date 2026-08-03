@@ -30,6 +30,19 @@
       }
     },
     {
+      "name": "MENU_COMPONENT",
+      "type": "InjectionToken<Menu<any> | MenuBar<any>>",
+      "entryType": "constant",
+      "rawComment": "/** Token used to expose menus to their child components. */",
+      "description": "Token used to expose menus to their child components.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/menu/menu-tokens.ts",
+        "startLine": 14,
+        "endLine": 14
+      }
+    },
+    {
       "name": "MenuTrigger",
       "isAbstract": false,
       "entryType": "directive",
@@ -945,6 +958,10 @@
       "@angular/core"
     ],
     [
+      "InjectionToken",
+      "@angular/core"
+    ],
+    [
       "booleanAttribute",
       "@angular/core"
     ],
@@ -1017,6 +1034,10 @@
       "@angular/aria/menu"
     ],
     [
+      "MENU_COMPONENT",
+      "@angular/aria/menu"
+    ],
+    [
       "MenuTrigger",
       "@angular/aria/menu"
     ],
@@ -1034,6 +1055,10 @@
     ],
     [
       "MenuContent",
+      "@angular/aria/menu"
+    ],
+    [
+      "MENU_COMPONENT",
       "@angular/aria/menu"
     ],
     [

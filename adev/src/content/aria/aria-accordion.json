@@ -26,6 +26,19 @@
       }
     },
     {
+      "name": "ACCORDION_GROUP",
+      "type": "InjectionToken<AccordionGroup>",
+      "entryType": "constant",
+      "rawComment": "/** Token used to expose the accordion group. */",
+      "description": "Token used to expose the accordion group.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/accordion/accordion-tokens.ts",
+        "startLine": 13,
+        "endLine": 13
+      }
+    },
+    {
       "name": "AccordionPanel",
       "isAbstract": false,
       "entryType": "undecorated_class",
@@ -668,6 +681,10 @@
       "@angular/core"
     ],
     [
+      "InjectionToken",
+      "@angular/core"
+    ],
+    [
       "ElementRef",
       "@angular/core"
     ],
@@ -728,6 +745,10 @@
       "@angular/aria/accordion"
     ],
     [
+      "ACCORDION_GROUP",
+      "@angular/aria/accordion"
+    ],
+    [
       "AccordionPanel",
       "@angular/aria/accordion"
     ],
@@ -741,6 +762,10 @@
     ],
     [
       "AccordionContent",
+      "@angular/aria/accordion"
+    ],
+    [
+      "ACCORDION_GROUP",
       "@angular/aria/accordion"
     ],
     [

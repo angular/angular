@@ -214,6 +214,19 @@
       }
     },
     {
+      "name": "COMBOBOX_POPUP",
+      "type": "InjectionToken<ComboboxPopup>",
+      "entryType": "constant",
+      "rawComment": "/** Token used to expose the combobox popup. */",
+      "description": "Token used to expose the combobox popup.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/combobox/combobox-tokens.ts",
+        "startLine": 13,
+        "endLine": 13
+      }
+    },
+    {
       "name": "ComboboxPopup",
       "isAbstract": false,
       "entryType": "directive",
@@ -595,6 +608,10 @@
       "@angular/core"
     ],
     [
+      "InjectionToken",
+      "@angular/core"
+    ],
+    [
       "computed",
       "@angular/core"
     ],
@@ -639,6 +656,10 @@
       "@angular/aria/combobox"
     ],
     [
+      "COMBOBOX_POPUP",
+      "@angular/aria/combobox"
+    ],
+    [
       "ComboboxPopup",
       "@angular/aria/combobox"
     ],
@@ -676,6 +697,10 @@
     ],
     [
       "ComboboxWidget.onFocusout",
+      "@angular/aria/combobox"
+    ],
+    [
+      "COMBOBOX_POPUP",
       "@angular/aria/combobox"
     ],
     [

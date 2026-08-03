@@ -26,6 +26,32 @@
       }
     },
     {
+      "name": "TABS",
+      "type": "InjectionToken<Tabs>",
+      "entryType": "constant",
+      "rawComment": "/** Token used to expose the `Tabs` directive to child directives. */",
+      "description": "Token used to expose the `Tabs` directive to child directives.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/tabs/tab-tokens.ts",
+        "startLine": 14,
+        "endLine": 14
+      }
+    },
+    {
+      "name": "TAB_LIST",
+      "type": "InjectionToken<TabList>",
+      "entryType": "constant",
+      "rawComment": "/** Token used to expose the tab list. */",
+      "description": "Token used to expose the tab list.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/tabs/tab-tokens.ts",
+        "startLine": 17,
+        "endLine": 17
+      }
+    },
+    {
       "name": "Tabs",
       "isAbstract": false,
       "entryType": "directive",
@@ -750,6 +776,10 @@
       "@angular/core"
     ],
     [
+      "InjectionToken",
+      "@angular/core"
+    ],
+    [
       "computed",
       "@angular/core"
     ],
@@ -818,6 +848,14 @@
       "@angular/aria/tabs"
     ],
     [
+      "TABS",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TAB_LIST",
+      "@angular/aria/tabs"
+    ],
+    [
       "Tabs",
       "@angular/aria/tabs"
     ],
@@ -835,6 +873,14 @@
     ],
     [
       "TabContent",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TABS",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TAB_LIST",
       "@angular/aria/tabs"
     ],
     [

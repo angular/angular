@@ -5,6 +5,19 @@
   "normalizedModuleName": "angular_aria_listbox",
   "entries": [
     {
+      "name": "LISTBOX",
+      "type": "InjectionToken<Listbox<any>>",
+      "entryType": "constant",
+      "rawComment": "",
+      "description": "",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/listbox/tokens.ts",
+        "startLine": 12,
+        "endLine": 12
+      }
+    },
+    {
       "name": "Option",
       "isAbstract": false,
       "entryType": "directive",
@@ -605,6 +618,10 @@
   ],
   "symbols": [
     [
+      "InjectionToken",
+      "@angular/core"
+    ],
+    [
       "booleanAttribute",
       "@angular/core"
     ],
@@ -669,11 +686,19 @@
       "@angular/cdk/bidi"
     ],
     [
+      "LISTBOX",
+      "@angular/aria/listbox"
+    ],
+    [
       "Option",
       "@angular/aria/listbox"
     ],
     [
       "Listbox",
+      "@angular/aria/listbox"
+    ],
+    [
+      "LISTBOX",
       "@angular/aria/listbox"
     ],
     [
