@@ -43,6 +43,8 @@ describe('createCustomElement', () => {
   let NgElementCtor: NgElementConstructor<WithFooBar>;
   let strategy: TestStrategy;
   let strategyFactory: TestStrategyFactory;
+  let reflectStrategy: TestStrategy;
+  let reflectStrategyFactory: TestStrategyFactory;
   let injector: Injector;
 
   beforeAll((done) => {
@@ -56,12 +58,18 @@ describe('createCustomElement', () => {
         strategyFactory = new TestStrategyFactory();
         strategy = strategyFactory.testStrategy;
 
+        reflectStrategyFactory = new TestStrategyFactory();
+        reflectStrategy = reflectStrategyFactory.testStrategy;
+
         NgElementCtor = createAndRegisterTestCustomElement(strategyFactory);
       })
       .then(done, done.fail);
   });
 
-  afterEach(() => strategy.reset());
+  afterEach(() => {
+    strategy.reset();
+    reflectStrategy?.reset();
+  });
 
   afterAll(() => {
     destroyPlatform();
@@ -342,7 +350,86 @@ describe('createCustomElement', () => {
     expect(isSignal(element.fooFoo)).toBe(true);
   });
 
+  describe('with `reflectProperties` enabled', () => {
+    it('should reflect a string property value to its attribute', () => {
+      const element = createAndRegisterReflectingElement();
+      element.fooFoo = 'from-property';
+      expect(element.getAttribute('foo-foo')).toBe('from-property');
+    });
+
+    it('should reflect a numeric property value as a string attribute', () => {
+      const element = createAndRegisterReflectingElement();
+      (element as any).fooFoo = 42;
+      expect(element.getAttribute('foo-foo')).toBe('42');
+    });
+
+    it('should reflect boolean `true` as an empty attribute and remove it for `false`', () => {
+      const element = createAndRegisterReflectingElement();
+
+      (element as any).fooFoo = true;
+      expect(element.getAttribute('foo-foo')).toBe('');
+
+      (element as any).fooFoo = false;
+      expect(element.hasAttribute('foo-foo')).toBe(false);
+    });
+
+    it('should remove the attribute when the property is set to `null` or `undefined`', () => {
+      const element = createAndRegisterReflectingElement();
+      element.fooFoo = 'value';
+      expect(element.getAttribute('foo-foo')).toBe('value');
+
+      (element as any).fooFoo = null;
+      expect(element.hasAttribute('foo-foo')).toBe(false);
+
+      element.fooFoo = 'value';
+      (element as any).fooFoo = undefined;
+      expect(element.hasAttribute('foo-foo')).toBe(false);
+    });
+
+    it('should not reflect non-primitive property values', () => {
+      const element = createAndRegisterReflectingElement();
+      (element as any).fooFoo = {toString: () => 'obj'};
+      expect(element.hasAttribute('foo-foo')).toBe(false);
+
+      (element as any).fooFoo = ['a', 'b'];
+      expect(element.hasAttribute('foo-foo')).toBe(false);
+    });
+
+    it('should use the mapped attribute name (e.g. an aliased input)', () => {
+      const element = createAndRegisterReflectingElement();
+      element.barBar = 'aliased';
+      // `barBar` is aliased to the `barbar` attribute.
+      expect(element.getAttribute('barbar')).toBe('aliased');
+    });
+
+    it('should keep the property value when reflecting (no attribute feedback loop)', () => {
+      const element = createAndRegisterReflectingElement();
+      element.fooFoo = 'from-property';
+      expect(reflectStrategy.getInputValue('fooFoo')).toBe('from-property');
+      expect(element.getAttribute('foo-foo')).toBe('from-property');
+    });
+  });
+
+  it('should not reflect properties to attributes by default', () => {
+    const element = new NgElementCtor(injector);
+    element.fooFoo = 'from-property';
+    expect(element.hasAttribute('foo-foo')).toBe(false);
+  });
+
   // Helpers
+  function createAndRegisterReflectingElement() {
+    const selector = `test-element-${++selectorUid}`;
+    const ElementCtor = createCustomElement<WithFooBar>(TestComponent, {
+      injector,
+      strategyFactory: reflectStrategyFactory,
+      reflectProperties: true,
+    });
+    customElements.define(selector, ElementCtor);
+    const element = document.createElement(selector) as HTMLElement & WithFooBar;
+    testContainer.appendChild(element);
+    return element;
+  }
+
   function createAndRegisterTestCustomElement(strategyFactory: NgElementStrategyFactory) {
     const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
 
