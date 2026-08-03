@@ -182,6 +182,45 @@ describe('FetchBackend', () => {
     expect(res.statusText).toBe('OK');
   });
 
+  it('handles a text response with iso-8859-1 charset', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST));
+    // "café" encoded in ISO-8859-1 (0x63, 0x61, 0x66, 0xE9)
+    const isoBytes = new Uint8Array([0x63, 0x61, 0x66, 0xe9]);
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', isoBytes, {
+      'Content-Type': 'text/html; charset=iso-8859-1',
+    });
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as HttpResponse<string>;
+    expect(res.body).toBe('café');
+  });
+
+  it('handles a text response with windows-1252 charset in quotes', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST));
+    // "€" encoded in Windows-1252 (0x80)
+    const windowsBytes = new Uint8Array([0x80]);
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', windowsBytes, {
+      'Content-Type': 'text/plain; charset="windows-1252"',
+    });
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as HttpResponse<string>;
+    expect(res.body).toBe('€');
+  });
+
+  it('falls back to default utf-8 when given an invalid charset', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST));
+    // "café" encoded in UTF-8
+    const utf8Bytes = new Uint8Array([0x63, 0x61, 0x66, 0xc3, 0xa9]);
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', utf8Bytes, {
+      'Content-Type': 'text/plain; charset=invalid-encoding-label',
+    });
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as HttpResponse<string>;
+    expect(res.body).toBe('café');
+  });
+
   it('handles a json response', async () => {
     const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', JSON.stringify({data: 'some data'}));
@@ -723,7 +762,7 @@ export class MockFetchFactory extends FetchFactory {
   mockFlush(
     status: number,
     statusText: string,
-    body?: string | Blob,
+    body?: string | Blob | Uint8Array,
     headers?: Record<string, string>,
   ): void {
     this.clearWarningTimeout?.();
@@ -829,7 +868,7 @@ class MockFetchResponse {
     start: (controller) => {
       this.sub$.subscribe({
         next: (val) => {
-          controller.enqueue(new TextEncoder().encode(val));
+          controller.enqueue(val instanceof Uint8Array ? val : new TextEncoder().encode(val));
         },
         complete: () => {
           controller.close();
