@@ -6,6 +6,11 @@
   cursor: pointer;
   padding: 0.375rem 0.75rem;
 
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
   &.size-mid {
     padding: 0.25rem 0.75rem;
   }

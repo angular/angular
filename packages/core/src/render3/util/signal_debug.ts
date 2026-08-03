@@ -17,17 +17,17 @@ import {
   SIGNAL,
   SignalNode,
 } from '../../../primitives/signals';
-import { Injector } from '../../di/injector';
-import { R3Injector } from '../../di/r3_injector';
-import { throwError } from '../../util/assert';
-import { assertLView, assertTNode } from '../assert';
-import { getFrameworkDIDebugData } from '../debug/framework_injector_profiler';
-import { NodeInjector, getNodeInjectorLView, getNodeInjectorTNode } from '../di';
-import { isLView } from '../interfaces/type_checks';
-import { CONTEXT, HOST, LView, REACTIVE_TEMPLATE_CONSUMER } from '../interfaces/view';
-import { ReactiveLViewConsumer } from '../reactive_lview_consumer';
-import type { AfterRenderPhaseEffectNode } from '../reactivity/after_render_effect';
-import { EffectNode, EffectRefImpl } from '../reactivity/effect';
+import {Injector} from '../../di/injector';
+import {R3Injector} from '../../di/r3_injector';
+import {throwError} from '../../util/assert';
+import {assertLView, assertTNode} from '../assert';
+import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
+import {NodeInjector, getNodeInjectorLView, getNodeInjectorTNode} from '../di';
+import {isLView} from '../interfaces/type_checks';
+import {CONTEXT, HOST, LView, REACTIVE_TEMPLATE_CONSUMER} from '../interfaces/view';
+import {ReactiveLViewConsumer} from '../reactive_lview_consumer';
+import type {AfterRenderPhaseEffectNode} from '../reactivity/after_render_effect';
+import {EffectNode, EffectRefImpl} from '../reactivity/effect';
 
 function isComputedNode(node: ReactiveNode): node is ComputedNode<unknown> {
   return node.kind === 'computed';
