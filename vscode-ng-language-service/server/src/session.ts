@@ -535,7 +535,37 @@ export class Session {
     // If they are already part of a ConfiguredProject then the following is
     // not needed.
     if (!project || project.projectKind !== ts.server.ProjectKind.Configured) {
-      const {configFileName} = this.projectService.openClientFile(scriptInfo.fileName);
+      let {configFileName} = this.projectService.openClientFile(scriptInfo.fileName);
+      if (configFileName === undefined && isExternalTemplate(scriptInfo.fileName)) {
+        // In a composite/solution-style project with references, TypeScript cannot resolve a
+        // config file for an HTML file because HTML files are unlikely to be listed in any
+        // files/includes list. When an external template loses its configured project after it
+        // was opened (e.g. because the corresponding component file was closed and the project
+        // graph was updated), the same best-effort used in `onDidOpenTextDocument` is needed
+        // here: briefly open the sibling TS file (most of the time the component of this
+        // template) to load its project, then retry.
+        // https://github.com/angular/vscode-ng-language-service/issues/2149
+        const maybeComponentTsPath = scriptInfo.fileName.replace(/\.html$/, '.ts');
+        if (!this.projectService.openFiles.has(this.projectService.toPath(maybeComponentTsPath))) {
+          this.projectService.openClientFile(maybeComponentTsPath);
+          this.projectService.closeClientFile(maybeComponentTsPath);
+          ({configFileName} = this.projectService.openClientFile(scriptInfo.fileName));
+        }
+        if (configFileName === undefined) {
+          // `openClientFile` does not repeat the config lookup for a file that is already open,
+          // so it can still report no config file even though the component's project is now
+          // loaded. Fall back to attaching the template directly to the configured project of
+          // its component.
+          const componentProject = this.projectService
+            .getScriptInfo(maybeComponentTsPath)
+            ?.containingProjects.find(isConfiguredProject);
+          if (componentProject) {
+            scriptInfo.detachAllProjects();
+            scriptInfo.attachToProject(componentProject);
+            return componentProject;
+          }
+        }
+      }
       if (!configFileName) {
         // Failed to find a config file. There is nothing we could do.
         this.error(`No config file for ${scriptInfo.fileName}`);
