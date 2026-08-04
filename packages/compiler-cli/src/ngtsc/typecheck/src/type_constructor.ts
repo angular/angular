@@ -66,8 +66,9 @@ export function generateTypeCtorDeclarationFn(
  *   ngForTemplate: null as any,
  * }); // Infers a type of NgForOf<string>.
  *
- * Any inputs declared on the type for which no property binding is present are assigned a value of
- * type `any`, to avoid producing any type errors for unset inputs.
+ * Unbound non-signal inputs are assigned `0 as any` so generic inference falls back to the type
+ * parameter default. Unbound signal inputs are omitted (init is `Partial` over signal keys) so
+ * they do not poison inference and defeat TypeScript's `NoInfer` on other inputs.
  *
  * Inline type constructors are used when the type being created has bounded generic types which
  * make writing a declared type constructor (via `generateTypeCtorDeclarationFn`) difficult or
@@ -118,7 +119,11 @@ function constructTypeCtorParameter(
   // Pick<rawType, 'inputA'|'inputB'>
   //
   // Pick here is used to select only those fields from which the generic type parameters of the
-  // directive will be inferred.
+  // directive will be inferred. Unbound non-signal inputs are filled with `any` in the call.
+  //
+  // Unbound signal inputs are omitted from the call; the init type includes
+  // `Partial<UnwrapDirectiveSignalInputs<...>>` so they do not poison inference and defeat
+  // TypeScript's `NoInfer` on other inputs.
   //
   // In the special case there are no inputs, initType is set to {}.
   let initType: string | null = null;
@@ -160,12 +165,13 @@ function constructTypeCtorParameter(
   if (signalInputKeys.length > 0) {
     const keyTypeUnion = signalInputKeys.join(' | ');
 
-    // Construct the UnwrapDirectiveSignalInputs<rawType, keyTypeUnion>.
+    // Construct Partial<UnwrapDirectiveSignalInputs<rawType, keyTypeUnion>> so unbound signal
+    // inputs are omitted rather than filled with `any` (which defeats `NoInfer`).
     const unwrapRef = env.referenceExternalSymbol(
       R3Identifiers.UnwrapDirectiveSignalInputs.moduleName,
       R3Identifiers.UnwrapDirectiveSignalInputs.name,
     );
-    const unwrapExpr = `${unwrapRef.print()}<${typeRefWithGenerics}, ${keyTypeUnion}>`;
+    const unwrapExpr = `Partial<${unwrapRef.print()}<${typeRefWithGenerics}, ${keyTypeUnion}>>`;
     initType = initType !== null ? `${initType} & ${unwrapExpr}` : unwrapExpr;
   }
 
