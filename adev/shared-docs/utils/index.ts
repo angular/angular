@@ -11,5 +11,6 @@ export * from './animations.utils';
 export * from './device.utils';
 export * from './filesystem.utils';
 export * from './navigation.utils';
+export * from './text-fragment-url';
 export * from './url.utils';
 export * from './zip.utils';
