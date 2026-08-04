@@ -423,6 +423,17 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate a deferred block with an interaction trigger, prefetch on idle, and placeholder/loading parameters",
+      "inputFiles": ["deferred_all_triggers.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid defer block compilation",
+          "files": ["deferred_all_triggers.js"]
+        }
+      ],
+      "compilationModeFilter": ["full compile"]
     }
   ]
 }

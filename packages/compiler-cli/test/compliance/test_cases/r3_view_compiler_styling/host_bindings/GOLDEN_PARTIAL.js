@@ -503,3 +503,50 @@ export declare class MyDirective {
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "my-dir", never, {}, {}, never, never, false, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: host_style_class_bindings.js
+ ****************************************************************************************************/
+import { Directive, Input } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostStylingDirective {
+    cssClass = '';
+    cssStyle = '';
+    width = 0;
+    isActive = false;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostStylingDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostStylingDirective, isStandalone: true, selector: "[hostStyling]", inputs: { cssClass: "cssClass", cssStyle: "cssStyle", width: "width", isActive: "isActive" }, host: { properties: { "class": "cssClass", "style": "cssStyle", "style.width.px": "width", "class.active": "isActive" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostStylingDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostStyling]',
+                    host: {
+                        '[class]': 'cssClass',
+                        '[style]': 'cssStyle',
+                        '[style.width.px]': 'width',
+                        '[class.active]': 'isActive',
+                    },
+                }]
+        }], propDecorators: { cssClass: [{
+                type: Input
+            }], cssStyle: [{
+                type: Input
+            }], width: [{
+                type: Input
+            }], isActive: [{
+                type: Input
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_style_class_bindings.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostStylingDirective {
+    cssClass: string;
+    cssStyle: string;
+    width: number;
+    isActive: boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostStylingDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostStylingDirective, "[hostStyling]", never, { "cssClass": { "alias": "cssClass"; "required": false; }; "cssStyle": { "alias": "cssStyle"; "required": false; }; "width": { "alias": "width"; "required": false; }; "isActive": { "alias": "isActive"; "required": false; }; }, {}, never, never, true, never>;
+}
+

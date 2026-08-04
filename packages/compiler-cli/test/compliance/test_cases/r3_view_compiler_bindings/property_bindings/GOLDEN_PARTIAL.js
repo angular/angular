@@ -1012,3 +1012,49 @@ export declare class App {
     static ɵcmp: i0.ɵɵComponentDeclaration<App, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: two_way_model_binding.js
+ ****************************************************************************************************/
+import { Component, Directive, model } from '@angular/core';
+import * as i0 from "@angular/core";
+export class ToggleDirective {
+    checked = model(false, /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "checked" }] : /* istanbul ignore next */ []));
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ToggleDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: ToggleDirective, isStandalone: true, selector: "[toggle]", inputs: { checked: { classPropertyName: "checked", publicName: "checked", isSignal: true, isRequired: false, transformFunction: null } }, outputs: { checked: "checkedChange" }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ToggleDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[toggle]',
+                }]
+        }], propDecorators: { checked: [{ type: i0.Input, args: [{ isSignal: true, alias: "checked", required: false }] }, { type: i0.Output, args: ["checkedChange"] }] } });
+export class AppComponent {
+    isChecked = false;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AppComponent, isStandalone: true, selector: "app-root", ngImport: i0, template: '<div toggle [(checked)]="isChecked"></div>', isInline: true, dependencies: [{ kind: "directive", type: ToggleDirective, selector: "[toggle]", inputs: ["checked"], outputs: ["checkedChange"] }] });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'app-root',
+                    imports: [ToggleDirective],
+                    template: '<div toggle [(checked)]="isChecked"></div>',
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: two_way_model_binding.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class ToggleDirective {
+    checked: import("@angular/core").ModelSignal<boolean>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ToggleDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ToggleDirective, "[toggle]", never, { "checked": { "alias": "checked"; "required": false; "isSignal": true; }; }, { "checked": "checkedChange"; }, never, never, true, never>;
+}
+export declare class AppComponent {
+    isChecked: boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AppComponent, "app-root", never, {}, {}, never, never, true, never>;
+}
+

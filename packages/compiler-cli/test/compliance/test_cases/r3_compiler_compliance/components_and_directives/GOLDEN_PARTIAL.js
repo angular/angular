@@ -818,3 +818,135 @@ export declare class TestCmp {
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: change_detection.js
+ ****************************************************************************************************/
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import * as i0 from "@angular/core";
+export class OnPushComponent {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: OnPushComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: OnPushComponent, isStandalone: true, selector: "on-push", ngImport: i0, template: '<div>hello</div>', isInline: true, changeDetection: i0.ChangeDetectionStrategy.OnPush, encapsulation: i0.ViewEncapsulation.ShadowDom, preserveWhitespaces: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: OnPushComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'on-push',
+                    template: '<div>hello</div>',
+                    changeDetection: ChangeDetectionStrategy.OnPush,
+                    encapsulation: ViewEncapsulation.ShadowDom,
+                    preserveWhitespaces: true,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: change_detection.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class OnPushComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<OnPushComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<OnPushComponent, "on-push", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: export_as_query.js
+ ****************************************************************************************************/
+import { Component, Directive, ViewChild } from '@angular/core';
+import * as i0 from "@angular/core";
+export class FooDirective {
+    open() { }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: FooDirective, isStandalone: true, selector: "[foo]", exportAs: ["foo"], ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FooDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[foo]',
+                    exportAs: 'foo',
+                }]
+        }] });
+export class AppComponent {
+    ref;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AppComponent, isStandalone: true, selector: "app-root", viewQueries: [{ propertyName: "ref", first: true, predicate: ["ref"], descendants: true }], ngImport: i0, template: '<div foo #ref="foo"></div>', isInline: true, dependencies: [{ kind: "directive", type: FooDirective, selector: "[foo]", exportAs: ["foo"] }] });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AppComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'app-root',
+                    imports: [FooDirective],
+                    template: '<div foo #ref="foo"></div>',
+                }]
+        }], propDecorators: { ref: [{
+                type: ViewChild,
+                args: ['ref']
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: export_as_query.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class FooDirective {
+    open(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<FooDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FooDirective, "[foo]", ["foo"], {}, {}, never, never, true, never>;
+}
+export declare class AppComponent {
+    ref?: FooDirective;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AppComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<AppComponent, "app-root", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: cross_file_inheritance_base.js
+ ****************************************************************************************************/
+import { Directive, Input } from '@angular/core';
+import * as i0 from "@angular/core";
+export class BaseDirective {
+    value = '';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: BaseDirective, isStandalone: true, inputs: { value: "value" }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseDirective, decorators: [{
+            type: Directive
+        }], propDecorators: { value: [{
+                type: Input
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: cross_file_inheritance_base.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class BaseDirective {
+    value: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<BaseDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<BaseDirective, never, never, { "value": { "alias": "value"; "required": false; }; }, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: cross_file_inheritance.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import { BaseDirective } from './cross_file_inheritance_base';
+import * as i0 from "@angular/core";
+export class ChildDirective extends BaseDirective {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ChildDirective, deps: null, target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: ChildDirective, isStandalone: false, selector: "[child]", usesInheritance: true, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ChildDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[child]',
+                    standalone: false,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: cross_file_inheritance.d.ts
+ ****************************************************************************************************/
+import { BaseDirective } from './cross_file_inheritance_base';
+import * as i0 from "@angular/core";
+export declare class ChildDirective extends BaseDirective {
+    static ɵfac: i0.ɵɵFactoryDeclaration<ChildDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ChildDirective, "[child]", never, {}, {}, never, never, false, never>;
+}
+
