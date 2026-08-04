@@ -291,6 +291,7 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   unusedStandaloneImports: 'warning',
   allowSignalsInTwoWayBindings: true,
   allowDomEventAssertion: true,
+  checkTypeOfNgTemplateBindings: true,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -447,6 +448,7 @@ export function tcb(
     useInlineTypeConstructors: true,
     allowSignalsInTwoWayBindings: true,
     allowDomEventAssertion: true,
+    checkTypeOfNgTemplateBindings: true,
     ...config,
   };
   options = options || {emitSpans: false};

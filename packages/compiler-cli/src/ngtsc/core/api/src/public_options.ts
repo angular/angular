@@ -206,6 +206,15 @@ export interface TypeCheckingOptions {
    * Defaults to `false` unless `strictTemplates` is set.
    */
   strictLiteralTypes?: boolean;
+
+  /**
+   * Whether to check if unknown properties are bound to `<ng-template>`.
+   *
+   * If this is `true`, an error will be reported for unknown properties bound to an `<ng-template>`.
+   *
+   * Defaults to `false`.
+   */
+  strictNgTemplateTypes?: boolean;
 }
 
 /**

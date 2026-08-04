@@ -1194,6 +1194,7 @@ describe('type check blocks', () => {
       unusedStandaloneImports: 'warning',
       allowSignalsInTwoWayBindings: true,
       allowDomEventAssertion: true,
+      checkTypeOfNgTemplateBindings: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {
