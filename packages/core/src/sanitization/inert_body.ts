@@ -39,10 +39,10 @@ class DOMParserHelper implements InertBodyHelper {
     // e.g. leading whitespace is maintained and tags like `<meta>` do not get hoisted to the
     // `<head>` tag. Note that the `<body>` tag is closed implicitly to prevent unclosed tags
     // in `html` from consuming the otherwise explicit `</body>` tag.
-    html = '<body><remove></remove>' + html;
+    const prefixedHtml = '<body><remove></remove>' + html;
     try {
       const body = new window.DOMParser().parseFromString(
-        trustedHTMLFromString(html) as string,
+        trustedHTMLFromString(prefixedHtml) as string,
         'text/html',
       ).body as HTMLBodyElement;
       if (body === null) {
