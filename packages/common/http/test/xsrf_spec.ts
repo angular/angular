@@ -207,6 +207,11 @@ describe('HttpXsrfCookieExtractor', () => {
     expect(extractor.getToken()).toEqual('quoted-token-value');
   });
 
+  it('extracts token without quotes when value is enclosed in URL-encoded DQUOTE characters (%22)', () => {
+    document['cookie'] = 'XSRF-TOKEN=%22quoted-token-value%22';
+    expect(extractor.getToken()).toEqual('quoted-token-value');
+  });
+
   it('extracts token without crashing when value has malformed percent-encoding', () => {
     document['cookie'] = 'XSRF-TOKEN=%ZZ';
     expect(extractor.getToken()).toEqual('%ZZ');

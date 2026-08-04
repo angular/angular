@@ -25,7 +25,7 @@ export function parseCookieValue(cookieStr: string, name: string): string | null
       // Fall back to raw cookie value if decoding fails (e.g. malformed percent-encoding).
     }
 
-    if (value.length > 1 && value[0] === '"' && value.endsWith('"')) {
+    if (value.length > 1 && value[0] === '"' && value[value.length - 1] === '"') {
       value = value.slice(1, -1);
     }
 

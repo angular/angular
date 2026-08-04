@@ -35,6 +35,7 @@ describe('cookies', () => {
 
   it('strips DQUOTE characters per RFC 6265 Section 4.1.1', () => {
     expect(parseCookieValue('token="abc123"', 'token')).toBe('abc123');
+    expect(parseCookieValue('token=%22abc123%22', 'token')).toBe('abc123');
     expect(parseCookieValue('token="abc=def"', 'token')).toBe('abc=def');
     expect(parseCookieValue('token="abc def"', 'token')).toBe('abc def');
     expect(parseCookieValue('token=""', 'token')).toBe('');
