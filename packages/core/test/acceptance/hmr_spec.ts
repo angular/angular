@@ -333,6 +333,189 @@ describe('hot module replacement', () => {
     );
   });
 
+  it('should update styles in-place during HMR when styles are modified', () => {
+    const initialMetadata: Component = {
+      selector: 'child-cmp',
+      template: '<span>Test</span>',
+      styles: ['span { color: red; }'],
+      changeDetection: ChangeDetectionStrategy.Eager,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {}
+
+    @Component({
+      imports: [ChildCmp],
+      template: '<child-cmp/>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+
+    markNodesAsCreatedInitially(fixture.nativeElement);
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      styles: ['span { color: blue; }'],
+    });
+    fixture.detectChanges();
+
+    verifyNodesRemainUntouched(fixture.nativeElement);
+    expectHTML(fixture.nativeElement, '<child-cmp><span>Test</span></child-cmp>');
+  });
+
+  it('should update styles in-place during HMR when multiple instances of component are rendered', () => {
+    const initialMetadata: Component = {
+      selector: 'child-cmp',
+      template: '<span>Test</span>',
+      styles: ['span { color: red; }'],
+      changeDetection: ChangeDetectionStrategy.Eager,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {}
+
+    @Component({
+      imports: [ChildCmp],
+      template: '<child-cmp/><child-cmp/>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+
+    markNodesAsCreatedInitially(fixture.nativeElement);
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      styles: ['span { color: blue; }'],
+    });
+    fixture.detectChanges();
+
+    verifyNodesRemainUntouched(fixture.nativeElement);
+    expectHTML(
+      fixture.nativeElement,
+      '<child-cmp><span>Test</span></child-cmp><child-cmp><span>Test</span></child-cmp>',
+    );
+  });
+
+  it('should update styles for ShadowDom encapsulated component during HMR', () => {
+    // Domino doesn't support shadow DOM.
+    if (isNode) {
+      return;
+    }
+
+    const initialMetadata: Component = {
+      selector: 'child-cmp',
+      template: '<span>Test</span>',
+      styles: ['span { color: red; }'],
+      encapsulation: ViewEncapsulation.ShadowDom,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {}
+
+    @Component({
+      imports: [ChildCmp],
+      template: '<child-cmp/>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+
+    const childHost = fixture.nativeElement.querySelector('child-cmp');
+    expectHTML(childHost.shadowRoot, `<style>span { color: red; }</style><span>Test</span>`);
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      styles: ['span { color: blue; }'],
+    });
+    fixture.detectChanges();
+
+    const newChildHost = fixture.nativeElement.querySelector('child-cmp');
+    // ShadowDom encapsulation components trigger view recreation because styles are scoped within shadow roots
+    expect(newChildHost).not.toBe(childHost);
+    expectHTML(newChildHost.shadowRoot, `<style>span { color: blue; }</style><span>Test</span>`);
+  });
+
+  it('should recreate component when metadata other than styles is modified during HMR', () => {
+    const initialMetadata: Component = {
+      selector: 'child-cmp',
+      template: '<span>Test</span>',
+      styles: ['span { color: red; }'],
+      changeDetection: ChangeDetectionStrategy.Eager,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {}
+
+    @Component({
+      imports: [ChildCmp],
+      template: '<child-cmp/>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+
+    const spanBefore = fixture.nativeElement.querySelector('span');
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      template: '<span>Modified Template</span>',
+      styles: ['span { color: blue; }'],
+    });
+    fixture.detectChanges();
+
+    const spanAfter = fixture.nativeElement.querySelector('span');
+    expect(spanAfter).not.toBe(spanBefore);
+    expectHTML(fixture.nativeElement, '<child-cmp><span>Modified Template</span></child-cmp>');
+  });
+
+  it('should recreate component when host attributes are modified alongside styles during HMR', () => {
+    const initialMetadata: Component = {
+      selector: 'child-cmp',
+      template: '<span>Test</span>',
+      styles: ['span { color: red; }'],
+      host: {'class': 'initial-class'},
+      changeDetection: ChangeDetectionStrategy.Eager,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {}
+
+    @Component({
+      imports: [ChildCmp],
+      template: '<child-cmp/>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+
+    const childHostBefore = fixture.nativeElement.querySelector('child-cmp');
+    const spanBefore = fixture.nativeElement.querySelector('span');
+    expect(childHostBefore.classList.contains('initial-class')).toBeTrue();
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      styles: ['span { color: blue; }'],
+      host: {'class': 'updated-class'},
+    });
+    fixture.detectChanges();
+
+    const spanAfter = fixture.nativeElement.querySelector('span');
+    expect(spanAfter).not.toBe(spanBefore);
+  });
+
   it('should continue binding inputs to a component that is replaced', () => {
     const initialMetadata: Component = {
       selector: 'child-cmp',

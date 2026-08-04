@@ -40,6 +40,8 @@ import {RendererFactory} from './interfaces/renderer';
 import {NgZone} from '../zone';
 import {ViewEncapsulation} from '../metadata/view';
 import {NG_COMP_DEF} from './fields';
+import {SHARED_STYLES_HOST, SharedStylesHost} from './interfaces/shared_styles_host';
+import {APP_ID} from '../application/application_tokens';
 import {
   createLView,
   getInitialLViewFlagsFromDef,
@@ -106,15 +108,166 @@ export function ɵɵreplaceMetadata(
   // If a `tView` hasn't been created yet, it means that this component hasn't been instantianted
   // before. In this case there's nothing left for us to do aside from patching it in.
   if (oldDef.tView) {
-    const trackedViews = getTrackedLViews().values();
-    for (const root of trackedViews) {
-      // Note: we have the additional check, because `IsRoot` can also indicate
-      // a component created through something like `createComponent`.
-      if (isRootView(root) && root[PARENT] === null) {
-        recreateMatchingLViews(importMeta, id, newDef, oldDef, root);
+    const oldStyles = oldDef.styles ?? [];
+    const newStyles = newDef.styles ?? [];
+    const oldUrls = oldDef.getExternalStyles?.(oldDef.id) ?? oldDef.getExternalStyles?.() ?? [];
+    const newUrls = newDef.getExternalStyles?.(newDef.id) ?? newDef.getExternalStyles?.() ?? [];
+
+    const isStyleUpdate = isPureStyleUpdate(oldDef, newDef, oldStyles, newStyles, oldUrls, newUrls);
+
+    const trackedViews = getTrackedLViews();
+    let styleReplaced = false;
+
+    if (isStyleUpdate) {
+      const processedHosts = new Set<SharedStylesHost>();
+      for (const root of trackedViews.values()) {
+        if (isRootView(root) && root[PARENT] === null) {
+          try {
+            const sharedStylesHost = root[INJECTOR].get(SHARED_STYLES_HOST, null, {optional: true});
+            if (sharedStylesHost?.replaceStyles && !processedHosts.has(sharedStylesHost)) {
+              processedHosts.add(sharedStylesHost);
+              const appId = root[INJECTOR].get(APP_ID, 'ng');
+              const compId = `${appId}-${oldDef.id}`;
+              const isEmulated = oldDef.encapsulation === ViewEncapsulation.Emulated;
+              const shimmedOld = isEmulated ? shimStyles(compId, oldStyles) : oldStyles;
+              const shimmedNew = isEmulated ? shimStyles(compId, newStyles) : newStyles;
+
+              sharedStylesHost.replaceStyles(
+                shimmedOld,
+                shimmedNew,
+                oldUrls,
+                newUrls,
+                oldDef.encapsulation !== ViewEncapsulation.None,
+              );
+              styleReplaced = true;
+            }
+          } catch {
+            // Injector may be destroyed in test environments
+          }
+        }
+      }
+    }
+
+    if (!styleReplaced) {
+      for (const root of trackedViews.values()) {
+        if (isRootView(root) && root[PARENT] === null) {
+          recreateMatchingLViews(importMeta, id, newDef, oldDef, root);
+        }
       }
     }
   }
+}
+
+/**
+ * Normalizes hostAttrs array by filtering out compiler-generated `_nghost-` encapsulation attributes.
+ */
+function normalizeHostAttrs(attrs: unknown): unknown[] {
+  if (!Array.isArray(attrs)) return [];
+  return attrs.filter((attr) => typeof attr !== 'string' || !attr.startsWith('_nghost-'));
+}
+
+/**
+ * Determines whether a metadata update is strictly a style modification
+ * (inline or external URLs) without any structural, binding, or scope changes.
+ */
+function isPureStyleUpdate(
+  oldDef: ComponentDef<unknown>,
+  newDef: ComponentDef<unknown>,
+  oldStyles: string[],
+  newStyles: string[],
+  oldUrls: string[],
+  newUrls: string[],
+): boolean {
+  if (
+    oldDef.encapsulation !== newDef.encapsulation ||
+    oldDef.encapsulation === ViewEncapsulation.ShadowDom ||
+    oldDef.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom ||
+    oldDef.onPush !== newDef.onPush
+  ) {
+    return false;
+  }
+
+  const stylesChanged =
+    oldStyles.length !== newStyles.length ||
+    oldStyles.some((s, i) => s !== newStyles[i]) ||
+    oldUrls.length !== newUrls.length ||
+    oldUrls.some((u, i) => u !== newUrls[i]);
+
+  if (!stylesChanged) {
+    return false;
+  }
+
+  return (
+    isSameFunctionOrNull(oldDef.template, newDef.template) &&
+    isSameFunctionOrNull(oldDef.hostBindings, newDef.hostBindings) &&
+    isSameObjectOrNull(
+      normalizeHostAttrs(oldDef.hostAttrs),
+      normalizeHostAttrs(newDef.hostAttrs),
+    ) &&
+    isSameFunctionOrNull(oldDef.providersResolver, newDef.providersResolver) &&
+    isSameFunctionOrNull(oldDef.viewProvidersResolver, newDef.viewProvidersResolver) &&
+    isSameObjectOrNull(oldDef.inputs, newDef.inputs) &&
+    isSameObjectOrNull(oldDef.outputs, newDef.outputs) &&
+    isSameFunctionOrNull(oldDef.contentQueries, newDef.contentQueries) &&
+    isSameFunctionOrNull(oldDef.viewQuery, newDef.viewQuery) &&
+    isSameObjectOrNull(oldDef.selectors, newDef.selectors) &&
+    isSameObjectOrNull(oldDef.hostDirectives, newDef.hostDirectives) &&
+    isSameObjectOrNull(oldDef.exportAs, newDef.exportAs)
+  );
+}
+
+/**
+ * Replaces `%COMP%` placeholders in component styles with the component's unique encapsulation ID.
+ * NOTE: Keep implementation in sync with `shimStylesContent` in `packages/platform-browser/src/dom/dom_renderer.ts`.
+ */
+function shimStyles(compId: string, styles: string[]): string[] {
+  return styles.map((s) => s.replace(/%COMP%/g, compId));
+}
+
+/**
+ * Compares two optional function references or function implementations for equivalence.
+ * Returns true if both references are equal or have identical stringified code bodies.
+ */
+function isSameFunctionOrNull(
+  fn1: Function | null | undefined,
+  fn2: Function | null | undefined,
+): boolean {
+  if (!fn1 && !fn2) return true;
+  return (
+    fn1 === fn2 ||
+    (typeof fn1 === 'function' && typeof fn2 === 'function' && fn1.toString() === fn2.toString())
+  );
+}
+
+/**
+ * Compares two optional object literals, arrays, functions, or records for structural equivalence.
+ */
+function isSameObjectOrNull(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (!a && !b) return true;
+  if (typeof a === 'function' && typeof b === 'function') {
+    return a.toString() === b.toString();
+  }
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
+
+  if (Array.isArray(a) || Array.isArray(b)) {
+    return (
+      Array.isArray(a) &&
+      Array.isArray(b) &&
+      a.length === b.length &&
+      a.every((val, i) => isSameObjectOrNull(val, b[i]))
+    );
+  }
+
+  const keysA = Object.keys(a as object);
+  const keysB = Object.keys(b as object);
+  if (keysA.length !== keysB.length) return false;
+
+  return keysA.every(
+    (key) =>
+      Object.prototype.hasOwnProperty.call(b, key) &&
+      isSameObjectOrNull((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]),
+  );
 }
 
 /**
