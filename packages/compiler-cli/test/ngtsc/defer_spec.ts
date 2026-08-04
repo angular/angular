@@ -1424,6 +1424,259 @@ runInEachFileSystem(() => {
           expect(diags).toEqual([]);
         });
       });
+
+      describe('block-specific deferredImports mapping', () => {
+        beforeEach(() => {
+          env.tsconfig({onlyExplicitDeferDependencyImports: true});
+        });
+
+        it('should handle block-specific mapping in standard compilation', () => {
+          env.write(
+            'deferred-a.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'deferred-cmp-a',
+              template: 'DeferredCmpA contents',
+            })
+            export class DeferredCmpA {}
+          `,
+          );
+
+          env.write(
+            'deferred-b.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'deferred-cmp-b',
+              template: 'DeferredCmpB contents',
+            })
+            export class DeferredCmpB {}
+          `,
+          );
+
+          env.write(
+            'test.ts',
+            `
+            import {Component} from '@angular/core';
+            import {DeferredCmpA} from './deferred-a';
+            import {DeferredCmpB} from './deferred-b';
+            @Component({
+              // @ts-ignore
+              deferredImports: {
+                blockA: [DeferredCmpA],
+                blockB: [DeferredCmpB],
+              },
+              template: \`
+                @defer (deps blockA) {
+                  <deferred-cmp-a />
+                }
+                @defer (deps blockB) {
+                  <deferred-cmp-b />
+                }
+              \`,
+            })
+            export class AppCmp {}
+          `,
+          );
+
+          env.driveMain();
+          const jsContents = env.getContents('test.js');
+
+          expect(cleanNewLines(jsContents)).toContain(
+            'const AppCmp_Defer_1_DepsFn = () => [/* @ts-ignore */ ' +
+              'import("./deferred-a").then(m => m.DeferredCmpA)];',
+          );
+          expect(cleanNewLines(jsContents)).toContain(
+            'const AppCmp_Defer_4_DepsFn = () => [/* @ts-ignore */ ' +
+              'import("./deferred-b").then(m => m.DeferredCmpB)];',
+          );
+        });
+
+        it('should handle block-specific mapping in local compilation mode', () => {
+          env.tsconfig({
+            onlyExplicitDeferDependencyImports: true,
+            compilationMode: 'experimental-local',
+          });
+
+          env.write(
+            'deferred-a.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'deferred-cmp-a',
+              template: 'DeferredCmpA contents',
+            })
+            export class DeferredCmpA {}
+          `,
+          );
+
+          env.write(
+            'deferred-b.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'deferred-cmp-b',
+              template: 'DeferredCmpB contents',
+            })
+            export class DeferredCmpB {}
+          `,
+          );
+
+          env.write(
+            'test.ts',
+            `
+            import {Component} from '@angular/core';
+            import {DeferredCmpA} from './deferred-a';
+            import {DeferredCmpB} from './deferred-b';
+            @Component({
+              // @ts-ignore
+              deferredImports: {
+                blockA: [DeferredCmpA],
+                blockB: [DeferredCmpB],
+              },
+              template: \`
+                @defer (deps blockA) {
+                  <deferred-cmp-a />
+                }
+                @defer (deps blockB) {
+                  <deferred-cmp-b />
+                }
+              \`,
+            })
+            export class AppCmp {}
+          `,
+          );
+
+          env.driveMain();
+          const jsContents = env.getContents('test.js');
+
+          expect(cleanNewLines(jsContents)).toContain(
+            'const AppCmp_Defer_1_DepsFn = () => [/* @ts-ignore */ ' +
+              'import("./deferred-a").then(m => m.DeferredCmpA)];',
+          );
+          expect(cleanNewLines(jsContents)).toContain(
+            'const AppCmp_Defer_4_DepsFn = () => [/* @ts-ignore */ ' +
+              'import("./deferred-b").then(m => m.DeferredCmpB)];',
+          );
+        });
+
+        it('should report error when defer block has no deps parameter but deferredImports is an object', () => {
+          env.write(
+            'deferred-a.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'deferred-cmp-a',
+              template: 'DeferredCmpA contents',
+            })
+            export class DeferredCmpA {}
+          `,
+          );
+
+          env.write(
+            'test.ts',
+            `
+            import {Component} from '@angular/core';
+            import {DeferredCmpA} from './deferred-a';
+            @Component({
+              // @ts-ignore
+              deferredImports: {
+                blockA: [DeferredCmpA],
+              },
+              template: \`
+                @defer {
+                  <deferred-cmp-a />
+                }
+              \`,
+            })
+            export class AppCmp {}
+          `,
+          );
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(`@defer block must specify a 'deps' parameter`);
+        });
+
+        it('should report error when deps parameter references missing block in deferredImports', () => {
+          env.write(
+            'deferred-a.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'deferred-cmp-a',
+              template: 'DeferredCmpA contents',
+            })
+            export class DeferredCmpA {}
+          `,
+          );
+
+          env.write(
+            'test.ts',
+            `
+            import {Component} from '@angular/core';
+            import {DeferredCmpA} from './deferred-a';
+            @Component({
+              // @ts-ignore
+              deferredImports: {
+                blockA: [DeferredCmpA],
+              },
+              template: \`
+                @defer (deps blockB) {
+                  <deferred-cmp-a />
+                }
+              \`,
+            })
+            export class AppCmp {}
+          `,
+          );
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            `The 'deps' parameter references block 'blockB' which is missing from '@Component.deferredImports'`,
+          );
+        });
+
+        it('should report error when deps parameter is used but deferredImports is an array', () => {
+          env.write(
+            'deferred-a.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'deferred-cmp-a',
+              template: 'DeferredCmpA contents',
+            })
+            export class DeferredCmpA {}
+          `,
+          );
+
+          env.write(
+            'test.ts',
+            `
+            import {Component} from '@angular/core';
+            import {DeferredCmpA} from './deferred-a';
+            @Component({
+              // @ts-ignore
+              deferredImports: [DeferredCmpA],
+              template: \`
+                @defer (deps blockA) {
+                  <deferred-cmp-a />
+                }
+              \`,
+            })
+            export class AppCmp {}
+          `,
+          );
+
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            `The 'deps' parameter can only be used when '@Component.deferredImports' is defined as an object.`,
+          );
+        });
+      });
     });
 
     describe('setClassMetadataAsync', () => {

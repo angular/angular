@@ -46,6 +46,9 @@ const WHEN_PARAMETER_PATTERN = /^when\s/;
 /** Pattern to identify a `on` parameter in a block. */
 const ON_PARAMETER_PATTERN = /^on\s/;
 
+/** Pattern to identify a `deps` parameter in a block. */
+const DEPS_PARAMETER_PATTERN = /^deps\s+/;
+
 /**
  * Predicate function that determines if a block with
  * a specific name cam be connected to a `defer` block.
@@ -63,7 +66,7 @@ export function createDeferredBlock(
 ): {node: t.DeferredBlock; errors: ParseError[]} {
   const errors: ParseError[] = [];
   const {placeholder, loading, error} = parseConnectedBlocks(connectedBlocks, errors, visitor);
-  const {triggers, prefetchTriggers, hydrateTriggers} = parsePrimaryTriggers(
+  const {triggers, prefetchTriggers, hydrateTriggers, definedDeps} = parsePrimaryTriggers(
     ast,
     bindingParser,
     errors,
@@ -97,6 +100,7 @@ export function createDeferredBlock(
     ast.sourceSpan,
     ast.startSourceSpan,
     lastEndSourceSpan,
+    definedDeps,
     ast.i18n,
   );
 
@@ -272,6 +276,7 @@ function parsePrimaryTriggers(
   const triggers: t.DeferredBlockTriggers = {};
   const prefetchTriggers: t.DeferredBlockTriggers = {};
   const hydrateTriggers: t.DeferredBlockTriggers = {};
+  let definedDeps: string | null = null;
 
   for (const param of ast.parameters) {
     // The lexer ignores the leading spaces so we can assume
@@ -290,6 +295,12 @@ function parsePrimaryTriggers(
       parseOnTrigger(param, bindingParser, hydrateTriggers, errors, placeholder);
     } else if (HYDRATE_NEVER_PATTERN.test(param.expression)) {
       parseNeverTrigger(param, hydrateTriggers, errors);
+    } else if (DEPS_PARAMETER_PATTERN.test(param.expression)) {
+      if (definedDeps !== null) {
+        errors.push(new ParseError(param.sourceSpan, 'Cannot specify multiple deps parameters'));
+      } else {
+        definedDeps = param.expression.slice(5).trim();
+      }
     } else {
       errors.push(new ParseError(param.sourceSpan, 'Unrecognized trigger'));
     }
@@ -304,5 +315,5 @@ function parsePrimaryTriggers(
     );
   }
 
-  return {triggers, prefetchTriggers, hydrateTriggers};
+  return {triggers, prefetchTriggers, hydrateTriggers, definedDeps};
 }
