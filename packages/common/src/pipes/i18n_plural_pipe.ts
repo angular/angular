@@ -51,7 +51,7 @@ export class I18nPluralPipe implements PipeTransform {
     if (value == null) return '';
 
     if (typeof pluralMap !== 'object' || pluralMap === null) {
-      throw invalidPipeArgumentError(I18nPluralPipe, pluralMap);
+      throw invalidPipeArgumentError(I18nPluralPipe, String(pluralMap));
     }
 
     const key = getPluralCategory(value, Object.keys(pluralMap), this._localization, locale);

@@ -119,6 +119,7 @@ export class DecimalPipe implements PipeTransform {
       const num = strToNumber(value);
       return formatNumber(num, locale, digitsInfo);
     } catch (error) {
+      // TODO: RuntimeError doesn't support `cause`, so the original error and its stack are lost.
       throw invalidPipeArgumentError(DecimalPipe, (error as Error).message);
     }
   }
@@ -186,6 +187,7 @@ export class PercentPipe implements PipeTransform {
       const num = strToNumber(value);
       return formatPercent(num, locale, digitsInfo);
     } catch (error) {
+      // TODO: RuntimeError doesn't support `cause`, so the original error and its stack are lost.
       throw invalidPipeArgumentError(PercentPipe, (error as Error).message);
     }
   }
@@ -309,6 +311,7 @@ export class CurrencyPipe implements PipeTransform {
       const num = strToNumber(value);
       return formatCurrency(num, locale, currency, currencyCode, digitsInfo);
     } catch (error) {
+      // TODO: RuntimeError doesn't support `cause`, so the original error and its stack are lost.
       throw invalidPipeArgumentError(CurrencyPipe, (error as Error).message);
     }
   }
