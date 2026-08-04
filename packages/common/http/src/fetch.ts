@@ -84,9 +84,26 @@ export class FetchBackend implements HttpBackend {
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
       const aborter = new AbortController();
+      let done = false;
+      const wrappedObserver: Observer<HttpEvent<any>> = {
+        next: (val) => {
+          if (val.type === HttpEventType.Response) {
+            done = true;
+          }
+          observer.next(val);
+        },
+        error: (err) => {
+          done = true;
+          observer.error(err);
+        },
+        complete: () => {
+          done = true;
+          observer.complete();
+        },
+      };
 
-      this.doRequest(request, aborter.signal, observer).then(noop, (error) =>
-        observer.error(new HttpErrorResponse({error})),
+      this.doRequest(request, aborter.signal, wrappedObserver).then(noop, (error) =>
+        wrappedObserver.error(new HttpErrorResponse({error})),
       );
 
       let timeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -106,7 +123,9 @@ export class FetchBackend implements HttpBackend {
         if (timeoutId !== undefined) {
           clearTimeout(timeoutId);
         }
-        aborter.abort();
+        if (!done && !aborter.signal.aborted) {
+          aborter.abort();
+        }
       };
     });
   }

@@ -718,6 +718,27 @@ describe('FetchBackend', () => {
       expect((events[1] as HttpResponse<string>).body).toBe('ok');
     });
   });
+
+  describe('cancellation behavior', () => {
+    it('should not abort signal when the request completes successfully', async () => {
+      const req = new HttpRequest('GET', '/test', {responseType: 'text'});
+      const promise = trackEvents(backend.handle(req));
+      fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'ok');
+      const events = await promise;
+
+      expect(events.length).toBe(2);
+      expect(fetchMock.request.signal?.aborted).toBeFalse();
+    });
+
+    it('should abort signal when unsubscribed before request completion', () => {
+      const req = new HttpRequest('GET', '/test', {responseType: 'text'});
+      const sub = backend.handle(req).subscribe();
+      expect(fetchMock.request.signal?.aborted).toBeFalse();
+
+      sub.unsubscribe();
+      expect(fetchMock.request.signal?.aborted).toBeTrue();
+    });
+  });
 });
 
 export class MockFetchFactory extends FetchFactory {
@@ -739,6 +760,7 @@ export class MockFetchFactory extends FetchFactory {
     this.request.body = init?.body;
     this.request.headers = init?.headers;
     this.request.credentials = init?.credentials;
+    this.request.signal = init?.signal;
 
     if (init?.signal) {
       init?.signal.addEventListener('abort', () => {
@@ -817,6 +839,7 @@ class MockFetchRequest {
   public body: any;
   public credentials?: RequestCredentials;
   public headers?: HeadersInit;
+  public signal?: AbortSignal | null;
 }
 
 class InfiniteStreamFetchFactory extends FetchFactory {
