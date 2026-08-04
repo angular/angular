@@ -24,7 +24,7 @@ function errorFilenameHandler() {
             line: parseInt(line, 10),
             character: parseInt(column, 10),
           },
-          '*',
+          'https://angular.dev',
         );
       }
       return new Response(null, {status: 200});
