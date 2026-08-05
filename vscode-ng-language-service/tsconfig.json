@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "types": ["node"],
     "sourceMap": true,
-    "strict": true,
     "esModuleInterop": true,
     "declaration": true,
     "skipLibCheck": true

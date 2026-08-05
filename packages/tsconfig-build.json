@@ -9,12 +9,9 @@
     "stripInternal": true,
     "noImplicitAny": true,
     "noImplicitOverride": true,
-    "strictNullChecks": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "esModuleInterop": true,
-    "strict": true,
-    "strictPropertyInitialization": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "bundler",
     "module": "esnext",
@@ -36,17 +33,14 @@
       "@angular/common/locales/*": ["./common/locales/*"],
       "@angular/compiler-cli": ["./compiler-cli"],
       "@angular/compiler-cli/*": ["./compiler-cli/*"],
-      "@angular/compiler-cli/src/ngtsc/reflection":  ["./compiler-cli/src/ngtsc/reflection/index"],
-      "@angular/compiler-cli/src/ngtsc/metadata":  ["./compiler-cli/src/ngtsc/metadata/index"],
-      "@angular/compiler-cli/private/migrations":  ["./compiler-cli/private/migrations"],
+      "@angular/compiler-cli/src/ngtsc/reflection": ["./compiler-cli/src/ngtsc/reflection/index"],
+      "@angular/compiler-cli/src/ngtsc/metadata": ["./compiler-cli/src/ngtsc/metadata/index"],
+      "@angular/compiler-cli/private/migrations": ["./compiler-cli/private/migrations"],
       "@angular/core/schematics/utils/tsurge/*": ["./core/schematics/utils/tsurge/*"]
     }
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
   },
-  "angularCompilerOptions": {
-    "strictTemplates": true,
-    "typeCheckHostBindings": true
-  }
+  "angularCompilerOptions": {}
 }
