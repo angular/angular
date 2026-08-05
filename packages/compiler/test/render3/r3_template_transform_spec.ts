@@ -313,6 +313,36 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should report an error for property binding on ngContent', () => {
+      const res = parse('<ng-content [foo]="bar"></ng-content>', {ignoreError: true});
+      expect(res.errors.length).toBe(1);
+      expect(res.errors[0].msg).toContain(
+        'Property and event bindings are not supported on <ng-content>',
+      );
+      expect(res.errors[0].msg).toContain('[foo]');
+      expectFromR3Nodes(res.nodes).toEqual([['Content', '*']]);
+    });
+
+    it('should report an error for event binding on ngContent', () => {
+      const res = parse('<ng-content (click)="handler()"></ng-content>', {ignoreError: true});
+      expect(res.errors.length).toBe(1);
+      expect(res.errors[0].msg).toContain(
+        'Property and event bindings are not supported on <ng-content>',
+      );
+      expect(res.errors[0].msg).toContain('(click)');
+    });
+
+    it('should report an error for each binding on ngContent', () => {
+      const res = parse('<ng-content [foo]="a" (bar)="b()"></ng-content>', {ignoreError: true});
+      expect(res.errors.length).toBe(2);
+    });
+
+    it('should report a single error for two-way binding on ngContent', () => {
+      const res = parse('<ng-content [(foo)]="bar"></ng-content>', {ignoreError: true});
+      expect(res.errors.length).toBe(1);
+      expect(res.errors[0].msg).toContain('[(foo)]');
+    });
+
     it('should indicate whether an element is void', () => {
       const nodes = parse('<input><div></div>').nodes as t.Element[];
       expect(nodes[0].name).toBe('input');
