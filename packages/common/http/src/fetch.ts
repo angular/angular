@@ -342,7 +342,7 @@ export class FetchBackend implements HttpBackend {
     switch (request.responseType) {
       case 'json':
         // stripping the XSSI when present
-        const text = getTextDecoder(contentType).decode(binContent).replace(XSSI_PREFIX, '');
+        const text = new TextDecoder().decode(binContent).replace(XSSI_PREFIX, '');
         if (text === '') {
           return null;
         }
