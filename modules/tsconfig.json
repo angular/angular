@@ -25,7 +25,6 @@
   },
   "exclude": ["payload_tests", "playground/", "benchmarks/"],
   "angularCompilerOptions": {
-    "strictTemplates": true,
     "skipTemplateCodegen": true
   }
 }

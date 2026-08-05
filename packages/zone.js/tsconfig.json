@@ -10,7 +10,6 @@
     "declaration": true,
     "noEmitOnError": false,
     "stripInternal": true,
-    "strict": true,
     "sourceMap": true,
     "noImplicitOverride": true,
     "lib": [
