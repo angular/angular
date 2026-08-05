@@ -1315,7 +1315,6 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should pick a Pipe defined in `declarations` over imported Pipes', () => {
-      env.tsconfig({});
       env.write(
         'test.ts',
         `
@@ -1344,7 +1343,7 @@ runInEachFileSystem((os: string) => {
           standalone: false,
         })
         class PipeB {
-          transform() {}
+          transform(arg: unknown) {}
         }
 
         @Component({
@@ -1371,7 +1370,7 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should respect imported module order when selecting Pipe (last imported Pipe is used)', () => {
-      env.tsconfig({});
+      env.tsconfig({strictTemplates: false});
       env.write(
         'test.ts',
         `
@@ -2565,7 +2564,7 @@ runInEachFileSystem((os: string) => {
           standalone: false,
         })
         export class TestPipe {
-          transform() {}
+          transform(arg: unknown) {}
         }
 
         @Component({
@@ -6167,6 +6166,7 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should compile a banana-in-a-box inside of a template', () => {
+      env.tsconfig({strictTemplates: false});
       env.write(
         'test.ts',
         `
@@ -11568,8 +11568,7 @@ runInEachFileSystem((os: string) => {
         );
 
         const options: CompilerOptions = {
-          strict: true,
-          strictTemplates: true,
+          // strict: true & strictTemplates: true are set by default
           target: ts.ScriptTarget.Latest,
           module: ts.ModuleKind.ESNext,
           annotateForClosureCompiler: true,

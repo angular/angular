@@ -500,11 +500,11 @@ describe('SafeOptionalChainingMigration', () => {
 
     mockFs.writeFile(
       tsconfig1,
-      JSON.stringify({compilerOptions: {strict: true, rootDir: '/'}, files: [sharedFile]}),
+      JSON.stringify({compilerOptions: {rootDir: '/'}, files: [sharedFile]}),
     );
     mockFs.writeFile(
       tsconfig2,
-      JSON.stringify({compilerOptions: {strict: true, rootDir: '/'}, files: [sharedFile]}),
+      JSON.stringify({compilerOptions: {rootDir: '/'}, files: [sharedFile]}),
     );
 
     const migration = new SafeOptionalChainingMigration();

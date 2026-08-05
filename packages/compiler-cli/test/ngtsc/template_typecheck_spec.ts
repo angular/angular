@@ -2015,7 +2015,7 @@ runInEachFileSystem(() => {
       });
 
       it("should be treated as 'any' without strictTemplates", () => {
-        env.tsconfig();
+        env.tsconfig({strictTemplates: false});
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
