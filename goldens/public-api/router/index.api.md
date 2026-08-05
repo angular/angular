@@ -591,7 +591,7 @@ export abstract class PreloadingStrategy {
 export const PRIMARY_OUTLET = "primary";
 
 // @public
-export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders;
+export function provideRouter(routes: Readonly<Routes>, ...features: readonly RouterFeatures[]): EnvironmentProviders;
 
 // @public
 export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
@@ -725,7 +725,7 @@ export class Router {
     // @deprecated
     onSameUrlNavigation: OnSameUrlNavigation;
     parseUrl(url: string): UrlTree;
-    resetConfig(config: Routes): void;
+    resetConfig(config: Readonly<Routes>): void;
     // @deprecated
     routeReuseStrategy: RouteReuseStrategy;
     get routerState(): RouterState;
@@ -883,8 +883,8 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 // @public
 export class RouterModule {
     constructor();
-    static forChild(routes: Routes): ModuleWithProviders<RouterModule>;
-    static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule>;
+    static forChild(routes: Readonly<Routes>): ModuleWithProviders<RouterModule>;
+    static forRoot(routes: Readonly<Routes>, config?: ExtraOptions): ModuleWithProviders<RouterModule>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterModule, never>;
     // (undocumented)
