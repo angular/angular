@@ -143,7 +143,10 @@ class TcbExprTranslator implements AstVisitor {
   }
 
   visitKeyedRead(ast: KeyedRead): TcbExpr {
-    const receiver = this.translate(ast.receiver).wrapForTypeChecker();
+    const receiver = this.translate(ast.receiver);
+    if (!this.isStrictSafeNavigationChain(ast.receiver)) {
+      receiver.wrapForTypeChecker();
+    }
     const key = this.translate(ast.key);
     return new TcbExpr(`${receiver.print()}[${key.print()}]`).addParseSpanInfo(ast.sourceSpan);
   }
@@ -234,7 +237,10 @@ class TcbExprTranslator implements AstVisitor {
   }
 
   visitPropertyRead(ast: PropertyRead): TcbExpr {
-    const receiver = this.translate(ast.receiver).wrapForTypeChecker();
+    const receiver = this.translate(ast.receiver);
+    if (!this.isStrictSafeNavigationChain(ast.receiver)) {
+      receiver.wrapForTypeChecker();
+    }
     return new TcbExpr(`${receiver.print()}.${ast.name}`)
       .addParseSpanInfo(ast.nameSpan)
       .wrapForTypeChecker()
@@ -284,7 +290,10 @@ class TcbExprTranslator implements AstVisitor {
       if (resolved !== null) {
         expr = resolved;
       } else {
-        const propertyReceiver = this.translate(receiver.receiver).wrapForTypeChecker();
+        const propertyReceiver = this.translate(receiver.receiver);
+        if (!this.isStrictSafeNavigationChain(receiver.receiver)) {
+          propertyReceiver.wrapForTypeChecker();
+        }
         expr = new TcbExpr(`${propertyReceiver.print()}.${receiver.name}`).addParseSpanInfo(
           receiver.nameSpan,
         );
@@ -413,6 +422,13 @@ class TcbExprTranslator implements AstVisitor {
 
   private escapeTemplateLiteral(value: string) {
     return value.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\${/g, '$\\{');
+  }
+
+  private isStrictSafeNavigationChain(ast: AST): boolean {
+    return (
+      this.config.strictSafeNavigationTypes &&
+      (ast instanceof SafePropertyRead || ast instanceof SafeKeyedRead || ast instanceof SafeCall)
+    );
   }
 }
 
