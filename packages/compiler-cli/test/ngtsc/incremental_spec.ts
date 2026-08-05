@@ -1291,7 +1291,7 @@ runInEachFileSystem(() => {
       standalone: false,
     })
     export class FooPipe {
-      transform() {}
+      transform(arg: unknown) {}
     }
   `,
     );
@@ -1345,7 +1345,7 @@ runInEachFileSystem(() => {
       standalone: false,
     })
     export class BarPipe {
-      transform() {}
+      transform(arg: unknown) {}
     }
   `,
     );
