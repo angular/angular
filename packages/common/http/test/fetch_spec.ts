@@ -230,6 +230,16 @@ describe('FetchBackend', () => {
     expect(res.body!.data).toBe('some data');
   });
 
+  it('decodes a json response as UTF-8 regardless of its declared charset', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', JSON.stringify({data: 'café'}), {
+      'Content-Type': 'application/json; charset=windows-1251',
+    });
+    const events = await promise;
+    const res = events[1] as HttpResponse<{data: string}>;
+    expect(res.body!.data).toBe('café');
+  });
+
   it('handles a blank json response', async () => {
     const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', '');
