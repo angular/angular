@@ -9,13 +9,10 @@
     "stripInternal": true,
     "noImplicitAny": true,
     "noImplicitOverride": true,
-    "strictNullChecks": true,
     "stableTypeOrdering": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "esModuleInterop": true,
-    "strict": true,
-    "strictPropertyInitialization": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "bundler",
     "module": "esnext",
@@ -46,8 +43,5 @@
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true
   },
-  "angularCompilerOptions": {
-    "strictTemplates": true,
-    "typeCheckHostBindings": true
-  }
+  "angularCompilerOptions": {}
 }

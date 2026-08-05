@@ -3,7 +3,6 @@
   "compilerOptions": {
     "stableTypeOrdering": true,
     "lib": ["es2015", "dom"],
-    "strict": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "target": "es2015",
@@ -13,7 +12,6 @@
     }
   },
   "angularCompilerOptions": {
-    "strictTemplates": true,
     "strictInjectionParameters": true
   }
 }
