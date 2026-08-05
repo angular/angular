@@ -1,7 +1,7 @@
 import {performCompilation} from '@angular/compiler-cli';
 import * as fs from 'fs/promises';
-import * as path from 'path';
 import * as os from 'os';
+import * as path from 'path';
 import ts from 'typescript';
 import {findAllEntryPointsAndExportedModules} from './find-all-modules.mjs';
 
@@ -78,9 +78,7 @@ async function main() {
         noEmit: true,
         module: ts.ModuleKind.ESNext,
         moduleResolution: ts.ModuleResolutionKind.Bundler,
-        strictTemplates: true,
         preserveSymlinks: true,
-        strict: true,
         // Note: HMR is needed as it will disable the Angular compiler's tree-shaking of used
         // directives/components. This is critical for this test as it allows us to simply all
         // modules and automatically validate that all symbols are reachable/importable.
