@@ -182,7 +182,10 @@ export function parseR3(
     ['onEvent'],
   );
   const bindingParser = new BindingParser(expressionParser, schemaRegistry, []);
-  const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser, {collectCommentNodes: false});
+  const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser, {
+    collectCommentNodes: false,
+    preserveWhitespaces: options.preserveWhitespaces,
+  });
 
   if (r3Result.errors.length > 0 && !options.ignoreError) {
     const msg = r3Result.errors.map((e) => e.toString()).join('\n');

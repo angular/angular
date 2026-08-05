@@ -256,7 +256,7 @@ export function parseTemplate(
   const {nodes, errors, styleUrls, styles, ngContentSelectors, commentNodes} = htmlAstToRender3Ast(
     rootNodes,
     bindingParser,
-    {collectCommentNodes: !!options.collectCommentNodes},
+    {collectCommentNodes: !!options.collectCommentNodes, preserveWhitespaces},
   );
   errors.push(...parseResult.errors, ...i18nMetaResult.errors);
 

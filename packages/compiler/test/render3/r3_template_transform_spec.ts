@@ -2636,6 +2636,39 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should preserve &ngsp; between two sibling @if blocks', () => {
+      expectFromHtml(
+        `@if (true) {<span>Hello</span>}&ngsp;@if (true) {<span>World</span>}`,
+      ).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'true'],
+        ['Element', 'span'],
+        ['Text', 'Hello'],
+        ['Text', ' '],
+        ['IfBlock'],
+        ['IfBlockBranch', 'true'],
+        ['Element', 'span'],
+        ['Text', 'World'],
+      ]);
+    });
+
+    it('should drop plain whitespace between two sibling @if blocks when preserveWhitespaces is enabled', () => {
+      expectFromR3Nodes(
+        parse(`@if (true) {<span>Hello</span>}\n@if (true) {<span>World</span>}`, {
+          preserveWhitespaces: true,
+        }).nodes,
+      ).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'true'],
+        ['Element', 'span'],
+        ['Text', 'Hello'],
+        ['IfBlock'],
+        ['IfBlockBranch', 'true'],
+        ['Element', 'span'],
+        ['Text', 'World'],
+      ]);
+    });
+
     describe('validations', () => {
       it('should report an if block without a condition', () => {
         expect(() =>

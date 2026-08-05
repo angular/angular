@@ -87,6 +87,7 @@ export interface Render3ParseResult {
 
 interface Render3ParseOptions {
   collectCommentNodes: boolean;
+  preserveWhitespaces?: boolean;
 }
 
 export function htmlAstToRender3Ast(
@@ -560,6 +561,14 @@ class HtmlAstToIvyAst implements html.Visitor {
     predicate: (blockName: string) => boolean,
   ): html.Block[] {
     const relatedBlocks: html.Block[] = [];
+    // Whitespace-only text nodes to mark as processed only if a connected block follows them.
+    // We defer this so that significant whitespace (e.g. &ngsp;, converted to ' ' by the
+    // whitespace visitor) between two unrelated @if blocks is not silently eaten. This is only
+    // necessary when whitespace is being collapsed: that's the only case where &ngsp; becomes
+    // indistinguishable from insignificant whitespace by the time we get here. When
+    // `preserveWhitespaces` is set, &ngsp; is still its own unicode character at this point, so
+    // whitespace-only nodes can keep being dropped eagerly like before.
+    const pendingTextNodes: html.Text[] = [];
 
     for (let i = primaryBlockIndex + 1; i < siblings.length; i++) {
       const node = siblings[i];
@@ -569,11 +578,14 @@ class HtmlAstToIvyAst implements html.Visitor {
         continue;
       }
 
-      // Ignore empty text nodes between blocks.
       if (node instanceof html.Text && node.value.trim().length === 0) {
-        // Add the text node to the processed nodes since we don't want
-        // it to be generated between the connected nodes.
-        this.processedNodes.add(node);
+        if (this.options.preserveWhitespaces) {
+          this.processedNodes.add(node);
+        } else {
+          // Collect whitespace-only text nodes; only mark them as processed once we confirm
+          // they precede a connected block (e.g. @else / @else if).
+          pendingTextNodes.push(node);
+        }
         continue;
       }
 
@@ -581,6 +593,12 @@ class HtmlAstToIvyAst implements html.Visitor {
       if (!(node instanceof html.Block) || !predicate(node.name)) {
         break;
       }
+
+      // A connected block was found — commit the pending whitespace nodes as processed.
+      for (const pending of pendingTextNodes) {
+        this.processedNodes.add(pending);
+      }
+      pendingTextNodes.length = 0;
 
       relatedBlocks.push(node);
       this.processedNodes.add(node);
