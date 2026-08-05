@@ -35,7 +35,8 @@ describe('markdown to html', () => {
 
   it('should deindent code blocks correctly', () => {
     const codeBlock = markdownDocument.querySelectorAll('code')[1];
-    expect(codeBlock.innerHTML).toContain(`  // bar`);
+    expect(codeBlock.textContent).not.toContain(`    if(foo)`);
+    expect(codeBlock.textContent).toContain(`  // bar`);
   });
 
   it('should handle code blocks without language', () => {

@@ -57,4 +57,9 @@ describe('markdown to html', () => {
     const codeBlock = markdownDocument.querySelectorAll('.docs-code')[5];
     expect(codeBlock.getAttribute('hideDollar')).toBe('true');
   });
+
+  it('should deindent inline code blocks correctly', () => {
+    const codeBlock = markdownDocument.querySelectorAll('.docs-code')[6]?.querySelector('code');
+    expect(codeBlock?.textContent).toMatch(/^  \/\/ bar/m);
+  });
 });
