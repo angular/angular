@@ -43,11 +43,14 @@ export class TcbForOfOp extends TcbOp {
     const initializer = new TcbExpr(`const ${initializerId.print()}`);
     initializer.addParseSpanInfo(this.block.item.keySpan);
 
+    // Emit the un-asserted expression as a statement so that symbol queries (e.g. extended
+    // diagnostics like optional_chain_not_nullable) do not see types narrowed by the trailing `!`.
+    const rawExpression = tcbExpression(this.block.expression, this.tcb, this.scope);
+    this.scope.addStatement(rawExpression);
+
     // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
     // Add a non-null expression to allow such values to be assigned.
-    const expression = new TcbExpr(
-      `${tcbExpression(this.block.expression, this.tcb, this.scope).print()}!`,
-    );
+    const expression = new TcbExpr(`${rawExpression.print()}!`);
 
     let statements: TcbExpr[];
 

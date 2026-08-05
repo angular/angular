@@ -400,5 +400,32 @@ runInEachFileSystem(() => {
     expect(diags.length).toBe(0);
   });
 
-  it('should not produce a warning on function calls with consecutive optional chaining with legacy behavior', () => {});
+  it('should not produce a warning for optional chaining in @for loop expression', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      {
+        fileName,
+        templates: {
+          'TestCmp': `@for (item of type().one?.two?.three?.array; track item.name) { {{ item.name }} }`,
+        },
+        source: `
+          export class TestCmp {
+            type(): { one?: { two?: { three?: { array: { name: string }[] } } } } {
+              return {};
+            }
+          }
+        `,
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+      templateTypeChecker,
+      program.getTypeChecker(),
+      [optionalChainNotNullableFactory],
+      {strictNullChecks: true} /* options */,
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(0);
+  });
 });
