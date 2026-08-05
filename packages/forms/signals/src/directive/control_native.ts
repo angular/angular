@@ -60,9 +60,20 @@ export function nativeControlCreate(
     bindings['controlValue'] = value;
     setNativeControlValue(input, value);
   };
+
+  // Use `addEventListener` so we only trigger ticks on signal changes.
+  // See https://github.com/angular/angular/issues/61839.
+  const nativeEl = host.nativeElement;
   // Pass undefined as the raw value since the parse function doesn't care about it.
-  host.listenToDom('input', () => parser.setRawValue(undefined));
-  host.listenToDom('blur', () => parent.state().markAsTouched());
+  const onInput = () => parser.setRawValue(undefined);
+  nativeEl.addEventListener('input', onInput);
+  const onBlur = () => parent.state().markAsTouched();
+  nativeEl.addEventListener('blur', onBlur);
+
+  parent.destroyRef.onDestroy(() => {
+    nativeEl.removeEventListener('input', onInput);
+    nativeEl.removeEventListener('blur', onBlur);
+  });
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
