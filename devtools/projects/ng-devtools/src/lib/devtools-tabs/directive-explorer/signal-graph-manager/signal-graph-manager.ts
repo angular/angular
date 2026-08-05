@@ -17,7 +17,7 @@ import {convertToDevtoolsSignalGraph} from '../../../shared/signal-graph/devtool
 @Injectable()
 export class SignalGraphManager {
   private readonly injector = inject(Injector);
-  private readonly messageBus = inject(MessageBus);
+  private readonly messageBus = inject(MessageBus<any>);
   private readonly signalGraph = signal<DevtoolsSignalGraph | null>(null);
   private unlistenFn?: () => void;
   private lastesSignalGraphMessageUnlistenFn?: () => void;
