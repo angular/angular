@@ -336,6 +336,33 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should not produce optional chain warning for a chain inside a `@for` block', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `@for (item of func().one?.two?.three?.items; track item) {}`,
+          },
+          source: `
+               export class TestCmp {
+                 func = (): {one?: {two: {three: {items?: string[]}}}} => ({});
+               }
+             `,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [optionalChainNotNullableFactory],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
+
     it('should respect configured diagnostic category', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup([

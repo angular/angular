@@ -658,11 +658,7 @@ export class SymbolBuilder {
     const expressionTarget = this.boundTarget.getExpressionTarget(expression);
     if (expressionTarget !== null) {
       return this.getSymbol(expressionTarget) as
-        | VariableSymbol
-        | ReferenceSymbol
-        | ExpressionSymbol
-        | LetDeclarationSymbol
-        | null;
+        VariableSymbol | ReferenceSymbol | ExpressionSymbol | LetDeclarationSymbol | null;
     }
 
     let withSpan = expression.sourceSpan;
@@ -711,6 +707,7 @@ export class SymbolBuilder {
       if (nameNode !== null) {
         node = nameNode;
         while (
+          !isAccessExpression(node) &&
           node.parent !== undefined &&
           (ts.isParenthesizedExpression(node.parent) ||
             ts.isNonNullExpression(node.parent) ||
