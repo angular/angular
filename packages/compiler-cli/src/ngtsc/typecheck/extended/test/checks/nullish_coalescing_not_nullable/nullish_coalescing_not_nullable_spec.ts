@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DiagnosticCategoryLabel} from '../../../../../core/api';
 import ts from 'typescript';
+import {DiagnosticCategoryLabel} from '../../../../../core/api';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName, ngErrorCode} from '../../../../../diagnostics';
 import {absoluteFrom, getSourceFileOrError} from '../../../../../file_system';
@@ -32,19 +32,22 @@ runInEachFileSystem(() => {
       expect(nullishCoalescingNotNullableFactory.create({strictNullChecks: true})).toBeDefined();
     });
 
-    it('should return a check if `strictNullChecks` is not configured but `strict` is enabled', () => {
-      expect(nullishCoalescingNotNullableFactory.create({strict: true})).toBeDefined();
+    it('should return a check if `strictNullChecks` is not configured but `strict` is enabled by default', () => {
+      expect(nullishCoalescingNotNullableFactory.create({})).toBeDefined();
     });
 
     it('should not return a check if `strictNullChecks` is disabled', () => {
-      expect(nullishCoalescingNotNullableFactory.create({strictNullChecks: false})).toBeNull();
-      expect(nullishCoalescingNotNullableFactory.create({})).toBeNull(); // Defaults disabled.
+      expect(
+        nullishCoalescingNotNullableFactory.create({strict: false, strictNullChecks: false}),
+      ).toBeNull();
+    });
+
+    it('should not return a check if `strict` is disabled and `strictNullChecks` is not configured', () => {
+      expect(nullishCoalescingNotNullableFactory.create({strict: false})).toBeNull();
     });
 
     it('should not return a check if `strict` is enabled but `strictNullChecks` is disabled', () => {
-      expect(
-        nullishCoalescingNotNullableFactory.create({strict: true, strictNullChecks: false}),
-      ).toBeNull();
+      expect(nullishCoalescingNotNullableFactory.create({strictNullChecks: false})).toBeNull();
     });
 
     it('should produce nullish coalescing warning', () => {
