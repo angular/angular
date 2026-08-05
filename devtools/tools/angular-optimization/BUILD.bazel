@@ -17,7 +17,6 @@ js_library(
     deps = [
         "//:node_modules/@angular/build",
         "//:node_modules/@babel/core",
-        "//:node_modules/@babel/plugin-transform-async-generator-functions",
         "//packages/compiler-cli",
     ],
 )
