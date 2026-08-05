@@ -25,19 +25,12 @@ export async function createEsbuildAngularOptimizePlugin(opts, additionalBabelPl
     compiler: null,
     babel: null,
   };
-  let downlevelAsyncGeneratorPlugin = null;
 
   if (opts.enableLinker) {
     linkerCreator = {
       compiler: await import('@angular/compiler-cli'),
       babel: await import('@angular/compiler-cli/linker/babel'),
     };
-  }
-
-  if (opts.downlevelAsyncGeneratorsIfPresent) {
-    downlevelAsyncGeneratorPlugin = (
-      await import('@babel/plugin-transform-async-generator-functions')
-    ).default.default;
   }
 
   const {adjustStaticMembers, adjustTypeScriptEnums, elideAngularMetadata, markTopLevelPure} = (
@@ -78,16 +71,6 @@ export async function createEsbuildAngularOptimizePlugin(opts, additionalBabelPl
               sourceMapping: false,
             }),
           );
-        }
-
-        // Matches Angular CLIs detection:
-        // https://github.com/angular/angular-cli/blob/afe9feaa45913cbebe7f22c678d693d96f38584a/packages/angular_devkit/build_angular/src/builders/browser-esbuild/javascript-transformer.ts#L74-L76
-        if (
-          opts.downlevelAsyncGeneratorsIfPresent &&
-          content.includes('async') &&
-          /async(\s+function)?\s*\*/.test(content)
-        ) {
-          plugins.push(downlevelAsyncGeneratorPlugin);
         }
 
         // If no plugins are enabled, return the original code and save time.

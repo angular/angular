@@ -17,7 +17,6 @@ export interface OptimizationOptions {
   optimize?: {
     isSideEffectFree?: (absoluteDiskPath: string) => boolean;
   };
-  downlevelAsyncGeneratorsIfPresent?: boolean;
 }
 
 export function createEsbuildAngularOptimizePlugin(opts: OptimizationOptions, additionalBabelPlugins?: PluginItem[]): Promise<any>
