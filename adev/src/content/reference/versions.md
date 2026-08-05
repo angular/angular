@@ -20,6 +20,9 @@ This table covers Angular versions that are no longer under long-term support (L
 information was correct when each version went out of LTS and is provided without any further
 guarantees. It is listed here for historical reference.
 
+If you need extended support for Angular, consider:
+* [HeroDevs Never-Ending Support](https://www.herodevs.com/support/nes-angular?utm_source=angular.dev&utm_medium=referral&utm_campaign=angular-nes)
+
 | Angular            | Node.js                              | TypeScript     | RxJS               |
 | ------------------ | ------------------------------------ | -------------- | ------------------ |
 | 19.2.x             | ^18.19.1 \|\| ^20.11.1 \|\| ^22.0.0  | >=5.5.0 <5.9.0 | ^6.5.3 \|\| ^7.4.0 |
