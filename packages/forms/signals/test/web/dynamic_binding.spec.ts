@@ -7,7 +7,9 @@
  */
 
 import {
+  ApplicationRef,
   Component,
+  ComponentRef,
   createComponent,
   EnvironmentInjector,
   input,
@@ -28,7 +30,7 @@ import {
 
 describe('createComponent', () => {
   describe('FormValueControl', () => {
-    it(`synchronizes value from '[formField]' binding`, () => {
+    it(`synchronizes value from '[formField]' binding`, async () => {
       @Component({template: ''})
       class CustomInput implements FormValueControl<string> {
         readonly value = model.required<string>();
@@ -46,23 +48,23 @@ describe('createComponent', () => {
           },
         ],
       });
-      fixture.changeDetectorRef.detectChanges();
+      const appRef = await renderComponent(fixture);
 
       expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.value()).toBe('initial value');
 
       // Model --> View
       control().value.set('new value');
-      fixture.changeDetectorRef.detectChanges();
+      await appRef.whenStable();
       expect(fixture.instance.value()).toBe('new value');
 
       // View --> Model
       fixture.instance.value.set('from component');
-      fixture.changeDetectorRef.detectChanges();
+      await appRef.whenStable();
       expect(control().value()).toBe('from component');
     });
 
-    it(`synchronizes properties from '[formField]' binding`, () => {
+    it(`synchronizes properties from '[formField]' binding`, async () => {
       @Component({template: ''})
       class CustomInput implements FormValueControl<string> {
         readonly value = model.required<string>();
@@ -86,19 +88,19 @@ describe('createComponent', () => {
           },
         ],
       });
-      fixture.changeDetectorRef.detectChanges();
+      const appRef = await renderComponent(fixture);
 
       expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.disabled()).toBe(false);
 
       disabledSignal.set(true);
-      fixture.changeDetectorRef.detectChanges();
+      await appRef.whenStable();
       expect(fixture.instance.disabled()).toBe(true);
     });
   });
 
   describe('FormCheckboxControl', () => {
-    it(`synchronizes value from '[formField]' binding`, () => {
+    it(`synchronizes value from '[formField]' binding`, async () => {
       @Component({template: ''})
       class CustomCheckbox implements FormCheckboxControl {
         readonly checked = model.required<boolean>();
@@ -116,23 +118,23 @@ describe('createComponent', () => {
           },
         ],
       });
-      fixture.changeDetectorRef.detectChanges();
+      const appRef = await renderComponent(fixture);
 
       expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.checked()).toBe(true);
 
       // Model --> View
       control().value.set(false);
-      fixture.changeDetectorRef.detectChanges();
+      await appRef.whenStable();
       expect(fixture.instance.checked()).toBe(false);
 
       // View --> Model
       fixture.instance.checked.set(true);
-      fixture.changeDetectorRef.detectChanges();
+      await appRef.whenStable();
       expect(control().value()).toBe(true);
     });
 
-    it(`synchronizes properties from '[formField]' binding`, () => {
+    it(`synchronizes properties from '[formField]' binding`, async () => {
       @Component({template: ''})
       class CustomCheckbox implements FormCheckboxControl {
         readonly checked = model.required<boolean>();
@@ -156,18 +158,18 @@ describe('createComponent', () => {
           },
         ],
       });
-      fixture.changeDetectorRef.detectChanges();
+      const appRef = await renderComponent(fixture);
 
       expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.required()).toBe(false);
 
       requiredSignal.set(true);
-      fixture.changeDetectorRef.detectChanges();
+      await appRef.whenStable();
       expect(fixture.instance.required()).toBe(true);
     });
   });
 
-  it(`should not treat component with '[formField]' input as a control`, () => {
+  it(`should not treat component with '[formField]' input as a control`, async () => {
     @Component({template: ''})
     class TestCmp {
       readonly formField = input.required<Field<string>>();
@@ -188,7 +190,7 @@ describe('createComponent', () => {
         },
       ],
     });
-    fixture.changeDetectorRef.detectChanges();
+    await renderComponent(fixture);
 
     expect(control().formFieldBindings()).toHaveSize(0);
   });
@@ -215,3 +217,10 @@ describe('createComponent', () => {
     ).toThrowError(/Component InvalidFieldHost (.+) is an invalid \[formField\] directive host\./);
   });
 });
+
+async function renderComponent<T>(componentRef: ComponentRef<T>): Promise<ApplicationRef> {
+  const appRef = TestBed.inject(ApplicationRef);
+  appRef.attachView(componentRef.hostView);
+  await appRef.whenStable();
+  return appRef;
+}
