@@ -836,11 +836,14 @@ runInEachFileSystem(() => {
                 .declarations![0] as ts.PropertyDeclaration
             ).parent.name!.getText(),
           ).toEqual('Car');
+
+          // Even if engine is string, TS will returned the type returned by the expression,
+          // which is string | undefined because of the safe navigation operator.
           expect(
             program
               .getTypeChecker()
               .typeToString(templateTypeChecker.getTypeOfSymbol(keyedReadSymbol)!),
-          ).toEqual('string');
+          ).toEqual('string | undefined');
         });
 
         it('safe property reads with as any (failure case)', () => {
