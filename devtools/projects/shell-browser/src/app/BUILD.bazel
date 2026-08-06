@@ -108,6 +108,27 @@ ts_project(
     ],
 )
 
+ts_test_library(
+    name = "chrome_application_operations_test_lib",
+    srcs = ["chrome-application-operations.spec.ts"],
+    deps = [
+        ":chrome_application_operations",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@types/chrome",
+        "//:node_modules/jasmine",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "chrome_application_operations_test",
+    deps = [
+        ":chrome_application_operations_test_lib",
+    ],
+)
+
 ts_project(
     name = "same_page_message_bus",
     srcs = [
