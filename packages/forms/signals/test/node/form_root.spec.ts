@@ -116,17 +116,20 @@ describe('FormRoot', () => {
     @Component({
       template: `
         <form [formRoot]="f">
-          <button type="submit">Submit</button>
+          <button type="submit" value="publish">Publish</button>
         </form>
       `,
       imports: [FormRoot, ReactiveFormsModule],
     })
     class TestCmp {
       submitted = false;
+      submitter: HTMLButtonElement | null = null;
+
       readonly f = form(signal({}), {
         submission: {
-          action: async () => {
+          action: async (_field, _detail) => {
             this.submitted = true;
+            this.submitter = _detail.submitEvent?.submitter as HTMLButtonElement | null;
           },
         },
       });
@@ -135,12 +138,15 @@ describe('FormRoot', () => {
     const fixture = act(() => TestBed.createComponent(TestCmp));
     const component = fixture.componentInstance;
     const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
 
-    const event = new Event('submit', {cancelable: true});
+    const event = createSubmitEvent(button);
+
     act(() => formElement.dispatchEvent(event));
 
     expect(event.defaultPrevented).toBe(true);
     expect(component.submitted).toBeTrue();
+    expect(component.submitter).toBe(button);
   });
 });
 
@@ -150,4 +156,13 @@ function act<T>(fn: () => T): T {
   } finally {
     TestBed.tick();
   }
+}
+
+function createSubmitEvent(button: HTMLButtonElement): SubmitEvent {
+  const event = new Event('submit', {cancelable: true}) as SubmitEvent;
+  Object.defineProperty(event, 'submitter', {
+    value: button,
+    configurable: true,
+  });
+  return event;
 }
