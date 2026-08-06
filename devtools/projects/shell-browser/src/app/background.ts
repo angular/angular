@@ -10,6 +10,7 @@
 
 import {AngularDetection} from '../../../protocol';
 import {TabManager} from './tab_manager';
+import {BreakpointManager} from './breakpoint_manager';
 
 function getPopUpName(ng: AngularDetection): string {
   if (!ng.isAngular) {
@@ -101,4 +102,5 @@ if (chrome !== undefined && chrome.runtime !== undefined) {
 
   const tabs = {};
   TabManager.initialize(tabs);
+  BreakpointManager.initialize();
 }
