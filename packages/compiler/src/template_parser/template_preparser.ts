@@ -15,7 +15,7 @@ const LINK_STYLE_REL_ATTR = 'rel';
 const LINK_STYLE_HREF_ATTR = 'href';
 const LINK_STYLE_REL_VALUE = 'stylesheet';
 const STYLE_ELEMENT = 'style';
-const SCRIPT_ELEMENTS: ReadonlySet<string> = new Set([':svg:script', 'script']);
+const SCRIPT_ELEMENTS: ReadonlySet<string> = new Set([':math:script', ':svg:script', 'script']);
 const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
