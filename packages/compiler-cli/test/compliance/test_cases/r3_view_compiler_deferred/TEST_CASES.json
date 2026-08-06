@@ -311,6 +311,40 @@
       ]
     },
     {
+      "description": "should refer to a deferred dependency by its local name in the class metadata",
+      "inputFiles": ["defer_aliased_deps.ts", "defer_aliased_deps_a.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_aliased_deps_template.js",
+              "generated": "defer_aliased_deps.js"
+            }
+          ],
+          "failureMessage": "Incorrect class metadata"
+        }
+      ]
+    },
+    {
+      "description": "should support deferred dependencies that are exported under the same name",
+      "inputFiles": [
+        "defer_shared_export_name.ts",
+        "defer_aliased_deps_a.ts",
+        "defer_aliased_deps_b.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_shared_export_name_template.js",
+              "generated": "defer_shared_export_name.js"
+            }
+          ],
+          "failureMessage": "Incorrect class metadata"
+        }
+      ]
+    },
+    {
       "description": "should generate a lazy deferred block with empty and placeholder",
       "inputFiles": ["lazy_with_blocks.ts"],
       "expectations": [

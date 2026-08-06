@@ -87,7 +87,10 @@ export function compileComponentClassMetadata(
 
   return internalCompileSetClassMetadataAsync(
     metadata,
-    dependencies.map((dep) => new o.FnParam(dep.symbolName, o.DYNAMIC_TYPE)),
+    // The callback wraps a `setClassMetadata` call that is reproduced from the original source,
+    // which refers to the dependencies by their local names. The parameters have to bind those
+    // names, rather than the exported ones used to read the symbols off of the loaded modules.
+    dependencies.map((dep) => new o.FnParam(dep.localSymbolName ?? dep.symbolName, o.DYNAMIC_TYPE)),
     compileComponentMetadataAsyncResolver(dependencies),
   );
 }

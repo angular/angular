@@ -364,9 +364,7 @@ export interface R3TemplateDependency {
  * A dependency that's used within a component template
  */
 export type R3TemplateDependencyMetadata =
-  | R3DirectiveDependencyMetadata
-  | R3PipeDependencyMetadata
-  | R3NgModuleDependencyMetadata;
+  R3DirectiveDependencyMetadata | R3PipeDependencyMetadata | R3NgModuleDependencyMetadata;
 
 /**
  * Information about a directive that is used in a component template. Only the stable, public
@@ -579,9 +577,23 @@ export interface R3DeferPerBlockDependency {
  */
 export interface R3DeferPerComponentDependency {
   /**
-   * Dependency class name.
+   * Name that the dependency is exported under by its module. This is the name that has to be
+   * read off of the dynamically-imported module, e.g. `import('./cmp').then(m => m.CmpA)`.
    */
   symbolName: string;
+
+  /**
+   * Name that the dependency is referred to by inside the file that declares the component.
+   * Usually identical to `symbolName`, but it can differ when the symbol is imported under an
+   * alias, e.g. `import {CmpA as AliasedCmp} from './cmp';`. Code that is reproduced from the
+   * original source, like the decorators inside `setClassMetadataAsync`, refers to the dependency
+   * by this name.
+   *
+   * Optional so that callers written against an earlier version of this interface keep compiling
+   * and keep their current output; `symbolName` is used when it is absent, which is what those
+   * callers were getting before. The compiler always populates it.
+   */
+  localSymbolName?: string;
 
   /**
    * Import path where this dependency is located.

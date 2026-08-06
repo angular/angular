@@ -65,7 +65,12 @@ export function compileComponentDeclareClassMetadata(
   definitionMap.set(
     'resolveMetadata',
     o.arrowFn(
-      dependencies.map((dep) => new o.FnParam(dep.symbolName, o.DYNAMIC_TYPE)),
+      // The callback returns metadata that is reproduced from the original source, which refers
+      // to the dependencies by their local names. The parameters have to bind those names, rather
+      // than the exported ones used to read the symbols off of the loaded modules.
+      dependencies.map(
+        (dep) => new o.FnParam(dep.localSymbolName ?? dep.symbolName, o.DYNAMIC_TYPE),
+      ),
       callbackReturnDefinitionMap.toLiteralMap(),
     ),
   );
