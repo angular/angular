@@ -1327,7 +1327,6 @@ describe('Component host element validation', () => {
   it('should reject a prefixed SVG script host element', () => {
     @Component({
       selector: 'my-prefixed-svg-script-host',
-      standalone: true,
       template: '',
     })
     class MyPrefixedSvgScriptHost {}
