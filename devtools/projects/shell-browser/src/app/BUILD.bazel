@@ -99,6 +99,7 @@ ts_project(
         "chrome-application-operations.ts",
     ],
     deps = [
+        ":comm_utils",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
         "//:node_modules/@types/chrome",
@@ -178,7 +179,20 @@ ts_project(
         "background.ts",
     ],
     deps = [
+        ":breakpoint_manager",
         ":tab_manager",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "breakpoint_manager",
+    srcs = [
+        "breakpoint_manager.ts",
+    ],
+    deps = [
+        ":comm_utils",
+        "//:node_modules/@types/chrome",
         "//devtools/projects/protocol",
     ],
 )

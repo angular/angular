@@ -33,7 +33,7 @@
   "background": {
     "service_worker": "app/background_bundle.js"
   },
-  "permissions": ["scripting", "activeTab", "storage"],
+  "permissions": ["scripting", "activeTab", "storage", "debugger"],
   "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
