@@ -13,10 +13,12 @@ import {
   input,
   linkedSignal,
   output,
+  resource,
   signal,
   viewChild,
 } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 import {ApplicationOperations} from '../../../application-operations/index';
 import {FrameManager} from '../../../application-services/frame_manager';
@@ -51,6 +53,7 @@ export class SignalGraphPaneComponent {
   protected readonly signalGraph = inject(SignalGraphManager);
   private readonly appOperations = inject(ApplicationOperations);
   private readonly frameManager = inject(FrameManager);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected readonly close = output<void>();
 
@@ -93,6 +96,34 @@ export class SignalGraphPaneComponent {
 
   protected readonly detailsVisible = signal(false);
 
+  // Track active breakpoints for the currently inspected component graph.
+  protected readonly activeBreakpoints = resource({
+    params: () => {
+      const element = this.signalGraph.element();
+      const frame = this.frameManager.selectedFrame();
+      if (!element || !frame) {
+        return undefined;
+      }
+      return {element, frame};
+    },
+    loader: async ({params}) => {
+      const positions = await this.appOperations.getActiveSignalBreakpoints(params.frame);
+      const activeIds = new Set<string>();
+      for (const pos of positions) {
+        if (JSON.stringify(pos.element) === JSON.stringify(params.element)) {
+          activeIds.add(pos.signalId);
+        }
+      }
+      return activeIds;
+    },
+    defaultValue: new Set<string>(),
+  });
+
+  protected hasBreakpoint(node: DevtoolsSignalGraphNode | undefined): boolean {
+    if (!node) return false;
+    return this.activeBreakpoints.value()?.has(node.id) ?? false;
+  }
+
   protected empty = computed(() => !(this.signalGraph.graph()?.nodes.length! > 0));
 
   onNodeClick(node: DevtoolsSignalGraphNode) {
@@ -102,13 +133,69 @@ export class SignalGraphPaneComponent {
 
   gotoSource(node: DevtoolsSignalGraphNode) {
     const frame = this.frameManager.selectedFrame();
+    if (!frame) {
+      console.warn('[Angular DevTools]: No frame selected for signal operation.');
+      return;
+    }
     this.appOperations.inspectSignal(
       {
         element: this.signalGraph.element()!,
         signalId: node.id,
       },
-      frame!,
+      frame,
     );
+  }
+
+  async setBreakpoint(node: DevtoolsSignalGraphNode) {
+    const frame = this.frameManager.selectedFrame();
+    if (!frame) {
+      console.warn('[Angular DevTools]: No frame selected for signal operation.');
+      return;
+    }
+    const success = await this.appOperations.setSignalBreakpoint(
+      {
+        element: this.signalGraph.element()!,
+        signalId: node.id,
+      },
+      frame,
+    );
+    if (success) {
+      this.activeBreakpoints.value.update((set) => new Set(set).add(node.id));
+    } else {
+      this.snackBar.open(
+        'Failed to set signal breakpoint. Try refreshing the page or reopening DevTools.',
+        'Dismiss',
+        {duration: 3000},
+      );
+    }
+  }
+
+  async removeBreakpoint(node: DevtoolsSignalGraphNode) {
+    const frame = this.frameManager.selectedFrame();
+    if (!frame) {
+      console.warn('[Angular DevTools]: No frame selected for signal operation.');
+      return;
+    }
+    const success = await this.appOperations.removeSignalBreakpoint(
+      {
+        element: this.signalGraph.element()!,
+        signalId: node.id,
+      },
+      frame,
+    );
+    if (success) {
+      this.activeBreakpoints.value.update((set) => {
+        const newSet = new Set(set);
+        newSet.delete(node.id);
+        return newSet;
+      });
+    } else {
+      this.snackBar.open(
+        'Failed to remove signal breakpoint. Try refreshing the page or reopening DevTools.',
+        'Dismiss',
+        {duration: 3000},
+      );
+    }
   }
 
   expandCluster(clusterId: string) {
