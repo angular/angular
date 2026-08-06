@@ -35,4 +35,15 @@ describe('renderApplication', () => {
     const html = await ssr(SomeComponent);
     expect(html).toContain('aria-label="a third label"');
   });
+  it('should not serialize MathML script elements', async () => {
+    @Component({
+      selector: 'app',
+      template: '<math><mtext><script>bad()</script></mtext></math>',
+    })
+    class SomeComponent {}
+
+    const html = await ssr(SomeComponent, {enableHydration: false});
+
+    expect(html).not.toContain('<script');
+  });
 });
