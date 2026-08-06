@@ -3045,6 +3045,9 @@ describe('type check blocks', () => {
 
       expect(block).toContain('var _t1 = null! as i0.CustomControl;');
       expect(block).toContain(
+        '(typeof (((((this).f)()).value)) extends { [i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: infer W } ? W : typeof (((((this).f)()).value)))',
+      );
+      expect(block).toContain(
         '_t1.value[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
       );
       expect(block).toContain('var _t2 = null! as i0.FormField;');
@@ -3179,6 +3182,33 @@ describe('type check blocks', () => {
       );
       expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
+    });
+
+    it('should generate reverse direction assignment check for custom controls with two-way value bindings', () => {
+      const block = tcb('<custom-control [formField]="f"/>', [
+        FieldMock,
+        {
+          type: 'directive',
+          name: 'CustomControl',
+          selector: 'custom-control',
+          inputs: {
+            value: {
+              classPropertyName: 'value',
+              bindingPropertyName: 'value',
+              required: false,
+              isSignal: true,
+              transform: null,
+            },
+          },
+          outputs: {
+            valueChange: 'valueChange',
+          },
+        },
+      ]);
+
+      expect(block).toContain(
+        '(typeof (((((this).f)()).value)) extends { [i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: infer W } ? W : typeof (((((this).f)()).value)))',
+      );
     });
 
     it('should not report diagnostics for aliased directive references via PropertyAccessExpression', () => {

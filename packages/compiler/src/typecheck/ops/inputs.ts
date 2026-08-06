@@ -166,6 +166,8 @@ export class TcbDirectiveInputsOp extends TcbOp {
             : new TcbExpr(`${dirId.print()}.${fieldName}`);
         }
 
+        const dirPropTarget = target;
+
         // For signal inputs, we unwrap the target `InputSignal`. Note that
         // we intentionally do the following things:
         //   1. keep the direct access to `dir.[field]` so that modifiers are honored.
@@ -186,7 +188,25 @@ export class TcbDirectiveInputsOp extends TcbOp {
 
         // Two-way bindings accept `T | WritableSignal<T>` so we have to unwrap the value.
         if (isTwoWayBinding && this.tcb.env.config.allowSignalsInTwoWayBindings) {
+          const rawAssignment = assignment;
           assignment = unwrapWritableSignal(assignment, this.tcb);
+
+          const inputSignalBrandWriteSymbol = this.tcb.env.referenceExternalSymbol(
+            R3Identifiers.InputSignalBrandWriteType.moduleName,
+            R3Identifiers.InputSignalBrandWriteType.name,
+          );
+          const reverseId = new TcbExpr(this.tcb.allocateId());
+          const reverseType = new TcbExpr(
+            `(typeof ${rawAssignment.wrapForTypeChecker().print()} extends { [${inputSignalBrandWriteSymbol.print()}]: infer W } ? W : typeof ${rawAssignment.wrapForTypeChecker().print()})`,
+          );
+          const reverseVar = declareVariable(reverseId, reverseType);
+          const reverseValue = unwrapWritableSignal(dirPropTarget, this.tcb);
+          const reverseAssignment = new TcbExpr(
+            `${reverseId.print()} = ${reverseValue.print()}`,
+          );
+          reverseAssignment.addParseSpanInfo(attr.sourceSpan);
+          this.scope.addStatement(reverseVar);
+          this.scope.addStatement(reverseAssignment);
         }
 
         // Finally the assignment is extended by assigning it into the target expression.
