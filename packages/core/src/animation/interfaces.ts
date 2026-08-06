@@ -59,6 +59,7 @@ export type RunEnterAnimationFn = VoidFunction;
 export type RunLeaveAnimationFn = () => {promise: Promise<void>; resolve: VoidFunction};
 
 export interface LongestAnimation {
+  animation?: Animation;
   animationName: string | undefined;
   propertyName: string | undefined;
   duration: number;

@@ -58,7 +58,12 @@ describe('determineLongestAnimation', () => {
 
       determineLongestAnimation(el, animationsMap, true);
       const longest = animationsMap.get(el);
-      expect(longest).toEqual({animationName: 'anim-2', propertyName: undefined, duration: 1000});
+      expect(longest).toEqual({
+        animation: el.getAnimations()[1],
+        animationName: 'anim-2',
+        propertyName: undefined,
+        duration: 1000,
+      });
     });
 
     it('should correctly identify CSSTransitions vs CSSAnimations', () => {
@@ -77,7 +82,12 @@ describe('determineLongestAnimation', () => {
 
       determineLongestAnimation(el, animationsMap, true);
       const longest = animationsMap.get(el);
-      expect(longest).toEqual({animationName: undefined, propertyName: 'opacity', duration: 800});
+      expect(longest).toEqual({
+        animation: el.getAnimations()[0],
+        animationName: undefined,
+        propertyName: 'opacity',
+        duration: 800,
+      });
     });
 
     it('should handle "auto" or undefined duration gracefully', () => {
@@ -97,6 +107,7 @@ describe('determineLongestAnimation', () => {
       determineLongestAnimation(el, animationsMap, true);
       const longest = animationsMap.get(el);
       expect(longest).toEqual({
+        animation: el.getAnimations()[0],
         animationName: 'bad-duration',
         propertyName: undefined,
         duration: 200,
@@ -127,6 +138,7 @@ describe('determineLongestAnimation', () => {
       determineLongestAnimation(el, animationsMap, true);
       const longest = animationsMap.get(el);
       expect(longest).toEqual({
+        animation: el.getAnimations()[1],
         animationName: 'finite-anim',
         propertyName: undefined,
         duration: 500,
@@ -197,7 +209,12 @@ describe('determineLongestAnimation', () => {
       determineLongestAnimation(el, animationsMap, true);
 
       const longest = animationsMap.get(el);
-      expect(longest).toEqual({animationName: 'mock-anim', propertyName: undefined, duration: 500});
+      expect(longest).toEqual({
+        animation: el.getAnimations()[0],
+        animationName: 'mock-anim',
+        propertyName: undefined,
+        duration: 500,
+      });
     });
 
     it('should handle negative playback rates by taking the absolute value', () => {
@@ -218,6 +235,7 @@ describe('determineLongestAnimation', () => {
 
       const longest = animationsMap.get(el);
       expect(longest).toEqual({
+        animation: el.getAnimations()[0],
         animationName: 'mock-anim',
         propertyName: undefined,
         duration: 1200,

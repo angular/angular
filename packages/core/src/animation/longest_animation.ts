@@ -148,7 +148,7 @@ function determineLongestAnimationFromElementAnimations(
     }
 
     if (duration >= longest.duration) {
-      longest = {animationName, propertyName, duration};
+      longest = {animation, animationName, propertyName, duration};
     }
   }
   if (isShorterThanExistingAnimation(animationsMap.get(el), longest)) return;
