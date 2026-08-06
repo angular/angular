@@ -69,15 +69,23 @@ export interface CreateSignalOptions<T> {
  * Create a `Signal` that can be set or updated directly.
  * @see [Angular Signals](guide/signals)
  */
-export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
-  const [get, set, update] = createSignal(initialValue, options?.equal);
+export function signal<T = undefined>(): WritableSignal<T | undefined>;
+export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;
+export function signal<T>(
+  initialValue?: T,
+  options?: CreateSignalOptions<T>,
+): WritableSignal<T | undefined> {
+  const [get, set, update] = createSignal<T | undefined>(
+    initialValue,
+    options?.equal as ValueEqualityFn<T | undefined>,
+  );
 
-  const signalFn = get as SignalGetter<T> & WritableSignal<T>;
+  const signalFn = get as SignalGetter<T | undefined> & WritableSignal<T | undefined>;
   const node = signalFn[SIGNAL];
 
   signalFn.set = set;
   signalFn.update = update;
-  signalFn.asReadonly = signalAsReadonlyFn.bind(signalFn as any) as () => Signal<T>;
+  signalFn.asReadonly = signalAsReadonlyFn.bind(signalFn as any) as () => Signal<T | undefined>;
 
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     const debugName = options?.debugName;
@@ -85,7 +93,7 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
     signalFn.toString = () => `[Signal${debugName ? ' (' + debugName + ')' : ''}: ${signalFn()}]`;
   }
 
-  return signalFn as WritableSignal<T>;
+  return signalFn as WritableSignal<T | undefined>;
 }
 
 export function signalAsReadonlyFn<T>(this: SignalGetter<T>): Signal<T> {
