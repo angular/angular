@@ -7380,6 +7380,42 @@ suppress
         );
       });
 
+      it('should suggest ngProjectAs in the error message for targeted slots', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/> <ng-content/>',
+          })
+          class Comp {}
+
+          @Component({
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  <span>other content</span>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `,
+        );
+
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(`ngProjectAs="[foo]"`);
+        expect(diags[0]).toContain(`all nodes in the block should be projected into the same slot`);
+        expect(diags[0]).toContain(`nodes in the block target different slots`);
+      });
+
       it('should not report when there is only one root node', () => {
         env.write(
           'test.ts',
