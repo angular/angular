@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "ts_project")
+
+ts_project(
+    name = "is_platform_browser_in_control_flow",
+    srcs = ["index.ts"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
+    ],
+)
