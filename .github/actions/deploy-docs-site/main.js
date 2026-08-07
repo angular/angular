@@ -58321,7 +58321,7 @@ var RequestError2 = class extends Error {
     this.request = requestCopy;
   }
 };
-var VERSION22 = "10.0.11";
+var VERSION22 = "10.0.13";
 var defaults_default2 = {
   headers: {
     "user-agent": `octokit-request.js/${VERSION22} ${getUserAgent2()}`
@@ -58451,7 +58451,10 @@ async function getResponseData2(response) {
     } catch (err) {
       return text;
     }
-  } else if (mimetype.type.startsWith("text/") || mimetype.parameters.charset?.toLowerCase() === "utf-8") {
+  } else if (mimetype.type.startsWith("text/") || // `application/octet-stream` is the canonical "arbitrary binary" type
+  // (RFC 2046) and must never be decoded as text, even when the response
+  // carries a (misleading) `charset=utf-8` parameter — see #751.
+  mimetype.parameters.charset?.toLowerCase() === "utf-8" && mimetype.type !== "application/octet-stream") {
     return response.text().catch(noop3);
   } else {
     return response.arrayBuffer().catch(
@@ -58518,6 +58521,9 @@ var GraphqlResponseError2 = class extends Error {
       Error.captureStackTrace(this, this.constructor);
     }
   }
+  request;
+  headers;
+  response;
   name = "GraphqlResponseError";
   errors;
   data;
@@ -58650,7 +58656,7 @@ var createTokenAuth3 = function createTokenAuth22(token) {
     hook: hook2.bind(null, token)
   });
 };
-var VERSION42 = "7.0.6";
+var VERSION42 = "7.0.7";
 var noop22 = () => {
 };
 var consoleWarn2 = console.warn.bind(console);
@@ -65366,7 +65372,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-D7SBR34O.mjs:
+@angular/ng-dev/bundles/chunk-3ZLFS5FP.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
@@ -65382,5 +65388,8 @@ content-type/dist/index.js:
   @octokit/request/dist-bundle/index.js:
     (* v8 ignore next -- @preserve *)
     (* v8 ignore else -- @preserve *)
+  
+  @octokit/graphql/dist-bundle/index.js:
+    (* v8 ignore if -- @preserve *)
   *)
 */
