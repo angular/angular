@@ -541,7 +541,7 @@ function cleanupRemainingHydrationQueue(
   dehydratedBlockRegistry: DehydratedBlockRegistry,
 ) {
   const blocksBeingHydrated = dehydratedBlockRegistry.hydrating;
-  for (const dehydratedBlockId in hydrationQueue) {
+  for (const dehydratedBlockId of hydrationQueue) {
     blocksBeingHydrated.get(dehydratedBlockId)?.reject();
   }
   dehydratedBlockRegistry.cleanup(hydrationQueue);
