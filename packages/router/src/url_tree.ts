@@ -453,7 +453,9 @@ export class DefaultUrlSerializer implements UrlSerializer {
 
   /** Converts a `UrlTree` into a url */
   serialize(tree: UrlTree): string {
-    const segment = `/${serializeSegment(tree.root, true)}`;
+    // A public UrlTree can contain a leading empty primary segment. Always emit a root-relative URL
+    // rather than allowing the serialized path to become protocol-relative.
+    const segment = `/${serializeSegment(tree.root, true).replace(/^\/+/, '')}`;
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
       typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment)}` : '';
@@ -463,6 +465,28 @@ export class DefaultUrlSerializer implements UrlSerializer {
 }
 
 const DEFAULT_SERIALIZER = new DefaultUrlSerializer();
+
+/**
+ * Reparse trees whose leading empty segments are collapsed by the default serializer so route
+ * recognition and the browser URL use the same segment structure.
+ */
+export function canonicalizeUrlTree(tree: UrlTree, serializer: UrlSerializer): UrlTree {
+  const primary = tree.root.children[PRIMARY_OUTLET];
+  const startsWithEmptyPath =
+    primary !== undefined &&
+    (primary.segments.length > 0
+      ? serializePath(primary.segments[0]) === ''
+      : primary.hasChildren());
+  if (!startsWithEmptyPath) {
+    return tree;
+  }
+
+  const {queryParams, fragment} = tree;
+  const canonical = serializer.parse(serializer.serialize(tree));
+  canonical.queryParams = queryParams;
+  canonical.fragment = fragment;
+  return canonical;
+}
 
 export function serializePaths(segment: UrlSegmentGroup): string {
   return segment.segments.map((p) => serializePath(p)).join('/');

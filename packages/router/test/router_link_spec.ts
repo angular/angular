@@ -9,7 +9,14 @@
 import {Component, inject, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Router, RouterLink, RouterModule, provideRouter} from '../index';
+import {
+  PRIMARY_OUTLET,
+  Router,
+  RouterLink,
+  RouterModule,
+  UrlSegment,
+  provideRouter,
+} from '../index';
 import {RouterTestingHarness} from '../testing';
 
 describe('RouterLink', () => {
@@ -328,5 +335,107 @@ describe('RouterLink', () => {
     expect(anchor.getAttribute('href')).toBe('/initial/child');
     await harness.navigateByUrl('/different');
     expect(anchor.getAttribute('href')).toBe('/different/child');
+  });
+
+  it('does not generate protocol-relative hrefs from leading empty primary segments', async () => {
+    @Component({
+      template: `
+        <a id="commands" [routerLink]="commands" queryParamsHandling="preserve">commands</a>
+        <a
+          id="outlet-string"
+          [routerLink]="outletString"
+          [queryParams]="pageQueryParams"
+          queryParamsHandling="merge"
+        >
+          outlet string
+        </a>
+        <a
+          id="outlet-array"
+          [routerLink]="outletArray"
+          queryParamsHandling="preserve"
+          preserveFragment
+        >
+          outlet array
+        </a>
+        <a id="url-tree" [routerLink]="urlTree">UrlTree</a>
+      `,
+      imports: [RouterLink],
+    })
+    class WithLink {
+      readonly commands = ['/', '', 'attacker.example', 'collect'];
+      readonly outletString = [{outlets: {primary: '/attacker.example/collect'}}];
+      readonly outletArray = [{outlets: {primary: ['', 'attacker.example', 'collect']}}];
+      readonly pageQueryParams = {page: 1};
+      readonly urlTree = inject(Router).parseUrl(
+        '/attacker.example/collect?token=RESET_TOKEN#OAUTH_TOKEN',
+      );
+
+      constructor() {
+        // UrlTree segments are public, so this mutation exercises the serializer backstop.
+        this.urlTree.root.children[PRIMARY_OUTLET].segments.unshift(new UrlSegment('', {}));
+      }
+    }
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{path: '', component: WithLink}])],
+    });
+    const harness = await RouterTestingHarness.create('/?token=RESET_TOKEN#OAUTH_TOKEN');
+
+    expect(harness.fixture.nativeElement.querySelector('#commands').getAttribute('href')).toBe(
+      '/attacker.example/collect?token=RESET_TOKEN',
+    );
+    expect(harness.fixture.nativeElement.querySelector('#outlet-string').getAttribute('href')).toBe(
+      '/attacker.example/collect?token=RESET_TOKEN&page=1',
+    );
+    expect(harness.fixture.nativeElement.querySelector('#outlet-array').getAttribute('href')).toBe(
+      '/attacker.example/collect?token=RESET_TOKEN#OAUTH_TOKEN',
+    );
+    expect(harness.fixture.nativeElement.querySelector('#url-tree').getAttribute('href')).toBe(
+      '/attacker.example/collect?token=RESET_TOKEN#OAUTH_TOKEN',
+    );
+  });
+
+  it('navigates to the route represented by the href', async () => {
+    const tenantAdminGuard = jasmine.createSpy().and.returnValue(true);
+    const strictAdminGuard = jasmine.createSpy().and.returnValue(true);
+
+    @Component({template: ''})
+    class RoutedComponent {}
+
+    @Component({
+      template: `
+        <a [routerLink]="['/', '', 'admin']" [queryParams]="{token: 'secret'}" fragment="fragment">
+          admin
+        </a>
+      `,
+      imports: [RouterLink],
+    })
+    class WithLink {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: ':tenant/admin',
+            canActivate: [tenantAdminGuard],
+            component: RoutedComponent,
+          },
+          {path: 'admin', canActivate: [strictAdminGuard], component: RoutedComponent},
+        ]),
+      ],
+    });
+    const fixture = TestBed.createComponent(WithLink);
+    await fixture.whenStable();
+
+    const anchor: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+    expect(anchor.getAttribute('href')).toBe('/admin?token=secret#fragment');
+    anchor.click();
+    await fixture.whenStable();
+
+    const router = TestBed.inject(Router);
+    expect(router.url).toBe('/admin?token=secret#fragment');
+    expect(router.routerState.snapshot.root.firstChild?.routeConfig?.path).toBe('admin');
+    expect(strictAdminGuard).toHaveBeenCalled();
+    expect(tenantAdminGuard).not.toHaveBeenCalled();
   });
 });

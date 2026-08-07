@@ -13,6 +13,7 @@ import {
   encodeUriQuery,
   encodeUriSegment,
   serializePath,
+  UrlSegment,
   UrlSegmentGroup,
 } from '../src/url_tree';
 
@@ -444,6 +445,35 @@ describe('url serializer', () => {
 
     it('should preserve query params and fragments after normalizing leading slashes', () => {
       expect(url.serialize(url.parse('///test?foo=bar#frag'))).toEqual('/test?foo=bar#frag');
+    });
+  });
+
+  describe('leading empty path segments', () => {
+    it('should not serialize a parsed primary outlet as a protocol-relative URL', () => {
+      const tree = url.parse('/(primary://attacker.example/collect)?token=RESET_TOKEN');
+
+      expect(url.serialize(tree)).toEqual('/attacker.example/collect?token=RESET_TOKEN');
+    });
+
+    it('should emit one slash for multiple leading empty primary segments', () => {
+      const tree = url.parse('/attacker.example/collect');
+      tree.root.children[PRIMARY_OUTLET].segments.unshift(
+        new UrlSegment('', {}),
+        new UrlSegment('', {}),
+      );
+
+      expect(url.serialize(tree)).toEqual('/attacker.example/collect');
+    });
+
+    it('should preserve secondary outlets, query params, and fragments when serializing', () => {
+      const tree = url.parse(
+        '/attacker.example/collect(popup:compose)?token=RESET_TOKEN#OAUTH_TOKEN',
+      );
+      tree.root.children[PRIMARY_OUTLET].segments.unshift(new UrlSegment('', {}));
+
+      expect(url.serialize(tree)).toEqual(
+        '/attacker.example/collect(popup:compose)?token=RESET_TOKEN#OAUTH_TOKEN',
+      );
     });
   });
 

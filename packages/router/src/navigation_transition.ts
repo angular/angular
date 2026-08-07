@@ -79,7 +79,7 @@ import {
 } from './router_state';
 import type {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
-import {UrlSerializer, UrlTree} from './url_tree';
+import {canonicalizeUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {abortSignalToObservable} from './utils/abort_signal_to_observable';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
@@ -428,7 +428,10 @@ export class NavigationTransitions {
     untracked(() => {
       this.transitions?.next({
         ...request,
-        extractedUrl: this.urlHandlingStrategy.extract(request.rawUrl),
+        extractedUrl: canonicalizeUrlTree(
+          this.urlHandlingStrategy.extract(request.rawUrl),
+          this.urlSerializer,
+        ),
         targetSnapshot: null,
         targetRouterState: null,
         guards: {canActivateChecks: [], canDeactivateChecks: []},
