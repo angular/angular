@@ -102,6 +102,7 @@ export {
   ɵɵconditional,
   ɵɵconditionalBranchCreate,
   ɵɵconditionalCreate,
+  ɵɵconditionalMetadata,
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
   ɵɵcontrol,
@@ -293,6 +294,8 @@ export {
   ControlFlowBlockType as ɵControlFlowBlockType,
   DeferBlockData as ɵDeferBlockData,
   ForLoopBlockData as ɵForLoopBlockData,
+  IfBlockData as ɵIfBlockData,
+  SwitchBlockData as ɵSwitchBlockData,
 } from './render3/util/control_flow_types';
 export {
   ExternalCoreGlobalUtils as ɵExternalCoreGlobalUtils,

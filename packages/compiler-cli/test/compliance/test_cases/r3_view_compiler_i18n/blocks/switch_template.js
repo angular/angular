@@ -73,6 +73,7 @@ export class MyApp {
       $r3$.ɵɵelementStart(0, "div");
       $r3$.ɵɵi18nStart(1, 0);
       $r3$.ɵɵconditionalCreate(2, MyApp_Case_2_Template, 2, 0)(3, MyApp_Case_3_Template, 2, 0)(4, MyApp_Case_4_Template, 2, 0);
+      (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(2, "switch", 3, 2, "count", [["0"], ["1"], []]);
       $r3$.ɵɵi18nEnd();
       $r3$.ɵɵelementEnd();
     }
