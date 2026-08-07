@@ -17,7 +17,7 @@ Common ARIA attributes to target in CSS:
 
 ---
 
-**CRITICAL**: Before using this package, it must be installed via the package manager. Confirm that it has been installed in the project. Use `npm install @angular/aria` to install if necessary.
+**CRITICAL**: Before using this package, confirm that `@angular/aria` is installed. If necessary, install it using the package manager configured for the project.
 
 ## 1. Accordion
 
