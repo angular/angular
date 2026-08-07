@@ -7,24 +7,30 @@
  */
 
 import {Component, computed, input, output} from '@angular/core';
+import {DecimalPipe} from '@angular/common';
 
 import {BargraphNode} from '../../../record-formatter/bargraph-formatter/bargraph-formatter';
+import {ElementProfile} from '../../../../../../../../../protocol';
 
 interface BarData {
   label: string;
   count: number;
   width: number;
   time: number;
-  text: string;
+  original: ElementProfile;
 }
 
 @Component({
   selector: 'ng-bar-chart',
   templateUrl: './bar-chart.component.html',
-  styleUrls: ['./bar-chart.component.scss'],
+  styleUrl: './bar-chart.component.scss',
+  imports: [DecimalPipe],
 })
 export class BarChartComponent {
   readonly data = input<BargraphNode[]>([]);
+
+  /** The `ElementProfile` that corresponds to a bar graph node to highlight. */
+  readonly highlighted = input<ElementProfile | null>(null);
 
   readonly internalData = computed(() => {
     const nodes = this.data() ?? [];
@@ -34,19 +40,13 @@ export class BarChartComponent {
       values.push({
         label: node.label,
         count: node.count ?? 1,
-        width: (node.value / max) * 100,
+        width: Math.max(1, (node.value / max) * 100),
         time: node.value,
-        text: createBarText(node),
+        original: node.original,
       });
     }
     return values;
   });
 
   readonly barClick = output<BargraphNode>();
-}
-
-export function createBarText(bar: BargraphNode) {
-  return `${bar.label} | ${bar.value.toFixed(1)} ms | ${bar.count} ${
-    bar.count === 1 ? 'instance' : 'instances'
-  }`;
 }
