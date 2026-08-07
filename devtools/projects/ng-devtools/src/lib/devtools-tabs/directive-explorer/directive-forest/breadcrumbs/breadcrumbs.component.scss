@@ -13,6 +13,8 @@
     border: none;
     cursor: pointer;
     color: var(--tertiary-contrast);
+    display: flex;
+    align-items: center;
 
     &.hidden {
       visibility: hidden;
