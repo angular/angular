@@ -19,11 +19,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig({
-        // This is the default in Angular apps so we enable it to ensure consistent behavior.
-        strict: true,
-        strictTemplates: true,
-      });
+      env.tsconfig();
     });
 
     function extractMessage(diag: ts.Diagnostic) {
