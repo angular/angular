@@ -20,7 +20,8 @@ import {
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {dispatchEvent, sortedClassList, timeout, useAutoTick} from '@angular/private/testing';
-import {merge} from 'rxjs';
+import {merge, Subject} from 'rxjs';
+import {take} from 'rxjs/operators';
 import {
   AbstractControl,
   AsyncValidator,
@@ -1163,6 +1164,84 @@ describe('template-driven forms integration tests', () => {
         fixture.detectChanges();
 
         expect(event.defaultPrevented).toBe(false);
+      });
+
+      describe('awaitAsyncValidators', () => {
+        beforeEach(() => {
+          NgPendingAsyncValidator.subject = new Subject<null>();
+        });
+
+        it('should emit ngSubmit immediately when awaitAsyncValidators is false (default)', async () => {
+          const fixture = initTest(NgModelAwaitAsyncValidatorsForm, NgPendingAsyncValidator);
+          fixture.detectChanges();
+          await timeout();
+
+          const form = fixture.debugElement.children[0].injector.get(NgForm);
+          const submitted: Event[] = [];
+          form.ngSubmit.subscribe((e: Event) => submitted.push(e));
+
+          expect(form.status).toBe('PENDING');
+
+          dispatchEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+          fixture.detectChanges();
+
+          expect(submitted.length)
+            .withContext('Expected ngSubmit to fire immediately when awaitAsyncValidators is false')
+            .toBe(1);
+        });
+
+        it('should defer ngSubmit until async validators complete when awaitAsyncValidators is true', async () => {
+          const fixture = initTest(NgModelAwaitAsyncValidatorsForm, NgPendingAsyncValidator);
+          fixture.componentInstance.awaitAsyncValidators = true;
+          fixture.detectChanges();
+          await timeout();
+
+          const form = fixture.debugElement.children[0].injector.get(NgForm);
+          const submitted: Event[] = [];
+          form.ngSubmit.subscribe((e: Event) => submitted.push(e));
+
+          expect(form.status).toBe('PENDING');
+
+          dispatchEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+          fixture.detectChanges();
+
+          expect(submitted.length)
+            .withContext('Expected ngSubmit not to fire while form is PENDING')
+            .toBe(0);
+
+          NgPendingAsyncValidator.subject.next(null);
+          await timeout();
+          fixture.detectChanges();
+
+          expect(submitted.length)
+            .withContext('Expected ngSubmit to fire after async validators complete')
+            .toBe(1);
+        });
+
+        it('should emit ngSubmit immediately when awaitAsyncValidators is true but form is not PENDING', async () => {
+          const fixture = initTest(NgModelAwaitAsyncValidatorsForm, NgPendingAsyncValidator);
+          fixture.componentInstance.awaitAsyncValidators = true;
+          fixture.detectChanges();
+          await timeout();
+
+          const form = fixture.debugElement.children[0].injector.get(NgForm);
+
+          NgPendingAsyncValidator.subject.next(null);
+          await timeout();
+          fixture.detectChanges();
+
+          expect(form.status).not.toBe('PENDING');
+
+          const submitted: Event[] = [];
+          form.ngSubmit.subscribe((e: Event) => submitted.push(e));
+
+          dispatchEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+          fixture.detectChanges();
+
+          expect(submitted.length)
+            .withContext('Expected ngSubmit to fire immediately when form is not PENDING')
+            .toBe(1);
+        });
       });
     });
 
@@ -3123,4 +3202,37 @@ class NgModelNoMinMaxValidator {
 })
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;
+}
+
+@Directive({
+  selector: '[ng-pending-async-validator]',
+  providers: [
+    {
+      provide: NG_ASYNC_VALIDATORS,
+      useExisting: forwardRef(() => NgPendingAsyncValidator),
+      multi: true,
+    },
+  ],
+  standalone: false,
+})
+class NgPendingAsyncValidator implements AsyncValidator {
+  static subject = new Subject<null>();
+
+  validate(_c: AbstractControl) {
+    return NgPendingAsyncValidator.subject.asObservable().pipe(take(1));
+  }
+}
+
+@Component({
+  selector: 'ng-model-await-async-validators-form',
+  template: `
+    <form [awaitAsyncValidators]="awaitAsyncValidators">
+      <input name="value" ngModel ng-pending-async-validator />
+    </form>
+  `,
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
+})
+class NgModelAwaitAsyncValidatorsForm {
+  awaitAsyncValidators = false;
 }

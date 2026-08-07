@@ -14,6 +14,7 @@ import {
   forwardRef,
   Inject,
   Input,
+  OnDestroy,
   Optional,
   Provider,
   Self,
@@ -21,6 +22,8 @@ import {
   untracked,
   ɵWritable as Writable,
 } from '@angular/core';
+import {of, Subject, Subscription} from 'rxjs';
+import {filter, map, switchMap, take} from 'rxjs/operators';
 
 import {AbstractControl, FormHooks, FormSubmittedEvent} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
@@ -124,7 +127,7 @@ const resolvedPromise = (() => Promise.resolve())();
   exportAs: 'ngForm',
   standalone: false,
 })
-export class NgForm extends ControlContainer implements Form, AfterViewInit {
+export class NgForm extends ControlContainer implements Form, AfterViewInit, OnDestroy {
   /**
    * @description
    * Returns whether the form submission has been triggered.
@@ -161,6 +164,23 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
    */
   @Input('ngFormOptions') options!: {updateOn?: FormHooks};
 
+  /**
+   * @description
+   * When set to `true`, the `ngSubmit` event will not emit until all pending async validators
+   * on the form have completed. Defaults to `false` to preserve existing behavior.
+   *
+   * @usageNotes
+   * ```html
+   * <form (ngSubmit)="onSubmit()" awaitAsyncValidators>
+   *   ...
+   * </form>
+   * ```
+   */
+  @Input() awaitAsyncValidators: boolean = false;
+
+  private readonly _pendingSubmit$ = new Subject<Event>();
+  private _pendingSubmitSub!: Subscription;
+
   constructor(
     @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator | ValidatorFn)[],
     @Optional()
@@ -177,6 +197,26 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       composeValidators(validators),
       composeAsyncValidators(asyncValidators),
     );
+    this._pendingSubmitSub = this._pendingSubmit$
+      .pipe(
+        switchMap((event) =>
+          this.awaitAsyncValidators && this.form.status === 'PENDING'
+            ? (() => {
+                const statusChanges$ = this.form.statusChanges.pipe(
+                  filter((status) => status !== 'PENDING'),
+                  take(1),
+                  map(() => event),
+                );
+                this.form._updateTreeValidity({emitEvent: true});
+                return statusChanges$;
+              })()
+            : of(event),
+        ),
+      )
+      .subscribe((event) => {
+        this.ngSubmit.emit(event);
+        this.form._events.next(new FormSubmittedEvent(this.control));
+      });
   }
 
   /** @docs-private */
@@ -334,11 +374,18 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   onSubmit($event: Event): boolean {
     this.submittedReactive.set(true);
     syncPendingControls(this.form, this._directives);
-    this.ngSubmit.emit($event);
-    this.form._events.next(new FormSubmittedEvent(this.control));
+
+    this._pendingSubmit$.next($event);
+
     // Forms with `method="dialog"` have some special behavior
     // that won't reload the page and that shouldn't be prevented.
     return ($event?.target as HTMLFormElement | null)?.method === 'dialog';
+  }
+
+  /** @nodoc */
+  ngOnDestroy(): void {
+    this._pendingSubmit$.complete();
+    this._pendingSubmitSub.unsubscribe();
   }
 
   /**
