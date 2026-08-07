@@ -186,12 +186,18 @@ export function convertToDevtoolsSignalGraph(
 
   // Add cluster nodes and edges
   for (const cluster of clusters) {
+    const isPrivate = Array.from(cluster.nodes).every((id) => {
+      const node = debugSignalGraph.nodes.find((n) => n.id === id);
+      return node?.isPrivate === true;
+    });
+
     signalGraph.nodes.push({
       id: cluster.id,
       nodeType: 'cluster',
       clusterType: cluster.type,
       label: cluster.name,
       previewNode: cluster.previewNode,
+      ...(isPrivate ? {isPrivate: true} : {}),
     });
     clusterIdxMap.set(cluster.id, signalGraph.nodes.length - 1);
 

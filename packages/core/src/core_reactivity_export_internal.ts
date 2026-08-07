@@ -18,6 +18,7 @@ export {
 } from './render3/reactivity/signal';
 export {linkedSignal} from './render3/reactivity/linked_signal';
 export {untracked} from './render3/reactivity/untracked';
+export {privatelyTracked as ɵprivatelyTracked} from './render3/reactivity/privately_tracked';
 export {
   CreateEffectOptions,
   effect,

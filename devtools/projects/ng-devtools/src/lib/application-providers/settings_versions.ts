@@ -38,6 +38,7 @@ export interface SettingsDataV2 extends SettingsDataBase {
   'theme@general': ThemePreference;
   'active_tab@general': string;
   'show_hydration_overlays@components': boolean;
+  'show_private_signals@components': boolean;
 }
 
 export interface SettingsDataV1 extends SettingsDataBase {

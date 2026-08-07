@@ -102,6 +102,7 @@ export function applyMigrations(
       // No change
       'theme@general': currData['theme@general'],
       'show_hydration_overlays@components': currData['show_hydration_overlays@components'],
+      'show_private_signals@components': false,
 
       // Convert `timing_api_enabled` (cat: `general`) key to `performance_track` (cat: `profiling`).
       'performance_track@profiling': currData['timing_api_enabled@general'],

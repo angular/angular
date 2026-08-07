@@ -35,6 +35,15 @@
       />
       <label for="show-hydration-overlays">Show hydration overlays</label>
     </li>
+    <li>
+      <input
+        id="show-private-signals"
+        type="checkbox"
+        (change)="settings.showPrivateSignals.set($event.target.checked)"
+        [checked]="settings.showPrivateSignals()"
+      />
+      <label for="show-private-signals">Show private signals in signal graph</label>
+    </li>
   </ul>
 
   <h3>Profiling</h3>

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal, untracked, ɵWritable} from '@angular/core';
+import {computed, ɵprivatelyTracked as privatelyTracked, Signal, untracked, ɵWritable} from '@angular/core';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
 import type {ReadonlyFieldTree, TreeValidationResult, ValidationResult} from '../api/types';
 import {isArray} from '../util/type_guards';
@@ -154,18 +154,20 @@ export class FieldValidationState implements ValidationState {
    * The full set of synchronous tree errors visible to this field. This includes ones that are
    * targeted at a descendant field rather than at this field.
    */
-  readonly rawSyncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(
-    () => {
-      if (this.shouldSkipValidation()) {
-        return [];
-      }
+  readonly rawSyncTreeErrors: Signal<ValidationError.WithFieldTree[]> = privatelyTracked(() =>
+    computed(
+      () => {
+        if (this.shouldSkipValidation()) {
+          return [];
+        }
 
-      return [
-        ...this.node.logicNode.logic.syncTreeErrors.compute(this.node.context),
-        ...(this.node.structure.parent?.validationState.rawSyncTreeErrors() ?? []),
-      ];
-    },
-    {equal: shallowArrayEquals},
+        return [
+          ...this.node.logicNode.logic.syncTreeErrors.compute(this.node.context),
+          ...(this.node.structure.parent?.validationState.rawSyncTreeErrors() ?? []),
+        ];
+      },
+      {equal: shallowArrayEquals},
+    ),
   );
 
   /**
@@ -174,46 +176,51 @@ export class FieldValidationState implements ValidationState {
    * added. From the perspective of the field state they are either there or not, they are never in a
    * pending state.
    */
-  readonly syncErrors: Signal<ValidationError.WithFieldTree[]> = computed(
-    () => {
-      // Short-circuit running validators if validation doesn't apply to this field.
-      if (this.shouldSkipValidation()) {
-        return [];
-      }
+  readonly syncErrors: Signal<ValidationError.WithFieldTree[]> = privatelyTracked(() =>
+    computed(
+      () => {
+        // Short-circuit running validators if validation doesn't apply to this field.
+        if (this.shouldSkipValidation()) {
+          return [];
+        }
 
-      return [
-        ...this.node.logicNode.logic.syncErrors.compute(this.node.context),
-        ...this.syncTreeErrors(),
-        ...normalizeErrors(this.node.submitState.submissionErrors()),
-      ];
-    },
-    {equal: shallowArrayEquals},
+        return [
+          ...this.node.logicNode.logic.syncErrors.compute(this.node.context),
+          ...this.syncTreeErrors(),
+          ...normalizeErrors(this.node.submitState.submissionErrors()),
+        ];
+      },
+      {equal: shallowArrayEquals},
+    ),
   );
 
   /**
    * Whether the field is considered valid according solely to its synchronous validators.
    * Errors resulting from a previous submit attempt are also considered for this state.
    */
-  readonly syncValid: Signal<boolean> = computed(() => {
-    // Short-circuit checking children if validation doesn't apply to this field.
-    if (this.shouldSkipValidation()) {
-      return true;
-    }
+  readonly syncValid: Signal<boolean> = privatelyTracked(() =>
+    computed(() => {
+      // Short-circuit checking children if validation doesn't apply to this field.
+      if (this.shouldSkipValidation()) {
+        return true;
+      }
 
-    return this.node.structure.reduceChildren(
-      this.syncErrors().length === 0,
-      (child, value) => value && child.validationState.syncValid(),
-      shortCircuitFalse,
-    );
-  });
+      return this.node.structure.reduceChildren(
+        this.syncErrors().length === 0,
+        (child, value) => value && child.validationState.syncValid(),
+        shortCircuitFalse,
+      );
+    }),
+  );
 
   /**
    * The synchronous tree errors visible to this field that are specifically targeted at this field
    * rather than a descendant.
    */
-  readonly syncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(
-    () => this.rawSyncTreeErrors().filter((err) => err.fieldTree === this.node.fieldTree),
-    {equal: shallowArrayEquals},
+  readonly syncTreeErrors: Signal<ValidationError.WithFieldTree[]> = privatelyTracked(() =>
+    computed(() => this.rawSyncTreeErrors().filter((err) => err.fieldTree === this.node.fieldTree), {
+      equal: shallowArrayEquals,
+    }),
   );
 
   /**
@@ -221,21 +228,24 @@ export class FieldValidationState implements ValidationState {
    * targeted at a descendant field rather than at this field, as well as sentinel 'pending' values
    * indicating that the validator is still running and an error could still occur.
    */
-  readonly rawAsyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(
-    () => {
-      // Short-circuit running validators if validation doesn't apply to this field.
-      if (this.shouldSkipValidation()) {
-        return [];
-      }
+  readonly rawAsyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = privatelyTracked(
+    () =>
+      computed(
+        () => {
+          // Short-circuit running validators if validation doesn't apply to this field.
+          if (this.shouldSkipValidation()) {
+            return [];
+          }
 
-      return [
-        // TODO: add field in `validateAsync` and remove this map
-        ...this.node.logicNode.logic.asyncErrors.compute(this.node.context),
-        // TODO: does it make sense to filter this to errors in this subtree?
-        ...(this.node.structure.parent?.validationState.rawAsyncErrors() ?? []),
-      ];
-    },
-    {equal: shallowArrayEquals},
+          return [
+            // TODO: add field in `validateAsync` and remove this map
+            ...this.node.logicNode.logic.asyncErrors.compute(this.node.context),
+            // TODO: does it make sense to filter this to errors in this subtree?
+            ...(this.node.structure.parent?.validationState.rawAsyncErrors() ?? []),
+          ];
+        },
+        {equal: shallowArrayEquals},
+      ),
   );
 
   /**
@@ -243,21 +253,24 @@ export class FieldValidationState implements ValidationState {
    * rather than a descendant. This also includes all 'pending' sentinel values, since those could
    * theoretically result in errors for this field.
    */
-  readonly asyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(
-    () => {
-      if (this.shouldSkipValidation()) {
-        return [];
-      }
-      return this.rawAsyncErrors().filter(
-        (err) => err === 'pending' || err.fieldTree === this.node.fieldTree,
-      );
-    },
-    {equal: shallowArrayEquals},
+  readonly asyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = privatelyTracked(() =>
+    computed(
+      () => {
+        if (this.shouldSkipValidation()) {
+          return [];
+        }
+        return this.rawAsyncErrors().filter(
+          (err) => err === 'pending' || err.fieldTree === this.node.fieldTree,
+        );
+      },
+      {equal: shallowArrayEquals},
+    ),
   );
 
-  readonly parseErrors: Signal<ValidationError.WithFormField[]> = computed(
-    () => this.node.formFieldBindings().flatMap((field) => field.parseErrors()),
-    {equal: shallowArrayEquals},
+  readonly parseErrors: Signal<ValidationError.WithFormField[]> = privatelyTracked(() =>
+    computed(() => this.node.formFieldBindings().flatMap((field) => field.parseErrors()), {
+      equal: shallowArrayEquals,
+    }),
   );
 
   /**
@@ -363,12 +376,14 @@ export class FieldValidationState implements ValidationState {
    * Indicates whether validation should be skipped for this field because it is hidden, disabled,
    * or readonly.
    */
-  readonly shouldSkipValidation = computed(
-    () =>
-      this.node.hidden() ||
-      this.node.disabled() ||
-      this.node.readonly() ||
-      this.node.structure.isOrphaned(),
+  readonly shouldSkipValidation = privatelyTracked(() =>
+    computed(
+      () =>
+        this.node.hidden() ||
+        this.node.disabled() ||
+        this.node.readonly() ||
+        this.node.structure.isOrphaned(),
+    ),
   );
 }
 

@@ -40,6 +40,7 @@ describe('applyMigrations', () => {
       'theme@general': 'dark',
       'active_tab@general': 'Profiler',
       'show_hydration_overlays@components': false,
+      'show_private_signals@components': false,
     } satisfies SettingsDataV2);
   });
 });

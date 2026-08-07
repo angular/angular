@@ -44,4 +44,10 @@ export class Settings {
     category: 'components',
     initialValue: false,
   });
+
+  readonly showPrivateSignals = this.settingsStore.create({
+    key: 'show_private_signals',
+    category: 'components',
+    initialValue: false,
+  });
 }

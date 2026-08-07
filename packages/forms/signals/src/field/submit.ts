@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
+import {
+  computed,
+  linkedSignal,
+  ɵprivatelyTracked as privatelyTracked,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import {ValidationError} from '../api/rules/validation/validation_errors';
 import type {FieldNode} from './node';
 
@@ -18,16 +25,18 @@ export class FieldSubmitState {
    * Whether this field was directly submitted (as opposed to indirectly by a parent field being submitted)
    * and is still in the process of submitting.
    */
-  readonly selfSubmitting = signal<boolean>(false);
+  readonly selfSubmitting = privatelyTracked(() => signal<boolean>(false));
 
   /** Submission errors that are associated with this field. */
   readonly submissionErrors: WritableSignal<readonly ValidationError.WithFieldTree[]>;
 
   constructor(private readonly node: FieldNode) {
-    this.submissionErrors = linkedSignal({
-      source: this.node.structure.value,
-      computation: () => [] as readonly ValidationError.WithFieldTree[],
-    });
+    this.submissionErrors = privatelyTracked(() =>
+      linkedSignal({
+        source: this.node.structure.value,
+        computation: () => [] as readonly ValidationError.WithFieldTree[],
+      }),
+    );
   }
 
   /**
