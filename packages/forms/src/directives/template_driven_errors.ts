@@ -76,3 +76,13 @@ export function modelGroupParentException(): Error {
     ${ngModelGroupExample}`,
   );
 }
+
+export function missingFormContainerException(path: string[]): Error {
+  const pathLabel = path.join(' -> ');
+  const parentPathLabel =
+    path.length > 1 ? `'${path.slice(0, -1).join("' -> '")}'` : 'the expected parent group';
+  return new RuntimeError(
+    RuntimeErrorCode.NGFORM_MISSING_CONTAINER,
+    `Cannot register a form control or ngModelGroup because the parent ngModelGroup ${parentPathLabel} was not found on the form during deferred registration. The control path is '${pathLabel}'. Ensure the parent ngModelGroup exists and has not been removed before the child registers.`,
+  );
+}

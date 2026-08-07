@@ -29,9 +29,11 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NG_VALUE_ACCESSOR_NOT_PROVIDED = 1200,
     // (undocumented)
+    NGFORM_MISSING_CONTAINER = 1354,
+    // (undocumented)
     NGMODEL_IN_FORM_GROUP = 1350,
     // (undocumented)
-    NGMODEL_IN_FORM_GROUP_NAME = 1351,
+    NGMODEL_IN_FORM_GROUP_NAME = 1351,  
     // (undocumented)
     NGMODEL_WITHOUT_NAME = 1352,
     // (undocumented)

@@ -32,6 +32,9 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    */
   _parent!: ControlContainer;
 
+  /** @internal */
+  _destroyed = false;
+
   /** @docs-private */
   ngOnInit(): void {
     this._checkParentType();
@@ -41,6 +44,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
 
   /** @docs-private */
   ngOnDestroy(): void {
+    this._destroyed = true;
     // Remove the group from its parent group.
     this.formDirective?.removeFormGroup(this);
   }
