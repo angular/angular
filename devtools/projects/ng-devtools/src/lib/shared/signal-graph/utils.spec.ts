@@ -31,6 +31,7 @@ const regularSignalNode: DevtoolsSignalGraphNode = {
     preview: '',
     type: PropType.Number,
   },
+  watched: false,
 };
 
 const compoundNode: DevtoolsSignalGraphNode = {
