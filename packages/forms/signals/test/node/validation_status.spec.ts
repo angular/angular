@@ -244,6 +244,36 @@ describe('validation status', () => {
       expect(f().invalid()).toBe(true);
     });
 
+    it('should support the simple async validator overload', async () => {
+      const f = form(
+        signal('VALID'),
+        (p) => {
+          validateAsync(p, async ({value}) => {
+            return value() === 'VALID' ? null : [{kind: 'custom'}];
+          });
+        },
+        {injector},
+      );
+
+      await Promise.resolve();
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(true);
+      expect(f().invalid()).toBe(false);
+
+      f().value.set('INVALID');
+
+      // Trigger change detection to notify resource signal dependencies
+      appRef.tick();
+      await Promise.resolve();
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(true);
+    });
+
     it('should affect validity of targeted field', async () => {
       let res: Resource<unknown>;
 

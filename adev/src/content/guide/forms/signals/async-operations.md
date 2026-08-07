@@ -244,7 +244,7 @@ TIP: See the [httpResource API documentation](api/common/http/httpResource) for 
 
 Most applications should use `validateHttp()` for async validation. It handles HTTP requests with minimal configuration and covers the majority of use cases.
 
-`validateAsync()` is a lower-level API that exposes Angular's resource primitive directly. It offers complete control but requires more code and familiarity with Angular's resource API.
+`validateAsync()` is a lower-level API that exposes Angular's resource primitive. It supports both a simple async function for standard checks and full resource configuration for complete control, which requires more code and familiarity with Angular's resource API.
 
 Consider `validateAsync()` only when `validateHttp()` can't meet your needs. Some examples include:
 
@@ -253,9 +253,54 @@ Consider `validateAsync()` only when `validateHttp()` can't meet your needs. Som
 - **Complex retry logic** - Custom backoff strategies or conditional retries
 - **Direct resource access** - When you need the full resource lifecycle
 
-### Creating a custom validation rule
+### Using a simple async validator
 
-The `validateAsync()` function requires four properties: `params`, `factory`, `onSuccess`, and `onError`. The `params` function returns the parameters for your resource, while `factory` creates the resource:
+Pass an async validator function that receives the field context and returns validation errors or `null` or `undefined`. You can optionally supply a config object to handle debouncing, conditional execution (`when`), or error handling (`onError`):
+
+```ts
+import {Component, inject, signal} from '@angular/core';
+import {FieldContext, form, FormField, validateAsync} from '@angular/forms/signals';
+import {UsernameValidator} from './username-validator';
+
+@Component({
+  selector: 'app-registration',
+  imports: [FormField],
+  template: `...`,
+})
+export class Registration {
+  registrationModel = signal({username: ''});
+  private usernameValidator = inject(UsernameValidator);
+
+  registrationForm = form(this.registrationModel, (schemaPath) => {
+    validateAsync(schemaPath.username, (ctx) => this.validateUsername(ctx), {
+      debounce: 300,
+      when: ({value}) => value().length >= 3,
+      onError: (error) => ({
+        kind: 'serverError',
+        message: 'Could not verify username',
+      }),
+    });
+  });
+
+  private async validateUsername({value}: FieldContext<string>) {
+    const result = await this.usernameValidator.checkAvailability(value());
+
+    return result?.available ? null : {kind: 'usernameTaken', message: 'Username taken'};
+  }
+}
+```
+
+#### Optional Configuration Options
+
+| **Config Option** | **Type**                  | **Description**                                                                                                        |
+| ----------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `debounce`        | `number \| DebounceTimer` | Duration in milliseconds to wait before triggering the async operation, or a function returning a timing promise.      |
+| `when`            | `LogicFn`                 | A function that receives the field context and returns `true` if the async validation should run.                      |
+| `onError`         | `Function`                | A handler for errors thrown by the validator. Defaults to an `{ kind: 'asyncError', message: ... }` object if omitted. |
+
+### Using Resouce-based validator
+
+For advanced control, pass an options object containing `params`, `factory`, `onSuccess`, and `onError`. The params function returns parameters for your resource, while `factory` creates the resource:
 
 ```ts
 import {Component, inject, signal, resource, Signal} from '@angular/core';
