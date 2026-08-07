@@ -7,7 +7,8 @@
  */
 
 export function eventTargetPatch(_global: any, api: _ZonePrivate) {
-  if ((Zone as any)[api.symbol('patchEventTarget')]) {
+  const patchSym = api.symbol('patchEventTarget');
+  if ((Zone as any).hasOwnProperty(patchSym) && (Zone as any)[patchSym]) {
     // EventTarget is already patched.
     return;
   }

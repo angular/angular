@@ -488,7 +488,11 @@ export function patchEventTarget(
 
     const compare = patchOptions?.diff || compareTaskCallbackVsDelegate;
 
-    const unpatchedEvents: string[] = (Zone as any)[zoneSymbol('UNPATCHED_EVENTS')];
+    const unpatchedSymbol = zoneSymbol('UNPATCHED_EVENTS');
+    const unpatchedEvents: string[] = (Zone as any).hasOwnProperty(unpatchedSymbol)
+      ? (Zone as any)[unpatchedSymbol]
+      : [];
+
     const passiveEvents: string[] = _global[zoneSymbol('PASSIVE_EVENTS')];
 
     function copyEventListenerOptions(options: any) {
