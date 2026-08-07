@@ -1,3 +1,20 @@
+<a name="22.2.0-next.1"></a>
+# 22.2.0-next.1 (2026-08-07)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cfe2cda110](https://github.com/angular/angular/commit/cfe2cda1100bb84e2ecf954687126c4d30212d07) | fix | initialize hydration triggers after late runtime activation |
+| [e43eb96341](https://github.com/angular/angular/commit/e43eb96341b692525743a1f3aa1380ce21a9dd02) | fix | warn when style property bindings receive invalid values |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ef4dfead83](https://github.com/angular/angular/commit/ef4dfead83ea8b3843b98a17ac572f2a380b1c46) | fix | avoid aborting completed requests in FetchBackend |
+| [6a0789dc7f](https://github.com/angular/angular/commit/6a0789dc7f0ac9d1249c4d9f315e83424867169b) | fix | respect content-type charset in fetch backend text decoder |
+| [bb78286e5e](https://github.com/angular/angular/commit/bb78286e5e729d1e1fcfd2733d88351a38083ef5) | fix | run root interceptors in the terminal request chain |
+| [280d09b160](https://github.com/angular/angular/commit/280d09b16011e4f53f9e696fd95964943c6dcbfa) | fix | strip RFC 6265 DQUOTE characters and handle URIError in parseCookieValue |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.1.1"></a>
 # 22.1.1 (2026-08-06)
 ### core
