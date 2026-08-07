@@ -203,7 +203,11 @@ export class DeferredSymbolTracker {
     const visit = (node: ts.Node): void => {
       // Don't record references from the declaration itself or inside
       // type nodes which will be stripped from the JS output.
-      if (node === importDecl || ts.isTypeNode(node)) {
+      // Note that `ts.isTypeNode` returns `true` for `ExpressionWithTypeArguments`,
+      // which is used for both `extends` and `implements` heritage clauses. An `extends`
+      // clause on a class is a value expression that survives in the emitted JavaScript,
+      // so references within it must be recorded.
+      if (node === importDecl || (ts.isTypeNode(node) && !isClassExtendsClause(node))) {
         return;
       }
 
@@ -233,4 +237,24 @@ export class DeferredSymbolTracker {
     visit(importDecl.getSourceFile());
     return results;
   }
+}
+
+/**
+ * Determines whether a given node is an `ExpressionWithTypeArguments` representing
+ * the `extends` clause of a class declaration or class expression.
+ */
+function isClassExtendsClause(node: ts.Node): boolean {
+  if (!ts.isExpressionWithTypeArguments(node)) {
+    return false;
+  }
+  const heritageClause = node.parent;
+  if (
+    heritageClause === undefined ||
+    !ts.isHeritageClause(heritageClause) ||
+    heritageClause.token !== ts.SyntaxKind.ExtendsKeyword
+  ) {
+    return false;
+  }
+  const parent = heritageClause.parent;
+  return parent !== undefined && (ts.isClassDeclaration(parent) || ts.isClassExpression(parent));
 }

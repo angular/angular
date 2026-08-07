@@ -423,6 +423,21 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should not drop static import when a sibling symbol is referenced in a class extends clause",
+      "inputFiles": ["defer_extends_clause.ts", "defer_extends_clause_deps.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_extends_clause_template.js",
+              "generated": "defer_extends_clause.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
