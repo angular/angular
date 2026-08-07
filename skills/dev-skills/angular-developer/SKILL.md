@@ -94,10 +94,12 @@ When formatting values in templates, creating custom pipes, or reusing pipe-like
 
 - **Pipes**: Built-in pipe imports, custom pipe naming and implementation, pure vs impure pipes, and TypeScript reuse patterns using standalone formatting functions or extracted plain functions. Read [pipes.md](references/pipes.md)
 
-## Angular Aria
+## Accessibility
 
-When building accessible custom components for any of the following patterns: Accordion, Listbox, Combobox, Menu, Tabs, Toolbar, Tree, Grid, consult the following reference:
+When building accessible Angular applications and components, consult the following reference:
 
+- **Accessibility**: Semantic HTML, ARIA attributes, keyboard navigation, focus management, forms, dialogs, and accessibility testing. Read [accessibility.md](references/accessibility.md)
+- **Angular CDK A11Y**: Use `@angular/cdk/a11y` for advanced focus management, live announcements, and accessibility helpers. Read [accessibility.md](references/accessibility.md)
 - **Angular Aria Components**: Building headless, accessible components (Accordion, Listbox, Combobox, Menu, Tabs, Toolbar, Tree, Grid) and styling ARIA attributes. Read [angular-aria.md](references/angular-aria.md)
 
 ## Routing
