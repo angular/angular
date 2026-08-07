@@ -36,7 +36,10 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     return this._diagnostics;
   }
 
-  constructor(private resolver: TypeCheckSourceResolver) {}
+  constructor(
+    private resolver: TypeCheckSourceResolver,
+    private registry: DomElementSchemaRegistry = REGISTRY,
+  ) {}
 
   checkElement(
     id: TypeCheckId,
@@ -50,7 +53,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     // in the registry are without a namespace.
     const name = tagName.replace(REMOVE_XHTML_REGEX, '');
 
-    if (!REGISTRY.hasElement(name, schemas)) {
+    if (!this.registry.hasElement(name, schemas)) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const schemas = `'${hostIsStandalone ? '@Component' : '@NgModule'}.schemas'`;
@@ -61,7 +64,12 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
           : 'part of this module'
       }.\n`;
       if (name.indexOf('-') > -1) {
-        errorMsg += `2. If '${name}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemas} of this component to suppress this message.`;
+        errorMsg += this.registry.hasCustomElementsManifestSchemas()
+          ? `2. If '${name}' is a Web Component, verify that it is declared by one of the Custom Elements Manifests configured in 'angularCompilerOptions.customElementsManifests'.`
+          : `2. If '${name}' is a Web Component, configure its Custom Elements Manifest in 'angularCompilerOptions.customElementsManifests'.`;
+        errorMsg +=
+          `\n3. If no Custom Elements Manifest is available for '${name}', add 'CUSTOM_ELEMENTS_SCHEMA' to the ${schemas} of this component.` +
+          `\n4. To allow any element add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
       } else {
         errorMsg += `2. To allow any element add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
       }
@@ -86,7 +94,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     schemas: SchemaMetadata[],
     hostIsStandalone: boolean,
   ): void {
-    const report = REGISTRY.validateProperty(name);
+    const report = this.registry.validateProperty(name);
     if (report.error) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
       const diag = makeTemplateDiagnostic(
@@ -101,7 +109,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
       return;
     }
 
-    if (!REGISTRY.hasProperty(tagName, name, schemas)) {
+    if (!this.registry.hasProperty(tagName, name, schemas)) {
       const mapping = this.resolver.getTemplateSourceMapping(id);
 
       const decorator = hostIsStandalone ? '@Component' : '@NgModule';
@@ -111,6 +119,10 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
         errorMsg +=
           `\n1. If '${name}' is an Angular directive, then add 'CommonModule' to the '${decorator}.imports' of this component.` +
           `\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the ${schemas} of this component.`;
+      } else if (this.registry.isCustomElementFromManifest(tagName)) {
+        errorMsg +=
+          `\nThe configured Custom Elements Manifest for '${tagName}' does not declare a bindable property named '${name}'. ` +
+          `Verify the binding name or regenerate the manifest from the web component library.`;
       } else if (tagName.indexOf('-') > -1) {
         errorMsg +=
           `\n1. If '${
@@ -143,7 +155,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     span: ParseSourceSpan,
     schemas: SchemaMetadata[],
   ): void {
-    const report = REGISTRY.validateProperty(name);
+    const report = this.registry.validateProperty(name);
     if (report.error) {
       const mapping = this.resolver.getHostBindingsMapping(id);
       const diag = makeTemplateDiagnostic(
@@ -159,7 +171,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
     }
 
     for (const tagName of element.tagNames) {
-      if (REGISTRY.hasProperty(tagName, name, schemas)) {
+      if (this.registry.hasProperty(tagName, name, schemas)) {
         continue;
       }
 

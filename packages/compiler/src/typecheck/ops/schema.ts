@@ -14,6 +14,7 @@ import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import {Context} from './context';
 import {getComponentTagName} from './selectorless';
+import {hasCustomElementsManifestProperty} from './custom_elements_manifest';
 
 /**
  * A `TcbOp` which feeds elements and unclaimed properties to the `DomSchemaChecker`.
@@ -66,12 +67,17 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
 
       if (isPropertyBinding && binding.name !== 'style' && binding.name !== 'class') {
         // A direct binding to a property.
-        const propertyName = REGISTRY.getMappedPropName(binding.name);
+        const tagName = isTemplateElement ? this.getTagName(element) : null;
+        const propertyName =
+          tagName !== null &&
+          hasCustomElementsManifestProperty(this.tcb.env.config, tagName, binding.name)
+            ? binding.name
+            : REGISTRY.getMappedPropName(binding.name);
 
         if (isTemplateElement) {
           this.tcb.domSchemaChecker.checkTemplateElementProperty(
             this.tcb.id,
-            this.getTagName(element),
+            tagName!,
             propertyName,
             binding.sourceSpan,
             this.tcb.schemas,

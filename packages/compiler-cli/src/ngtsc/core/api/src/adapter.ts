@@ -84,6 +84,25 @@ export interface NgCompilerAdapter
    * Resolved list of root directories explicitly set in, or inferred from, the tsconfig.
    */
   readonly rootDirs: ReadonlyArray<AbsoluteFsPath>;
+
+  /**
+   * Optional storage for Custom Elements Manifest load results reused across `NgCompiler`
+   * instances.
+   *
+   * Long-lived hosts that recreate compilers frequently (the language service) provide one so
+   * unchanged manifests are not re-parsed and re-validated on every program change. Single-shot
+   * compilations (command-line `ngc`) omit it. The stored entry is written and interpreted
+   * exclusively by the manifest loader, which validates it against current file contents before
+   * reuse.
+   */
+  readonly customElementsManifestCache?: {entry: unknown};
+
+  /**
+   * Records a non-TypeScript resource path whose existence can affect compilation even when the
+   * resource cannot currently be read. Long-lived hosts can use this to detect creation of a
+   * configured resource without requiring a TypeScript program update.
+   */
+  recordResourceDependency?(fileName: AbsoluteFsPath): void;
 }
 
 export interface SourceFileTypeIdentifier {
