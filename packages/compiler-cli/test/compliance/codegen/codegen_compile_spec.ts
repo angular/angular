@@ -55,8 +55,7 @@ function compileTests(fs: FileSystem, test: ComplianceTest): CompileResult {
 
   const verifyHost = new NgtscTestCompilerHost(fs, options);
   const extraPaths = test.compilerOptions?.['paths'] as unknown as
-    | Record<string, string[]>
-    | undefined;
+    Record<string, string[]> | undefined;
   const verifyProgram = ts.createProgram({
     rootNames: [...emittedFiles],
     options: {

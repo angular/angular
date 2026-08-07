@@ -2678,8 +2678,7 @@ describe('Animation', () => {
       const panels = () => Array.from(fixture.nativeElement.querySelectorAll('.panel'));
       const panelByText = (text: string) =>
         panels().find((el) => (el as HTMLElement).textContent?.includes(text)) as
-          | HTMLElement
-          | undefined;
+          HTMLElement | undefined;
 
       expect(panels().length).toBe(1);
       expect(panelByText('Panel A')).toBeTruthy();

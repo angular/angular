@@ -35,12 +35,7 @@ import {TemplateTypeChecker} from '../../src/ngtsc/typecheck/api';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
 type TsConfigOptionsValue =
-  | string
-  | boolean
-  | number
-  | null
-  | TsConfigOptionsValue[]
-  | {[key: string]: TsConfigOptionsValue};
+  string | boolean | number | null | TsConfigOptionsValue[] | {[key: string]: TsConfigOptionsValue};
 
 export type TsConfigOptions = {
   [key: string]: TsConfigOptionsValue;
