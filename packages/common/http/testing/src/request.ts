@@ -24,6 +24,8 @@ type TestRequestErrorOptions = {
   headers?: HttpHeaders | {[name: string]: string | string[]};
   status?: number;
   statusText?: string;
+  redirected?: boolean;
+  responseType?: ResponseType;
 };
 
 /**
@@ -74,6 +76,8 @@ export class TestRequest {
       headers?: HttpHeaders | {[name: string]: string | string[]};
       status?: number;
       statusText?: string;
+      redirected?: boolean;
+      responseType?: ResponseType;
     } = {},
   ): void {
     if (this.cancelled) {
@@ -85,6 +89,8 @@ export class TestRequest {
     body = _maybeConvertBody(this.request.responseType, body);
     let statusText: string | undefined = opts.statusText;
     let status: number = opts.status !== undefined ? opts.status : HttpStatusCode.Ok;
+    const responseType = opts.responseType;
+    const redirected = opts.redirected;
     if (opts.status === undefined) {
       if (body === null) {
         status = HttpStatusCode.NoContent;
@@ -97,10 +103,30 @@ export class TestRequest {
       throw new Error('statusText is required when setting a custom status.');
     }
     if (status >= 200 && status < 300) {
-      this.observer.next(new HttpResponse<any>({body, headers, status, statusText, url}));
+      this.observer.next(
+        new HttpResponse<any>({
+          body,
+          headers,
+          status,
+          statusText,
+          url,
+          redirected,
+          responseType,
+        }),
+      );
       this.observer.complete();
     } else {
-      this.observer.error(new HttpErrorResponse({error: body, headers, status, statusText, url}));
+      this.observer.error(
+        new HttpErrorResponse({
+          error: body,
+          headers,
+          status,
+          statusText,
+          url,
+          redirected,
+          responseType,
+        }),
+      );
     }
   }
 
@@ -126,6 +152,8 @@ export class TestRequest {
         status: opts.status || 0,
         statusText: opts.statusText || '',
         url: this.request.urlWithParams,
+        redirected: opts.redirected,
+        responseType: opts.responseType,
       }),
     );
   }
