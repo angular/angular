@@ -17,6 +17,8 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * @param path The target path to make readonly.
  * @param config Optional configuration object.
  *  - `when`: A reactive function that returns `true` when the field is readonly.
+ *  - `validate`: A reactive function that returns `true` when validation should still run even
+ *    though the field is readonly.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
@@ -28,7 +30,10 @@ import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
  */
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  config?: {when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>},
+  config?: {
+    when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+    validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+  },
 ): void;
 
 /**
@@ -44,7 +49,10 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   configOrLogic?:
-    | {when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>}
+    | {
+        when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+        validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+      }
     | NoInfer<LogicFn<TValue, boolean, TPathKind>>,
 ) {
   assertPathIsCurrent(path);
@@ -52,13 +60,17 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
   let logic: LogicFn<TValue, boolean, TPathKind>;
-  if (typeof configOrLogic === 'object' && configOrLogic !== null && 'when' in configOrLogic) {
-    logic = configOrLogic.when ?? (() => true);
-  } else if (typeof configOrLogic === 'function') {
+  let validate: LogicFn<TValue, boolean, TPathKind> | undefined;
+  if (typeof configOrLogic === 'function') {
     logic = configOrLogic;
   } else {
-    logic = () => true;
+    logic = configOrLogic?.when ?? (() => true);
+    validate = configOrLogic?.validate;
   }
 
   pathNode.builder.addReadonlyRule(logic);
+
+  if (validate) {
+    pathNode.builder.addForceValidateRule(validate);
+  }
 }
