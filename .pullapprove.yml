@@ -120,6 +120,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files.exclude('packages/core/primitives/*'), [
+          '.agent/skills/**/{*,.*}',
           'contributing-docs/public-api-surface.md',
           'dev-app/**/{*,.*}',
           'integration/**/{*,.*}',
