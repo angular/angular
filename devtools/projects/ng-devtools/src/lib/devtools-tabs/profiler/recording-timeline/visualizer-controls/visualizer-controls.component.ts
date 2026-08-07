@@ -18,7 +18,7 @@ const VIS_INFO: {[key in VisualizationMode]: string} = {
   [VisualizationMode.BarGraph]:
     'The bar chart displays the processing time of the components during the selected CD cycle(s) in descending order.',
   [VisualizationMode.FlameGraph]:
-    'The flame graph displays the full component tree hierarchy for the selected cycle(s). During this period, processed components shift from blue to orange. The more orange a component is, the longer it took to process. You can expand and explore deeply nested nodes by double-clicking a bar.',
+    'The flame graph displays the full component tree hierarchy for the selected cycle(s). During this period, processed components shift from blue to orange. The closer to orange a component is, the longer it took to process. You can expand and explore deeply nested nodes by double-clicking a bar.',
   [VisualizationMode.TreeMap]:
     'The tree map displays the hierarchy of the processed components during the selected CD cycle(s). Note that you may need to expand the DevTools viewport to explore more deeply nested items.',
 };

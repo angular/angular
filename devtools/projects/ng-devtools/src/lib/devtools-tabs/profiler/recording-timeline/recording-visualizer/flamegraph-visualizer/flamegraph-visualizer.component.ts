@@ -44,14 +44,14 @@ export class FlamegraphVisualizerComponent {
     // Represent `dynamic-blue-02` and `dynamic-orange-01`
     return this.themeService.currentTheme() === 'dark'
       ? {
-          hue: [211, 25],
-          saturation: [100, 100],
-          lightness: [65, 64],
+          red: [75, 255],
+          green: [162, 150],
+          blue: [255, 73],
         }
       : {
-          hue: [214, 25],
-          saturation: [85, 84],
-          lightness: [50, 53],
+          red: [19, 236],
+          green: [113, 118],
+          blue: [234, 33],
         };
   });
 

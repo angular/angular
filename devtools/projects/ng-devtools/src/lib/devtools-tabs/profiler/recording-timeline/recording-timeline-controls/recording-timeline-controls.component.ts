@@ -31,5 +31,6 @@ export class RecordingTimelineControlsComponent {
   clearFilter() {
     const filterInput = this.filterRef()?.nativeElement;
     filterInput.value = '';
+    this.onFilterInput('');
   }
 }

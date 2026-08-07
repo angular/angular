@@ -28,6 +28,7 @@ $sel-bar-outline-width: 2px;
       @extend %caption-text;
       margin: 0;
       color: var(--quaternary-contrast);
+      white-space: nowrap;
     }
 
     .x-axis-label {
@@ -62,6 +63,7 @@ $sel-bar-outline-width: 2px;
         top: 0;
         padding: 0 0.75rem;
         margin-top: -1.125rem;
+        white-space: nowrap;
       }
 
       &::before {

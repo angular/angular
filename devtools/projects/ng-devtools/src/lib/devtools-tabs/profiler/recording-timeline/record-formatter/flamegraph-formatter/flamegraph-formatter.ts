@@ -24,9 +24,6 @@ export interface FlamegraphNode {
 export const ROOT_LEVEL_ELEMENT_LABEL = 'Entire application';
 
 export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
-  private cdColor: string = '';
-  private noCdColor: string = '';
-
   override formatFrame(
     frame: ProfilerFrame,
     showChangeDetection?: boolean,
@@ -45,15 +42,13 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
       },
     };
 
-    if (showChangeDetection) {
-      this.cdColor = theme === 'dark' ? CHANGE_DETECTION_COLOR_DARK : CHANGE_DETECTION_COLOR_LIGHT;
-      this.noCdColor =
-        theme === 'dark' ? NO_CHANGE_DETECTION_COLOR_DARK : NO_CHANGE_DETECTION_COLOR_LIGHT;
+    const colors = createColors(theme);
 
-      result.color = this.cdColor;
+    if (showChangeDetection) {
+      result.color = colors.cdColor;
     }
 
-    this.addFrame(result.children, frame.directives, showChangeDetection, theme);
+    this.addFrame(result.children, frame.directives, showChangeDetection, colors);
     return result;
   }
 
@@ -61,7 +56,7 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
     nodes: FlamegraphNode[],
     elements: ElementProfile[],
     showChangeDetection?: boolean,
-    theme?: ThemeUi,
+    colors?: Colors,
   ): number {
     let timeSpent = 0;
 
@@ -70,7 +65,7 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
       // the insertion on the backend.
       if (!element) {
         console.error('Unable to insert undefined element');
-        break;
+        continue;
       }
       const changeDetected = didRunChangeDetection(element);
       const node: FlamegraphNode = {
@@ -81,10 +76,10 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
         original: element,
         changeDetected,
       };
-      if (showChangeDetection) {
-        node.color = changeDetected ? this.cdColor : this.noCdColor;
+      if (showChangeDetection && colors) {
+        node.color = changeDetected ? colors.cdColor : colors.noCdColor;
       }
-      timeSpent += this.addFrame(node.children, element.children, showChangeDetection, theme);
+      timeSpent += this.addFrame(node.children, element.children, showChangeDetection, colors);
       timeSpent += node.value;
       nodes.push(node);
     }
@@ -107,3 +102,17 @@ const didRunChangeDetection = (profile: ElementProfile) => {
   }
   return components.some((c) => c.changeDetection !== undefined);
 };
+
+type Colors = {
+  cdColor: string;
+  noCdColor: string;
+};
+
+function createColors(theme?: ThemeUi): Colors {
+  const isDark = theme === 'dark';
+
+  return {
+    cdColor: isDark ? CHANGE_DETECTION_COLOR_DARK : CHANGE_DETECTION_COLOR_LIGHT,
+    noCdColor: isDark ? NO_CHANGE_DETECTION_COLOR_DARK : NO_CHANGE_DETECTION_COLOR_LIGHT,
+  };
+}
