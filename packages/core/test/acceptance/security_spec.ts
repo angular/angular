@@ -1323,6 +1323,25 @@ describe('Component host element validation', () => {
       svgScriptHost.remove();
     }
   });
+
+  it('should reject a prefixed SVG script host element', () => {
+    @Component({
+      selector: 'my-prefixed-svg-script-host',
+      template: '',
+    })
+    class MyPrefixedSvgScriptHost {}
+
+    const host = document.createElementNS(SVG_NAMESPACE_URI, 'x:script');
+
+    expect(host.tagName).toBe('x:script');
+    expect(host.localName).toBe('script');
+    expect(() =>
+      createComponent(MyPrefixedSvgScriptHost, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+        hostElement: host,
+      }),
+    ).toThrowError(/"<script>" tag is not allowed as a component host element/);
+  });
 });
 
 describe('SVG <script> bindings', () => {
