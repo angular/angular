@@ -23,6 +23,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     NULLISH_COALESCING_NOT_NULLABLE = "nullishCoalescingNotNullable",
     // (undocumented)
+    NUMERIC_CSS_PROPERTY_REQUIRES_UNIT = "numericCssPropertyRequiresUnit",
+    // (undocumented)
     OPTIONAL_CHAIN_NOT_NULLABLE = "optionalChainNotNullable",
     // (undocumented)
     SKIP_HYDRATION_NOT_STATIC = "skipHydrationNotStatic",
