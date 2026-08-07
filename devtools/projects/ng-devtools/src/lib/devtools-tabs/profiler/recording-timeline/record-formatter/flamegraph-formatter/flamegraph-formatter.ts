@@ -70,7 +70,7 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
       // the insertion on the backend.
       if (!element) {
         console.error('Unable to insert undefined element');
-        break;
+        continue;
       }
       const changeDetected = didRunChangeDetection(element);
       const node: FlamegraphNode = {

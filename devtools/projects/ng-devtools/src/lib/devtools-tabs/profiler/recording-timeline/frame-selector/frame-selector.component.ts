@@ -124,6 +124,9 @@ export class FrameSelectorComponent {
    */
   protected readonly sixtyFpsLineHeightPerc = computed(() => {
     const max = Math.max(...this.graphData().map((n) => n.frame.duration));
+    if (max === -Infinity || max === 0) {
+      return null;
+    }
     const frameRate = calculateFrameRate(max);
     if (frameRate >= 60) {
       return null;
