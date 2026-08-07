@@ -2,32 +2,28 @@
 
 mat-toolbar {
   @extend %body-medium-01;
-  padding: 0.25rem 0.625rem;
+  padding: 0.45rem 0.625rem;
   justify-content: space-between;
   text-overflow: ellipsis;
   overflow: hidden;
-  line-height: 25px;
   height: auto;
 
   .button-wrapper {
     display: flex;
-    gap: 8px;
+    gap: 0.75rem;
   }
 }
 
-.mat-icon-button {
-  font-size: 16px;
-  line-height: 10px;
-}
-
 button {
-  padding: 0;
-  background: none;
-  border: none;
-  height: 24px;
-  width: 24px;
-  cursor: pointer;
   opacity: 0.5;
+  width: 18px;
+  height: 18px;
+
+  mat-icon {
+    width: inherit;
+    height: inherit;
+    font-size: 18px;
+  }
 
   &:hover {
     opacity: 0.75;
