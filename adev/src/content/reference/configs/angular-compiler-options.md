@@ -91,6 +91,10 @@ These message formats have some issues, such as whitespace handling and reliance
 The new message format is more resilient to whitespace changes, is the same across all translation file formats, and can be created directly from calls to `$localize`.
 This allows `$localize` messages in application code to use the same ID as identical `i18n` messages in component templates.
 
+IMPORTANT: This option is only supported by the `@angular-devkit/build-angular:browser` builder.
+When using the `@angular/build:application` builder (esbuild), this option has no effect and the new decimal message ID format is always used regardless of this setting.
+If your project relies on legacy message IDs, use the `@angular-devkit/build-angular:browser` builder.
+
 ### `enableResourceInlining`
 
 When `true`, replaces the `templateUrl` and `styleUrls` properties in all `@Component` decorators with inline content in the `template` and `styles` properties.
