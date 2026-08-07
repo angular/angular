@@ -184,8 +184,13 @@ function createHostElement(componentDef: ComponentDef<unknown>, renderer: Render
   return createElementNode(renderer, tagName, namespace);
 }
 
-function assertNotScriptHostElement(tagName: string | null | undefined): void {
-  if (tagName?.toLowerCase() === 'script') {
+function assertNotScriptHostElement(element: RElement | null | undefined): void {
+  const elementName =
+    element && 'localName' in element && typeof element.localName === 'string'
+      ? element.localName
+      : element?.tagName;
+
+  if (elementName?.toLowerCase() === 'script') {
     throw new RuntimeError(
       RuntimeErrorCode.UNSAFE_VALUE_IN_SCRIPT,
       ngDevMode && `"<script>" tag is not allowed as a component host element.`,
@@ -313,7 +318,7 @@ export class ComponentFactory<T> {
     const hostElement = rootSelectorOrNode
       ? locateHostElement(hostRenderer, rootSelectorOrNode, cmpDef.encapsulation, rootViewInjector)
       : createHostElement(cmpDef, hostRenderer);
-    assertNotScriptHostElement(hostElement?.tagName);
+    assertNotScriptHostElement(hostElement);
 
     const sharedStylesHost = rootViewInjector.get(SHARED_STYLES_HOST, null);
     const styleHost = getStyleHost(
