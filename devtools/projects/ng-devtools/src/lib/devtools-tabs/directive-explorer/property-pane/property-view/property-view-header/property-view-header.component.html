@@ -2,13 +2,17 @@
   {{ directive() }}
   <span class="button-wrapper">
     <button
-      (click)="handlelogInstance($event)"
-      [matTooltip]="'Log directive instance to console'"
-      [attr.aria-label]="'Log directive instance to console'"
+      ng-button
+      btnType="icon"
+      (click)="handleLogInstance($event)"
+      matTooltip="Log directive instance to console"
+      aria-label="Log directive instance to console"
     >
       <mat-icon> terminal </mat-icon>
     </button>
     <button
+      ng-button
+      btnType="icon"
       [disabled]="disableViewSourceButton()"
       (click)="handleViewSource($event)"
       [matTooltip]="viewSourceTooltip()"
