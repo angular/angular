@@ -14,147 +14,149 @@
  * Profiler events is an enum used by the profiler to distinguish between different calls of user
  * code invoked throughout the application lifecycle.
  */
-export enum ProfilerEvent {
+export const ProfilerEvent = {
   /**
    * Corresponds to the point in time before the runtime has called the template function of a
    * component with `RenderFlags.Create`.
    */
-  TemplateCreateStart,
+  TemplateCreateStart: 0,
 
   /**
    * Corresponds to the point in time after the runtime has called the template function of a
    * component with `RenderFlags.Create`.
    */
-  TemplateCreateEnd,
+  TemplateCreateEnd: 1,
 
   /**
    * Corresponds to the point in time before the runtime has called the template function of a
    * component with `RenderFlags.Update`.
    */
-  TemplateUpdateStart,
+  TemplateUpdateStart: 2,
 
   /**
    * Corresponds to the point in time after the runtime has called the template function of a
    * component with `RenderFlags.Update`.
    */
-  TemplateUpdateEnd,
+  TemplateUpdateEnd: 3,
 
   /**
    * Corresponds to the point in time before the runtime has called a lifecycle hook of a component
    * or directive.
    */
-  LifecycleHookStart,
+  LifecycleHookStart: 4,
 
   /**
    * Corresponds to the point in time after the runtime has called a lifecycle hook of a component
    * or directive.
    */
-  LifecycleHookEnd,
+  LifecycleHookEnd: 5,
 
   /**
    * Corresponds to the point in time before the runtime has evaluated an expression associated with
    * an event or an output.
    */
-  OutputStart,
+  OutputStart: 6,
 
   /**
    * Corresponds to the point in time after the runtime has evaluated an expression associated with
    * an event or an output.
    */
-  OutputEnd,
+  OutputEnd: 7,
 
   /**
    * Corresponds to the point in time just before application bootstrap.
    */
-  BootstrapApplicationStart,
+  BootstrapApplicationStart: 8,
 
   /**
    * Corresponds to the point in time after application bootstrap.
    */
-  BootstrapApplicationEnd,
+  BootstrapApplicationEnd: 9,
 
   /**
    * Corresponds to the point in time just before root component bootstrap.
    */
-  BootstrapComponentStart,
+  BootstrapComponentStart: 10,
 
   /**
    * Corresponds to the point in time after root component bootstrap.
    */
-  BootstrapComponentEnd,
+  BootstrapComponentEnd: 11,
 
   /**
    * Corresponds to the point in time just before Angular starts a change detection tick.
    */
-  ChangeDetectionStart,
+  ChangeDetectionStart: 12,
 
   /**
    * Corresponds to the point in time after Angular ended a change detection tick.
    */
-  ChangeDetectionEnd,
+  ChangeDetectionEnd: 13,
 
   /**
    * Corresponds to the point in time just before Angular starts a new synchronization pass of change detection tick.
    */
-  ChangeDetectionSyncStart,
+  ChangeDetectionSyncStart: 14,
 
   /**
    * Corresponds to the point in time after Angular ended a synchronization pass.
    */
-  ChangeDetectionSyncEnd,
+  ChangeDetectionSyncEnd: 15,
 
   /**
    * Corresponds to the point in time just before Angular executes after render hooks.
    */
-  AfterRenderHooksStart,
+  AfterRenderHooksStart: 16,
 
   /**
    * Corresponds to the point in time after Angular executed after render hooks.
    */
-  AfterRenderHooksEnd,
+  AfterRenderHooksEnd: 17,
 
   /**
    * Corresponds to the point in time just before Angular starts processing a component (create or update).
    */
-  ComponentStart,
+  ComponentStart: 18,
 
   /**
    * Corresponds to the point in time after Angular finished processing a component.
    */
-  ComponentEnd,
+  ComponentEnd: 19,
 
   /**
    * Corresponds to the point in time just before a defer block transitions between states.
    */
-  DeferBlockStateStart,
+  DeferBlockStateStart: 20,
 
   /**
    * Corresponds to the point in time after a defer block transitioned between states.
    */
-  DeferBlockStateEnd,
+  DeferBlockStateEnd: 21,
 
   /**
    * Corresponds to the point in time just before a component instance is created dynamically.
    */
-  DynamicComponentStart,
+  DynamicComponentStart: 22,
 
   /**
    * Corresponds to the point in time after a a component instance is created dynamically.
    */
-  DynamicComponentEnd,
+  DynamicComponentEnd: 23,
 
   /**
    * Corresponds to the point in time before the runtime has called the host bindings function
    * of a directive.
    */
-  HostBindingsUpdateStart,
+  HostBindingsUpdateStart: 24,
 
   /**
    * Corresponds to the point in time after the runtime has called the host bindings function
    * of a directive.
    */
-  HostBindingsUpdateEnd,
-}
+  HostBindingsUpdateEnd: 25,
+} as const;
+
+export type ProfilerEvent = (typeof ProfilerEvent)[keyof typeof ProfilerEvent];
 
 /**
  * Profiler function which the runtime will invoke before and after user code.
