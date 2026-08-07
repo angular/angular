@@ -332,14 +332,32 @@ export function isLongestAnimation(
   // If we don't have any record of a longest animation, then we shouldn't
   // block the animationend/transitionend event from doing its work.
   if (longestAnimation === undefined) return true;
-  return (
-    nativeElement === getEventTarget(event) &&
-    ((longestAnimation.animationName !== undefined &&
-      (event as AnimationEvent).animationName === longestAnimation.animationName) ||
-      (longestAnimation.propertyName !== undefined &&
-        (longestAnimation.propertyName === 'all' ||
-          (event as TransitionEvent).propertyName === longestAnimation.propertyName)))
-  );
+
+  if (nativeElement !== getEventTarget(event)) return false;
+
+  // Distinct CSS animations can share a name. Chrome 151 stable exposes their exact instance:
+  // https://developer.chrome.com/release-notes/151#animation_accessor_on_animation_and_transition_events
+  const eventAnimation = (
+    event as (AnimationEvent | TransitionEvent) & {readonly animation?: Animation | null}
+  ).animation;
+
+  if (eventAnimation && longestAnimation.animation) {
+    return eventAnimation === longestAnimation.animation;
+  }
+
+  // Fall back to strings for older browsers and animations determined from computed styles.
+  if (longestAnimation.animationName !== undefined) {
+    return (event as AnimationEvent).animationName === longestAnimation.animationName;
+  }
+
+  if (longestAnimation.propertyName !== undefined) {
+    return (
+      longestAnimation.propertyName === 'all' ||
+      (event as TransitionEvent).propertyName === longestAnimation.propertyName
+    );
+  }
+
+  return false;
 }
 
 /**
