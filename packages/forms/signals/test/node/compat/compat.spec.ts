@@ -157,6 +157,27 @@ describe('Forms compat', () => {
       expect(f.age().valid()).toBeTrue();
     });
 
+    it('picks up the required state from a reactive form control', () => {
+      const control = new FormControl('pirojok-the-cat', Validators.required);
+      const cat = signal({name: control});
+
+      const f = compatForm(cat, {
+        injector: TestBed.inject(Injector),
+      });
+
+      expect(f.name().required()).toBeTrue();
+
+      control.clearValidators();
+      control.updateValueAndValidity();
+
+      expect(f.name().required()).toBeFalse();
+
+      control.setValidators(Validators.required);
+      control.updateValueAndValidity();
+
+      expect(f.name().required()).toBeTrue();
+    });
+
     it('allows to manually set errors', () => {
       const catControl = new FormControl('meow', Validators.minLength(3));
       const cat = signal(catControl);
