@@ -1148,6 +1148,151 @@ export declare class TestCmp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: defer_aliased_deps_a.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Dep {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dep, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Dep, isStandalone: true, selector: "dep-a", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dep, decorators: [{
+            type: Directive,
+            args: [{ selector: 'dep-a' }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_aliased_deps_a.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Dep {
+    static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Dep, "dep-a", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_aliased_deps.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @defer {
+      <dep-a/>
+    }
+  `, isInline: true, deferBlockDependencies: [() => [/* @ts-ignore */
+                import("./defer_aliased_deps_a").then(m => m.Dep)]] });
+}
+i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, resolveDeferredDeps: () => [/* @ts-ignore */
+        import("./defer_aliased_deps_a").then(m => m.Dep)], resolveMetadata: AliasedDep => ({ decorators: [{
+                type: Component,
+                args: [{
+                        template: `
+    @defer {
+      <dep-a/>
+    }
+  `,
+                        imports: [AliasedDep],
+                    }]
+            }], ctorParameters: null, propDecorators: null }) });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_aliased_deps.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_aliased_deps_a.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Dep {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dep, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Dep, isStandalone: true, selector: "dep-a", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dep, decorators: [{
+            type: Directive,
+            args: [{ selector: 'dep-a' }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_aliased_deps_a.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Dep {
+    static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Dep, "dep-a", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_aliased_deps_b.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class Dep {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dep, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: Dep, isStandalone: true, selector: "dep-b", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dep, decorators: [{
+            type: Directive,
+            args: [{ selector: 'dep-b' }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_aliased_deps_b.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class Dep {
+    static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Dep, "dep-b", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_shared_export_name.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @defer {
+      <dep-a/>
+      <dep-b/>
+    }
+  `, isInline: true, deferBlockDependencies: [() => [/* @ts-ignore */
+                import("./defer_aliased_deps_a").then(m => m.Dep), /* @ts-ignore */
+                import("./defer_aliased_deps_b").then(m => m.Dep)]] });
+}
+i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, resolveDeferredDeps: () => [/* @ts-ignore */
+        import("./defer_aliased_deps_a").then(m => m.Dep), /* @ts-ignore */
+        import("./defer_aliased_deps_b").then(m => m.Dep)], resolveMetadata: (AliasedDepA, AliasedDepB) => ({ decorators: [{
+                type: Component,
+                args: [{
+                        template: `
+    @defer {
+      <dep-a/>
+      <dep-b/>
+    }
+  `,
+                        imports: [AliasedDepA, AliasedDepB],
+                    }]
+            }], ctorParameters: null, propDecorators: null }) });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_shared_export_name.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: lazy_with_blocks.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';

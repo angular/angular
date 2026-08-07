@@ -133,11 +133,9 @@ export interface ComponentResolutionData {
 
   /**
    * Map of all types that can be defer loaded (ts.ClassDeclaration) ->
-   * corresponding import information (reflection `Import`) within
-   * the current source file. The `Import` preserves the exported name
-   * as seen by the importing module so aliasing is handled correctly.
+   * corresponding import information within the current source file.
    */
-  deferrableDeclToImportDecl: Map<ClassDeclaration, Import>;
+  deferrableDeclToImportDecl: Map<ClassDeclaration, DeferrableImport>;
 
   /**
    * Map of `@defer` blocks -> their corresponding dependencies.
@@ -160,6 +158,21 @@ export interface ComponentResolutionData {
 
   /** Whether the component is standalone and has any directly-imported directive dependencies. */
   hasDirectiveDependencies: boolean;
+}
+
+/**
+ * Describes how a class that can be defer loaded made it into the current source file.
+ */
+export interface DeferrableImport {
+  /**
+   * Import through which the class was brought into the file. Note that `Import.name` is the name
+   * that the class is *exported* under which, in the case of an aliased import, is different from
+   * the name that the current file refers to it by.
+   */
+  importInfo: Import;
+
+  /** Name that the current file binds the imported class to. */
+  localSymbolName: string;
 }
 
 /**
