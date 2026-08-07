@@ -102,8 +102,10 @@ export class IdleScheduler implements OnDestroy {
 
     const key = getIdleRequestKey(options);
     const callback = (deadline?: IdleDeadline) => {
-      this.cancelBucket(bucket);
-
+      // Do not cancelBucket() here. The browser has already fired this handle so
+      // cancelling it is moot, and leaving idleId set prevents re-entrant add()
+      // calls during the drain from scheduling a redundant requestOnIdle that
+      // would be orphaned once the queue empties at the end of this invocation.
       for (const cb of bucket.queue) {
         cb();
         // _tick here is an optimized change detection check and is safe to call here.
@@ -117,6 +119,10 @@ export class IdleScheduler implements OnDestroy {
           break;
         }
       }
+
+      // The handle has been consumed; clear idleId so scheduleBucket() below can
+      // register a fresh one for any callbacks that remain after a deadline break.
+      bucket.idleId = null;
 
       if (bucket.queue.size > 0) {
         this.scheduleBucket(bucket, options);
