@@ -492,6 +492,61 @@ NOTE: Child fields also have a `key` signal, and array item fields have both `ke
 
 Return an error object with `kind` and `message` when validation fails. Return `null` or `undefined` when validation passes.
 
+### Using validateAsync()
+
+The `validateAsync()` function creates custom asynchronous validation rules. It receives a validator function that accesses the field context and returns a `Promise` resolving to:
+
+| Return Value          | Meaning          |
+| --------------------- | ---------------- |
+| Error object          | Value is invalid |
+| `null` or `undefined` | Value is valid   |
+
+```angular-ts
+import {Component, inject, signal} from '@angular/core';
+import {FieldContext, form, FormField, validateAsync} from '@angular/forms/signals';
+import {UserService} from './user.service';
+
+@Component({
+  selector: 'app-username-form',
+  imports: [FormField],
+  template: `
+    <form novalidate>
+      <label>
+        Username
+        <input [formField]="usernameForm.username" />
+      </label>
+    </form>
+  `,
+})
+export class UsernameFormComponent {
+  private userService = inject(UserService);
+
+  usernameModel = signal({username: ''});
+
+  usernameForm = form(this.usernameModel, (schemaPath) => {
+    validateAsync(schemaPath.username, (ctx) => this.validateUsername(ctx));
+  });
+
+  private async validateUsername({value}: FieldContext<string>) {
+    const username = value();
+    const available = await this.userService.checkUsernameAvailability(username);
+
+    if (!available) {
+      return {
+        kind: 'usernameTaken',
+        message: 'Username is already taken',
+      };
+    }
+
+    return null;
+  }
+}
+```
+
+The validator function receives the same `FieldContext` object as synchronous `validate()`.
+
+NOTE: For advanced async validation and complex scenarios requiring execution delays, conditional checks, unhandled error fallbacks, or direct access to Angular's `resource()` primitive, see the [Custom async validation with validateAsync() guide](guide/forms/signals/async-operations#custom-async-validation-with-validateasync).
+
 ### Using validateTree()
 
 The `validateTree()` function creates custom validation rules that can target multiple fields or provide complex validation logic for a whole subtree.
@@ -505,9 +560,7 @@ interface User {
   lastName: string;
 }
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserFormComponent {
   readonly userModel = model<User>({
     firstName: '',
@@ -750,9 +803,7 @@ import {Component, computed, signal} from '@angular/core';
 import {form, FormField, validateStandardSchema} from '@angular/forms/signals';
 import z from 'zod';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class DynamicSchema {
   model = signal({document: '', type: 'dni'});
 

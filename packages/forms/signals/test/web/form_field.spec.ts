@@ -136,6 +136,40 @@ describe('field directive', () => {
       });
       expect(component.model()).toEqual({x: 'a', y: 'c'});
     });
+
+    it('should support simple async validator functions with formField bindings', async () => {
+      @Component({
+        imports: [FormField],
+        template: `<input [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal('VALID'), (p) => {
+          validateAsync(p, async ({value}) => {
+            return value() === 'VALID' ? null : [{kind: 'custom'}];
+          });
+        });
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const component = fixture.componentInstance;
+
+      await Promise.resolve();
+      await fixture.whenStable();
+
+      expect(component.f().pending()).toBe(false);
+      expect(component.f().valid()).toBe(true);
+
+      act(() => {
+        component.f().value.set('INVALID');
+        fixture.detectChanges();
+      });
+
+      await Promise.resolve();
+      await fixture.whenStable();
+
+      expect(component.f().pending()).toBe(false);
+      expect(component.f().invalid()).toBe(true);
+    });
   });
 
   describe('host directive mapping', () => {

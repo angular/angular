@@ -902,6 +902,26 @@ export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> =
 
 /**
  * A function that takes the `FieldContext` for the field being validated and returns a
+ * `ValidationResult` or pending status indicating errors for the field asynchronously.
+ *
+ * @template TValue The type of value stored in the field being validated
+ * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
+ *
+ * @see [Custom validation rules](guide/forms/signals/validation#using-validateasync)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export type FieldValidatorAsync<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
+  TValue,
+  | ValidationResult<ValidationError.WithoutFieldTree>
+  | Promise<ValidationResult<ValidationError.WithoutFieldTree>>
+  | 'pending',
+  TPathKind
+>;
+
+/**
+ * A function that takes the `FieldContext` for the field being validated and returns a
  * `TreeValidationResult` indicating errors for the field and its sub-fields.
  *
  * @template TValue The type of value stored in the field being validated
