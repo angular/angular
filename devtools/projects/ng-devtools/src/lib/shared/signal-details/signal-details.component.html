@@ -12,7 +12,9 @@
         btnType="secondary"
         (click)="gotoSource.emit(node)"
         [disabled]="!node.debuggable"
-        matTooltip="View source"
+        [matTooltip]="
+          node.debuggable ? 'View source' : 'Source location is not available for this node'
+        "
       >
         <mat-icon> code </mat-icon>
       </button>
