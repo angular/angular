@@ -556,8 +556,8 @@ runInEachFileSystem(() => {
         expect(diags.length).toBe(3);
         expect(diags[0].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
         expect(diags[1].messageText).toBe(`Type 'string' is not assignable to type 'boolean'.`);
-        expect(diags[2].messageText).toBe(
-          `Can't bind to 'valueAlias' since it isn't a known property of 'div'.`,
+        expect(diags[2].messageText).toMatch(
+          /Can't bind to 'valueAlias' since it isn't a known property of 'div'\. Find more at .*/,
         );
       });
 
