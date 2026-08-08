@@ -6,6 +6,7 @@ The Angular skills are designed to help coding agents create applications aligne
 
 - **`angular-developer`**: Generates Angular code and provides architectural guidance. Useful for creating components, services, HTTP communication, or obtaining best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling, testing, or CLI tooling.
 - **`angular-new-app`**: Creates a new Angular app using the Angular CLI. Provides important guidelines for effectively setting up and structuring a modern Angular application.
+- **`naming-conventions`**: Enforces naming conventions for components, directives, and services, including both file names and class names, using the "Intent over Role" naming style.
 
 ## Using Agent Skills
 
