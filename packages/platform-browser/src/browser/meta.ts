@@ -7,11 +7,14 @@
  */
 
 import {DOCUMENT, ɵDomAdapter as DomAdapter, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {Inject, Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
 
 /**
  * Represents the attributes of an HTML `<meta>` element. The element itself is
- * represented by the internal `HTMLMetaElement`.
+ * represented by the internal `HTMLMetaElement`. Event handler attributes, which start with
+ * `on`, are not allowed.
  *
  * @see [HTML meta tag](https://developer.mozilla.org/docs/Web/HTML/Element/meta)
  * @see {@link Meta}
@@ -133,6 +136,7 @@ export class Meta {
    */
   updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement | null {
     if (!tag) return null;
+    this._validateMetaDefinition(tag);
     selector = selector || this._parseSelector(tag);
     const meta: HTMLMetaElement = this.getTag(selector)!;
     if (meta) {
@@ -164,6 +168,7 @@ export class Meta {
     meta: MetaDefinition,
     forceCreation: boolean = false,
   ): HTMLMetaElement {
+    this._validateMetaDefinition(meta);
     if (!forceCreation) {
       const selector: string = this._parseSelector(meta);
       // It's allowed to have multiple elements with the same name so it's not enough to
@@ -197,6 +202,19 @@ export class Meta {
     return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
   }
 
+  private _validateMetaDefinition(tag: MetaDefinition): void {
+    for (const prop of Object.keys(tag)) {
+      const attributeName = this._getMetaKeyMap(prop);
+      if (attributeName.toLowerCase().startsWith('on')) {
+        throw new RuntimeError(
+          RuntimeErrorCode.INVALID_EVENT_ATTRIBUTE,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            `The Meta service does not allow setting event handler attribute '${attributeName}' for security reasons.`,
+        );
+      }
+    }
+  }
+
   private _containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean {
     return Object.keys(tag).every(
       (key: string) => elem.getAttribute(this._getMetaKeyMap(key)) === tag[key],
@@ -204,7 +222,7 @@ export class Meta {
   }
 
   private _getMetaKeyMap(prop: string): string {
-    return META_KEYS_MAP[prop] || prop;
+    return Object.hasOwn(META_KEYS_MAP, prop) ? META_KEYS_MAP[prop] : prop;
   }
 }
 
