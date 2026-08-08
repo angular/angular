@@ -206,7 +206,7 @@ export interface ComponentInputBindingOptions {
 }
 
 // @public
-export function convertToParamMap(params: Params): ParamMap;
+export function convertToParamMap(params: Params, options?: ParamMapOptions): ParamMap;
 
 // @public
 export function createUrlTreeFromSnapshot(relativeTo: ActivatedRouteSnapshot, commands: readonly any[], queryParams?: Params | null, fragment?: string | null, urlSerializer?: DefaultUrlSerializer): UrlTree;

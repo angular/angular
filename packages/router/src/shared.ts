@@ -72,32 +72,74 @@ export interface ParamMap {
   readonly keys: string[];
 }
 
+/**
+ * Options to configure the behavior of a `ParamMap`.
+ * @see {@link convertToParamMap}
+ * @see {@link ParamMap}
+ *
+ * @publicApi
+ */
+export type ParamMapOptions = {
+  /** Whether to perform case-insensitive matching for parameter names. */
+  caseInsensitive?: boolean;
+};
+
+const DEFAULT_PARAM_MAP_OPTIONS: ParamMapOptions = Object.freeze({
+  caseInsensitive: false,
+});
+
 class ParamsAsMap implements ParamMap {
   private params: Params;
+  private readonly options: ParamMapOptions;
 
-  constructor(params: Params) {
-    this.params = params || {};
+  constructor(params: Params, options?: ParamMapOptions) {
+    const rawParams = params || {};
+    this.options = {
+      ...DEFAULT_PARAM_MAP_OPTIONS,
+      ...(options || {}),
+    };
+
+    // Normalize the parameter keys based on the caseInsensitive option.
+    if (this.options.caseInsensitive) {
+      this.params = {};
+      for (const key of Object.keys(rawParams)) {
+        this.params[key.toLowerCase()] = rawParams[key];
+      }
+    } else {
+      this.params = rawParams;
+    }
+  }
+
+  private getKey(name: string): string | null {
+    // Guard against invalid lookup keys (null, undefined, non-strings, or empty strings)
+    if (typeof name !== 'string' || name.trim() === '') {
+      return null;
+    }
+
+    const key = this.options.caseInsensitive ? name.toLowerCase() : name;
+
+    return Object.prototype.hasOwnProperty.call(this.params, key) ? key : null;
   }
 
   has(name: string): boolean {
-    return Object.prototype.hasOwnProperty.call(this.params, name);
+    return this.getKey(name) !== null;
   }
 
   get(name: string): string | null {
-    if (this.has(name)) {
-      const v = this.params[name];
+    const key = this.getKey(name);
+    if (key !== null) {
+      const v = this.params[key];
       return Array.isArray(v) ? v[0] : v;
     }
-
     return null;
   }
 
   getAll(name: string): string[] {
-    if (this.has(name)) {
-      const v = this.params[name];
+    const key = this.getKey(name);
+    if (key !== null) {
+      const v = this.params[key];
       return Array.isArray(v) ? v : [v];
     }
-
     return [];
   }
 
@@ -109,12 +151,14 @@ class ParamsAsMap implements ParamMap {
 /**
  * Converts a `Params` instance to a `ParamMap`.
  * @param params The instance to convert.
+ * @param options Optional, Options to configure the conversion.
+ * - `caseInsensitive`: Whether to perform case-insensitive matching for parameter names. Defaults to `false`.
  * @returns The new map instance.
  *
  * @publicApi
  */
-export function convertToParamMap(params: Params): ParamMap {
-  return new ParamsAsMap(params);
+export function convertToParamMap(params: Params, options?: ParamMapOptions): ParamMap {
+  return new ParamsAsMap(params, options);
 }
 
 function matchParts(
