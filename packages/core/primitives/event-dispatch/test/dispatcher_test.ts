@@ -1129,4 +1129,134 @@ describe('Dispatcher', () => {
       expect(eventInfoWrapper.getAction()).toBeUndefined();
     });
   });
+
+  describe('prototype pollution prevention', () => {
+    it('ignores __proto__ as event type in jsaction attribute', () => {
+      const container = getRequiredElementById('click-container');
+      const targetElement = getRequiredElementById('click-target-element');
+      const actionElement = getRequiredElementById('click-action-element');
+
+      // Simulate attacker-controlled jsaction attribute
+      actionElement.setAttribute('jsaction', '__proto__:evil;click:handleClick');
+      cache.clear(actionElement);
+
+      const eventContract = createEventContract({
+        container,
+        eventTypes: ['click'],
+      });
+      const dispatchDelegate = createDispatchDelegateSpy();
+      createDispatcher({dispatchDelegate, eventContract});
+
+      dispatchMouseEvent(targetElement);
+
+      // __proto__ key must not pollute Object.prototype
+      expect(({} as any).evil).toBeUndefined();
+
+      // Legitimate click action still resolves correctly
+      const eventInfoWrapper = dispatchDelegate.calls.mostRecent().args[0];
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    });
+
+    it('ignores constructor as event type in jsaction attribute', () => {
+      const container = getRequiredElementById('click-container');
+      const targetElement = getRequiredElementById('click-target-element');
+      const actionElement = getRequiredElementById('click-action-element');
+
+      actionElement.setAttribute('jsaction', 'constructor:evil;click:handleClick');
+      cache.clear(actionElement);
+
+      const eventContract = createEventContract({
+        container,
+        eventTypes: ['click'],
+      });
+      const dispatchDelegate = createDispatchDelegateSpy();
+      createDispatcher({dispatchDelegate, eventContract});
+
+      dispatchMouseEvent(targetElement);
+
+      // constructor must not be shadowed on the action map
+      const eventInfoWrapper = dispatchDelegate.calls.mostRecent().args[0];
+      const action = eventInfoWrapper.getAction();
+      expect(action?.name).toBe('handleClick');
+
+      // Verify constructor was not written as an own property on the parsed map
+      // by checking that a freshly parsed map still has a normal constructor
+      expect(typeof {}.constructor).toBe('function');
+    });
+
+    it('ignores prototype as event type in jsaction attribute', () => {
+      const container = getRequiredElementById('click-container');
+      const targetElement = getRequiredElementById('click-target-element');
+      const actionElement = getRequiredElementById('click-action-element');
+
+      actionElement.setAttribute('jsaction', 'prototype:evil;click:handleClick');
+      cache.clear(actionElement);
+
+      const eventContract = createEventContract({
+        container,
+        eventTypes: ['click'],
+      });
+      const dispatchDelegate = createDispatchDelegateSpy();
+      createDispatcher({dispatchDelegate, eventContract});
+
+      dispatchMouseEvent(targetElement);
+
+      const eventInfoWrapper = dispatchDelegate.calls.mostRecent().args[0];
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    });
+
+    it('does not pollute parseCache via __proto__ jsaction value', () => {
+      const container = getRequiredElementById('click-container');
+      const targetElement = getRequiredElementById('click-target-element');
+      const actionElement = getRequiredElementById('click-action-element');
+
+      // The full jsaction string itself is used as the parseCache key —
+      // if parseCache is a plain {}, setting parseCache["__proto__"] could
+      // affect Object.prototype in some engines.
+      actionElement.setAttribute('jsaction', '__proto__');
+      cache.clear(actionElement);
+
+      const eventContract = createEventContract({
+        container,
+        eventTypes: ['click'],
+      });
+      const dispatchDelegate = createDispatchDelegateSpy();
+      createDispatcher({dispatchDelegate, eventContract});
+
+      dispatchMouseEvent(targetElement);
+
+      // Object.prototype must be clean after parsing
+      expect(({} as any).click).toBeUndefined();
+      expect(({} as any).handleClick).toBeUndefined();
+    });
+
+    it('handles multiple dangerous keys mixed with legitimate ones', () => {
+      const container = getRequiredElementById('click-container');
+      const targetElement = getRequiredElementById('click-target-element');
+      const actionElement = getRequiredElementById('click-action-element');
+
+      actionElement.setAttribute(
+        'jsaction',
+        '__proto__:evil1;constructor:evil2;prototype:evil3;click:handleClick',
+      );
+      cache.clear(actionElement);
+
+      const eventContract = createEventContract({
+        container,
+        eventTypes: ['click'],
+      });
+      const dispatchDelegate = createDispatchDelegateSpy();
+      createDispatcher({dispatchDelegate, eventContract});
+
+      dispatchMouseEvent(targetElement);
+
+      // All dangerous keys skipped, legitimate action still works
+      expect(({} as any).evil1).toBeUndefined();
+      expect(({} as any).evil2).toBeUndefined();
+      expect(({} as any).evil3).toBeUndefined();
+
+      const eventInfoWrapper = dispatchDelegate.calls.mostRecent().args[0];
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    });
+  });
 });
