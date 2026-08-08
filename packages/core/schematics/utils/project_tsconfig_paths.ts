@@ -12,9 +12,14 @@ import {Tree} from '@angular-devkit/schematics';
 /**
  * Gets all tsconfig paths from a CLI project by reading the workspace configuration
  * and looking for common tsconfig locations.
+ *
+ * When `angularBuildersOnly` is set, only targets that use an Angular builder are considered.
+ * This avoids picking up tsconfig files of non-Angular projects in a mixed workspace (e.g. an Nx
+ * monorepo), which should not be touched by Angular migrations.
  */
 export async function getProjectTsConfigPaths(
   tree: Tree,
+  {angularBuildersOnly = false}: {angularBuildersOnly?: boolean} = {},
 ): Promise<{buildPaths: string[]; testPaths: string[]}> {
   // Start with some tsconfig paths that are generally used within CLI projects. Note
   // that we are not interested in IDE-specific tsconfig files (e.g. /tsconfig.json)
@@ -24,6 +29,10 @@ export async function getProjectTsConfigPaths(
   const workspace = await getWorkspace(tree);
   for (const [, project] of workspace.projects) {
     for (const [name, target] of project.targets) {
+      if (angularBuildersOnly && !isAngularBuilder(target.builder)) {
+        continue;
+      }
+
       for (const [, options] of allTargetOptions(target)) {
         const tsConfig = options['tsConfig'];
         // Filter out tsconfig files that don't exist in the CLI project.
@@ -44,6 +53,22 @@ export async function getProjectTsConfigPaths(
     buildPaths: [...buildPaths],
     testPaths: [...testPaths],
   };
+}
+
+/** Prefixes of Angular builders, including common community builders (e.g. Nx). */
+const angularBuilderPrefixes = [
+  '@angular-devkit/build-angular:',
+  '@angular/build:',
+  '@nx/angular:',
+  '@angular-builders/',
+  'ngx-build-plus:',
+];
+
+/** Whether the given builder is a recognized Angular builder. */
+function isAngularBuilder(builder: string | undefined): boolean {
+  return (
+    builder !== undefined && angularBuilderPrefixes.some((prefix) => builder.startsWith(prefix))
+  );
 }
 
 /** Get options for all configurations for the passed builder target. */
