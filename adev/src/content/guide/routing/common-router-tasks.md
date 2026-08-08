@@ -68,22 +68,21 @@ provideRouter(appRoutes, withComponentInputBinding({queryParams: false}));
 
 ### Configure behavior for inputs not available in router data
 
-By default, the router sets an input to `undefined` if it was not available in the router data during a navigation. This ensures that stale data is not retained.
+By default, the router sets an input to `undefined` only if it was previously available in the router data during the lifetime of the active route in the outlet (`unmatchedInputBehavior: 'undefinedIfStale'`). This ensures that stale data is cleared when a parameter is removed, while preserving the initial value of the input if it was never targeted by the router.
 
-If you want to avoid setting `undefined` for inputs that have _never_ been available in the router data for the active component instance, you can set the `unmatchedInputBehavior` option to `'undefinedIfStale'`:
+If you want to instruct the Router to always set unmatched inputs to `undefined` (overriding any initial values in the component), you can set the `unmatchedInputBehavior` option to `'alwaysUndefined'`:
 
 ```ts
-provideRouter(appRoutes, withComponentInputBinding({unmatchedInputBehavior: 'undefinedIfStale'}));
+provideRouter(appRoutes, withComponentInputBinding({unmatchedInputBehavior: 'alwaysUndefined'}));
 ```
 
-When you combine `unmatchedInputBehavior: 'undefinedIfStale'` with `queryParams: false`, inputs retain their initial values unless they are explicitly provided by the router. The exception is matrix parameters: if a matrix parameter is provided in one navigation and removed in a subsequent one, the router will set the input to `undefined` to avoid retaining stale data.
+With `queryParams: false`, inputs retain their initial values unless they are explicitly provided by the router. The exception is matrix parameters: if a matrix parameter is provided in one navigation and removed in a subsequent one, the router will set the input to `undefined` to avoid retaining stale data.
 
 ```ts
 provideRouter(
   appRoutes,
   withComponentInputBinding({
     queryParams: false,
-    unmatchedInputBehavior: 'undefinedIfStale',
   }),
 );
 ```
