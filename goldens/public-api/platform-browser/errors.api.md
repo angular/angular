@@ -14,6 +14,7 @@ export const enum RuntimeErrorCode {
     HYDRATION_CONFLICTING_FEATURES = 5001,
     // (undocumented)
     INSERT_BEFORE_NODE_NOT_FOUND = -5106,
+    INVALID_EVENT_ATTRIBUTE = 5203,
     // (undocumented)
     NO_PLUGIN_FOR_EVENT = -5101,
     // (undocumented)
