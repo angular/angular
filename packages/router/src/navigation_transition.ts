@@ -317,6 +317,7 @@ export interface NavigationTransition {
   urlAfterRedirects?: UrlTree;
   rawUrl: UrlTree;
   extras: NavigationExtras;
+  hasUAVisualTransition: boolean;
   resolve: (value: boolean | PromiseLike<boolean>) => void;
   reject: (reason?: any) => void;
   promise: Promise<boolean>;
@@ -413,6 +414,7 @@ export class NavigationTransitions {
       | 'currentRawUrl'
       | 'rawUrl'
       | 'extras'
+      | 'hasUAVisualTransition'
       | 'resolve'
       | 'reject'
       | 'promise'
@@ -776,6 +778,7 @@ export class NavigationTransitions {
               this.environmentInjector,
               currentSnapshot.root,
               targetSnapshot!.root,
+              overallTransitionState.hasUAVisualTransition,
             );
 
             // If view transitions are enabled, block the navigation until the view

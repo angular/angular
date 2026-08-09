@@ -18,6 +18,8 @@ export interface PopStateEvent {
   state?: any;
   type?: string;
   url?: string;
+  /** Whether the user agent performed a visual transition for this navigation. */
+  hasUAVisualTransition?: boolean;
 }
 
 /**
@@ -80,6 +82,7 @@ export class Location implements OnDestroy {
         'pop': true,
         'state': ev.state,
         'type': ev.type,
+        'hasUAVisualTransition': ev.hasUAVisualTransition,
       });
     });
   }

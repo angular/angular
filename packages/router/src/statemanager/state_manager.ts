@@ -153,6 +153,7 @@ export abstract class StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
+      hasUAVisualTransition: boolean,
     ) => void,
   ): SubscriptionLike;
 
@@ -194,17 +195,34 @@ export class HistoryStateManager extends StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
+      hasUAVisualTransition: boolean,
     ) => void,
   ): SubscriptionLike {
     return this.location.subscribe((event) => {
       if (event['type'] === 'popstate') {
+        const hasUAVisualTransition = event.hasUAVisualTransition === true;
+        const invokeListener = () => {
+          listener(
+            event['url']!,
+            event.state as RestoredState | null | undefined,
+            'popstate',
+            {
+              replaceUrl: true,
+            },
+            hasUAVisualTransition,
+          );
+        };
+
+        if (hasUAVisualTransition) {
+          // A UA visual transition has already started. Schedule the navigation immediately so
+          // the browser can present the post-navigation DOM without an additional task.
+          invokeListener();
+          return;
+        }
+
         // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
         // hybrid apps.
-        setTimeout(() => {
-          listener(event['url']!, event.state as RestoredState | null | undefined, 'popstate', {
-            replaceUrl: true,
-          });
-        });
+        setTimeout(invokeListener);
       }
     });
   }
