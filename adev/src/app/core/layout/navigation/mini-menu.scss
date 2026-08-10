@@ -108,6 +108,7 @@
 
 .adev-version-picker {
   overflow-y: auto;
+  overscroll-behavior: contain;
   max-height: 70dvh;
   margin-inline-start: 10px;
 
