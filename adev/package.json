@@ -51,7 +51,7 @@
     "@stackblitz/sdk": "1.11.1",
     "@types/dom-navigation": "1.0.7",
     "@types/jasmine": "6.0.0",
-    "@types/jsdom": "28.0.3",
+    "@types/jsdom": "30.0.0",
     "@types/node": "24.13.3",
     "@typescript/vfs": "1.6.4",
     "@webcontainer/api": "1.6.4",
