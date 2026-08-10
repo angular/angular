@@ -11,6 +11,9 @@
   border-radius: 0.25rem;
   z-index: var(--z-index-mini-menu);
   box-shadow: 10px 4px 40px 0 rgba(0, 0, 0, 0.075);
+  max-height: 70dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 
   // Animation for mini-menu appearance
   animation: menuFadeIn 0.2s ease-out forwards;
@@ -107,9 +110,6 @@
 }
 
 .adev-version-picker {
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  max-height: 70dvh;
   margin-inline-start: 10px;
 
   li {

@@ -65,6 +65,7 @@ h4 {
   transform: translateY(-0.7rem);
   max-height: 200px;
   overflow-y: auto;
+  overscroll-behavior: contain;
   width: $ver-dropdown-width;
   box-sizing: border-box;
   background: var(--page-background);

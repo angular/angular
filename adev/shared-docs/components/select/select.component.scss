@@ -171,6 +171,7 @@
   flex-direction: column;
   max-height: 12rem;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 0.25rem;
 }
 
