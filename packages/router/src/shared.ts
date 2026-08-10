@@ -84,18 +84,17 @@ export type ParamMapOptions = {
   caseInsensitive?: boolean;
 };
 
-const DEFAULT_PARAM_MAP_OPTIONS: ParamMapOptions = Object.freeze({
-  caseInsensitive: false,
-});
-
 class ParamsAsMap implements ParamMap {
   private params: Params;
   private readonly options: ParamMapOptions;
+  private static readonly DEFAULT_OPTIONS: ParamMapOptions = {
+    caseInsensitive: false,
+  };
 
   constructor(params: Params, options?: ParamMapOptions) {
     const rawParams = params || {};
     this.options = {
-      ...DEFAULT_PARAM_MAP_OPTIONS,
+      ...ParamsAsMap.DEFAULT_OPTIONS,
       ...(options || {}),
     };
 
@@ -111,7 +110,7 @@ class ParamsAsMap implements ParamMap {
   }
 
   private getKey(name: string): string | null {
-    // Guard against invalid lookup keys (null, undefined, non-strings, or empty strings)
+    // Guard against invalid lookup keys (null, undefined, non-strings, or empty strings).
     if (typeof name !== 'string' || name.trim() === '') {
       return null;
     }
