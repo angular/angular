@@ -209,8 +209,8 @@
       ],
       "source": {
         "filePath": "/src/aria/combobox/combobox-widget.ts",
-        "startLine": 19,
-        "endLine": 78
+        "startLine": 29,
+        "endLine": 99
       }
     },
     {
@@ -567,6 +567,10 @@
   ],
   "symbols": [
     [
+      "afterNextRender",
+      "@angular/core"
+    ],
+    [
       "Directive",
       "@angular/core"
     ],
@@ -593,6 +597,10 @@
     [
       "signal",
       "@angular/core"
+    ],
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
     ],
     [
       "computed",
