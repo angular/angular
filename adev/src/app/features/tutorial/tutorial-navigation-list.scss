@@ -6,6 +6,7 @@
   list-style: none;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
   height: 100vh;
   padding: 0;
   margin: 0;
