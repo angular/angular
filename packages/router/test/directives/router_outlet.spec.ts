@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, NgForOf} from '@angular/common';
-import {Component, inject, Input, Type, NgModule, signal} from '@angular/core';
+import {Component, Directive, inject, Input, Type, NgModule, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   provideRouter,
@@ -300,6 +300,47 @@ describe('component input binding', () => {
     const instance = await harness.navigateByUrl('/', MyComponent);
     expect(instance.resolveA).toEqual('My resolved data');
     expect(instance.dataA).toEqual('My static data');
+  });
+
+  it('sets component and host directive inputs from static data', async () => {
+    @Directive()
+    class HostDirective {
+      @Input('hostDirectiveInput') value?: string;
+    }
+
+    @Component({
+      template: '',
+      hostDirectives: [
+        {directive: HostDirective, inputs: ['hostDirectiveInput: exposedHostDirectiveInput']},
+      ],
+    })
+    class MyComponent {
+      @Input() componentInput?: string;
+      readonly hostDirective = inject(HostDirective);
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: '**',
+              component: MyComponent,
+              data: {
+                componentInput: 'Component input value',
+                exposedHostDirectiveInput: 'Host directive input value',
+              },
+            },
+          ],
+          withComponentInputBinding(),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    const instance = await harness.navigateByUrl('/', MyComponent);
+    expect(instance.componentInput).toEqual('Component input value');
+    expect(instance.hostDirective.value).toEqual('Host directive input value');
   });
 
   it('sets component inputs from path params', async () => {

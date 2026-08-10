@@ -21,7 +21,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  reflectComponentType,
+  ɵgetComponentInputNames as getComponentInputNames,
   ɵRuntimeError as RuntimeError,
   Signal,
   SimpleChanges,
@@ -509,12 +509,6 @@ export class RoutedComponentInputBinder {
           return;
         }
 
-        const mirror = reflectComponentType(activatedRoute.component);
-        if (!mirror) {
-          this.unsubscribeFromRouteData(outlet);
-          return;
-        }
-
         let seenKeys = this.outletSeenKeys.get(outlet);
         if (!seenKeys) {
           seenKeys = new Set<string>();
@@ -527,7 +521,7 @@ export class RoutedComponentInputBinder {
 
         const behavior = this.options.unmatchedInputBehavior ?? 'alwaysUndefined';
 
-        for (const {templateName} of mirror.inputs) {
+        for (const templateName of getComponentInputNames(outlet.activatedComponentRef)) {
           const value = data[templateName];
           if (value !== undefined || behavior === 'alwaysUndefined' || seenKeys.has(templateName)) {
             outlet.activatedComponentRef.setInput(templateName, value);

@@ -624,6 +624,22 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
   override onDestroy(callback: () => void): void {
     this.hostView.onDestroy(callback);
   }
+
+  /** Returns the input names that can be passed to `setInput`. */
+  getInputNames(): ReadonlySet<string> {
+    const inputNames = new Set(Object.keys(this._tNode.inputs ?? {}));
+    for (const name of Object.keys(this._tNode.hostDirectiveInputs ?? {})) {
+      inputNames.add(name);
+    }
+    return inputNames;
+  }
+}
+
+/** Returns the input names that can be set on a component reference. */
+export function getComponentInputNames(
+  componentRef: AbstractComponentRef<unknown>,
+): ReadonlySet<string> {
+  return (componentRef as ComponentRef<unknown>).getInputNames();
 }
 
 /** Projects the `projectableNodes` that were specified when creating a root component. */
