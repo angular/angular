@@ -1376,6 +1376,12 @@ describe('platform-server partial hydration integration', () => {
 
           expect(activeObservers.length).toBe(1);
           expect(activeObservers[0].options).toEqual({rootMargin: '123px', threshold: 0.5});
+
+          const article = doc.getElementsByTagName('article')[0];
+          MockIntersectionObserver.invokeCallbacksForElement(article, true);
+          await appRef.whenStable();
+
+          expect(activeObservers[0].observedElements.size).toBe(0);
         });
       });
 
