@@ -21,8 +21,10 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Renderer} from '../render3/interfaces/renderer';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {TNode} from '../render3/interfaces/node';
+import {getAnimationDuration} from './longest_animation';
 
 const DEFAULT_ANIMATIONS_DISABLED = false;
+const ANIMATION_DURATION_TOLERANCE_MS = 1;
 
 export const areAnimationSupported =
   (typeof ngServerMode === 'undefined' || !ngServerMode) &&
@@ -332,14 +334,42 @@ export function isLongestAnimation(
   // If we don't have any record of a longest animation, then we shouldn't
   // block the animationend/transitionend event from doing its work.
   if (longestAnimation === undefined) return true;
-  return (
-    nativeElement === getEventTarget(event) &&
-    ((longestAnimation.animationName !== undefined &&
-      (event as AnimationEvent).animationName === longestAnimation.animationName) ||
-      (longestAnimation.propertyName !== undefined &&
-        (longestAnimation.propertyName === 'all' ||
-          (event as TransitionEvent).propertyName === longestAnimation.propertyName)))
-  );
+
+  if (nativeElement !== getEventTarget(event)) return false;
+
+  // Distinct CSS animations can share a name. Chrome 151 stable exposes their instance:
+  // https://developer.chrome.com/release-notes/151#animation_accessor_on_animation_and_transition_events
+  const eventAnimation = (
+    event as (AnimationEvent | TransitionEvent) & {readonly animation?: Animation | null}
+  ).animation;
+
+  // Compare the event animation's duration instead of retaining the Animation object. This also
+  // disambiguates records obtained from computed styles when getAnimations() was empty.
+  if (eventAnimation) {
+    const eventAnimationDuration = getAnimationDuration(eventAnimation);
+    // CSSOM can round serialized times while Web Animations retains more precision. Only reject an
+    // event when it is shorter by more than the tolerance so the longest event is not ignored.
+    if (
+      eventAnimationDuration !== undefined &&
+      eventAnimationDuration + ANIMATION_DURATION_TOLERANCE_MS < longestAnimation.duration
+    ) {
+      return false;
+    }
+  }
+
+  // Fall back to strings for older browsers.
+  if (longestAnimation.animationName !== undefined) {
+    return (event as AnimationEvent).animationName === longestAnimation.animationName;
+  }
+
+  if (longestAnimation.propertyName !== undefined) {
+    return (
+      longestAnimation.propertyName === 'all' ||
+      (event as TransitionEvent).propertyName === longestAnimation.propertyName
+    );
+  }
+
+  return false;
 }
 
 /**
