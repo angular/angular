@@ -90,6 +90,8 @@ Animating an element when it leaves the view is similar to animating when enteri
     <docs-code header="remove.css" path="adev/src/content/examples/animations/src/app/native-css/remove.css"  />
 </docs-code-multifile>
 
+NOTE: Child `animate.leave` animations fire only within the same component template. Nested component `animate.leave` animations will not fire when a parent element is removed.
+
 For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations).
 
 ### Animating increment and decrement
