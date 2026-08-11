@@ -23,7 +23,7 @@
 } @else if (hasFrames() && frame) {
   <ng-visualizer-controls
     [record]="frame"
-    [estimatedFrameRate]="currentFrameRate()"
+    [frameRate]="currentFrameRate()"
     [(visualizationMode)]="visualizationMode"
     [(changeDetection)]="changeDetection"
   />

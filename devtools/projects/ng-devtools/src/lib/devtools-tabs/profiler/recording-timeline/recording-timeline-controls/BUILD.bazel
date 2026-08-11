@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -17,7 +17,32 @@ ng_project(
         ":recording-timeline-controls_styles",
     ],
     deps = [
+        ":filter",
         "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
+    ],
+)
+
+ts_project(
+    name = "filter",
+    srcs = ["filter.ts"],
+    deps = [
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = glob(["*.spec.ts"]),
+    deps = [
+        ":filter",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
     ],
 )

@@ -745,8 +745,8 @@ importers:
         specifier: ^7.0.14
         version: 7.0.14
       ngx-flamegraph:
-        specifier: 0.1.1
-        version: 0.1.1(@angular/common@packages+common)(@angular/core@packages+core)
+        specifier: 0.2.0
+        version: 0.2.0(@angular/common@packages+common)(@angular/core@packages+core)
       todomvc-app-css:
         specifier: ^2.3.0
         version: 2.4.3
@@ -8710,8 +8710,8 @@ packages:
       tailwindcss:
         optional: true
 
-  ngx-flamegraph@0.1.1:
-    resolution: {integrity: sha512-BTyyOnPDXW0Xi5iOd+H03atdiCNdnYNzpkNJ4iqTrkYGJnOnzaMEzdlaN9Jt3Qpjcs3oyvUoJvD85xZnZpzTyQ==}
+  ngx-flamegraph@0.2.0:
+    resolution: {integrity: sha512-qupUnKsftllyS1MMnI3rsegmW8XFs6bLYz7dRU84x0+FAykikR9c3ZAcjwYYbghv2PAIv4Ltw7kB9mwkbWbs/w==}
     peerDependencies:
       '@angular/common': ^20.0.0
       '@angular/core': ^20.0.0
@@ -19848,7 +19848,7 @@ snapshots:
       - supports-color
       - vue-tsc
 
-  ngx-flamegraph@0.1.1(@angular/common@packages+common)(@angular/core@packages+core):
+  ngx-flamegraph@0.2.0(@angular/common@packages+common)(@angular/core@packages+core):
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
