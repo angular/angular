@@ -112,7 +112,7 @@ class StateValue {
     input: any,
     public namespaceId: string = '',
   ) {
-    const isObj = input && input.hasOwnProperty('value');
+    const isObj = input && Object.hasOwn(input, 'value');
     const value = isObj ? input['value'] : input;
     this.value = normalizeTriggerValue(value);
     if (isObj) {
@@ -246,7 +246,7 @@ class AnimationTransitionNamespace {
 
     let fromState = triggersWithStates.get(triggerName);
     const toState = new StateValue(value, this.id);
-    const isObj = value && value.hasOwnProperty('value');
+    const isObj = value && Object.hasOwn(value, 'value');
     if (!isObj && fromState) {
       toState.absorbOptions(fromState.options);
     }
