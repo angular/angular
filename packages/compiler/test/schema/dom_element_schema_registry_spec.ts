@@ -44,6 +44,7 @@ describe('DOMElementSchema', () => {
     expect(registry.hasProperty('div', 'id', [])).toBeTruthy();
     expect(registry.hasProperty('div', 'title', [])).toBeTruthy();
     expect(registry.hasProperty('div', 'inert', [])).toBeTruthy();
+    expect(registry.hasProperty('div', 'popover', [])).toBeTruthy();
     expect(registry.hasProperty('h1', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h2', 'align', [])).toBeTruthy();
     expect(registry.hasProperty('h3', 'align', [])).toBeTruthy();
