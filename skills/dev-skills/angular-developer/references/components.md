@@ -90,6 +90,8 @@ The `@for` block iterates over collections. The `track` expression is **required
 
 **Implicit Variables**: `$index`, `$count`, `$first`, `$last`, `$even`, `$odd`.
 
+**Avoid calling non-memoized methods in template expressions** (e.g. `@for (x of getItems())`, `{{ formatDate(item.date) }}`). These reevaluate on every change-detection run, which is wasteful when the computation is nontrivial. Prefer a `computed()` signal, or a pure pipe, so the result is cached and only recalculated when its dependencies change. A plain function call is fine when it's a trivial/pure lookup (e.g. reading a signal, indexing an object).
+
 ### Switching Content (`@switch`)
 
 The `@switch` block renders content based on a value. It uses strict equality (`===`) and has **no fallthrough**.
