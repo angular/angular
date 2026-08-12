@@ -1,3 +1,11 @@
+## 22.1.0 (2026-08-12)
+
+- fix(language-service): account for strictTemplates being enabled by default ([a99fb915c0](https://github.com/angular/angular/commit/a99fb915c09b352ac67f24e71af84cda30bcbf3e))
+- feat(language-service): Typecheck templates which would require inline typecheck blocks (#68454) ([4f9c824dd9](https://github.com/angular/angular/commit/4f9c824dd9ec4462d29ed07b5e7916be86c19e84))
+- feat(language-service): compile non-exported classes if standalone (#68454) ([7f0265e43a](https://github.com/angular/angular/commit/7f0265e43ab9f6b1ab9ad0ae84e70a40db417417))
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 22.0.1 (2026-06-11)
 
 - fix(vscode-extension): resolve relative workspace tsdk paths to absolute ([f6695b0eb2](https://github.com/angular/angular/commit/f6695b0eb26e70a92579666396a5ff417b8874ff))
