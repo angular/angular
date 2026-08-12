@@ -212,6 +212,22 @@ describe('Meta service', () => {
     metaService.removeTagElement(actual);
   });
 
+  it('should add attributes whose names match Object prototype keys', () => {
+    const meta = metaService.addTag({
+      name: 'prototype-keys',
+      constructor: 'constructor',
+      toString: 'toString',
+      ['__proto__']: '__proto__',
+    })!;
+
+    expect(meta.getAttribute('constructor')).toEqual('constructor');
+    expect(meta.getAttribute('toString')).toEqual('toString');
+    expect(meta.getAttribute('__proto__')).toEqual('__proto__');
+
+    // clean up
+    metaService.removeTagElement(meta);
+  });
+
   it('should escape selector values when deriving the match selector', () => {
     // This payload attempts to prematurely close the attribute selector
     // and match another attribute.

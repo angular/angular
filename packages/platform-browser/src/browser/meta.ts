@@ -214,7 +214,7 @@ function containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean
 }
 
 function getMetaKeyMap(prop: string): string {
-  return META_KEYS_MAP[prop] || prop;
+  return Object.hasOwn(META_KEYS_MAP, prop) ? META_KEYS_MAP[prop] : prop;
 }
 
 function isMetaTag(tag: HTMLElement | null): tag is HTMLMetaElement {
