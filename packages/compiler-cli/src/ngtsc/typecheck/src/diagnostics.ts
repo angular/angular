@@ -57,13 +57,30 @@ export function translateDiagnostic(
   }
 
   const {sourceLocation, sourceMapping: templateSourceMapping, span} = fullMapping;
+  let code = diagnostic.code;
+  let messageText = diagnostic.messageText;
+
+  // Unwrap TS7053 (Element implicitly has an 'any' type...) if the underlying cause is TS2339
+  // (Property 'foo' does not exist...). This provides a much better developer experience for
+  // typo errors in templates when indexed access is used in the TCB.
+  if (
+    code === 7053 &&
+    typeof messageText === 'object' &&
+    messageText.next &&
+    messageText.next.length === 1 &&
+    messageText.next[0].code === 2339
+  ) {
+    code = 2339;
+    messageText = messageText.next[0].messageText;
+  }
+
   return makeTemplateDiagnostic(
     sourceLocation.id,
     templateSourceMapping,
     span,
     diagnostic.category,
-    diagnostic.code,
-    diagnostic.messageText,
+    code,
+    messageText,
     undefined,
     diagnostic.reportsDeprecated !== undefined
       ? {

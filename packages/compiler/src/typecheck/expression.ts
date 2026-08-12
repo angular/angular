@@ -241,7 +241,13 @@ class TcbExprTranslator implements AstVisitor {
     if (!this.isStrictSafeNavigationChain(ast.receiver)) {
       receiver.wrapForTypeChecker();
     }
-    return new TcbExpr(`${receiver.print()}.${ast.name}`)
+    const isComponentContextRead =
+      ast.receiver instanceof ImplicitReceiver || ast.receiver instanceof ThisReceiver;
+    const access =
+      isComponentContextRead && this.config.useElementAccessForProperties !== false
+        ? `${receiver.print()}[${TcbExpr.quoteAndEscape(ast.name)}]`
+        : `${receiver.print()}.${ast.name}`;
+    return new TcbExpr(access)
       .addParseSpanInfo(ast.nameSpan)
       .wrapForTypeChecker()
       .addParseSpanInfo(ast.sourceSpan);
@@ -294,9 +300,14 @@ class TcbExprTranslator implements AstVisitor {
         if (!this.isStrictSafeNavigationChain(receiver.receiver)) {
           propertyReceiver.wrapForTypeChecker();
         }
-        expr = new TcbExpr(`${propertyReceiver.print()}.${receiver.name}`).addParseSpanInfo(
-          receiver.nameSpan,
-        );
+        const isComponentContextRead =
+          receiver.receiver instanceof ImplicitReceiver ||
+          receiver.receiver instanceof ThisReceiver;
+        const access =
+          isComponentContextRead && this.config.useElementAccessForProperties !== false
+            ? `${propertyReceiver.print()}[${TcbExpr.quoteAndEscape(receiver.name)}]`
+            : `${propertyReceiver.print()}.${receiver.name}`;
+        expr = new TcbExpr(access).addParseSpanInfo(receiver.nameSpan);
       }
     } else {
       expr = this.translate(receiver);

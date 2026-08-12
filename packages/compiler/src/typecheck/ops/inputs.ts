@@ -8,25 +8,25 @@
 
 import {AST, BindingType} from '../../expression_parser/ast';
 import {BindingPropertyName, ClassPropertyName} from '../../property_mapping';
-import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
 import {BoundAttribute, Component, Directive, Element, Template} from '../../render3/r3_ast';
-import type {Context} from './context';
-import type {Scope} from './scope';
+import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
+import {isUnsafeObjectKey} from '../../render3/util';
+import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
+import {getBoundAttributes, widenBinding} from './bindings';
 import {declareVariable, TcbExpr} from './codegen';
-import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
-const REGISTRY = new DomElementSchemaRegistry();
+import type {Context} from './context';
 import {tcbExpression, unwrapWritableSignal} from './expression';
+import {LocalSymbol} from './references';
+import type {Scope} from './scope';
 import {
   checkUnsupportedFieldBindings,
-  CustomFormControlType,
   customFormControlBannedInputFields,
+  CustomFormControlType,
   expandBoundAttributesForField,
 } from './signal_forms';
-import {getBoundAttributes, widenBinding} from './bindings';
-import {LocalSymbol} from './references';
-import {isUnsafeObjectKey} from '../../render3/util';
+const REGISTRY = new DomElementSchemaRegistry();
 
 /**
  * Translates the given attribute binding to a `ts.Expression`.
@@ -158,12 +158,14 @@ export class TcbDirectiveInputsOp extends TcbOp {
             dirId = this.scope.resolve(this.node, this.dir);
           }
 
-          // To get errors assign directly to the fields on the instance, using property access
-          // when possible. String literal fields may not be valid JS identifiers so we use
-          // literal element access instead for those cases.
-          target = this.dir.stringLiteralInputFields.has(fieldName)
-            ? new TcbExpr(`${dirId.print()}[${TcbExpr.quoteAndEscape(fieldName)}]`)
-            : new TcbExpr(`${dirId.print()}.${fieldName}`);
+          // Always use literal element access for directive members when configured. This keeps behavior
+          // consistent for all field names and avoids access checks tied to property access.
+          target =
+            this.tcb.env.config.useElementAccessForProperties !== false
+              ? new TcbExpr(`${dirId.print()}[${TcbExpr.quoteAndEscape(fieldName)}]`)
+              : this.dir.stringLiteralInputFields.has(fieldName)
+                ? new TcbExpr(`${dirId.print()}[${TcbExpr.quoteAndEscape(fieldName)}]`)
+                : new TcbExpr(`${dirId.print()}.${fieldName}`);
         }
 
         // For signal inputs, we unwrap the target `InputSignal`. Note that

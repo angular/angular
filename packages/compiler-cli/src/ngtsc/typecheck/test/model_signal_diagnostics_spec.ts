@@ -101,26 +101,22 @@ runInEachFileSystem(() => {
       },
       // restricted fields
       {
-        id: 'disallows access to private model',
+        id: 'allows access to private model',
         inputs: {
           pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'private'},
         },
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [pattern]="'works'">`,
-        expected: [
-          `TestComponent.html(1, 11): Property 'pattern' is private and only accessible within class 'Dir'.`,
-        ],
+        expected: [],
       },
       {
-        id: 'disallows access to protected model',
+        id: 'allows access to protected model',
         inputs: {
           pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'protected'},
         },
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [pattern]="'works'">`,
-        expected: [
-          `TestComponent.html(1, 11): Property 'pattern' is protected and only accessible within class 'Dir' and its subclasses.`,
-        ],
+        expected: [],
       },
       {
         id: 'allows access to readonly model by default',

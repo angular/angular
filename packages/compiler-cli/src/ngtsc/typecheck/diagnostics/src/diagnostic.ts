@@ -22,6 +22,37 @@ interface DeprecatedDiagnosticInfo {
   relatedMessages: ts.DiagnosticRelatedInformation[] | undefined;
 }
 
+function removeRedundantImplicitAnyMessage(
+  messageText: string | ts.DiagnosticMessageChain,
+): string | ts.DiagnosticMessageChain {
+  if (typeof messageText !== 'object' || messageText.next === undefined) {
+    return messageText;
+  }
+
+  const propertyMessage = findPropertyDoesNotExistMessage(messageText);
+  return propertyMessage ?? messageText;
+}
+
+function findPropertyDoesNotExistMessage(
+  messageText: ts.DiagnosticMessageChain,
+): ts.DiagnosticMessageChain | null {
+  const isPropertyError = /^Property '.*' does not exist on type '.*'\.?$/.test(
+    messageText.messageText,
+  );
+  if (isPropertyError) {
+    return messageText;
+  }
+
+  for (const next of messageText.next ?? []) {
+    const nested = findPropertyDoesNotExistMessage(next);
+    if (nested !== null) {
+      return nested;
+    }
+  }
+
+  return null;
+}
+
 /**
  * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
  *
@@ -42,6 +73,8 @@ export function makeTemplateDiagnostic(
   }[],
   deprecatedDiagInfo?: DeprecatedDiagnosticInfo,
 ): TemplateDiagnostic {
+  messageText = removeRedundantImplicitAnyMessage(messageText);
+
   if (mapping.type === 'direct') {
     let relatedInformation: ts.DiagnosticRelatedInformation[] | undefined = [];
     if (relatedMessages !== undefined) {

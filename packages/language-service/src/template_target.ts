@@ -425,10 +425,19 @@ export function getTcbNodesOfTemplateAtPosition(
     if (targetNode instanceof PropertyRead) {
       const tsNode = findFirstMatchingNode(tcb, {
         withSpan: targetNode.nameSpan,
-        filter: (node): node is tss.PropertyAccessExpression =>
-          tss.isPropertyAccessExpression(node),
+        filter: (node): node is tss.PropertyAccessExpression | tss.ElementAccessExpression =>
+          tss.isPropertyAccessExpression(node) || tss.isElementAccessExpression(node),
       });
-      tcbNodes.push(tsNode?.name ?? null);
+      if (tsNode) {
+        if (tss.isPropertyAccessExpression(tsNode)) {
+          tcbNodes.push(tsNode.name);
+        } else if (
+          tss.isElementAccessExpression(tsNode) &&
+          tss.isStringLiteral(tsNode.argumentExpression)
+        ) {
+          tcbNodes.push(tsNode.argumentExpression);
+        }
+      }
     } else {
       tcbNodes.push(findFirstMatchingNodeForSourceSpan(tcb, target.context.node.sourceSpan));
     }

@@ -1193,7 +1193,7 @@ runInEachFileSystem(() => {
             program
               .getTypeChecker()
               .symbolToString(templateTypeChecker.getTsSymbolOfSymbol(symbol)!),
-          ).toEqual('foo');
+          ).toEqual('"foo"');
           expect(
             program.getTypeChecker().typeToString(templateTypeChecker.getTypeOfSymbol(symbol)!),
           ).toEqual('Foo');

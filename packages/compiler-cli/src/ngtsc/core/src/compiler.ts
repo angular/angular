@@ -1082,6 +1082,7 @@ export class NgCompiler {
     if (strictTemplates) {
       typeCheckingConfig = {
         applyTemplateContextGuards: strictTemplates,
+        useElementAccessForProperties: this.options['_isAngularLanguageService'] !== true,
         checkQueries: false,
         checkTemplateBodies: true,
         alwaysCheckSchemaInTemplateBodies: true,
@@ -1118,7 +1119,8 @@ export class NgCompiler {
       };
     } else {
       typeCheckingConfig = {
-        applyTemplateContextGuards: false,
+        applyTemplateContextGuards: true,
+        useElementAccessForProperties: this.options['_isAngularLanguageService'] !== true,
         checkQueries: false,
         checkTemplateBodies: false,
         checkControlFlowBodies: false,

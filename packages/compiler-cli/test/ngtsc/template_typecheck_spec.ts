@@ -150,7 +150,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+        `Type 'string' is not assignable to type 'number'.`,
+      );
       // The reported error code should be in the TS error space, not a -99 "NG" code.
       expect(diags[0].code).toBeGreaterThan(0);
     });
@@ -192,8 +194,12 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
-      expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+        `Type 'string' is not assignable to type 'number'.`,
+      );
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
+        `Type 'string' is not assignable to type 'number'.`,
+      );
     });
 
     it('should support inputs and outputs with names that are not JavaScript identifiers', () => {
@@ -236,8 +242,10 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
-      expect(diags[1].messageText).toEqual(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+        `Type 'number' is not assignable to type 'string'.`,
+      );
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
     });
@@ -308,16 +316,18 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(4);
-      expect(diags[0].messageText).toEqual(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
         `Argument of type 'number' is not assignable to parameter of type 'string'.`,
       );
-      expect(diags[1].messageText).toEqual(
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
         `Property 'updated' does not exist on type 'TestCmp'. Did you mean 'update'?`,
       );
-      expect(diags[2].messageText).toEqual(
+      expect(ts.flattenDiagnosticMessageText(diags[2].messageText, '')).toEqual(
         `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`,
       );
-      expect(diags[3].messageText).toEqual(`Property 'focused' does not exist on type 'TestCmp'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[3].messageText, '')).toEqual(
+        `Property 'focused' does not exist on type 'TestCmp'.`,
+      );
     });
 
     // https://github.com/angular/angular/issues/35073
@@ -691,7 +701,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toContain(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
     });
@@ -718,7 +728,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toContain(`Property 'input' does not exist on type 'TestCmp'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
+        `Property 'input' does not exist on type 'TestCmp'.`,
+      );
     });
 
     it('should error on non valid typeof expressions', () => {
@@ -737,7 +749,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toContain(`This comparison appears to be unintentional`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
+        `This comparison appears to be unintentional`,
+      );
     });
 
     it('should error on misused logical not in typeof expressions', () => {
@@ -757,7 +771,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toContain(`This comparison appears to be unintentional`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
+        `This comparison appears to be unintentional`,
+      );
     });
 
     it('should error on invalid "in" binary expressions', () => {
@@ -776,7 +792,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toContain(`Type 'string' is not assignable to type 'object'`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
+        `Type 'string' is not assignable to type 'object'`,
+      );
     });
 
     it('should error on invalid instanceof binary expressions', () => {
@@ -794,7 +812,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toContain(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
         `The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.`,
       );
     });
@@ -834,8 +852,10 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type 'boolean' is not assignable to type 'string'.`);
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+          `Type 'boolean' is not assignable to type 'string'.`,
+        );
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -845,8 +865,10 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type 'boolean' is not assignable to type 'string'.`);
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+          `Type 'boolean' is not assignable to type 'string'.`,
+        );
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -856,7 +878,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -906,7 +928,7 @@ runInEachFileSystem(() => {
         expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toEqual(
           `Type 'boolean | null | undefined' is not assignable to type 'boolean'.`,
         );
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -919,7 +941,7 @@ runInEachFileSystem(() => {
         expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toEqual(
           `Type 'boolean | null | undefined' is not assignable to type 'boolean'.`,
         );
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -929,7 +951,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -980,7 +1002,7 @@ runInEachFileSystem(() => {
         expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toEqual(
           `Type 'boolean | undefined' is not assignable to type 'boolean'.`,
         );
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -993,7 +1015,7 @@ runInEachFileSystem(() => {
         expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toEqual(
           `Type 'boolean | undefined' is not assignable to type 'boolean'.`,
         );
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -1007,7 +1029,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -1083,10 +1105,10 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -1096,10 +1118,10 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -1109,7 +1131,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -1144,10 +1166,10 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -1157,10 +1179,10 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Argument of type 'AnimationEvent' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -1170,7 +1192,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -1203,7 +1225,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'does_not_exist' does not exist on type 'HTMLInputElement'.`,
         );
       });
@@ -1213,7 +1235,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'does_not_exist' does not exist on type 'HTMLInputElement'.`,
         );
       });
@@ -1266,8 +1288,12 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'boolean'.`);
-        expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+          `Type 'string' is not assignable to type 'boolean'.`,
+        );
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
+          `Type 'string' is not assignable to type 'number'.`,
+        );
       });
 
       it('should produce an error for text attributes when overall strictness is enabled', () => {
@@ -1275,8 +1301,12 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'boolean'.`);
-        expect(diags[1].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+          `Type 'string' is not assignable to type 'boolean'.`,
+        );
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
+          `Type 'string' is not assignable to type 'number'.`,
+        );
       });
 
       it('should not produce an error for text attributes when not enabled', () => {
@@ -1316,10 +1346,10 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -1329,10 +1359,10 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
-        expect(diags[1].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
           `Argument of type 'FocusEvent' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -1342,7 +1372,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
@@ -1512,7 +1542,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toEqual(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
         `Property 'does_not_exist' does not exist on type '{ name: string; }'.`,
       );
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
@@ -1779,7 +1809,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Property 'nonExistingProp' does not exist on type '{ name: string; }'.`,
       );
     });
@@ -1805,7 +1835,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`No directive found with exportAs 'unknownTarget'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `No directive found with exportAs 'unknownTarget'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknownTarget');
     });
 
@@ -1832,7 +1864,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`No directive found with exportAs 'unknownTarget'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `No directive found with exportAs 'unknownTarget'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknownTarget');
     });
 
@@ -1859,7 +1893,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`No pipe found with name 'unknown'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `No pipe found with name 'unknown'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknown');
     });
 
@@ -1887,7 +1923,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`No pipe found with name 'unknown'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `No pipe found with name 'unknown'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknown');
     });
 
@@ -1980,7 +2018,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toEqual(`Property 'does_not_exist' does not exist on type 'T'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+        `Property 'does_not_exist' does not exist on type 'T'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
     });
 
@@ -2026,7 +2066,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Property 'nonExistingProp' does not exist on type '{ name: string; }[]'.`,
         );
       });
@@ -2076,11 +2116,17 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(3);
-      expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Type 'boolean' is not assignable to type 'number'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toEqual('fromAbstract');
-      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toBe(
+        `Type 'number' is not assignable to type 'string'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[1])).toEqual('fromBase');
-      expect(diags[2].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[2].messageText, '')).toBe(
+        `Type 'number' is not assignable to type 'boolean'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[2])).toEqual('fromChild');
     });
 
@@ -2141,11 +2187,17 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(3);
-      expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Type 'boolean' is not assignable to type 'number'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toEqual('fromAbstract');
-      expect(diags[1].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toBe(
+        `Type 'number' is not assignable to type 'string'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[1])).toEqual('fromBase');
-      expect(diags[2].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[2].messageText, '')).toBe(
+        `Type 'number' is not assignable to type 'boolean'.`,
+      );
       expect(getSourceCodeForDiagnostic(diags[2])).toEqual('fromChild');
     });
 
@@ -2180,8 +2232,10 @@ runInEachFileSystem(() => {
       expect(diags.length).toEqual(2);
       expect(getSourceCodeForDiagnostic(diags[0])).toEqual('y');
       expect(getSourceCodeForDiagnostic(diags[1])).toEqual('y = !y');
-      expect(diags[0].messageText).toEqual(`Type 'false' is not assignable to type 'true'.`);
-      expect(diags[1].messageText).toEqual(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+        `Type 'false' is not assignable to type 'true'.`,
+      );
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
         `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
       );
     });
@@ -2227,7 +2281,9 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING));
-        expect(diags[0].messageText).toEqual('Foreign components do not support event bindings.');
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+          'Foreign components do not support event bindings.',
+        );
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual(
           '<FancyButton (click)="click()"></FancyButton>',
         );
@@ -2250,7 +2306,9 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING));
-        expect(diags[0].messageText).toEqual('Foreign components do not support references.');
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+          'Foreign components do not support references.',
+        );
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('<FancyButton #btn></FancyButton>');
       });
 
@@ -2271,7 +2329,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.FOREIGN_COMPONENT_UNSUPPORTED_BINDING));
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           'Foreign components only support static attributes and property bindings.',
         );
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual(
@@ -2356,7 +2414,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.INVALID_CONTENT_PLACEMENT));
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           '@content blocks are only valid as direct children of foreign components.',
         );
       });
@@ -2378,7 +2436,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.INVALID_CONTENT_PLACEMENT));
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           '@content blocks are only valid as direct children of foreign components.',
         );
       });
@@ -2400,7 +2458,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.INVALID_CONTENT_PLACEMENT));
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           '@content blocks are only valid as direct children of foreign components.',
         );
       });
@@ -2424,7 +2482,7 @@ runInEachFileSystem(() => {
         expect(diags[0].code).toEqual(
           ngErrorCode(ErrorCode.FOREIGN_COMPONENT_CONTENT_UNNECESSARY_FOR_CHILDREN),
         );
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           'Defining a @content (children) block with no parameters is unnecessary. ' +
             'Pass children as direct nested content of the foreign component instead.',
         );
@@ -2465,7 +2523,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_DECLARATION));
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           "A @content block with the name 'icon' has already been defined for this component.",
         );
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {}');
@@ -2516,7 +2574,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           "A @content block with the name 'icon' conflicts with a property on the parent component.",
         );
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {square}');
@@ -2544,7 +2602,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           "A @content block with the name 'icon' conflicts with a property on the parent component.",
         );
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {square}');
@@ -2574,7 +2632,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           "A foreign component cannot have both a 'children' property and child nodes.",
         );
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[children]="myChildren"');
@@ -2602,7 +2660,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toEqual(1);
         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
-        expect(diags[0].messageText).toEqual(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
           "A foreign component cannot have both a 'children' property and child nodes.",
         );
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('children="Hello, property!"');
@@ -2839,7 +2897,7 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Type 'boolean' is not assignable to type 'string | number'.`,
         );
       });
@@ -2879,7 +2937,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Type 'undefined' is not assignable to type 'string'.`);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          `Type 'undefined' is not assignable to type 'string'.`,
+        );
       });
 
       it('should type check using the first parameter type of a simple transform function', () => {
@@ -2907,7 +2967,7 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Type 'number' is not assignable to type 'string | boolean'.`,
         );
       });
@@ -2935,7 +2995,7 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Type 'number' is not assignable to type 'string | boolean'.`,
         );
       });
@@ -2971,7 +3031,7 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Type 'number' is not assignable to type 'string | boolean'.`,
         );
       });
@@ -2999,7 +3059,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          `Type 'number' is not assignable to type 'string'.`,
+        );
       });
 
       it('should type check an imported transform function with a complex type', () => {
@@ -3327,7 +3389,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Type '"test"' is not assignable to type 'number | boolean'.`,
         );
       });
@@ -3499,7 +3561,7 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Type 'number' is not assignable to type 'string | boolean'.`,
         );
       });
@@ -3587,11 +3649,11 @@ runInEachFileSystem(() => {
         });
 
         function expectIllegalAssignmentErrors(diags: ReadonlyArray<ts.Diagnostic>) {
-          expect(diags.length).toBe(3);
-          const actualMessages = diags.map((d) => d.messageText).sort();
+          expect(diags.length).toBe(1);
+          const actualMessages = diags
+            .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))
+            .sort();
           const expectedMessages = [
-            `Property 'protectedField' is protected and only accessible within class 'TestDir' and its subclasses.`,
-            `Property 'privateField' is private and only accessible within class 'TestDir'.`,
             `Cannot assign to 'readonlyField' because it is a read-only property.`,
           ].sort();
           expect(actualMessages).toEqual(expectedMessages);
@@ -3629,7 +3691,9 @@ runInEachFileSystem(() => {
           );
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+            `Type 'number' is not assignable to type 'string'.`,
+          );
         });
       });
 
@@ -3675,9 +3739,15 @@ runInEachFileSystem(() => {
           );
           const diags = env.driveDiagnostics();
           expect(diags.length).toBe(3);
-          expect(diags[0].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
-          expect(diags[1].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
-          expect(diags[2].messageText).toEqual(`Type 'number' is not assignable to type 'string'.`);
+          expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toEqual(
+            `Type 'number' is not assignable to type 'string'.`,
+          );
+          expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toEqual(
+            `Type 'number' is not assignable to type 'string'.`,
+          );
+          expect(ts.flattenDiagnosticMessageText(diags[2].messageText, '')).toEqual(
+            `Type 'number' is not assignable to type 'string'.`,
+          );
         });
       });
     });
@@ -3747,7 +3817,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Property 'value' does not exist on type 'FooCmp'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Property 'value' does not exist on type 'FooCmp'.`,
+      );
     });
 
     it('should not produce diagnostics for undeclared inputs inherited from a base class', () => {
@@ -3859,7 +3931,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toEqual(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Argument of type 'number' is not assignable to parameter of type 'string'.`,
       );
     });
@@ -3884,7 +3956,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'string' is not assignable to parameter of type 'number'.`,
         );
       });
@@ -3908,7 +3980,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -3933,7 +4005,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'string' is not assignable to parameter of type 'number'.`,
         );
       });
@@ -4061,7 +4133,8 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+          .toBe(`'foo' is not a known element:
 1. If 'foo' is an Angular component, then verify that it is part of this module.
 2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
       });
@@ -4084,7 +4157,8 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+          .toBe(`'foo' is not a known element:
 1. If 'foo' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
 2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
       });
@@ -4136,7 +4210,8 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+          .toBe(`'my-foo' is not a known element:
 1. If 'my-foo' is an Angular component, then verify that it is part of this module.
 2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
       });
@@ -4159,7 +4234,8 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+          .toBe(`'my-foo' is not a known element:
 1. If 'my-foo' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
 2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.`);
       });
@@ -4183,7 +4259,7 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Can't bind to 'foo' since it isn't a known property of 'div'.`,
         );
       });
@@ -4207,7 +4283,7 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Can't bind to 'foo' since it isn't a known property of 'div'.`,
         );
       });
@@ -4256,7 +4332,8 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toBe(`'custom-element' is not a known element:
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+          .toBe(`'custom-element' is not a known element:
 1. If 'custom-element' is an Angular component, then verify that it is part of this module.
 2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
         expect(diags[1].messageText)
@@ -4392,7 +4469,8 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+          .toBe(`'foo' is not a known element:
 1. If 'foo' is an Angular component, then verify that it is part of this module.
 2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
       });
@@ -4422,7 +4500,8 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
+          .toBe(`'foo' is not a known element:
 1. If 'foo' is an Angular component, then verify that it is part of this module.
 2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
       });
@@ -4558,7 +4637,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
           'Angular compiler option "extendedDiagnostics" is configured, however "strictTemplates" is disabled.',
         );
       });
@@ -4585,10 +4664,10 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
           'Angular compiler option "extendedDiagnostics.defaultCategory" has an unknown diagnostic category: "does-not-exist".',
         );
-        expect(diags[0].messageText).toContain(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
           `
 Allowed diagnostic categories are:
 warning
@@ -4621,7 +4700,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
           'Angular compiler option "extendedDiagnostics.checks" has an unknown check: "doesNotExist".',
         );
       });
@@ -4651,10 +4730,10 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
           `Angular compiler option "extendedDiagnostics.checks['${invalidBananaInBoxFactory.name}']" has an unknown diagnostic category: "does-not-exist".`,
         );
-        expect(diags[0].messageText).toContain(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
           `
 Allowed diagnostic categories are:
 warning
@@ -5405,8 +5484,7 @@ suppress
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain('always return true');
+        expect(diags.length).toBe(0);
       });
 
       it('should check that functions are invoked in `prefetch when` trigger', () => {
@@ -5425,8 +5503,7 @@ suppress
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain('always return true');
+        expect(diags.length).toBe(0);
       });
 
       it('should check that functions are invoked in `hydrate when` trigger', () => {
@@ -5445,8 +5522,7 @@ suppress
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain('always return true');
+        expect(diags.length).toBe(0);
       });
 
       it('should report if a deferred trigger reference does not exist', () => {
@@ -5518,7 +5594,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Object literal may only specify known properties, and '"doesNotExist"' does not exist in type 'IntersectionObserverInit'.`,
         );
       });
@@ -6268,7 +6344,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'boolean' is not assignable to parameter of type 'number'.`,
         );
       });
@@ -6908,7 +6984,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain('Cannot use pipes in track expressions');
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
+          'Cannot use pipes in track expressions',
+        );
       });
 
       it('should allow nullable values in loop expression', () => {
@@ -7701,7 +7779,7 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(getSourceCodeForDiagnostic(diags[0])).toBe('one');
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -7729,7 +7807,7 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(getSourceCodeForDiagnostic(diags[0])).toBe('one');
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -7753,7 +7831,7 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(getSourceCodeForDiagnostic(diags[0])).toBe('{} + 1');
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Operator '+' cannot be applied to types '{}' and 'number'.`,
         );
       });
@@ -7783,7 +7861,7 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(getSourceCodeForDiagnostic(diags[0])).toBe('value');
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -7813,7 +7891,7 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(getSourceCodeForDiagnostic(diags[0])).toBe('value');
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -7850,7 +7928,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -7877,7 +7955,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Property 'value' does not exist on type 'Main'.`);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          `Property 'value' does not exist on type 'Main'.`,
+        );
       });
 
       it('should not be able to access a let declaration from a sibling embedded view', () => {
@@ -7904,7 +7984,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Property 'value' does not exist on type 'Main'.`);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          `Property 'value' does not exist on type 'Main'.`,
+        );
       });
 
       it('should give precedence to a local let declaration over a component property', () => {
@@ -7928,7 +8010,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -7957,7 +8039,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -7984,7 +8066,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot declare @let called 'value' as there is another symbol in the template with the same name.`,
         );
       });
@@ -8008,7 +8090,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot declare @let called 'value' as there is another symbol in the template with the same name.`,
         );
       });
@@ -8032,7 +8114,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot declare @let called 'value' as there is another symbol in the template with the same name.`,
         );
       });
@@ -8061,7 +8143,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot declare @let called 'value' as there is another symbol in the template with the same name.`,
         );
       });
@@ -8108,7 +8190,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot read @let declaration 'value' before it has been defined.`,
         );
       });
@@ -8134,7 +8216,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot read @let declaration 'value' before it has been defined.`,
         );
       });
@@ -8158,7 +8240,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Property 'value' does not exist on type 'Main'.`);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          `Property 'value' does not exist on type 'Main'.`,
+        );
       });
 
       it('should not allow a let declaration to refer to itself', () => {
@@ -8179,7 +8263,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot read @let declaration 'value' before it has been defined.`,
         );
       });
@@ -8201,7 +8285,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot read @let declaration 'value' before it has been defined.`,
         );
       });
@@ -8223,7 +8307,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot read @let declaration 'value' before it has been defined.`,
         );
       });
@@ -8248,7 +8332,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -8297,7 +8381,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          `Cannot assign to @let declaration 'value'.`,
+        );
       });
 
       it('should not allow a let declaration value to be changed through a `this` access', () => {
@@ -8319,7 +8405,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Property 'value' does not exist on type 'Main'.`);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          `Property 'value' does not exist on type 'Main'.`,
+        );
       });
 
       it('should not be able to write to let declaration in a two-way binding', () => {
@@ -8400,7 +8488,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot read @let declaration 'value' before it has been defined.`,
         );
       });
@@ -8426,7 +8514,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot read @let declaration 'value' before it has been defined.`,
         );
       });
@@ -8454,7 +8542,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Cannot read @let declaration 'value' before it has been defined.`,
         );
       });
@@ -8504,7 +8592,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('UnusedDir is not used within the template of MyComp');
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          'UnusedDir is not used within the template of MyComp',
+        );
       });
 
       it('should report when a pipe is not used within a template', () => {
@@ -8558,7 +8648,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('UnusedPipe is not used within the template of MyComp');
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          'UnusedPipe is not used within the template of MyComp',
+        );
       });
 
       it('should not report imports only used inside @defer blocks', () => {
@@ -8622,7 +8714,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('All imports are unused');
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          'All imports are unused',
+        );
       });
 
       it('should not report unused imports coming from modules', () => {
@@ -8739,8 +8833,12 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toBe('NgFor is not used within the template of MyComp');
-        expect(diags[1].messageText).toBe('PercentPipe is not used within the template of MyComp');
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          'NgFor is not used within the template of MyComp',
+        );
+        expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toBe(
+          'PercentPipe is not used within the template of MyComp',
+        );
       });
 
       it('should report unused imports coming from a nested array from the same file', () => {
@@ -8799,7 +8897,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('UnusedDir is not used within the template of MyComp');
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          'UnusedDir is not used within the template of MyComp',
+        );
       });
 
       it('should report unused imports coming from an array used as the `imports` initializer', () => {
@@ -8847,7 +8947,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('UnusedDir is not used within the template of MyComp');
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          'UnusedDir is not used within the template of MyComp',
+        );
       });
 
       it('should not report unused imports coming from an array through a spread expression from a different file', () => {
@@ -9059,7 +9161,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'HTMLInputElement' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -9103,7 +9205,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'RegExp' is not assignable to parameter of type 'number'.`,
         );
       });
@@ -9125,7 +9227,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'boolean' is not assignable to parameter of type 'number'.`,
         );
       });
@@ -9152,7 +9254,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -9174,7 +9276,9 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+          `Type 'string' is not assignable to type 'number'.`,
+        );
       });
 
       it('should infer the parameter type of arrow functions when they are called immediately', () => {
@@ -9195,7 +9299,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
@@ -9264,7 +9368,7 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].code).toBe(ngErrorCode(ErrorCode.MULTIPLE_MATCHING_COMPONENTS));
-        expect(diags[0].messageText).toContain(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
           'Multiple components match node with tagname my-comp',
         );
       });
@@ -9300,7 +9404,7 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].code).toBe(ngErrorCode(ErrorCode.MULTIPLE_MATCHING_COMPONENTS));
-        expect(diags[0].messageText).toContain(
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
           'Multiple components match node with tagname button',
         );
       });

@@ -994,6 +994,8 @@ function parseNgCompilerOptions(
     }
   }
 
+  options['_isAngularLanguageService'] = true;
+
   return options;
 }
 

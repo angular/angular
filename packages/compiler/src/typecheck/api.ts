@@ -163,6 +163,11 @@ export interface TcbEnvironment {
 
 export interface TypeCheckingConfig {
   /**
+   * Whether to use element access `ctx["prop"]` for component properties, or property access `ctx.prop`.
+   */
+  useElementAccessForProperties?: boolean;
+
+  /**
    * Whether to check the left-hand side type of binding operations.
    */
   checkTypeOfInputBindings: boolean;

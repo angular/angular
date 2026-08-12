@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import ts from 'typescript';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
-import ts from 'typescript';
 
 const testFiles = loadStandardTestFiles();
 
@@ -50,7 +50,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Property 'doesNotExist' does not exist on type 'Comp'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Property 'doesNotExist' does not exist on type 'Comp'.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('doesNotExist');
     });
 
@@ -71,7 +73,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Property 'doesNotExist' does not exist on type 'Comp'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Property 'doesNotExist' does not exist on type 'Comp'.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('doesNotExist');
     });
 
@@ -92,7 +96,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Property 'doesNotExist' does not exist on type 'Comp'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Property 'doesNotExist' does not exist on type 'Comp'.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('doesNotExist');
     });
 
@@ -113,7 +119,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Property 'doesNotExist' does not exist on type 'Comp'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Property 'doesNotExist' does not exist on type 'Comp'.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('doesNotExist');
     });
 
@@ -134,7 +142,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Property 'doesNotExist' does not exist on type 'Comp'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Property 'doesNotExist' does not exist on type 'Comp'.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('doesNotExist');
     });
 
@@ -153,7 +163,7 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Can't bind to 'foo' since it isn't a known property of 'ng-component'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('[foo]');
@@ -175,7 +185,7 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Can't bind to 'foo' since it isn't a known property of 'input'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('[foo]');
@@ -198,7 +208,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Can't bind to 'value' since it isn't a known property of 'div'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('[value]');
@@ -297,7 +307,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Expected 1 arguments, but got 0.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Expected 1 arguments, but got 0.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('handleEvent');
     });
 
@@ -371,7 +383,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Property 'bar' does not exist on type 'Comp'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Property 'bar' does not exist on type 'Comp'.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('bar');
     });
 
@@ -395,7 +409,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Property 'bar' does not exist on type 'Comp'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Property 'bar' does not exist on type 'Comp'.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('bar');
     });
 
@@ -415,10 +431,10 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Property 'doesNotExistTemplate' does not exist on type 'Comp'.`,
       );
-      expect(diags[1].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toBe(
         `Property 'doesNotExistHost' does not exist on type 'Comp'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('doesNotExistTemplate');
@@ -443,10 +459,10 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Property 'doesNotExistTemplate' does not exist on type 'Comp'.`,
       );
-      expect(diags[1].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toBe(
         `Property 'doesNotExistHost' does not exist on type 'Comp'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('doesNotExistTemplate');
@@ -471,10 +487,10 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Property 'doesNotExistTemplate' does not exist on type 'Comp'.`,
       );
-      expect(diags[1].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toBe(
         `Property 'doesNotExistHost' does not exist on type 'Comp'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('doesNotExistTemplate');
@@ -496,7 +512,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Can't bind to 'foo' since it isn't a known property of 'ng-component'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('foo');
@@ -517,7 +533,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Can't bind to 'foo' since it isn't a known property of 'ng-component'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('foo');
@@ -538,7 +554,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Expected 1 arguments, but got 0.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Expected 1 arguments, but got 0.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('handleClick');
     });
 
@@ -557,7 +575,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Expected 0 arguments, but got 1.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Expected 0 arguments, but got 1.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });
 
@@ -576,7 +596,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Argument of type 'PointerEvent' is not assignable to parameter of type 'string'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
@@ -599,7 +619,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe('Expected 1 arguments, but got 3.');
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        'Expected 1 arguments, but got 3.',
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('two');
     });
 
@@ -618,15 +640,7 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toBe(
-        `Property 'id' is private and only accessible within class 'Comp'.`,
-      );
-      expect(diags[1].messageText).toBe(
-        `Property 'handleClick' is private and only accessible within class 'Comp'.`,
-      );
-      expect(getDiagnosticSourceCode(diags[0])).toBe('id');
-      expect(getDiagnosticSourceCode(diags[1])).toBe('handleClick');
+      expect(diags.length).toBe(0);
     });
 
     it('should report diagnostic on the entire expression of property binding if node contains escaped string', () => {
@@ -648,7 +662,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Property 'doesNotExist' does not exist on type 'Dir'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Property 'doesNotExist' does not exist on type 'Dir'.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe(`prefix + \\'123\\' + doesNotExist`);
     });
 
@@ -671,7 +687,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe(`handleClick(\\'foo\\')`);
@@ -698,7 +714,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Argument of type 'number' is not assignable to parameter of type 'string'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('123');
@@ -752,17 +768,19 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(4);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Property 'literalBindingDoesNotExist' does not exist on type 'SomeDir'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('literalBindingDoesNotExist');
-      expect(diags[1].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toBe(
         `Property 'literalListenerDoesNotExist' does not exist on type 'SomeDir'.`,
       );
       expect(getDiagnosticSourceCode(diags[1])).toBe('literalListenerDoesNotExist');
-      expect(diags[2].messageText).toBe(`Expected 1 arguments, but got 0.`);
+      expect(ts.flattenDiagnosticMessageText(diags[2].messageText, '')).toBe(
+        `Expected 1 arguments, but got 0.`,
+      );
       expect(getDiagnosticSourceCode(diags[2])).toBe('directiveDecoratorHostListener');
-      expect(diags[3].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[3].messageText, '')).toBe(
         `Can't bind to 'foo' since it isn't a known property of 'button'.`,
       );
       expect(getDiagnosticSourceCode(diags[3])).toBe('foo');
@@ -808,7 +826,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
     });
@@ -837,7 +855,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
     });
@@ -868,10 +886,10 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
-      expect(diags[1].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toBe(
         `Argument of type 'boolean' is not assignable to parameter of type 'number'.`,
       );
     });
@@ -895,7 +913,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
     });
@@ -923,7 +941,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
     });
@@ -953,10 +971,10 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
         `Argument of type 'string' is not assignable to parameter of type 'number'.`,
       );
-      expect(diags[1].messageText).toBe(
+      expect(ts.flattenDiagnosticMessageText(diags[1].messageText, '')).toBe(
         `Argument of type 'boolean' is not assignable to parameter of type 'number'.`,
       );
     });
@@ -981,7 +999,9 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`Property 'doesNotExist' does not exist on type 'App<T>'.`);
+      expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toBe(
+        `Property 'doesNotExist' does not exist on type 'App<T>'.`,
+      );
       expect(getDiagnosticSourceCode(diags[0])).toBe('doesNotExist');
     });
   });

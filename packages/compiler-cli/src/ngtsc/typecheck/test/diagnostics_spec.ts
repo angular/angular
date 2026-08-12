@@ -748,7 +748,7 @@ class TestComponent {
       expect(messages).toEqual([]);
     });
 
-    it('disallows access to private members', () => {
+    it('allows access to private members', () => {
       const messages = diagnose(
         `<button (click)="doFoo()">{{ message }}</button>`,
         `
@@ -758,10 +758,7 @@ class TestComponent {
         }`,
       );
 
-      expect(messages).toEqual([
-        `TestComponent.html(1, 18): Property 'doFoo' is private and only accessible within class 'TestComponent'.`,
-        `TestComponent.html(1, 30): Property 'message' is private and only accessible within class 'TestComponent'.`,
-      ]);
+      expect(messages).toEqual([]);
     });
   });
 

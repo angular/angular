@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {Symbol, SymbolKind, TemplateTypeChecker, TcbLocation} from '../api';
+import {Symbol, SymbolKind, TcbLocation, TemplateTypeChecker} from '../api';
 
 /** Names of known signal functions. */
 const SIGNAL_FNS = new Set([
@@ -20,10 +20,13 @@ const SIGNAL_FNS = new Set([
 ]);
 
 /** Returns whether a symbol is a reference to a signal. */
+
 export function isSignalReference(symbol: Symbol, typeChecker: TemplateTypeChecker): boolean {
   let location: TcbLocation | null = null;
+  let tcbTypeLocation: TcbLocation | undefined = undefined;
   if ('tcbLocation' in symbol) {
     location = (symbol as any).tcbLocation;
+    tcbTypeLocation = (symbol as any).tcbTypeLocation;
   } else if ('localVarLocation' in symbol) {
     location = (symbol as any).localVarLocation;
   }
@@ -32,8 +35,13 @@ export function isSignalReference(symbol: Symbol, typeChecker: TemplateTypeCheck
     return false;
   }
 
-  // We can trick getTypeOfSymbol since it just checks 'tcbLocation'
-  const type = typeChecker.getTypeOfSymbol({tcbLocation: location} as any);
+  // We can trick getTypeOfSymbol since it just checks 'tcbLocation' and 'tcbTypeLocation'
+  const mockSymbol: any = {tcbLocation: location};
+  if (tcbTypeLocation !== undefined) {
+    mockSymbol.tcbTypeLocation = tcbTypeLocation;
+  }
+  const type = typeChecker.getTypeOfSymbol(mockSymbol);
+
   if (!type) return false;
 
   return (
