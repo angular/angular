@@ -1502,7 +1502,7 @@ export function provideCheckNoChangesConfig(options: {
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
-export function provideExperimentalWebMcpTools<const InputSchema extends JsonSchemaForInference>(tools: WebMcpToolDescriptor<InputSchema>[]): EnvironmentProviders;
+export function provideExperimentalWebMcpTools<const InputSchemas extends readonly JsonSchemaForInference[]>(tools: { [K in keyof InputSchemas]: WebMcpToolDescriptor<InputSchemas[K]>; }): EnvironmentProviders;
 
 // @public
 export function provideIdleServiceWith(useExisting: AbstractType<IdleService> | InjectionToken<IdleService>): EnvironmentProviders;

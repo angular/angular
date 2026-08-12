@@ -26,8 +26,10 @@ import type {ToolDescriptor} from './types';
  *     or route providers.
  * @experimental
  */
-export function provideExperimentalWebMcpTools<const InputSchema extends JsonSchemaForInference>(
-  tools: ToolDescriptor<InputSchema>[],
+export function provideExperimentalWebMcpTools<
+  const InputSchemas extends readonly JsonSchemaForInference[],
+>(
+  tools: {[K in keyof InputSchemas]: ToolDescriptor<InputSchemas[K]>},
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideEnvironmentInitializer(() => {
