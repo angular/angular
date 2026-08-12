@@ -27,6 +27,7 @@ const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>([
   ['window', Identifiers.resolveWindow],
   ['document', Identifiers.resolveDocument],
   ['body', Identifiers.resolveBody],
+  ['root', Identifiers.resolveRoot],
 ]);
 
 /**

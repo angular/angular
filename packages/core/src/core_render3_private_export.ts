@@ -227,6 +227,7 @@ export {
   ɵɵresetView,
   ɵɵresolveBody,
   ɵɵresolveDocument,
+  ɵɵresolveRoot,
   ɵɵresolveWindow,
   ɵɵrestoreView,
   ɵɵsetComponentScope,

@@ -33,6 +33,17 @@ export function ɵɵresolveBody(element: RElement & {ownerDocument: Document}): 
 }
 
 /**
+ *
+ * @codeGenApi
+ */
+export function ɵɵresolveRoot(element: RElement & {ownerDocument: Document}): EventTarget {
+  // `getRootNode` isn't implemented by every renderer environment (e.g. server-side
+  // rendering), so fall back to the owner document, which matches the value `getRootNode`
+  // returns for elements that aren't inside a shadow tree.
+  return (element.getRootNode?.() as unknown as EventTarget) ?? element.ownerDocument;
+}
+
+/**
  * The special delimiter we use to separate property names, prefixes, and suffixes
  * in property binding metadata. See storeBindingMetadata().
  *

@@ -165,6 +165,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵresolveWindow': r3.ɵɵresolveWindow,
   'ɵɵresolveDocument': r3.ɵɵresolveDocument,
   'ɵɵresolveBody': r3.ɵɵresolveBody,
+  'ɵɵresolveRoot': r3.ɵɵresolveRoot,
   'ɵɵsetComponentScope': r3.ɵɵsetComponentScope,
   'ɵɵsetNgModuleScope': r3.ɵɵsetNgModuleScope,
   'ɵɵregisterNgModuleType': registerNgModuleType,

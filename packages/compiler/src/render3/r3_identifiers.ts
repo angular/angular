@@ -321,6 +321,7 @@ export class Identifiers {
   static resolveWindow: o.ExternalReference = {name: 'ɵɵresolveWindow', moduleName: CORE};
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};
   static resolveBody: o.ExternalReference = {name: 'ɵɵresolveBody', moduleName: CORE};
+  static resolveRoot: o.ExternalReference = {name: 'ɵɵresolveRoot', moduleName: CORE};
 
   static getComponentDepsFactory: o.ExternalReference = {
     name: 'ɵɵgetComponentDepsFactory',

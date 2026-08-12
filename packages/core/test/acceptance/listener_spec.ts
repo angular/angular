@@ -823,6 +823,34 @@ describe('event listeners', () => {
       expect(events).toEqual(['click!', 'click!']);
     });
 
+    it('should support root:-prefixed host listeners resolved via getRootNode()', () => {
+      const events: string[] = [];
+
+      @Component({
+        template: ``,
+        standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyComp {
+        @HostListener('root:click')
+        onClick() {
+          events.push('root click!');
+        }
+      }
+
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const host = fixture.nativeElement;
+
+      host.click();
+      expect(events).toEqual(['root click!']);
+
+      host.click();
+      expect(events).toEqual(['root click!', 'root click!']);
+    });
+
     it('should support global host listeners on directives', () => {
       const events: string[] = [];
 
