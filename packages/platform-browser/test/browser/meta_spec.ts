@@ -156,6 +156,32 @@ describe('Meta service', () => {
     metaService.removeTagElement(actual);
   });
 
+  it('should not write event-handler attributes onto the meta element', () => {
+    const meta = metaService.addTag({
+      name: 'og:title',
+      content: 'Content Title',
+      onerror: 'alert(document.cookie)',
+      OnClick: 'alert(1)',
+    })!;
+
+    expect(meta.getAttribute('onerror')).toBeNull();
+    expect(meta.getAttribute('OnClick')).toBeNull();
+    expect(meta.getAttribute('onclick')).toBeNull();
+    expect(meta.getAttribute('content')).toEqual('Content Title');
+
+    // clean up
+    metaService.removeTagElement(meta);
+  });
+
+  it('should not add event-handler attributes when updating an existing meta tag', () => {
+    const selector = 'property="fb:app_id"';
+    metaService.updateTag({content: '4321', onsecuritypolicyviolation: 'alert(1)'}, selector);
+
+    const actual = metaService.getTag(selector)!;
+    expect(actual.getAttribute('onsecuritypolicyviolation')).toBeNull();
+    expect(actual.getAttribute('content')).toEqual('4321');
+  });
+
   it('should escape selector values when deriving the match selector', () => {
     // This payload attempts to prematurely close the attribute selector
     // and match another attribute.

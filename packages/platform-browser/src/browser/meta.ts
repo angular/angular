@@ -177,7 +177,12 @@ function buildMetaSelector(attrSelector: string): string {
 }
 
 function setMetaElementAttributes(tag: MetaDefinition, el: HTMLMetaElement) {
-  Object.keys(tag).forEach((prop: string) => el.setAttribute(getMetaKeyMap(prop), tag[prop]));
+  Object.keys(tag)
+    // Event-handler attributes (e.g. `onerror`, `onsecuritypolicyviolation`) must never be
+    // written to the DOM: unlike template bindings, `MetaDefinition` keys aren't validated by
+    // Angular's compiler, so an attacker-controlled key could otherwise execute script.
+    .filter((prop: string) => !prop.toLowerCase().startsWith('on'))
+    .forEach((prop: string) => el.setAttribute(getMetaKeyMap(prop), tag[prop]));
 }
 
 function parseSelector(tag: MetaDefinition): string {
