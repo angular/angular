@@ -123,22 +123,41 @@ export function isActive(
 ): Signal<boolean> {
   const urlTree = url instanceof UrlTree ? url : router.parseUrl(url);
   return computed(() =>
-    containsTree(router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(), urlTree, {
-      ...subsetMatchOptions,
-      ...matchOptions,
-    }),
+    containsTree(
+      router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(),
+      urlTree,
+      matchOptions,
+    ),
   );
 }
 
+/**
+ * Determines if a `UrlTree` is contained within another `UrlTree` based on the provided matching options.
+ *
+ * @param container The outer or reference `UrlTree`.
+ * @param containee The target `UrlTree` to test against the container.
+ * @param options Optional, matching options:
+ * - `paths`: Defines how to compare URL segments ('exact' or 'subset'). Defaults to 'subset'.
+ * - `matrixParams`: Defines how to compare matrix parameters ('exact', 'subset', or 'ignored'). Defaults to 'ignored'.
+ * - `queryParams`: Defines how to compare query parameters ('exact', 'subset', or 'ignored'). Defaults to 'subset'.
+ * - `fragment`: Defines how to compare URL fragments ('exact' or 'ignored'). Defaults to 'ignored'.
+ *
+ * @publicApi
+ */
 export function containsTree(
   container: UrlTree,
   containee: UrlTree,
-  options: IsActiveMatchOptions,
+  options?: Partial<IsActiveMatchOptions>,
 ): boolean {
+  const matchOptions: IsActiveMatchOptions = {
+    ...subsetMatchOptions,
+    ...(options || {}),
+  };
+
   return (
-    pathCompareMap[options.paths](container.root, containee.root, options.matrixParams) &&
-    paramCompareMap[options.queryParams](container.queryParams, containee.queryParams) &&
-    !(options.fragment === 'exact' && container.fragment !== containee.fragment)
+    pathCompareMap[matchOptions.paths](container.root, containee.root, matchOptions.matrixParams) &&
+    paramCompareMap[matchOptions.queryParams](container.queryParams, containee.queryParams) &&
+    !(matchOptions.fragment === 'exact' && container.fragment !== containee.fragment)
   );
 }
 
