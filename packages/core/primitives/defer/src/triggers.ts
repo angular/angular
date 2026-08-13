@@ -216,5 +216,6 @@ function getIntersectionObserverKey(options: IntersectionObserverInit | undefine
     return '';
   }
 
-  return `${options.rootMargin}/${typeof options.threshold === 'number' ? options.threshold : options.threshold?.join('\n')}`;
+  // TODO: Remove the cast once G3 uses the TypeScript 6.0 DOM types.
+  return `${options.rootMargin}/${(options as any).scrollMargin}/${typeof options.threshold === 'number' ? options.threshold : options.threshold?.join('\n')}`;
 }
