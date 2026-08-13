@@ -83,7 +83,7 @@ import {UrlSerializer, UrlTree} from './url_tree';
 import {abortSignalToObservable} from './utils/abort_signal_to_observable';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
-import {ACTIVATED_ROUTE_INJECTOR_FEATURE} from './activated_route_injector_feature';
+import {ROUTER_RESOURCES_FEATURE} from './router_resource_feature';
 
 /**
  * @description
@@ -369,7 +369,7 @@ export class NavigationTransitions {
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
   private readonly createViewTransition = inject(CREATE_VIEW_TRANSITION, {optional: true});
   private readonly navigationErrorHandler = inject(NAVIGATION_ERROR_HANDLER, {optional: true});
-  private readonly activatedRouteInjectorFeature = inject(ACTIVATED_ROUTE_INJECTOR_FEATURE, {
+  private readonly routerResourcesFeature = inject(ROUTER_RESOURCES_FEATURE, {
     optional: true,
   });
 
@@ -765,7 +765,7 @@ export class NavigationTransitions {
             return of(t);
           }),
 
-          this.activatedRouteInjectorFeature?.operator() ?? ((t) => t),
+          this.routerResourcesFeature?.operator() ?? ((t) => t),
 
           switchTap(() => this.afterPreactivation()),
 
