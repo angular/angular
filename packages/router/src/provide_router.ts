@@ -63,8 +63,8 @@ import {
   VIEW_TRANSITION_OPTIONS,
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
-import {ACTIVATED_ROUTE_INJECTOR_FEATURE} from './activated_route_injector_feature';
-import {setupActivatedRouteInjectors} from './operators/setup_activated_route_injectors';
+import {ROUTER_RESOURCES_FEATURE} from './router_resource_feature';
+import {setupActivatedRouteInjectors} from './operators/setup_and_run_resources';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -888,12 +888,12 @@ export function withViewTransitions(
   return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
 }
 
-export type ActivatedRouteInjectorFeature =
+export type RouterResourcesFeature =
   RouterFeature<RouterFeatureKind.ViewTransitionsFeature /* temporary - not public API. Must reuse existing */>;
-export function withActivatedRouteInjectors(): ActivatedRouteInjectorFeature {
+export function withRouterResources(): RouterResourcesFeature {
   const providers = [
     {
-      provide: ACTIVATED_ROUTE_INJECTOR_FEATURE,
+      provide: ROUTER_RESOURCES_FEATURE,
       useValue: {
         operator: setupActivatedRouteInjectors,
       },
