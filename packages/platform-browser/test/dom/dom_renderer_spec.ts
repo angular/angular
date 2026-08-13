@@ -181,6 +181,42 @@ describe('DefaultDomRendererV2', () => {
     expect(otherChild.parentNode).toBe(template.content);
   });
 
+  it('should be able to insert a child when `refChild` is `null`', () => {
+    const parent = document.createElement('div');
+    const child = document.createElement('div');
+
+    renderer.insertBefore(parent, child, null);
+
+    expect(child.parentNode).toBe(parent);
+  });
+
+  describe('when the reference node was detached outside of Angular', () => {
+    it('should throw a descriptive error instead of a native NotFoundError', () => {
+      const parent = document.createElement('div');
+      const refChild = document.createElement('span');
+      const newChild = document.createElement('div');
+      parent.appendChild(refChild);
+
+      // pretend something outside Angular removed it
+      refChild.remove();
+
+      expect(() => renderer.insertBefore(parent, newChild, refChild)).toThrowError(/NG05106/);
+      expect(newChild.parentNode).toBeNull();
+    });
+
+    it('should throw a descriptive error when the reference node was moved to another parent', () => {
+      const parent = document.createElement('div');
+      const otherParent = document.createElement('div');
+      const refChild = document.createElement('span');
+      const newChild = document.createElement('div');
+      parent.appendChild(refChild);
+
+      otherParent.appendChild(refChild);
+
+      expect(() => renderer.insertBefore(parent, newChild, refChild)).toThrowError(/NG05106/);
+    });
+  });
+
   describe('should not cleanup styles of destroyed components when `REMOVE_STYLES_ON_COMPONENT_DESTROY` is `false`', () => {
     beforeEach(() => {
       TestBed.resetTestingModule();
