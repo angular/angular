@@ -748,7 +748,7 @@ class TestComponent {
       expect(messages).toEqual([]);
     });
 
-    it('disallows access to private members', () => {
+    it('allow access to private members', () => {
       const messages = diagnose(
         `<button (click)="doFoo()">{{ message }}</button>`,
         `
@@ -758,9 +758,24 @@ class TestComponent {
         }`,
       );
 
+      expect(messages).toEqual([]);
+    });
+
+    it('disallows access of a nested private member', () => {
+      const messages = diagnose(
+        `<div>{{ prop.a }}</div>`,
+        `
+        export class Model {
+          private a = 1;
+        }
+
+        export class TestComponent {
+          private prop =  new Model();
+        }      
+        `,
+      );
       expect(messages).toEqual([
-        `TestComponent.html(1, 18): Property 'doFoo' is private and only accessible within class 'TestComponent'.`,
-        `TestComponent.html(1, 30): Property 'message' is private and only accessible within class 'TestComponent'.`,
+        `TestComponent.html(1, 14): Property 'a' is private and only accessible within class 'Model'.`,
       ]);
     });
   });
