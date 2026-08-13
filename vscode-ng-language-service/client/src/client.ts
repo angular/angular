@@ -666,7 +666,7 @@ export class AngularLanguageClient implements vscode.Disposable {
 
         if (isApproved === undefined) {
           // Prompt the user asynchronously, without blocking current server initialization
-          this.promptForTsdkApproval(workspaceTsdk, stateKey);
+          this.promptForTsdkApproval(stateKey);
         }
 
         // Fall back to globalValue (or bundled) while waiting for approval or if rejected
@@ -676,12 +676,12 @@ export class AngularLanguageClient implements vscode.Disposable {
     return jsTsTsdkInspect?.globalValue?.trim() ?? tsTsdkInspect?.globalValue?.trim() ?? '';
   }
 
-  private async promptForTsdkApproval(workspaceTsdk: string, stateKey: string): Promise<void> {
+  private async promptForTsdkApproval(stateKey: string): Promise<void> {
     const allowOption = 'Allow';
     const disallowOption = 'Disallow';
 
     const choice = await vscode.window.showWarningMessage(
-      `This workspace configures a custom TypeScript compiler path (${workspaceTsdk}) via 'js/ts.tsdk.path' or 'typescript.tsdk'. ` +
+      `This workspace configures a custom TypeScript compiler path via 'js/ts.tsdk.path' or 'typescript.tsdk'. ` +
         `Do you want to allow the Angular Language Service to load the TypeScript compiler from this path?`,
       allowOption,
       disallowOption,
