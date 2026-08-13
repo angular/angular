@@ -474,6 +474,7 @@
       "defaultThrowError",
       "deferBlockHasErrored",
       "delayChangeDetectionForEvents",
+      "describeDomNode",
       "destroyLView",
       "destroyViewTree",
       "detachMovedView",
