@@ -6326,6 +6326,73 @@ describe('platform-server full application hydration integration', () => {
         },
       );
 
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when an element ' +
+          'instruction cannot locate a matching DOM node in production mode (ngDevMode off)',
+        async () => {
+          // Regression test. When the client-rendered DOM has fewer nodes than the
+          // server-rendered HTML (e.g. a node was removed before hydration runs),
+          // `locateNextRNode` returns `null`. The `validateMatchingNode` check that
+          // would normally catch this only runs in dev mode, so it's removed from
+          // production builds. Without a dedicated null guard, production would fall
+          // through to `native.nodeType`, which throws a raw TypeError instead of a
+          // coded RuntimeError.
+          @Component({
+            selector: 'app',
+            template: `
+              <div id="abc">
+                <p>This is an original content</p>
+                <b>Bold text</b>
+                <i>Italic text</i>
+              </div>
+            `,
+          })
+          class SimpleComponent {
+            private doc = inject(DOCUMENT);
+            private isServer = isPlatformServer(inject(PLATFORM_ID));
+            ngAfterViewInit() {
+              // Only change the DOM on the server, right before it gets serialized.
+              // `<i>` is the last child, so removing it means hydration's sibling walk
+              // runs off the end of the DOM (`nextSibling` is `null`) instead of landing
+              // on some other, wrongly-typed node — exercising the missing-node path
+              // rather than the node-mismatch path covered by the test above.
+              if (this.isServer) {
+                this.doc.querySelector('i')?.remove();
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          // Simulate a production build. `locateOrCreateElementNodeImpl` only calls
+          // `validateMatchingNode` when `ngDevMode` is truthy, so turning it off
+          // here means the full mismatch check is skipped, and only the new
+          // null guard runs.
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            });
+            fail('Expected the hydration process to throw.');
+          } catch (e: unknown) {
+            const error = e as Error;
+            // This is the fixed behavior: a coded NG0502 RuntimeError, not a raw
+            // TypeError.
+            expect(error instanceof TypeError).toBe(false);
+            expect(error.message).toBe('NG0502: <i>');
+            expect(error.message).not.toContain("reading 'nodeType'");
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        },
+      );
+
       it('should if there are any third-party scripts that manipulate the DOM', async () => {
         @Component({
           selector: 'app',

@@ -361,6 +361,18 @@ function locateOrCreateElementNodeImpl(
   }
 
   if (hydrationInfo) {
+    // `validateMatchingNode` above would normally catch a missing node too, but it's dev-mode
+    // only. Guard against it here so production throws a coded RuntimeError instead of a raw
+    // TypeError when dereferencing `native` below.
+    if (native == null) {
+      throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_MISSING_NODE,
+        ngDevMode
+          ? `During hydration Angular expected a "<${name}>" element at this location (tNode #${tNode.index}), but no matching DOM node was found. This usually means the client-rendered DOM no longer matches the server-rendered HTML.`
+          : `<${name}>`,
+      );
+    }
+
     // `hasSkipHydrationAttrOnRElement` below calls `.hasAttribute`, which needs `native` to be
     // an Element. `validateMatchingNode` above would normally catch a wrong node type, but it's
     // dev-mode only. Guard against it here too, cheaply, so production throws a coded
