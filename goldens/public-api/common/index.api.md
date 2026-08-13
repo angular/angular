@@ -379,17 +379,17 @@ export class KeyValuePipe implements PipeTransform {
     // (undocumented)
     transform<K, V>(input: ReadonlyMap<K, V>, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>>;
     // (undocumented)
-    transform<K extends number, V>(input: Record<K, V>, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>>;
-    // (undocumented)
     transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V>, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>>;
+    // (undocumented)
+    transform<K extends number, V>(input: Record<K, V>, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>>;
     // (undocumented)
     transform(input: null | undefined, compareFn?: ((a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number) | null): null;
     // (undocumented)
     transform<K, V>(input: ReadonlyMap<K, V> | null | undefined, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>> | null;
     // (undocumented)
-    transform<K extends number, V>(input: Record<K, V> | null | undefined, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>> | null;
-    // (undocumented)
     transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V> | null | undefined, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>> | null;
+    // (undocumented)
+    transform<K extends number, V>(input: Record<K, V> | null | undefined, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>> | null;
     // (undocumented)
     transform<T>(input: T, compareFn?: T extends object ? (a: T[keyof T], b: T[keyof T]) => number : never): T extends object ? Array<KeyValue<keyof T, T[keyof T]>> : null;
     // (undocumented)
