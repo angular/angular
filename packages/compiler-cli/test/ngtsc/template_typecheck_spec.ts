@@ -5980,7 +5980,7 @@ suppress
 
           @Component({
             template: \`
-              @defer (on viewport({trigger: target, rootMargin: '10px', doesNotExist: true})) {
+              @defer (on viewport({trigger: target, rootMargin: '10px', scrollMargin: '20px', doesNotExist: true})) {
                 Content
               }
 
