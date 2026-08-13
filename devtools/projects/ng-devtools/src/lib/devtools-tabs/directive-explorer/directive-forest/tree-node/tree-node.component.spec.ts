@@ -11,10 +11,12 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {FlatTreeControl} from '@angular/cdk/tree';
 
+import {MatTooltip} from '@angular/material/tooltip';
+
 import {NodeTextMatch, TreeNodeComponent} from './tree-node.component';
 import {FlatNode} from '../component-data-source';
 import {APP_DATA, AppData} from '../../../../application-providers/app_data';
-import {ChangeDetection} from '../../../../../../../protocol';
+import {CdElementData, ChangeDetection} from '../../../../../../../protocol';
 
 type DeepPartial<T> = T extends object ? {[P in keyof T]?: DeepPartial<T[P]>} : T;
 
@@ -277,6 +279,55 @@ describe('TreeNodeComponent', () => {
 
     it('should render "Eager" label, if Angular v0 (dev)', async () => {
       expect(await getCdLabel('ng-eager', 0)).toBe('Eager');
+    });
+  });
+
+  describe('Change detection cycle pills', () => {
+    function setCdData(lastCdPassDuration: number, cdCount: number) {
+      const cdData: CdElementData = {element: [0], lastCdPassDuration, cdCount};
+      fixture.componentRef.setInput('nodeCdData', cdData);
+      return fixture.whenStable();
+    }
+
+    it('should NOT render cycle pills, if there is no CD data', () => {
+      expect(fixture.debugElement.query(By.css('.cycle-count'))).toBeFalsy();
+      expect(fixture.debugElement.query(By.css('.cycle-duration'))).toBeFalsy();
+    });
+
+    it('should render the number of recorded CD cycles', async () => {
+      await setCdData(5.6, 3);
+
+      const cycleCount = fixture.debugElement.query(By.css('.cycle-count'));
+      expect(cycleCount.nativeElement.textContent).toBe('x3');
+    });
+
+    it('should render the duration of the last CD cycle, rounded to one decimal', async () => {
+      await setCdData(3.456, 2);
+
+      const cycleDuration = fixture.debugElement.query(By.css('.cycle-duration'));
+      expect(cycleDuration.nativeElement.textContent).toBe('3.5 ms');
+    });
+
+    it('should NOT mark the pill as a dropped frame, if under 60 fps (16.6 ms)', async () => {
+      await setCdData(10, 1);
+
+      const cycleDuration = fixture.debugElement.query(By.css('.cycle-duration'));
+      expect(cycleDuration.nativeElement.classList.contains('frame-dropped')).toBeFalse();
+
+      const tooltip = cycleDuration.injector.get(MatTooltip);
+      expect(tooltip.message).toBe('The component update time during the last CD cycle');
+    });
+
+    it('should mark the pill as a dropped frame, if over 60 fps (16.6 ms)', async () => {
+      await setCdData(20, 1);
+
+      const cycleDuration = fixture.debugElement.query(By.css('.cycle-duration'));
+      expect(cycleDuration.nativeElement.classList.contains('frame-dropped')).toBeTrue();
+
+      const tooltip = cycleDuration.injector.get(MatTooltip);
+      expect(tooltip.message).toBe(
+        'The component update time during the last CD cycle. Exceeded 16.6 ms (60 fps)',
+      );
     });
   });
 });

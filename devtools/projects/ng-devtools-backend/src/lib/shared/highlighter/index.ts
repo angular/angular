@@ -131,6 +131,7 @@ highlightDestroyEvents.subscribe(([highlight]) => {
     // remove the target element from the global vars.
     if (!targetHighlights.length) {
       activeHighlights.delete(target);
+      resizeObserver.unobserve(target);
 
       const targetElsIdx = targetElements.findIndex((wr) => wr.deref() === target);
       if (targetElsIdx > -1) {

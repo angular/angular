@@ -18,8 +18,10 @@ import {
   computed,
   DestroyRef,
   untracked,
+  linkedSignal,
 } from '@angular/core';
 import {
+  CdElementData,
   ComponentExplorerView,
   ComponentExplorerViewQuery,
   DevToolsNode,
@@ -148,6 +150,18 @@ export class DirectiveExplorerComponent {
   protected readonly forestSplitSize = signal<number>(FOREST_VER_SPLIT_SIZE);
   protected readonly signalGraphSplitSize = signal<number>(SIGNAL_GRAPH_VER_SPLIT_SIZE);
 
+  protected readonly cdData = linkedSignal<boolean, CdElementData[] | null>({
+    source: this.settings.showCdInExplorer,
+    computation: (showCdInExplorer, prev) => {
+      // We reset the `cdData` if the feature
+      // is disabled from the settings.
+      if (!showCdInExplorer) {
+        return null;
+      }
+      return prev?.value ?? null;
+    },
+  });
+
   private readonly currentElementPos = computed(() => this.currentSelectedElement()?.position);
 
   constructor() {
@@ -214,6 +228,8 @@ export class DirectiveExplorerComponent {
     });
 
     this._messageBus.on('componentTreeDirty', () => this.refresh());
+
+    this._messageBus.on('latestCdData', (cdData) => this.cdData.set(cdData));
   }
 
   refresh(): void {

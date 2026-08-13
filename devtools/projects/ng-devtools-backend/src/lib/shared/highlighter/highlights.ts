@@ -83,10 +83,11 @@ export interface HighlightTemplate<T extends HighlightLabelDefinition = Highligh
 // a priority when a single target element has multiple highlights.
 // The smaller the number, the higher the priority.
 export enum HighlightType {
-  InspectElement = 0,
-  HydrationSkipped = 1,
-  HydrationMismatched = 2,
-  HydrationCompleted = 3,
+  ChangeDetection = 0,
+  InspectElement = 1,
+  HydrationSkipped = 2,
+  HydrationMismatched = 3,
+  HydrationCompleted = 4,
 }
 
 /** Provides a container of all highlight-related references and controls over the highlight. */
@@ -107,6 +108,10 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
     return this.template.type;
   }
 
+  get isDestroyed() {
+    return this.destroyed;
+  }
+
   /** Update a label of the highlight. */
   updateLabel(labelId: keyof T, ...props: Parameters<T[keyof T]>) {
     const labelContent = this.template.labels[labelId].content(...props);
@@ -119,19 +124,25 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
     }
   }
 
-  /** Remove the highlight. */
+  /**
+   * Remove the highlight.
+   */
   destroy() {
     // Since there is a chance that there are references
     // outside of `highlighter.ts`, we store the destroy state.
     // Ideally, we should clean up all references.
-    // Getting the warning, means that there might be a problem
+    // Getting the warning, means that there MIGHT be a problem
     // with the code (i.e. there is chance for a memory leak).
+    // However, this could be a false positive since GC passes
+    // are not guaranteed to happen immediately.
+    // This is merely a warning to be diligent with references storing.
     if (this.destroyed) {
       debugLog.warn('The highlight has already been destroyed. Check references storing.');
       return;
     }
     if (this.ttlTimeout) {
       clearTimeout(this.ttlTimeout);
+      this.ttlTimeout = 0;
     }
     this.destroyEvents.emit([this]);
     this.overlayElement.remove();
@@ -141,6 +152,10 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
   /** Render/append the highlight to the DOM. */
   display() {
     if (document.body.contains(this.overlayElement)) {
+      return;
+    }
+    if (this.destroyed) {
+      console.warn('Cannot display a destroyed highlight.');
       return;
     }
 
@@ -283,3 +298,32 @@ export const hydrationMismatchedHighlightTemplate: HighlightTemplate<HydrationLa
 /** Template for skipped hydration highlight. */
 export const hydrationSkippedHighlightTemplate: HighlightTemplate<HydrationLabels> =
   createHydrationHighlightTemplate(HighlightType.HydrationSkipped, COLORS.grey);
+
+//
+// Change detection highlight
+//
+
+type CdHighlightLabels = {
+  'component-name': (name: string) => string;
+  'cycles-count': (count: number) => string;
+};
+
+export const changeDetectionHighlightTemplate: HighlightTemplate<CdHighlightLabels> = {
+  type: HighlightType.ChangeDetection,
+  overlayColor: COLORS.green,
+  labelsType: 'static',
+  style: 'outline',
+  ttl: 1000,
+  labels: {
+    ['component-name']: {
+      x: 'left',
+      offset: 'prefer-inset',
+      content: (name: string) => `<${name}>`,
+    },
+    ['cycles-count']: {
+      x: 'right',
+      offset: 'prefer-inset',
+      content: (count: number) => `x${count}`,
+    },
+  },
+};
