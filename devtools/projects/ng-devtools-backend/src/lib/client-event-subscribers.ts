@@ -75,6 +75,12 @@ import {
   removeHydrationHighlights,
 } from './hydration/hydration-highlighting';
 import {removeAllHighlights} from './shared/highlighter';
+import {
+  disableCdHighlighting,
+  enableCdHighlighting,
+  disableCdDataStream,
+  enableCdDataStream,
+} from './profiling/cd-analyzer';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
@@ -100,7 +106,7 @@ export const subscribeToClientEvents = (
   messageBus.on('startProfiling', startProfilingCallback(messageBus));
   messageBus.on('stopProfiling', stopProfilingCallback(messageBus));
 
-  messageBus.on('setSelectedComponent', selectedComponentCallback(inspector));
+  messageBus.on('setSelectedComponent', selectedComponentCallback);
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
@@ -119,6 +125,12 @@ export const subscribeToClientEvents = (
   messageBus.on('logProvider', logProvider);
 
   messageBus.on('getTransferState', getTransferStateCallback(messageBus));
+
+  messageBus.on('enableCdHighlighting', enableCdHighlighting);
+  messageBus.on('disableCdHighlighting', disableCdHighlighting);
+
+  messageBus.on('enableCdDataStream', enableCdDataStream(messageBus));
+  messageBus.on('disableCdDataStream', disableCdDataStream);
 
   const SAFE_LOG_LEVELS = new Set(['log', 'info', 'warn', 'debug', 'error']);
   messageBus.on('log', ({message, level}) => {
@@ -227,13 +239,12 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
 };
 
-const selectedComponentCallback = (inspector: InspectorRef) => (position: ElementPosition) => {
+const selectedComponentCallback = (position: ElementPosition) => {
   const node = queryDirectiveForest(
     position,
     getDirectiveForestManager().getIndexedDirectiveForest(),
   );
   setConsoleReference({node, position});
-  inspector.ref?.highlightByPosition(position);
 };
 
 const getNestedPropertiesCallback =

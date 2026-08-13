@@ -17,7 +17,7 @@ import {
   Renderer2,
   viewChild,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/common';
+import {DecimalPipe, DOCUMENT} from '@angular/common';
 
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -31,6 +31,7 @@ import {
 } from '../directive-forest-utils';
 import {BlockType} from '../../../../shared/utils/control-flow';
 import {APP_DATA} from '../../../../application-providers/app_data';
+import {CdElementData} from '../../../../../../../protocol';
 
 const PADDING_LEFT_STEP = 15; // px
 
@@ -43,7 +44,7 @@ export type NodeTextMatch = {
   selector: 'ng-tree-node',
   templateUrl: './tree-node.component.html',
   styleUrls: ['./tree-node.component.scss'],
-  imports: [MatIcon, MatTooltip],
+  imports: [MatIcon, MatTooltip, DecimalPipe],
   host: {
     '[style.padding-left]': 'paddingLeft()',
     '[class.selected]': 'isSelected',
@@ -70,6 +71,7 @@ export class TreeNodeComponent {
   protected readonly highlightedId = input.required<number | null>();
   protected readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
   protected readonly textMatches = input<NodeTextMatch[]>([]);
+  protected readonly nodeCdData = input<CdElementData>();
 
   protected readonly selectNode = output<FlatNode>();
   protected readonly selectDomElement = output<FlatNode>();
@@ -104,9 +106,25 @@ export class TreeNodeComponent {
     return undefined;
   });
 
+  protected readonly printableCdData = computed(() => {
+    const cdData = this.nodeCdData();
+    if (!cdData) {
+      return null;
+    }
+
+    const cyclesLength = cdData.cdPassDurations.length;
+
+    return {
+      cyclesCount: cyclesLength,
+      lastCdPassDuration: cdData.cdPassDurations[cyclesLength - 1],
+    };
+  });
+
   private readonly nodeNameString = computed(() => getFullNodeNameString(this.node()));
 
   private matchedText: HTMLElement | null = null;
+
+  protected readonly FPS_60 = 1000 / 60;
 
   constructor() {
     afterRenderEffect({write: () => this.handleMatchedText()});
