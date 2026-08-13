@@ -1,3 +1,39 @@
+<a name="22.2.0-next.2"></a>
+# 22.2.0-next.2 (2026-08-13)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4f1a94948](https://github.com/angular/angular/commit/a4f1a949486d20ce2bf9add427eea6629228b28b) | fix | do not encapsulate nested selectors if parent contains ::ng-deep |
+| [d7b03f5523](https://github.com/angular/angular/commit/d7b03f5523d220c7935426d23ff5f103c96b00d9) | fix | Generate correct expression for optional chaning. |
+| [107f6fa49d](https://github.com/angular/angular/commit/107f6fa49d00ec250b94a8d5f484bae2fc3d71c9) | fix | remove namespaced MathML script elements |
+| [d0d7f57e08](https://github.com/angular/angular/commit/d0d7f57e0810a24ba16dbb1f2ab9f079a096fa3d) | fix | scope nested CSS rules |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e8aa222e7d](https://github.com/angular/angular/commit/e8aa222e7d98d2e54c5604107a929a11cb1ef62d) | fix | correctly resolve symbol for SafePropertyRead in chained optional navigation |
+| [8d6c925392](https://github.com/angular/angular/commit/8d6c925392c7230fbe6b39abdad05381672631b1) | fix | record class extends clause references in DeferredSymbolTracker |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8925a4ee49](https://github.com/angular/angular/commit/8925a4ee491aebaf6a1a74880c73dfb20e0a4ba1) | fix | ensure i18n_util hasOwnProperty checks are safe for property renaming |
+| [565dbb2fe5](https://github.com/angular/angular/commit/565dbb2fe5406f2a86d43a5b3c6993434b7124a7) | fix | incorrect loop in defer blocks |
+| [9f8e32616b](https://github.com/angular/angular/commit/9f8e32616b79892785051fab1c3120a770f5f682) | fix | reject prefixed SVG script hosts |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9e37a58e14](https://github.com/angular/angular/commit/9e37a58e14bd7955d40255e42e20aa84fcde02f4) | fix | keep radio inputs in sync when values change |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [09bc90003e](https://github.com/angular/angular/commit/09bc90003ed6e9f6c166e885503728af49d1af67) | fix | always decode JSON responses as UTF-8 |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b65dea4f03](https://github.com/angular/angular/commit/b65dea4f03e5fc01093a718c990c72ae9165c43f) | feat | allow throwing RedirectCommand to trigger redirects |
+| [435f8b2b8b](https://github.com/angular/angular/commit/435f8b2b8b67277fc69888911251d14b32705828) | fix | limit protocol-relative URL handling to serialization |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.28"></a>
 # 20.3.28 (2026-08-13)
 ### core
