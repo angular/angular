@@ -18,8 +18,10 @@ import {
   computed,
   DestroyRef,
   untracked,
+  effect,
 } from '@angular/core';
 import {
+  CdElementData,
   ComponentExplorerView,
   ComponentExplorerViewQuery,
   DevToolsNode,
@@ -121,6 +123,7 @@ export class DirectiveExplorerComponent {
   readonly forest = signal<DevToolsNode[]>([]);
   readonly splitDirection = signal<'horizontal' | 'vertical'>('horizontal');
   readonly parents = signal<FlatNode[] | null>(null);
+  readonly cdData = signal<CdElementData[] | null>(null);
 
   readonly signalsOpen = signal(false);
 
@@ -179,6 +182,13 @@ export class DirectiveExplorerComponent {
     inject(DestroyRef).onDestroy(() => {
       this.signalGraph.destroy();
     });
+
+    effect(() => {
+      // Clean the CD data if the feature is disabled.
+      if (!this.settings.showCdInExplorer()) {
+        this.cdData.set(null);
+      }
+    });
   }
 
   private isNonTopLevelFirefoxFrame() {
@@ -204,16 +214,27 @@ export class DirectiveExplorerComponent {
   }
 
   subscribeToBackendEvents(): void {
-    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
-      this.forest.set(view.forest);
+    const latestCmpExplorerView = this._messageBus.on(
+      'latestComponentExplorerView',
+      (view: ComponentExplorerView) => {
+        this.forest.set(view.forest);
 
-      this.currentSelectedElement.set(this._clickedElement);
-      if (view.properties && this._clickedElement) {
-        this._propResolver.setProperties(this._clickedElement, view.properties);
-      }
+        this.currentSelectedElement.set(this._clickedElement);
+        if (view.properties && this._clickedElement) {
+          this._propResolver.setProperties(this._clickedElement, view.properties);
+        }
+      },
+    );
+
+    const cmpTreeDirty = this._messageBus.on('componentTreeDirty', () => this.refresh());
+
+    const latestCdData = this._messageBus.on('latestCdData', (cdData) => this.cdData.set(cdData));
+
+    inject(DestroyRef).onDestroy(() => {
+      latestCmpExplorerView();
+      cmpTreeDirty();
+      latestCdData();
     });
-
-    this._messageBus.on('componentTreeDirty', () => this.refresh());
   }
 
   refresh(): void {

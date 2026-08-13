@@ -34,6 +34,7 @@ import {
 } from '../../../shared-utils';
 
 import {ComponentInspector} from './component-inspector/component-inspector';
+import {setConsoleReference} from './console/set-console-reference';
 import {
   getDirectiveCdStrategy,
   getElementInjectorElement,
@@ -50,32 +51,37 @@ import {
   serializeResolutionPath,
   updateState,
 } from './directive-forest/component-tree/component-tree';
+import {getDirectiveForestManager} from './directive-forest/manager';
+import {
+  highlightHydrationNodes,
+  removeHydrationHighlights,
+} from './hydration/hydration-highlighting';
 import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
+import {
+  disableCdDataStream,
+  disableCdHighlighting,
+  enableCdDataStream,
+  enableCdHighlighting,
+} from './profiling/cd-analyzer';
 import {disablePerformanceTrack, enablePerformanceTrack} from './profiling/performance-track';
 import {getProfiler, Profiler} from './profiling/profiler';
+import {
+  getRouterCallableConstructRef,
+  parseRoutes,
+  RoutePropertyType,
+} from './router-tree/router-tree';
+import {removeAllHighlights} from './shared/highlighter';
 import {ComponentTreeNode, DevtoolsBackendConfig} from './shared/interfaces';
 import {
   ngDebugClient,
   ngDebugDependencyInjectionApiIsSupported,
 } from './shared/ng-debug-api/ng-debug-api';
 import {getSupportedApis} from './shared/ng-debug-api/supported-apis';
-import {
-  getRouterCallableConstructRef,
-  parseRoutes,
-  RoutePropertyType,
-} from './router-tree/router-tree';
-import {setConsoleReference} from './console/set-console-reference';
 import {serializeDirectiveState, serializeValue} from './shared/state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './shared/utils/general';
+import {debugLog, log, setupLogging} from './shared/utils/log';
 import {sanitizeObject} from './shared/utils/serialization';
 import {SignalGraphRef} from './shared/utils/signal-graph-ref';
-import {getDirectiveForestManager} from './directive-forest/manager';
-import {
-  highlightHydrationNodes,
-  removeHydrationHighlights,
-} from './hydration/hydration-highlighting';
-import {removeAllHighlights} from './shared/highlighter';
-import {debugLog, log, setupLogging} from './shared/utils/log';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
@@ -104,7 +110,7 @@ export const subscribeToClientEvents = (
   messageBus.on('startProfiling', startProfilingCallback(messageBus));
   messageBus.on('stopProfiling', stopProfilingCallback(messageBus));
 
-  messageBus.on('setSelectedComponent', selectedComponentCallback(inspector));
+  messageBus.on('setSelectedComponent', selectedComponentCallback);
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
@@ -123,6 +129,12 @@ export const subscribeToClientEvents = (
   messageBus.on('logProvider', logProvider);
 
   messageBus.on('getTransferState', getTransferStateCallback(messageBus));
+
+  messageBus.on('enableCdHighlighting', enableCdHighlighting);
+  messageBus.on('disableCdHighlighting', disableCdHighlighting);
+
+  messageBus.on('enableCdDataStream', enableCdDataStream(messageBus));
+  messageBus.on('disableCdDataStream', disableCdDataStream);
 
   const SAFE_LOG_LEVELS = new Set(['log', 'info', 'warn', 'debug', 'error']);
   messageBus.on('log', ({message, level}) => {
@@ -233,13 +245,12 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
 };
 
-const selectedComponentCallback = (inspector: InspectorRef) => (position: ElementPosition) => {
+const selectedComponentCallback = (position: ElementPosition) => {
   const node = queryDirectiveForest(
     position,
     getDirectiveForestManager().getIndexedDirectiveForest(),
   );
   setConsoleReference({node, position});
-  inspector.ref?.highlightByPosition(position);
 };
 
 const getNestedPropertiesCallback =
