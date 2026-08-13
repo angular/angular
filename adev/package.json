@@ -85,7 +85,7 @@
     "prettier": "3.9.6",
     "property-information": "^7.1.0",
     "rxjs": "7.8.2",
-    "shiki": "4.4.2",
+    "shiki": "4.4.3",
     "space-separated-tokens": "^2.0.2",
     "stringify-entities": "^4.0.4",
     "style-mod": "4.1.3",
