@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import ts from 'typescript';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
-import ts from 'typescript';
 
 const testFiles = loadStandardTestFiles();
 
@@ -603,7 +603,7 @@ runInEachFileSystem(() => {
       expect(getDiagnosticSourceCode(diags[0])).toBe('two');
     });
 
-    it('should report host decorators on private members', () => {
+    it('should not report host decorators on private members', () => {
       env.write(
         'test.ts',
         `
@@ -618,15 +618,7 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(2);
-      expect(diags[0].messageText).toBe(
-        `Property 'id' is private and only accessible within class 'Comp'.`,
-      );
-      expect(diags[1].messageText).toBe(
-        `Property 'handleClick' is private and only accessible within class 'Comp'.`,
-      );
-      expect(getDiagnosticSourceCode(diags[0])).toBe('id');
-      expect(getDiagnosticSourceCode(diags[1])).toBe('handleClick');
+      expect(diags.length).toBe(0);
     });
 
     it('should report diagnostic on the entire expression of property binding if node contains escaped string', () => {
