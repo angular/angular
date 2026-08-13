@@ -1,6 +1,6 @@
 ---
 name: angular-developer
-description: Generates Angular code and provides architectural guidance. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, or CLI tooling.
+description: Generates Angular code and provides architectural guidance. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or CLI tooling.
 license: MIT
 metadata:
   author: Copyright 2026 Google LLC
@@ -49,6 +49,7 @@ When working with Angular components, consult the following references based on 
 - **Inputs**: Signal-based inputs, transforms, and model inputs. Read [inputs.md](references/inputs.md)
 - **Outputs**: Signal-based outputs and custom event best practices. Read [outputs.md](references/outputs.md)
 - **Host Elements**: Host bindings and attribute injection. Read [host-elements.md](references/host-elements.md)
+- **Naming Conventions**: Modern Angular v20+ naming style ("Intent over Role") for files, components, services, directives, pipes, and models. Read [naming-conventions.md](references/naming-conventions.md)
 
 If you require deeper documentation not found in the references above, read the documentation at `https://angular.dev/guide/components`.
 
