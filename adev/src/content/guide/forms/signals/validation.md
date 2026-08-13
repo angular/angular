@@ -249,12 +249,18 @@ export class PasswordFormComponent {
     minLength(schemaPath.password, 8, {message: 'Password must be at least 8 characters'});
     maxLength(schemaPath.password, 100, {message: 'Password is too long'});
 
-    maxLength(schemaPath.bio, 500, {message: 'Bio cannot exceed 500 characters'});
+    // Prevents native 'maxlength' DOM attribute while keeping validation active
+    maxLength(schemaPath.bio, 500, {
+      message: ({value}) => `Bio is ${value().length} characters. Limit is 500.`,
+      nativeAttribute: false,
+    });
   });
 }
 ```
 
 For strings, "length" means the number of characters. For arrays, "length" means the number of elements.
+
+NOTE: `maxLength()` includes an additional `nativeAttribute` option (default: true). By default,`maxLength()` projects the HTML maxlength attribute onto the DOM element, which causes browsers to hard-truncate user input. Set `nativeAttribute` to false to disable DOM projection, allowing soft validation where users can continue typing past the character limit while the field correctly reflects an error state.
 
 ### pattern()
 
@@ -505,9 +511,7 @@ interface User {
   lastName: string;
 }
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserFormComponent {
   readonly userModel = model<User>({
     firstName: '',
@@ -750,9 +754,7 @@ import {Component, computed, signal} from '@angular/core';
 import {form, FormField, validateStandardSchema} from '@angular/forms/signals';
 import z from 'zod';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class DynamicSchema {
   model = signal({document: '', type: 'dni'});
 

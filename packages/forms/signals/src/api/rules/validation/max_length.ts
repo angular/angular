@@ -19,6 +19,21 @@ import {validate} from './validate';
 import {maxLengthError} from './validation_errors';
 
 /**
+ * Configuration options for the `maxLength` validator.
+ */
+export type MaxLengthValidatorConfig<
+  TValue extends ValueWithLengthOrSize,
+  TPathKind extends PathKind = PathKind.Root,
+> = BaseValidatorConfig<TValue, TPathKind> & {
+  /**
+   * Whether to apply the native `maxlength` HTML attribute to the bound DOM element.
+   *
+   * @default true
+   */
+  nativeAttribute?: boolean;
+};
+
+/**
  * Binds a validator to the given path that requires the length of the value to be less than or
  * equal to the given `maxLength`.
  * This function can only be called on string or array paths.
@@ -27,6 +42,7 @@ import {maxLengthError} from './validation_errors';
  * @param path Path of the field to validate
  * @param maxLength The maximum length, or a LogicFn that returns the maximum length.
  * @param config Optional, allows providing any of the following options:
+ *  - `nativeAttribute`: Whether to write the native `maxlength` HTML attribute to the element. Defaults to `true`.
  *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.maxLength(maxLength)`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TValue The type of value stored in the field the logic is bound to.
@@ -42,7 +58,7 @@ export function maxLength<
 >(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
-  config?: BaseValidatorConfig<TValue, TPathKind>,
+  config?: MaxLengthValidatorConfig<TValue, TPathKind>,
 ) {
   const MAX_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) => {
     if (config?.when && !config.when(ctx)) {
@@ -50,7 +66,9 @@ export function maxLength<
     }
     return typeof maxLength === 'number' ? maxLength : maxLength(ctx);
   });
-  metadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
+  if (config?.nativeAttribute !== false) {
+    metadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
+  }
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

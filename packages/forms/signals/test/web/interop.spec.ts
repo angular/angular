@@ -1172,6 +1172,51 @@ describe('ControlValueAccessor', () => {
         act(() => fixture.componentInstance.maxLength.set(5));
         expect(input.getAttribute('maxLength')).toBe('5');
       });
+
+      it('should not sync maxlength DOM attribute when nativeAttribute is false', () => {
+        @Component({
+          imports: [FormField, CvaDir],
+          template: `<input [formField]="f" cvaDir />`,
+        })
+        class InteropCmp {
+          readonly f = form(signal('initial'), (p) => {
+            maxLength(p, 10, {nativeAttribute: false});
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(InteropCmp));
+        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+        expect(input.hasAttribute('maxlength')).toBeFalse();
+        expect(input.maxLength).toBe(-1);
+      });
+
+      it('should preserve validation errors on formField when length exceeds limit', () => {
+        @Component({
+          imports: [FormField, CvaDir],
+          template: `<input [formField]="f" cvaDir />`,
+        })
+        class InteropCmp {
+          readonly f = form(signal(''), (p) => {
+            maxLength(p, 10, {nativeAttribute: false});
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(InteropCmp));
+        const component = fixture.componentInstance;
+        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+        act(() => {
+          input.value = 'This string is way too long for 10 characters';
+          input.dispatchEvent(new Event('input'));
+        });
+
+        fixture.detectChanges();
+
+        expect(component.f().errors()).not.toBeNull();
+        // Native input value isn't clamped by browser maxlength
+        expect(input.value).toBe('This string is way too long for 10 characters');
+      });
     });
 
     describe('min', () => {

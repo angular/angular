@@ -137,6 +137,49 @@ describe('maxLength validator', () => {
     expect(f().errors()).toEqual([]);
   });
 
+  it('should expose maxLength property on field when nativeAttribute is true or omitted', () => {
+    const data = signal({email: 'test@example.com'});
+    const f = form(
+      data,
+      (p) => {
+        maxLength(p.email, 100);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.email().maxLength?.()).toBe(100);
+  });
+
+  it('should NOT expose maxLength property on field when nativeAttribute is false', () => {
+    const data = signal({email: 'test@example.com'});
+    const f = form(
+      data,
+      (p) => {
+        maxLength(p.email, 100, {nativeAttribute: false});
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.email().maxLength).toBeUndefined();
+  });
+
+  it('should validate string length regardless of nativeAttribute flag state', () => {
+    const data = signal({username: 'abcdef'});
+    const f = form(
+      data,
+      (p) => {
+        maxLength(p.username, 3, {nativeAttribute: false});
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.username().errors()).toEqual([
+      maxLengthError(3, {
+        fieldTree: f.username,
+      }),
+    ]);
+  });
+
   describe('custom properties', () => {
     it('stores the MAX_LENGTH property on maxLength', () => {
       const data = signal({text: 'abcdef'});

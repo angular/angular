@@ -369,7 +369,7 @@ export function maxError(max: number, options: WithFieldTree<ValidationErrorOpti
 export function maxError(max: number, options?: ValidationErrorOptions): WithoutFieldTree<MaxValidationError>;
 
 // @public
-export function maxLength<TValue extends ValueWithLengthOrSize, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxLength: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+export function maxLength<TValue extends ValueWithLengthOrSize, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxLength: number | LogicFn<TValue, number | undefined, TPathKind>, config?: MaxLengthValidatorConfig<TValue, TPathKind>): void;
 
 // @public
 export function maxLengthError(maxLength: number, options: WithFieldTree<ValidationErrorOptions>): MaxLengthValidationError;
@@ -385,6 +385,11 @@ export class MaxLengthValidationError extends BaseNgValidationError {
     // (undocumented)
     readonly maxLength: number;
 }
+
+// @public
+export type MaxLengthValidatorConfig<TValue extends ValueWithLengthOrSize, TPathKind extends PathKind = PathKind.Root> = BaseValidatorConfig<TValue, TPathKind> & {
+    nativeAttribute?: boolean;
+};
 
 // @public
 export class MaxValidationError extends BaseNgValidationError {

@@ -60,6 +60,7 @@ import {
   requiredError,
   validateAsync,
   transformedValue,
+  maxLengthError,
   type DisabledReason,
   type Field,
   type FormCheckboxControl,
@@ -3523,6 +3524,81 @@ describe('field directive', () => {
         act(() => fixture.componentInstance.maxLength.set(5));
         expect(dir.maxLength()).toBe(5);
         expect(element.maxLength).toBe(5);
+      });
+
+      it('should not bind native maxlength attribute when nativeAttribute is false', () => {
+        @Component({
+          imports: [FormField],
+          template: `<textarea [formField]="f"></textarea>`,
+        })
+        class TestCmp {
+          readonly maxLength = signal(20);
+          readonly f = form(signal(''), (p) => {
+            maxLength(p, this.maxLength, {nativeAttribute: false});
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLTextAreaElement;
+        expect(element.hasAttribute('maxlength')).toBeFalse();
+        expect(element.maxLength).toBe(-1);
+      });
+
+      it('should not bind maxLength input on custom control when nativeAttribute is false', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model('');
+          readonly maxLength = input<number | undefined>();
+        }
+
+        @Component({
+          imports: [FormField, CustomControl],
+          template: `<custom-control [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly maxLength = signal(10);
+          readonly f = form(signal(''), (p) => {
+            maxLength(p, this.maxLength, {nativeAttribute: false});
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().maxLength()).toBeUndefined();
+      });
+
+      it('should allow user to type past limit and trigger validation error when nativeAttribute is false', () => {
+        @Component({
+          imports: [FormField],
+          template: `<textarea [formField]="f"></textarea>`,
+        })
+        class TestCmp {
+          readonly f = form(signal(''), (p) => {
+            maxLength(p, 5, {nativeAttribute: false});
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLTextAreaElement;
+
+        // Native attribute was omitted
+        expect(element.hasAttribute('maxlength')).toBeFalse();
+
+        // Simulate typing past 5 characters
+        element.value = 'exceeds_limit';
+        element.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+
+        // Native value allowed by browser
+        expect(element.value).toBe('exceeds_limit');
+
+        // Form control still flags error
+        expect(fixture.componentInstance.f().errors()).toEqual([
+          maxLengthError(5, {
+            fieldTree: fixture.componentInstance.f,
+          }),
+        ]);
       });
     });
 
