@@ -186,16 +186,33 @@ export class TcbExpressionTranslator {
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
         pipe = new TcbExpr('(0 as any)');
-      } else if (
-        pipeMeta.isExplicitlyDeferred &&
-        this.tcb.boundTarget.getEagerlyUsedPipes().includes(ast.name)
-      ) {
-        // This pipe was defer-loaded (included into `@Component.deferredImports`),
-        // but was used outside of a `@defer` block, which is the error.
-        this.tcb.oobRecorder.deferredPipeUsedEagerly(this.tcb.id, ast);
-
-        // Use an 'any' value to at least allow the rest of the expression to be checked.
-        pipe = new TcbExpr('(0 as any)');
+      } else if (pipeMeta.isExplicitlyDeferred) {
+        const enclosingBlocks = this.tcb.boundTarget.getDeferBlocksOfPipe(ast);
+        const isDeferred = enclosingBlocks.length > 0;
+        if (!isDeferred) {
+          this.tcb.oobRecorder.deferredPipeUsedEagerly(this.tcb.id, ast, null, null);
+          pipe = new TcbExpr('(0 as any)');
+        } else if (pipeMeta.deferredBlocks != null) {
+          const isAllowedInBlock = enclosingBlocks.some(
+            (b) => b.definedName !== null && pipeMeta.deferredBlocks!.has(b.definedName),
+          );
+          if (!isAllowedInBlock) {
+            const currentBlockName =
+              enclosingBlocks[enclosingBlocks.length - 1].definedName ?? 'unnamed';
+            const declaredBlocks = Array.from(pipeMeta.deferredBlocks);
+            this.tcb.oobRecorder.deferredPipeUsedEagerly(
+              this.tcb.id,
+              ast,
+              currentBlockName,
+              declaredBlocks,
+            );
+            pipe = new TcbExpr('(0 as any)');
+          } else {
+            pipe = this.tcb.env.pipeInst(pipeMeta);
+          }
+        } else {
+          pipe = this.tcb.env.pipeInst(pipeMeta);
+        }
       } else {
         // Use a variable declared as the pipe's type.
         pipe = this.tcb.env.pipeInst(pipeMeta);

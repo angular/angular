@@ -1127,6 +1127,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       foreignImports: analysis.foreignImports,
       rawImports: analysis.rawImports,
       deferredImports: analysis.resolvedDeferredImports,
+      deferredImportsByBlock: analysis.resolvedDeferredImportsByBlock,
       animationTriggerNames: analysis.legacyAnimationTriggerNames,
       schemas: analysis.schemas,
       decorator: analysis.decorator,
@@ -1134,6 +1135,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ngContentSelectors: analysis.template.ngContentSelectors,
       preserveWhitespaces: analysis.template.preserveWhitespaces ?? false,
       isExplicitlyDeferred: false,
+      deferredBlocks: null,
       selectorlessEnabled: analysis.selectorlessEnabled,
       localReferencedSymbols: analysis.localReferencedSymbols,
     });

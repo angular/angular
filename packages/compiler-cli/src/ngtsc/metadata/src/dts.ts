@@ -243,6 +243,7 @@ export class DtsMetadataReader implements MetadataReader {
       foreignImports: null,
       rawImports: null,
       deferredImports: null,
+      deferredImportsByBlock: null,
       // The same goes for schemas.
       schemas: null,
       decorator: null,
@@ -252,6 +253,7 @@ export class DtsMetadataReader implements MetadataReader {
       // used to increase the accuracy of a diagnostic.
       preserveWhitespaces: false,
       isExplicitlyDeferred: false,
+      deferredBlocks: null,
       // We don't need to know if imported components from .d.ts
       // files are selectorless for type-checking purposes.
       selectorlessEnabled: false,
@@ -301,6 +303,7 @@ export class DtsMetadataReader implements MetadataReader {
       isPure: null!, // The DTS has no idea about that
       decorator: null,
       isExplicitlyDeferred: false,
+      deferredBlocks: null,
     };
   }
 }

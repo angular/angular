@@ -579,13 +579,37 @@ export class Scope {
 
     this.reportConflictingBindings(node);
 
-    if (node instanceof Element) {
-      const isDeferred = this.tcb.boundTarget.isDeferred(node);
-      if (!isDeferred && directives.some((dirMeta) => dirMeta.isExplicitlyDeferred)) {
-        // This node has directives/components that were defer-loaded (included into
-        // `@Component.deferredImports`), but the node itself was used outside of a
-        // `@defer` block, which is the error.
-        this.tcb.oobRecorder.deferredComponentUsedEagerly(this.tcb.id, node);
+    if (node instanceof Element || node instanceof Template) {
+      const enclosingBlocks = this.tcb.boundTarget.getDeferBlocksOfNode(node);
+      const isDeferred = enclosingBlocks.length > 0;
+
+      for (const dirMeta of directives) {
+        if (!dirMeta.isExplicitlyDeferred) {
+          continue;
+        }
+
+        if (!isDeferred) {
+          // This node has directives/components that were defer-loaded (included into
+          // `@Component.deferredImports`), but the node itself was used outside of a
+          // `@defer` block, which is the error.
+          this.tcb.oobRecorder.deferredComponentUsedEagerly(this.tcb.id, node, dirMeta, null, null);
+        } else if (dirMeta.deferredBlocks != null) {
+          const isAllowedInBlock = enclosingBlocks.some(
+            (b) => b.definedName !== null && dirMeta.deferredBlocks!.has(b.definedName),
+          );
+          if (!isAllowedInBlock) {
+            const currentBlockName =
+              enclosingBlocks[enclosingBlocks.length - 1].definedName ?? 'unnamed';
+            const declaredBlocks = Array.from(dirMeta.deferredBlocks);
+            this.tcb.oobRecorder.deferredComponentUsedEagerly(
+              this.tcb.id,
+              node,
+              dirMeta,
+              currentBlockName,
+              declaredBlocks,
+            );
+          }
+        }
       }
     }
 

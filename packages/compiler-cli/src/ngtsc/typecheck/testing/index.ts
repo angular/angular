@@ -22,6 +22,7 @@ import {
   R3TargetBinder,
   SelectorlessMatcher,
   SelectorMatcher,
+  TcbDirectiveMetadata,
   TcbGenericContextBehavior,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
@@ -31,6 +32,7 @@ import {
   TmplAstHoverDeferredTrigger,
   TmplAstInteractionDeferredTrigger,
   TmplAstLetDeclaration,
+  TmplAstTemplate,
   TmplAstTextAttribute,
   TmplAstViewportDeferredTrigger,
   TypeCheckId,
@@ -857,6 +859,7 @@ function prepareDeclarations(
         isStandalone: false,
         decorator: null,
         isExplicitlyDeferred: false,
+        deferredBlocks: null,
         isPure: true,
       });
     }
@@ -940,6 +943,7 @@ function getDirectiveMetaFromDeclaration(
     ngContentSelectors: decl.ngContentSelectors || null,
     preserveWhitespaces: decl.preserveWhitespaces ?? false,
     isExplicitlyDeferred: false,
+    deferredBlocks: null,
     imports: decl.imports,
     rawImports: null,
     matchSource: MatchSource.Selector,
@@ -999,12 +1003,14 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         foreignImports: null,
         rawImports: null,
         deferredImports: null,
+        deferredImportsByBlock: null,
         schemas: null,
         decorator: null,
         assumedToExportProviders: false,
         ngContentSelectors: decl.ngContentSelectors || null,
         preserveWhitespaces: decl.preserveWhitespaces ?? false,
         isExplicitlyDeferred: false,
+        deferredBlocks: null,
         inputFieldNamesFromMetadataArray: null,
         selectorlessEnabled: false,
         localReferencedSymbols: null,
@@ -1037,6 +1043,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
         decorator: null,
         isExplicitlyDeferred: false,
+        deferredBlocks: null,
         isPure: true,
       });
     }
@@ -1074,8 +1081,19 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder<TemplateDiag
   }
   missingReferenceTarget(): void {}
   missingPipe(): void {}
-  deferredPipeUsedEagerly(id: TypeCheckId, ast: BindingPipe): void {}
-  deferredComponentUsedEagerly(id: TypeCheckId, element: TmplAstElement): void {}
+  deferredPipeUsedEagerly(
+    id: TypeCheckId,
+    ast: BindingPipe,
+    currentBlockName: string | null,
+    declaredBlocks: string[] | null,
+  ): void {}
+  deferredComponentUsedEagerly(
+    id: TypeCheckId,
+    element: TmplAstElement | TmplAstTemplate,
+    dirMeta: TcbDirectiveMetadata,
+    currentBlockName: string | null,
+    declaredBlocks: string[] | null,
+  ): void {}
   duplicateTemplateVar(): void {}
   suboptimalTypeInference(): void {}
   splitTwoWayBinding(): void {}

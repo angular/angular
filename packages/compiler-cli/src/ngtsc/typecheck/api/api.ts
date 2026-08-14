@@ -35,6 +35,7 @@ export interface TypeCheckableDirectiveMeta extends DirectiveMeta, DirectiveType
   hostDirectives: HostDirectiveMeta[] | null;
   decorator: ts.Decorator | null;
   isExplicitlyDeferred: boolean;
+  deferredBlocks?: Set<string> | null;
   imports: Reference<ClassDeclaration>[] | null;
   rawImports: ts.Expression | null;
 }
@@ -99,9 +100,7 @@ export interface TypeCheckBlockMetadata {
 }
 
 export type SourceMapping =
-  | DirectSourceMapping
-  | IndirectSourceMapping
-  | ExternalTemplateSourceMapping;
+  DirectSourceMapping | IndirectSourceMapping | ExternalTemplateSourceMapping;
 
 /**
  * A mapping to a node within the same source file..
