@@ -180,6 +180,21 @@ export function angularCoreDtsFiles(): TestFile[] {
   })));
 }
 
+let _angularFormsDts: TestFile[] | null = null;
+export function angularFormsDtsFiles(): TestFile[] {
+  if (_angularFormsDts !== null) {
+    return _angularFormsDts;
+  }
+
+  const directory = resolveFromRunfiles('_main/packages/forms/npm_package');
+  const dtsFiles = globSync('**/*.d.ts', {cwd: directory});
+
+  return (_angularFormsDts = ['package.json', ...dtsFiles].map((fileName) => ({
+    name: absoluteFrom(`/node_modules/@angular/forms/${fileName}`),
+    contents: readFileSync(path.join(directory, fileName), 'utf8'),
+  })));
+}
+
 export function angularAnimationsDts(): TestFile {
   return {
     name: absoluteFrom('/node_modules/@angular/animations/index.d.ts'),
@@ -533,12 +548,20 @@ export function setup(
     parseOptions?: ParseTemplateOptions;
     referenceEmitter?: ReferenceEmitter;
   } = {},
+  load: {
+    forms?: boolean;
+  } = {},
 ): {
   templateTypeChecker: TemplateTypeChecker;
   program: ts.Program;
   programStrategy: TsCreateProgramDriver;
 } {
-  const files = [typescriptLibDts(), ...angularCoreDtsFiles(), angularAnimationsDts()];
+  const files = [
+    typescriptLibDts(),
+    ...angularCoreDtsFiles(),
+    angularAnimationsDts(),
+    ...(load.forms ? angularFormsDtsFiles() : []),
+  ];
   const fakeMetadataRegistry = new Map();
   const shims = new Map<AbsoluteFsPath, AbsoluteFsPath>();
 
