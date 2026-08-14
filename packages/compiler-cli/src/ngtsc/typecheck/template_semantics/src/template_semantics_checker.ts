@@ -33,13 +33,27 @@ import {TemplateSemanticsChecker} from '../api/api';
 
 const NG_SKIP_HYDRATION_ATTR = 'ngSkipHydration';
 
-function selectorMatchesAttribute(selectorStr: string | null, attrName: string): boolean {
+function selectorMatchesAttribute(
+  selectorStr: string | null,
+  attrName: string,
+  attrValue?: string,
+): boolean {
   if (!selectorStr) {
     return false;
   }
   try {
     const selectors = CssSelector.parse(selectorStr);
     for (const sel of selectors) {
+      if (attrName === 'class' && sel.classNames.length > 0) {
+        if (attrValue) {
+          const classes = attrValue.split(/\s+/);
+          if (sel.classNames.some((c) => classes.includes(c))) {
+            return true;
+          }
+        } else {
+          return true;
+        }
+      }
       for (let i = 0; i < sel.attrs.length; i += 2) {
         if (sel.attrs[i] === attrName) {
           return true;
@@ -133,7 +147,7 @@ class TemplateSemanticsVisitor extends TmplAstRecursiveVisitor {
         if (attribute.name === NG_SKIP_HYDRATION_ATTR) continue;
         const isClaimed = directives?.some((dir) => {
           if (dir.inputs.hasBindingPropertyName(attribute.name)) return true;
-          if (selectorMatchesAttribute(dir.selector, attribute.name)) {
+          if (selectorMatchesAttribute(dir.selector, attribute.name, attribute.value)) {
             return true;
           }
           return false;
