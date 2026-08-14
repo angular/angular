@@ -7,7 +7,7 @@
  */
 
 import * as webdriver from 'selenium-webdriver';
-import {collectBrowserLogs, createWebDriver} from '../browser-logs-util';
+import {collectBrowserLogs, createWebDriver, waitForBrowserLogs} from '../browser-logs-util';
 
 describe('NgOptimizedImage directive (image-distortion)', () => {
   let driver: webdriver.WebDriver;
@@ -15,6 +15,12 @@ describe('NgOptimizedImage directive (image-distortion)', () => {
 
   beforeAll(async () => {
     ({driver, baseUrl} = await createWebDriver());
+
+    // Prime the memory cache with `a.png` by visiting the passing component first.
+    // Chromium's native lazy loading defers `display: none` images indefinitely
+    // unless they are already in the memory cache.
+    await driver.get(`${baseUrl}/e2e/image-distortion-passing`);
+    await new Promise((r) => setTimeout(r, 1000));
   });
 
   afterAll(async () => {
@@ -30,14 +36,9 @@ describe('NgOptimizedImage directive (image-distortion)', () => {
 
   it('should warn if there is image distortion', async () => {
     await driver.get(`${baseUrl}/e2e/image-distortion-failing`);
-    const logs: webdriver.logging.Entry[] = [];
-    const startTime = Date.now();
-    while (Date.now() - startTime < 5000) {
-      const newLogs = await collectBrowserLogs(driver, webdriver.logging.Level.WARNING);
-      logs.push(...newLogs);
-      if (logs.length >= 8) break;
-      await new Promise((r) => setTimeout(r, 200));
-    }
+    const logs = await waitForBrowserLogs(driver, webdriver.logging.Level.WARNING, 8, 15000, (l) =>
+      l.message.includes('NG02952'),
+    );
 
     expect(logs.length).toEqual(8);
 

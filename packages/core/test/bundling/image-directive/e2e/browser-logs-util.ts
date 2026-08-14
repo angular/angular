@@ -92,6 +92,28 @@ export async function collectBrowserLogs(
   return collectedLogs;
 }
 
+export async function waitForBrowserLogs(
+  driver: webdriver.WebDriver,
+  loggingLevel: webdriver.logging.Level,
+  minCount: number,
+  timeoutMs: number = 10000,
+  filterFn?: (entry: webdriver.logging.Entry) => boolean,
+  collectMoreSevereErrors: boolean = false,
+): Promise<webdriver.logging.Entry[]> {
+  const collectedLogs: webdriver.logging.Entry[] = [];
+  const startTime = Date.now();
+  while (Date.now() - startTime < timeoutMs) {
+    const newLogs = await collectBrowserLogs(driver, loggingLevel, collectMoreSevereErrors);
+    const filtered = filterFn ? newLogs.filter(filterFn) : newLogs;
+    collectedLogs.push(...filtered);
+    if (collectedLogs.length >= minCount) {
+      return collectedLogs;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+  return collectedLogs;
+}
+
 export async function verifyNoBrowserErrors(driver: webdriver.WebDriver) {
   const logs = await collectBrowserLogs(
     driver,

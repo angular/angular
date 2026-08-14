@@ -7,13 +7,12 @@ def example_test(
         data = [],
         deps = [],
         external = [],
-        tsconfig = "//modules/playground:tsconfig_e2e",
-        use_legacy_webdriver_types = False):
+        tsconfig = "//modules/playground:tsconfig_e2e"):
     ts_project(
         name = "%s_lib" % name,
         testonly = True,
         srcs = srcs,
-        tsconfig = "//modules/playground:tsconfig_e2e",
+        tsconfig = tsconfig,
         deps = deps + [
             "//modules:node_modules/@types/jasmine",
             "//modules:node_modules/@types/selenium-webdriver",
@@ -27,7 +26,5 @@ def example_test(
         server = server,
         data = data,
         external = external,
-        deps = [
-            ":%s_lib" % name,
-        ],
+        deps = [":%s_lib" % name],
     )

@@ -7,7 +7,7 @@
  */
 
 import * as webdriver from 'selenium-webdriver';
-import {collectBrowserLogs, createWebDriver} from '../browser-logs-util';
+import {createWebDriver, waitForBrowserLogs} from '../browser-logs-util';
 
 describe('NgOptimizedImage directive (lcp-check)', () => {
   let driver: webdriver.WebDriver;
@@ -23,8 +23,9 @@ describe('NgOptimizedImage directive (lcp-check)', () => {
 
   it('should log a warning when a `priority` is missing on an LCP image', async () => {
     await driver.get(`${baseUrl}/e2e/lcp-check`);
-    // Wait for ngSrc to be modified
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    // Wait for ngSrc to be modified after 500ms timeout
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
     // Verify that both images were rendered.
     const imgs = await driver.findElements(webdriver.By.css('img'));
     let srcB = await imgs[0].getAttribute('src');
@@ -40,7 +41,11 @@ describe('NgOptimizedImage directive (lcp-check)', () => {
     // We use >= 1 and check the last log because the browser may sometimes report `b.png`
     // as an intermediate LCP element before `a.png` is painted, causing an extra log.
     // NOTE: This highlights a potential bug where the directive warns on intermediate LCP elements.
-    const logs = (await collectBrowserLogs(driver, webdriver.logging.Level.SEVERE)).filter(
+    const logs = await waitForBrowserLogs(
+      driver,
+      webdriver.logging.Level.SEVERE,
+      1,
+      10000,
       (l) => l.message.includes(`NG02955`), // LCP_IMG_MISSING_PRIORITY
     );
     expect(logs.length).toBeGreaterThanOrEqual(1);
