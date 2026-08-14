@@ -6,76 +6,105 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {verifyNoBrowserErrors} from '../../../utilities/index.js';
-import {browser, by, element, protractor} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
+import {
+  createWebDriver,
+  verifyNoBrowserErrors,
+  waitForAngular,
+} from '../../../../packages/examples/test-utils/index.js';
 
-const Key = protractor.Key;
+const Key = webdriver.Key;
 
 describe('key_events', function () {
-  const URL = '/';
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  afterEach(verifyNoBrowserErrors);
-  beforeEach(() => {
-    browser.get(URL);
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
   });
 
-  it('should display correct key names', function () {
-    const firstArea = element.all(by.css('.sample-area')).get(0);
-    expect(firstArea.getText()).toEqual('(none)');
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
+
+  beforeEach(async () => {
+    await driver.get(`${baseUrl}/`);
+    await waitForAngular(driver);
+  });
+
+  it('should display correct key names', async function () {
+    const areas = await driver.findElements(webdriver.By.css('.sample-area'));
+    const firstArea = areas[0];
+    expect(await firstArea.getText()).toEqual('(none)');
+
+    await firstArea.click();
 
     // testing different key categories:
-    firstArea.sendKeys(Key.ENTER);
-    expect(firstArea.getText()).toEqual('enter');
+    await firstArea.sendKeys(Key.ENTER);
+    await waitForAngular(driver);
+    expect(await firstArea.getText()).toEqual('enter');
 
-    firstArea.sendKeys(Key.SHIFT, Key.ENTER);
-    expect(firstArea.getText()).toEqual('shift.enter');
+    await firstArea.sendKeys(Key.chord(Key.SHIFT, Key.ENTER));
+    await waitForAngular(driver);
+    expect(await firstArea.getText()).toEqual('shift.enter');
 
-    firstArea.sendKeys(Key.CONTROL, Key.SHIFT, Key.ENTER);
-    expect(firstArea.getText()).toEqual('control.shift.enter');
+    await firstArea.sendKeys(Key.chord(Key.CONTROL, Key.SHIFT, Key.ENTER));
+    await waitForAngular(driver);
+    expect(await firstArea.getText()).toEqual('control.shift.enter');
 
-    firstArea.sendKeys(' ');
-    expect(firstArea.getText()).toEqual('space');
+    await firstArea.sendKeys(' ');
+    await waitForAngular(driver);
+    expect(await firstArea.getText()).toEqual('space');
 
-    // It would not work with a letter which position depends on the keyboard layout (ie AZERTY vs
-    // QWERTY), see https://code.google.com/p/chromedriver/issues/detail?id=553
-    firstArea.sendKeys('u');
-    expect(firstArea.getText()).toEqual('u');
+    await firstArea.sendKeys('u');
+    await waitForAngular(driver);
+    expect(await firstArea.getText()).toEqual('u');
 
-    firstArea.sendKeys(Key.CONTROL, 'b');
-    expect(firstArea.getText()).toEqual('control.b');
+    await firstArea.sendKeys(Key.chord(Key.CONTROL, 'b'));
+    await waitForAngular(driver);
+    expect(await firstArea.getText()).toEqual('control.b');
 
-    firstArea.sendKeys(Key.F1);
-    expect(firstArea.getText()).toEqual('f1');
+    await firstArea.sendKeys(Key.F1);
+    await waitForAngular(driver);
+    expect(await firstArea.getText()).toEqual('f1');
 
-    firstArea.sendKeys(Key.ALT, Key.F1);
-    expect(firstArea.getText()).toEqual('alt.f1');
+    await firstArea.sendKeys(Key.chord(Key.ALT, Key.F1));
+    await waitForAngular(driver);
+    expect(await firstArea.getText()).toEqual('alt.f1');
 
-    firstArea.sendKeys(Key.CONTROL, Key.F1);
-    expect(firstArea.getText()).toEqual('control.f1');
-
-    // There is an issue with Key.NUMPAD0 (and other NUMPADx):
-    // chromedriver does not correctly set the location property on the event to
-    // specify that the key is on the numeric keypad (event.location = 3)
-    // so the following test fails:
-    // firstArea.sendKeys(Key.NUMPAD0);
-    // expect(firstArea.getText()).toEqual('0');
+    await firstArea.sendKeys(Key.chord(Key.CONTROL, Key.F1));
+    await waitForAngular(driver);
+    expect(await firstArea.getText()).toEqual('control.f1');
   });
 
-  it('should correctly react to the specified key', function () {
-    const secondArea = element.all(by.css('.sample-area')).get(1);
-    secondArea.sendKeys(Key.SHIFT, Key.ENTER);
-    expect(secondArea.getText()).toEqual('You pressed shift.enter!');
+  it('should correctly react to the specified key', async function () {
+    const areas = await driver.findElements(webdriver.By.css('.sample-area'));
+    const secondArea = areas[1];
+    await secondArea.click();
+    await secondArea.sendKeys(Key.chord(Key.SHIFT, Key.ENTER));
+    await waitForAngular(driver);
+    expect(await secondArea.getText()).toEqual('You pressed shift.enter!');
   });
 
-  it('should not react to incomplete keys', function () {
-    const secondArea = element.all(by.css('.sample-area')).get(1);
-    secondArea.sendKeys(Key.ENTER);
-    expect(secondArea.getText()).toEqual('');
+  it('should not react to incomplete keys', async function () {
+    const areas = await driver.findElements(webdriver.By.css('.sample-area'));
+    const secondArea = areas[1];
+    await secondArea.click();
+    await secondArea.sendKeys(Key.ENTER);
+    await waitForAngular(driver);
+    expect(await secondArea.getText()).toEqual('');
   });
 
-  it('should not react to keys with more modifiers', function () {
-    const secondArea = element.all(by.css('.sample-area')).get(1);
-    secondArea.sendKeys(Key.CONTROL, Key.SHIFT, Key.ENTER);
-    expect(secondArea.getText()).toEqual('');
+  it('should not react to keys with more modifiers', async function () {
+    const areas = await driver.findElements(webdriver.By.css('.sample-area'));
+    const secondArea = areas[1];
+    await secondArea.click();
+    await secondArea.sendKeys(Key.chord(Key.CONTROL, Key.SHIFT, Key.ENTER));
+    await waitForAngular(driver);
+    expect(await secondArea.getText()).toEqual('');
   });
 });

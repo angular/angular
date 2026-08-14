@@ -6,24 +6,45 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {verifyNoBrowserErrors} from '../../../utilities/index.js';
-import {browser, by, element} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
+import {
+  createWebDriver,
+  verifyNoBrowserErrors,
+  waitForAngular,
+} from '../../../../packages/examples/test-utils/index.js';
 
 describe('Template-Driven Forms', function () {
-  afterEach(verifyNoBrowserErrors);
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  const URL = '/';
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
 
-  it('should display errors', function () {
-    browser.get(URL);
+  afterAll(async () => {
+    await driver.quit();
+  });
 
-    const form = element.all(by.css('form')).first();
-    const input = element.all(by.css('#creditCard')).first();
-    const firstName = element.all(by.css('#firstName')).first();
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
 
-    input.sendKeys('invalid');
-    firstName.click();
+  it('should display errors', async function () {
+    await driver.get(`${baseUrl}/`);
+    await waitForAngular(driver);
 
-    expect(form.getAttribute('innerHTML')).toContain('is invalid credit card number');
+    const forms = await driver.findElements(webdriver.By.css('form'));
+    const input = await driver.findElement(webdriver.By.css('#creditCard'));
+    const firstName = await driver.findElement(webdriver.By.css('#firstName'));
+
+    await input.sendKeys('invalid');
+    await firstName.click();
+    await waitForAngular(driver);
+
+    const innerHTML = await driver.executeScript<string>(
+      'return arguments[0].innerHTML;',
+      forms[0],
+    );
+    expect(innerHTML).toContain('is invalid credit card number');
   });
 });
