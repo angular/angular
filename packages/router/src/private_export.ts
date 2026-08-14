@@ -11,4 +11,6 @@ export {RestoredState as ɵRestoredState} from './navigation_transition';
 export {loadChildren as ɵloadChildren} from './router_config_loader';
 export {ROUTER_PROVIDERS as ɵROUTER_PROVIDERS} from './router_module';
 export {afterNextNavigation as ɵafterNextNavigation} from './utils/navigations';
-export {withRouterResources as ɵwithActivatedRouteInjectors} from './provide_router';
+export {withRouterResources as ɵwithRouterResources} from './provide_router';
+export {nonBlocking as ɵnonBlocking} from './router_resource';
+export {ResourceContext as ɵResourceContext, ResourceResult as ɵResourceResult} from './models';

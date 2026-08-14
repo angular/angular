@@ -1,7 +1,6 @@
 {
   "chunks": {
     "main": [
-      "ACTIVATED_ROUTE_INJECTOR_FEATURE",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS",
       "ANIMATION_QUEUE",
@@ -243,6 +242,7 @@
       "ROUTER_CONFIGURATION",
       "ROUTER_OUTLET_DATA",
       "ROUTER_PRELOADER",
+      "ROUTER_RESOURCES_FEATURE",
       "ROUTER_SCROLLER",
       "ROUTES",
       "ROUTES2",
@@ -584,7 +584,6 @@
       "diPublicInInjector",
       "directiveHostEndFirstCreatePass",
       "directiveHostFirstCreatePass",
-      "discardNewActivatedRoutes",
       "documentSupported",
       "domOnlyFirstCreatePass",
       "elementAttributeInternal",
@@ -1037,6 +1036,7 @@
       "reportUnhandledError",
       "requiresRefreshOrTraversal",
       "resetConsumerBeforeComputation",
+      "resetPendingRoutes",
       "resetPreOrderHookFlags",
       "resolveData",
       "resolveDirectives",
@@ -1045,6 +1045,7 @@
       "resolveNode",
       "retrieveHydrationInfo",
       "reusedNodes",
+      "rollbackState",
       "rootRoute",
       "runAfterLeaveAnimations",
       "runCanActivate",
