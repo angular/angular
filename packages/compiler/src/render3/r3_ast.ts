@@ -390,6 +390,7 @@ export class DeferredBlock extends BlockNode implements Node {
     public mainBlockSpan: ParseSourceSpan,
     startSourceSpan: ParseSourceSpan,
     endSourceSpan: ParseSourceSpan | null,
+    public definedName: string | null,
     public i18n?: I18nMeta,
   ) {
     super(nameSpan, sourceSpan, startSourceSpan, endSourceSpan);
