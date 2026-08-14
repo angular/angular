@@ -6,21 +6,30 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser} from 'protractor';
-import {logging} from 'selenium-webdriver';
+import * as webdriver from 'selenium-webdriver';
+import {collectBrowserLogs, createWebDriver} from '../browser-logs-util';
 
-import {collectBrowserLogs} from '../browser-logs-util';
+describe('NgOptimizedImage directive (oversized-image)', () => {
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-describe('NgOptimizedImage directive', () => {
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
+
+  afterAll(async () => {
+    await driver.quit();
+  });
+
   it('should not warn if there is no oversized image', async () => {
-    await browser.get('/e2e/oversized-image-passing');
-    const logs = await collectBrowserLogs(logging.Level.WARNING);
+    await driver.get(`${baseUrl}/e2e/oversized-image-passing`);
+    const logs = await collectBrowserLogs(driver, webdriver.logging.Level.WARNING);
     expect(logs.length).toEqual(0);
   });
 
   it('should warn if rendered image size is much smaller than intrinsic size', async () => {
-    await browser.get('/e2e/oversized-image-failing');
-    const logs = await collectBrowserLogs(logging.Level.WARNING);
+    await driver.get(`${baseUrl}/e2e/oversized-image-failing`);
+    const logs = await collectBrowserLogs(driver, webdriver.logging.Level.WARNING);
 
     expect(logs.length).toEqual(1);
 
