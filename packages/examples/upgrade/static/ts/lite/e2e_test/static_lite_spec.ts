@@ -6,85 +6,102 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser, by, element, ElementArrayFinder, ElementFinder} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
-
-import {addCustomMatchers} from './e2e_util';
-
-function loadPage() {
-  browser.rootEl = 'example-app';
-  browser.get('/');
-}
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../../test-utils';
+import {expectToBeAHero, expectToHaveName} from './e2e_util';
 
 describe('upgrade/static (lite)', () => {
-  let showHideBtn: ElementFinder;
-  let ng2Heroes: ElementFinder;
-  let ng2HeroesHeader: ElementFinder;
-  let ng2HeroesExtra: ElementFinder;
-  let ng2HeroesAddBtn: ElementFinder;
-  let ng1Heroes: ElementArrayFinder;
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  const expectHeroes = (isShown: boolean, ng1HeroCount = 3, statusMessage = 'Ready') => {
-    // Verify the show/hide button text.
-    expect(showHideBtn.getText()).toBe(isShown ? 'Hide heroes' : 'Show heroes');
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
 
-    // Verify the `<ng2-heroes>` component.
-    expect(ng2Heroes.isPresent()).toBe(isShown);
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
+
+  async function loadPage() {
+    await driver.get(`${baseUrl}/`);
+    await waitForAngular(driver);
+  }
+
+  const expectHeroes = async (isShown: boolean, ng1HeroCount = 3, statusMessage = 'Ready') => {
+    const showHideBtn = await driver.findElement(webdriver.By.css('button'));
+    expect(await showHideBtn.getText()).toBe(isShown ? 'Hide heroes' : 'Show heroes');
+
+    const ng2HeroesList = await driver.findElements(webdriver.By.css('.ng2-heroes'));
+    expect(ng2HeroesList.length > 0).toBe(isShown);
     if (isShown) {
-      expect(ng2HeroesHeader.getText()).toBe('Heroes');
-      expect(ng2HeroesExtra.getText()).toBe(`Status: ${statusMessage}`);
+      const ng2HeroesHeader = await ng2HeroesList[0].findElement(webdriver.By.css('h1'));
+      const ng2HeroesExtra = await ng2HeroesList[0].findElement(webdriver.By.css('.extra'));
+      expect(await ng2HeroesHeader.getText()).toBe('Heroes');
+      expect(await ng2HeroesExtra.getText()).toBe(`Status: ${statusMessage}`);
     }
 
-    // Verify the `<ng1-hero>` components.
-    expect(ng1Heroes.count()).toBe(isShown ? ng1HeroCount : 0);
+    const ng1Heroes = await driver.findElements(webdriver.By.css('.ng1-hero'));
+    expect(ng1Heroes.length).toBe(isShown ? ng1HeroCount : 0);
     if (isShown) {
-      ng1Heroes.each((ng1Hero) => expect(ng1Hero).toBeAHero());
+      for (const ng1Hero of ng1Heroes) {
+        await expectToBeAHero(ng1Hero);
+      }
     }
   };
 
-  beforeEach(() => {
-    showHideBtn = element(by.binding('toggleBtnText'));
-
-    ng2Heroes = element(by.css('.ng2-heroes'));
-    ng2HeroesHeader = ng2Heroes.element(by.css('h1'));
-    ng2HeroesExtra = ng2Heroes.element(by.css('.extra'));
-    ng2HeroesAddBtn = ng2Heroes.element(by.buttonText('Add Hero'));
-
-    ng1Heroes = element.all(by.css('.ng1-hero'));
-  });
-  beforeEach(addCustomMatchers);
   beforeEach(loadPage);
-  afterEach(verifyNoBrowserErrors);
 
-  it('should initially not render the heroes', () => expectHeroes(false));
+  it('should initially not render the heroes', async () => expectHeroes(false));
 
-  it('should toggle the heroes when clicking the "show/hide" button', () => {
-    showHideBtn.click();
-    expectHeroes(true);
+  it('should toggle the heroes when clicking the "show/hide" button', async () => {
+    let showHideBtn = await driver.findElement(webdriver.By.css('button'));
+    await showHideBtn.click();
+    await waitForAngular(driver);
+    await expectHeroes(true);
 
-    showHideBtn.click();
-    expectHeroes(false);
+    showHideBtn = await driver.findElement(webdriver.By.css('button'));
+    await showHideBtn.click();
+    await waitForAngular(driver);
+    await expectHeroes(false);
   });
 
-  it('should add a new hero when clicking the "add" button', () => {
-    showHideBtn.click();
-    ng2HeroesAddBtn.click();
+  it('should add a new hero when clicking the "add" button', async () => {
+    let showHideBtn = await driver.findElement(webdriver.By.css('button'));
+    await showHideBtn.click();
+    await waitForAngular(driver);
 
-    expectHeroes(true, 4, 'Added hero Kamala Khan');
-    expect(ng1Heroes.last()).toHaveName('Kamala Khan');
+    const ng2HeroesAddBtn = await driver.findElement(
+      webdriver.By.xpath("//button[text()='Add Hero']"),
+    );
+    await ng2HeroesAddBtn.click();
+    await waitForAngular(driver);
+
+    await expectHeroes(true, 4, 'Added hero Kamala Khan');
+    const ng1Heroes = await driver.findElements(webdriver.By.css('.ng1-hero'));
+    await expectToHaveName(ng1Heroes[ng1Heroes.length - 1], 'Kamala Khan');
   });
 
-  it('should remove a hero when clicking its "remove" button', () => {
-    showHideBtn.click();
+  it('should remove a hero when clicking its "remove" button', async () => {
+    let showHideBtn = await driver.findElement(webdriver.By.css('button'));
+    await showHideBtn.click();
+    await waitForAngular(driver);
 
-    const firstHero = ng1Heroes.first();
-    expect(firstHero).toHaveName('Superman');
+    let ng1Heroes = await driver.findElements(webdriver.By.css('.ng1-hero'));
+    await expectToHaveName(ng1Heroes[0], 'Superman');
 
-    const removeBtn = firstHero.element(by.buttonText('Remove'));
-    removeBtn.click();
+    const removeBtn = await ng1Heroes[0].findElement(
+      webdriver.By.xpath(".//button[text()='Remove']"),
+    );
+    await removeBtn.click();
+    await waitForAngular(driver);
 
-    expectHeroes(true, 2, 'Removed hero Superman');
-    expect(ng1Heroes.first()).not.toHaveName('Superman');
+    await expectHeroes(true, 2, 'Removed hero Superman');
+    ng1Heroes = await driver.findElements(webdriver.By.css('.ng1-hero'));
+    const firstHeroName = await ng1Heroes[0].findElement(webdriver.By.css('h2')).getText();
+    expect(firstHeroName).not.toBe('Superman');
   });
 });
