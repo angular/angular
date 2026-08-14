@@ -17,7 +17,6 @@ import {
   ResourceSnapshot,
   effect,
   computed,
-  WritableResource,
   assertInInjectionContext,
 } from '@angular/core';
 import {Router} from './router';
@@ -29,6 +28,32 @@ import {
   NavigationSkipped,
   NavigationCancellationCode,
 } from './events';
+
+export const NON_BLOCKING_SYMBOL: unique symbol = Symbol(
+  typeof ngDevMode === 'undefined' || ngDevMode ? '__isNonBlocking' : '',
+);
+export const BLOCKING_SYMBOL: unique symbol = Symbol(
+  typeof ngDevMode === 'undefined' || ngDevMode ? '__isBlocking' : '',
+);
+
+/**
+ * @internal
+ */
+export interface InternalRouterResource<T = unknown> extends Resource<T> {
+  [NON_BLOCKING_SYMBOL]?: boolean;
+  [BLOCKING_SYMBOL]?: boolean;
+  reload(): boolean;
+}
+
+/**
+ * Marks a resource as non-blocking. The Router will NOT wait for this resource to resolve
+ * before completing the navigation.
+ * @experimental
+ */
+export function nonBlocking<T, R extends Resource<T>>(res: R): R {
+  (res as unknown as InternalRouterResource<T>)[NON_BLOCKING_SYMBOL] = true;
+  return res;
+}
 
 /**
  * Wraps a Resource to make it cooperative with the Angular Router, freezing its state
@@ -45,7 +70,13 @@ export function routerResource<T>(source: Resource<T>): Resource<T> & {reload():
     injector,
   );
 
-  const res = resourceFromSnapshots(snapshotSignal) as Resource<T> & {reload(): boolean};
+  const res = resourceFromSnapshots(snapshotSignal) as unknown as InternalRouterResource<T>;
+
+  if ((source as unknown as InternalRouterResource<T>)[NON_BLOCKING_SYMBOL]) {
+    res[NON_BLOCKING_SYMBOL] = true;
+  } else {
+    res[BLOCKING_SYMBOL] = true;
+  }
 
   if (typeof (source as any).reload === 'function') {
     res.reload = function (): boolean {
@@ -99,10 +130,18 @@ function createTransactionalSnapshot<T>(
         // Freeze the snapshot at the start of navigation to keep the UI stable.
         frozenSnapshot.set(source.snapshot());
       }
-    } else if (e instanceof NavigationEnd || e instanceof NavigationSkipped) {
-      // Navigation succeeded or was skipped, so we can unfreeze and use the live state.
+    } else if (e instanceof NavigationEnd) {
+      // Navigation succeeded, so we can unfreeze and use the live state.
       frozenSnapshot.set(null);
       isRollbackRecoveryPending.set(false);
+    } else if (e instanceof NavigationSkipped) {
+      // If a navigation is skipped while we have a frozen snapshot (e.g. navigating to the
+      // current URL to cancel an in-flight navigation), the in-flight navigation is aborted
+      // and parameter rollback begins. We must maintain the frozen snapshot until the rollback
+      // recovery load completes to prevent flashing a loading state.
+      if (frozenSnapshot() !== null) {
+        isRollbackRecoveryPending.set(true);
+      }
     } else if (e instanceof NavigationCancel || e instanceof NavigationError) {
       const isRollback =
         e instanceof NavigationError ||
@@ -120,7 +159,12 @@ function createTransactionalSnapshot<T>(
 
   effect(
     () => {
-      if (isRollbackRecoveryPending() && !source.isLoading()) {
+      if (
+        isRollbackRecoveryPending() &&
+        // TODO(consider):  should this be hasValue || status !== loading
+        // Some stream implementations may retain loading status after first item resolves
+        !source.isLoading()
+      ) {
         isRollbackRecoveryPending.set(false);
         frozenSnapshot.set(null);
       }

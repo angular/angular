@@ -18,9 +18,22 @@ import {
   Router,
   destroyDetachedRouteHandle,
   provideRouter,
-  ɵwithActivatedRouteInjectors,
+  ɵwithRouterResources,
+  ɵResourceContext as ResourceContext,
+  ɵResourceResult as ResourceResult,
 } from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
+
+// TODO: Use the public @angular/router API once exposed
+type InternalRoute = Route & {
+  /**
+   * A function that returns a map of resources.
+   * This function is executed during the Main Loading Phase of a navigation.
+   * @experimental
+   * @internal
+   */
+  resources?: (ctx: ResourceContext) => ResourceResult | Promise<ResourceResult>;
+};
 
 describe('ActivatedRoute local injector', () => {
   @Component({
@@ -63,10 +76,10 @@ describe('ActivatedRoute local injector', () => {
   let router: Router;
   let strategy: CustomReuseStrategy;
 
-  async function setUpRouter(routes: Route[]): Promise<RouterTestingHarness> {
+  async function setUpRouter(routes: InternalRoute[]): Promise<RouterTestingHarness> {
     TestBed.configureTestingModule({
       providers: [
-        provideRouter(routes, ɵwithActivatedRouteInjectors()),
+        provideRouter(routes, ɵwithRouterResources()),
         {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
       ],
     });
@@ -76,13 +89,13 @@ describe('ActivatedRoute local injector', () => {
     return await RouterTestingHarness.create();
   }
 
-  it('should create and destroy local injector for routes with ɵUseActivatedRouteInjector', async () => {
+  it('should create and destroy local injector for routes with resources', async () => {
     const harness = await setUpRouter([
       {
         path: 'home',
         component: HomeComponent,
-        'ɵUseActivatedRouteInjector': true,
-      } as any,
+        resources: () => ({}),
+      },
       {
         path: 'away',
         component: AwayComponent,
@@ -107,7 +120,7 @@ describe('ActivatedRoute local injector', () => {
     expect(destroyed).toBe(true);
   });
 
-  it('should NOT create local injector for routes without ɵUseActivatedRouteInjector', async () => {
+  it('should NOT create local injector for routes without resources', async () => {
     const harness = await setUpRouter([
       {
         path: 'home',
@@ -127,8 +140,8 @@ describe('ActivatedRoute local injector', () => {
       {
         path: 'home',
         component: HomeComponent,
-        'ɵUseActivatedRouteInjector': true,
-      } as any,
+        resources: () => ({}),
+      },
       {
         path: 'away',
         component: AwayComponent,
@@ -186,13 +199,13 @@ describe('ActivatedRoute local injector', () => {
       {
         path: 'home',
         component: HomeComponent,
-        'ɵUseActivatedRouteInjector': true,
-      } as any,
+        resources: () => ({}),
+      },
       {
         path: 'throwing',
         component: ThrowingComponent,
-        'ɵUseActivatedRouteInjector': true,
-      } as any,
+        resources: () => ({}),
+      },
     ]);
 
     await harness.navigateByUrl('/home');

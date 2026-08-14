@@ -41,7 +41,7 @@ function createNode(
   // reuse an activated route that is currently displayed on the screen
   if (prevState && routeReuseStrategy.shouldReuseRoute(curr.value, prevState.value.snapshot)) {
     const value = prevState.value;
-    value._futureSnapshot = curr.value;
+    value._setPending(curr.value);
     const children = createOrReuseChildren(routeReuseStrategy, curr, prevState, newlyCreatedRoutes);
     return new TreeNode<ActivatedRoute>(value, children);
   } else {
@@ -50,7 +50,7 @@ function createNode(
       const detachedRouteHandle = routeReuseStrategy.retrieve(curr.value);
       if (detachedRouteHandle !== null) {
         const tree = (detachedRouteHandle as DetachedRouteHandleInternal).route;
-        tree.value._futureSnapshot = curr.value;
+        tree.value._setPending(curr.value);
         tree.children = curr.children.map((c) =>
           createNode(routeReuseStrategy, c, undefined, newlyCreatedRoutes),
         );
@@ -59,6 +59,7 @@ function createNode(
     }
 
     const value = createActivatedRoute(curr.value);
+    value._setPending(curr.value);
     newlyCreatedRoutes.add(value);
     const children = curr.children.map((c) =>
       createNode(routeReuseStrategy, c, undefined, newlyCreatedRoutes),

@@ -10,10 +10,12 @@ import {InjectionToken} from '@angular/core';
 import {OperatorFunction} from 'rxjs';
 import type {NavigationTransition} from './navigation_transition';
 
-export interface RouterResourcesFeature {
-  operator(): OperatorFunction<NavigationTransition, NavigationTransition>;
+import type {ActivatedRoute} from './router_state';
+
+export interface RouterResourcesFeatureImplementation {
+  operator(abortSignal: AbortSignal): OperatorFunction<NavigationTransition, NavigationTransition>;
 }
 
-export const ROUTER_RESOURCES_FEATURE = new InjectionToken<RouterResourcesFeature>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'Router resources feature' : '',
+export const ROUTER_RESOURCES_FEATURE = new InjectionToken<RouterResourcesFeatureImplementation>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'Router Resources Feature' : '',
 );
