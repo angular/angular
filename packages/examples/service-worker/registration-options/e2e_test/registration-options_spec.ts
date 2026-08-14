@@ -6,22 +6,36 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../test-utils';
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../test-utils';
 
 describe('SW `SwRegistrationOptions` example', () => {
-  const pageUrl = '/registration-options';
-  const appElem = element(by.css('example-app'));
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  afterEach(verifyNoBrowserErrors);
-
-  it('not register the SW by default', () => {
-    browser.get(pageUrl);
-    expect(appElem.getText()).toBe('SW enabled: false');
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
   });
 
-  it('register the SW when navigating to `?sw=true`', () => {
-    browser.get(`${pageUrl}?sw=true`);
-    expect(appElem.getText()).toBe('SW enabled: true');
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
+
+  it('not register the SW by default', async () => {
+    await driver.get(`${baseUrl}/registration-options`);
+    await waitForAngular(driver);
+    const appElem = await driver.findElement(webdriver.By.css('example-app'));
+    expect(await appElem.getText()).toBe('SW enabled: false');
+  });
+
+  it('register the SW when navigating to `?sw=true`', async () => {
+    await driver.get(`${baseUrl}/registration-options?sw=true`);
+    await waitForAngular(driver);
+    const appElem = await driver.findElement(webdriver.By.css('example-app'));
+    expect(await appElem.getText()).toBe('SW enabled: true');
   });
 });
