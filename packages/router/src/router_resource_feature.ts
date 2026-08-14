@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken} from '@angular/core';
+import {ComponentRef, EffectRef, InjectionToken, Injector} from '@angular/core';
 import {OperatorFunction} from 'rxjs';
 import type {NavigationTransition} from './navigation_transition';
 
@@ -16,6 +16,11 @@ export interface RouterResourcesFeatureImplementation {
   setupAndRunResources(
     abortSignal: AbortSignal,
   ): OperatorFunction<NavigationTransition, NavigationTransition>;
+  createResourceOutletBindingEffects?: (
+    componentRef: ComponentRef<unknown>,
+    route: ActivatedRoute,
+    injector: Injector,
+  ) => {createdEffects: EffectRef[]; handledKeys: string[]};
 }
 
 export const ROUTER_RESOURCES_FEATURE = new InjectionToken<RouterResourcesFeatureImplementation>(
