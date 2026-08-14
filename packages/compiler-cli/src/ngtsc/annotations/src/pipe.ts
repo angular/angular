@@ -247,6 +247,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<
       isStandalone: analysis.meta.isStandalone,
       decorator: analysis.decorator,
       isExplicitlyDeferred: false,
+      deferredBlocks: null,
       isPure: analysis.meta.pure,
     });
 

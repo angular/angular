@@ -1247,6 +1247,9 @@ runInEachFileSystem(() => {
 
           expect(diags.length).toBe(1);
           expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFERRED_DIRECTIVE_USED_EAGERLY));
+          expect(diags[0].messageText).toContain(
+            "Component 'DeferredCmpA' (used as element 'deferred-cmp-a') was imported via `@Component.deferredImports`, but was used outside of a `@defer` block in a template",
+          );
         });
 
         it('should produce an error the same component is referenced in both `deferredImports` and `imports`', () => {
@@ -2100,6 +2103,448 @@ runInEachFileSystem(() => {
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
           'Trigger with no target can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+        );
+      });
+    });
+
+    describe('block-specific deferredImports type checking', () => {
+      it('should pass type-checking when a deferred component is used in its declared block', () => {
+        env.write(
+          'cmp-a.ts',
+          `
+          import { Component } from '@angular/core';
+          @Component({ selector: 'cmp-a', template: 'CmpA!' })
+          export class CmpA {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { CmpA } from './cmp-a';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              blockA: [CmpA],
+            },
+            template: \`
+              @defer (name blockA) {
+                <cmp-a />
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should report an error when a deferred component is used in a defer block that does not include it', () => {
+        env.write(
+          'cmps.ts',
+          `
+          import { Component } from '@angular/core';
+          @Component({ selector: 'cmp-a', template: 'CmpA!' })
+          export class CmpA {}
+
+          @Component({ selector: 'cmp-b', template: 'CmpB!' })
+          export class CmpB {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { CmpA, CmpB } from './cmps';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              blockA: [CmpA],
+              blockB: [CmpB],
+            },
+            template: \`
+              @defer (name blockA) {
+                <cmp-b />
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          "Component 'CmpB' (used as element 'cmp-b') was imported via `@Component.deferredImports` under block 'blockB', but is used in a `@defer` block configured for 'blockA'",
+        );
+      });
+
+      it('should allow nested defer blocks to inherit dependencies from parent defer blocks', () => {
+        env.write(
+          'cmps.ts',
+          `
+          import { Component } from '@angular/core';
+          @Component({ selector: 'outer-cmp', template: 'Outer!' })
+          export class OuterCmp {}
+
+          @Component({ selector: 'inner-cmp', template: 'Inner!' })
+          export class InnerCmp {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { OuterCmp, InnerCmp } from './cmps';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              outerBlock: [OuterCmp],
+              innerBlock: [InnerCmp],
+            },
+            template: \`
+              @defer (name outerBlock) {
+                <outer-cmp />
+                @defer (name innerBlock) {
+                  <outer-cmp />
+                  <inner-cmp />
+                }
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should report an error in nested defer block when using a component from an unassociated block', () => {
+        env.write(
+          'cmps.ts',
+          `
+          import { Component } from '@angular/core';
+          @Component({ selector: 'outer-cmp', template: 'Outer!' })
+          export class OuterCmp {}
+
+          @Component({ selector: 'inner-cmp', template: 'Inner!' })
+          export class InnerCmp {}
+
+          @Component({ selector: 'other-cmp', template: 'Other!' })
+          export class OtherCmp {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { OuterCmp, InnerCmp, OtherCmp } from './cmps';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              outerBlock: [OuterCmp],
+              innerBlock: [InnerCmp],
+              otherBlock: [OtherCmp],
+            },
+            template: \`
+              @defer (name outerBlock) {
+                @defer (name innerBlock) {
+                  <other-cmp />
+                }
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          "Component 'OtherCmp' (used as element 'other-cmp') was imported via `@Component.deferredImports` under block 'otherBlock', but is used in a `@defer` block configured for 'innerBlock'",
+        );
+      });
+
+      it('should report an error when a deferred pipe is used in a defer block that does not include it', () => {
+        env.write(
+          'pipe-b.ts',
+          `
+          import { Pipe, PipeTransform } from '@angular/core';
+          @Pipe({ name: 'pipeb' })
+          export class PipeB implements PipeTransform {
+            transform(val: string) { return val; }
+          }
+        `,
+        );
+
+        env.write(
+          'cmp-a.ts',
+          `
+          import { Component } from '@angular/core';
+          @Component({ selector: 'cmp-a', template: 'CmpA!' })
+          export class CmpA {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { CmpA } from './cmp-a';
+          import { PipeB } from './pipe-b';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              blockA: [CmpA],
+              blockB: [PipeB],
+            },
+            template: \`
+              @defer (name blockA) {
+                <cmp-a />
+                {{ 'hello' | pipeb }}
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          "Pipe 'pipeb' was imported via `@Component.deferredImports` under block 'blockB', but is used in a `@defer` block configured for 'blockA'",
+        );
+      });
+
+      it('should pass type-checking when multiple defer blocks use distinct pipes', () => {
+        env.write(
+          'pipes.ts',
+          `
+          import { Pipe, PipeTransform } from '@angular/core';
+          @Pipe({ name: 'pipea' })
+          export class PipeA implements PipeTransform {
+            transform(val: string) { return val; }
+          }
+          @Pipe({ name: 'pipeb' })
+          export class PipeB implements PipeTransform {
+            transform(val: string) { return val; }
+          }
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { PipeA, PipeB } from './pipes';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              blockA: [PipeA],
+              blockB: [PipeB],
+            },
+            template: \`
+              @defer (name blockA) {
+                {{ 'hello' | pipea }}
+              }
+              @defer (name blockB) {
+                {{ 'world' | pipeb }}
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should report an error when a pipe declared in a keyed block is used in an unnamed defer block', () => {
+        env.write(
+          'pipe-a.ts',
+          `
+          import { Pipe, PipeTransform } from '@angular/core';
+          @Pipe({ name: 'pipea' })
+          export class PipeA implements PipeTransform {
+            transform(val: string) { return val; }
+          }
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { PipeA } from './pipe-a';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              blockA: [PipeA],
+            },
+            template: \`
+              @defer {
+                {{ 'hello' | pipea }}
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(`@defer block must specify a 'name' parameter`);
+      });
+
+      it('should report an error when a structural directive from deferredImports is used in an unassociated defer block', () => {
+        env.write(
+          'dirs.ts',
+          `
+          import { Directive, TemplateRef, ViewContainerRef } from '@angular/core';
+          @Directive({ selector: '[dirA]' })
+          export class DirA {
+            constructor(tr: TemplateRef<any>, vcr: ViewContainerRef) {}
+          }
+          @Directive({ selector: '[dirB]' })
+          export class DirB {
+            constructor(tr: TemplateRef<any>, vcr: ViewContainerRef) {}
+          }
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { DirA, DirB } from './dirs';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              blockA: [DirA],
+              blockB: [DirB],
+            },
+            template: \`
+              @defer (name blockA) {
+                <div *dirB></div>
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          "Directive 'DirB' (used on element 'div') was imported via `@Component.deferredImports` under block 'blockB', but is used in a `@defer` block configured for 'blockA'",
+        );
+      });
+
+      it('should pass type-checking when a structural directive from deferredImports is used in its declared defer block', () => {
+        env.write(
+          'dir-a.ts',
+          `
+          import { Directive, TemplateRef, ViewContainerRef } from '@angular/core';
+          @Directive({ selector: '[dirA]' })
+          export class DirA {
+            constructor(tr: TemplateRef<any>, vcr: ViewContainerRef) {}
+          }
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { DirA } from './dir-a';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              blockA: [DirA],
+            },
+            template: \`
+              @defer (name blockA) {
+                <div *dirA></div>
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should report separate diagnostics for multiple deferred directives on the same element', () => {
+        env.write(
+          'dirs.ts',
+          `
+          import { Directive } from '@angular/core';
+          @Directive({ selector: '[dirA]' })
+          export class DirA {}
+          @Directive({ selector: '[dirB]' })
+          export class DirB {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { DirA, DirB } from './dirs';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              blockA: [DirA],
+              blockB: [DirB],
+              blockC: [],
+            },
+            template: \`
+              @defer (name blockC) {
+                <div dirA dirB></div>
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toContain(
+          "Directive 'DirA' (used on element 'div') was imported via `@Component.deferredImports` under block 'blockA', but is used in a `@defer` block configured for 'blockC'",
+        );
+        expect(diags[1].messageText).toContain(
+          "Directive 'DirB' (used on element 'div') was imported via `@Component.deferredImports` under block 'blockB', but is used in a `@defer` block configured for 'blockC'",
         );
       });
     });

@@ -104,17 +104,35 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
       }
 
       if (clazzMeta.deferredImports !== null) {
+        const refToBlocks = new Map<ClassDeclaration, Set<string>>();
+        if (clazzMeta.deferredImportsByBlock != null) {
+          for (const [blockName, refs] of clazzMeta.deferredImportsByBlock) {
+            for (const ref of refs) {
+              if (!refToBlocks.has(ref.node)) {
+                refToBlocks.set(ref.node, new Set());
+              }
+              refToBlocks.get(ref.node)!.add(blockName);
+            }
+          }
+        }
+
         for (const ref of clazzMeta.deferredImports) {
+          const deferredBlocks = refToBlocks.get(ref.node) ?? null;
           const dirMeta = this.metaReader.getDirectiveMetadata(ref);
           if (dirMeta !== null) {
-            deferredDependencies.add({...dirMeta, ref, isExplicitlyDeferred: true});
+            deferredDependencies.add({...dirMeta, ref, isExplicitlyDeferred: true, deferredBlocks});
             isPoisoned = isPoisoned || dirMeta.isPoisoned || !dirMeta.isStandalone;
             continue;
           }
 
           const pipeMeta = this.metaReader.getPipeMetadata(ref);
           if (pipeMeta !== null) {
-            deferredDependencies.add({...pipeMeta, ref, isExplicitlyDeferred: true});
+            deferredDependencies.add({
+              ...pipeMeta,
+              ref,
+              isExplicitlyDeferred: true,
+              deferredBlocks,
+            });
             isPoisoned = isPoisoned || !pipeMeta.isStandalone;
             continue;
           }

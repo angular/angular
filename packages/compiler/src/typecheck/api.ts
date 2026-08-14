@@ -79,6 +79,7 @@ export interface TcbPipeMetadata {
   name: string;
   ref: TcbReferenceMetadata;
   isExplicitlyDeferred: boolean;
+  deferredBlocks?: Set<string> | null;
 }
 
 /**
@@ -109,6 +110,7 @@ export interface TcbDirectiveMetadata {
   isStructural: boolean;
   isStandalone: boolean;
   isExplicitlyDeferred: boolean;
+  deferredBlocks?: Set<string> | null;
   preserveWhitespaces: boolean;
   exportAs: string[] | null;
   matchSource: MatchSource;

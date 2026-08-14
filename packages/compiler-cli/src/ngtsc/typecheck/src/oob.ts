@@ -139,17 +139,30 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     this.recordedPipes.add(ast);
   }
 
-  deferredPipeUsedEagerly(id: TypeCheckId, ast: BindingPipe): void {
+  deferredPipeUsedEagerly(
+    id: TypeCheckId,
+    ast: BindingPipe,
+    currentBlockName: string | null,
+    declaredBlocks: string[] | null,
+  ): void {
     if (this.recordedPipes.has(ast)) {
       return;
     }
 
     const mapping = this.resolver.getTemplateSourceMapping(id);
-    const errorMsg =
-      `Pipe '${ast.name}' was imported  via \`@Component.deferredImports\`, ` +
-      `but was used outside of a \`@defer\` block in a template. To fix this, either ` +
-      `use the '${ast.name}' pipe inside of a \`@defer\` block or import this dependency ` +
-      `using the \`@Component.imports\` field.`;
+    let errorMsg: string;
+    if (currentBlockName !== null && declaredBlocks !== null && declaredBlocks.length > 0) {
+      errorMsg =
+        `Pipe '${ast.name}' was imported via \`@Component.deferredImports\` under block '${declaredBlocks.join(', ')}', ` +
+        `but is used in a \`@defer\` block configured for '${currentBlockName}'. ` +
+        `To fix this, add '${ast.name}' to 'deferredImports.${currentBlockName}'.`;
+    } else {
+      errorMsg =
+        `Pipe '${ast.name}' was imported via \`@Component.deferredImports\`, ` +
+        `but was used outside of a \`@defer\` block in a template. To fix this, either ` +
+        `use the '${ast.name}' pipe inside of a \`@defer\` block or import this dependency ` +
+        `using the \`@Component.imports\` field.`;
+    }
 
     const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, ast.nameSpan);
     if (sourceSpan === null) {
@@ -170,21 +183,41 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     this.recordedPipes.add(ast);
   }
 
-  deferredComponentUsedEagerly(id: TypeCheckId, element: TmplAstElement): void {
+  deferredComponentUsedEagerly(
+    id: TypeCheckId,
+    element: TmplAstElement | TmplAstTemplate,
+    dirMeta: TcbDirectiveMetadata,
+    currentBlockName: string | null,
+    declaredBlocks: string[] | null,
+  ): void {
     const mapping = this.resolver.getTemplateSourceMapping(id);
-    const errorMsg =
-      `Element '${element.name}' contains a component or a directive that ` +
-      `was imported  via \`@Component.deferredImports\`, but the element itself is located ` +
-      `outside of a \`@defer\` block in a template. To fix this, either ` +
-      `use the '${element.name}' element inside of a \`@defer\` block or ` +
-      `import referenced component/directive dependency using the \`@Component.imports\` field.`;
+    const elementName =
+      element instanceof TmplAstElement ? element.name : (element.tagName ?? 'ng-template');
+    const kind = dirMeta.isComponent ? 'Component' : 'Directive';
+    const usage = dirMeta.isComponent
+      ? `used as element '${elementName}'`
+      : `used on element '${elementName}'`;
+    let errorMsg: string;
+    if (currentBlockName !== null && declaredBlocks !== null && declaredBlocks.length > 0) {
+      errorMsg =
+        `${kind} '${dirMeta.name}' (${usage}) was imported via \`@Component.deferredImports\` ` +
+        `under block '${declaredBlocks.join(', ')}', but is used in a \`@defer\` block configured for '${currentBlockName}'. ` +
+        `To fix this, add '${dirMeta.name}' to 'deferredImports.${currentBlockName}'.`;
+    } else {
+      errorMsg =
+        `${kind} '${dirMeta.name}' (${usage}) was imported via \`@Component.deferredImports\`, ` +
+        `but was used outside of a \`@defer\` block in a template. To fix this, either ` +
+        `use the '${elementName}' element inside of a \`@defer\` block or ` +
+        `import '${dirMeta.name}' using the \`@Component.imports\` field.`;
+    }
 
-    const {start, end} = element.startSourceSpan;
+    const startSourceSpan = element.startSourceSpan ?? element.sourceSpan;
+    const {start, end} = startSourceSpan;
     const absoluteSourceSpan = new AbsoluteSourceSpan(start.offset, end.offset);
     const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, absoluteSourceSpan);
     if (sourceSpan === null) {
       throw new Error(
-        `Assertion failure: no SourceLocation found for usage of pipe '${element.name}'.`,
+        `Assertion failure: no SourceLocation found for usage of ${kind.toLowerCase()} '${dirMeta.name}'.`,
       );
     }
     this._diagnostics.push(
