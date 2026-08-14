@@ -1,8 +1,12 @@
-import {browser, element, by, protractor, ElementFinder, ElementArrayFinder} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 // THESE TESTS ARE INCOMPLETE
 describe('Form Validation Tests', () => {
-  beforeAll(() => browser.get(''));
+  let driver: webdriver.WebDriver;
+
+  beforeAll(async () => {
+    await driver.get('');
+  });
 
   describe('Template-driven form', () => {
     beforeAll(() => {
@@ -25,222 +29,221 @@ describe('Form Validation Tests', () => {
     asyncValidationTests();
     crossValidationTests();
   });
-});
 
-//////////
+  const testName = 'Test Name';
 
-const testName = 'Test Name';
-
-let page: {
-  section: ElementFinder;
-  form: ElementFinder;
-  title: ElementFinder;
-  nameInput: ElementFinder;
-  roleInput: ElementFinder;
-  skillSelect: ElementFinder;
-  skillOption: ElementFinder;
-  errorMessages: ElementArrayFinder;
-  actorFormButtons: ElementArrayFinder;
-  actorSubmitted: ElementFinder;
-  roleErrors: ElementFinder;
-  crossValidationErrorMessage: ElementFinder;
-};
-
-function getPage(sectionTag: string) {
-  const section = element(by.css(sectionTag));
-  const buttons = section.all(by.css('button'));
-
-  page = {
-    section,
-    form: section.element(by.css('form')),
-    title: section.element(by.css('h2')),
-    nameInput: section.element(by.css('#name')),
-    roleInput: section.element(by.css('#role')),
-    skillSelect: section.element(by.css('#skill')),
-    skillOption: section.element(by.css('#skill option')),
-    errorMessages: section.all(by.css('div.alert')),
-    actorFormButtons: buttons,
-    actorSubmitted: section.element(by.css('.submitted-message')),
-    roleErrors: section.element(by.css('.role-errors')),
-    crossValidationErrorMessage: section.element(by.css('.cross-validation-error-message')),
+  let page: {
+    sectionTag: string;
+    section: () => webdriver.WebElement;
+    form: () => webdriver.WebElement;
+    title: () => webdriver.WebElement;
+    nameInput: () => webdriver.WebElement;
+    roleInput: () => webdriver.WebElement;
+    skillSelect: () => webdriver.WebElement;
+    skillOption: () => webdriver.WebElement;
+    errorMessages: () => Promise<webdriver.WebElement[]>;
+    actorFormButtons: () => Promise<webdriver.WebElement[]>;
+    actorSubmitted: () => webdriver.WebElement;
+    roleErrors: () => webdriver.WebElement;
+    crossValidationErrorMessage: () => webdriver.WebElement;
   };
-}
 
-function tests(title: string) {
-  it('should display correct title', async () => {
-    expect(await page.title.getText()).toContain(title);
-  });
+  function getPage(sectionTag: string) {
+    const sec = () => driver.findElement(webdriver.By.css(sectionTag));
 
-  it('should not display submitted message before submit', async () => {
-    expect(await page.actorSubmitted.isElementPresent(by.css('p'))).toBe(false);
-  });
+    page = {
+      sectionTag,
+      section: sec,
+      form: () => sec().findElement(webdriver.By.css('form')),
+      title: () => sec().findElement(webdriver.By.css('h2')),
+      nameInput: () => sec().findElement(webdriver.By.css('#name')),
+      roleInput: () => sec().findElement(webdriver.By.css('#role')),
+      skillSelect: () => sec().findElement(webdriver.By.css('#skill')),
+      skillOption: () => sec().findElement(webdriver.By.css('#skill option')),
+      errorMessages: () => sec().findElements(webdriver.By.css('div.alert')),
+      actorFormButtons: () => sec().findElements(webdriver.By.css('button')),
+      actorSubmitted: () => sec().findElement(webdriver.By.css('.submitted-message')),
+      roleErrors: () => sec().findElement(webdriver.By.css('.role-errors')),
+      crossValidationErrorMessage: () =>
+        sec().findElement(webdriver.By.css('.cross-validation-error-message')),
+    };
+  }
 
-  it('should have form buttons', async () => {
-    expect(await page.actorFormButtons.count()).toEqual(2);
-  });
+  function tests(title: string) {
+    it('should display correct title', async () => {
+      expect(await page.title().getText()).toContain(title);
+    });
 
-  it('should have error at start', async () => {
-    await expectFormIsInvalid();
-  });
+    it('should not display submitted message before submit', async () => {
+      const p = await page.actorSubmitted().findElements(webdriver.By.css('p'));
+      expect(p.length).toBe(0);
+    });
 
-  // it('showForm', () => {
-  //   page.form.getInnerHtml().then(html => console.log(html));
-  // });
+    it('should have form buttons', async () => {
+      expect((await page.actorFormButtons()).length).toEqual(2);
+    });
 
-  it('should have disabled submit button', async () => {
-    expect(await page.actorFormButtons.get(0).isEnabled()).toBe(false);
-  });
+    it('should have error at start', async () => {
+      await expectFormIsInvalid();
+    });
 
-  it('resetting name to valid name should clear errors', async () => {
-    const ele = page.nameInput;
-    expect(await ele.isPresent()).toBe(true, 'nameInput should exist');
-    await ele.clear();
-    await ele.sendKeys(testName);
-    await expectFormIsValid();
-  });
+    it('should have disabled submit button', async () => {
+      expect(await (await page.actorFormButtons())[0].isEnabled()).toBe(false);
+    });
 
-  it('should produce "required" error after clearing name', async () => {
-    await page.nameInput.clear();
-    // await page.roleInput.click(); // to blur ... didn't work
-    await page.nameInput.sendKeys('x', protractor.Key.BACK_SPACE); // ugh!
-    expect(await page.form.getAttribute('class')).toMatch('ng-invalid');
-    expect(await page.errorMessages.get(0).getText()).toContain('required');
-  });
+    it('resetting name to valid name should clear errors', async () => {
+      const ele = page.nameInput();
+      expect(await ele.isDisplayed()).toBe(true, 'nameInput should exist');
+      await ele.clear();
+      await ele.sendKeys(testName);
+      await expectFormIsValid();
+    });
 
-  it('should produce "at least 4 characters" error when name="x"', async () => {
-    await page.nameInput.clear();
-    await page.nameInput.sendKeys('x'); // too short
-    await expectFormIsInvalid();
-    expect(await page.errorMessages.get(0).getText()).toContain('at least 4 characters');
-  });
+    it('should produce "required" error after clearing name', async () => {
+      await page.nameInput().clear();
+      await page.nameInput().sendKeys('x', webdriver.Key.BACK_SPACE);
+      expect(await page.form().getAttribute('class')).toMatch('ng-invalid');
+      expect(await (await page.errorMessages())[0].getText()).toContain('required');
+    });
 
-  it('resetting name to valid name again should clear errors', async () => {
-    await page.nameInput.sendKeys(testName);
-    await expectFormIsValid();
-  });
+    it('should produce "at least 4 characters" error when name="x"', async () => {
+      await page.nameInput().clear();
+      await page.nameInput().sendKeys('x');
+      await expectFormIsInvalid();
+      expect(await (await page.errorMessages())[0].getText()).toContain('at least 4 characters');
+    });
 
-  it('should have enabled submit button', async () => {
-    const submitBtn = page.actorFormButtons.get(0);
-    expect(await submitBtn.isEnabled()).toBe(true);
-  });
+    it('resetting name to valid name again should clear errors', async () => {
+      await page.nameInput().sendKeys(testName);
+      await expectFormIsValid();
+    });
 
-  it('should hide form after submit', async () => {
-    await page.actorFormButtons.get(0).click();
-    expect(await page.actorFormButtons.get(0).isDisplayed()).toBe(false);
-  });
+    it('should have enabled submit button', async () => {
+      const submitBtn = (await page.actorFormButtons())[0];
+      expect(await submitBtn.isEnabled()).toBe(true);
+    });
 
-  it('submitted form should be displayed', async () => {
-    expect(await page.actorSubmitted.isElementPresent(by.css('p'))).toBe(true);
-  });
+    it('should hide form after submit', async () => {
+      await (await page.actorFormButtons())[0].click();
+      const forms = await driver.findElements(webdriver.By.css(`${page.sectionTag} form`));
+      expect(forms.length === 0 || !(await forms[0].isDisplayed())).toBe(true);
+    });
 
-  it('submitted form should have new actor name', async () => {
-    expect(await page.actorSubmitted.getText()).toContain(testName);
-  });
+    it('submitted form should be displayed', async () => {
+      const p = await page.actorSubmitted().findElements(webdriver.By.css('p'));
+      expect(p.length).toBeGreaterThan(0);
+    });
 
-  it('clicking edit button should reveal form again', async () => {
-    const newFormBtn = page.actorSubmitted.element(by.css('button'));
-    await newFormBtn.click();
-    expect(await page.actorSubmitted.isElementPresent(by.css('p'))).toBe(
-      false,
-      'submitted hidden again',
-    );
-    expect(await page.title.isDisplayed()).toBe(true, 'can see form title');
-  });
-}
+    it('submitted form should have new actor name', async () => {
+      expect(await page.actorSubmitted().getText()).toContain(testName);
+    });
 
-async function expectFormIsValid() {
-  expect(await page.form.getAttribute('class')).toMatch('ng-valid');
-}
+    it('clicking edit button should reveal form again', async () => {
+      const newFormBtn = page.actorSubmitted().findElement(webdriver.By.css('button'));
+      await newFormBtn.click();
+      const p = await page.actorSubmitted().findElements(webdriver.By.css('p'));
+      expect(p.length).toBe(0, 'submitted hidden again');
+      expect(await page.title().isDisplayed()).toBe(true, 'can see form title');
+    });
+  }
 
-async function expectFormIsInvalid() {
-  expect(await page.form.getAttribute('class')).toMatch('ng-invalid');
-}
+  async function expectFormIsValid() {
+    expect(await page.form().getAttribute('class')).toMatch('ng-valid');
+  }
 
-async function triggerRoleValidation() {
-  // role has updateOn set to 'blur', click outside of the input to trigger the blur event
-  await element(by.css('app-root')).click();
-}
+  async function expectFormIsInvalid() {
+    expect(await page.form().getAttribute('class')).toMatch('ng-invalid');
+  }
 
-async function waitForAlterEgoValidation() {
-  // role async validation will be performed in 400ms
-  await browser.sleep(400);
-}
+  async function triggerRoleValidation() {
+    await driver.findElement(webdriver.By.css('app-root')).click();
+  }
 
-function bobTests() {
-  const emsg = 'Name cannot be Bob.';
+  async function waitForAlterEgoValidation() {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  }
 
-  it('should produce "no bob" error after setting name to "Bobby"', async () => {
-    // Re-populate select element
-    await page.skillSelect.click();
-    await page.skillOption.click();
+  function bobTests() {
+    const emsg = 'Name cannot be Bob.';
 
-    await page.nameInput.clear();
-    await page.nameInput.sendKeys('Bobby');
-    await expectFormIsInvalid();
-    expect(await page.errorMessages.get(0).getText()).toBe(emsg);
-  });
+    it('should produce "no bob" error after setting name to "Bobby"', async () => {
+      await page.skillSelect().click();
+      await page.skillOption().click();
 
-  it('should be ok again with valid name', async () => {
-    await page.nameInput.clear();
-    await page.nameInput.sendKeys(testName);
-    await expectFormIsValid();
-  });
-}
+      await page.nameInput().clear();
+      await page.nameInput().sendKeys('Bobby');
+      await expectFormIsInvalid();
+      expect(await (await page.errorMessages())[0].getText()).toBe(emsg);
+    });
 
-function asyncValidationTests() {
-  const emsg = 'Role is already taken.';
+    it('should be ok again with valid name', async () => {
+      await page.nameInput().clear();
+      await page.nameInput().sendKeys(testName);
+      await expectFormIsValid();
+    });
+  }
 
-  it(`should produce "${emsg}" error after setting role to Eric`, async () => {
-    await page.roleInput.clear();
-    await page.roleInput.sendKeys('Eric');
+  function asyncValidationTests() {
+    const emsg = 'Role is already taken.';
 
-    await triggerRoleValidation();
-    await waitForAlterEgoValidation();
+    it(`should produce "${emsg}" error after setting role to Eric`, async () => {
+      await page.roleInput().clear();
+      await page.roleInput().sendKeys('Eric');
 
-    await expectFormIsInvalid();
-    expect(await page.roleErrors.getText()).toBe(emsg);
-  });
+      await triggerRoleValidation();
+      await waitForAlterEgoValidation();
 
-  it('should be ok again with different values', async () => {
-    await page.roleInput.clear();
-    await page.roleInput.sendKeys('John');
+      await expectFormIsInvalid();
+      expect(await page.roleErrors().getText()).toBe(emsg);
+    });
 
-    await triggerRoleValidation();
-    await waitForAlterEgoValidation();
+    it('should be ok again with different values', async () => {
+      await page.roleInput().clear();
+      await page.roleInput().sendKeys('John');
 
-    await expectFormIsValid();
-    expect(await page.roleErrors.isPresent()).toBe(false);
-  });
-}
+      await triggerRoleValidation();
+      await waitForAlterEgoValidation();
 
-function crossValidationTests() {
-  const emsg = 'Name cannot match role.';
+      await expectFormIsValid();
+      const roleErrors = await driver.findElements(
+        webdriver.By.css(`${page.sectionTag} .role-errors`),
+      );
+      expect(roleErrors.length).toBe(0);
+    });
+  }
 
-  it(`should produce "${emsg}" error after setting name and role to the same value`, async () => {
-    await page.nameInput.clear();
-    await page.nameInput.sendKeys('Romeo');
+  function crossValidationTests() {
+    const emsg = 'Name cannot match role.';
 
-    await page.roleInput.clear();
-    await page.roleInput.sendKeys('Romeo');
+    it(`should produce "${emsg}" error after setting name and role to the same value`, async () => {
+      await page.nameInput().clear();
+      await page.nameInput().sendKeys('Romeo');
 
-    await triggerRoleValidation();
-    await waitForAlterEgoValidation();
+      await page.roleInput().clear();
+      await page.roleInput().sendKeys('Romeo');
 
-    await expectFormIsInvalid();
-    expect(await page.crossValidationErrorMessage.getText()).toBe(emsg);
-  });
+      await triggerRoleValidation();
+      await waitForAlterEgoValidation();
 
-  it('should be ok again with different values', async () => {
-    await page.nameInput.clear();
-    await page.nameInput.sendKeys('Romeo');
+      await expectFormIsInvalid();
+      expect(await page.crossValidationErrorMessage().getText()).toBe(emsg);
+    });
 
-    await page.roleInput.clear();
-    await page.roleInput.sendKeys('Juliet');
+    it('should be ok again with different values', async () => {
+      await page.nameInput().clear();
+      await page.nameInput().sendKeys('Romeo');
 
-    await triggerRoleValidation();
-    await waitForAlterEgoValidation();
+      await page.roleInput().clear();
+      await page.roleInput().sendKeys('Juliet');
 
-    await expectFormIsValid();
-    expect(await page.crossValidationErrorMessage.isPresent()).toBe(false);
-  });
-}
+      await triggerRoleValidation();
+      await waitForAlterEgoValidation();
+
+      await expectFormIsValid();
+      const crossErrors = await driver.findElements(
+        webdriver.By.css(`${page.sectionTag} .cross-validation-error-message`),
+      );
+      expect(crossErrors.length).toBe(0);
+    });
+  }
+});

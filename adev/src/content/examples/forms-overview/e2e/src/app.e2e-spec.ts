@@ -1,14 +1,15 @@
-import {AppPage} from './app.po';
+import * as webdriver from 'selenium-webdriver';
 
 describe('forms-overview App', () => {
-  let page: AppPage;
+  let driver: webdriver.WebDriver;
 
-  beforeEach(() => {
-    page = new AppPage();
+  beforeEach(async () => {
+    await driver.get('');
   });
 
   it('should display a title', async () => {
-    await page.navigateTo();
-    expect(await page.getTitleText()).toEqual('Forms Overview');
+    expect(await driver.findElement(webdriver.By.css('h1, h2')).getText()).toEqual(
+      'Forms Overview',
+    );
   });
 });

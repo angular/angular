@@ -1,25 +1,26 @@
-import {by} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 import {locate} from './util';
 
-export function getPage() {
-  return by.css('app-toggle-animations-child-page');
+export function getPage(driver: webdriver.WebDriver) {
+  return driver.findElement(webdriver.By.css('app-toggle-animations-child-page'));
 }
 
-export function getComponent() {
-  return by.css('app-open-close-toggle');
+export function getComponent(driver: webdriver.WebDriver) {
+  return driver.findElement(webdriver.By.css('app-open-close-toggle'));
 }
 
-export function getToggleButton() {
-  const toggleButton = () => by.buttonText('Toggle Open/Closed');
-  return locate(getComponent(), toggleButton());
+export async function getToggleButton(driver: webdriver.WebDriver) {
+  const comp = await getComponent(driver);
+  return comp.findElement(webdriver.By.xpath('.//button[normalize-space()="Toggle Open/Closed"]'));
 }
 
-export function getToggleAnimationsButton() {
-  const toggleAnimationsButton = () => by.buttonText('Toggle Animations');
-  return locate(getComponent(), toggleAnimationsButton());
+export async function getToggleAnimationsButton(driver: webdriver.WebDriver) {
+  const comp = await getComponent(driver);
+  return comp.findElement(webdriver.By.xpath('.//button[normalize-space()="Toggle Animations"]'));
 }
 
-export function getComponentContainer() {
-  const findContainer = () => by.css('div');
-  return locate(getComponent()).all(findContainer()).get(0);
+export async function getComponentContainer(driver: webdriver.WebDriver) {
+  const comp = await getComponent(driver);
+  const divs = await comp.findElements(webdriver.By.css('div'));
+  return divs[0];
 }

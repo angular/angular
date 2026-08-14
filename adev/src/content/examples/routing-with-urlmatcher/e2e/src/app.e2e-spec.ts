@@ -1,9 +1,15 @@
-import {browser, element, by} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 describe('Routing with Custom Matching', () => {
-  beforeAll(() => browser.get(''));
+  let driver: webdriver.WebDriver;
 
-  it('should display Routing with Custom Matching ', async () => {
-    expect(await element(by.css('h2')).getText()).toEqual('Routing with Custom Matching');
+  beforeAll(async () => {
+    await driver.get('');
+  });
+
+  it('should display Routing with Custom Matching', async () => {
+    expect(await (await driver.findElement(webdriver.By.css('h2'))).getText()).toEqual(
+      'Routing with Custom Matching',
+    );
   });
 });
