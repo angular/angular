@@ -1,27 +1,37 @@
-import {browser, element, by} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 describe('Attribute directives', () => {
+  let driver: webdriver.WebDriver;
   const title = 'My First Attribute Directive';
 
-  beforeAll(() => browser.get(''));
+  beforeAll(async () => {
+    await driver.get('');
+  });
 
   it(`should display correct title: ${title}`, async () => {
-    expect(await element(by.css('h1')).getText()).toEqual(title);
+    expect(await driver.findElement(webdriver.By.css('h1')).getText()).toEqual(title);
   });
 
   it('should be able to select green highlight', async () => {
-    const highlightedEle = element(by.cssContainingText('p', 'Highlight me!'));
+    const paragraphs = await driver.findElements(webdriver.By.css('p'));
+    let highlightedEle: webdriver.WebElement | null = null;
+    for (const p of paragraphs) {
+      if ((await p.getText()).includes('Highlight me!')) {
+        highlightedEle = p;
+        break;
+      }
+    }
     const lightGreen = 'rgba(144, 238, 144, 1)';
-    const getBgColor = () => highlightedEle.getCssValue('background-color');
+    const getBgColor = () => highlightedEle!.getCssValue('background-color');
 
-    expect(await highlightedEle.getCssValue('background-color')).not.toEqual(lightGreen);
+    expect(await getBgColor()).not.toEqual(lightGreen);
 
-    const greenRb = element.all(by.css('input')).get(0);
+    const greenRb = (await driver.findElements(webdriver.By.css('input')))[0];
     await greenRb.click();
-    await browser.actions().mouseMove(highlightedEle).perform();
+    await driver.actions().move({origin: highlightedEle!}).perform();
 
     // Wait for up to 4s for the background color to be updated,
     // to account for slow environments (e.g. CI).
-    await browser.wait(async () => (await getBgColor()) === lightGreen, 4000);
+    await driver.wait(async () => (await getBgColor()) === lightGreen, 4000);
   });
 });

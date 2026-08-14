@@ -1,20 +1,19 @@
-import {by} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 import {locate} from './util';
 
-export function getPage() {
-  return by.css('app-status-slider-page');
+export function getPage(driver: webdriver.WebDriver) {
+  return driver.findElement(webdriver.By.css('app-status-slider-page'));
 }
 
-export function getComponent() {
-  return by.css('app-status-slider');
+export function getComponent(driver: webdriver.WebDriver) {
+  return driver.findElement(webdriver.By.css('app-status-slider'));
 }
 
-export function getToggleButton() {
-  const toggleButton = () => by.buttonText('Toggle Status');
-  return locate(getComponent(), toggleButton());
+export async function getToggleButton(driver: webdriver.WebDriver) {
+  const comp = await getComponent(driver);
+  return comp.findElement(webdriver.By.xpath('.//button[normalize-space()="Toggle Status"]'));
 }
 
-export function getComponentContainer() {
-  const findContainer = () => by.css('div');
-  return locate(getComponent(), findContainer());
+export async function getComponentContainer(driver: webdriver.WebDriver) {
+  return locate(driver, webdriver.By.css('app-status-slider'), webdriver.By.css('div'));
 }

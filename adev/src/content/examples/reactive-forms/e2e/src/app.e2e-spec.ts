@@ -1,52 +1,73 @@
-import {browser, element, by} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 describe('Reactive forms', () => {
-  const nameEditor = element(by.css('app-name-editor'));
-  const profileEditor = element(by.css('app-profile-editor'));
-  const nameEditorButton = element(by.cssContainingText('app-root > nav > button', 'Name Editor'));
-  const profileEditorButton = element(
-    by.cssContainingText('app-root > nav > button', 'Profile Editor'),
-  );
+  let driver: webdriver.WebDriver;
 
-  beforeAll(() => browser.get(''));
+  const getNameEditor = () => driver.findElement(webdriver.By.css('app-name-editor'));
+  const getProfileEditor = () => driver.findElement(webdriver.By.css('app-profile-editor'));
+
+  const findNavButton = async (text: string) => {
+    const buttons = await driver.findElements(webdriver.By.css('app-root > nav > button'));
+    for (const b of buttons) {
+      if ((await b.getText()).includes(text)) {
+        return b;
+      }
+    }
+    throw new Error(`Nav button "${text}" not found`);
+  };
+
+  beforeAll(async () => {
+    await driver.get('');
+  });
 
   describe('Name Editor', () => {
-    const nameInput = nameEditor.element(by.css('input'));
-    const updateButton = nameEditor.element(by.buttonText('Update Name'));
     const nameText = 'John Smith';
 
     beforeAll(async () => {
-      await nameEditorButton.click();
+      await (await findNavButton('Name Editor')).click();
     });
 
     beforeEach(async () => {
+      const nameInput = await (await getNameEditor()).findElement(webdriver.By.css('input'));
       await nameInput.clear();
     });
 
     it('should update the name value when the name control is updated', async () => {
+      const nameInput = await (await getNameEditor()).findElement(webdriver.By.css('input'));
       await nameInput.sendKeys(nameText);
 
       const value = await nameInput.getAttribute('value');
-
       expect(value).toBe(nameText);
     });
 
     it('should update the name control when the Update Name button is clicked', async () => {
+      const nameInput = await (await getNameEditor()).findElement(webdriver.By.css('input'));
+      const updateButton = await (
+        await getNameEditor()
+      ).findElement(webdriver.By.xpath('.//button[normalize-space()="Update Name"]'));
+
       await nameInput.sendKeys(nameText);
       const value1 = await nameInput.getAttribute('value');
-
       expect(value1).toBe(nameText);
+
       await updateButton.click();
-
       const value2 = await nameInput.getAttribute('value');
-
       expect(value2).toBe('Nancy');
     });
 
     it('should update the displayed control value when the name control updated', async () => {
+      const nameInput = await (await getNameEditor()).findElement(webdriver.By.css('input'));
       await nameInput.sendKeys(nameText);
-      const valueElement = nameEditor.element(by.cssContainingText('p', 'Value:'));
-      const nameValueElement = await valueElement.getText();
+
+      const paragraphs = await (await getNameEditor()).findElements(webdriver.By.css('p'));
+      let valueElement: webdriver.WebElement | null = null;
+      for (const p of paragraphs) {
+        if ((await p.getText()).includes('Value:')) {
+          valueElement = p;
+          break;
+        }
+      }
+      const nameValueElement = await valueElement!.getText();
       const nameValue = nameValueElement.toString().replace('Value: ', '');
 
       expect(nameValue).toBe(nameText);
@@ -54,10 +75,6 @@ describe('Reactive forms', () => {
   });
 
   describe('Profile Editor', () => {
-    const firstNameInput = getInput('firstName');
-    const streetInput = getInput('street');
-    const addAliasButton = element(by.buttonText('+ Add another alias'));
-    const updateButton = profileEditor.element(by.buttonText('Update Profile'));
     const profile: Record<string, string | number> = {
       firstName: 'John',
       lastName: 'Smith',
@@ -68,26 +85,33 @@ describe('Reactive forms', () => {
     };
 
     beforeAll(async () => {
-      await profileEditorButton.click();
+      await (await findNavButton('Profile Editor')).click();
     });
 
     beforeEach(async () => {
-      await browser.get('');
-      await profileEditorButton.click();
+      await driver.get('');
+      await (await findNavButton('Profile Editor')).click();
     });
 
     it('should be invalid by default', async () => {
-      expect(await profileEditor.getText()).toContain('Form Status: INVALID');
+      expect(await (await getProfileEditor()).getText()).toContain('Form Status: INVALID');
     });
 
     it('should be valid if the First Name is filled in', async () => {
+      const firstNameInput = await getInput('firstName');
       await firstNameInput.clear();
       await firstNameInput.sendKeys('John Smith');
 
-      expect(await profileEditor.getText()).toContain('Form Status: VALID');
+      expect(await (await getProfileEditor()).getText()).toContain('Form Status: VALID');
     });
 
     it('should update the name when the button is clicked', async () => {
+      const firstNameInput = await getInput('firstName');
+      const streetInput = await getInput('street');
+      const updateButton = await (
+        await getProfileEditor()
+      ).findElement(webdriver.By.xpath('.//button[normalize-space()="Update Profile"]'));
+
       await firstNameInput.clear();
       await streetInput.clear();
       await firstNameInput.sendKeys('John');
@@ -107,23 +131,42 @@ describe('Reactive forms', () => {
     });
 
     it('should add an alias field when the Add Alias button is clicked', async () => {
+      const addAliasButton = await driver.findElement(
+        webdriver.By.xpath('.//button[normalize-space()="+ Add another alias"]'),
+      );
       await addAliasButton.click();
 
-      const aliasInputs = profileEditor.all(by.cssContainingText('label', 'Alias'));
+      const labels = await (await getProfileEditor()).findElements(webdriver.By.css('label'));
+      const aliasLabels: webdriver.WebElement[] = [];
+      for (const l of labels) {
+        if ((await l.getText()).includes('Alias')) {
+          aliasLabels.push(l);
+        }
+      }
 
-      expect(await aliasInputs.count()).toBe(2);
+      expect(aliasLabels.length).toBe(2);
     });
 
     it('should update the displayed form value when form inputs are updated', async () => {
       const aliasText = 'Johnny';
-      await Promise.all(
-        Object.keys(profile).map((key) => getInput(key).sendKeys(`${profile[key]}`)),
-      );
+      for (const key of Object.keys(profile)) {
+        await (await getInput(key)).sendKeys(`${profile[key]}`);
+      }
 
-      const aliasInput = profileEditor.all(by.css('#alias-0'));
+      const aliasInput = (
+        await (await getProfileEditor()).findElements(webdriver.By.css('#alias-0'))
+      )[0];
       await aliasInput.sendKeys(aliasText);
-      const formValueElement = profileEditor.all(by.cssContainingText('p', 'Form Value:'));
-      const formValue = await formValueElement.getText();
+
+      const paragraphs = await (await getProfileEditor()).findElements(webdriver.By.css('p'));
+      let formValueElement: webdriver.WebElement | null = null;
+      for (const p of paragraphs) {
+        if ((await p.getText()).includes('Form Value:')) {
+          formValueElement = p;
+          break;
+        }
+      }
+      const formValue = await formValueElement!.getText();
       const formJson = JSON.parse(formValue.toString().replace('Form Value:', ''));
 
       expect(profile['firstName']).toBe(formJson.firstName);
@@ -133,6 +176,6 @@ describe('Reactive forms', () => {
   });
 
   function getInput(key: string) {
-    return element(by.css(`input[formcontrolname=${key}`));
+    return driver.findElement(webdriver.By.css(`input[formcontrolname=${key}]`));
   }
 });

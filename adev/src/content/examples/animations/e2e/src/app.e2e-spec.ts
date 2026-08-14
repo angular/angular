@@ -1,5 +1,4 @@
-import {browser} from 'protractor';
-import {logging} from 'selenium-webdriver';
+import * as webdriver from 'selenium-webdriver';
 import * as openClose from './open-close.po';
 import * as statusSlider from './status-slider.po';
 import * as toggle from './toggle.po';
@@ -11,41 +10,32 @@ import {getLinkById, sleepFor} from './util';
 import {getComponentSection, getToggleButton} from './querying.po';
 
 describe('Animation Tests', () => {
+  let driver: webdriver.WebDriver;
   const routingAnimationDuration = 350;
-
-  const openCloseHref = getLinkById('open-close');
-  const statusSliderHref = getLinkById('status');
-  const toggleHref = getLinkById('toggle');
-  const enterLeaveHref = getLinkById('enter-leave');
-  const autoHref = getLinkById('auto');
-  const filterHref = getLinkById('heroes');
-  const heroGroupsHref = getLinkById('hero-groups');
-  const queryingHref = getLinkById('querying');
 
   const newPageSleepFor = (ms = 0) => sleepFor(ms + routingAnimationDuration);
 
-  beforeAll(() => browser.get(''));
+  beforeAll(async () => {
+    await driver.get('');
+  });
 
   describe('Open/Close Component', () => {
     const closedHeight = '100px';
     const openHeight = '200px';
 
     beforeAll(async () => {
-      await openCloseHref.click();
+      await (await getLinkById(driver, 'open-close')).click();
       await newPageSleepFor(300);
     });
 
     it('should be open', async () => {
-      const toggleButton = openClose.getToggleButton();
-      const container = openClose.getComponentContainer();
+      const toggleButton = await openClose.getToggleButton(driver);
+      const container = await openClose.getComponentContainer(driver);
       let text = await container.getText();
 
       if (text.includes('Closed')) {
         await toggleButton.click();
-        await browser.wait(
-          async () => (await container.getCssValue('height')) === openHeight,
-          2000,
-        );
+        await driver.wait(async () => (await container.getCssValue('height')) === openHeight, 2000);
       }
 
       text = await container.getText();
@@ -56,13 +46,13 @@ describe('Animation Tests', () => {
     });
 
     it('should be closed', async () => {
-      const toggleButton = openClose.getToggleButton();
-      const container = openClose.getComponentContainer();
+      const toggleButton = await openClose.getToggleButton(driver);
+      const container = await openClose.getComponentContainer(driver);
       let text = await container.getText();
 
       if (text.includes('Open')) {
         await toggleButton.click();
-        await browser.wait(
+        await driver.wait(
           async () => (await container.getCssValue('height')) === closedHeight,
           2000,
         );
@@ -76,12 +66,12 @@ describe('Animation Tests', () => {
     });
 
     it('should log animation events', async () => {
-      const toggleButton = openClose.getToggleButton();
-      const loggingCheckbox = openClose.getLoggingCheckbox();
+      const toggleButton = await openClose.getToggleButton(driver);
+      const loggingCheckbox = await openClose.getLoggingCheckbox(driver);
       await loggingCheckbox.click();
       await toggleButton.click();
 
-      const logs = await browser.manage().logs().get(logging.Type.BROWSER);
+      const logs = await driver.manage().logs().get(webdriver.logging.Type.BROWSER);
       const animationMessages = logs.filter(({message}) => message.includes('Animation'));
 
       expect(animationMessages.length).toBeGreaterThan(0);
@@ -93,18 +83,18 @@ describe('Animation Tests', () => {
     const inactiveColor = 'rgba(0, 0, 255, 1)';
 
     beforeAll(async () => {
-      await statusSliderHref.click();
+      await (await getLinkById(driver, 'status')).click();
       await newPageSleepFor(2000);
     });
 
     it('should be inactive with a blue background', async () => {
-      const toggleButton = statusSlider.getToggleButton();
-      const container = statusSlider.getComponentContainer();
+      const toggleButton = await statusSlider.getToggleButton(driver);
+      const container = await statusSlider.getComponentContainer(driver);
       let text = await container.getText();
 
       if (text === 'Active') {
         await toggleButton.click();
-        await browser.wait(
+        await driver.wait(
           async () => (await container.getCssValue('backgroundColor')) === inactiveColor,
           3000,
         );
@@ -118,13 +108,13 @@ describe('Animation Tests', () => {
     });
 
     it('should be active with an orange background', async () => {
-      const toggleButton = statusSlider.getToggleButton();
-      const container = statusSlider.getComponentContainer();
+      const toggleButton = await statusSlider.getToggleButton(driver);
+      const container = await statusSlider.getComponentContainer(driver);
       let text = await container.getText();
 
       if (text === 'Inactive') {
         await toggleButton.click();
-        await browser.wait(
+        await driver.wait(
           async () => (await container.getCssValue('backgroundColor')) === activeColor,
           3000,
         );
@@ -140,16 +130,16 @@ describe('Animation Tests', () => {
 
   describe('Toggle Animations Component', () => {
     beforeAll(async () => {
-      await toggleHref.click();
+      await (await getLinkById(driver, 'toggle')).click();
       await newPageSleepFor();
     });
 
     it('should disabled animations on the child element', async () => {
-      const toggleButton = toggle.getToggleAnimationsButton();
+      const toggleButton = await toggle.getToggleAnimationsButton(driver);
 
       await toggleButton.click();
 
-      const container = toggle.getComponentContainer();
+      const container = await toggle.getComponentContainer(driver);
       const cssClasses = await container.getAttribute('class');
 
       expect(cssClasses).toContain('ng-animate-disabled');
@@ -158,13 +148,13 @@ describe('Animation Tests', () => {
 
   describe('Enter/Leave Component', () => {
     beforeAll(async () => {
-      await enterLeaveHref.click();
+      await (await getLinkById(driver, 'enter-leave')).click();
       await newPageSleepFor(100);
     });
 
     it('should attach a flyInOut trigger to the list of items', async () => {
-      const heroesList = enterLeave.getHeroesList();
-      const hero = heroesList.get(0);
+      const heroesList = await enterLeave.getHeroesList(driver);
+      const hero = heroesList[0];
       const cssClasses = await hero.getAttribute('class');
       const transform = await hero.getCssValue('transform');
 
@@ -173,75 +163,75 @@ describe('Animation Tests', () => {
     });
 
     it('should remove the hero from the list when clicked', async () => {
-      const heroesList = enterLeave.getHeroesList();
-      const total = await heroesList.count();
-      const hero = heroesList.get(0);
+      const heroesList = await enterLeave.getHeroesList(driver);
+      const total = heroesList.length;
+      const hero = heroesList[0];
 
       await hero.click();
-      await browser.wait(async () => (await heroesList.count()) < total, 2000);
+      await driver.wait(async () => (await enterLeave.getHeroesList(driver)).length < total, 2000);
     });
   });
 
   describe('Auto Calculation Component', () => {
     beforeAll(async () => {
-      await autoHref.click();
+      await (await getLinkById(driver, 'auto')).click();
       await newPageSleepFor();
     });
 
     it('should attach a shrinkOut trigger to the list of items', async () => {
-      const heroesList = auto.getHeroesList();
-      const hero = heroesList.get(0);
+      const heroesList = await auto.getHeroesList(driver);
+      const hero = heroesList[0];
       const cssClasses = await hero.getAttribute('class');
 
       expect(cssClasses).toContain('ng-trigger-shrinkOut');
     });
 
     it('should remove the hero from the list when clicked', async () => {
-      const heroesList = auto.getHeroesList();
-      const total = await heroesList.count();
-      const hero = heroesList.get(0);
+      const heroesList = await auto.getHeroesList(driver);
+      const total = heroesList.length;
+      const hero = heroesList[0];
 
       await hero.click();
-      await browser.wait(async () => (await heroesList.count()) < total, 2000);
+      await driver.wait(async () => (await auto.getHeroesList(driver)).length < total, 2000);
     });
   });
 
   describe('Filter/Stagger Component', () => {
     beforeAll(async () => {
-      await filterHref.click();
+      await (await getLinkById(driver, 'heroes')).click();
       await newPageSleepFor();
     });
 
     it('should attach a filterAnimations trigger to the list container', async () => {
-      const heroesList = filterStagger.getComponentContainer();
+      const heroesList = await filterStagger.getComponentContainer(driver);
       const cssClasses = await heroesList.getAttribute('class');
 
       expect(cssClasses).toContain('ng-trigger-filterAnimation');
     });
 
     it('should filter down the list when a search is performed', async () => {
-      const heroesList = filterStagger.getHeroesList();
-      const total = await heroesList.count();
+      const heroesList = await filterStagger.getHeroesList(driver);
+      const total = heroesList.length;
 
-      const input = filterStagger.getInput();
+      const input = await filterStagger.getInput(driver);
       await input.sendKeys('Mag');
 
-      await browser.wait(async () => (await heroesList.count()) === 2, 2000);
+      await driver.wait(async () => (await filterStagger.getHeroesList(driver)).length === 2, 2000);
 
-      const newTotal = await heroesList.count();
+      const newTotal = (await filterStagger.getHeroesList(driver)).length;
       expect(newTotal).toBeLessThan(total);
     });
   });
 
   describe('Hero Groups Component', () => {
     beforeAll(async () => {
-      await heroGroupsHref.click();
+      await (await getLinkById(driver, 'hero-groups')).click();
       await newPageSleepFor(400);
     });
 
     it('should attach a flyInOut trigger to the list of items', async () => {
-      const heroesList = heroGroups.getHeroesList();
-      const hero = heroesList.get(0);
+      const heroesList = await heroGroups.getHeroesList(driver);
+      const hero = heroesList[0];
       const cssClasses = await hero.getAttribute('class');
       const transform = await hero.getCssValue('transform');
       const opacity = await hero.getCssValue('opacity');
@@ -252,12 +242,12 @@ describe('Animation Tests', () => {
     });
 
     it('should remove the hero from the list when clicked', async () => {
-      const heroesList = heroGroups.getHeroesList();
-      const total = await heroesList.count();
-      const hero = heroesList.get(0);
+      const heroesList = await heroGroups.getHeroesList(driver);
+      const total = heroesList.length;
+      const hero = heroesList[0];
 
       await hero.click();
-      await browser.wait(async () => (await heroesList.count()) < total, 2000);
+      await driver.wait(async () => (await heroGroups.getHeroesList(driver)).length < total, 2000);
     });
   });
 
@@ -265,30 +255,32 @@ describe('Animation Tests', () => {
     const queryingAnimationDuration = 2500;
 
     beforeAll(async () => {
-      await queryingHref.click();
+      await (await getLinkById(driver, 'querying')).click();
       await newPageSleepFor(queryingAnimationDuration);
     });
 
     it('should toggle the section', async () => {
-      const toggleButton = getToggleButton();
-      const section = getComponentSection();
+      const toggleButton = await getToggleButton(driver);
+      const section = await getComponentSection(driver);
 
-      expect(await section.isPresent()).toBe(true);
+      expect(await section.isDisplayed()).toBe(true);
 
       // toggling off
       await toggleButton.click();
       await newPageSleepFor(queryingAnimationDuration);
-      expect(await section.isPresent()).toBe(false);
+      const sectionsOff = await driver.findElements(webdriver.By.css('app-querying section'));
+      expect(sectionsOff.length).toBe(0);
 
       // toggling on
       await toggleButton.click();
       await newPageSleepFor(queryingAnimationDuration);
-      expect(await section.isPresent()).toBe(true);
+      const sectionsOn = await driver.findElements(webdriver.By.css('app-querying section'));
+      expect(sectionsOn.length).toBe(1);
       await newPageSleepFor(queryingAnimationDuration);
     });
 
     it(`should disable the button for the animation's duration`, async () => {
-      const toggleButton = getToggleButton();
+      const toggleButton = await getToggleButton(driver);
       expect(await toggleButton.isEnabled()).toBe(true);
 
       // toggling off
