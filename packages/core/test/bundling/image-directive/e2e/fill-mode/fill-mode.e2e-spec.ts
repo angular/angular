@@ -7,7 +7,7 @@
  */
 
 import * as webdriver from 'selenium-webdriver';
-import {collectBrowserLogs, createWebDriver} from '../browser-logs-util';
+import {collectBrowserLogs, createWebDriver, waitForBrowserLogs} from '../browser-logs-util';
 
 describe('NgOptimizedImage directive (fill-mode)', () => {
   let driver: webdriver.WebDriver;
@@ -23,13 +23,16 @@ describe('NgOptimizedImage directive (fill-mode)', () => {
 
   it('should not warn when an image in the fill mode is rendered correctly', async () => {
     await driver.get(`${baseUrl}/e2e/fill-mode-passing`);
+    await new Promise((resolve) => setTimeout(resolve, 600));
     const logs = await collectBrowserLogs(driver, webdriver.logging.Level.WARNING);
     expect(logs.length).toEqual(0);
   });
 
   it('should warn if an image in the fill mode has zero height after rendering', async () => {
     await driver.get(`${baseUrl}/e2e/fill-mode-failing`);
-    const logs = await collectBrowserLogs(driver, webdriver.logging.Level.WARNING);
+    const logs = await waitForBrowserLogs(driver, webdriver.logging.Level.WARNING, 1, 10000, (l) =>
+      l.message.includes('NG02952'),
+    );
 
     expect(logs.length).toEqual(1);
     // Image loading order is not guaranteed, so all logs, rather than single entry

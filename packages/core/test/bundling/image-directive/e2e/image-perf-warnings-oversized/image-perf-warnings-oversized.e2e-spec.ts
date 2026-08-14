@@ -7,7 +7,7 @@
  */
 
 import * as webdriver from 'selenium-webdriver';
-import {collectBrowserLogs, createWebDriver} from '../browser-logs-util';
+import {collectBrowserLogs, createWebDriver, waitForBrowserLogs} from '../browser-logs-util';
 
 describe('Image performance warnings (oversized)', () => {
   let driver: webdriver.WebDriver;
@@ -23,13 +23,12 @@ describe('Image performance warnings (oversized)', () => {
 
   it('should warn if rendered image size is much smaller than intrinsic size', async () => {
     await driver.get(`${baseUrl}/e2e/image-perf-warnings-oversized`);
-    // Wait for load event
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    const logs = await collectBrowserLogs(driver, webdriver.logging.Level.WARNING);
+    const expectedMessageRegex = /has intrinsic file dimensions much larger than/;
+    const logs = await waitForBrowserLogs(driver, webdriver.logging.Level.WARNING, 1, 10000, (l) =>
+      expectedMessageRegex.test(l.message),
+    );
 
     expect(logs.length).toEqual(1);
-
-    const expectedMessageRegex = /has intrinsic file dimensions much larger than/;
     expect(expectedMessageRegex.test(logs[0].message)).toBeTruthy();
   });
 

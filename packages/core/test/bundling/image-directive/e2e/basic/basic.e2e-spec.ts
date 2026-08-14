@@ -7,7 +7,7 @@
  */
 
 import * as webdriver from 'selenium-webdriver';
-import {collectBrowserLogs, createWebDriver} from '../browser-logs-util';
+import {createWebDriver, waitForBrowserLogs} from '../browser-logs-util';
 
 describe('NgOptimizedImage directive (basic)', () => {
   let driver: webdriver.WebDriver;
@@ -29,7 +29,9 @@ describe('NgOptimizedImage directive (basic)', () => {
 
     // Since there are no preconnect tags on a page,
     // we expect a log in a console that mentions that.
-    const logs = await collectBrowserLogs(driver, webdriver.logging.Level.WARNING);
+    const logs = await waitForBrowserLogs(driver, webdriver.logging.Level.WARNING, 1, 10000, (l) =>
+      l.message.includes('NG02956'),
+    );
     expect(logs.length).toEqual(1);
 
     // Verify that the error code and a raw image src are present.
