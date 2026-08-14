@@ -32,11 +32,23 @@ import {
 export const BLOCKING_SYMBOL: unique symbol = Symbol(
   typeof ngDevMode === 'undefined' || ngDevMode ? '__isBlocking' : '',
 );
+export const SOURCE_RESOURCE_SYMBOL: unique symbol = Symbol(
+  typeof ngDevMode === 'undefined' || ngDevMode ? '__sourceResource' : '',
+);
+
+/**
+ * Checks if a resource has a value or has transitioned to a resolved/non-loading status.
+ */
+export function hasValueOrResolved(res: Resource<unknown>): boolean {
+  const status = res.status();
+  return res.hasValue() || (status !== 'loading' && status !== 'reloading');
+}
 
 /**
  * @internal
  */
 export interface InternalRouterResource<T = unknown> extends Resource<T> {
+  [SOURCE_RESOURCE_SYMBOL]: Resource<T>;
   [BLOCKING_SYMBOL]?: boolean;
   reload(): boolean;
 }
@@ -68,11 +80,9 @@ export function routerResource<T>(source: Resource<T>): Resource<T> & {reload():
 
   const res = resourceFromSnapshots(snapshotSignal) as unknown as InternalRouterResource<T>;
 
-  if ((source as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] === false) {
-    res[BLOCKING_SYMBOL] = false;
-  } else {
-    res[BLOCKING_SYMBOL] = true;
-  }
+  res[SOURCE_RESOURCE_SYMBOL] = source;
+  res[BLOCKING_SYMBOL] =
+    (source as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] !== false;
 
   if (typeof (source as any).reload === 'function') {
     res.reload = function (): boolean {
@@ -155,12 +165,7 @@ function createTransactionalSnapshot<T>(
 
   effect(
     () => {
-      if (
-        isRollbackRecoveryPending() &&
-        // TODO(consider):  should this be hasValue || status !== loading
-        // Some stream implementations may retain loading status after first item resolves
-        !source.isLoading()
-      ) {
+      if (isRollbackRecoveryPending() && hasValueOrResolved(source)) {
         isRollbackRecoveryPending.set(false);
         frozenSnapshot.set(null);
       }
