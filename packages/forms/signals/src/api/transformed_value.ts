@@ -103,12 +103,11 @@ export interface TransformedValueSignal<TRaw> extends WritableSignal<TRaw> {
  *
  *   protected readonly rawValue = transformedValue(this.value, {
  *     parse: (val) => {
- *       if (val === '') return {value: null};
- *       const num = Number(val);
- *       if (Number.isNaN(num)) {
- *         return {error: {kind: 'parse', message: `${val} is not numeric`}};
- *       }
- *       return {value: num};
+ *       const parsed = val ? Number(val) : null;
+ *
+ *       return Number.isNaN(parsed)
+ *         ? {error: {kind: 'parse', message: `${val} is not a number`}}
+ *         : {value: parsed};
  *     },
  *     format: (val) => val?.toString() ?? '',
  *   });
