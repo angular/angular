@@ -1,22 +1,21 @@
-import {AppPage} from './app.po';
-import {browser, logging} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 describe('workspace-project App', () => {
-  let page: AppPage;
+  let driver: webdriver.WebDriver;
 
-  beforeEach(() => {
-    page = new AppPage();
+  beforeEach(async () => {
+    await driver.get('');
   });
 
   // Add your e2e tests here
 
   afterEach(async () => {
     // Assert that there are no errors emitted from the browser
-    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
+    const logs = await driver.manage().logs().get(webdriver.logging.Type.BROWSER);
     expect(logs).not.toContain(
       jasmine.objectContaining({
-        level: logging.Level.SEVERE,
-      } as logging.Entry),
+        level: webdriver.logging.Level.SEVERE,
+      } as webdriver.logging.Entry),
     );
   });
 });

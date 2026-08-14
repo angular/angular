@@ -1,19 +1,19 @@
-import {by} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 import {locate} from './util';
 
-export function getPage() {
-  return by.css('app-hero-list-groups-page');
+export function getPage(driver: webdriver.WebDriver) {
+  return driver.findElement(webdriver.By.css('app-hero-list-groups-page'));
 }
 
-export function getComponent() {
-  return by.css('app-hero-list-groups');
+export function getComponent(driver: webdriver.WebDriver) {
+  return driver.findElement(webdriver.By.css('app-hero-list-groups'));
 }
 
-export function getComponentContainer() {
-  const findContainer = () => by.css('ul');
-  return locate(getComponent(), findContainer());
+export async function getComponentContainer(driver: webdriver.WebDriver) {
+  return locate(driver, webdriver.By.css('app-hero-list-groups'), webdriver.By.css('ul'));
 }
 
-export function getHeroesList() {
-  return getComponentContainer().all(by.css('li'));
+export async function getHeroesList(driver: webdriver.WebDriver) {
+  const container = await getComponentContainer(driver);
+  return container.findElements(webdriver.By.css('li'));
 }

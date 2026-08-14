@@ -1,20 +1,23 @@
-import {Locator, ElementFinder, browser, by, element} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 /**
- *
- * locate(finder1, finder2) => element(finder1).element(finder2).element(finderN);
+ * locate(parent, finder1, finder2) => parent.findElement(finder1).findElement(finder2);
  */
-export function locate(locator: Locator, ...locators: Locator[]) {
-  return locators.reduce(
-    (current: ElementFinder, next: Locator) => current.element(next),
-    element(locator),
-  ) as ElementFinder;
+export async function locate(
+  parent: webdriver.WebDriver | webdriver.WebElement,
+  ...locators: webdriver.Locator[]
+): Promise<webdriver.WebElement> {
+  let current: webdriver.WebElement = await parent.findElement(locators[0]);
+  for (let i = 1; i < locators.length; i++) {
+    current = await current.findElement(locators[i]);
+  }
+  return current;
 }
 
 export async function sleepFor(time = 1000) {
-  return await browser.sleep(time);
+  return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-export function getLinkById(id: string) {
-  return element(by.css(`a[id=${id}]`));
+export function getLinkById(driver: webdriver.WebDriver, id: string) {
+  return driver.findElement(webdriver.By.css(`a[id=${id}]`));
 }

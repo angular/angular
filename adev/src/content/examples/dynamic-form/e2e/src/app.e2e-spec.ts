@@ -1,21 +1,34 @@
-import {browser, element, by} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 describe('Dynamic Form', () => {
-  beforeAll(() => browser.get(''));
+  let driver: webdriver.WebDriver;
+
+  beforeAll(async () => {
+    await driver.get('');
+  });
 
   it('should submit form', async () => {
-    const firstNameElement = element.all(by.css('input[id=firstName]')).get(0);
+    const firstNameElement = (
+      await driver.findElements(webdriver.By.css('input[id=firstName]'))
+    )[0];
     expect(await firstNameElement.getAttribute('value')).toEqual('Bombasto');
 
-    const emailElement = element.all(by.css('input[id=emailAddress]')).get(0);
+    const emailElement = (await driver.findElements(webdriver.By.css('input[id=emailAddress]')))[0];
     const email = 'test@test.com';
     await emailElement.sendKeys(email);
     expect(await emailElement.getAttribute('value')).toEqual(email);
 
-    await element(by.css('select option[value="solid"]')).click();
-    await element.all(by.css('button')).get(0).click();
-    expect(
-      await element(by.cssContainingText('strong', 'Saved the following values')).isPresent(),
-    ).toBe(true);
+    await (await driver.findElement(webdriver.By.css('select option[value="solid"]'))).click();
+    await (await driver.findElements(webdriver.By.css('button')))[0].click();
+
+    const strongs = await driver.findElements(webdriver.By.css('strong'));
+    let found = false;
+    for (const s of strongs) {
+      if ((await s.getText()).includes('Saved the following values')) {
+        found = true;
+        break;
+      }
+    }
+    expect(found).toBe(true);
   });
 });
