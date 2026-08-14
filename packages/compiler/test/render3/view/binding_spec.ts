@@ -37,6 +37,7 @@ function makeDirectiveMeta(config: {
     inputs: ClassPropertyMapping.fromMappedObject(config.inputs || {}),
     outputs: ClassPropertyMapping.fromMappedObject(config.outputs || {}),
     isComponent: !!config.isComponent,
+    isHostless: false,
     isStructural: !!config.isStructural,
     selector: config.selector,
     animationTriggerNames: null,

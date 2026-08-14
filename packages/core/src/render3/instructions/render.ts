@@ -6,17 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {retrieveHydrationInfo} from '../../hydration/utils';
+import {getSegmentHead, retrieveHydrationInfo} from '../../hydration/utils';
 import {assertEqual, assertNotReactive} from '../../util/assert';
 import {RenderFlags} from '../interfaces/definition';
+import {TNode, TNodeType} from '../interfaces/node';
+import {isComponentHost} from '../interfaces/type_checks';
 import {
   CONTEXT,
   FLAGS,
+  HEADER_OFFSET,
   HOST,
   HYDRATION,
   INJECTOR,
   LView,
   LViewFlags,
+  PARENT,
   QUERIES,
   TVIEW,
   TView,
@@ -28,8 +32,9 @@ import {enterView, leaveView} from '../state';
 import {getComponentLViewByIndex, isCreationMode} from '../util/view_utils';
 
 import {executeTemplate} from './shared';
-
 export function renderComponent(hostLView: LView, componentHostIdx: number) {
+  const hostTNode = hostLView[TVIEW].data[componentHostIdx] as TNode;
+
   ngDevMode && assertEqual(isCreationMode(hostLView), true, 'Should be run in creation mode');
   const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
   const componentTView = componentView[TVIEW];
@@ -39,6 +44,12 @@ export function renderComponent(hostLView: LView, componentHostIdx: number) {
   // Populate an LView with hydration info retrieved from the DOM via TransferState.
   if (hostRNode !== null && componentView[HYDRATION] === null) {
     componentView[HYDRATION] = retrieveHydrationInfo(hostRNode, componentView[INJECTOR]);
+    if (hostTNode && isComponentHost(hostTNode) && hostTNode.type === TNodeType.ElementContainer) {
+      if (componentView[HYDRATION] && hostLView[HYDRATION]) {
+        const noOffsetIndex = hostTNode.index - HEADER_OFFSET;
+        componentView[HYDRATION].firstChild = getSegmentHead(hostLView[HYDRATION], noOffsetIndex);
+      }
+    }
   }
 
   profiler(ProfilerEvent.ComponentStart);

@@ -693,7 +693,7 @@ export class TestBedImpl implements TestBed {
     const testComponentRenderer = this.inject(TestComponentRenderer);
     const shouldInferTagName = options?.inferTagName ?? this._instanceInferTagName ?? false;
     const componentDef = getComponentDef(type);
-    const rootElId = `root${_nextRootElementId++}`;
+    const rootElId = componentDef?.hostless ? 'root-hostless' : `root${_nextRootElementId++}`;
 
     if (!componentDef) {
       throw new Error(`It looks like '${stringify(type)}' has not been compiled.`);

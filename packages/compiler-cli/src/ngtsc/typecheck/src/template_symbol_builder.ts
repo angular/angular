@@ -69,6 +69,7 @@ export interface SymbolDirectiveMeta {
   getNgModule(): ClassDeclaration | null;
   matchSource: MatchSource;
   isComponent: boolean;
+  isHostless: boolean;
   selector: string | null;
   isStructural: boolean;
   inputs: ClassPropertyMapping;
@@ -303,6 +304,7 @@ export class SymbolBuilder {
               ref,
               selector: meta.selector,
               isComponent: meta.isComponent,
+              isHostless: meta.isHostless,
               ngModule: meta.getNgModule(),
               kind: SymbolKind.Directive,
               isStructural: meta.isStructural,
@@ -317,6 +319,7 @@ export class SymbolBuilder {
               ref,
               selector: meta.selector,
               isComponent: meta.isComponent,
+              isHostless: meta.isHostless,
               ngModule: meta.getNgModule(),
               kind: SymbolKind.Directive,
               isStructural: meta.isStructural,
@@ -505,6 +508,7 @@ export class SymbolBuilder {
       kind: SymbolKind.Directive,
       tcbLocation: this.getTcbLocationForNode(fieldAccessExpr.expression),
       isComponent: meta.isComponent,
+      isHostless: meta.isHostless,
       isStructural: meta.isStructural,
       selector: meta.selector,
       ngModule: meta.getNgModule(),

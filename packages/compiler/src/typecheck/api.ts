@@ -105,6 +105,7 @@ export interface TcbDirectiveMetadata {
   name: string;
   selector: string | null;
   isComponent: boolean;
+  isHostless: boolean;
   isGeneric: boolean;
   isStructural: boolean;
   isStandalone: boolean;

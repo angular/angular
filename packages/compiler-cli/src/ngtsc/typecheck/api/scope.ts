@@ -86,6 +86,11 @@ export interface PotentialDirective {
   isComponent: boolean;
 
   /**
+   * `true` if this component is hostless.
+   */
+  isHostless: boolean;
+
+  /**
    * `true` if this directive is a structural directive.
    */
   isStructural: boolean;

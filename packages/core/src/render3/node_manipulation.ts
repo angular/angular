@@ -20,6 +20,9 @@ import {
   assertNumber,
 } from '../util/assert';
 
+import {ProfilerEvent} from '../../primitives/devtools';
+import {cancelLeavingNodes, reusedNodes, trackLeavingNodes} from '../animation/utils';
+import {Injector} from '../di';
 import {isDetachedByI18n} from '../i18n/utils';
 import {
   assertLContainer,
@@ -57,6 +60,7 @@ import {Renderer} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {isComponentHost, isDestroyed, isLContainer, isLView} from './interfaces/type_checks';
 import {
+  ANIMATIONS,
   CHILD_HEAD,
   CLEANUP,
   DECLARATION_COMPONENT_VIEW,
@@ -68,7 +72,7 @@ import {
   HookData,
   HookFn,
   HOST,
-  ANIMATIONS,
+  INJECTOR,
   LView,
   LViewFlags,
   NEXT,
@@ -81,16 +85,16 @@ import {
   TVIEW,
   TView,
   TViewType,
-  INJECTOR,
-  ID,
 } from './interfaces/view';
+import {maybeQueueEnterAnimation, runLeaveAnimationsWithCallback} from './node_animations';
 import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';
-import {ProfilerEvent} from '../../primitives/devtools';
-import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
-import {cancelLeavingNodes, reusedNodes, trackLeavingNodes} from '../animation/utils';
-import {Injector} from '../di';
-import {maybeQueueEnterAnimation, runLeaveAnimationsWithCallback} from './node_animations';
+import {
+  getComponentLViewByIndex,
+  getLViewParent,
+  getNativeByTNode,
+  unwrapRNode,
+} from './util/view_utils';
 
 export const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -516,6 +520,7 @@ export function getClosestRElement(
   // corresponding DOM node at all.
   while (
     parentTNode !== null &&
+    !isComponentHost(parentTNode) &&
     parentTNode.type & (TNodeType.ElementContainer | TNodeType.Icu | TNodeType.LetDeclaration)
   ) {
     tNode = parentTNode;
@@ -527,9 +532,16 @@ export function getClosestRElement(
   if (parentTNode === null) {
     // We are inserting a root element of the component view into the component host element and
     // it should always be eager.
+    const hostTNode = lView[T_HOST];
+    if (hostTNode && hostTNode.type & TNodeType.ElementContainer) {
+      // The host is an ElementContainer (hostless component), so we can't append to it.
+      // Append to its parent node instead.
+      const renderer = lView[RENDERER];
+      return renderer.parentNode(lView[HOST] as RNode);
+    }
     return lView[HOST];
   } else {
-    ngDevMode && assertTNodeType(parentTNode, TNodeType.AnyRNode | TNodeType.Container);
+    ngDevMode && assertTNodeType(parentTNode, TNodeType.AnyRNode | TNodeType.AnyContainer);
     if (isComponentHost(parentTNode)) {
       ngDevMode && assertTNodeForLView(parentTNode, lView);
       const {encapsulation} = tView.data[
@@ -588,6 +600,9 @@ export function getInsertInFrontOfRNodeWithNoI18n(
   lView: LView,
 ): RNode | null {
   if (parentTNode.type & (TNodeType.ElementContainer | TNodeType.Icu)) {
+    if (parentTNode === lView[T_HOST]) {
+      return lView[HOST] as RElement;
+    }
     return getNativeByTNode(parentTNode, lView);
   }
   return null;
@@ -690,15 +705,32 @@ export function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode | n
     } else if (tNodeType & TNodeType.Container) {
       return getBeforeNodeForView(-1, lView[tNode.index]);
     } else if (tNodeType & TNodeType.ElementContainer) {
-      const elIcuContainerChild = tNode.child;
-      if (elIcuContainerChild !== null) {
-        return getFirstNativeNode(lView, elIcuContainerChild);
-      } else {
+      if (isComponentHost(tNode)) {
+        const componentLView = getComponentLViewByIndex(tNode.index, lView);
+        const firstChild = componentLView[TVIEW].firstChild;
+        if (firstChild !== null) {
+          const firstNode = getFirstNativeNode(componentLView, firstChild);
+          if (firstNode !== null) {
+            return firstNode;
+          }
+        }
         const rNodeOrLContainer = lView[tNode.index];
         if (isLContainer(rNodeOrLContainer)) {
           return getBeforeNodeForView(-1, rNodeOrLContainer);
         } else {
           return unwrapRNode(rNodeOrLContainer);
+        }
+      } else {
+        const elIcuContainerChild = tNode.child;
+        if (elIcuContainerChild !== null) {
+          return getFirstNativeNode(lView, elIcuContainerChild);
+        } else {
+          const rNodeOrLContainer = lView[tNode.index];
+          if (isLContainer(rNodeOrLContainer)) {
+            return getBeforeNodeForView(-1, rNodeOrLContainer);
+          } else {
+            return unwrapRNode(rNodeOrLContainer);
+          }
         }
       }
     } else if (tNodeType & TNodeType.LetDeclaration) {
@@ -781,8 +813,10 @@ function applyNodes(
         tNode,
         TNodeType.AnyRNode | TNodeType.AnyContainer | TNodeType.Projection | TNodeType.Icu,
       );
+
     const rawSlotValue = lView[tNode.index];
     const tNodeType = tNode.type;
+
     if (isProjection) {
       if (action === WalkTNodeTreeAction.Create) {
         rawSlotValue && attachPatchData(unwrapRNode(rawSlotValue), lView);
@@ -791,7 +825,20 @@ function applyNodes(
     }
     if (!isDetachedByI18n(tNode)) {
       if (tNodeType & TNodeType.ElementContainer) {
-        applyNodes(renderer, action, tNode.child, lView, parentRElement, beforeNode, false);
+        if (isComponentHost(tNode)) {
+          const componentLView = getComponentLViewByIndex(tNode.index, lView);
+          applyNodes(
+            renderer,
+            action,
+            componentLView[TVIEW].firstChild,
+            componentLView,
+            parentRElement,
+            beforeNode,
+            false,
+          );
+        } else {
+          applyNodes(renderer, action, tNode.child, lView, parentRElement, beforeNode, false);
+        }
         applyToElementOrContainer(
           action,
           renderer,

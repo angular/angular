@@ -180,6 +180,18 @@ export function compileComponentFromMetadata(
   constantPool: ConstantPool,
   bindingParser: BindingParser,
 ): R3CompiledExpression {
+  if (meta.isHostless) {
+    const hasBindings =
+      Object.keys(meta.host.attributes).length > 0 ||
+      Object.keys(meta.host.listeners).length > 0 ||
+      Object.keys(meta.host.properties).length > 0 ||
+      meta.host.specialAttributes.styleAttr ||
+      meta.host.specialAttributes.classAttr;
+    if (hasBindings) {
+      throw new Error('Hostless components cannot have host bindings.');
+    }
+  }
+
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
 
@@ -320,6 +332,10 @@ export function compileComponentFromMetadata(
     }
   }
 
+  if (meta.isHostless) {
+    definitionMap.set('hostless', o.literal(true));
+  }
+
   const expression = o
     .importExpr(R3.defineComponent)
     .callFn([definitionMap.toLiteralMap()], undefined, true);
@@ -340,8 +356,11 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   // TODO(signals): Always include this metadata starting with v17. Right
   // now Angular v16.0.x does not support this field and library distributions
   // would then be incompatible with v16.0.x framework users.
-  if (meta.isSignal) {
+  if (meta.isSignal || meta.isHostless) {
     typeParams.push(o.expressionType(o.literal(meta.isSignal)));
+  }
+  if (meta.isHostless) {
+    typeParams.push(o.expressionType(o.literal(meta.isHostless)));
   }
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }

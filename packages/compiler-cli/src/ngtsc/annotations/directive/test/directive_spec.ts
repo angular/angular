@@ -135,6 +135,7 @@ runInEachFileSystem(() => {
         inputs: analysis.inputs,
         outputs: analysis.outputs,
         isComponent: false,
+        isHostless: false,
         name: 'Dir',
         selector: '[dir]',
         isStructural: false,

@@ -12,13 +12,14 @@ import {
   validateMatchingNode,
   validateNodeExists,
 } from '../../hydration/error_handling';
-import {locateNextRNode} from '../../hydration/node_lookup_utils';
+import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {
   hasSkipHydrationAttrOnRElement,
   hasSkipHydrationAttrOnTNode,
 } from '../../hydration/skip_hydration';
 import {
   canHydrateNode,
+  getNgContainerSize,
   getSerializedContainerViews,
   markRNodeAsClaimedByHydration,
   markRNodeAsSkippedByHydration,
@@ -27,10 +28,15 @@ import {
 import {getComponentName} from '../../internal/get_closest_component_name';
 import {assertDefined} from '../../util/assert';
 import {assertTNodeCreationIndex} from '../assert';
-import {clearElementContents, createElementNode} from '../dom_node_manipulation';
+import {
+  clearElementContents,
+  createCommentNode,
+  createElementNode,
+  nativeRemoveNode,
+} from '../dom_node_manipulation';
 import {ComponentDef} from '../interfaces/definition';
 import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
-import {RElement} from '../interfaces/renderer_dom';
+import {RComment, RElement, RNode} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {
   ENVIRONMENT,
@@ -111,6 +117,17 @@ export function ɵɵelementStart(
       )
     : (tView.data[adjustedIndex] as TElementNode);
 
+  let isHostless = false;
+  if (isComponentHost(tNode)) {
+    const def = tView.data[tNode.directiveStart + tNode.componentOffset] as ComponentDef<{}>;
+    if (def.hostless) {
+      isHostless = true;
+      if (tView.firstCreatePass) {
+        tNode.type = TNodeType.ElementContainer;
+      }
+    }
+  }
+
   // If the node is a component host and we have a tracing service, we need to wrap the init logic.
   if (isComponentHost(tNode)) {
     const tracingService = lView[ENVIRONMENT].tracingService;
@@ -119,13 +136,13 @@ export function ɵɵelementStart(
       const def = tView.data[tNode.directiveStart + tNode.componentOffset] as ComponentDef<{}>;
 
       return tracingService.componentCreate(getComponentName(def), () => {
-        initializeElement(index, name, lView, tNode, localRefsIndex);
+        initializeElement(index, name, lView, tNode, localRefsIndex, isHostless);
         return ɵɵelementStart;
       });
     }
   }
 
-  initializeElement(index, name, lView, tNode, localRefsIndex);
+  initializeElement(index, name, lView, tNode, localRefsIndex, isHostless);
   return ɵɵelementStart;
 }
 
@@ -135,8 +152,15 @@ function initializeElement(
   lView: LView,
   tNode: TElementNode,
   localRefsIndex: number | undefined,
+  isHostless: boolean = false,
 ) {
-  elementLikeStartShared(tNode, lView, index, name, _locateOrCreateElementNode);
+  elementLikeStartShared(
+    tNode,
+    lView,
+    index,
+    name,
+    isHostless ? _locateOrCreateCommentNode : _locateOrCreateElementNode,
+  );
 
   if (isDirectiveHost(tNode)) {
     const tView = lView[TVIEW];
@@ -165,7 +189,7 @@ export function ɵɵelementEnd(): typeof ɵɵelementEnd {
   ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
 
   const currentTNode = elementLikeEndShared(initialTNode);
-  ngDevMode && assertTNodeType(currentTNode, TNodeType.AnyRNode);
+  ngDevMode && assertTNodeType(currentTNode, TNodeType.AnyRNode | TNodeType.ElementContainer);
 
   if (tView.firstCreatePass) {
     directiveHostEndFirstCreatePass(tView, currentTNode);
@@ -417,4 +441,70 @@ function locateOrCreateElementNodeImpl(
 
 export function enableLocateOrCreateElementNodeImpl() {
   _locateOrCreateElementNode = locateOrCreateElementNodeImpl;
+  _locateOrCreateCommentNode = locateOrCreateCommentNodeImpl;
+}
+
+let _locateOrCreateCommentNode: typeof locateOrCreateCommentNodeImpl = (
+  tView: TView,
+  lView: LView,
+  tNode: TNode,
+  name: string,
+  index: number,
+) => {
+  lastNodeWasCreated(true);
+  return createCommentNode(lView[RENDERER], ngDevMode ? `hostless ${name}` : '');
+};
+
+function locateOrCreateCommentNodeImpl(
+  tView: TView,
+  lView: LView,
+  tNode: TNode,
+  name: string,
+  index: number,
+) {
+  const isNodeCreationMode = !canHydrateNode(lView, tNode);
+
+  lastNodeWasCreated(isNodeCreationMode);
+
+  // Regular creation mode.
+  if (isNodeCreationMode) {
+    return createCommentNode(lView[RENDERER], ngDevMode ? `hostless ${name}` : '');
+  }
+
+  // Hydration mode, looking up existing elements in DOM.
+  const hydrationInfo = lView[HYDRATION]!;
+  const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
+
+  // A hostless component acts as an ElementContainer, meaning `currentRNode`
+  // is the first child of the component. We need to find the anchor comment node.
+  const ngContainerSize = getNgContainerSize(hydrationInfo, index) as number;
+  setSegmentHead(hydrationInfo, index, currentRNode);
+  const comment = siblingAfter<RComment>(ngContainerSize, currentRNode)!;
+
+  if (ngDevMode) {
+    validateMatchingNode(comment, Node.COMMENT_NODE, null, lView, tNode);
+    markRNodeAsClaimedByHydration(comment);
+  }
+
+  if (hydrationInfo && hasSkipHydrationAttrOnTNode(tNode)) {
+    if (isComponentHost(tNode)) {
+      enterSkipHydrationBlock(tNode);
+
+      // Since this isn't hydratable, we need to empty the container's contents
+      // so there's no duplicate content after render.
+      const renderer = lView[RENDERER];
+      let nodeToRemove: RNode | null = currentRNode;
+      while (nodeToRemove && nodeToRemove !== comment) {
+        const next: RNode | null = (nodeToRemove as Node).nextSibling as RNode | null;
+        nativeRemoveNode(renderer, nodeToRemove);
+        nodeToRemove = next;
+      }
+
+      ngDevMode && markRNodeAsSkippedByHydration(comment);
+    } else if (ngDevMode) {
+      throw invalidSkipHydrationHost(comment);
+    }
+  }
+
+  return comment;
 }

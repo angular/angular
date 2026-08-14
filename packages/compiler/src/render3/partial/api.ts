@@ -236,6 +236,7 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
    * Whether whitespace in the template should be preserved. Defaults to false.
    */
   preserveWhitespaces?: boolean;
+  isHostless?: boolean;
 }
 
 export type R3DeclareTemplateDependencyMetadata =

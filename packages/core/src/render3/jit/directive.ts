@@ -147,6 +147,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           //  * for standalone components, they're set just below, after `compileComponent`.
           declarations: [],
           changeDetection: metadata.changeDetection,
+          isHostless: metadata.hostless === true,
           encapsulation,
           viewProviders: metadata.viewProviders || null,
           // We can't inspect whether any of the dependencies are actually directives, because they

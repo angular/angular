@@ -375,4 +375,59 @@ runInEachFileSystem(() => {
     expect(withoutOwningModule.exports.length).toBe(1);
     expect(withoutOwningModule.isPoisoned).toBe(true);
   });
+
+  it('should read isHostless metadata from ɵɵComponentDeclaration', () => {
+    const mainPath = absoluteFrom('/main.d.ts');
+    const {program} = makeProgram(
+      [
+        {
+          name: mainPath,
+          contents: `
+            import * as i0 from '@angular/core';
+
+            export declare class HostlessCmp {
+              static ɵcmp: i0.ɵɵComponentDeclaration<HostlessCmp, "hostless-cmp", never, {}, {}, never, never, true, never, false, true>;
+            }
+
+            export declare class RegularCmp {
+              static ɵcmp: i0.ɵɵComponentDeclaration<RegularCmp, "regular-cmp", never, {}, {}, never, never, true, never, false, false>;
+            }
+
+            export declare class DefaultCmp {
+              static ɵcmp: i0.ɵɵComponentDeclaration<DefaultCmp, "default-cmp", never, {}, {}, never, never, true>;
+            }
+          `,
+        },
+      ],
+      {
+        skipLibCheck: true,
+        lib: ['es6', 'dom'],
+      },
+    );
+
+    const sf = getSourceFileOrError(program, mainPath);
+    const hostlessClazz = sf.statements[1];
+    const regularClazz = sf.statements[2];
+    const defaultClazz = sf.statements[3];
+
+    if (
+      !isNamedClassDeclaration(hostlessClazz) ||
+      !isNamedClassDeclaration(regularClazz) ||
+      !isNamedClassDeclaration(defaultClazz)
+    ) {
+      return fail('Expected class declarations');
+    }
+
+    const typeChecker = program.getTypeChecker();
+    const dtsReader = new DtsMetadataReader(typeChecker, new TypeScriptReflectionHost(typeChecker));
+
+    const hostlessMeta = dtsReader.getDirectiveMetadata(new Reference(hostlessClazz))!;
+    expect(hostlessMeta.isHostless).toBe(true);
+
+    const regularMeta = dtsReader.getDirectiveMetadata(new Reference(regularClazz))!;
+    expect(regularMeta.isHostless).toBe(false);
+
+    const defaultMeta = dtsReader.getDirectiveMetadata(new Reference(defaultClazz))!;
+    expect(defaultMeta.isHostless).toBe(false);
+  });
 });

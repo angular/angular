@@ -341,6 +341,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     name,
     selector: `[${ref.debugName}]`,
     isComponent: name.startsWith('Cmp'),
+    isHostless: false,
     inputs: ClassPropertyMapping.fromMappedObject({}),
     outputs: ClassPropertyMapping.fromMappedObject({}),
     exportAs: null,

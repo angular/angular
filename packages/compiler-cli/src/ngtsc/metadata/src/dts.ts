@@ -208,6 +208,9 @@ export class DtsMetadataReader implements MetadataReader {
     const isSignal =
       def.type.typeArguments.length > 9 && (readBooleanType(def.type.typeArguments[9]) ?? false);
 
+    const isHostless =
+      def.type.typeArguments.length > 10 && (readBooleanType(def.type.typeArguments[10]) ?? false);
+
     // At this point in time, the `.d.ts` may not be fully extractable when
     // trying to resolve host directive types to their declarations.
     // If this cannot be done completely, the metadata is incomplete and "poisoned".
@@ -219,6 +222,7 @@ export class DtsMetadataReader implements MetadataReader {
       ref,
       name: clazz.name.text,
       isComponent,
+      isHostless,
       selector: readStringType(def.type.typeArguments[1]),
       exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs,

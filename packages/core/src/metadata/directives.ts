@@ -556,6 +556,14 @@ export interface Component extends Directive {
   changeDetection?: ChangeDetectionStrategy;
 
   /**
+   * If `true`, the component will not render a host element in the DOM.
+   * Instead, the component will act as a logical container, and any
+   * CSS style encapsulation classes will be applied to the top-level
+   * elements in its template.
+   */
+  hostless?: boolean;
+
+  /**
    * Defines the set of injectable objects that are visible to its view DOM children.
    * See [example](#injecting-a-class-with-a-view-provider).
    *

@@ -244,6 +244,9 @@ function locateRNodeByPath(path: string, lView: LView): RNode {
   let ref: Element;
   if (referenceNode === REFERENCE_NODE_HOST) {
     ref = lView[DECLARATION_COMPONENT_VIEW][HOST] as unknown as Element;
+    if ((ref as Node).nodeType === Node.COMMENT_NODE) {
+      ref = (ref as Node).parentElement as Element;
+    }
   } else if (referenceNode === REFERENCE_NODE_BODY) {
     ref = ɵɵresolveBody(
       lView[DECLARATION_COMPONENT_VIEW][HOST] as RElement & {ownerDocument: Document},
@@ -354,6 +357,9 @@ export function calcPathForNode(
     // (i.e. not a DOM node), use component host element as a reference node.
     parentIndex = referenceNodeName = REFERENCE_NODE_HOST;
     parentRNode = lView[DECLARATION_COMPONENT_VIEW][HOST]!;
+    if ((parentRNode as Node).nodeType === Node.COMMENT_NODE) {
+      parentRNode = (parentRNode as Node).parentElement as RNode;
+    }
   } else {
     // Use parent TNode as a reference node.
     parentIndex = parentTNode.index;
