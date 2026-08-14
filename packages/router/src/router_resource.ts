@@ -7,6 +7,8 @@
  */
 
 import {
+  ComponentRef,
+  EffectRef,
   inject,
   Injector,
   Resource,
@@ -18,8 +20,10 @@ import {
   effect,
   computed,
   assertInInjectionContext,
+  reflectComponentType,
 } from '@angular/core';
 import {Router} from './router';
+import type {ActivatedRoute} from './router_state';
 import {
   NavigationStart,
   NavigationEnd,
@@ -177,4 +181,35 @@ function createTransactionalSnapshot<T>(
     snapshot: computed(() => frozenSnapshot() ?? source.snapshot()),
     frozenSnapshot,
   };
+}
+
+export function createResourceOutletBindingEffects(
+  componentRef: ComponentRef<unknown>,
+  route: ActivatedRoute,
+  injector: Injector,
+): {effects: EffectRef[]; handledKeys: string[]} {
+  const effects: EffectRef[] = [];
+  const handledKeys: string[] = [];
+  const mirror = route.component ? reflectComponentType(route.component) : null;
+  if (!mirror) {
+    return {effects, handledKeys};
+  }
+
+  for (const {templateName} of mirror.inputs) {
+    const resource = route.resources?.[templateName];
+    if (!resource || !(resource as InternalRouterResource)[BLOCKING_SYMBOL]) {
+      continue;
+    }
+
+    const effectRef = effect(
+      () => {
+        componentRef.setInput(templateName, resource.value());
+      },
+      {injector},
+    );
+    effects.push(effectRef);
+    handledKeys.push(templateName);
+  }
+
+  return {effects, handledKeys};
 }
