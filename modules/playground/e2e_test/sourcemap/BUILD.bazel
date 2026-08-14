@@ -10,7 +10,6 @@ example_test(
     # Source-Map is using WASM and cannot be bundled for specs.
     external = ["source-map"],
     server = "//modules/playground/src/sourcemap:devserver",
-    use_legacy_webdriver_types = False,
     deps = [
         "//modules:node_modules/source-map",
     ],

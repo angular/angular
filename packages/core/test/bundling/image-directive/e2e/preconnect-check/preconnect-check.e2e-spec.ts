@@ -7,7 +7,7 @@
  */
 
 import * as webdriver from 'selenium-webdriver';
-import {collectBrowserLogs, createWebDriver} from '../browser-logs-util';
+import {collectBrowserLogs, createWebDriver, waitForBrowserLogs} from '../browser-logs-util';
 
 // Verifies that both images used in a component were rendered.
 async function verifyImagesPresent(driver: webdriver.WebDriver) {
@@ -38,7 +38,9 @@ describe('NgOptimizedImage directive (preconnect-check)', () => {
     // Make sure that only one warning is in the console for both images,
     // because they both have the same base URL (which is used to look for
     // corresponding `<link rel="preconnect">` tags).
-    const logs = await collectBrowserLogs(driver, webdriver.logging.Level.WARNING);
+    const logs = await waitForBrowserLogs(driver, webdriver.logging.Level.WARNING, 1, 10000, (l) =>
+      l.message.includes('NG02956'),
+    );
     expect(logs.length).toEqual(1);
 
     // Verify that the error code and a raw image src are present in the
