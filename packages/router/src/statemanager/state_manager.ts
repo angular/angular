@@ -200,8 +200,9 @@ export class HistoryStateManager extends StateManager {
   ): SubscriptionLike {
     return this.location.subscribe((event) => {
       if (event['type'] === 'popstate') {
-        const hasUAVisualTransition = event.hasUAVisualTransition === true;
-        const invokeListener = () => {
+        // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
+        // hybrid apps.
+        setTimeout(() => {
           listener(
             event['url']!,
             event.state as RestoredState | null | undefined,
@@ -209,20 +210,9 @@ export class HistoryStateManager extends StateManager {
             {
               replaceUrl: true,
             },
-            hasUAVisualTransition,
+            event.hasUAVisualTransition === true,
           );
-        };
-
-        if (hasUAVisualTransition) {
-          // A UA visual transition has already started. Schedule the navigation immediately so
-          // the browser can present the post-navigation DOM without an additional task.
-          invokeListener();
-          return;
-        }
-
-        // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
-        // hybrid apps.
-        setTimeout(invokeListener);
+        });
       }
     });
   }
