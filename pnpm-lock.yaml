@@ -29,7 +29,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 22.2.0-next.3
-        version: 22.2.0-next.3(5fcc1952106436e17bf9dfb56a010d3f)
+        version: 22.2.0-next.3(39ee8d2319c93c40e60d47a3ae4e2f94)
       '@angular/cdk':
         specifier: 22.2.0-next.1
         version: 22.2.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -282,7 +282,7 @@ importers:
         version: 0.5.5
       conventional-changelog:
         specifier: ^8.0.0
-        version: 8.1.2
+        version: 8.1.2(conventional-commits-filter@6.0.1)
       cypress:
         specifier: 15.20.1
         version: 15.20.1
@@ -348,7 +348,7 @@ importers:
         version: 22.2.0-next.1(@angular/cdk@22.2.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 22.2.0-next.3
-        version: 22.2.0-next.3(106dc9751853e49b12f7c905c041a507)
+        version: 22.2.0-next.3(57ac2d9b28185d23a939578176d5579a)
       '@angular/cdk':
         specifier: 22.2.0-next.1
         version: 22.2.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -719,7 +719,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: 22.2.0-next.3
-        version: 22.2.0-next.3(5fcc1952106436e17bf9dfb56a010d3f)
+        version: 22.2.0-next.3(39ee8d2319c93c40e60d47a3ae4e2f94)
       '@angular/cli':
         specifier: 22.2.0-next.3
         version: 22.2.0-next.3(@types/node@20.19.43)(chokidar@5.0.0)
@@ -819,7 +819,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 22.2.0-next.3
-        version: 22.2.0-next.3(106dc9751853e49b12f7c905c041a507)
+        version: 22.2.0-next.3(57ac2d9b28185d23a939578176d5579a)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1004,7 +1004,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 22.2.0-next.3
-        version: 22.2.0-next.3(5fcc1952106436e17bf9dfb56a010d3f)
+        version: 22.2.0-next.3(39ee8d2319c93c40e60d47a3ae4e2f94)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1370,8 +1370,8 @@ importers:
         version: 7.8.2
     devDependencies:
       ng-packagr:
-        specifier: 22.2.0-next.2
-        version: 22.2.0-next.2(@angular/compiler-cli@packages+compiler-cli)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+        specifier: 22.2.0-next.3
+        version: 22.2.0-next.3(@angular/compiler-cli@packages+compiler-cli)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -8629,12 +8629,12 @@ packages:
     resolution: {integrity: sha512-eonl3sLUha+S1GzTPxychyhnUzKyeQkZ7jLjKrBagJgPla13F+uQ71HgpFefyHgqrjEbCPkDArxYsjY8/+gLKA==}
     engines: {node: '>= 0.4.0'}
 
-  ng-packagr@22.2.0-next.2:
-    resolution: {integrity: sha512-769/f4DvfQEm+SMNdKM9R/D/bulIHTwDJBPj7e3CE0fI/EjVNEigv1l3j00Ipm+AAEAZhxX5Q0A4JY0fmwKpJg==}
+  ng-packagr@22.2.0-next.3:
+    resolution: {integrity: sha512-bWjugQxxaZt1yWN/TxDCPbHwfuqHaAjD7blIZd7YDLAd32424JHWLFKqQwzi93NYYCUadSg8CU+LGiczZkuFsA==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0}
     hasBin: true
     peerDependencies:
-      '@angular/compiler-cli': ^22.0.0 || ^22.1.0-next || ^22.2.0-next
+      '@angular/compiler-cli': ^22.2.0-next
       tailwindcss: ^2.0.0 || ^3.0.0 || ^4.0.0
       tslib: ^2.3.0
       typescript: '>=6.0 <6.1'
@@ -9614,13 +9614,13 @@ packages:
   robust-predicates@3.0.3:
     resolution: {integrity: sha512-NS3levdsRIUOmiJ8FZWCP7LG3QpJyrs/TE0Zpf1yvZu8cAJJ6QMW92H1c7kWpdIHo8RvmLxN/o2JXTKHp74lUA==}
 
-  rolldown-plugin-dts@0.27.14:
-    resolution: {integrity: sha512-ZvuDDwoIpRK9RPxDXratCpklFO9QZZWndf/sd0VBFb4LEj0jj07UcHK9OCh7V4XiFz2Z89ziyBC2K6tJiDjrbw==}
-    engines: {node: ^22.18.0 || >=24.11.0}
+  rolldown-plugin-dts@0.28.2:
+    resolution: {integrity: sha512-U0Ng45ZaESZ7rJtQtgCWkJYCpMgH42yIj3xv9HGAsh/dJ8XBhjI4lcqh4NOWx8+CAxoY2HWg8VYINML2yE9A5A==}
+    engines: {node: ^22.18.0 || ^24.11.0 || >=26.0.0}
     peerDependencies:
       '@typescript/native-preview': '*'
       '@volar/typescript': ~2.4.0
-      rolldown: ^1.0.0
+      rolldown: ^1.2.0
       typescript: ^5.0.0 || ^6.0.0 || ~7.0.0
       vue-tsc: ~3.2.0 || ~3.3.0
     peerDependenciesMeta:
@@ -11362,68 +11362,7 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  '@angular/build@22.2.0-next.3(106dc9751853e49b12f7c905c041a507)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2202.0-next.3(chokidar@5.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 8.0.1
-      '@inquirer/confirm': 6.1.1(@types/node@24.13.3)
-      '@parcel/watcher': 2.6.0
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(less@4.8.1(supports-color@11.0.0))(sass@1.102.0)(tsx@4.23.12)(yaml@2.9.0))
-      beasties: 0.4.3
-      browserslist: 4.28.8
-      chokidar: 5.0.0
-      esbuild: 0.28.2
-      https-proxy-agent: 9.1.0(supports-color@11.0.0)
-      jsonc-parser: 3.3.1
-      listr2: 11.0.0
-      magic-string: 1.1.0
-      mrmime: 2.0.1
-      oxc-parser: 0.143.0
-      parse5-html-rewriting-stream: 8.0.1
-      picomatch: 4.0.5
-      piscina: 5.3.0
-      rolldown: 1.2.3
-      sass: 1.102.0
-      semver: 7.8.5
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.17
-      tslib: 2.8.1
-      typescript: 6.0.3
-      vite: 8.2.1(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(less@4.8.1(supports-color@11.0.0))(sass@1.102.0)(tsx@4.23.12)(yaml@2.9.0)
-      xxhash-wasm: 1.1.0
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 22.2.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      istanbul-lib-instrument: 6.0.3(supports-color@11.0.0)
-      karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
-      less: 4.8.1(supports-color@11.0.0)
-      lmdb: 3.5.6
-      ng-packagr: 22.2.0-next.2(@angular/compiler-cli@packages+compiler-cli)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
-      postcss: 8.5.26
-      rollup: 4.62.4
-      tailwindcss: 3.4.19(tsx@4.23.12)(yaml@2.9.0)
-      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(jsdom@30.0.1)(less@4.8.1(supports-color@11.0.0))(sass@1.102.0)(tsx@4.23.12)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - '@vitejs/devtools'
-      - jiti
-      - kerberos
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  '@angular/build@22.2.0-next.3(5fcc1952106436e17bf9dfb56a010d3f)':
+  '@angular/build@22.2.0-next.3(39ee8d2319c93c40e60d47a3ae4e2f94)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2202.0-next.3(chokidar@5.0.0)
@@ -11466,11 +11405,72 @@ snapshots:
       karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
       less: 4.8.1(supports-color@11.0.0)
       lmdb: 3.5.6
-      ng-packagr: 22.2.0-next.2(@angular/compiler-cli@packages+compiler-cli)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      ng-packagr: 22.2.0-next.3(@angular/compiler-cli@packages+compiler-cli)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
       postcss: 8.5.26
       rollup: 4.62.4
       tailwindcss: 3.4.19(tsx@4.23.12)(yaml@2.9.0)
       vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@20.19.43)(esbuild@0.28.2)(jiti@1.21.7)(jsdom@30.0.1)(less@4.8.1(supports-color@11.0.0))(sass@1.102.0)(tsx@4.23.12)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - '@vitejs/devtools'
+      - jiti
+      - kerberos
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  '@angular/build@22.2.0-next.3(57ac2d9b28185d23a939578176d5579a)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2202.0-next.3(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 8.0.1
+      '@inquirer/confirm': 6.1.1(@types/node@24.13.3)
+      '@parcel/watcher': 2.6.0
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@8.2.1(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(less@4.8.1(supports-color@11.0.0))(sass@1.102.0)(tsx@4.23.12)(yaml@2.9.0))
+      beasties: 0.4.3
+      browserslist: 4.28.8
+      chokidar: 5.0.0
+      esbuild: 0.28.2
+      https-proxy-agent: 9.1.0(supports-color@11.0.0)
+      jsonc-parser: 3.3.1
+      listr2: 11.0.0
+      magic-string: 1.1.0
+      mrmime: 2.0.1
+      oxc-parser: 0.143.0
+      parse5-html-rewriting-stream: 8.0.1
+      picomatch: 4.0.5
+      piscina: 5.3.0
+      rolldown: 1.2.3
+      sass: 1.102.0
+      semver: 7.8.5
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.17
+      tslib: 2.8.1
+      typescript: 6.0.3
+      vite: 8.2.1(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(less@4.8.1(supports-color@11.0.0))(sass@1.102.0)(tsx@4.23.12)(yaml@2.9.0)
+      xxhash-wasm: 1.1.0
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 22.2.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      istanbul-lib-instrument: 6.0.3(supports-color@11.0.0)
+      karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
+      less: 4.8.1(supports-color@11.0.0)
+      lmdb: 3.5.6
+      ng-packagr: 22.2.0-next.3(@angular/compiler-cli@packages+compiler-cli)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3)
+      postcss: 8.5.26
+      rollup: 4.62.4
+      tailwindcss: 3.4.19(tsx@4.23.12)(yaml@2.9.0)
+      vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@1.21.7)(jsdom@30.0.1)(less@4.8.1(supports-color@11.0.0))(sass@1.102.0)(tsx@4.23.12)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@types/node'
       - '@vitejs/devtools'
@@ -16030,7 +16030,7 @@ snapshots:
     transitivePeerDependencies:
       - conventional-commits-filter
 
-  conventional-changelog@8.1.2:
+  conventional-changelog@8.1.2(conventional-commits-filter@6.0.1):
     dependencies:
       '@conventional-changelog/git-client': 3.1.2(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.2)
       '@simple-libs/hosted-git-info': 2.0.0
@@ -19614,7 +19614,7 @@ snapshots:
 
   netmask@2.1.1: {}
 
-  ng-packagr@22.2.0-next.2(@angular/compiler-cli@packages+compiler-cli)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3):
+  ng-packagr@22.2.0-next.3(@angular/compiler-cli@packages+compiler-cli)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.12)(yaml@2.9.0))(tslib@2.8.1)(typescript@6.0.3):
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular/compiler-cli': link:packages/compiler-cli
@@ -19632,7 +19632,7 @@ snapshots:
       piscina: 5.3.0
       postcss: 8.5.26
       rolldown: 1.2.3
-      rolldown-plugin-dts: 0.27.14(rolldown@1.2.3)(typescript@6.0.3)
+      rolldown-plugin-dts: 0.28.2(rolldown@1.2.3)(typescript@6.0.3)
       rxjs: 7.8.2
       sass: 1.102.0
       tinyglobby: 0.2.17
@@ -20685,7 +20685,7 @@ snapshots:
 
   robust-predicates@3.0.3: {}
 
-  rolldown-plugin-dts@0.27.14(rolldown@1.2.3)(typescript@6.0.3):
+  rolldown-plugin-dts@0.28.2(rolldown@1.2.3)(typescript@6.0.3):
     dependencies:
       dts-resolver: 3.0.0
       get-tsconfig: 5.0.0-beta.5
