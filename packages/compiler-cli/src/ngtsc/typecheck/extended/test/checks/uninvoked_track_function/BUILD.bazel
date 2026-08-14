@@ -23,5 +23,6 @@ jasmine_test(
     data = [
         ":test_lib",
         "//packages/core:npm_package",
+        "//packages/forms:npm_package",
     ],
 )
