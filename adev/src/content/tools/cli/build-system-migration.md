@@ -569,6 +569,18 @@ IMPORTANT: Avoiding the use of modules with non-local side effects (outside of p
 By default, after a successful build by the application builder the bundle is located in a `dist/<project-name>/browser` directory (instead of `dist/<project-name>` for the browser builder).
 This might break some of the toolchains that rely the previous location. In this case, you can [configure the output path](reference/configs/workspace-config#output-path-configuration) to suit your needs.
 
+If you deploy via a CI/CD pipeline (for example Azure DevOps release tasks, IIS, or any script that copies from a fixed `dist/<project-name>` path), update the deploy step to point at `dist/<project-name>/browser` instead. Pipelines that copy `dist/<project-name>` directly will silently deploy an incomplete or empty site.
+
+If you'd rather keep your existing deploy path unchanged, you can flatten the output back to `dist/<project-name>` by setting `outputPath` in `angular.json`:
+
+```conf - angular.json
+ \`\`\`json
+"outputPath": {
+  "base": "dist/<project-name>"
+}
+\`\`\` 
+```
+
 ## Bug reports
 
 Report issues and feature requests on [GitHub](https://github.com/angular/angular-cli/issues).
