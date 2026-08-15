@@ -6174,6 +6174,41 @@ describe('platform-server full application hydration integration', () => {
         });
       });
 
+      it('should detect static text content mismatch', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <ul>
+              <li><span>Alice</span><button>Delete</button></li>
+            </ul>
+          `,
+        })
+        class SimpleComponent {
+          private doc = inject(DOCUMENT);
+          private isServer = isPlatformServer(inject(PLATFORM_ID));
+
+          ngAfterViewInit() {
+            if (this.isServer) {
+              const injectedItem = this.doc.createElement('li');
+              injectedItem.innerHTML = '<span>Sponsored</span><button>Visit ad</button>';
+              this.doc.querySelector('li')?.before(injectedItem);
+            }
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+
+        resetTViewsFor(SimpleComponent);
+
+        await expectAsync(
+          prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [withNoopErrorHandler()],
+          }),
+        ).toBeRejectedWithError(
+          /During hydration Angular expected a text node \(with the "Alice" content\) but found a text node \(with the "Sponsored" content\)/,
+        );
+      });
+
       it('should not crash when a node can not be found during hydration', async () => {
         @Component({
           selector: 'app',

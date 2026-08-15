@@ -64,13 +64,17 @@ export function validateMatchingNode(
   tNode: TNode,
   isViewContainerAnchor = false,
 ): void {
+  const hasStaticTextContentMismatch = hasTextContentMismatch(node, tNode);
+
   if (
     !node ||
     (node as Node).nodeType !== nodeType ||
+    hasStaticTextContentMismatch ||
     ((node as Node).nodeType === Node.ELEMENT_NODE &&
       (node as HTMLElement).tagName.toLowerCase() !== tagName?.toLowerCase())
   ) {
-    const expectedNode = shortRNodeDescription(nodeType, tagName, null);
+    const expectedTextContent = hasStaticTextContentMismatch ? tNode.value : null;
+    const expectedNode = shortRNodeDescription(nodeType, tagName, expectedTextContent);
     let header = `During hydration Angular expected ${expectedNode} but `;
 
     const hostComponentDef = getDeclarationComponentDef(lView);
@@ -118,6 +122,16 @@ export function validateMatchingNode(
 
     throw new RuntimeError(RuntimeErrorCode.HYDRATION_NODE_MISMATCH, message);
   }
+}
+
+function hasTextContentMismatch(node: RNode | null, tNode: TNode): boolean {
+  return (
+    node !== null &&
+    (node as Node).nodeType === Node.TEXT_NODE &&
+    tNode.type === TNodeType.Text &&
+    tNode.value.length > 0 &&
+    (node as Node).textContent !== tNode.value
+  );
 }
 
 /**
