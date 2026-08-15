@@ -132,6 +132,21 @@ describe('Highlight', () => {
 
       expect(document.body.querySelectorAll('.' + OVERLAY_CLASS).length).toBe(1);
     });
+
+    it('should destroy the highlight after the configured TTL elapses', () => {
+      jasmine.clock().install();
+
+      const highlight = createHighlight(createTemplate({ttl: 1000}), {
+        title: document.createElement('div'),
+      });
+
+      highlight.display();
+      jasmine.clock().tick(1000);
+
+      expect(getOverlay()).toBeNull();
+
+      jasmine.clock().uninstall();
+    });
   });
 
   describe('hide', () => {
