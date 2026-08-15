@@ -8,9 +8,15 @@
 
 import {EventEmitter} from '@angular/core';
 import {HydrationStatus} from '../../../../../protocol';
-import {positionOverlayElement, setLabelElementVisibility} from './dom';
-import {debugLog} from '../utils/log';
 import {AngularDevtoolsError} from '../utils/error';
+import {runOutsideAngular} from '../utils/general';
+import {debugLog} from '../utils/log';
+import {
+  fadeOutOverlay,
+  OVERLAY_FADE_OUT_DUR,
+  positionOverlayElement,
+  setLabelElementPosition,
+} from './dom';
 
 //
 // Types & classes
@@ -38,7 +44,7 @@ export interface HighlightLabel<T extends LabelContentFn> {
   x: 'left' | 'center' | 'right';
 
   /** Offset placement of the label relative to the highlight container edge. */
-  offset: 'inset' | 'outset';
+  offset: 'inset' | 'outset' | 'prefer-inset';
 
   /** Label content template function. */
   content: T;
@@ -50,6 +56,9 @@ export interface HighlightTemplate<T extends HighlightLabelDefinition = Highligh
 
   /** Color of the highlight overlay. The labels are also based on it. */
   overlayColor: RgbColor;
+
+  /** Select the style of the overlay – filled or an outline. Default: `fill` */
+  style?: 'fill' | 'outline';
 
   /**
    * Pick whether the labels should be visible/sticky
@@ -63,6 +72,9 @@ export interface HighlightTemplate<T extends HighlightLabelDefinition = Highligh
    * (e.g. a single `left`, a single `center` and a single `right`).
    */
   labels: Record<keyof T, HighlightLabel<T[keyof T]>>;
+
+  /** Time to live (in milliseconds). Default: unset */
+  ttl?: number;
 }
 
 // Add a new type for each new template.
@@ -80,6 +92,7 @@ export enum HighlightType {
 /** Provides a container of all highlight-related references and controls over the highlight. */
 export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefinition> {
   private destroyed = false;
+  private ttlTimeout: ReturnType<typeof setTimeout> = 0;
 
   constructor(
     private readonly overlayElement: HTMLElement,
@@ -117,6 +130,9 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
       debugLog.warn('The highlight has already been destroyed. Check references storing.');
       return;
     }
+    if (this.ttlTimeout) {
+      clearTimeout(this.ttlTimeout);
+    }
     this.destroyEvents.emit([this]);
     this.overlayElement.remove();
     this.destroyed = true;
@@ -124,8 +140,25 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
 
   /** Render/append the highlight to the DOM. */
   display() {
-    if (!document.body.contains(this.overlayElement)) {
-      document.body.appendChild(this.overlayElement);
+    if (document.body.contains(this.overlayElement)) {
+      return;
+    }
+
+    document.body.appendChild(this.overlayElement);
+
+    // Initiate TTL, if it's set
+    const {ttl} = this.template;
+    if (ttl !== undefined && ttl > 0 && !this.ttlTimeout) {
+      runOutsideAngular(() => {
+        this.ttlTimeout = setTimeout(() => this.destroy(), ttl);
+      });
+
+      // Check whether there is enough time to fade out the
+      // element gracefully. If not, do not animate.
+      const timeUntilFadeOut = ttl - OVERLAY_FADE_OUT_DUR;
+      if (timeUntilFadeOut >= 0) {
+        fadeOutOverlay(this.overlayElement, timeUntilFadeOut);
+      }
     }
   }
 
@@ -144,7 +177,7 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
     positionOverlayElement(dimensions, this.overlayElement);
 
     for (const [id, label] of Object.entries(this.labelElements)) {
-      setLabelElementVisibility(dimensions, label, this.template.labels[id].offset);
+      setLabelElementPosition(dimensions, label, this.template.labels[id].offset);
     }
   }
 }
@@ -175,6 +208,7 @@ export const inspectElementHighlightTemplate: HighlightTemplate<InspectElementLa
   type: HighlightType.InspectElement,
   overlayColor: COLORS.blue,
   labelsType: 'sticky',
+  ttl: 4000,
   labels: {
     ['component-name']: {
       x: 'right',
