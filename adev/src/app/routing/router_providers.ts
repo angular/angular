@@ -23,6 +23,7 @@ import {
   withNavigationErrorHandler,
   withRouterConfig,
   isActive,
+  withExperimentalWebMcpRouterTools,
 } from '@angular/router';
 import {routes} from './routes';
 import {ADevTitleStrategy} from '../core/services/a-dev-title-strategy';
@@ -65,6 +66,7 @@ export const routerProviders = [
       },
     }),
     withComponentInputBinding(),
+    withExperimentalWebMcpRouterTools(),
   ),
   {
     provide: RouteReuseStrategy,

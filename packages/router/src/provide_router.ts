@@ -54,6 +54,7 @@ import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 
 import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtools';
 import {ActivatedRoute} from './router_state';
+import type {WebMcpRouterToolsFeature} from './webmcp';
 import {NavigationStateManager} from './statemanager/navigation_state_manager';
 import {StateManager} from './statemanager/state_manager';
 import {afterNextNavigation} from './utils/navigations';
@@ -136,7 +137,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 /**
  * Helper function to create an object that represents a Router feature.
  */
-function routerFeature<FeatureKind extends RouterFeatureKind>(
+export function routerFeature<FeatureKind extends RouterFeatureKind>(
   kind: FeatureKind,
   providers: Array<Provider | EnvironmentProviders>,
 ): RouterFeature<FeatureKind> {
@@ -363,8 +364,7 @@ export type EnabledBlockingInitialNavigationFeature =
  * @publicApi
  */
 export type InitialNavigationFeature =
-  | EnabledBlockingInitialNavigationFeature
-  | DisabledInitialNavigationFeature;
+  EnabledBlockingInitialNavigationFeature | DisabledInitialNavigationFeature;
 
 /**
  * Configures initial navigation to start before the root component is created.
@@ -923,7 +923,8 @@ export type RouterFeatures =
   | ViewTransitionsFeature
   | ExperimentalAutoCleanupInjectorsFeature
   | RouterHashLocationFeature
-  | ExperimentalPlatformNavigationFeature;
+  | ExperimentalPlatformNavigationFeature
+  | WebMcpRouterToolsFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -941,4 +942,5 @@ export const enum RouterFeatureKind {
   ViewTransitionsFeature,
   ExperimentalAutoCleanupInjectorsFeature,
   ExperimentalPlatformNavigationFeature,
+  WebMcpRouterToolsFeature,
 }

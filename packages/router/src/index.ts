@@ -100,6 +100,8 @@ export {
   withViewTransitions,
 } from './provide_router';
 
+export {withExperimentalWebMcpRouterTools, WebMcpRouterToolsFeature} from './webmcp';
+
 export {
   BaseRouteReuseStrategy,
   destroyDetachedRouteHandle,

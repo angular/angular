@@ -26,6 +26,7 @@ ts_project(
         "//packages/platform-browser/testing",
         "//packages/private/testing",
         "//packages/router",
+        "//packages/router:node_modules/@mcp-b/webmcp-polyfill",
         "//packages/router/testing",
     ],
 )

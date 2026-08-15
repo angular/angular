@@ -791,7 +791,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | ExperimentalAutoCleanupInjectorsFeature | RouterHashLocationFeature | ExperimentalPlatformNavigationFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | ExperimentalAutoCleanupInjectorsFeature | RouterHashLocationFeature | ExperimentalPlatformNavigationFeature | WebMcpRouterToolsFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -1137,6 +1137,9 @@ export interface ViewTransitionsFeatureOptions {
 }
 
 // @public
+export type WebMcpRouterToolsFeature = RouterFeature<RouterFeatureKind.WebMcpRouterToolsFeature>;
+
+// @public
 export function withComponentInputBinding(options?: ComponentInputBindingOptions): ComponentInputBindingFeature;
 
 // @public
@@ -1153,6 +1156,9 @@ export function withExperimentalAutoCleanupInjectors(): ExperimentalAutoCleanupI
 
 // @public
 export function withExperimentalPlatformNavigation(): ExperimentalPlatformNavigationFeature;
+
+// @public
+export function withExperimentalWebMcpRouterTools(): WebMcpRouterToolsFeature;
 
 // @public
 export function withHashLocation(): RouterHashLocationFeature;
