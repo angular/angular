@@ -127,6 +127,7 @@ export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {Writable as ɵWritable} from './interface/type';
 export {getClosestComponentName as ɵgetClosestComponentName} from './internal/get_closest_component_name';
 export {getCurrentClosestComponentInstance as ɵgetCurrentClosestComponentInstance} from './internal/get_current_closest_component_instance';
+export {isIpAddress as ɵisIpAddress} from './util/ip_address';
 export {
   clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue,
   isComponentDefPendingResolution as ɵisComponentDefPendingResolution,
@@ -181,7 +182,7 @@ export {
 } from './testability/testability';
 export {ɵassertType} from './type_checking';
 export {booleanAttribute, numberAttribute} from './util/coercion';
-export {devModeEqual as ɵdevModeEqual} from './util/comparison';
+export {devModeEqual as ɵdevModeEqual, eq as ɵeq} from './util/comparison';
 export {global as ɵglobal} from './util/global';
 export {isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './util/lang';
 export {performanceMarkFeature as ɵperformanceMarkFeature} from './util/performance';

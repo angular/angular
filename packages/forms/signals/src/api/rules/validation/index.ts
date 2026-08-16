@@ -6,15 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+export * from './compare';
 export * from './email';
+export * from './integer';
+export * from './ip_address';
 export * from './max';
 export * from './max_date';
 export * from './max_length';
 export * from './min';
 export * from './min_date';
 export * from './min_length';
+export * from './numeric';
+export * from './no_whitespace';
 export * from './pattern';
 export * from './required';
+export * from './url';
 export * from './standard_schema';
 export * from './validate';
 export * from './validate_async';

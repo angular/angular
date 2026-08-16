@@ -58,7 +58,17 @@ Signal Forms **does not** use the browser's built-in [constraint validation](htt
 
 Instead, your validation rules run entirely in Angular, and validation state is exposed through field state signals such as `valid()`, `invalid()`, and `errors()` rather than through the element's native validity state. The [`FormRoot` directive](guide/forms/signals/form-submission) also sets the `novalidate` attribute on the form element so the browser does not block submission.
 
-When a field is bound to a native form element, some built-in validation rules mirror their constraint to the corresponding native attribute: `required()`, `min()`, `max()`, `minLength()`, and `maxLength()` set the `required`, `min`, `max`, `minlength`, and `maxlength` attributes when the element supports them. An exception is `pattern()`, which does not set the native `pattern` attribute. Signal Forms sets these attributes to control input behavior and to improve accessibility, **not to trigger native validation**.
+When a field is bound to a native form element, some built-in validation rules mirror their constraint to the corresponding native attribute: `required()`, `min()`, `max()`, `minLength()`, and `maxLength()` set the `required`, `min`, `max`, `minlength`, and `maxlength` attributes when the element supports them. Exceptions include rules **without a direct native attribute counterpart**, such as:
+
+- `compare()`
+- `integer()`
+- `ipAddress()`
+- `noWhitespace()`
+- `numeric()`
+- `pattern()`
+- `url()`
+
+Signal Forms sets these attributes to control input behavior and to improve accessibility, **not to trigger native validation**.
 
 NOTE: There is one case where Signal Forms reads native validity state: when the browser cannot parse a native input's value (for example, a partially typed date), Signal Forms reports it as a parse error. Even then, the error surfaces through the field's `errors()` signal like any other validation error. See [Value transformation](guide/forms/signals/custom-controls#value-transformation) for details.
 
@@ -308,6 +318,211 @@ Common patterns:
 | Alphanumeric     | `/^[a-zA-Z0-9]+$/`      | abc123       |
 | URL-safe         | `/^[a-zA-Z0-9_-]+$/`    | my-url_123   |
 
+### url()
+
+The `url()` validation rule checks whether a field contains a valid URL format:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, url} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-website',
+  imports: [FormField],
+  template: `
+    <form novalidate>
+      <label>
+        Website
+        <input type="url" [formField]="profileForm.website" />
+      </label>
+    </form>
+  `,
+})
+export class WebsiteComponent {
+  profileModel = signal({website: ''});
+
+  profileForm = form(this.profileModel, (schemaPath) => {
+    url(schemaPath.website, {message: 'Please enter a valid URL'});
+  });
+}
+```
+
+The `url()` rule validates standard web addresses (such as [https://angular.dev](https://angular.dev) or http://localhost:4200) and rejects malformed URLs.
+
+### numeric()
+
+The `numeric()` validation rule ensures a field value contains a valid numeric value:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, numeric} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-pricing',
+  imports: [FormField],
+  template: `
+    <form novalidate>
+      <label>
+        Price
+        <input type="text" [formField]="priceForm.price" />
+      </label>
+    </form>
+  `,
+})
+export class PricingComponent {
+  priceModel = signal({price: ''});
+
+  priceForm = form(this.priceModel, (schemaPath) => {
+    numeric(schemaPath.price, {message: 'Price must be a valid number'});
+  });
+}
+```
+
+The rule accepts both floating-point numbers and integers (e.g., `123`, `45.67`, `-10`), but rejects non-numeric characters.
+
+### integer()
+
+The `integer()` validation rule checks whether a field contains a whole number:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, integer} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-inventory',
+  imports: [FormField],
+  template: `
+    <form novalidate>
+      <label>
+        Quantity
+        <input type="number" [formField]="inventoryForm.quantity" />
+      </label>
+    </form>
+  `,
+})
+export class InventoryComponent {
+  inventoryModel = signal({quantity: ''});
+
+  inventoryForm = form(this.inventoryModel, (schemaPath) => {
+    integer(schemaPath.quantity, {message: 'Quantity must be a whole number'});
+  });
+}
+```
+
+Unlike `numeric()`, `integer()` rejects decimal numbers (e.g., `12.34`) and only accepts integer values.
+
+### ipAddress()
+
+The `ipAddress()` validation rule checks whether a field value is a valid IP address:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, ipAddress} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-network-settings',
+  imports: [FormField],
+  template: `
+    <form novalidate>
+      <label>
+        Server IP
+        <input [formField]="networkForm.ip" />
+      </label>
+    </form>
+  `,
+})
+export class NetworkSettingsComponent {
+  networkModel = signal({ip: ''});
+
+  networkForm = form(this.networkModel, (schemaPath) => {
+    ipAddress(schemaPath.ipAddress, {message: 'Please enter a valid IP address'});
+  });
+}
+```
+
+The rule checks for valid [IPv4](https://developer.mozilla.org/en-US/docs/Glossary/IPv4) or [IPv6](https://developer.mozilla.org/en-US/docs/Glossary/IPv6) format strings (e.g., `192.168.1.1` or `::1`).
+
+### noWhitespace()
+
+The `noWhitespace()` validation rule ensures that a string field does not consist solely of whitespace characters or contain invalid leading/trailing whitespace:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, noWhitespace} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-profile-name',
+  imports: [FormField],
+  template: `
+    <form novalidate>
+      <label>
+        Display Name
+        <input [formField]="profileForm.displayName" />
+      </label>
+    </form>
+  `,
+})
+export class ProfileNameComponent {
+  profileModel = signal({displayName: ''});
+
+  profileForm = form(this.profileModel, (schemaPath) => {
+    noWhitespace(schemaPath.displayName, {
+      message: 'Display name cannot contain leading, trailing, or only whitespace',
+    });
+  });
+}
+```
+
+#### Validation error options
+
+`WhitespaceValidationErrorOptions` extends standard `ValidationErrorOptions` (such as `message` and `fieldTree`) with the following specific flags:
+
+| Property      | Type      | Description                                                                                            |
+| ------------- | --------- | ------------------------------------------------------------------------------------------------------ |
+| `isBlank`     | `boolean` | `true` when the input string consists exclusively of whitespace characters (e.g., `'   '`).            |
+| `isUntrimmed` | `boolean` | `true` when the input string contains leading or trailing whitespace characters (e.g., `'  hello  '`). |
+
+### compare()
+
+The `compare()` validation rule compares the value of one field to another field within the form schema (such as password confirmation):
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, compareWith} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-reset-password',
+  imports: [FormField],
+  template: `
+    <form novalidate>
+      <label>
+        Password
+        <input type="password" [formField]="passwordForm.password" />
+      </label>
+
+      <label>
+        Confirm Password
+        <input type="password" [formField]="passwordForm.confirmPassword" />
+      </label>
+    </form>
+  `,
+})
+export class ResetPasswordComponent {
+  passwordModel = signal({
+    password: '',
+    confirmPassword: '',
+  });
+
+  passwordForm = form(this.passwordModel, (schemaPath) => {
+    compare(schemaPath.confirmPassword, schemaPath.password, {
+      message: 'Passwords do not match',
+    });
+  });
+}
+```
+
+The rule marks the target field as invalid whenever its value does not match the referenced field value.
+
 ## Validation of array items
 
 Forms can include arrays of nested objects (for example, a list of order items). To apply validation rules to each item in an array, use `applyEach()` inside your schema function. `applyEach()` iterates the array path and supplies a path for each item where you can apply validators just like top-level fields.
@@ -505,9 +720,7 @@ interface User {
   lastName: string;
 }
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserFormComponent {
   readonly userModel = model<User>({
     firstName: '',
@@ -750,9 +963,7 @@ import {Component, computed, signal} from '@angular/core';
 import {form, FormField, validateStandardSchema} from '@angular/forms/signals';
 import z from 'zod';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class DynamicSchema {
   model = signal({document: '', type: 'dni'});
 

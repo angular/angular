@@ -353,6 +353,193 @@ export function emailError(
 }
 
 /**
+ * Create a URL format error associated with the target field
+ * @param options The validation error options
+ *
+ * @see [URL validation](guide/forms/signals/validation#url)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function urlError(options: WithFieldTree<ValidationErrorOptions>): UrlValidationError;
+/**
+ * Create a URL format error
+ * @param options The optional validation error options
+ *
+ * @see [URL validation](guide/forms/signals/validation#url)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function urlError(options?: ValidationErrorOptions): WithoutFieldTree<UrlValidationError>;
+export function urlError(
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<UrlValidationError> {
+  return new UrlValidationError(options);
+}
+
+/**
+ * Create a numeric error associated with the target field
+ * @param options The validation error options
+ *
+ * @see [Numeric validation](guide/forms/signals/validation#numeric)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function numericError(
+  options: WithFieldTree<ValidationErrorOptions>,
+): NumericValidationError;
+/**
+ * Create a numeric error
+ * @param options The optional validation error options
+ *
+ * @see [Numeric validation](guide/forms/signals/validation#numeric)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function numericError(
+  options?: ValidationErrorOptions,
+): WithoutFieldTree<NumericValidationError>;
+export function numericError(
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<NumericValidationError> {
+  return new NumericValidationError(options);
+}
+
+/**
+ * Create an integer error associated with the target field
+ * @param options The validation error options
+ *
+ * @see [Integer validation](guide/forms/signals/validation#integer)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function integerError(
+  options: WithFieldTree<ValidationErrorOptions>,
+): IntegerValidationError;
+/**
+ * Create an integer error
+ * @param options The optional validation error options
+ *
+ * @see [Integer validation](guide/forms/signals/validation#integer)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function integerError(
+  options?: ValidationErrorOptions,
+): WithoutFieldTree<IntegerValidationError>;
+export function integerError(
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<IntegerValidationError> {
+  return new IntegerValidationError(options);
+}
+
+/**
+ * Create an IP address format error associated with the target field
+ * @param options The validation error options
+ *
+ * @see [IP address validation](guide/forms/signals/validation#ipaddress)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function ipAddressError(
+  options: WithFieldTree<ValidationErrorOptions>,
+): IpAddressValidationError;
+/**
+ * Create an IP address format error
+ * @param options The optional validation error options
+ *
+ * @see [IP address validation](guide/forms/signals/validation#ipaddress)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function ipAddressError(
+  options?: ValidationErrorOptions,
+): WithoutFieldTree<IpAddressValidationError>;
+export function ipAddressError(
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<IpAddressValidationError> {
+  return new IpAddressValidationError(options);
+}
+
+/**
+ * Options used to create a `NoWhitespaceValidationError`.
+ */
+export interface WhitespaceValidationErrorOptions extends ValidationErrorOptions {
+  /** True when input consists entirely of whitespace characters (e.g. "   ") */
+  readonly isBlank?: boolean;
+
+  /** True when input contains leading or trailing whitespace (e.g. " cat ") */
+  readonly isUntrimmed?: boolean;
+}
+
+/**
+ * Create a whitespace error associated with the target field
+ * @param options The validation error options
+ *
+ * @see [No whitespace validation](guide/forms/signals/validation#nowhitespace)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function noWhitespaceError(
+  options: WithFieldTree<WhitespaceValidationErrorOptions>,
+): NoWhitespaceValidationError;
+/**
+ * Create a whitespace error
+ * @param options The optional validation error options
+ *
+ * @see [No whitespace validation](guide/forms/signals/validation#nowhitespace)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function noWhitespaceError(
+  options?: WhitespaceValidationErrorOptions,
+): WithoutFieldTree<NoWhitespaceValidationError>;
+export function noWhitespaceError(
+  options?: WhitespaceValidationErrorOptions,
+): WithOptionalFieldTree<NoWhitespaceValidationError> {
+  return new NoWhitespaceValidationError(options);
+}
+
+/**
+ * Create a comparison error associated with the target field
+ * @param options The validation error options
+ *
+ * @see [Compare validation](guide/forms/signals/validation#compare)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function compareError(
+  options: WithFieldTree<ValidationErrorOptions>,
+): CompareValidationError;
+/**
+ * Create a comparison error
+ * @param options The optional validation error options
+ *
+ * @see [Compare validation](guide/forms/signals/validation#compare)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export function compareError(
+  options?: ValidationErrorOptions,
+): WithoutFieldTree<CompareValidationError>;
+export function compareError(
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<CompareValidationError> {
+  return new CompareValidationError(options);
+}
+
+/**
  * Common interface for all validation errors.
  *
  * This can be returned from validators.
@@ -604,6 +791,74 @@ export class PatternValidationError extends BaseNgValidationError {
  */
 export class EmailValidationError extends BaseNgValidationError {
   override readonly kind = 'email';
+}
+
+/**
+ * Represents a validation error when a field value is not a valid URL.
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export class UrlValidationError extends BaseNgValidationError {
+  override readonly kind = 'url';
+}
+
+/**
+ * Represents a validation error when a field value is not numeric.
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export class NumericValidationError extends BaseNgValidationError {
+  override readonly kind = 'numeric';
+}
+
+/**
+ * Represents a validation error when a field value is not an integer.
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export class IntegerValidationError extends BaseNgValidationError {
+  override readonly kind = 'integer';
+}
+
+/**
+ * Represents a validation error when a field value is not a valid IP address.
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export class IpAddressValidationError extends BaseNgValidationError {
+  override readonly kind = 'ipAddress';
+}
+
+/**
+ * Represents a validation error when a field value contains invalid whitespace.
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export class NoWhitespaceValidationError extends BaseNgValidationError {
+  override readonly kind = 'noWhitespace';
+  readonly isBlank: boolean;
+  readonly isUntrimmed: boolean;
+
+  constructor(options?: WhitespaceValidationErrorOptions) {
+    super(options);
+    this.isBlank = options?.isBlank ?? false;
+    this.isUntrimmed = options?.isUntrimmed ?? false;
+  }
+}
+
+/**
+ * Represents a validation error when two field values do not match.
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export class CompareValidationError extends BaseNgValidationError {
+  override readonly kind = 'compare';
 }
 
 /**

@@ -67,6 +67,21 @@ export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
 }
 
 // @public
+export function compare<T, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<T, SchemaPathRules.Supported, TPathKind>, targetPath: SchemaPath<T, SchemaPathRules.Supported, PathKind>, config?: BaseValidatorConfig<T, TPathKind>): void;
+
+// @public
+export function compareError(options: WithFieldTree<ValidationErrorOptions>): CompareValidationError;
+
+// @public
+export function compareError(options?: ValidationErrorOptions): WithoutFieldTree<CompareValidationError>;
+
+// @public
+export class CompareValidationError extends BaseNgValidationError {
+    // (undocumented)
+    readonly kind = "compare";
+}
+
+// @public
 export type CompatFieldState<TControl extends AbstractControl, TKey extends string | number = string | number, TMode extends 'writable' | 'readonly' = 'writable'> = FieldStateByMode<TControl extends AbstractControl<unknown, infer TValue> ? TValue : never, TKey, TMode> & {
     control: Signal<TControl>;
 };
@@ -297,6 +312,36 @@ export type IgnoreUnknownProperties<T> = T extends Record<PropertyKey, unknown> 
 } : T;
 
 // @public
+export function integer<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<string | number, SchemaPathRules.Supported, TPathKind>, config?: BaseValidatorConfig<string | number, TPathKind>): void;
+
+// @public
+export function integerError(options: WithFieldTree<ValidationErrorOptions>): IntegerValidationError;
+
+// @public
+export function integerError(options?: ValidationErrorOptions): WithoutFieldTree<IntegerValidationError>;
+
+// @public
+export class IntegerValidationError extends BaseNgValidationError {
+    // (undocumented)
+    readonly kind = "integer";
+}
+
+// @public
+export function ipAddress<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>, config?: BaseValidatorConfig<string, TPathKind>): void;
+
+// @public
+export function ipAddressError(options: WithFieldTree<ValidationErrorOptions>): IpAddressValidationError;
+
+// @public
+export function ipAddressError(options?: ValidationErrorOptions): WithoutFieldTree<IpAddressValidationError>;
+
+// @public
+export class IpAddressValidationError extends BaseNgValidationError {
+    // (undocumented)
+    readonly kind = "ipAddress";
+}
+
+// @public
 export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol;
 
 // @public
@@ -509,6 +554,41 @@ export const NgValidationError: abstract new () => NgValidationError;
 
 // @public (undocumented)
 export type NgValidationError = RequiredValidationError | MinValidationError | MinDateValidationError | MaxValidationError | MaxDateValidationError | MinLengthValidationError | MaxLengthValidationError | PatternValidationError | EmailValidationError | StandardSchemaValidationError | NativeInputParseError;
+
+// @public
+export function noWhitespace<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>, config?: BaseValidatorConfig<string, TPathKind>): void;
+
+// @public
+export function noWhitespaceError(options: WithFieldTree<WhitespaceValidationErrorOptions>): NoWhitespaceValidationError;
+
+// @public
+export function noWhitespaceError(options?: WhitespaceValidationErrorOptions): WithoutFieldTree<NoWhitespaceValidationError>;
+
+// @public
+export class NoWhitespaceValidationError extends BaseNgValidationError {
+    constructor(options?: WhitespaceValidationErrorOptions);
+    // (undocumented)
+    readonly isBlank: boolean;
+    // (undocumented)
+    readonly isUntrimmed: boolean;
+    // (undocumented)
+    readonly kind = "noWhitespace";
+}
+
+// @public
+export function numeric<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<string | number, SchemaPathRules.Supported, TPathKind>, config?: BaseValidatorConfig<string | number, TPathKind>): void;
+
+// @public
+export function numericError(options: WithFieldTree<ValidationErrorOptions>): NumericValidationError;
+
+// @public
+export function numericError(options?: ValidationErrorOptions): WithoutFieldTree<NumericValidationError>;
+
+// @public
+export class NumericValidationError extends BaseNgValidationError {
+    // (undocumented)
+    readonly kind = "numeric";
+}
 
 // @public
 export type OneOrMany<T> = T | readonly T[];
@@ -751,6 +831,21 @@ export type TreeValidationResult<E extends ValidationError.WithOptionalFieldTree
 export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, TreeValidationResult, TPathKind>;
 
 // @public
+export function url<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>, config?: BaseValidatorConfig<string, TPathKind>): void;
+
+// @public
+export function urlError(options: WithFieldTree<ValidationErrorOptions>): UrlValidationError;
+
+// @public
+export function urlError(options?: ValidationErrorOptions): WithoutFieldTree<UrlValidationError>;
+
+// @public
+export class UrlValidationError extends BaseNgValidationError {
+    // (undocumented)
+    readonly kind = "url";
+}
+
+// @public
 export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: NoInfer<FieldValidator<TValue, TPathKind>>): void;
 
 // @public
@@ -811,6 +906,12 @@ export type ValidationSuccess = null | undefined | void;
 
 // @public
 export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, ValidationResult, TPathKind>;
+
+// @public
+export interface WhitespaceValidationErrorOptions extends ValidationErrorOptions {
+    readonly isBlank?: boolean;
+    readonly isUntrimmed?: boolean;
+}
 
 // @public
 export type WithFieldTree<T> = T & {
