@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  ɵRuntimeError as RuntimeError,
+  ɵformatRuntimeError as formatRuntimeError,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -74,5 +77,15 @@ export function modelGroupParentException(): Error {
     Option 2:  Use a regular form tag instead of the formGroup directive (template-driven strategy):
 
     ${ngModelGroupExample}`,
+  );
+}
+
+export function duplicateNgModelNameWarning(name: string): string {
+  return formatRuntimeError(
+    RuntimeErrorCode.NGMODEL_DUPLICATE_NAME,
+    `
+    The "${name}" name is used for multiple ngModel bindings in this form.
+    Make sure that elements with ngModel bindings in this form group have
+    unique "name" attribute values.`,
   );
 }
