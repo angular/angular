@@ -625,6 +625,8 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         name = `[${node.name}]`;
       } else if (node.type === BindingType.Attribute) {
         name = `[attr.${node.name}]`;
+      } else if (node.type === BindingType.TwoWay) {
+        name = `[(${node.name})]`;
       } else {
         // We shouldn't hit this, but we have this logic as a fallback.
         name = node.name;
