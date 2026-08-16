@@ -12,14 +12,13 @@ import {
   validateMatchingNode,
   validateNodeExists,
 } from '../../hydration/error_handling';
-import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
+import {locateNextRNode} from '../../hydration/node_lookup_utils';
 import {
   hasSkipHydrationAttrOnRElement,
   hasSkipHydrationAttrOnTNode,
 } from '../../hydration/skip_hydration';
 import {
   canHydrateNode,
-  getNgContainerSize,
   getSerializedContainerViews,
   markRNodeAsClaimedByHydration,
   markRNodeAsSkippedByHydration,
@@ -28,15 +27,11 @@ import {
 import {getComponentName} from '../../internal/get_closest_component_name';
 import {assertDefined} from '../../util/assert';
 import {assertTNodeCreationIndex} from '../assert';
-import {
-  clearElementContents,
-  createCommentNode,
-  createElementNode,
-  nativeRemoveNode,
-} from '../dom_node_manipulation';
+import {clearElementContents, createElementNode} from '../dom_node_manipulation';
 import {ComponentDef} from '../interfaces/definition';
+import {_locateOrCreateElementContainerNode} from './element_container';
 import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
-import {RComment, RElement, RNode} from '../interfaces/renderer_dom';
+import {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {
   ENVIRONMENT,
@@ -158,8 +153,8 @@ function initializeElement(
     tNode,
     lView,
     index,
-    name,
-    isHostless ? _locateOrCreateCommentNode : _locateOrCreateElementNode,
+    isHostless ? (ngDevMode ? `hostless ${name}` : '') : name,
+    isHostless ? _locateOrCreateElementContainerNode : _locateOrCreateElementNode,
   );
 
   if (isDirectiveHost(tNode)) {
@@ -441,70 +436,4 @@ function locateOrCreateElementNodeImpl(
 
 export function enableLocateOrCreateElementNodeImpl() {
   _locateOrCreateElementNode = locateOrCreateElementNodeImpl;
-  _locateOrCreateCommentNode = locateOrCreateCommentNodeImpl;
-}
-
-let _locateOrCreateCommentNode: typeof locateOrCreateCommentNodeImpl = (
-  tView: TView,
-  lView: LView,
-  tNode: TNode,
-  name: string,
-  index: number,
-) => {
-  lastNodeWasCreated(true);
-  return createCommentNode(lView[RENDERER], ngDevMode ? `hostless ${name}` : '');
-};
-
-function locateOrCreateCommentNodeImpl(
-  tView: TView,
-  lView: LView,
-  tNode: TNode,
-  name: string,
-  index: number,
-) {
-  const isNodeCreationMode = !canHydrateNode(lView, tNode);
-
-  lastNodeWasCreated(isNodeCreationMode);
-
-  // Regular creation mode.
-  if (isNodeCreationMode) {
-    return createCommentNode(lView[RENDERER], ngDevMode ? `hostless ${name}` : '');
-  }
-
-  // Hydration mode, looking up existing elements in DOM.
-  const hydrationInfo = lView[HYDRATION]!;
-  const currentRNode = locateNextRNode(hydrationInfo, tView, lView, tNode)!;
-
-  // A hostless component acts as an ElementContainer, meaning `currentRNode`
-  // is the first child of the component. We need to find the anchor comment node.
-  const ngContainerSize = getNgContainerSize(hydrationInfo, index) as number;
-  setSegmentHead(hydrationInfo, index, currentRNode);
-  const comment = siblingAfter<RComment>(ngContainerSize, currentRNode)!;
-
-  if (ngDevMode) {
-    validateMatchingNode(comment, Node.COMMENT_NODE, null, lView, tNode);
-    markRNodeAsClaimedByHydration(comment);
-  }
-
-  if (hydrationInfo && hasSkipHydrationAttrOnTNode(tNode)) {
-    if (isComponentHost(tNode)) {
-      enterSkipHydrationBlock(tNode);
-
-      // Since this isn't hydratable, we need to empty the container's contents
-      // so there's no duplicate content after render.
-      const renderer = lView[RENDERER];
-      let nodeToRemove: RNode | null = currentRNode;
-      while (nodeToRemove && nodeToRemove !== comment) {
-        const next: RNode | null = (nodeToRemove as Node).nextSibling as RNode | null;
-        nativeRemoveNode(renderer, nodeToRemove);
-        nodeToRemove = next;
-      }
-
-      ngDevMode && markRNodeAsSkippedByHydration(comment);
-    } else if (ngDevMode) {
-      throw invalidSkipHydrationHost(comment);
-    }
-  }
-
-  return comment;
 }

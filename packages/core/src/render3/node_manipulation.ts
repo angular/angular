@@ -705,34 +705,23 @@ export function getFirstNativeNode(lView: LView, tNode: TNode | null): RNode | n
     } else if (tNodeType & TNodeType.Container) {
       return getBeforeNodeForView(-1, lView[tNode.index]);
     } else if (tNodeType & TNodeType.ElementContainer) {
-      if (isComponentHost(tNode)) {
-        const componentLView = getComponentLViewByIndex(tNode.index, lView);
-        const firstChild = componentLView[TVIEW].firstChild;
-        if (firstChild !== null) {
-          const firstNode = getFirstNativeNode(componentLView, firstChild);
-          if (firstNode !== null) {
-            return firstNode;
-          }
-        }
-        const rNodeOrLContainer = lView[tNode.index];
-        if (isLContainer(rNodeOrLContainer)) {
-          return getBeforeNodeForView(-1, rNodeOrLContainer);
-        } else {
-          return unwrapRNode(rNodeOrLContainer);
-        }
-      } else {
-        const elIcuContainerChild = tNode.child;
-        if (elIcuContainerChild !== null) {
-          return getFirstNativeNode(lView, elIcuContainerChild);
-        } else {
-          const rNodeOrLContainer = lView[tNode.index];
-          if (isLContainer(rNodeOrLContainer)) {
-            return getBeforeNodeForView(-1, rNodeOrLContainer);
-          } else {
-            return unwrapRNode(rNodeOrLContainer);
-          }
+      const child = isComponentHost(tNode)
+        ? getComponentLViewByIndex(tNode.index, lView)[TVIEW].firstChild
+        : tNode.child;
+      const childLView = isComponentHost(tNode)
+        ? getComponentLViewByIndex(tNode.index, lView)
+        : lView;
+
+      if (child !== null) {
+        const firstNode = getFirstNativeNode(childLView, child);
+        if (firstNode !== null) {
+          return firstNode;
         }
       }
+      const rNodeOrLContainer = lView[tNode.index];
+      return isLContainer(rNodeOrLContainer)
+        ? getBeforeNodeForView(-1, rNodeOrLContainer)
+        : unwrapRNode(rNodeOrLContainer);
     } else if (tNodeType & TNodeType.LetDeclaration) {
       return getFirstNativeNode(lView, tNode.next);
     } else if (tNodeType & TNodeType.Icu) {

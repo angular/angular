@@ -178,11 +178,6 @@ export enum ErrorCode {
   HOSTLESS_COMPONENT_ANIMATIONS = 2031,
 
   /**
-   * Raised when a hostless component uses :host or :host-context in its styles.
-   */
-  HOSTLESS_COMPONENT_HOST_STYLE = 2032,
-
-  /**
    * Raised when a `standalone: false` component is declared but `strictStandalone` is set.
    */
   NON_STANDALONE_NOT_ALLOWED = 2023,

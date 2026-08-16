@@ -137,7 +137,7 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toContain('Hostless components cannot have animations');
     });
 
-    it('should emit a warning if a hostless component has :host in its styles', () => {
+    it('should allow :host in hostless component styles without errors', () => {
       env.write(
         'test.ts',
         `
@@ -154,35 +154,7 @@ runInEachFileSystem(() => {
       );
 
       const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(1);
-      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
-      expect(diags[0].messageText).toContain(
-        'Hostless components cannot use :host or :host-context in their styles',
-      );
-    });
-
-    it('should emit a warning if a hostless component has :host-context in its styles', () => {
-      env.write(
-        'test.ts',
-        `
-        import {Component} from '@angular/core';
-
-        @Component({
-          selector: 'test-cmp',
-          template: '<div></div>',
-          hostless: true,
-          styles: [' :host-context(.dark-theme) { color: white; } ']
-        })
-        export class TestCmp {}
-      `,
-      );
-
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(1);
-      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
-      expect(diags[0].messageText).toContain(
-        'Hostless components cannot use :host or :host-context in their styles',
-      );
+      expect(diags.length).toBe(0);
     });
 
     it('should throw an error if a hostless component has a class or style binding on its usage', () => {
@@ -608,30 +580,6 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toContain('Hostless components cannot have DOM bindings');
-    });
-
-    it('should not warn when CSS class name or variable contains substring :host', () => {
-      env.write(
-        'test.ts',
-        `
-        import {Component} from '@angular/core';
-
-        @Component({
-          selector: 'test-cmp',
-          template: '<div class="host-card"></div>',
-          hostless: true,
-          styles: [
-            '.host-card { color: red; }',
-            ':root { --host-bg-color: blue; }',
-            '/* comment mentioning :host */',
-          ],
-        })
-        export class TestCmp {}
-      `,
-      );
-
-      const diags = env.driveDiagnostics();
-      expect(diags.length).toBe(0);
     });
 
     it('should allow class-based directive selectors on hostless components', () => {

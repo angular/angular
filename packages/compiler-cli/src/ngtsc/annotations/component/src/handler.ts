@@ -1024,30 +1024,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           ),
         );
       }
-
-      for (const style of styles) {
-        const cleanedStyle = style
-          .replace(/\/\*[\s\S]*?\*\//g, '')
-          .replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, '');
-        if (/(?<!:):(host|host-context)\b/.test(cleanedStyle)) {
-          if (diagnostics === undefined) {
-            diagnostics = [];
-          }
-          diagnostics.push(
-            makeDiagnostic(
-              ErrorCode.HOSTLESS_COMPONENT_HOST_STYLE,
-              component.get('styles') ??
-                component.get('styleUrl') ??
-                component.get('styleUrls') ??
-                component.get('hostless')!,
-              'Hostless components cannot use :host or :host-context in their styles.',
-              undefined,
-              ts.DiagnosticCategory.Warning,
-            ),
-          );
-          break; // only need to warn once per component
-        }
-      }
     }
 
     // Collect all explicitly deferred symbols from the `@Component.deferredImports` field

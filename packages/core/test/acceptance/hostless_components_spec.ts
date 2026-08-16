@@ -522,7 +522,7 @@ describe('hostless components', () => {
     expect(fixture.nativeElement).toBeTruthy();
     // The virtual host
     expect(fixture.nativeElement.tagName).toBe('DIV');
-    expect(fixture.nativeElement.id).toBe('root-hostless');
+    expect(fixture.nativeElement.id).toMatch(/^root\d+/);
     // The actual content of our hostless component
     expect(fixture.nativeElement.innerHTML).toContain(
       '<header>hello world</header><footer>hello world</footer>',

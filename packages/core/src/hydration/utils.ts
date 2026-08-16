@@ -131,13 +131,6 @@ export function retrieveHydrationInfoImpl(
     }
   } else if (typeof (rNode as HTMLElement).getAttribute === 'function') {
     nghAttrValue = (rNode as HTMLElement).getAttribute(NGH_ATTR_NAME);
-  } else {
-    console.error(
-      'rNode does not have getAttribute. nodeType:',
-      (rNode as any).nodeType,
-      'nodeName:',
-      (rNode as any).nodeName,
-    );
   }
 
   if (nghAttrValue == null) return null;
