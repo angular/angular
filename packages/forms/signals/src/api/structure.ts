@@ -59,6 +59,30 @@ export interface FormOptions<TModel> {
   name?: string;
 
   /**
+   * When `true`, validation runs for all disabled fields in this form, regardless of whether
+   * individual `disabled()` rules have `validate: true` set.
+   *
+   * Defaults to `false`.
+   */
+  validateDisabledFields?: boolean;
+
+  /**
+   * When `true`, validation runs for all readonly fields in this form, regardless of whether
+   * individual `readonly()` rules have `validate: true` set.
+   *
+   * Defaults to `false`.
+   */
+  validateReadonlyFields?: boolean;
+
+  /**
+   * When `true`, validation runs for all hidden fields in this form, regardless of whether
+   * individual `hidden()` rules have `validate: true` set.
+   *
+   * Defaults to `false`.
+   */
+  validateHiddenFields?: boolean;
+
+  /**
    * Configuration options to expose this form as an experimental WebMCP AI agent tool.
    *
    * @experimental
@@ -216,6 +240,9 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
     injector,
     options?.name,
     options?.submission as FormSubmitOptions<unknown, unknown> | undefined,
+    options?.validateDisabledFields,
+    options?.validateReadonlyFields,
+    options?.validateHiddenFields,
   );
   const adapter = options?.adapter ?? new BasicFieldAdapter();
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
