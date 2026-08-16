@@ -388,7 +388,7 @@
       "_isRefreshingViews",
       "_keyMap",
       "_locateOrCreateAnchorNode",
-      "_locateOrCreateCommentNode",
+      "_locateOrCreateElementContainerNode",
       "_locateOrCreateElementNode",
       "_locateOrCreateTextNode",
       "_ngOnChangesFeatureImpl",

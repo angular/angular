@@ -309,7 +309,7 @@
       "_injectImplementation",
       "_isRefreshingViews",
       "_keyMap",
-      "_locateOrCreateCommentNode",
+      "_locateOrCreateElementContainerNode",
       "_locateOrCreateElementNode",
       "_ngOnChangesFeatureImpl",
       "_platformInjector",

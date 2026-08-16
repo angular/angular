@@ -1,52 +1,79 @@
 # Hostless Components Feature Support
 
-This document tracks the current support matrix for Angular hostless components.
+Hostless components (`@Component({ hostless: true, ... })`) behave **identically to regular components** in almost every way. They have a full component `LView`, dependency injection, inputs/outputs, change detection, queries, content projection, and hydration.
 
-## Supported Features
+The only differences and restrictions stem directly from the **absence of a physical host DOM element** (the component is backed by an `ElementContainer` / comment anchor node instead of an `Element`).
 
-### Core Architecture
+---
 
-- [x] Hostless component configuration (`hostless: true` in `@Component` decorator).
-- [x] Compilation support (compiler propagates `hostless: true` to `ComponentDef`).
-- [x] Removal of the host element from the DOM (rendered as an `ElementContainer` / comment node instead).
-- [x] Support by Angular DevTools (Supported out of the box! Rendered as `ElementContainer` nodes just like `<ng-container>`).
+## 1. Identical Behavior to Regular Components
 
-### Styling & Encapsulation
+Hostless components support standard component capabilities without deviation:
 
-- [x] children hostless components do not inherit from their parent, same as regular components
+### Component Lifecycle & Dependency Injection
 
-### Component Features & APIs
+- **Lifecycle Hooks**: Full support for all lifecycle hooks (`ngOnInit`, `ngAfterViewInit`, `ngOnDestroy`, `afterRender`, `afterNextRender`, etc.).
+- **Dependency Injection**: Full injector hierarchy with `providers`, `viewProviders`, and hierarchical DI.
+- **Inputs & Outputs**: Signal inputs (`input()`, `input.required()`), classic `@Input()`, outputs (`output()`, `@Output()`), and two-way models (`model()`).
 
-- [x] Content projection (`<ng-content>`) inside hostless components.
-- [x] View queries (`@ViewChild`, `@ViewChildren`) querying the hostless component itself (`ElementRef` maps to the Comment node).
-- [x] Dependency Injection for `ElementRef` (Injecting `ElementRef` returns a reference to the Comment node).
-- [x] Directives applied to the hostless component (Instances created; dev-mode runtime warnings emitted if they attempt to apply host bindings to the underlying Comment node).
-- [x] Host Directives (`hostDirectives: [MyDir]`) (Instances created; dev-mode warnings emitted if they attempt to apply host bindings).
-- [x] Change Detection (`ChangeDetectionStrategy.OnPush`, `ChangeDetectorRef.markForCheck()`, Signals) (Logical `LView` tree remains exactly the same as a normal component).
-- [x] Dynamic instantiation via `ViewContainerRef.createComponent()` (seamlessly appends internal views rather than a host wrapper).
-- [x] Native support in `RouterOutlet` (navigating to a hostless component successfully renders its internal views without a host wrapper).
-- [x] Support for `*ngComponentOutlet` (since it relies on `ViewContainerRef.createComponent()`).
+### Change Detection & Reactivity
 
-### Error Handling & Restrictions
+- **Change Detection Strategies**: `ChangeDetectionStrategy.OnPush` and `Default`.
+- **Reactivity**: Full support for Signals, `computed()`, `effect()`, `ChangeDetectorRef.markForCheck()`, and zoneless scheduling.
 
-- [x] Throw compiler error for host bindings and listeners (`@HostBinding`, `@HostListener`, `host: { ... }`).
-- [x] Throw error on styles set from the parent component.
-- [x] Throw error on regular event listeners set from the parent component (listening to outputs is still allowed).
-- [x] Throw error if legacy animations are used.
-- [x] Throw error if `ShadowDom` encapsulation is used.
-- [x] Throw error if `:host` or `:host-context` selectors are used in the component's styles.
-- [x] Animations tied to the host element throw an `NG0303` unknown property runtime error in dev-mode, since there's no DOM element to animate.
+### Templates, Projection & Queries
 
-### Server-Side Rendering & Hydration
+- **Content Projection**: Single-slot and multi-slot content projection (`<ng-content select="...">`).
+- **View & Content Queries**: `viewChild()`, `viewChildren()`, `@ViewChild`, `@ViewChildren`, `contentChild()`, `contentChildren()`, `@ContentChild`, `@ContentChildren`.
+- **Template Features**: Control flow (`@if`, `@for`, `@switch`), `@let` declarations, deferred views (`@defer`), pipes, and nested child components.
 
-- [x] Works with SSR & Hydration (Rehydrates safely by properly resolving the anchor comment node and correctly claiming child nodes).
-- [x] `ngSkipHydration` support (Safely skips hydration boundaries rooted at hostless components, clearing server DOM and falling back to client-side rendering).
+### Directives & Dynamic Instantiation
 
-### Testing Utilities
+- **Directives & Host Directives**: Directives applied to the hostless component selector and `hostDirectives: [...]` work normally.
+- **Dynamic Creation**: Seamlessly works with `ViewContainerRef.createComponent()`, `*ngComponentOutlet`, and `RouterOutlet`.
 
-- [x] Behavior of `fixture.nativeElement` and `fixture.debugElement` when testing a hostless component directly (`fixture.nativeElement` maps to the virtual `root` wrapper created by `TestBed`, allowing easy querying of child elements).
+### SSR, Hydration & Testing
 
-## Unsupported / Pending Features
+- **SSR & Full Hydration**: Server-side rendering and client rehydration correctly resolve the comment anchor and claim children.
+- **Skip Hydration**: `ngSkipHydration` works as expected on the component selector.
+- **Angular DevTools**: Supported out of the box (displayed as container nodes).
+- **TestBed**: Testing hostless components with `TestBed.createComponent()` works out of the box (with `fixture.nativeElement` wrapping the projected content in the virtual root).
 
-- Bootstrapping a hostless component directly as the root of the application (e.g. `bootstrapApplication(MyHostless)`). The component will currently attach to the root element in the `index.html` (ignoring `hostless: true`) because the root view requires a physical DOM anchor.
-- Re-ordering or querying the `ComponentRef.location.nativeElement` for dynamically created hostless components. It currently returns the underlying `Comment` node anchor, not the component's internal DOM nodes.
+---
+
+## 2. Exceptions & Restrictions (Absence of Host Element)
+
+Because no physical host element exists in the DOM, the following features are restricted or behave differently:
+
+### 1. No Host Bindings or Listeners (`NG2029`)
+
+- **Restriction**: Cannot declare `@HostBinding()`, `@HostListener()`, or `host: { ... }` in component metadata.
+- **Reason**: There is no host DOM element to attach classes, styles, attributes, or event listeners to.
+- **Compiler Error**: `ErrorCode.HOSTLESS_COMPONENT_WITH_HOST_BINDINGS = 2029`.
+
+### 2. No DOM Bindings on Component Usage (`NG8030`)
+
+- **Restriction**: Templates consuming a hostless component cannot bind DOM properties, attributes, classes, styles, or native events (e.g. `<my-hostless [class.active]="..." [id]="..." (click)="...">`).
+- **Reason**: There is no DOM element to receive these bindings.
+- **Compiler Error**: `ErrorCode.HOSTLESS_COMPONENT_UNSUPPORTED_BINDING = 8030`.
+- _Note_: Bindings matching an `@Input()`, `@Output()`, or a directive applied to the hostless tag are fully supported.
+
+### 3. No Shadow DOM Encapsulation (`NG2030`)
+
+- **Restriction**: Cannot use `ViewEncapsulation.ShadowDom` or `ViewEncapsulation.ExperimentalIsolatedShadowDom`.
+- **Reason**: Attaching a shadow root (`attachShadow()`) requires a physical DOM `Element`.
+- **Compiler Error**: `ErrorCode.HOSTLESS_COMPONENT_SHADOW_DOM = 2030`.
+
+### 4. No Component Animations (`NG2031`)
+
+- **Restriction**: Cannot declare `@Component({ animations: [...] })`.
+- **Reason**: Angular animations require a host element target.
+- **Compiler Error**: `ErrorCode.HOSTLESS_COMPONENT_ANIMATIONS = 2031`.
+
+### 5. `ElementRef` References the Comment Anchor
+
+- **Behavior**: Injecting `ElementRef` or accessing `ComponentRef.location.nativeElement` returns the underlying `Comment` node rather than an `HTMLElement`.
+
+### 6. Root Application Bootstrapping
+
+- **Behavior**: A hostless component cannot serve as the root component passed to `bootstrapApplication(MyHostless)` without a host element, because root application mounting requires an existing physical DOM element in `index.html`.

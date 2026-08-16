@@ -560,6 +560,8 @@ export interface Component extends Directive {
    * Instead, the component will act as a logical container, and any
    * CSS style encapsulation classes will be applied to the top-level
    * elements in its template.
+   *
+   * @developerPreview 22.2
    */
   hostless?: boolean;
 

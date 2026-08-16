@@ -10,24 +10,21 @@ import {
   validateMatchingNode,
   validateNodeExists,
 } from '../../hydration/error_handling';
-import {hasSkipHydrationAttrOnTNode} from '../../hydration/skip_hydration';
-import {markRNodeAsSkippedByHydration} from '../../hydration/utils';
-import {nativeRemoveNode} from '../dom_node_manipulation';
-import {RNode} from '../interfaces/renderer_dom';
-import {isComponentHost} from '../interfaces/type_checks';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
+import {hasSkipHydrationAttrOnTNode} from '../../hydration/skip_hydration';
 import {
   canHydrateNode,
   getNgContainerSize,
   markRNodeAsClaimedByHydration,
+  markRNodeAsSkippedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
 import {assertDefined, assertNumber} from '../../util/assert';
 import {assertTNodeCreationIndex} from '../assert';
-import {createCommentNode} from '../dom_node_manipulation';
+import {createCommentNode, nativeRemoveNode} from '../dom_node_manipulation';
 import {TElementContainerNode, TNode, TNodeType} from '../interfaces/node';
-import {RComment} from '../interfaces/renderer_dom';
-import {isDirectiveHost} from '../interfaces/type_checks';
+import {RComment, RNode} from '../interfaces/renderer_dom';
+import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TVIEW, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {executeContentQueries} from '../queries/query_execution';
