@@ -480,6 +480,31 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should report unsupported two-way bindings on a field', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="number" [formField]="f" [(max)]="maxLength"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(''));
+            maxLength = 10;
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Binding to '[(max)]' is not allowed on nodes using the '[formField]' directive`,
+      );
+    });
+
     it('should report unsupported property bindings on a field with a custom control', () => {
       env.write(
         'test.ts',
