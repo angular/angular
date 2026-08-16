@@ -179,6 +179,32 @@ describe('EventContract', () => {
     expect(registeredEventTypes).toEqual(['click']);
   });
 
+  it('adds event listener for an event type that shadows an Object.prototype member', () => {
+    const container = getRequiredElementById('container');
+    const addEventListenerSpy = spyOn(container, 'addEventListener');
+
+    const eventContractContainerManager = new EventContractContainer(container);
+    const eventContract = createEventContract({eventContractContainerManager, eventTypes: []});
+
+    eventContract.addEvent('constructor');
+
+    const registeredEventTypes = addEventListenerSpy.calls
+      .allArgs()
+      .map(([eventType]) => eventType);
+    expect(registeredEventTypes).toEqual(['constructor']);
+  });
+
+  it('has no event handlers with `handler()` for an unregistered Object.prototype member name', () => {
+    const container = getRequiredElementById('click-container');
+
+    const eventContract = createEventContract({
+      eventContractContainerManager: new EventContractContainer(container),
+      eventTypes: [],
+    });
+
+    expect(eventContract.handler('constructor')).toBeUndefined();
+  });
+
   it('adds event listener for aliased event', () => {
     const container = getRequiredElementById('container');
     const addEventListenerSpy = spyOn(container, 'addEventListener');

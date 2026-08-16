@@ -143,6 +143,16 @@ const domContent = `
     <div id="pointerleave-target-element"></div>
   </div>
 </div>
+
+<div id="prototype-event-type-container">
+  <div id="prototype-event-type-action-element" jsaction="constructor:handleConstructor">
+    <div id="prototype-event-type-target-element"></div>
+  </div>
+</div>
+
+<div id="prototype-action-name-container">
+  <div id="prototype-action-name-target-element" jsaction="constructor"></div>
+</div>
 `;
 
 function getRequiredElementById(id: string) {
@@ -256,6 +266,12 @@ function dispatchKeyboardEvent(
   // `initKeyboardEvent`.
   Object.defineProperty(event, 'key', {value: key});
   spyOn(event, 'preventDefault').and.callThrough();
+  target.dispatchEvent(event);
+  return event;
+}
+
+function dispatchCustomEvent(target: Element, type: string) {
+  const event = new Event(type, {bubbles: true, cancelable: true});
   target.dispatchEvent(event);
   return event;
 }
@@ -614,6 +630,67 @@ describe('Dispatcher', () => {
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
     expect(eventInfoWrapper.getAction()).toBeUndefined();
+  });
+
+  it('dispatches event for an event type that shadows an Object.prototype member', () => {
+    const container = getRequiredElementById('prototype-event-type-container');
+    const actionElement = getRequiredElementById('prototype-event-type-action-element');
+    const targetElement = getRequiredElementById('prototype-event-type-target-element');
+
+    const eventContract = createEventContract({
+      container,
+      eventTypes: ['constructor'],
+    });
+    const dispatchDelegate = createDispatchDelegateSpy();
+    createDispatcher({dispatchDelegate, eventContract});
+
+    const customEvent = dispatchCustomEvent(targetElement, 'constructor');
+
+    expect(dispatchDelegate).toHaveBeenCalledTimes(1);
+    const eventInfoWrapper = dispatchDelegate.calls.mostRecent().args[0];
+    expect(eventInfoWrapper.getEventType()).toBe('constructor');
+    expect(eventInfoWrapper.getEvent()).toBe(customEvent);
+    expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleConstructor');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
+  });
+
+  it('does not resolve an action for an event type the jsaction does not name', () => {
+    const container = getRequiredElementById('click-container');
+    const targetElement = getRequiredElementById('click-target-element');
+
+    const eventContract = createEventContract({
+      container,
+      eventTypes: ['toString'],
+    });
+    const dispatchDelegate = createDispatchDelegateSpy();
+    createDispatcher({dispatchDelegate, eventContract});
+
+    dispatchCustomEvent(targetElement, 'toString');
+
+    expect(dispatchDelegate).toHaveBeenCalledTimes(1);
+    const eventInfoWrapper = dispatchDelegate.calls.mostRecent().args[0];
+    expect(eventInfoWrapper.getEventType()).toBe('toString');
+    expect(eventInfoWrapper.getAction()).toBeUndefined();
+  });
+
+  it('dispatches event for a jsaction attribute that is an Object.prototype member name', () => {
+    const container = getRequiredElementById('prototype-action-name-container');
+    const targetElement = getRequiredElementById('prototype-action-name-target-element');
+
+    const eventContract = createEventContract({
+      container,
+      eventTypes: ['click'],
+    });
+    const dispatchDelegate = createDispatchDelegateSpy();
+    createDispatcher({dispatchDelegate, eventContract});
+
+    dispatchMouseEvent(targetElement);
+
+    expect(dispatchDelegate).toHaveBeenCalledTimes(1);
+    const eventInfoWrapper = dispatchDelegate.calls.mostRecent().args[0];
+    expect(eventInfoWrapper.getAction()?.name).toBe('constructor');
+    expect(eventInfoWrapper.getAction()?.element).toBe(targetElement);
   });
 
   it('dispatches event from shadow dom', () => {

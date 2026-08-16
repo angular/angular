@@ -10,8 +10,12 @@ import {Property} from './property';
 
 /**
  * Map from jsaction annotation to a parsed map from event name to action name.
+ *
+ * Null-prototype because it is indexed by the raw attribute value, so an
+ * attribute that is exactly an `Object.prototype` member name would otherwise
+ * read back the inherited value as if it were a cache hit.
  */
-const parseCache: {[key: string]: {[key: string]: string | undefined}} = {};
+const parseCache: {[key: string]: {[key: string]: string | undefined}} = Object.create(null);
 
 /**
  * Reads the jsaction parser cache from the given DOM Element.
@@ -25,7 +29,7 @@ export function get(element: Element): {[key: string]: string | undefined} | und
  * creates an empty one.
  */
 export function getDefaulted(element: Element): {[key: string]: string | undefined} {
-  const cache = get(element) ?? {};
+  const cache: {[key: string]: string | undefined} = get(element) ?? Object.create(null);
   set(element, cache);
   return cache;
 }

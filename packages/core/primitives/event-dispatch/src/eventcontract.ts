@@ -85,10 +85,14 @@ export class EventContract implements UnrenamedEventContract {
    * internally created DOM event handler function that handles the
    * DOM events. See addEvent().
    *
+   * Null-prototype because it is keyed by event type. With a normal object
+   * literal the `eventType in this.eventHandlers` guard in `addEvent()` is
+   * satisfied by every `Object.prototype` member, so an event type such as
+   * `constructor` is treated as already registered and never gets a listener.
    */
-  private eventHandlers: {[key: string]: EventHandler} = {};
+  private eventHandlers: {[key: string]: EventHandler} = Object.create(null);
 
-  private browserEventTypeToExtraEventTypes: {[key: string]: string[]} = {};
+  private browserEventTypeToExtraEventTypes: {[key: string]: string[]} = Object.create(null);
 
   /**
    * The dispatcher function. Events are passed to this function for
@@ -252,8 +256,8 @@ export class EventContract implements UnrenamedEventContract {
   cleanUp() {
     this.containerManager?.cleanUp();
     this.containerManager = null;
-    this.eventHandlers = {};
-    this.browserEventTypeToExtraEventTypes = {};
+    this.eventHandlers = Object.create(null);
+    this.browserEventTypeToExtraEventTypes = Object.create(null);
     this.dispatcher = null;
     this.queuedEventInfos = [];
   }

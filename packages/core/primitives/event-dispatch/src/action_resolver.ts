@@ -18,8 +18,13 @@ import * as eventLib from './event';
 /**
  * Since maps from event to action are immutable we can use a single map
  * to represent the empty map.
+ *
+ * Null-prototype because it is indexed by DOM event type, and an event type
+ * that collides with an `Object.prototype` member (`constructor`, `toString`,
+ * `valueOf`, ...) would otherwise resolve to the inherited value instead of
+ * `undefined`.
  */
-const EMPTY_ACTION_MAP: {[key: string]: string} = {};
+const EMPTY_ACTION_MAP: {[key: string]: string} = Object.create(null);
 
 /**
  * This regular expression matches a semicolon.
@@ -258,7 +263,7 @@ export class ActionResolver {
       } else {
         actionMap = cache.getParsed(jsactionAttribute);
         if (!actionMap) {
-          actionMap = {};
+          actionMap = Object.create(null) as {[key: string]: string | undefined};
           const values = jsactionAttribute.split(REGEXP_SEMICOLON);
           for (let idx = 0; idx < values.length; idx++) {
             const value = values[idx];
