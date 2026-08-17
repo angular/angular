@@ -1044,6 +1044,49 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+
+      it('should properly short-circuit safe navigation chains', () => {
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictTemplates: true,
+          strictSafeNavigationTypes: true,
+        });
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+
+          type MyType = {
+            data: {
+              foo: {
+                bar: () => boolean;
+              };
+              0: {
+                bar: boolean;
+              };
+            };
+          };
+
+          @Component({
+            selector: 'test',
+            template: '{{ value?.data.foo.bar() }} {{ value?.data["foo"] }} {{ value?.data[0].bar }}',
+            standalone: false,
+          })
+          class TestCmp {
+            value: MyType | null = null;
+          }
+
+          @NgModule({
+            declarations: [TestCmp],
+          })
+          class Module {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('strictOutputEventTypes', () => {
