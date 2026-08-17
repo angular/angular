@@ -1147,15 +1147,15 @@ describe('FieldNode', () => {
     });
   });
 
-  describe('validateDisabledFields option', () => {
-    it('should validate all disabled fields when set to true', () => {
+  describe('skipDisabledValidation option', () => {
+    it('should validate all disabled fields when set to false', () => {
       const f = form(
         signal({a: ''}),
         (p) => {
           disabled(p.a);
           required(p.a);
         },
-        {injector: TestBed.inject(Injector), validateDisabledFields: true},
+        {injector: TestBed.inject(Injector), skipDisabledValidation: false},
       );
 
       expect(f.a().disabled()).toBe(true);
@@ -1185,7 +1185,7 @@ describe('FieldNode', () => {
           required(p.a);
           required(p.b);
         },
-        {injector: TestBed.inject(Injector), validateDisabledFields: true},
+        {injector: TestBed.inject(Injector), skipDisabledValidation: false},
       );
 
       expect(f().disabled()).toBe(true);
@@ -1195,15 +1195,15 @@ describe('FieldNode', () => {
     });
   });
 
-  describe('validateReadonlyFields option', () => {
-    it('should validate all readonly fields when set to true', () => {
+  describe('skipReadonlyValidation option', () => {
+    it('should validate all readonly fields when set to false', () => {
       const f = form(
         signal({a: ''}),
         (p) => {
           readonly(p.a);
           required(p.a);
         },
-        {injector: TestBed.inject(Injector), validateReadonlyFields: true},
+        {injector: TestBed.inject(Injector), skipReadonlyValidation: false},
       );
 
       expect(f.a().readonly()).toBe(true);
@@ -1233,7 +1233,7 @@ describe('FieldNode', () => {
           required(p.a);
           required(p.b);
         },
-        {injector: TestBed.inject(Injector), validateReadonlyFields: true},
+        {injector: TestBed.inject(Injector), skipReadonlyValidation: false},
       );
 
       expect(f().readonly()).toBe(true);
@@ -1243,15 +1243,15 @@ describe('FieldNode', () => {
     });
   });
 
-  describe('validateHiddenFields option', () => {
-    it('should validate all hidden fields when set to true', () => {
+  describe('skipHiddenValidation option', () => {
+    it('should validate all hidden fields when set to false', () => {
       const f = form(
         signal({a: ''}),
         (p) => {
           hidden(p.a, {when: () => true});
           required(p.a);
         },
-        {injector: TestBed.inject(Injector), validateHiddenFields: true},
+        {injector: TestBed.inject(Injector), skipHiddenValidation: false},
       );
 
       expect(f.a().hidden()).toBe(true);
@@ -1281,7 +1281,7 @@ describe('FieldNode', () => {
           required(p.a);
           required(p.b);
         },
-        {injector: TestBed.inject(Injector), validateHiddenFields: true},
+        {injector: TestBed.inject(Injector), skipHiddenValidation: false},
       );
 
       expect(f().hidden()).toBe(true);

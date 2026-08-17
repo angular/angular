@@ -218,9 +218,9 @@ export interface FormOptions<TModel> {
     injector?: Injector;
     name?: string;
     submission?: FormSubmitOptions<TModel, unknown>;
-    validateDisabledFields?: boolean;
-    validateHiddenFields?: boolean;
-    validateReadonlyFields?: boolean;
+    skipDisabledValidation?: boolean;
+    skipReadonlyValidation?: boolean;
+    skipHiddenValidation?: boolean;
 }
 
 // @public
