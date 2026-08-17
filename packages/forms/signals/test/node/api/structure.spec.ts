@@ -130,4 +130,24 @@ describe('structure APIs', () => {
       expect((f.a() as any).structure._areChildrenMaterialized()).toBeTrue();
     });
   });
+
+  describe('object models with shadowing keys', () => {
+    it('should not throw when the model has an own `hasOwnProperty` field', () => {
+      // A model value that mirrors untrusted JSON may carry a field literally named
+      // `hasOwnProperty`, which shadows the method used by the stale-field diff.
+      const data = signal<Record<string, unknown>>({a: '', hasOwnProperty: ''});
+      const f = form(data, {injector: TestBed.inject(Injector)}) as any;
+
+      // Materialize the root's children so the structural cache is populated.
+      expect(f.a).toBeDefined();
+
+      // Update to another object that still carries the shadowing key. Re-reading a
+      // child recomputes the children map and runs the stale-field diff against this
+      // value.
+      data.set({a: 'updated', hasOwnProperty: ''});
+
+      expect(() => f.a().value()).not.toThrow();
+      expect(f.a().value()).toBe('updated');
+    });
+  });
 });
