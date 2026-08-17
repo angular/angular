@@ -55,9 +55,6 @@ export function createLinkedSignal<S, D>(sourceFn: () => S, computationFn: Compu
 // @public
 export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): [SignalGetter<T>, SignalSetter<T>, SignalUpdater<T>];
 
-// @public (undocumented)
-export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, schedule: (watch: Watch) => void, allowSignalWrites: boolean): Watch;
-
 // @public
 export function defaultEquals<T>(a: T, b: T): boolean;
 
@@ -227,24 +224,6 @@ export type ValueEqualityFn<T> = (a: T, b: T) => boolean;
 export type Version = number & {
     __brand: 'Version';
 };
-
-// @public (undocumented)
-export interface Watch {
-    // (undocumented)
-    [SIGNAL]: WatchNode;
-    // (undocumented)
-    cleanup(): void;
-    destroy(): void;
-    // (undocumented)
-    notify(): void;
-    run(): void;
-}
-
-// @public
-export type WatchCleanupFn = () => void;
-
-// @public
-export type WatchCleanupRegisterFn = (cleanupFn: WatchCleanupFn) => void;
 
 // (No @packageDocumentation comment for this package)
 

@@ -6,24 +6,99 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {createWatch, Watch, WatchCleanupFn} from '../../primitives/signals';
+import {
+  BASE_EFFECT_NODE,
+  BaseEffectNode,
+  consumerDestroy,
+  isInNotificationPhase,
+  runEffect,
+  setActiveConsumer,
+} from '../../primitives/signals';
 
-let queue = new Set<Watch>();
+export type EffectCleanupFn = () => void;
+export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
+
+export interface TestingEffectNode extends BaseEffectNode {
+  cleanupFns: EffectCleanupFn[] | undefined;
+  destroyed: boolean;
+}
+
+export const TESTING_EFFECT_NODE: Omit<TestingEffectNode, 'fn'> = /* @__PURE__ */ (() => ({
+  ...BASE_EFFECT_NODE,
+  cleanupFns: undefined,
+  destroyed: false,
+  consumerMarkedDirty(this: TestingEffectNode): void {
+    if (this.destroyed) {
+      return;
+    }
+    queue.add(this);
+  },
+  run(this: TestingEffectNode): void {
+    if (this.destroyed) {
+      return;
+    }
+    if (isInNotificationPhase()) {
+      throw new Error('Schedulers cannot synchronously execute watches while scheduling.');
+    }
+    runEffect(this);
+  },
+  cleanup(this: TestingEffectNode): void {
+    if (!this.cleanupFns?.length) {
+      return;
+    }
+    const prevConsumer = setActiveConsumer(null);
+    try {
+      while (this.cleanupFns.length) {
+        this.cleanupFns.pop()!();
+      }
+    } finally {
+      this.cleanupFns = [];
+      setActiveConsumer(prevConsumer);
+    }
+  },
+  destroy(this: TestingEffectNode): void {
+    if (this.destroyed) {
+      return;
+    }
+    this.destroyed = true;
+    consumerDestroy(this);
+    this.cleanup();
+  },
+}))();
+
+let queue = new Set<TestingEffectNode>();
+
+export function createTestingEffect(
+  effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
+  onMarkedDirty?: () => void,
+): TestingEffectNode {
+  const node = Object.create(TESTING_EFFECT_NODE) as TestingEffectNode;
+  node.fn = () => {
+    effectFn((cleanupFn) => (node.cleanupFns ??= []).push(cleanupFn));
+  };
+  if (onMarkedDirty) {
+    node.consumerMarkedDirty = function (this: TestingEffectNode) {
+      if (this.destroyed) {
+        return;
+      }
+      onMarkedDirty();
+    };
+  }
+  return node;
+}
 
 /**
- * A wrapper around `Watch` that emulates the `effect` API and allows for more streamlined testing.
+ * A wrapper around `TestingEffectNode` that emulates the `effect` API and allows for more streamlined testing.
  */
-export function testingEffect(
-  effectFn: (onCleanup: (cleanupFn: WatchCleanupFn) => void) => void,
-): () => void {
-  const w = createWatch(effectFn, queue.add.bind(queue), true);
+export function testingEffect(effectFn: (onCleanup: EffectCleanupRegisterFn) => void): () => void {
+  const node = createTestingEffect(effectFn);
 
   // Effects start dirty.
-  w.notify();
+  queue.add(node);
 
   return () => {
-    queue.delete(w);
-    w.destroy();
+    queue.delete(node);
+    node.destroy();
   };
 }
 

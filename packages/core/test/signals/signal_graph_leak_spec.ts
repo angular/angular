@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, signal, WritableSignal} from '../../src/core';
-import {createWatch, SIGNAL} from '../../primitives/signals';
 import {isBrowser, timeout} from '@angular/private/testing';
+import {computed, signal, WritableSignal} from '../../src/core';
+import {createTestingEffect} from './effect_util';
 
 describe('signal graph: destroyed consumers should be GC-eligible', () => {
   if (isBrowser) {
@@ -17,14 +17,13 @@ describe('signal graph: destroyed consumers should be GC-eligible', () => {
   }
 
   function setupAndReturnRef(source: WritableSignal<number>): WeakRef<object> {
-    const watch = createWatch(
+    const watch = createTestingEffect(
       () => source(),
       () => {},
-      true,
     );
     watch.run();
 
-    const ref = new WeakRef(watch[SIGNAL]);
+    const ref = new WeakRef(watch);
 
     // Non-live computed that also reads source.
     const derived = computed(() => source() + 1);
