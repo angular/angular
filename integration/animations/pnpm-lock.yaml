@@ -67,11 +67,11 @@ importers:
         specifier: 10.0.4
         version: 10.0.4
       jasmine:
-        specifier: 6.3.0
-        version: 6.3.0
+        specifier: 7.0.0
+        version: 7.0.0
       jasmine-core:
-        specifier: 6.3.0
-        version: 6.3.0
+        specifier: 7.0.1
+        version: 7.0.1
       puppeteer:
         specifier: 25.6.0
         version: 25.6.0
@@ -2693,11 +2693,11 @@ packages:
     resolution: {integrity: sha512-Vtgk7L/R2JHyyGW07spoFlB8/lpjiOLTjMdms6AFMraYt3BaJauod/NGrfnVG/y4Ix1JEuMRPDPEj2ua+zz1/Q==}
     engines: {node: '>=10'}
 
-  jasmine-core@6.3.0:
-    resolution: {integrity: sha512-eMm5qBovNjNoGOcgE/W207+wrcK5zrQv0Rg/rWGboUJUmZp0dFCpHTyjpuDAfCwRCqg7f9U2q2jtv/aUuzdCQg==}
+  jasmine-core@7.0.1:
+    resolution: {integrity: sha512-AVUnCekV7RBFS6k4+bc9OrLTbEcDYM9gVHtUuPMWrpFUZBovr5p47WbVTKbr6gBYeAtBBe+nX32ivrvc0Ne2XA==}
 
-  jasmine@6.3.0:
-    resolution: {integrity: sha512-u6L7yYtrtS1JALlp7f4k7Wz7o7ZKXauSKKkXc0L3qUkKrdaxYvNiMHhHp5gtTuVZZXVihXRxS7bWwDBX1wJ7EQ==}
+  jasmine@7.0.0:
+    resolution: {integrity: sha512-rnjiyg1LAhFZMoyU8ei/Wqyvti5oCzFhW7ZtkD6o+CSx3LpU9aYurPrh5BKyX3coGvmdEVYPC2HYh1rrBvZoWg==}
     hasBin: true
 
   jest-worker@27.5.1:
@@ -6408,13 +6408,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jasmine-core@6.3.0: {}
+  jasmine-core@7.0.1: {}
 
-  jasmine@6.3.0:
+  jasmine@7.0.0:
     dependencies:
       '@jasminejs/reporters': 1.1.0
       glob: 13.0.6
-      jasmine-core: 6.3.0
+      jasmine-core: 7.0.1
 
   jest-worker@27.5.1:
     dependencies:
