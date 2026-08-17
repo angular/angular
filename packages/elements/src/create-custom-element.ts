@@ -155,11 +155,15 @@ export function createCustomElement<P>(
   const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
   // Reverse map (property name -> attribute name) used when reflecting property
-  // values back to attributes. Only built/used when `reflectProperties` is set.
-  const propertyToAttributeInputs = new Map<string, string>();
-  inputs.forEach(({propName, templateName}) => {
-    propertyToAttributeInputs.set(propName, camelToDashCase(templateName));
-  });
+  // values back to attributes. Only built when `reflectProperties` is enabled,
+  // to avoid the allocation for the default (non-reflecting) case.
+  let propertyToAttributeInputs: Map<string, string> | undefined;
+  if (config.reflectProperties) {
+    propertyToAttributeInputs = new Map<string, string>();
+    inputs.forEach(({propName, templateName}) => {
+      propertyToAttributeInputs!.set(propName, camelToDashCase(templateName));
+    });
+  }
 
   class NgElementImpl extends NgElement {
     // Work around a bug in closure typed optimizations(b/79557487) where it is not honoring static
@@ -195,9 +199,11 @@ export function createCustomElement<P>(
 
     private _ngElementStrategy?: NgElementStrategy;
 
-    // Attribute names currently being written by property reflection. Used to
-    // avoid feeding a reflected attribute change straight back into the strategy.
-    private _reflectingAttributes = new Set<string>();
+    // Whether a property value is currently being reflected to an attribute.
+    // Set/removeAttribute fire `attributeChangedCallback` synchronously for the
+    // single attribute being written, so a boolean flag is enough to avoid
+    // feeding that reflected change straight back into the strategy.
+    private _isReflecting = false;
 
     constructor(private readonly injector?: Injector) {
       super();
@@ -210,7 +216,7 @@ export function createCustomElement<P>(
       namespace?: string,
     ): void {
       // Ignore the change we caused ourselves while reflecting a property value.
-      if (this._reflectingAttributes.has(attrName)) {
+      if (this._isReflecting) {
         return;
       }
       const [propName, transform] = attributeToPropertyInputs[attrName]!;
@@ -222,12 +228,12 @@ export function createCustomElement<P>(
      * for non-primitive values, which cannot be serialized to an attribute.
      */
     private _reflectPropertyToAttribute(propName: string, value: unknown): void {
-      const attrName = propertyToAttributeInputs.get(propName);
+      const attrName = propertyToAttributeInputs?.get(propName);
       if (attrName === undefined) {
         return;
       }
 
-      this._reflectingAttributes.add(attrName);
+      this._isReflecting = true;
       try {
         if (value === null || value === undefined || value === false) {
           this.removeAttribute(attrName);
@@ -238,7 +244,7 @@ export function createCustomElement<P>(
         }
         // Objects, arrays, functions and symbols are intentionally not reflected.
       } finally {
-        this._reflectingAttributes.delete(attrName);
+        this._isReflecting = false;
       }
     }
 
