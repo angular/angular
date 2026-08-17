@@ -140,18 +140,6 @@ When working with signals, prefer deriving values over synchronizing state. If o
 
 For a detailed comparison of `computed` and `effect`, including common mistakes and examples, see [Avoid using effects to synchronize state](./effect.md#avoid-using-effects-for-derived-state).
 
-Signals are best understood as a reactive state graph.
-
-Each signal represents a piece of state. Computed values derive state from other state. Effects react to state changes and interact with the outside world.
-
-A useful rule of thumb is:
-
-- Use `signal` for state.
-- Use `computed` for derived state.
-- Use `effect` for side effects.
-
-When working with signals, prefer deriving values over synchronizing values. If one value can be calculated from another, represent that relationship with `computed` instead of manually keeping multiple signals in sync.
-
 ### Prefer derivation over synchronization
 
 When a value can be expressed as a function of other state, model it as a derivation instead of maintaining multiple sources of truth.
