@@ -1228,6 +1228,18 @@ describe('type check blocks', () => {
         expect(block).not.toContain('((this).a)');
       });
 
+      it('should still check explicit ng-template bindings when schema checks are forced', () => {
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          checkTemplateBodies: false,
+          alwaysCheckSchemaInTemplateBodies: true,
+        };
+        const TEMPLATE = `<ng-template [foo]="a">{{b}}</ng-template>`;
+        const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
+        expect(block).toContain('((this).a)');
+        expect(block).not.toContain('((this).b)');
+      });
+
       it('generates a references var when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain('var _t1 = (_t2 as any as i1.TemplateRef<any>);');

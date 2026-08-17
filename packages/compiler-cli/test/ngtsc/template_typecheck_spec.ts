@@ -4235,6 +4235,23 @@ runInEachFileSystem(() => {
 2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
         });
 
+        it('should not check for unknown properties on an ng-template when NO_ERRORS_SCHEMA is used', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<ng-template [foo]="1"></ng-template>',
+          schemas: [NO_ERRORS_SCHEMA],
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
         it('should not report properties on an ng-template that are claimed by a directive', () => {
           env.write(
             'test.ts',
@@ -4317,7 +4334,7 @@ runInEachFileSystem(() => {
       `,
           );
           const diags = env.driveDiagnostics();
-          expect(diags.map((d) => d.messageText)).toEqual([]);
+          expect(diags.length).toBe(0);
         });
 
         it('should not report properties on an ng-template inside an svg element', () => {
@@ -4340,7 +4357,7 @@ runInEachFileSystem(() => {
       `,
           );
           const diags = env.driveDiagnostics();
-          expect(diags.map((d) => d.messageText)).toEqual([]);
+          expect(diags.length).toBe(0);
         });
       });
 

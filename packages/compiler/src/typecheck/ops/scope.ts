@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveOwner} from '../../render3/view/t2_api';
 import {
   BoundAttribute,
   BoundEvent,
@@ -33,23 +32,31 @@ import {
   Variable,
   ViewportDeferredTrigger,
 } from '../../render3/r3_ast';
+import {isNgTemplate} from '../../ml_parser/tags';
+import {DirectiveOwner} from '../../render3/view/t2_api';
+import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
-import {TcbDirectiveMetadata} from '../api';
-import {Context} from './context';
-import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
-import {TcbElementOp} from './element';
-import {tcbExpression, TcbConditionOp, TcbExpressionOp} from './expression';
-import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
 import {TcbComponentContextCompletionOp} from './completions';
-import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
-import {TcbIfBlockOp} from './if_block';
-import {TcbSwitchOp} from './switch_block';
-import {TcbForOfOp} from './for_block';
-import {TcbLetDeclarationOp} from './let';
-import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
-import {TcbDomSchemaCheckerOp} from './schema';
+import {TcbControlFlowContentProjectionOp} from './content_projection';
+import {Context} from './context';
+import {TcbDirectiveCtorOp} from './directive_constructor';
+import {
+  TcbGenericDirectiveTypeWithAnyParamsOp,
+  TcbNonGenericDirectiveTypeOp,
+} from './directive_type';
+import {TcbElementOp} from './element';
 import {TcbDirectiveOutputsOp, TcbUnclaimedOutputsOp} from './events';
+import {TcbConditionOp, tcbExpression, TcbExpressionOp} from './expression';
+import {TcbForOfOp} from './for_block';
+import {TcbHostElementOp} from './host';
+import {TcbIfBlockOp} from './if_block';
+import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
+import {TcbIntersectionObserverOp} from './intersection_observer';
+import {TcbLetDeclarationOp} from './let';
+import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
+import {TcbDomSchemaCheckerOp} from './schema';
+import {TcbComponentNodeOp} from './selectorless';
 import {
   CustomFormControlType,
   getCustomFieldDirectiveType,
@@ -58,15 +65,9 @@ import {
   TcbNativeFieldOp,
   TcbNativeRadioButtonFieldOp,
 } from './signal_forms';
-import {
-  TcbGenericDirectiveTypeWithAnyParamsOp,
-  TcbNonGenericDirectiveTypeOp,
-} from './directive_type';
-import {TcbDirectiveCtorOp} from './directive_constructor';
-import {TcbControlFlowContentProjectionOp} from './content_projection';
-import {TcbComponentNodeOp} from './selectorless';
-import {TcbIntersectionObserverOp} from './intersection_observer';
-import {TcbHostElementOp} from './host';
+import {TcbSwitchOp} from './switch_block';
+import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
+import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
 
 /**
  * Local scope within the type check block for a particular template.
@@ -1090,9 +1091,9 @@ export class Scope {
   }
 }
 
-// Note: namespaced ng-template tags (e.g. `:svg:ng-template`) are deliberately excluded,
-// because directive matching does not claim their inputs (see `getAttrsForDirectiveMatching`)
-// which would lead to false positives for correctly-imported structural directives.
+// Identifies a node as an explicitly written `<ng-template>` element (as opposed to a structural
+// directive's microsyntax which also gets converted into a Template node). This check is robust
+// against implicit namespaces like `:svg:ng-template`.
 function isExplicitNgTemplate(node: Node): node is Template {
-  return node instanceof Template && node.tagName === 'ng-template';
+  return node instanceof Template && node.tagName !== null && isNgTemplate(node.tagName);
 }
