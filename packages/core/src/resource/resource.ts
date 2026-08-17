@@ -196,13 +196,37 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   private destroyed = false;
   private unregisterOnDestroy: () => void;
 
+  // This used to be `readonly`, but now we clear it to `undefined` when the resource is
+  // destroyed. Same idea as `PromiseStrategy.createSubscription` in `async_pipe.ts` — read
+  // the comment there too if you want the full picture.
+  //
+  // According to the promise specification, promises are not cancellable. Once you start
+  // waiting on one — which is what the `await` in `loadEffect()` below does — there's no
+  // built-in way to say "never mind, stop." If the loader's promise never settles (a fetch
+  // that hangs forever, a third-party API that never calls back), that `await` just keeps
+  // waiting, potentially forever.
+  //
+  // While it's waiting, the JS engine has to keep everything that code needs alive in memory.
+  // For an `async` method like `loadEffect()`, that includes `this` — the whole resource
+  // object — for as long as the wait continues. We can't avoid that part; it's just how
+  // `await` works under the hood (if you're curious, Chrome lets you see this yourself with
+  // `--allow-natives-syntax --track-retaining-path` and `%DebugTrackRetainingPath()`, which
+  // prints how many references away from a GC root something is being kept alive by).
+  //
+  // What we CAN do is stop holding onto the loader function itself. It's just a normal
+  // reference stored on `this`, so setting it to `undefined` here takes effect immediately —
+  // it doesn't need to wait for anything. If your loader closes over data from the component
+  // that created it (e.g. `loader: () => fetch(this.userId())`), that data is now free to be
+  // garbage collected instead of being kept alive for as long as the abandoned load "waits."
+  private loaderFn: ResourceStreamingLoader<T, R> | undefined;
+
   override readonly status: Signal<ResourceStatus>;
   override readonly error: Signal<Error | undefined>;
   private readonly transferState: TransferState | undefined;
 
   constructor(
     request: (ctx: ResourceParamsContext) => R,
-    private readonly loaderFn: ResourceStreamingLoader<T, R>,
+    loaderFn: ResourceStreamingLoader<T, R>,
     defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
     private readonly debugName: string | undefined,
@@ -240,6 +264,8 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       ),
       debugName,
     );
+
+    this.loaderFn = loaderFn;
 
     const cacheState = injector.get(CACHE_ACTIVE, undefined, {optional: true}) ?? {isActive: false};
 
@@ -399,6 +425,12 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     this.effectRef.destroy();
     this.abortInProgressLoad();
 
+    // Per the promise spec, if a load is still happening in the background, we can't cancel
+    // it — so it might keep running (or hang) long after this resource is gone. We can't do
+    // anything about that. But we don't need to keep the loader function around anymore, so
+    // let it go here — see the comment on the `loaderFn` field above for the full reasoning.
+    this.loaderFn = undefined;
+
     // Destroyed resources enter Idle state.
     this.state.set({
       extRequest: {request: undefined, reload: 0},
@@ -445,7 +477,9 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       // reactive. This avoids any confusion with signals tracking or not tracking depending on
       // which side of the `await` they are.
       const stream = untracked(() => {
-        return this.loaderFn({
+        // The only place `loaderFn` gets cleared is `destroy()`, and that also stops this function
+        // (`loadEffect`) from ever running again. So if we're here, it's always still set.
+        return this.loaderFn!({
           params: extRequest.request as Exclude<R, undefined>,
           abortSignal,
           previous: {

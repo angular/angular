@@ -527,6 +527,32 @@ describe('resource', () => {
     expect(aborted).toEqual([{counter: 0}]);
   });
 
+  it('should release the loader closure once destroyed, even if the load never resolves', async () => {
+    // Regression test. `loadEffect` is an async method, so a still-pending `await` (waiting on
+    // the loader's promise) keeps `this` alive until that promise settles — which, since
+    // promises can't be cancelled, might be never. `destroy()` should still release the loader
+    // reference itself, so at least its closure (which may capture arbitrary caller state)
+    // isn't held onto for that long too.
+    const backend = new MockEchoBackend<{counter: number}>();
+    const echoResource = resource<{counter: number}, {counter: number}>({
+      params: () => ({counter: 0}),
+      loader: ({params}) => backend.fetch(params),
+      injector: TestBed.inject(Injector),
+    });
+
+    TestBed.tick();
+    await Promise.resolve();
+
+    // Destroy while the load is still pending — never call `backend.flush()`, simulating a
+    // loader whose promise never resolves.
+    echoResource.destroy();
+
+    // `loaderFn` is a private implementation field; reaching into it here is the only way to
+    // directly verify the reference was actually released, since calling it again after
+    // destroy was already impossible before this fix too (the effect is destroyed either way).
+    expect((echoResource as any).loaderFn).toBeUndefined();
+  });
+
   it('should not respond to reactive state changes in a loader', async () => {
     const unrelated = signal('a');
     const backend = new MockResponseCountingBackend();
