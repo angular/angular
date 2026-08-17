@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {
   invalidSkipHydrationHost,
   validateMatchingNode,
@@ -359,26 +360,56 @@ function locateOrCreateElementNodeImpl(
     setSegmentHead(hydrationInfo, index, native.nextSibling);
   }
 
-  // Checks if the skip hydration attribute is present during hydration so we know to
-  // skip attempting to hydrate this block. We check both TNode and RElement for an
-  // attribute: the RElement case is needed for i18n cases, when we add it to host
-  // elements during the annotation phase (after all internal data structures are setup).
-  if (
-    hydrationInfo &&
-    (hasSkipHydrationAttrOnTNode(tNode) || hasSkipHydrationAttrOnRElement(native))
-  ) {
-    if (isComponentHost(tNode)) {
-      enterSkipHydrationBlock(tNode);
+  if (hydrationInfo) {
+    // `validateMatchingNode` above would normally catch a missing node too, but it's dev-mode
+    // only. Guard against it here so production throws a coded RuntimeError instead of a raw
+    // TypeError when dereferencing `native` below.
+    if (native == null) {
+      throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_MISSING_NODE,
+        ngDevMode
+          ? `During hydration Angular expected a "<${name}>" element at this location (tNode #${tNode.index}), but no matching DOM node was found. This usually means the client-rendered DOM no longer matches the server-rendered HTML.`
+          : `<${name}>`,
+      );
+    }
 
-      // Since this isn't hydratable, we need to empty the node
-      // so there's no duplicate content after render
-      clearElementContents(native);
+    // `hasSkipHydrationAttrOnRElement` below calls `.hasAttribute`, which needs `native` to be
+    // an Element. `validateMatchingNode` above would normally catch a wrong node type, but it's
+    // dev-mode only. Guard against it here too, cheaply, so production throws a coded
+    // RuntimeError instead of a raw TypeError. In production, skip the full sentence and just
+    // include the mismatched node's `nodeName`/`textContent` so the error stays cheap to build.
+    if ((native as unknown as Node).nodeType !== Node.ELEMENT_NODE) {
+      const node = native as unknown as Node;
+      // Truncate so a large text node can't blow up the error message, same as
+      // `shorten()` in `hydration/error_handling.ts`.
+      const textContent = node.textContent && node.textContent.slice(0, 50);
+      const description = textContent ? `${node.nodeName} ("${textContent}")` : node.nodeName;
+      throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_NODE_MISMATCH,
+        ngDevMode
+          ? `During hydration Angular expected an element at this location, but found a ${description} node instead.`
+          : description,
+      );
+    }
 
-      ngDevMode && markRNodeAsSkippedByHydration(native);
-    } else if (ngDevMode) {
-      // If this is not a component host, throw an error.
-      // Hydration can be skipped on per-component basis only.
-      throw invalidSkipHydrationHost(native);
+    // Checks if the skip hydration attribute is present during hydration so we know to
+    // skip attempting to hydrate this block. We check both TNode and RElement for an
+    // attribute: the RElement case is needed for i18n cases, when we add it to host
+    // elements during the annotation phase (after all internal data structures are setup).
+    if (hasSkipHydrationAttrOnTNode(tNode) || hasSkipHydrationAttrOnRElement(native)) {
+      if (isComponentHost(tNode)) {
+        enterSkipHydrationBlock(tNode);
+
+        // Since this isn't hydratable, we need to empty the node
+        // so there's no duplicate content after render
+        clearElementContents(native);
+
+        ngDevMode && markRNodeAsSkippedByHydration(native);
+      } else if (ngDevMode) {
+        // If this is not a component host, throw an error.
+        // Hydration can be skipped on per-component basis only.
+        throw invalidSkipHydrationHost(native);
+      }
     }
   }
   return native;

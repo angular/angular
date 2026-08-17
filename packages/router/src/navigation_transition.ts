@@ -902,6 +902,10 @@ export class NavigationTransitions {
               return EMPTY;
             }
 
+            if (e instanceof RedirectCommand) {
+              e = redirectingNavigationError(this.urlSerializer, e);
+            }
+
             /* This error type is issued during Redirect, and is handled as a
              * cancellation rather than an error. */
             if (isNavigationCancelingError(e)) {

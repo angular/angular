@@ -1547,3 +1547,66 @@ export declare class MyApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: defer_extends_clause_deps.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class DeferDep {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DeferDep, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: DeferDep, isStandalone: true, selector: "defer-dep", ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DeferDep, decorators: [{
+            type: Directive,
+            args: [{ selector: 'defer-dep' }]
+        }] });
+export class BaseCmp {
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_extends_clause_deps.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class DeferDep {
+    static ɵfac: i0.ɵɵFactoryDeclaration<DeferDep, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DeferDep, "defer-dep", never, {}, {}, never, never, true, never>;
+}
+export declare class BaseCmp {
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_extends_clause.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import { DeferDep, BaseCmp } from './defer_extends_clause_deps';
+import * as i0 from "@angular/core";
+export class MyApp extends BaseCmp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: null, target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", usesInheritance: true, ngImport: i0, template: `
+    @defer {
+      <defer-dep/>
+    }
+  `, isInline: true, deferBlockDependencies: [() => [DeferDep]] });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @defer {
+      <defer-dep/>
+    }
+  `,
+                    imports: [DeferDep],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_extends_clause.d.ts
+ ****************************************************************************************************/
+import { BaseCmp } from './defer_extends_clause_deps';
+import * as i0 from "@angular/core";
+export declare class MyApp extends BaseCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

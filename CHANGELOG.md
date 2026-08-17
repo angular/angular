@@ -1,3 +1,136 @@
+<a name="22.1.2"></a>
+# 22.1.2 (2026-08-13)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [76dff307b4](https://github.com/angular/angular/commit/76dff307b4c34bc4ceefcb1c7aa86c39daa5ea45) | fix | Generate correct expression for optional chaning. |
+| [6f9a64e6f5](https://github.com/angular/angular/commit/6f9a64e6f5b1e3faada6514e8b090f9d61aa8e54) | fix | remove namespaced MathML script elements |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e9660b1801](https://github.com/angular/angular/commit/e9660b1801a0280fa5ba41e7c330cb6d597199ec) | fix | correctly resolve symbol for SafePropertyRead in chained optional navigation |
+| [ec6deea513](https://github.com/angular/angular/commit/ec6deea51329b0c8410c75943d90ce823081e216) | fix | record class extends clause references in DeferredSymbolTracker |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0df9d5eb65](https://github.com/angular/angular/commit/0df9d5eb6516106188b879536f7f813a9ca8811c) | fix | ensure i18n_util hasOwnProperty checks are safe for property renaming |
+| [4d985a179e](https://github.com/angular/angular/commit/4d985a179e66428d46e60b4622435f88c39e1d2b) | fix | incorrect loop in defer blocks |
+| [7b40456792](https://github.com/angular/angular/commit/7b404567924840aabdb955704a9bc04778b14f73) | fix | reject prefixed SVG script hosts |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3b5c798072](https://github.com/angular/angular/commit/3b5c798072a3cf43b5e0ec0b3f4abc18bc6196a5) | fix | keep radio inputs in sync when values change |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4f7e9987fa](https://github.com/angular/angular/commit/4f7e9987fa35888de43895bfd859382dfa436e51) | fix | always decode JSON responses as UTF-8 |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2f82601662](https://github.com/angular/angular/commit/2f82601662a958b3accd4d22dff7ad4ec7c56d77) | fix | limit protocol-relative URL handling to serialization |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="22.2.0-next.2"></a>
+# 22.2.0-next.2 (2026-08-13)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a4f1a94948](https://github.com/angular/angular/commit/a4f1a949486d20ce2bf9add427eea6629228b28b) | fix | do not encapsulate nested selectors if parent contains ::ng-deep |
+| [d7b03f5523](https://github.com/angular/angular/commit/d7b03f5523d220c7935426d23ff5f103c96b00d9) | fix | Generate correct expression for optional chaning. |
+| [107f6fa49d](https://github.com/angular/angular/commit/107f6fa49d00ec250b94a8d5f484bae2fc3d71c9) | fix | remove namespaced MathML script elements |
+| [d0d7f57e08](https://github.com/angular/angular/commit/d0d7f57e0810a24ba16dbb1f2ab9f079a096fa3d) | fix | scope nested CSS rules |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e8aa222e7d](https://github.com/angular/angular/commit/e8aa222e7d98d2e54c5604107a929a11cb1ef62d) | fix | correctly resolve symbol for SafePropertyRead in chained optional navigation |
+| [8d6c925392](https://github.com/angular/angular/commit/8d6c925392c7230fbe6b39abdad05381672631b1) | fix | record class extends clause references in DeferredSymbolTracker |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8925a4ee49](https://github.com/angular/angular/commit/8925a4ee491aebaf6a1a74880c73dfb20e0a4ba1) | fix | ensure i18n_util hasOwnProperty checks are safe for property renaming |
+| [565dbb2fe5](https://github.com/angular/angular/commit/565dbb2fe5406f2a86d43a5b3c6993434b7124a7) | fix | incorrect loop in defer blocks |
+| [9f8e32616b](https://github.com/angular/angular/commit/9f8e32616b79892785051fab1c3120a770f5f682) | fix | reject prefixed SVG script hosts |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9e37a58e14](https://github.com/angular/angular/commit/9e37a58e14bd7955d40255e42e20aa84fcde02f4) | fix | keep radio inputs in sync when values change |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [09bc90003e](https://github.com/angular/angular/commit/09bc90003ed6e9f6c166e885503728af49d1af67) | fix | always decode JSON responses as UTF-8 |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b65dea4f03](https://github.com/angular/angular/commit/b65dea4f03e5fc01093a718c990c72ae9165c43f) | feat | allow throwing RedirectCommand to trigger redirects |
+| [435f8b2b8b](https://github.com/angular/angular/commit/435f8b2b8b67277fc69888911251d14b32705828) | fix | limit protocol-relative URL handling to serialization |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="20.3.28"></a>
+# 20.3.28 (2026-08-13)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2f96c8020f](https://github.com/angular/angular/commit/2f96c8020f85ccb715a76de4b79a0c680c2c7264) | fix | sanitize host bindings on concrete hosts |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [969133d426](https://github.com/angular/angular/commit/969133d426723336eb04ab839ff30d884ce54dd9) | fix | match header values exactly when deleting |
+| [29dd26bd71](https://github.com/angular/angular/commit/29dd26bd7115f90ea059a1a5d174203255033e36) | fix | preserve immutability of materialized clones |
+| [e4c416c20a](https://github.com/angular/angular/commit/e4c416c20a1cb222ce73d29c035452b257380c56) | fix | run root interceptors in the terminal request chain |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.2.20"></a>
+# 21.2.20 (2026-08-12)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6afe6fa781](https://github.com/angular/angular/commit/6afe6fa781c2f0931f0aedd729b9884a8fe212ee) | fix | sanitize host bindings on concrete hosts |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fec5977df4](https://github.com/angular/angular/commit/fec5977df4dda3a10d5ce2923e3e06d86ba11ee7) | fix | match header values exactly when deleting |
+| [e33d69a71c](https://github.com/angular/angular/commit/e33d69a71c5beb8fe5785b53fd6b37658334e8e0) | fix | preserve immutability of materialized clones |
+| [caf616670f](https://github.com/angular/angular/commit/caf616670fd20d528aa69e0131cc17d60f0cc27d) | fix | run root interceptors in the terminal request chain |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="22.2.0-next.1"></a>
+# 22.2.0-next.1 (2026-08-07)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cfe2cda110](https://github.com/angular/angular/commit/cfe2cda1100bb84e2ecf954687126c4d30212d07) | fix | initialize hydration triggers after late runtime activation |
+| [e43eb96341](https://github.com/angular/angular/commit/e43eb96341b692525743a1f3aa1380ce21a9dd02) | fix | warn when style property bindings receive invalid values |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ef4dfead83](https://github.com/angular/angular/commit/ef4dfead83ea8b3843b98a17ac572f2a380b1c46) | fix | avoid aborting completed requests in FetchBackend |
+| [6a0789dc7f](https://github.com/angular/angular/commit/6a0789dc7f0ac9d1249c4d9f315e83424867169b) | fix | respect content-type charset in fetch backend text decoder |
+| [bb78286e5e](https://github.com/angular/angular/commit/bb78286e5e729d1e1fcfd2733d88351a38083ef5) | fix | run root interceptors in the terminal request chain |
+| [280d09b160](https://github.com/angular/angular/commit/280d09b16011e4f53f9e696fd95964943c6dcbfa) | fix | strip RFC 6265 DQUOTE characters and handle URIError in parseCookieValue |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="22.1.1"></a>
+# 22.1.1 (2026-08-06)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [aa6d3189c1](https://github.com/angular/angular/commit/aa6d3189c141a9247615ed14d856813ea1b95c8d) | fix | initialize hydration triggers after late runtime activation |
+| [deecb301c8](https://github.com/angular/angular/commit/deecb301c8aab4c22b80eaa505042311ee938b67) | fix | warn when style property bindings receive invalid values |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ac3728e79f](https://github.com/angular/angular/commit/ac3728e79fd8fae7a4b38e20d152c5a734a6e3fc) | fix | avoid aborting completed requests in FetchBackend |
+| [688a0a7118](https://github.com/angular/angular/commit/688a0a7118215bcab10004a3bf2667773fefdf74) | fix | respect content-type charset in fetch backend text decoder |
+| [a13b968451](https://github.com/angular/angular/commit/a13b9684510dfd04e18f3e1d6686d556c051f34e) | fix | run root interceptors in the terminal request chain |
+| [32af9b525e](https://github.com/angular/angular/commit/32af9b525efe005998a9cd02aebfcc08e6793cf2) | fix | strip RFC 6265 DQUOTE characters and handle URIError in parseCookieValue |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.2.0-next.0"></a>
 # 22.2.0-next.0 (2026-07-29)
 ### forms

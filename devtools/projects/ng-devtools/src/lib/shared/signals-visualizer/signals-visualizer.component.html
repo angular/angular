@@ -3,43 +3,45 @@
 @let hasExpandedClusters = expandedClusters().length;
 
 <div class="floating-cont">
-  @if (!searchExpanded()) {
-    <button
-      ng-button
-      btnType="icon"
-      class="search-btn open-search"
-      (click)="searchExpanded.set(true)"
-      matTooltip="Search"
-      aria-label="Search"
-    >
-      <mat-icon>search</mat-icon>
-    </button>
-  } @else {
-    <div class="search">
-      <ng-filter
-        (filter)="handleFilter($event)"
-        (nextMatched)="navigateMatchedNode('next')"
-        (prevMatched)="navigateMatchedNode('prev')"
-        [matchesCount]="searchMatches().length"
-        [currentMatch]="currentSearchMatchIdx() + 1"
-        [filterFnGenerator]="filterGenerator"
-        placeholder="Search node"
-        [debounce]="250"
-      />
-      <div class="search-btn" [matTooltip]="FILTER_INFO_TOOLTIP">
-        <mat-icon>info</mat-icon>
-      </div>
+  @if (graph()?.nodes!.length > 0) {
+    @if (!searchExpanded()) {
       <button
         ng-button
         btnType="icon"
-        class="search-btn close-search"
-        (click)="searchExpanded.set(false)"
-        matTooltip="Close search box"
-        aria-label="Close search box"
+        class="search-btn open-search"
+        (click)="searchExpanded.set(true)"
+        matTooltip="Search"
+        aria-label="Search"
       >
-        <mat-icon>close</mat-icon>
+        <mat-icon>search</mat-icon>
       </button>
-    </div>
+    } @else {
+      <div class="search">
+        <ng-filter
+          (filter)="handleFilter($event)"
+          (nextMatched)="navigateMatchedNode('next')"
+          (prevMatched)="navigateMatchedNode('prev')"
+          [matchesCount]="searchMatches().length"
+          [currentMatch]="currentSearchMatchIdx() + 1"
+          [filterFnGenerator]="filterGenerator"
+          placeholder="Search node"
+          [debounce]="250"
+        />
+        <div class="search-btn" [matTooltip]="FILTER_INFO_TOOLTIP">
+          <mat-icon>info</mat-icon>
+        </div>
+        <button
+          ng-button
+          btnType="icon"
+          class="search-btn close-search"
+          (click)="searchExpanded.set(false)"
+          matTooltip="Close search box"
+          aria-label="Close search box"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    }
   }
   @if (hasExpandedClusters || highlightedNodeLabel()) {
     <div class="menu">

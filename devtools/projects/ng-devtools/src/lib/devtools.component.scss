@@ -48,12 +48,9 @@
   overflow-y: auto;
   box-sizing: border-box;
 
-  .devtools-state-angie {
-    display: block;
-    height: 120px;
-    width: auto;
+  ng-angie {
     margin-inline: auto;
-    margin-block: 0.5rem 0rem;
+    margin-block: 1.5rem 0rem;
   }
 
   .text-message {

@@ -6,17 +6,29 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../test-utils';
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../test-utils';
 
 describe('SW `SwPush` example', () => {
-  const pageUrl = '/push';
-  const appElem = element(by.css('example-app'));
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  afterEach(verifyNoBrowserErrors);
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
 
-  it('should be enabled', () => {
-    browser.get(pageUrl);
-    expect(appElem.getText()).toBe('SW enabled: true');
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
+
+  it('should be enabled', async () => {
+    await driver.get(`${baseUrl}/push`);
+    await waitForAngular(driver);
+    const appElem = await driver.findElement(webdriver.By.css('example-app'));
+    expect(await appElem.getText()).toBe('SW enabled: true');
   });
 });

@@ -17,6 +17,7 @@ import {
   OnInit,
   Provider,
   Renderer2,
+  SimpleChanges,
   ɵRuntimeError as RuntimeError,
   Service,
 } from '@angular/core';
@@ -177,6 +178,15 @@ export class RadioControlValueAccessor
     private _injector: Injector,
   ) {
     super(renderer, elementRef);
+  }
+
+  /** @internal */
+  ngOnChanges(changes: SimpleChanges): void {
+    const control = this._control?.control;
+
+    if (changes['value'] && control) {
+      this.writeValue(control.value);
+    }
   }
 
   /** @docs-private */

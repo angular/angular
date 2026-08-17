@@ -84,9 +84,26 @@ export class FetchBackend implements HttpBackend {
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
       const aborter = new AbortController();
+      let done = false;
+      const wrappedObserver: Observer<HttpEvent<any>> = {
+        next: (val) => {
+          if (val.type === HttpEventType.Response) {
+            done = true;
+          }
+          observer.next(val);
+        },
+        error: (err) => {
+          done = true;
+          observer.error(err);
+        },
+        complete: () => {
+          done = true;
+          observer.complete();
+        },
+      };
 
-      this.doRequest(request, aborter.signal, observer).then(noop, (error) =>
-        observer.error(new HttpErrorResponse({error})),
+      this.doRequest(request, aborter.signal, wrappedObserver).then(noop, (error) =>
+        wrappedObserver.error(new HttpErrorResponse({error})),
       );
 
       let timeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -106,7 +123,9 @@ export class FetchBackend implements HttpBackend {
         if (timeoutId !== undefined) {
           clearTimeout(timeoutId);
         }
-        aborter.abort();
+        if (!done && !aborter.signal.aborted) {
+          aborter.abort();
+        }
       };
     });
   }
@@ -161,6 +180,8 @@ export class FetchBackend implements HttpBackend {
     }
 
     if (response.body) {
+      const contentType = response.headers.get(CONTENT_TYPE_HEADER) ?? '';
+
       // Read Progress
       const contentLength = response.headers.get('content-length');
       const contentLengthValue = contentLength !== null ? Number(contentLength) : NaN;
@@ -223,7 +244,7 @@ export class FetchBackend implements HttpBackend {
             partialText =
               request.responseType === 'text'
                 ? (partialText ?? '') +
-                  (decoder ??= new TextDecoder()).decode(value, {stream: true})
+                  (decoder ??= getTextDecoder(contentType)).decode(value, {stream: true})
                 : undefined;
 
             const reportProgress = () =>
@@ -250,7 +271,6 @@ export class FetchBackend implements HttpBackend {
       // Combine all chunks.
       const chunksAll = this.concatChunks(chunks, receivedLength);
       try {
-        const contentType = response.headers.get(CONTENT_TYPE_HEADER) ?? '';
         body = this.parseBody(request, chunksAll, contentType, status);
       } catch (error) {
         // Body loading or parsing failed
@@ -339,7 +359,7 @@ export class FetchBackend implements HttpBackend {
           throw e;
         }
       case 'text':
-        return new TextDecoder().decode(binContent);
+        return getTextDecoder(contentType).decode(binContent);
       case 'blob':
         return new Blob([binContent], {type: contentType});
       case 'arraybuffer':
@@ -452,4 +472,25 @@ function throwBodyTooLargeError(maxResponseSize: number): never {
     ngDevMode &&
       `Fetch response body exceeded the configured buffer limit (${maxResponseSize} bytes).`,
   );
+}
+
+const CHARSET_REGEX = /charset=\s*["']?([^;"'\s]+)["']?/i;
+
+/**
+ * Creates a `TextDecoder` instance using the charset extracted from the `Content-Type` header,
+ * falling back to the default (`utf-8`) if no valid charset is specified or supported.
+ */
+function getTextDecoder(contentType: string): TextDecoder {
+  const match = contentType.match(CHARSET_REGEX);
+  if (match !== null) {
+    try {
+      return new TextDecoder(match[1]);
+    } catch {
+      // Catching `RangeError` thrown by `new TextDecoder(...)` when the encoding label is invalid or
+      // unsupported. There is no synchronous inspection API on `TextDecoder` to verify whether an
+      // encoding is supported without executing the constructor, so catching the error is required
+      // before falling back to default UTF-8.
+    }
+  }
+  return new TextDecoder();
 }

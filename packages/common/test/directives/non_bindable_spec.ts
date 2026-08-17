@@ -12,24 +12,18 @@ import {hasClass} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 
 describe('non-bindable', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [TestComponent, TestDirective],
-    });
-  });
-
-  it('should not interpolate children', () => {
+  it('should not interpolate children', async () => {
     const template = '<div>{{text}}<span ngNonBindable>{{text}}</span></div>';
     const fixture = createTestComponent(template);
 
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement).toHaveText('foo{{text}}');
   });
 
-  it('should ignore directives on child nodes', () => {
+  it('should ignore directives on child nodes', async () => {
     const template = '<div ngNonBindable><span id=child test-dec>{{text}}</span></div>';
     const fixture = createTestComponent(template);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // We must use getDOM().querySelector instead of fixture.query here
     // since the elements inside are not compiled.
@@ -37,10 +31,10 @@ describe('non-bindable', () => {
     expect(hasClass(span, 'compiled')).toBeFalsy();
   });
 
-  it('should trigger directives on the same node', () => {
+  it('should trigger directives on the same node', async () => {
     const template = '<div><span id=child ngNonBindable test-dec>{{text}}</span></div>';
     const fixture = createTestComponent(template);
-    fixture.detectChanges();
+    await fixture.whenStable();
     const span = fixture.nativeElement.querySelector('#child');
     expect(hasClass(span, 'compiled')).toBeTruthy();
   });
@@ -48,7 +42,6 @@ describe('non-bindable', () => {
 
 @Directive({
   selector: '[test-dec]',
-  standalone: false,
 })
 class TestDirective {
   constructor(el: ElementRef) {
@@ -59,7 +52,7 @@ class TestDirective {
 @Component({
   selector: 'test-cmp',
   template: '',
-  standalone: false,
+  imports: [TestDirective],
 })
 class TestComponent {
   text: string;

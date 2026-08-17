@@ -42,11 +42,13 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
       },
     };
 
+    const colors = createColors(theme);
+
     if (showChangeDetection) {
-      result.color = theme === 'dark' ? CHANGE_DETECTION_COLOR_DARK : CHANGE_DETECTION_COLOR_LIGHT;
+      result.color = colors.cdColor;
     }
 
-    this.addFrame(result.children, frame.directives, showChangeDetection, theme);
+    this.addFrame(result.children, frame.directives, showChangeDetection, colors);
     return result;
   }
 
@@ -54,15 +56,16 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
     nodes: FlamegraphNode[],
     elements: ElementProfile[],
     showChangeDetection?: boolean,
-    theme?: ThemeUi,
+    colors?: Colors,
   ): number {
     let timeSpent = 0;
-    elements.forEach((element) => {
+
+    for (const element of elements) {
       // Possibly undefined because of
       // the insertion on the backend.
       if (!element) {
         console.error('Unable to insert undefined element');
-        return;
+        continue;
       }
       const changeDetected = didRunChangeDetection(element);
       const node: FlamegraphNode = {
@@ -73,15 +76,13 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
         original: element,
         changeDetected,
       };
-      if (showChangeDetection) {
-        const CHANGE_DETECTION_COLOR =
-          theme === 'dark' ? CHANGE_DETECTION_COLOR_DARK : CHANGE_DETECTION_COLOR_LIGHT;
-        node.color = changeDetected ? CHANGE_DETECTION_COLOR : NO_CHANGE_DETECTION_COLOR;
+      if (showChangeDetection && colors) {
+        node.color = changeDetected ? colors.cdColor : colors.noCdColor;
       }
-      timeSpent += this.addFrame(node.children, element.children, showChangeDetection, theme);
+      timeSpent += this.addFrame(node.children, element.children, showChangeDetection, colors);
       timeSpent += node.value;
       nodes.push(node);
-    });
+    }
     return timeSpent;
   }
 }
@@ -90,7 +91,9 @@ export class FlamegraphFormatter extends RecordFormatter<FlamegraphNode> {
 const CHANGE_DETECTION_COLOR_LIGHT = 'oklch(47.5% 0.26 295)';
 const CHANGE_DETECTION_COLOR_DARK = 'oklch(76% 0.15 305)';
 
-const NO_CHANGE_DETECTION_COLOR = 'transparent';
+// Represent quaternary-contrast
+const NO_CHANGE_DETECTION_COLOR_LIGHT = 'oklch(54.84% 0 0)';
+const NO_CHANGE_DETECTION_COLOR_DARK = 'oklch(70.9% 0 0)';
 
 const didRunChangeDetection = (profile: ElementProfile) => {
   const components = profile.directives.filter((d) => d.isComponent);
@@ -99,3 +102,17 @@ const didRunChangeDetection = (profile: ElementProfile) => {
   }
   return components.some((c) => c.changeDetection !== undefined);
 };
+
+type Colors = {
+  cdColor: string;
+  noCdColor: string;
+};
+
+function createColors(theme?: ThemeUi): Colors {
+  const isDark = theme === 'dark';
+
+  return {
+    cdColor: isDark ? CHANGE_DETECTION_COLOR_DARK : CHANGE_DETECTION_COLOR_LIGHT,
+    noCdColor: isDark ? NO_CHANGE_DETECTION_COLOR_DARK : NO_CHANGE_DETECTION_COLOR_LIGHT,
+  };
+}

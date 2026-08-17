@@ -37,7 +37,7 @@ export function compileDeclareServiceFromMetadata(meta: R3ServiceMetadata): R3Co
 /**
  * Gathers the declaration fields for a Service into a `DefinitionMap`.
  */
-export function createServiceDefinitionMap(
+function createServiceDefinitionMap(
   meta: R3ServiceMetadata,
 ): DefinitionMap<R3DeclareServiceMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareServiceMetadata>();

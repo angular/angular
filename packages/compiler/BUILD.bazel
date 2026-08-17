@@ -34,7 +34,6 @@ ng_package(
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
         "//adev:__pkg__",
-        "//devtools/tools/angular-optimization:__subpackages__",
         "//integration:__subpackages__",
         "//modules/ssr-benchmarks:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",

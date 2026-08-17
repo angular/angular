@@ -43,6 +43,7 @@
       "createLinkElement",
       "createProvidersConfig",
       "createStyleElement",
+      "describeDomNode",
       "errorHandler",
       "getBaseElementHref",
       "getDOM",

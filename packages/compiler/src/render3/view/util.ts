@@ -44,12 +44,6 @@ export function temporaryAllocator(
   };
 }
 
-export function invalid<T>(this: t.Visitor, arg: o.Expression | o.Statement | t.Node): never {
-  throw new Error(
-    `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`,
-  );
-}
-
 export function asLiteral(value: any): o.Expression {
   if (Array.isArray(value)) {
     return o.literalArr(value.map(asLiteral));

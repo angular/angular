@@ -99,12 +99,34 @@ ts_project(
         "chrome-application-operations.ts",
     ],
     deps = [
+        ":comm_utils",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
         "//:node_modules/@types/chrome",
         "//devtools:node_modules/@types/firefox-webext-browser",
         "//devtools/projects/ng-devtools",
         "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "chrome_application_operations_test_lib",
+    srcs = ["chrome-application-operations.spec.ts"],
+    deps = [
+        ":chrome_application_operations",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@types/chrome",
+        "//:node_modules/jasmine",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "chrome_application_operations_test",
+    deps = [
+        ":chrome_application_operations_test_lib",
     ],
 )
 
@@ -157,7 +179,20 @@ ts_project(
         "background.ts",
     ],
     deps = [
+        ":breakpoint_manager",
         ":tab_manager",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "breakpoint_manager",
+    srcs = [
+        "breakpoint_manager.ts",
+    ],
+    deps = [
+        ":comm_utils",
+        "//:node_modules/@types/chrome",
         "//devtools/projects/protocol",
     ],
 )

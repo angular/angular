@@ -224,7 +224,6 @@ describe('parse errors', () => {
     expect(input.value).toBe('5');
 
     await act(() => comp.model.set(123));
-    fix.detectChanges();
 
     expect(input.value).toBe('123');
   });

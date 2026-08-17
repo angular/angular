@@ -20,10 +20,10 @@
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@types/jasmine": "^6.0.0",
     "@types/jasminewd2": "^2.0.8",
-    "concurrently": "10.0.3",
+    "concurrently": "10.0.4",
     "lite-server": "2.6.1",
     "protractor": "^7.0.0",
-    "rollup": "4.62.2"
+    "rollup": "4.62.4"
   },
   "scripts": {
     "build": "pnpm ngc && pnpm rollup -c rollup.config.mjs",
@@ -33,5 +33,5 @@
     "protractor": "protractor e2e/protractor.config.js"
   },
   "private": true,
-  "packageManager": "pnpm@11.17.0"
+  "packageManager": "pnpm@11.21.0"
 }

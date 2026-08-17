@@ -10,6 +10,7 @@
 
 import {AngularDetection} from '../../../protocol';
 import {TabManager} from './tab_manager';
+import {BreakpointManager} from './breakpoint_manager';
 
 function getPopUpName(ng: AngularDetection): string {
   if (!ng.isAngular) {
@@ -34,7 +35,10 @@ function checkGoogler(): void {
     mode: 'no-cors',
     method: 'HEAD',
   })
-    .then(() => chrome.storage.local.set({isGoogler: true}))
+    .then((response) => {
+      // For non Googlers the Promise will resolve with status: 0/ok: false.
+      chrome.storage.local.set({isGoogler: response.status !== 0});
+    })
     .catch(() => chrome.storage.local.set({isGoogler: false}));
 }
 
@@ -98,4 +102,5 @@ if (chrome !== undefined && chrome.runtime !== undefined) {
 
   const tabs = {};
   TabManager.initialize(tabs);
+  BreakpointManager.initialize();
 }

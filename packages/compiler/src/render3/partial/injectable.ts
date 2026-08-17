@@ -40,7 +40,7 @@ export function compileDeclareInjectableFromMetadata(
 /**
  * Gathers the declaration fields for a Injectable into a `DefinitionMap`.
  */
-export function createInjectableDefinitionMap(
+function createInjectableDefinitionMap(
   meta: R3InjectableMetadata,
 ): DefinitionMap<R3DeclareInjectableMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareInjectableMetadata>();

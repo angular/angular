@@ -269,7 +269,7 @@ describe('KeyValuePipe', () => {
     });
   });
 
-  it('should be available as a standalone pipe', () => {
+  it('should be available as a standalone pipe', async () => {
     @Component({
       selector: 'test-component',
       imports: [KeyValuePipe, JsonPipe],
@@ -280,7 +280,7 @@ describe('KeyValuePipe', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const content = fixture.nativeElement.textContent;
     expect(content.replace(/\s/g, '')).toBe('[{"key":"a","value":2},{"key":"b","value":1}]');

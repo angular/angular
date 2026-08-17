@@ -1,16 +1,14 @@
-import {by} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 import {locate} from './util';
 
-export function getComponent() {
-  return by.css('app-querying');
+export function getComponent(driver: webdriver.WebDriver) {
+  return driver.findElement(webdriver.By.css('app-querying'));
 }
 
-export function getToggleButton() {
-  const toggleButton = () => by.className('toggle');
-  return locate(getComponent(), toggleButton());
+export async function getToggleButton(driver: webdriver.WebDriver) {
+  return locate(driver, webdriver.By.css('app-querying'), webdriver.By.className('toggle'));
 }
 
-export function getComponentSection() {
-  const findSection = () => by.css('section');
-  return locate(getComponent(), findSection());
+export async function getComponentSection(driver: webdriver.WebDriver) {
+  return locate(driver, webdriver.By.css('app-querying'), webdriver.By.css('section'));
 }

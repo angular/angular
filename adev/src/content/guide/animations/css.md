@@ -90,6 +90,8 @@ Animating an element when it leaves the view is similar to animating when enteri
     <docs-code header="remove.css" path="adev/src/content/examples/animations/src/app/native-css/remove.css"  />
 </docs-code-multifile>
 
+NOTE: Child `animate.leave` animations fire only within the same component template. Nested component `animate.leave` animations will not fire when a parent element is removed.
+
 For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations).
 
 ### Animating increment and decrement
@@ -127,7 +129,7 @@ If you have actions you would like to execute at certain points during animation
 
 [`OnAnimationStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationstart_event)  
 [`OnAnimationEnd`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationend_event)  
-[`OnAnimationIteration`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationitration_event)  
+[`OnAnimationIteration`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationiteration_event)  
 [`OnAnimationCancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/animationcancel_event)
 
 [`OnTransitionStart`](https://developer.mozilla.org/en-US/docs/Web/API/Element/transitionstart_event)  

@@ -197,6 +197,150 @@ describe('instructions', () => {
   });
 
   describe('styleProp', () => {
+    it('should warn when a style property is bound to a boolean', () => {
+      const warnSpy = spyOn(console, 'warn');
+      const t = new ViewFixture({
+        create: createDiv,
+        update: () => ɵɵstyleProp('display', true),
+        decls: 1,
+        vars: 2,
+      });
+
+      t.update();
+
+      expect(warnSpy).toHaveBeenCalledOnceWith(
+        'NG0318: `[style.display]` was bound to an invalid value. ' +
+          'Expected a string, number, SafeValue, null, or undefined, but received `boolean` (`true`). ' +
+          'Find more at https://next.angular.dev/errors/NG0318',
+      );
+    });
+
+    it('should warn when a style property is bound to an object', () => {
+      const warnSpy = spyOn(console, 'warn');
+      const t = new ViewFixture({
+        create: createDiv,
+        update: () => ɵɵstyleProp('color', {r: 255, g: 0, b: 0}),
+        decls: 1,
+        vars: 2,
+      });
+
+      t.update();
+
+      expect(warnSpy).toHaveBeenCalledOnceWith(
+        'NG0318: `[style.color]` was bound to an invalid value. ' +
+          'Expected a string, number, SafeValue, null, or undefined, but received ' +
+          '`object` (`[object Object]`). ' +
+          'Find more at https://next.angular.dev/errors/NG0318',
+      );
+    });
+
+    it('should warn when a style property is bound to a non-style SafeValue', () => {
+      const warnSpy = spyOn(console, 'warn');
+      const t = new ViewFixture({
+        create: createDiv,
+        update: () => ɵɵstyleProp('color', bypassSanitizationTrustHtml('red')),
+        decls: 1,
+        vars: 2,
+      });
+
+      t.update();
+
+      expect(warnSpy).toHaveBeenCalledOnceWith(
+        'NG0318: `[style.color]` was bound to an invalid value. ' +
+          'Expected a string, number, SafeValue, null, or undefined, but received `object` ' +
+          '(`SafeValue must use [property]=binding: red ' +
+          '(see https://angular.dev/best-practices/security#preventing-cross-site-scripting-xss)`). ' +
+          'Find more at https://next.angular.dev/errors/NG0318',
+      );
+    });
+
+    it('should unwrap a style SafeValue before appending a suffix', () => {
+      const warnSpy = spyOn(console, 'warn');
+      const t = new ViewFixture({
+        create: createDiv,
+        update: () => ɵɵstyleProp('width', bypassSanitizationTrustStyle('100'), 'px'),
+        decls: 1,
+        vars: 2,
+      });
+
+      t.update();
+
+      expect((t.host.firstChild as HTMLElement).style.width).toBe('100px');
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it('should warn when a style property with a suffix is bound to a non-style SafeValue', () => {
+      const warnSpy = spyOn(console, 'warn');
+      const t = new ViewFixture({
+        create: createDiv,
+        update: () => ɵɵstyleProp('width', bypassSanitizationTrustHtml('100'), 'px'),
+        decls: 1,
+        vars: 2,
+      });
+
+      t.update();
+
+      expect(warnSpy).toHaveBeenCalledOnceWith(
+        'NG0318: `[style.width]` was bound to an invalid value. ' +
+          'Expected a string, number, SafeValue, null, or undefined, but received `object` ' +
+          '(`SafeValue must use [property]=binding: 100 ' +
+          '(see https://angular.dev/best-practices/security#preventing-cross-site-scripting-xss)`). ' +
+          'Find more at https://next.angular.dev/errors/NG0318',
+      );
+    });
+
+    it('should continue binding when an invalid value has a throwing getter', () => {
+      const warnSpy = spyOn(console, 'warn');
+      const value = Object.assign(() => {}, {toString: () => 'applied-value'});
+      Object.defineProperty(value, 'overriddenName', {
+        get: () => {
+          throw new Error('Unexpected read of overriddenName');
+        },
+      });
+      const t = new ViewFixture({
+        create: createDiv,
+        update: () => ɵɵstyleProp('--test-value', value),
+        decls: 1,
+        vars: 2,
+      });
+
+      t.update();
+
+      expect((t.host.firstChild as HTMLElement).style.getPropertyValue('--test-value')).toBe(
+        'applied-value',
+      );
+      expect(warnSpy).toHaveBeenCalledOnceWith(
+        'NG0318: `[style.--test-value]` was bound to an invalid value. ' +
+          'Expected a string, number, SafeValue, null, or undefined, but received ' +
+          '`function` (`[unstringifiable value]`). ' +
+          'Find more at https://next.angular.dev/errors/NG0318',
+      );
+    });
+
+    it('should not warn when a style property is bound to a supported value', () => {
+      const warnSpy = spyOn(console, 'warn');
+      let value: string | number | SafeValue | null | undefined = 'block';
+      const t = new ViewFixture({
+        create: createDiv,
+        update: () => ɵɵstyleProp('display', value),
+        decls: 1,
+        vars: 2,
+      });
+
+      for (const supportedValue of [
+        'inline',
+        1,
+        bypassSanitizationTrustStyle('block'),
+        null,
+        undefined,
+      ]) {
+        value = supportedValue;
+        t.update();
+      }
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
     it('should allow values even if a bypass operation is applied', () => {
       let backgroundImage: string | SafeValue = 'url("http://server")';
       const t = new ViewFixture({
@@ -243,6 +387,25 @@ describe('instructions', () => {
       });
       fixture.update();
       expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
+    });
+
+    it('should warn when a style map property is bound to a boolean', () => {
+      const warnSpy = spyOn(console, 'warn');
+      const fixture = new ViewFixture({
+        create: createDivWithStyle,
+        update: () => ɵɵstyleMap({display: true}),
+        decls: 1,
+        vars: 2,
+        consts: attrs,
+      });
+
+      fixture.update();
+
+      expect(warnSpy).toHaveBeenCalledOnceWith(
+        'NG0318: `[style.display]` was bound to an invalid value. ' +
+          'Expected a string, number, SafeValue, null, or undefined, but received `boolean` (`true`). ' +
+          'Find more at https://next.angular.dev/errors/NG0318',
+      );
     });
   });
 

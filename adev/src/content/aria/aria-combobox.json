@@ -5,6 +5,19 @@
   "normalizedModuleName": "angular_aria_combobox",
   "entries": [
     {
+      "name": "COMBOBOX_POPUP",
+      "type": "InjectionToken<ComboboxPopup>",
+      "entryType": "constant",
+      "rawComment": "/** Token used to expose the combobox popup. */",
+      "description": "Token used to expose the combobox popup.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/combobox/combobox-tokens.ts",
+        "startLine": 13,
+        "endLine": 13
+      }
+    },
+    {
       "name": "ComboboxWidget",
       "isAbstract": false,
       "entryType": "directive",
@@ -209,8 +222,8 @@
       ],
       "source": {
         "filePath": "/src/aria/combobox/combobox-widget.ts",
-        "startLine": 19,
-        "endLine": 78
+        "startLine": 29,
+        "endLine": 99
       }
     },
     {
@@ -567,6 +580,14 @@
   ],
   "symbols": [
     [
+      "InjectionToken",
+      "@angular/core"
+    ],
+    [
+      "afterNextRender",
+      "@angular/core"
+    ],
+    [
       "Directive",
       "@angular/core"
     ],
@@ -593,6 +614,10 @@
     [
       "signal",
       "@angular/core"
+    ],
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
     ],
     [
       "computed",
@@ -635,6 +660,10 @@
       "@angular/aria/private"
     ],
     [
+      "COMBOBOX_POPUP",
+      "@angular/aria/combobox"
+    ],
+    [
       "ComboboxWidget",
       "@angular/aria/combobox"
     ],
@@ -644,6 +673,10 @@
     ],
     [
       "Combobox",
+      "@angular/aria/combobox"
+    ],
+    [
+      "COMBOBOX_POPUP",
       "@angular/aria/combobox"
     ],
     [

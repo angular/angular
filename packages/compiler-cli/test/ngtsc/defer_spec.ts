@@ -827,7 +827,7 @@ runInEachFileSystem(() => {
 
         @Pipe({name: 'test'})
         export class TestPipe {
-          transform() {
+          transform(arg: unknown) {
             return 1;
           }
         }
@@ -865,7 +865,7 @@ runInEachFileSystem(() => {
 
         @Pipe({name: 'test'})
         export class TestPipe {
-          transform() {
+          transform(arg: unknown) {
             return 1;
           }
         }
@@ -903,7 +903,7 @@ runInEachFileSystem(() => {
 
         @Pipe({name: 'test'})
         export class TestPipe {
-          transform() {
+          transform(arg: unknown) {
             return 1;
           }
         }
@@ -973,6 +973,7 @@ runInEachFileSystem(() => {
             name: 'pipea',
           })
           export class PipeA {
+            transform(arg: unknown) {}
           }
         `,
         );
@@ -1295,7 +1296,7 @@ runInEachFileSystem(() => {
               import {Pipe} from '@angular/core';
               @Pipe({name: 'deferredPipeA'})
               export class DeferredPipeA {
-                transform() {}
+                transform(arg: unknown) {}
               }
             `,
           );
@@ -1306,7 +1307,7 @@ runInEachFileSystem(() => {
               import {Pipe} from '@angular/core';
               @Pipe({name: 'deferredPipeB'})
               export class DeferredPipeB {
-                transform() {}
+                transform(arg: unknown) {}
               }
             `,
           );

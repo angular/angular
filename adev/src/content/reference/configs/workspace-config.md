@@ -279,7 +279,7 @@ An asset specification object can have the following fields.
 
 | Fields           | Details                                                                                                                                   |
 | :--------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| `glob`           | A [node-glob](https://github.com/isaacs/node-glob/blob/master/README.md) using `input` as base directory.                                 |
+| `glob`           | A [node-glob](https://github.com/isaacs/node-glob/blob/main/README.md) using `input` as base directory.                                   |
 | `input`          | A path relative to the workspace root.                                                                                                    |
 | `output`         | A path relative to `outDir`. Because of the security implications, the Angular CLI never writes files outside of the project output path. |
 | `ignore`         | A list of globs to exclude.                                                                                                               |

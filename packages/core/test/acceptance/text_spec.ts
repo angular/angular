@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {AsyncPipe} from '@angular/common';
+import {of} from 'rxjs';
 import {Component} from '../../src/core';
 import {TestBed} from '../../testing';
-import {of} from 'rxjs';
 
 describe('text instructions', () => {
   it('should handle all flavors of interpolated text', () => {
@@ -25,7 +26,6 @@ describe('text instructions', () => {
         <div>a{{one}}b</div>
         <div>{{one}}</div>
       `,
-      standalone: false,
     })
     class App {
       one = 1;
@@ -39,7 +39,6 @@ describe('text instructions', () => {
       nine = 9;
     }
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -62,12 +61,14 @@ describe('text instructions', () => {
   });
 
   it('should handle piped values in interpolated text', () => {
-    // prettier-ignore
     @Component({
       template: `
-        <p>{{who | async}} sells {{(item | async)?.what}} down by the {{(item | async)?.where}}.</p>
+        <p>
+          {{ who | async }} sells {{ (item | async)?.what }} down by the
+          {{ (item | async)?.where }}.
+        </p>
       `,
-      standalone: false,
+      imports: [AsyncPipe],
     })
     class App {
       who = of('Sally');
@@ -76,25 +77,20 @@ describe('text instructions', () => {
         where: 'seashore',
       });
     }
-
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
     const p = fixture.nativeElement.querySelector('p') as HTMLDivElement;
-    expect(p.textContent).toBe('Sally sells seashells down by the seashore.');
+    expect(p.textContent.trim()).toBe('Sally sells seashells down by the seashore.');
   });
 
   it('should not sanitize urls in interpolated text', () => {
     @Component({
       template: '<p>{{thisisfine}}</p>',
-      standalone: false,
     })
     class App {
       thisisfine = 'javascript:alert("image_of_dog_with_coffee_in_burning_building.gif")';
     }
-
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const p = fixture.nativeElement.querySelector('p');
@@ -107,13 +103,10 @@ describe('text instructions', () => {
   it('should not allow writing HTML in interpolated text', () => {
     @Component({
       template: '<div>{{test}}</div>',
-      standalone: false,
     })
     class App {
       test = '<h1>LOL, big text</h1>';
     }
-
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const div = fixture.nativeElement.querySelector('div');
@@ -124,13 +117,11 @@ describe('text instructions', () => {
   it('should stringify functions used in bindings', () => {
     @Component({
       template: '<div>{{test}}</div>',
-      standalone: false,
     })
     class App {
       test = function foo() {};
     }
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const div = fixture.nativeElement.querySelector('div');
@@ -151,13 +142,11 @@ describe('text instructions', () => {
 
     @Component({
       template: '{{object}}',
-      standalone: false,
     })
     class App {
       object = new TestObject();
     }
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -172,13 +161,11 @@ describe('text instructions', () => {
 
     @Component({
       template: '{{symbol}}',
-      standalone: false,
     })
     class App {
       symbol = Symbol('hello');
     }
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -190,11 +177,9 @@ describe('text instructions', () => {
   it('should handle binding syntax used inside quoted text', () => {
     @Component({
       template: `{{'Interpolations look like {{this}}'}}`,
-      standalone: false,
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 

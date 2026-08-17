@@ -6,36 +6,59 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {verifyNoBrowserErrors} from '../../../utilities/index.js';
-import {browser, by, element} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
+import {
+  createWebDriver,
+  verifyNoBrowserErrors,
+  waitForAngular,
+} from '../../../../packages/examples/test-utils/index.js';
 
 describe('Zippy Component', function () {
-  afterEach(verifyNoBrowserErrors);
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
+
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
+
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
 
   describe('zippy', function () {
-    const URL = '/';
-
-    beforeEach(function () {
-      browser.get(URL);
+    beforeEach(async function () {
+      await driver.get(`${baseUrl}/`);
+      await waitForAngular(driver);
     });
 
-    it("should change the zippy title depending on it's state", function () {
-      const zippyTitle = element(by.css('.zippy__title'));
-
-      expect(zippyTitle.getText()).toEqual('▾ Details');
-      zippyTitle.click();
-      expect(zippyTitle.getText()).toEqual('▸ Details');
+    it("should change the zippy title depending on it's state", async function () {
+      const zippyTitle = await driver.findElement(webdriver.By.css('.zippy__title'));
+      expect(await zippyTitle.getText()).toEqual('▾ Details');
+      await zippyTitle.click();
+      await waitForAngular(driver);
+      expect(await zippyTitle.getText()).toEqual('▸ Details');
     });
 
-    it('should have zippy content', function () {
-      expect(element(by.css('.zippy__content')).getText()).toEqual('This is some content.');
+    it('should have zippy content', async function () {
+      const content = await driver.findElement(webdriver.By.css('.zippy__content'));
+      expect(await content.getText()).toEqual('This is some content.');
     });
 
-    it('should toggle when the zippy title is clicked', function () {
-      element(by.css('.zippy__title')).click();
-      expect(element(by.css('.zippy__content')).isDisplayed()).toEqual(false);
-      element(by.css('.zippy__title')).click();
-      expect(element(by.css('.zippy__content')).isDisplayed()).toEqual(true);
+    it('should toggle when the zippy title is clicked', async function () {
+      const zippyTitle = await driver.findElement(webdriver.By.css('.zippy__title'));
+      const content = await driver.findElement(webdriver.By.css('.zippy__content'));
+
+      await zippyTitle.click();
+      await waitForAngular(driver);
+      expect(await content.isDisplayed()).toEqual(false);
+
+      await zippyTitle.click();
+      await waitForAngular(driver);
+      expect(await content.isDisplayed()).toEqual(true);
     });
   });
 });

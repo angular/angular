@@ -343,6 +343,7 @@
       "defaultErrorHandler",
       "defaultThrowError",
       "delayChangeDetectionForEvents",
+      "describeDomNode",
       "destroyLView",
       "destroyViewTree",
       "detachMovedView",

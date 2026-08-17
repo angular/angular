@@ -1,43 +1,52 @@
-import {browser, element, by} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 describe('Forms Tests', () => {
-  beforeEach(() => browser.get(''));
+  let driver: webdriver.WebDriver;
+
+  beforeEach(async () => {
+    await driver.get('');
+  });
 
   it('should display correct title', async () => {
-    expect(await element.all(by.css('h1')).get(0).getText()).toEqual('Actor Form');
+    const h1s = await driver.findElements(webdriver.By.css('h1'));
+    expect(await h1s[0].getText()).toEqual('Actor Form');
   });
 
   it('should not display message before submit', async () => {
-    const ele = element(by.css('h2'));
-    expect(await ele.isDisplayed()).toBe(false);
+    const h2s = await driver.findElements(webdriver.By.css('h2'));
+    expect(h2s.length === 0 || !(await h2s[0].isDisplayed())).toBe(true);
   });
 
   it('should hide form after submit', async () => {
-    const ele = element.all(by.css('h1')).get(0);
+    const ele = (await driver.findElements(webdriver.By.css('h1')))[0];
     expect(await ele.isDisplayed()).toBe(true);
 
-    const b = element.all(by.css('button[type=submit]')).get(0);
+    const b = (await driver.findElements(webdriver.By.css('button[type=submit]')))[0];
     await b.click();
-    expect(await ele.isDisplayed()).toBe(false);
+    const h1s = await driver.findElements(webdriver.By.css('h1'));
+    expect(h1s.length === 0 || !(await h1s[0].isDisplayed())).toBe(true);
   });
 
   it('should display message after submit', async () => {
-    const b = element.all(by.css('button[type=submit]')).get(0);
+    const b = (await driver.findElements(webdriver.By.css('button[type=submit]')))[0];
     await b.click();
-    expect(await element(by.css('h2')).getText()).toContain('You submitted the following');
+    expect(await (await driver.findElement(webdriver.By.css('h2'))).getText()).toContain(
+      'You submitted the following',
+    );
   });
 
   it('should hide form after submit', async () => {
-    const studioEle = element.all(by.css('input[name=studio]')).get(0);
+    const studioEle = (await driver.findElements(webdriver.By.css('input[name=studio]')))[0];
     expect(await studioEle.isDisplayed()).toBe(true);
 
-    const submitButtonEle = element.all(by.css('button[type=submit]')).get(0);
+    const submitButtonEle = (await driver.findElements(webdriver.By.css('button[type=submit]')))[0];
     await submitButtonEle.click();
-    expect(await studioEle.isDisplayed()).toBe(false);
+    const studioEles = await driver.findElements(webdriver.By.css('input[name=studio]'));
+    expect(studioEles.length === 0 || !(await studioEles[0].isDisplayed())).toBe(true);
   });
 
   it('should reflect submitted data after submit', async () => {
-    const studioEle = element.all(by.css('input[name=studio]')).get(0);
+    const studioEle = (await driver.findElements(webdriver.By.css('input[name=studio]')))[0];
     const value = await studioEle.getAttribute('value');
     const test = 'testing 1 2 3';
     const newValue = value + test;
@@ -45,12 +54,18 @@ describe('Forms Tests', () => {
     await studioEle.sendKeys(test);
     expect(await studioEle.getAttribute('value')).toEqual(newValue);
 
-    const b = element.all(by.css('button[type=submit]')).get(0);
+    const b = (await driver.findElements(webdriver.By.css('button[type=submit]')))[0];
     await b.click();
 
-    const studioTextEle = element(by.cssContainingText('div', 'Studio'));
-    expect(await studioTextEle.isPresent()).toBe(true, 'cannot locate "Studio" label');
-    const divEle = element(by.cssContainingText('div', newValue));
-    expect(await divEle.isPresent()).toBe(true, `cannot locate div with this text: ${newValue}`);
+    const divs = await driver.findElements(webdriver.By.css('div'));
+    let foundStudio = false;
+    let foundNewValue = false;
+    for (const d of divs) {
+      const text = await d.getText();
+      if (text.includes('Studio')) foundStudio = true;
+      if (text.includes(newValue)) foundNewValue = true;
+    }
+    expect(foundStudio).toBe(true, 'cannot locate "Studio" label');
+    expect(foundNewValue).toBe(true, `cannot locate div with this text: ${newValue}`);
   });
 });

@@ -87,25 +87,17 @@ describe('filtering', () => {
       const filter = createFilter('source:click');
       expect(
         filter({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 10,
+          source: 'click',
         }),
       ).toBeTrue();
 
       expect(
         filter({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'mouseenter',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 10,
+          source: 'mouseenter',
         }),
       ).toBeFalse();
     });
@@ -114,49 +106,33 @@ describe('filtering', () => {
       const filter1 = createFilter('duration:>10ms');
       expect(
         filter1({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 10,
+          source: 'click',
         }),
       ).toBeFalse();
 
       expect(
         filter1({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'mouseenter',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 15,
+          source: 'mouseenter',
         }),
       ).toBeTrue();
 
       const filter2 = createFilter('duration:=10ms');
       expect(
         filter2({
-          frame: {
-            directives: [],
-            duration: 11,
-            source: 'mouseenter',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 11,
+          source: 'mouseenter',
         }),
       ).toBeFalse();
       expect(
         filter2({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'mouseenter',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 10,
+          source: 'mouseenter',
         }),
       ).toBeTrue();
     });
@@ -165,37 +141,25 @@ describe('filtering', () => {
       const filter = createFilter('duration:>10ms source: click');
       expect(
         filter({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 10,
+          source: 'click',
         }),
       ).toBeFalse();
 
       expect(
         filter({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'mouseenter',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 15,
+          source: 'mouseenter',
         }),
       ).toBeFalse();
 
       expect(
         filter({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 15,
+          source: 'click',
         }),
       ).toBeTrue();
     });
@@ -205,13 +169,9 @@ describe('filtering', () => {
 
       expect(
         filter({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 15,
+          source: 'click',
         }),
       ).toBeTrue();
     });
@@ -221,13 +181,9 @@ describe('filtering', () => {
 
       expect(
         filter({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'message',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 15,
+          source: 'message',
         }),
       ).toBeFalse();
     });
@@ -237,37 +193,25 @@ describe('filtering', () => {
 
       expect(
         filter({
-          frame: {
-            directives: [],
-            duration: 15,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 15,
+          source: 'click',
         }),
       ).toBeFalse();
 
       expect(
         filter({
-          frame: {
-            directives: [],
-            duration: 10,
-            source: 'message',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 10,
+          source: 'message',
         }),
       ).toBeFalse();
 
       expect(
         filter({
-          frame: {
-            directives: [],
-            duration: 14,
-            source: 'click',
-          },
-          style: {},
-          toolTip: '',
+          directives: [],
+          duration: 14,
+          source: 'click',
         }),
       ).toBeTrue();
     });

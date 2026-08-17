@@ -5,6 +5,19 @@
   "normalizedModuleName": "angular_aria_toolbar",
   "entries": [
     {
+      "name": "TOOLBAR_WIDGET_GROUP",
+      "type": "InjectionToken<ToolbarWidgetGroup<unknown>>",
+      "entryType": "constant",
+      "rawComment": "/** Token used to provide the `ToolbarWidgetGroup` directive. */",
+      "description": "Token used to provide the `ToolbarWidgetGroup` directive.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/toolbar/toolbar-tokens.ts",
+        "startLine": 13,
+        "endLine": 15
+      }
+    },
+    {
       "name": "ToolbarWidgetGroup",
       "isAbstract": false,
       "entryType": "directive",
@@ -415,6 +428,10 @@
   ],
   "symbols": [
     [
+      "InjectionToken",
+      "@angular/core"
+    ],
+    [
       "Directive",
       "@angular/core"
     ],
@@ -475,6 +492,10 @@
       "@angular/cdk/a11y"
     ],
     [
+      "TOOLBAR_WIDGET_GROUP",
+      "@angular/aria/toolbar"
+    ],
+    [
       "ToolbarWidgetGroup",
       "@angular/aria/toolbar"
     ],
@@ -484,6 +505,10 @@
     ],
     [
       "ToolbarWidget",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "TOOLBAR_WIDGET_GROUP",
       "@angular/aria/toolbar"
     ],
     [

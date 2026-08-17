@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export function estimateFrameRate(timeSpent: number): number {
-  const multiplier = Math.max(Math.ceil(timeSpent / 16) - 1, 0);
-  return Math.floor(60 / 2 ** multiplier);
+export function calculateFrameRate(timeSpent: number): number {
+  if (timeSpent <= 0) {
+    return 60;
+  }
+  return Math.min(60, Math.round(1000 / timeSpent));
 }

@@ -8,6 +8,7 @@
 name: Deploying adev preview to Firebase
 
 on:
+  # zizmor: ignore[dangerous-triggers] - {Trigger is safe as workflow does not checkout untrusted code}
   workflow_run:
     workflows: ['Build adev for preview deployment']
     types: [completed]
@@ -45,7 +46,7 @@ jobs:
           npx -y firebase-tools@15.15.0 target:clear --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs
           npx -y firebase-tools@15.15.0 target:apply --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs ${{env.PREVIEW_SITE}}
 
-      - uses: angular/dev-infra/github-actions/previews/upload-artifacts-to-firebase@442c2fcbf06a321b5196b4c5fc70e78a49242958
+      - uses: angular/dev-infra/github-actions/previews/upload-artifacts-to-firebase@630fa0aa7ce9b7127b1ec4464b6af02d34f8154b # main
         with:
           github-token: '${{secrets.GITHUB_TOKEN}}'
           workflow-artifact-name: 'adev-preview'

@@ -30,7 +30,7 @@ export class FlamegraphVisualizerComponent {
   public themeService = inject(ThemeService);
   readonly profilerBars = computed(() => {
     return [
-      this._formatter.formatFrame(
+      this.formatter.formatFrame(
         this.frame(),
         this.changeDetection(),
         this.themeService.currentTheme(),
@@ -39,19 +39,19 @@ export class FlamegraphVisualizerComponent {
   });
   view: [number, number] = [235, 200];
 
-  private readonly _formatter = new FlamegraphFormatter();
+  private readonly formatter = new FlamegraphFormatter();
   readonly colors = computed<FlamegraphColor>(() => {
-    // Represent `dynamic-blue-02` and `dynamic-green-01`
+    // Represent `dynamic-blue-02` and `dynamic-orange-01`
     return this.themeService.currentTheme() === 'dark'
       ? {
-          hue: [211, 123],
-          saturation: [100, 31],
-          lightness: [65, 49],
+          red: [75, 255],
+          green: [162, 150],
+          blue: [255, 73],
         }
       : {
-          hue: [214, 125],
-          saturation: [85, 37],
-          lightness: [50, 41],
+          red: [19, 236],
+          green: [113, 118],
+          blue: [234, 33],
         };
   });
 

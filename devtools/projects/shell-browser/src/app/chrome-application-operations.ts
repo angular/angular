@@ -13,6 +13,7 @@ import {Platform} from '@angular/cdk/platform';
 import {inject} from '@angular/core';
 import {ApplicationOperations, Frame, TOP_LEVEL_FRAME_ID} from '../../../ng-devtools';
 import {DirectivePosition, ElementPosition, SignalNodePosition} from '../../../protocol';
+import {stringifyAndEscape} from './comm-utils';
 
 export class ChromeApplicationOperations extends ApplicationOperations {
   platform = inject(Platform);
@@ -47,6 +48,65 @@ export class ChromeApplicationOperations extends ApplicationOperations {
       position,
     )}))`;
     this.runInInspectedWindow(inspectSignal, target);
+  }
+
+  override async setSignalBreakpoint(
+    position: SignalNodePosition,
+    target: Frame,
+  ): Promise<boolean> {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'setSignalBreakpoint',
+        tabId,
+        position,
+      });
+      if (!response?.success) {
+        console.error('Failed to set breakpoint via CDP:', response?.error);
+      }
+      return Boolean(response?.success);
+    } catch (err) {
+      console.error('Failed to set breakpoint via CDP:', err);
+      return false;
+    }
+  }
+
+  override async removeSignalBreakpoint(
+    position: SignalNodePosition,
+    target: Frame,
+  ): Promise<boolean> {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'removeSignalBreakpoint',
+        tabId,
+        position,
+      });
+      if (!response?.success) {
+        console.error('Failed to remove breakpoint via CDP:', response?.error);
+      }
+      return Boolean(response?.success);
+    } catch (err) {
+      console.error('Failed to remove breakpoint via CDP:', err);
+      return false;
+    }
+  }
+
+  override async getActiveSignalBreakpoints(target: Frame): Promise<SignalNodePosition[]> {
+    const tabId = chrome.devtools.inspectedWindow.tabId;
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'getActiveSignalBreakpoints',
+        tabId,
+      });
+      if (!response?.success) {
+        console.error('Failed to get active signal breakpoints via CDP:', response?.error);
+      }
+      return response?.success ? (response.activePositions ?? []) : [];
+    } catch (err) {
+      console.error('Failed to get active signal breakpoints via CDP:', err);
+      return [];
+    }
   }
 
   override viewSourceFromRouter(name: string, type: string, target: Frame): void {
@@ -87,8 +147,4 @@ export class ChromeApplicationOperations extends ApplicationOperations {
     }
     return browser.storage.local;
   }
-}
-
-function stringifyAndEscape(obj: unknown): string {
-  return JSON.stringify(JSON.stringify(obj));
 }

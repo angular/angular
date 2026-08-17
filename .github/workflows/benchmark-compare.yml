@@ -45,14 +45,14 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       - run: pnpm install --frozen-lockfile
 
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@442c2fcbf06a321b5196b4c5fc70e78a49242958
+        uses: angular/dev-infra/github-actions/bazel/setup@630fa0aa7ce9b7127b1ec4464b6af02d34f8154b # main
 
-      - uses: angular/dev-infra/github-actions/bazel/configure-remote@442c2fcbf06a321b5196b4c5fc70e78a49242958
+      - uses: angular/dev-infra/github-actions/bazel/configure-remote@630fa0aa7ce9b7127b1ec4464b6af02d34f8154b # main
         with:
           bazelrc: ./.bazelrc.user
 

@@ -7,7 +7,7 @@
  */
 
 import {Component, computed, input, output} from '@angular/core';
-import {ProfilerFrame} from '../../../../../../../../protocol';
+import {ElementProfile, ProfilerFrame} from '../../../../../../../../protocol';
 
 import {BarGraphFormatter, BargraphNode} from '../../record-formatter/bargraph-formatter/index';
 
@@ -26,6 +26,9 @@ export class BargraphVisualizerComponent {
 
   private readonly _formatter = new BarGraphFormatter();
   frame = input.required<ProfilerFrame>();
+
+  /** The `ElementProfile` that corresponds to a bar graph node to highlight. */
+  highlighted = input<ElementProfile | null>(null);
 
   profileRecords = computed(() => this._formatter.formatFrame(this.frame()));
 

@@ -431,6 +431,7 @@
       "defaultThrowError",
       "delayChangeDetectionForEvents",
       "deleteOrUnsetInMap",
+      "describeDomNode",
       "destroyLView",
       "destroyViewTree",
       "detachMovedView",

@@ -26,6 +26,7 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/forms",
         "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/shared/angie",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
         "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer",
         "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",

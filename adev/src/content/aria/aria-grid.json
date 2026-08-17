@@ -5,6 +5,19 @@
   "normalizedModuleName": "angular_aria_grid",
   "entries": [
     {
+      "name": "GRID_CELL",
+      "type": "InjectionToken<GridCell>",
+      "entryType": "constant",
+      "rawComment": "/** Token used to expose a `GridCell`. */",
+      "description": "Token used to expose a `GridCell`.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/grid/grid-tokens.ts",
+        "startLine": 15,
+        "endLine": 15
+      }
+    },
+    {
       "name": "GridRow",
       "isAbstract": false,
       "entryType": "directive",
@@ -337,6 +350,32 @@
         "filePath": "src/aria/grid/grid-cell-widget.ts",
         "startLine": 40,
         "endLine": 125
+      }
+    },
+    {
+      "name": "GRID_ROW",
+      "type": "InjectionToken<GridRow>",
+      "entryType": "constant",
+      "rawComment": "/** Token used to expose a `GridRow`. */",
+      "description": "Token used to expose a `GridRow`.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/grid/grid-tokens.ts",
+        "startLine": 18,
+        "endLine": 18
+      }
+    },
+    {
+      "name": "GRID",
+      "type": "InjectionToken<Grid>",
+      "entryType": "constant",
+      "rawComment": "/** Token used to expose a `Grid`. */",
+      "description": "Token used to expose a `Grid`.",
+      "jsdocTags": [],
+      "source": {
+        "filePath": "/src/aria/grid/grid-tokens.ts",
+        "startLine": 21,
+        "endLine": 21
       }
     },
     {
@@ -864,6 +903,10 @@
   ],
   "symbols": [
     [
+      "InjectionToken",
+      "@angular/core"
+    ],
+    [
       "afterNextRender",
       "@angular/core"
     ],
@@ -932,6 +975,10 @@
       "@angular/core"
     ],
     [
+      "GRID_CELL",
+      "@angular/aria/grid"
+    ],
+    [
       "GridRow",
       "@angular/aria/grid"
     ],
@@ -940,11 +987,23 @@
       "@angular/aria/grid"
     ],
     [
+      "GRID_ROW",
+      "@angular/aria/grid"
+    ],
+    [
+      "GRID",
+      "@angular/aria/grid"
+    ],
+    [
       "Grid",
       "@angular/aria/grid"
     ],
     [
       "GridCell",
+      "@angular/aria/grid"
+    ],
+    [
+      "GRID_CELL",
       "@angular/aria/grid"
     ],
     [
@@ -1017,6 +1076,14 @@
     ],
     [
       "GridCellWidget.deactivate",
+      "@angular/aria/grid"
+    ],
+    [
+      "GRID_ROW",
+      "@angular/aria/grid"
+    ],
+    [
+      "GRID",
       "@angular/aria/grid"
     ],
     [

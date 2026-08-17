@@ -1,6 +1,8 @@
 name: Merge Ready
 
-on: pull_request_target
+on:
+  # zizmor: ignore[dangerous-triggers] - {Trigger is safe as workflow does not checkout untrusted code}
+  pull_request_target:
 
 # Declare default permissions as read only.
 permissions: {}
@@ -9,6 +11,6 @@ jobs:
   status:
     runs-on: ubuntu-latest
     steps:
-      - uses: angular/dev-infra/github-actions/unified-status-check@442c2fcbf06a321b5196b4c5fc70e78a49242958
+      - uses: angular/dev-infra/github-actions/unified-status-check@630fa0aa7ce9b7127b1ec4464b6af02d34f8154b # main
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}

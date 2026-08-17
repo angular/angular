@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NgIf, NgTemplateOutlet} from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   Injector,
   provideNgReflectAttributes,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
-  ChangeDetectionStrategy,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
@@ -21,9 +22,7 @@ describe('TemplateRef', () => {
   describe('rootNodes', () => {
     @Component({
       template: `<ng-template #templateRef></ng-template>`,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [NgIf, NgTemplateOutlet],
     })
     class App {
       @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
@@ -31,9 +30,6 @@ describe('TemplateRef', () => {
     }
 
     function getRootNodes(template: string): any[] {
-      TestBed.configureTestingModule({
-        declarations: [App],
-      });
       TestBed.overrideTemplate(App, template);
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -66,9 +62,6 @@ describe('TemplateRef', () => {
           </ng-template>
         `,
         exportAs: 'menuContent',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MenuContent {
         @ViewChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
@@ -82,9 +75,7 @@ describe('TemplateRef', () => {
             <ng-template [ngIf]="true"><button>Item three</button></ng-template>
           </menu-content>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MenuContent, NgIf],
       })
       class App {
         @ViewChild(MenuContent) content!: MenuContent;
@@ -93,7 +84,6 @@ describe('TemplateRef', () => {
       }
 
       TestBed.configureTestingModule({
-        declarations: [MenuContent, App],
         providers: [provideNgReflectAttributes()],
       });
       const fixture = TestBed.createComponent(App);
@@ -202,9 +192,6 @@ describe('TemplateRef', () => {
       @Component({
         selector: 'dynamic',
         template: '',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class DynamicCmp {
         @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
@@ -213,16 +200,13 @@ describe('TemplateRef', () => {
       @Component({
         selector: 'test',
         template: '',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmp {
         constructor(public vcr: ViewContainerRef) {}
       }
 
       beforeEach(() => {
-        TestBed.configureTestingModule({declarations: [TestCmp, DynamicCmp]});
+        TestBed.configureTestingModule({imports: [TestCmp, DynamicCmp]});
       });
 
       it('should return projectable nodes when provided', () => {
@@ -285,7 +269,6 @@ describe('TemplateRef', () => {
         <ng-template #templateRef let-name="name">{{ name }}</ng-template>
         <ng-container #containerRef></ng-container>
       `,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -295,7 +278,6 @@ describe('TemplateRef', () => {
     }
 
     it('should update if the context of a view ref is mutated', () => {
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const context = {name: 'Frodo'};
@@ -313,7 +295,6 @@ describe('TemplateRef', () => {
     });
 
     it('should update if the context of a view ref is replaced', () => {
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
@@ -339,9 +320,6 @@ describe('TemplateRef', () => {
           </ng-template>
           <ng-container #containerRef></ng-container>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ListenerTest {
         @ViewChild('templateRef') templateRef!: TemplateRef<any>;
@@ -352,7 +330,6 @@ describe('TemplateRef', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [ListenerTest]});
       const fixture = TestBed.createComponent(ListenerTest);
       fixture.detectChanges();
       const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
@@ -371,7 +348,6 @@ describe('TemplateRef', () => {
     });
 
     it('should warn if the context of an embedded view ref is replaced', () => {
-      TestBed.configureTestingModule({declarations: [App]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});

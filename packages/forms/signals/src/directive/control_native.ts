@@ -94,7 +94,7 @@ export function nativeControlCreate(
     );
   }
 
-  const bindings = createBindings<ControlBindingKey | 'controlValue'>();
+  const bindings = createBindings<ControlBindingKey | 'controlValue' | 'radioValue'>();
 
   return () => {
     const state = parent.state();
@@ -117,7 +117,11 @@ export function nativeControlCreate(
 
     // We need to update the value after setting the attributes as some attributes like min/max might prevent from setting the value
     const controlValue = state.controlValue();
-    if (bindingUpdated(bindings, 'controlValue', controlValue)) {
+    const controlValueChanged = bindingUpdated(bindings, 'controlValue', controlValue);
+    const radioValueChanged =
+      input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
+
+    if (controlValueChanged || radioValueChanged) {
       setNativeControlValue(input, controlValue);
     }
 

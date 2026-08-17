@@ -708,7 +708,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Advanced,
     step: 'wtf',
     action:
-      'Support for web tracing framework in Angular was deprecated in version 8. You should stop using any of the `wtf*` APIs. To do performance tracing, we recommend using [browser performance tools](https://developers.google.com/web/tools/lighthouse/audits/user-timing).',
+      'Support for web tracing framework in Angular was deprecated in version 8. You should stop using any of the `wtf*` APIs. To do performance tracing, we recommend using [browser performance tools](https://developer.chrome.com/docs/lighthouse/performance/user-timings).',
   },
   {
     possibleIn: 800,
@@ -2544,6 +2544,14 @@ export const RECOMMENDATIONS: Step[] = [
   },
   {
     action:
+      'Remove the `allowSignalWrites` option from `effect()` calls. The option is deprecated and no longer required, as signal writes inside effects are allowed by default.',
+    level: ApplicationComplexity.Medium,
+    necessaryAsOf: 1900,
+    possibleIn: 1900,
+    step: '19.0.0-remove-allow-signal-writes',
+  },
+  {
+    action:
       "In the application's project directory, run `ng update @angular/core@20 @angular/cli@20` to update your application to Angular v20.",
     level: ApplicationComplexity.Basic,
     necessaryAsOf: 2000,
@@ -2772,6 +2780,14 @@ export const RECOMMENDATIONS: Step[] = [
     possibleIn: 2100,
     step: '21.0.0_ng_update',
   },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0-safe-resource-url-audio-src',
+    action:
+      'If you use `SafeResourceUrl` values with `audio[src]` bindings, be aware that `audio[src]` is no longer sanitized in Angular v21. Existing uses of `bypassSecurityTrustResourceUrl` may therefore produce the `SafeValue must use [property]=binding` message. Remove the unnecessary sanitization and bind the URL directly instead.',
+  },
 
   {
     possibleIn: 2100,
@@ -2780,6 +2796,15 @@ export const RECOMMENDATIONS: Step[] = [
     material: true,
     step: 'update @angular/material',
     action: 'Run `ng update @angular/material@21`.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    material: true,
+    step: '21.0.0-cdk-overlay-top-layer-stacking',
+    action:
+      "CDK overlays can now render in the browser's native top layer, causing elements that previously appeared above Material overlays via `z-index` to render beneath them. You can restore the previous behavior by providing `OVERLAY_DEFAULT_CONFIG` from `@angular/cdk/overlay` with the value `{usePopover: false}`.",
   },
   {
     possibleIn: 2100,

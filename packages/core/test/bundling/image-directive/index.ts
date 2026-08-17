@@ -7,7 +7,7 @@
  */
 
 import '@angular/compiler';
-import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/platform-browser';
+import {bootstrapApplication} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
 import {
   ChangeDetectionStrategy,
@@ -63,9 +63,5 @@ const ROUTES = [
 ];
 
 bootstrapApplication(RootComponent, {
-  providers: [
-    provideZoneChangeDetection(),
-    provideProtractorTestingSupport(), //
-    importProvidersFrom(RouterModule.forRoot(ROUTES)),
-  ],
+  providers: [provideZoneChangeDetection(), importProvidersFrom(RouterModule.forRoot(ROUTES))],
 });

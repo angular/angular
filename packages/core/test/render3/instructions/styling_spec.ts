@@ -10,6 +10,7 @@ import {AttributeMarker, DirectiveDef} from '../../../src/render3';
 import {ɵɵdefineDirective} from '../../../src/render3/definition';
 import {
   classStringParser,
+  styleKeyValueArraySet,
   styleStringParser,
   toStylingKeyValueArray,
   ɵɵclassProp,
@@ -32,6 +33,10 @@ import {
 import {HEADER_OFFSET, TVIEW} from '../../../src/render3/interfaces/view';
 import {getLView, leaveView, setBindingRootForHostBindings} from '../../../src/render3/state';
 import {getNativeByIndex} from '../../../src/render3/util/view_utils';
+import {
+  bypassSanitizationTrustHtml,
+  bypassSanitizationTrustStyle,
+} from '../../../src/sanitization/bypass';
 import {keyValueArraySet} from '../../../src/util/array_utils';
 import {getElementClasses, getElementStyles} from '../../../testing/src/styling';
 
@@ -423,6 +428,46 @@ describe('styling', () => {
             'x',
           ] as any);
         });
+
+        it('should accept supported style values', () => {
+          const warnSpy = spyOn(console, 'warn');
+
+          expect(
+            toStylingKeyValueArray(styleKeyValueArraySet, null!, {
+              color: 'red',
+              width: 10,
+              display: bypassSanitizationTrustStyle('block'),
+              opacity: null,
+            }),
+          ).toEqual(['color', 'red', 'display', 'block', 'opacity', null, 'width', 10] as any);
+          expect(warnSpy).not.toHaveBeenCalled();
+        });
+
+        it('should warn about unsupported style values', () => {
+          const warnSpy = spyOn(console, 'warn');
+
+          expect(
+            toStylingKeyValueArray(styleKeyValueArraySet, null!, {
+              display: true,
+              color: bypassSanitizationTrustHtml('red'),
+            }),
+          ).toEqual(['color', 'red', 'display', true] as any);
+          expect(warnSpy).toHaveBeenCalledTimes(2);
+          expect(warnSpy).toHaveBeenCalledWith(
+            'NG0318: `[style.display]` was bound to an invalid value. ' +
+              'Expected a string, number, SafeValue, null, or undefined, but received ' +
+              '`boolean` (`true`). ' +
+              'Find more at https://next.angular.dev/errors/NG0318',
+          );
+          expect(warnSpy).toHaveBeenCalledWith(
+            'NG0318: `[style.color]` was bound to an invalid value. ' +
+              'Expected a string, number, SafeValue, null, or undefined, but received `object` ' +
+              '(`SafeValue must use [property]=binding: red ' +
+              '(see https://angular.dev/best-practices/security#preventing-cross-site-scripting-xss)`). ' +
+              'Find more at https://next.angular.dev/errors/NG0318',
+          );
+        });
+
         it('should parse objects with null prototype', () => {
           const nullProtoObj = Object.assign(Object.create(null), {X: 'x', A: 'a'});
           expect(toStylingKeyValueArray(keyValueArraySet, null!, nullProtoObj)).toEqual([

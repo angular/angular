@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, input, output} from '@angular/core';
+import {Component, computed, inject, input, output} from '@angular/core';
+import {Platform} from '@angular/cdk/platform';
 import {MatIcon} from '@angular/material/icon';
 
 import {DebugSignalGraphNode, ElementPosition} from '../../../../../protocol';
@@ -52,11 +53,17 @@ interface ResourceCluster {
   imports: [SignalValueTreeComponent, MatIcon, ButtonComponent, MatTooltip, IconComponent],
 })
 export class SignalDetailsComponent {
+  private readonly platform = inject(Platform);
+  protected readonly supportsBreakpoints = !this.platform.FIREFOX;
+
   protected readonly node = input.required<DevtoolsSignalGraphNode>();
   protected readonly graph = input.required<DevtoolsSignalGraph>();
   protected readonly element = input.required<ElementPosition>();
+  protected readonly hasBreakpoint = input<boolean>(false);
 
   protected readonly gotoSource = output<DevtoolsSignalGraphNode>();
+  protected readonly setBreakpoint = output<DevtoolsSignalGraphNode>();
+  protected readonly removeBreakpoint = output<DevtoolsSignalGraphNode>();
   protected readonly expandCluster = output<string>();
   protected readonly highlightDeps = output<{
     node: DevtoolsSignalGraphNode;

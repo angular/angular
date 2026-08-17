@@ -49,7 +49,7 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
     } else {
       data.handle = handleOrId;
       // On Node.js a timeout and interval can be restarted over and over again by using the `.refresh` method.
-      data.isRefreshable = isFunction(handleOrId.refresh);
+      data.isRefreshable = isFunction(handleOrId?.refresh);
     }
 
     return task;

@@ -19,7 +19,7 @@ export interface AppEntry<T> {
 }
 
 export interface GraphNode {
-  toolTip: string;
+  tooltip: string;
   style: Record<string, unknown>;
   frame: ProfilerFrame;
 }

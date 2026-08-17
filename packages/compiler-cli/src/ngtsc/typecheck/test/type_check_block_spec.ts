@@ -1508,6 +1508,12 @@ describe('type check blocks', () => {
         expect(block).toContain('(((((this).a))![0] as any)');
         expect(block).toContain('((((((this).a)).optionalMethod))!() as any)');
       });
+
+      it('should produce correct correct ts expression', () => {
+        const TEMPLATE = `{{ one?.two.three }}`;
+        const block = tcb(TEMPLATE, DIRECTIVES);
+        expect(block).toContain('(((((this).one))?.two.three))');
+      });
     });
 
     describe('config.strictSafeNavigationTypes (View Engine bug emulation)', () => {

@@ -182,6 +182,45 @@ describe('FetchBackend', () => {
     expect(res.statusText).toBe('OK');
   });
 
+  it('handles a text response with iso-8859-1 charset', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST));
+    // "café" encoded in ISO-8859-1 (0x63, 0x61, 0x66, 0xE9)
+    const isoBytes = new Uint8Array([0x63, 0x61, 0x66, 0xe9]);
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', isoBytes, {
+      'Content-Type': 'text/html; charset=iso-8859-1',
+    });
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as HttpResponse<string>;
+    expect(res.body).toBe('café');
+  });
+
+  it('handles a text response with windows-1252 charset in quotes', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST));
+    // "€" encoded in Windows-1252 (0x80)
+    const windowsBytes = new Uint8Array([0x80]);
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', windowsBytes, {
+      'Content-Type': 'text/plain; charset="windows-1252"',
+    });
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as HttpResponse<string>;
+    expect(res.body).toBe('€');
+  });
+
+  it('falls back to default utf-8 when given an invalid charset', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST));
+    // "café" encoded in UTF-8
+    const utf8Bytes = new Uint8Array([0x63, 0x61, 0x66, 0xc3, 0xa9]);
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', utf8Bytes, {
+      'Content-Type': 'text/plain; charset=invalid-encoding-label',
+    });
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as HttpResponse<string>;
+    expect(res.body).toBe('café');
+  });
+
   it('handles a json response', async () => {
     const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', JSON.stringify({data: 'some data'}));
@@ -189,6 +228,16 @@ describe('FetchBackend', () => {
     expect(events.length).toBe(2);
     const res = events[1] as HttpResponse<{data: string}>;
     expect(res.body!.data).toBe('some data');
+  });
+
+  it('decodes a json response as UTF-8 regardless of its declared charset', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', JSON.stringify({data: 'café'}), {
+      'Content-Type': 'application/json; charset=windows-1251',
+    });
+    const events = await promise;
+    const res = events[1] as HttpResponse<{data: string}>;
+    expect(res.body!.data).toBe('café');
   });
 
   it('handles a blank json response', async () => {
@@ -679,6 +728,27 @@ describe('FetchBackend', () => {
       expect((events[1] as HttpResponse<string>).body).toBe('ok');
     });
   });
+
+  describe('cancellation behavior', () => {
+    it('should not abort signal when the request completes successfully', async () => {
+      const req = new HttpRequest('GET', '/test', {responseType: 'text'});
+      const promise = trackEvents(backend.handle(req));
+      fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'ok');
+      const events = await promise;
+
+      expect(events.length).toBe(2);
+      expect(fetchMock.request.signal?.aborted).toBeFalse();
+    });
+
+    it('should abort signal when unsubscribed before request completion', () => {
+      const req = new HttpRequest('GET', '/test', {responseType: 'text'});
+      const sub = backend.handle(req).subscribe();
+      expect(fetchMock.request.signal?.aborted).toBeFalse();
+
+      sub.unsubscribe();
+      expect(fetchMock.request.signal?.aborted).toBeTrue();
+    });
+  });
 });
 
 export class MockFetchFactory extends FetchFactory {
@@ -700,6 +770,7 @@ export class MockFetchFactory extends FetchFactory {
     this.request.body = init?.body;
     this.request.headers = init?.headers;
     this.request.credentials = init?.credentials;
+    this.request.signal = init?.signal;
 
     if (init?.signal) {
       init?.signal.addEventListener('abort', () => {
@@ -723,7 +794,7 @@ export class MockFetchFactory extends FetchFactory {
   mockFlush(
     status: number,
     statusText: string,
-    body?: string | Blob,
+    body?: string | Blob | Uint8Array,
     headers?: Record<string, string>,
   ): void {
     this.clearWarningTimeout?.();
@@ -778,6 +849,7 @@ class MockFetchRequest {
   public body: any;
   public credentials?: RequestCredentials;
   public headers?: HeadersInit;
+  public signal?: AbortSignal | null;
 }
 
 class InfiniteStreamFetchFactory extends FetchFactory {
@@ -829,7 +901,7 @@ class MockFetchResponse {
     start: (controller) => {
       this.sub$.subscribe({
         next: (val) => {
-          controller.enqueue(new TextEncoder().encode(val));
+          controller.enqueue(val instanceof Uint8Array ? val : new TextEncoder().encode(val));
         },
         complete: () => {
           controller.close();

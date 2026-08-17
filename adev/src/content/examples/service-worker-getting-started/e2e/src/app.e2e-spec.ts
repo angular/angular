@@ -1,30 +1,30 @@
-import {AppPage} from './app.po';
-import {element, by} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 describe('sw-example App', () => {
-  let page: AppPage;
+  let driver: webdriver.WebDriver;
 
   beforeEach(async () => {
-    page = new AppPage();
-    await page.navigateTo();
+    await driver.get('');
   });
 
   it('should display welcome message', async () => {
-    expect(await page.getTitleText()).toEqual('Welcome to Service Workers!');
+    expect(await (await driver.findElement(webdriver.By.css('h1, app-root h1'))).getText()).toEqual(
+      'Welcome to Service Workers!',
+    );
   });
 
   it('should display the Angular logo', async () => {
-    const logo = element(by.css('img'));
-    expect(await logo.isPresent()).toBe(true);
+    const imgs = await driver.findElements(webdriver.By.css('img'));
+    expect(imgs.length).toBeGreaterThan(0);
   });
 
   it('should show a header for the list of links', async () => {
-    const listHeader = element(by.css('app-root > h2'));
+    const listHeader = await driver.findElement(webdriver.By.css('app-root > h2'));
     expect(await listHeader.getText()).toEqual('Here are some links to help you start:');
   });
 
   it('should show a list of links', async () => {
-    const items = await element.all(by.css('ul > li > h2 > a'));
+    const items = await driver.findElements(webdriver.By.css('ul > li > h2 > a'));
 
     expect(items.length).toBe(4);
     expect(await items[0].getText()).toBe('Angular Service Worker Intro');
@@ -35,8 +35,8 @@ describe('sw-example App', () => {
 
   // Check for a rejected promise as the service worker is not enabled
   it('SwUpdate.checkForUpdate() should return a rejected promise', async () => {
-    const button = element(by.css('button'));
-    const rejectMessage = element(by.css('p'));
+    const button = await driver.findElement(webdriver.By.css('button'));
+    const rejectMessage = await driver.findElement(webdriver.By.css('p'));
     await button.click();
     expect(await rejectMessage.getText()).toContain('rejected: ');
   });

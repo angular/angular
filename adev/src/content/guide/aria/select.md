@@ -224,4 +224,4 @@ For detailed API documentation, inspect the following API references:
 
 ### Positioning
 
-The select pattern integrates with [CDK Overlay](https://material.angular.io/cdk/overlay/overview) for smart positioning. Use `cdkConnectedOverlay` to handle viewport edges and scrolling automatically.
+The select pattern integrates with [CDK Overlay](https://material.angular.dev/cdk/overlay/overview) for smart positioning. Use `cdkConnectedOverlay` to handle viewport edges and scrolling automatically.
