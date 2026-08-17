@@ -39,13 +39,7 @@ export function setupAndRunResources(
 
       traverse(targetRouterState._root);
 
-      function throwIfAborted() {
-        if (abortSignal.aborted) {
-          throw new Error(abortSignal.reason);
-        }
-      }
-
-      return Promise.all(resourceSetupPromises).then(throwIfAborted);
+      return Promise.all(resourceSetupPromises);
       // TODO: wait for blocking resources
     }),
   );

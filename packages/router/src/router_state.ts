@@ -401,6 +401,7 @@ export class ActivatedRouteSnapshot {
   /**
    * The result of running the route's resources function.
    * @experimental
+   * @internal
    */
   resources?: ResourceResult;
 
