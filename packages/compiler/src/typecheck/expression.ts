@@ -238,13 +238,20 @@ class TcbExprTranslator implements AstVisitor {
 
   visitPropertyRead(ast: PropertyRead): TcbExpr {
     const receiver = this.translate(ast.receiver);
-    if (!this.isStrictSafeNavigationChain(ast.receiver)) {
+    const isSafeChain = this.isStrictSafeNavigationChain(ast.receiver);
+    if (!isSafeChain) {
       receiver.wrapForTypeChecker();
     }
-    return new TcbExpr(`${receiver.print()}.${ast.name}`)
-      .addParseSpanInfo(ast.nameSpan)
-      .wrapForTypeChecker()
-      .addParseSpanInfo(ast.sourceSpan);
+
+    const node = new TcbExpr(`${receiver.print()}.${ast.name}`).addParseSpanInfo(ast.nameSpan);
+
+    let result: TcbExpr;
+    if (isSafeChain) {
+      result = new TcbExpr(node.print());
+    } else {
+      result = node.wrapForTypeChecker();
+    }
+    return result.addParseSpanInfo(ast.sourceSpan);
   }
 
   visitSafePropertyRead(ast: SafePropertyRead): TcbExpr {
@@ -410,7 +417,7 @@ class TcbExprTranslator implements AstVisitor {
     const args = argNodes.map((node) => node.print()).join(', ');
 
     if (this.config.strictSafeNavigationTypes) {
-      return new TcbExpr(`(${expr}?.(${args}))`);
+      return new TcbExpr(`${expr}?.(${args})`);
     }
 
     if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
@@ -425,10 +432,31 @@ class TcbExprTranslator implements AstVisitor {
   }
 
   private isStrictSafeNavigationChain(ast: AST): boolean {
-    return (
-      this.config.strictSafeNavigationTypes &&
-      (ast instanceof SafePropertyRead || ast instanceof SafeKeyedRead || ast instanceof SafeCall)
-    );
+    if (!this.config.strictSafeNavigationTypes) {
+      return false;
+    }
+    let current: AST | undefined = ast;
+    while (current) {
+      if (
+        current instanceof SafePropertyRead ||
+        current instanceof SafeKeyedRead ||
+        current instanceof SafeCall
+      ) {
+        return true;
+      }
+      if (
+        current instanceof PropertyRead ||
+        current instanceof KeyedRead ||
+        current instanceof Call
+      ) {
+        current = current.receiver;
+      } else if (current instanceof NonNullAssert) {
+        current = current.expression;
+      } else {
+        break;
+      }
+    }
+    return false;
   }
 }
 
