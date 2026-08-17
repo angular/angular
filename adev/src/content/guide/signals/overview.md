@@ -128,6 +128,20 @@ Note that dependencies can be removed during a derivation as well as added. If y
 
 Signals are best understood as a reactive state graph.
 
+Each signal represents a piece of state. Computed values derive state from other state, while effects react to state changes and perform side effects.
+
+A useful rule of thumb is:
+
+- Use `signal` for state.
+- Use `computed` for derived state.
+- Use `effect` for side effects.
+
+When working with signals, prefer deriving values over synchronizing state. If one value can be calculated from another, model that relationship with `computed` rather than manually keeping multiple pieces of state in sync.
+
+For a detailed comparison of `computed` and `effect`, including common mistakes and examples, see [Avoid using effects to synchronize state](./effect.md#avoid-using-effects-for-derived-state).
+
+Signals are best understood as a reactive state graph.
+
 Each signal represents a piece of state. Computed values derive state from other state. Effects react to state changes and interact with the outside world.
 
 A useful rule of thumb is:
