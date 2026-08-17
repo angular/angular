@@ -285,7 +285,7 @@ importers:
         version: 0.5.5
       conventional-changelog:
         specifier: ^8.0.0
-        version: 8.1.2
+        version: 8.1.2(conventional-commits-filter@6.0.1)
       cypress:
         specifier: 15.18.1
         version: 15.18.1
@@ -16597,7 +16597,7 @@ snapshots:
     transitivePeerDependencies:
       - conventional-commits-filter
 
-  conventional-changelog@8.1.2:
+  conventional-changelog@8.1.2(conventional-commits-filter@6.0.1):
     dependencies:
       '@conventional-changelog/git-client': 3.1.2(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.2)
       '@simple-libs/hosted-git-info': 2.0.0
