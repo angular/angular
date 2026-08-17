@@ -497,7 +497,7 @@ groups:
         - iteriani # Thomas Nguyen
         - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
-        - ENAML # Ethan Cline
+        - e-cline # Ethan Cline
 
   ####################################################################################
   # Override managed result groups
