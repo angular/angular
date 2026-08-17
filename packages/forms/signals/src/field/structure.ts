@@ -15,6 +15,7 @@ import {
   Signal,
   untracked,
   WritableSignal,
+  ɵprivatelyTracked as privatelyTracked,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -28,7 +29,7 @@ import type {FormFieldManager} from './manager';
 import type {FieldNode, ParentFieldNode} from './node';
 
 const ORPHAN_TOKEN = Symbol(typeof ngDevMode !== 'undefined' && ngDevMode ? 'ORPHAN_TOKEN' : '');
-const FALSE_SIGNAL = computed(() => false);
+const FALSE_SIGNAL = privatelyTracked(() => computed(() => false));
 
 /**
  * Key by which a parent `FieldNode` tracks its children.
@@ -232,37 +233,39 @@ export abstract class FieldNodeStructure {
     const parent = this.parent!;
     let lastKnownKey = initialKeyInParent!;
 
-    const keyOrOrphan = computed(() => {
-      if (parent.structure.isOrphaned()) {
-        return ORPHAN_TOKEN;
-      }
-
-      const map = parent.structure.childrenMap();
-      if (!map) {
-        return ORPHAN_TOKEN;
-      }
-
-      // Fast path: check last known key
-      const lastKnownChild = map.byPropertyKey.get(lastKnownKey);
-      if (lastKnownChild && lastKnownChild.node === this.node) {
-        return lastKnownKey;
-      }
-
-      if (identityInParent === undefined) {
-        // Object property: if not at last known key, it's orphaned
-        return ORPHAN_TOKEN;
-      } else {
-        // Array element: scan for node in childrenMap
-        for (const [key, child] of map.byPropertyKey) {
-          if (child.node === this.node) {
-            return (lastKnownKey = key);
-          }
+    const keyOrOrphan = privatelyTracked(() =>
+      computed(() => {
+        if (parent.structure.isOrphaned()) {
+          return ORPHAN_TOKEN;
         }
-        return ORPHAN_TOKEN;
-      }
-    });
 
-    const isOrphaned = computed(() => keyOrOrphan() === ORPHAN_TOKEN);
+        const map = parent.structure.childrenMap();
+        if (!map) {
+          return ORPHAN_TOKEN;
+        }
+
+        // Fast path: check last known key
+        const lastKnownChild = map.byPropertyKey.get(lastKnownKey);
+        if (lastKnownChild && lastKnownChild.node === this.node) {
+          return lastKnownKey;
+        }
+
+        if (identityInParent === undefined) {
+          // Object property: if not at last known key, it's orphaned
+          return ORPHAN_TOKEN;
+        } else {
+          // Array element: scan for node in childrenMap
+          for (const [key, child] of map.byPropertyKey) {
+            if (child.node === this.node) {
+              return (lastKnownKey = key);
+            }
+          }
+          return ORPHAN_TOKEN;
+        }
+      }),
+    );
+
+    const isOrphaned = privatelyTracked(() => computed(() => keyOrOrphan() === ORPHAN_TOKEN));
 
     const keyInParent = computed(() => {
       const key = keyOrOrphan();
@@ -289,13 +292,15 @@ export abstract class FieldNodeStructure {
   }
 
   protected createChildrenMap(): Signal<ChildrenData | undefined> {
-    return linkedSignal({
-      source: this.value,
-      computation: (
-        value: unknown,
-        previous: {source: unknown; value: ChildrenData | undefined} | undefined,
-      ): ChildrenData | undefined => this.computeChildrenMap(value, previous?.value, false),
-    });
+    return privatelyTracked(() =>
+      linkedSignal({
+        source: this.value,
+        computation: (
+          value: unknown,
+          previous: {source: unknown; value: ChildrenData | undefined} | undefined,
+        ): ChildrenData | undefined => this.computeChildrenMap(value, previous?.value, false),
+      }),
+    );
   }
 
   private computeChildrenMap(
@@ -424,7 +429,7 @@ export abstract class FieldNodeStructure {
    * reactive consumers aren't notified unless the field at a key actually changes.
    */
   private createReader(key: string): Signal<FieldNode | undefined> {
-    return computed(() => this.childrenMap()?.byPropertyKey.get(key)?.node);
+    return privatelyTracked(() => computed(() => this.childrenMap()?.byPropertyKey.get(key)?.node));
   }
 }
 
@@ -518,7 +523,9 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
     this.isOrphaned = signals.isOrphaned;
     this.keyInParent = signals.keyInParent;
 
-    this.pathKeys = computed(() => [...parent.structure.pathKeys(), this.keyInParent()]);
+    this.pathKeys = privatelyTracked(() =>
+      computed(() => [...parent.structure.pathKeys(), this.keyInParent()]),
+    );
 
     this.value = deepSignal(this.parent.structure.value, this.keyInParent);
     this.childrenMap = this.createChildrenMap();
@@ -567,7 +574,7 @@ export interface ChildFieldNodeOptions {
 export type FieldNodeOptions = RootFieldNodeOptions | ChildFieldNodeOptions;
 
 /** A signal representing an empty list of path keys, used for root fields. */
-const ROOT_PATH_KEYS = computed<readonly string[]>(() => []);
+const ROOT_PATH_KEYS = privatelyTracked(() => computed<readonly string[]>(() => []));
 
 /**
  * A signal representing a non-existent key of the field in its parent, used for root fields which

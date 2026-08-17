@@ -12,6 +12,7 @@ import type {DirectiveDef} from '../interfaces/definition';
 import {type TNode, TNodeFlags} from '../interfaces/node';
 import {isComponentHost} from '../interfaces/type_checks';
 import {type LView, RENDERER, type TView} from '../interfaces/view';
+import {privatelyTracked} from '../reactivity/privately_tracked';
 import {
   getCurrentTNode,
   getLView,
@@ -19,8 +20,8 @@ import {
   getTView,
   isInCheckNoChangesMode,
 } from '../state';
-import {getNativeByTNode} from '../util/view_utils';
 import {debugStringifyTypeForError} from '../util/stringify_utils';
+import {getNativeByTNode} from '../util/view_utils';
 import {listenToDirectiveOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
 import {setDirectiveInput} from './shared';
@@ -36,7 +37,11 @@ import {writeToDirectiveInput} from './write_to_directive_input';
  * @codeGenApi
  */
 export function ɵɵcontrolCreate(): void {
-  controlCreateInternal();
+  if (ngDevMode) {
+    privatelyTracked(() => controlCreateInternal());
+  } else {
+    controlCreateInternal();
+  }
 }
 
 export function controlCreateInternal(): void {
@@ -64,7 +69,11 @@ export function controlCreateInternal(): void {
  * @codeGenApi
  */
 export function ɵɵcontrol(): void {
-  controlUpdateInternal();
+  if (ngDevMode) {
+    privatelyTracked(() => controlUpdateInternal());
+  } else {
+    controlUpdateInternal();
+  }
 }
 
 export function controlUpdateInternal(): void {

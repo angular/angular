@@ -26,6 +26,7 @@ export interface DebugSignalGraphNode {
   label?: string;
   preview: Descriptor;
   debuggable: boolean;
+  isPrivate?: boolean;
 }
 
 export interface DebugSignalGraphEdge {
@@ -38,6 +39,7 @@ export interface DebugSignalGraphEdge {
    * Index of a signal node in the `nodes` array that is a producer of the signal consumed by the consumer node.
    */
   producer: number;
+  isPrivate?: boolean;
 }
 
 /**

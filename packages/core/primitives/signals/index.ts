@@ -34,8 +34,10 @@ export {
   consumerPollProducersForChange,
   finalizeConsumerAfterComputation,
   getActiveConsumer,
+  getPrivateTracking,
   isInNotificationPhase,
   isReactive,
+  onReactiveNodeCreated,
   producerAccessed,
   producerIncrementEpoch,
   producerMarkClean,
@@ -46,6 +48,7 @@ export {
   runPostProducerCreatedFn,
   setActiveConsumer,
   setPostProducerCreatedFn,
+  setPrivateTracking,
   Version,
 } from './src/graph';
 export {
@@ -62,6 +65,7 @@ export {
 export {Watch, WatchCleanupFn, WatchCleanupRegisterFn, createWatch} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';
 export {untracked} from './src/untracked';
+export {privatelyTracked} from './src/privately_tracked';
 export {runEffect, BASE_EFFECT_NODE, BaseEffectNode} from './src/effect';
 export {installDevToolsSignalFormatter} from './src/formatter';
 

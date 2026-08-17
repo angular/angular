@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, linkedSignal, runInInjectionContext, Signal, untracked} from '@angular/core';
+import {computed, linkedSignal, runInInjectionContext, Signal, untracked, ɵprivatelyTracked as privatelyTracked} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {AbstractControl} from '@angular/forms';
 import {Observable, ReplaySubject} from 'rxjs';
@@ -65,14 +65,18 @@ export function extractControlPropToSignal<T, R = T>(
   // Creates a subject that could be used in takeUntil.
   const createDestroySubject = makeCreateDestroySubject();
 
-  const signalOfControlSignal = linkedSignal({
-    source: options.control,
-    computation: (control) => {
-      return untracked(() => {
-        return runInInjectionContext(injector, () => makeSignal(control, createDestroySubject()));
-      });
-    },
-  });
+  const signalOfControlSignal = privatelyTracked(() =>
+    linkedSignal({
+      source: options.control,
+      computation: (control) => {
+        return untracked(() => {
+          return runInInjectionContext(injector, () =>
+            privatelyTracked(() => makeSignal(control, createDestroySubject())),
+          );
+        });
+      },
+    }),
+  );
 
   // We have to have computed, because we need to react to both:
   // linked signal changes as well as the inner signal changes.

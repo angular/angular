@@ -8,6 +8,7 @@
 
 import {
   computed,
+  ɵprivatelyTracked as privatelyTracked,
   Signal,
   signal,
   WritableSignal,
@@ -111,8 +112,8 @@ export class CompatStructure extends FieldNodeStructure {
   override keyInParent: Signal<string>;
   override root: FieldNode;
   override pathKeys: Signal<readonly string[]>;
-  override readonly children = signal([]);
-  override readonly childrenMap = computed(() => undefined);
+  override readonly children = privatelyTracked(() => signal([]));
+  override readonly childrenMap = privatelyTracked(() => computed(() => undefined));
   override readonly parent: ParentFieldNode | undefined;
   override readonly fieldManager: FormFieldManager;
   override readonly isOrphaned: Signal<boolean>;
@@ -140,8 +141,10 @@ export class CompatStructure extends FieldNodeStructure {
     this.keyInParent = signals.keyInParent;
     this.isOrphaned = signals.isOrphaned;
 
-    this.pathKeys = computed(() =>
-      this.parent ? [...this.parent.structure.pathKeys(), this.keyInParent()] : [],
+    this.pathKeys = privatelyTracked(() =>
+      computed(() =>
+        this.parent ? [...this.parent.structure.pathKeys(), this.keyInParent()] : [],
+      ),
     );
   }
 

@@ -9,13 +9,15 @@
 import {
   computed,
   linkedSignal,
+  ɵprivatelyTracked as privatelyTracked,
+  type Resource,
   type Signal,
   untracked,
-  type WritableSignal,
-  type Resource,
   type WritableResource,
+  type WritableSignal,
 } from '@angular/core';
 import {
+  IS_ASYNC_VALIDATION_RESOURCE,
   MAX,
   MAX_LENGTH,
   type MetadataKey,
@@ -23,7 +25,6 @@ import {
   MIN_LENGTH,
   PATTERN,
   REQUIRED,
-  IS_ASYNC_VALIDATION_RESOURCE,
 } from '../api/rules/metadata';
 import type {NgValidationError, ValidationError} from '../api/rules/validation/validation_errors';
 import type {
@@ -117,8 +118,7 @@ export class FieldNode implements FieldState<unknown> {
    * first focusable binding in the DOM for any descendant node of this one.
    */
   private getBindingForFocus():
-    | (FormField<unknown> & {focus: (options?: FocusOptions) => void})
-    | undefined {
+    (FormField<unknown> & {focus: (options?: FocusOptions) => void}) | undefined {
     // First try to focus one of our own bindings.
     const own = this.formFieldBindings()
       .filter(
@@ -144,13 +144,16 @@ export class FieldNode implements FieldState<unknown> {
    * before the pending debounced sync resolves. It will also cancel any pending debounced sync
    * automatically when recomputed due to `value` being set directly from others sources.
    */
-  private readonly pendingSync: WritableSignal<AbortController | undefined> = linkedSignal({
-    source: () => this.value(),
-    computation: (_source, previous) => {
-      previous?.value?.abort();
-      return undefined;
-    },
-  });
+  private readonly pendingSync: WritableSignal<AbortController | undefined> = privatelyTracked(
+    () =>
+      linkedSignal({
+        source: () => this.value(),
+        computation: (_source, previous) => {
+          previous?.value?.abort();
+          return undefined;
+        },
+      }),
+  );
 
   get fieldTree(): FieldTree<unknown> {
     return this.fieldProxy;
@@ -510,8 +513,8 @@ export class FieldNode implements FieldState<unknown> {
   }
 }
 
-const EMPTY = computed(() => []);
-const FALSE = computed(() => false);
+const EMPTY = privatelyTracked(() => computed(() => []));
+const FALSE = privatelyTracked(() => computed(() => false));
 
 /**
  * Field node of a field that has children.

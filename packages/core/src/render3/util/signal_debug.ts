@@ -58,13 +58,36 @@ function getTemplateConsumer(injector: NodeInjector): ReactiveLViewConsumer | nu
 const signalDebugMap = new WeakMap<ReactiveNode, string>();
 let counter = 0;
 
-function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, ReactiveNode[]>): {
+function getNodesAndEdgesFromSignalMap(
+  signalMap: ReadonlyMap<ReactiveNode, Array<{producer: ReactiveNode; isPrivate?: boolean}>>,
+  rootNodes: ReactiveNode[],
+): {
   nodes: DebugSignalGraphNode[];
   edges: DebugSignalGraphEdge[];
 } {
   const nodes = Array.from(signalMap.keys());
   const debugSignalGraphNodes: DebugSignalGraphNode[] = [];
   const edges: DebugSignalGraphEdge[] = [];
+
+  const publicRoots = rootNodes.filter(
+    (node) => !(node as {isCreatedPrivate?: boolean}).isCreatedPrivate,
+  );
+  const publicNodes = new Set<ReactiveNode>(publicRoots);
+  const queue = [...publicRoots];
+  while (queue.length > 0) {
+    const curr = queue.shift()!;
+    const links = signalMap.get(curr) || [];
+    for (const link of links) {
+      if (
+        !link.isPrivate &&
+        !(link.producer as {isCreatedPrivate?: boolean}).isCreatedPrivate &&
+        !publicNodes.has(link.producer)
+      ) {
+        publicNodes.add(link.producer);
+        queue.push(link.producer);
+      }
+    }
+  }
 
   for (const [consumer, producers] of signalMap.entries()) {
     const consumerIndex = nodes.indexOf(consumer);
@@ -76,6 +99,8 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
       signalDebugMap.set(consumer, id);
     }
 
+    const isPrivate = !publicNodes.has(consumer);
+
     // collect node
     if (isComputedNode(consumer)) {
       debugSignalGraphNodes.push({
@@ -85,6 +110,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         epoch: consumer.version,
         debuggableFn: consumer.computation,
         id,
+        ...(isPrivate ? {isPrivate: true} : {}),
       });
     } else if (isSignalNode(consumer)) {
       debugSignalGraphNodes.push({
@@ -93,6 +119,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         kind: consumer.kind,
         epoch: consumer.version,
         id,
+        ...(isPrivate ? {isPrivate: true} : {}),
       });
     } else if (isTemplateEffectNode(consumer)) {
       debugSignalGraphNodes.push({
@@ -103,6 +130,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         // We get the constructor so that `inspect(.constructor)` shows the component class.
         debuggableFn: consumer.lView?.[CONTEXT]?.constructor as (() => unknown) | undefined,
         id,
+        ...(isPrivate ? {isPrivate: true} : {}),
       });
     } else if (isEffectNode(consumer)) {
       debugSignalGraphNodes.push({
@@ -118,12 +146,17 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         kind: consumer.kind,
         epoch: consumer.version,
         id,
+        ...(isPrivate ? {isPrivate: true} : {}),
       });
     }
 
     // collect edges for node
-    for (const producer of producers) {
-      edges.push({consumer: consumerIndex, producer: nodes.indexOf(producer)});
+    for (const link of producers) {
+      edges.push({
+        consumer: consumerIndex,
+        producer: nodes.indexOf(link.producer),
+        ...(link.isPrivate ? {isPrivate: true} : {}),
+      });
     }
   }
 
@@ -152,19 +185,24 @@ function extractEffectsFromInjector(injector: Injector): ReactiveNode[] {
 
 function extractSignalNodesAndEdgesFromRoots(
   nodes: ReactiveNode[],
-  signalDependenciesMap: Map<ReactiveNode, ReactiveNode[]> = new Map(),
-): Map<ReactiveNode, ReactiveNode[]> {
+  signalDependenciesMap: Map<
+    ReactiveNode,
+    Array<{producer: ReactiveNode; isPrivate?: boolean}>
+  > = new Map(),
+): Map<ReactiveNode, Array<{producer: ReactiveNode; isPrivate?: boolean}>> {
   for (const node of nodes) {
     if (signalDependenciesMap.has(node)) {
       continue;
     }
 
+    const producerLinks = [];
     const producerNodes = [];
     for (let link = node.producers; link !== undefined; link = link.nextProducer) {
       const producer = link.producer;
+      producerLinks.push({producer, isPrivate: (link as {isPrivate?: boolean}).isPrivate});
       producerNodes.push(producer);
     }
-    signalDependenciesMap.set(node, producerNodes);
+    signalDependenciesMap.set(node, producerLinks);
     extractSignalNodesAndEdgesFromRoots(producerNodes, signalDependenciesMap);
   }
 
@@ -200,5 +238,5 @@ export function getSignalGraph(injector: Injector): DebugSignalGraph {
 
   const signalDependenciesMap = extractSignalNodesAndEdgesFromRoots(signalNodes);
 
-  return getNodesAndEdgesFromSignalMap(signalDependenciesMap);
+  return getNodesAndEdgesFromSignalMap(signalDependenciesMap, signalNodes);
 }

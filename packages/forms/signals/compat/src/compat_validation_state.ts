@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal} from '@angular/core';
+import {computed, Signal, ɵprivatelyTracked as privatelyTracked} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {ValidationError} from '../../src/api/rules';
 import {calculateValidationSelfStatus, ValidationState} from '../../src/field/validation';
@@ -18,7 +18,7 @@ import {CompatFieldNode, getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
 
 // Readonly signal containing an empty array, used for optimization.
-const EMPTY_ARRAY_SIGNAL = computed(() => []);
+const EMPTY_ARRAY_SIGNAL = privatelyTracked(() => computed(() => []));
 
 /**
  * Compat version of a validation state that wraps a FormControl, and proxies it's validation state.
@@ -33,13 +33,17 @@ export class CompatValidationState implements ValidationState {
   readonly invalid: Signal<boolean>;
   readonly valid: Signal<boolean>;
 
-  readonly parseErrors: Signal<ValidationError.WithFormField[]> = computed(() => []);
+  readonly parseErrors: Signal<ValidationError.WithFormField[]> = privatelyTracked(() =>
+    computed(() => []),
+  );
 
   constructor(
     private readonly node: CompatFieldNode,
     options: CompatFieldNodeOptions,
   ) {
-    this.syncValid = getControlStatusSignal(options, (c: AbstractControl) => c.status === 'VALID');
+    this.syncValid = privatelyTracked(() =>
+      getControlStatusSignal(options, (c: AbstractControl) => c.status === 'VALID'),
+    );
     this.errors = getControlStatusSignal(options, extractNestedReactiveErrors);
     this.pending = getControlStatusSignal(options, (c) => c.pending);
 
@@ -62,8 +66,8 @@ export class CompatValidationState implements ValidationState {
 
   // Compat fields can't have validation rules applied to them; however, there are other
   // features that depend on this property, such as `markAsTouched()`.
-  readonly shouldSkipValidation = computed(
-    () => this.node.hidden() || this.node.disabled() || this.node.readonly(),
+  readonly shouldSkipValidation = privatelyTracked(() =>
+    computed(() => this.node.hidden() || this.node.disabled() || this.node.readonly()),
   );
 
   /**

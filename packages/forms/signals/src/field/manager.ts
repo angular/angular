@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID, effect, Injector, untracked} from '@angular/core';
+import {
+  APP_ID,
+  effect,
+  Injector,
+  ɵprivatelyTracked as privatelyTracked,
+  untracked,
+} from '@angular/core';
 import type {FormSubmitOptions} from '../api/types';
 import type {FieldNodeStructure} from './structure';
 
@@ -53,20 +59,22 @@ export class FormFieldManager {
    * @param root The root field structure.
    */
   createFieldManagementEffect(root: FieldNodeStructure): void {
-    effect(
-      () => {
-        const liveStructures = new Set<FieldNodeStructure>();
-        this.markStructuresLive(root, liveStructures);
+    privatelyTracked(() =>
+      effect(
+        () => {
+          const liveStructures = new Set<FieldNodeStructure>();
+          this.markStructuresLive(root, liveStructures);
 
-        // Destroy all nodes that are no longer live.
-        for (const structure of this.structures) {
-          if (!liveStructures.has(structure)) {
-            this.structures.delete(structure);
-            untracked(() => structure.destroy());
+          // Destroy all nodes that are no longer live.
+          for (const structure of this.structures) {
+            if (!liveStructures.has(structure)) {
+              this.structures.delete(structure);
+              untracked(() => structure.destroy());
+            }
           }
-        }
-      },
-      {injector: this.injector},
+        },
+        {injector: this.injector},
+      ),
     );
   }
 

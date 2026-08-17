@@ -41,6 +41,7 @@ import {
   signalNodeFilterFnGenerator,
   SignalNodeFilterSource,
 } from './signal-node-filter-fn-generator';
+import {Settings} from '../../application-services/settings';
 
 const FILTER_INFO_TOOLTIP = 'You can filter signals by type via `type:signal|computed|effect|...`.';
 
@@ -67,6 +68,8 @@ export class SignalsVisualizerComponent {
   protected readonly currentSearchMatchIdx = signal<number>(-1);
   protected readonly searchMatches = signal<string[]>([]); // Node IDs
   protected readonly highlightedNodeLabel = signal<string | null>(null);
+  private readonly settings = inject(Settings);
+  protected readonly showPrivateSignals = this.settings.showPrivateSignals;
   private readonly expandedClustersIds = signal<Set<string>>(new Set());
   protected readonly expandedClusters = computed<DevtoolsSignalGraphCluster[]>(() => {
     const clusterIds = this.expandedClustersIds();
@@ -105,6 +108,11 @@ export class SignalsVisualizerComponent {
           effect(() => {
             const selected = this.selectedNodeId();
             this.signalsVisualizer!.highlightNode(selected);
+          });
+
+          effect(() => {
+            const show = this.showPrivateSignals();
+            this.signalsVisualizer!.setShowPrivate(show);
           });
 
           let lastElement: ElementPosition | undefined;
@@ -169,6 +177,10 @@ export class SignalsVisualizerComponent {
     const newMatches: string[] = [];
 
     for (const node of this.graph()?.nodes || []) {
+      if (!this.showPrivateSignals() && (node as {isPrivate?: boolean}).isPrivate) {
+        continue;
+      }
+
       let label = node.label || '';
 
       if (isSignalNode(node) && node.clusterId) {

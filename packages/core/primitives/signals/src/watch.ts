@@ -13,6 +13,7 @@ import {
   consumerMarkDirty,
   consumerPollProducersForChange,
   isInNotificationPhase,
+  onReactiveNodeCreated,
   REACTIVE_NODE,
   ReactiveNode,
   SIGNAL,
@@ -68,6 +69,7 @@ export function createWatch(
   allowSignalWrites: boolean,
 ): Watch {
   const node: WatchNode = Object.create(WATCH_NODE);
+  onReactiveNodeCreated(node);
   if (allowSignalWrites) {
     node.consumerAllowSignalWrites = true;
   }

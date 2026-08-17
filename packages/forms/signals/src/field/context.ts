@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-
 import {
   computed,
+  ɵprivatelyTracked as privatelyTracked,
   Signal,
   untracked,
   WritableSignal,
@@ -132,19 +132,21 @@ export class FieldNodeContext implements FieldContext<unknown> {
     return this.node.structure.pathKeys;
   }
 
-  readonly index = computed(() => {
-    // Attempt to read the key first, this will throw an error if we're on a root field.
-    const key = this.key();
-    // Assert that the parent is actually an array.
-    if (!isArray(untracked(this.node.structure.parent!.value))) {
-      throw new RuntimeError(
-        RuntimeErrorCode.PARENT_NOT_ARRAY,
-        ngDevMode && 'Cannot access index, parent field is not an array.',
-      );
-    }
-    // Return the key as a number if we are indeed inside an array field.
-    return Number(key);
-  });
+  readonly index = privatelyTracked(() =>
+    computed(() => {
+      // Attempt to read the key first, this will throw an error if we're on a root field.
+      const key = this.key();
+      // Assert that the parent is actually an array.
+      if (!isArray(untracked(this.node.structure.parent!.value))) {
+        throw new RuntimeError(
+          RuntimeErrorCode.PARENT_NOT_ARRAY,
+          ngDevMode && 'Cannot access index, parent field is not an array.',
+        );
+      }
+      // Return the key as a number if we are indeed inside an array field.
+      return Number(key);
+    }),
+  );
 
   // Note: `fieldTreeOf` and `stateOf` are purposefully defined as overloaded class
   // methods rather than arrow-function properties. This allows their signatures
