@@ -7,27 +7,27 @@
  */
 
 import {
+  BASE_EFFECT_NODE,
+  BaseEffectNode,
   SIGNAL,
   consumerDestroy,
   isInNotificationPhase,
-  setActiveConsumer,
-  BaseEffectNode,
-  BASE_EFFECT_NODE,
   runEffect,
+  setActiveConsumer,
 } from '../../../primitives/signals';
-import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
-import {markAncestorsForTraversal} from '../util/view_utils';
-import {inject} from '../../di/injector_compatibility';
-import {Injector} from '../../di/injector';
-import {assertNotInReactiveContext} from './asserts';
-import {assertInInjectionContext} from '../../di/contextual';
-import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
-import {ViewContext} from '../view_context';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
 } from '../../change_detection/scheduling/zoneless_scheduling';
+import {assertInInjectionContext} from '../../di/contextual';
+import {Injector} from '../../di/injector';
+import {inject} from '../../di/injector_compatibility';
+import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
+import {EFFECTS, FLAGS, LView, LViewFlags} from '../interfaces/view';
 import {setIsRefreshingViews} from '../state';
+import {markAncestorsForTraversal} from '../util/view_utils';
+import {ViewContext} from '../view_context';
+import {assertNotInReactiveContext} from './asserts';
 import {EffectScheduler, SchedulableEffect} from './root_effect_scheduler';
 
 import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injector_profiler';
