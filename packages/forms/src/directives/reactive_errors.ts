@@ -57,17 +57,6 @@ export function ngModelGroupException(): Error {
   );
 }
 
-export function missingFormException(): Error {
-  return new RuntimeError(
-    RuntimeErrorCode.FORM_GROUP_MISSING_INSTANCE,
-    `formGroup expects a FormGroup instance. Please pass one in.
-
-      Example:
-
-      ${formControlNameExample}`,
-  );
-}
-
 export function groupParentException(): Error {
   return new RuntimeError(
     RuntimeErrorCode.FORM_GROUP_NAME_MISSING_PARENT,
