@@ -49,15 +49,15 @@ export function getTIcu(tView: TView, index: number): TIcu | null {
   if (value === null || typeof value === 'string') return null;
   if (
     ngDevMode &&
-    !(value.hasOwnProperty(TVIEW) || value.hasOwnProperty(CURRENT_CASE_LVIEW_INDEX))
+    !(Object.hasOwn(value, TVIEW) || Object.hasOwn(value, CURRENT_CASE_LVIEW_INDEX))
   ) {
     throwError("We expect to get 'null'|'TIcu'|'TIcuContainer', but got: " + value);
   }
-  // Here the `value.hasOwnProperty(CURRENT_CASE_LVIEW_INDEX)` is a polymorphic read as it can be
+  // Here the `Object.hasOwn(value, CURRENT_CASE_LVIEW_INDEX)` is a polymorphic read as it can be
   // either TIcu or TIcuContainerNode. This is not ideal, but we still think it is OK because it
   // will be just two cases which fits into the browser inline cache (inline cache can take up to
   // 4)
-  const tIcu = value.hasOwnProperty(CURRENT_CASE_LVIEW_INDEX)
+  const tIcu = Object.hasOwn(value, CURRENT_CASE_LVIEW_INDEX)
     ? (value as TIcu)
     : (value as TIcuContainerNode).value;
   ngDevMode && assertTIcu(tIcu);
@@ -82,7 +82,7 @@ export function setTIcu(tView: TView, index: number, tIcu: TIcu): void {
   const tNode = tView.data[index] as null | TIcuContainerNode;
   ngDevMode &&
     assertEqual(
-      tNode === null || tNode.hasOwnProperty(TVIEW),
+      tNode === null || Object.hasOwn(tNode, TVIEW),
       true,
       "We expect to get 'null'|'TIcuContainer'",
     );

@@ -33,7 +33,7 @@ export class MockScriptElement {
   }
 
   getAttribute(name: string): string | null {
-    return this.attrs.hasOwnProperty(name) ? this.attrs[name] : null;
+    return Object.hasOwn(this.attrs, name) ? this.attrs[name] : null;
   }
 }
 

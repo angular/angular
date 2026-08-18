@@ -62,7 +62,7 @@ export function assertTNodeForTView(tNode: TNode, tView: TView) {
 
 export function assertTNode(tNode: TNode) {
   assertDefined(tNode, 'TNode must be defined');
-  if (!(tNode && typeof tNode === 'object' && tNode.hasOwnProperty('directiveStylingLast'))) {
+  if (!(tNode && typeof tNode === 'object' && Object.hasOwn(tNode, 'directiveStylingLast'))) {
     throwError('Not of type TNode, got: ' + tNode);
   }
 }

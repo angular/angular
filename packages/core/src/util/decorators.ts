@@ -68,7 +68,7 @@ export function makeDecorator<T>(
         if (typeFn) typeFn(cls, ...args);
         // Use of Object.defineProperty is important since it creates non-enumerable property which
         // prevents the property is copied during subclassing.
-        const annotations = cls.hasOwnProperty(ANNOTATIONS)
+        const annotations = Object.hasOwn(cls, ANNOTATIONS)
           ? (cls as any)[ANNOTATIONS]
           : (Object.defineProperty(cls, ANNOTATIONS, {value: []}) as any)[ANNOTATIONS];
         annotations.push(annotationInstance);
@@ -123,7 +123,7 @@ export function makeParamDecorator(
       function ParamDecorator(cls: any, unusedKey: any, index: number): any {
         // Use of Object.defineProperty is important since it creates non-enumerable property which
         // prevents the property is copied during subclassing.
-        const parameters = cls.hasOwnProperty(PARAMETERS)
+        const parameters = Object.hasOwn(cls, PARAMETERS)
           ? (cls as any)[PARAMETERS]
           : Object.defineProperty(cls, PARAMETERS, {value: []})[PARAMETERS];
 
@@ -176,10 +176,10 @@ export function makePropDecorator(
         const constructor = target.constructor;
         // Use of Object.defineProperty is important because it creates a non-enumerable property
         // which prevents the property from being copied during subclassing.
-        const meta = constructor.hasOwnProperty(PROP_METADATA)
+        const meta = Object.hasOwn(constructor, PROP_METADATA)
           ? (constructor as any)[PROP_METADATA]
           : Object.defineProperty(constructor, PROP_METADATA, {value: {}})[PROP_METADATA];
-        meta[name] = (meta.hasOwnProperty(name) && meta[name]) || [];
+        meta[name] = (Object.hasOwn(meta, name) && meta[name]) || [];
         meta[name].unshift(decoratorInstance);
 
         if (additionalProcessing) additionalProcessing(target, name, ...args);

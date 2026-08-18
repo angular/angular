@@ -74,6 +74,10 @@
       {
         "name": ["performance", "mark"],
         "message": "`performance` methods aren't not fully supported in all environments like JSDOM and Cloudflare workers. Use 'performanceMark' from '@angular/core' instead."
+      },
+      {
+        "name": ["*", "hasOwnProperty"],
+        "message": "Use `Object.hasOwn` instead."
       }
     ]
   },

@@ -735,7 +735,7 @@ export function createHostDirectivesMappingArray(
   const elements: o.LiteralExpr[] = [];
 
   for (const publicName in mapping) {
-    if (mapping.hasOwnProperty(publicName)) {
+    if (Object.hasOwn(mapping, publicName)) {
       elements.push(o.literal(publicName), o.literal(mapping[publicName]));
     }
   }

@@ -723,7 +723,7 @@ const NG_DEBUG_PROPERTY = '__ng_debug__';
  */
 export function getDebugNode(nativeNode: any): DebugNode | null {
   if (nativeNode instanceof Node) {
-    if (!nativeNode.hasOwnProperty(NG_DEBUG_PROPERTY)) {
+    if (!Object.hasOwn(nativeNode, NG_DEBUG_PROPERTY)) {
       (nativeNode as any)[NG_DEBUG_PROPERTY] =
         nativeNode.nodeType == Node.ELEMENT_NODE
           ? new DebugElement(nativeNode as Element)

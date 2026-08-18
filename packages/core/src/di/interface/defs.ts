@@ -218,7 +218,7 @@ export function isInjectable(type: any): boolean {
  */
 function getOwnDefinition<T>(type: any, field: string): ɵɵInjectableDeclaration<T> | null {
   // if the ɵprov prop exist but is undefined we still want to return null
-  return (type.hasOwnProperty(field) && type[field]) || null;
+  return (Object.hasOwn(type, field) && type[field]) || null;
 }
 
 /**
@@ -251,7 +251,7 @@ export function getInheritedInjectableDef<T>(type: any): ɵɵInjectableDeclarati
  * @param type type which may have an injector def (`ɵinj`)
  */
 export function getInjectorDef<T>(type: any): ɵɵInjectorDef<T> | null {
-  return type && type.hasOwnProperty(NG_INJ_DEF) ? (type as any)[NG_INJ_DEF] : null;
+  return type && Object.hasOwn(type, NG_INJ_DEF) ? (type as any)[NG_INJ_DEF] : null;
 }
 
 export const NG_PROV_DEF: string = getClosureSafeProperty({ɵprov: getClosureSafeProperty});

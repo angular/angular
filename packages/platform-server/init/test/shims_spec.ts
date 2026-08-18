@@ -19,7 +19,7 @@ describe('applyShims()', () => {
         // These props are just a getter and cannot be changed
         continue;
       }
-      if (globalClone.hasOwnProperty(prop)) {
+      if (Object.hasOwn(globalClone, prop)) {
         (global as any)[prop] = (globalClone as any)[prop];
       } else {
         delete (global as any)[prop];

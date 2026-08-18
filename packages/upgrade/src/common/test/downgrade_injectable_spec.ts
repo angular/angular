@@ -16,7 +16,7 @@ describe('downgradeInjectable', () => {
   const setupMockInjectors = (downgradedModule = '') => {
     const mockNg1Injector = jasmine.createSpyObj<angular.IInjectorService>(['get', 'has']);
     mockNg1Injector.get.and.callFake((key: string) => mockDependencies[key]);
-    mockNg1Injector.has.and.callFake((key: string) => mockDependencies.hasOwnProperty(key));
+    mockNg1Injector.has.and.callFake((key: string) => Object.hasOwn(mockDependencies, key));
 
     const mockNg2Injector = jasmine.createSpyObj<Injector>(['get']);
     mockNg2Injector.get.and.returnValue('service value');

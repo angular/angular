@@ -799,7 +799,8 @@ export function setDirectiveInput(
   if (
     hostDirectivesStart !== null &&
     hostDirectivesEnd !== null &&
-    tNode.hostDirectiveInputs?.hasOwnProperty(publicName)
+    tNode.hostDirectiveInputs &&
+    Object.hasOwn(tNode.hostDirectiveInputs, publicName)
   ) {
     const hostDirectiveInputs = tNode.hostDirectiveInputs[publicName];
 
@@ -819,7 +820,7 @@ export function setDirectiveInput(
     }
   }
 
-  if (hostIndex !== null && target.inputs.hasOwnProperty(publicName)) {
+  if (hostIndex !== null && Object.hasOwn(target.inputs, publicName)) {
     ngDevMode && assertIndexInRange(lView, hostIndex);
     writeToDirectiveInput(target, lView[hostIndex], publicName, value);
     hasSet = true;
