@@ -93,3 +93,6 @@ confirmModulesPurge: false
 
 # Workaround as the default 'install' causes problems during `pnpm ng-dev pr merge` as the lockfile is updated.
 verifyDepsBeforeRun: warn
+
+patchedDependencies:
+  karma-jasmine-html-reporter@2.2.0: patches/karma-jasmine-html-reporter@2.2.0.patch

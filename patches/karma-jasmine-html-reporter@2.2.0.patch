@@ -1,0 +1,50 @@
+diff --git a/src/boot.js b/src/boot.js
+index 12614dabbc26587eaac494408f7914fdfba35d59..217b7a2994bb453aa897db1227c97aa90e0290ba 100644
+--- a/src/boot.js
++++ b/src/boot.js
+@@ -72,21 +72,33 @@
+ 
+         var htmlReporter = new jasmine.HtmlReporterV2({ env: env, urls: urls });
+ 
+-        // Monkey-patch jasmineStarted to handle missing/invalid data from karma-jasmine
+-        var originalJasmineStarted = htmlReporter.jasmineStarted.bind(htmlReporter);
+-        htmlReporter.jasmineStarted = function(options) {
+-            // Ensure required properties exist and are valid numbers
+-            options = options || {};
+-            if (typeof options.totalSpecsDefined !== 'number' || !isFinite(options.totalSpecsDefined)) {
+-                options.totalSpecsDefined = 0;
+-            }
+-            if (typeof options.numExcludedSpecs !== 'number' || !isFinite(options.numExcludedSpecs)) {
+-                options.numExcludedSpecs = 0;
++        // Wrap HtmlReporterV2 to sanitize options passed to jasmineStarted from karma-jasmine
++        var wrappedReporter = {
++            jasmineStarted: function(options) {
++                options = options || {};
++                if (typeof options.totalSpecsDefined !== 'number' || !isFinite(options.totalSpecsDefined)) {
++                    options.totalSpecsDefined = 0;
++                }
++                if (typeof options.numExcludedSpecs !== 'number' || !isFinite(options.numExcludedSpecs)) {
++                    options.numExcludedSpecs = 0;
++                }
++                return htmlReporter.jasmineStarted(options);
++            },
++            suiteStarted: function(result) {
++                return htmlReporter.suiteStarted(result);
++            },
++            suiteDone: function(result) {
++                return htmlReporter.suiteDone(result);
++            },
++            specDone: function(result) {
++                return htmlReporter.specDone(result);
++            },
++            jasmineDone: function(doneResult) {
++                return htmlReporter.jasmineDone(doneResult);
+             }
+-            return originalJasmineStarted(options);
+         };
+ 
+-        env.addReporter(htmlReporter);
++        env.addReporter(wrappedReporter);
+     } else {
+         // Jasmine 4/5 path
+         var queryString = new jasmine.QueryString({

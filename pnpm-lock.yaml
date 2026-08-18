@@ -8,6 +8,9 @@ packageExtensionsChecksum: sha256-3L73Fw32UVtE6x5BJxJPBtQtH/mgsr31grNpdhHP1IY=
 
 pnpmfileChecksum: sha256-TYPFsbGgXlr65uhno3A1oHE+n2qqt8R+w/szQ+Wq97s=
 
+patchedDependencies:
+  karma-jasmine-html-reporter@2.2.0: 43ebbf3fb49c422fc51288ab1251872ee626561c3ad80765f67a1ddf3c75ac59
+
 importers:
 
   .:
@@ -306,7 +309,7 @@ importers:
         version: 2.2.1(supports-color@11.0.0)
       karma-jasmine-html-reporter:
         specifier: ^2.2.0
-        version: 2.2.0(jasmine-core@7.0.1)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+        version: 2.2.0(patch_hash=43ebbf3fb49c422fc51288ab1251872ee626561c3ad80765f67a1ddf3c75ac59)(jasmine-core@7.0.1)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
       prettier:
         specifier: ^3.8.0
         version: 3.9.6
@@ -555,7 +558,7 @@ importers:
         version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
       karma-jasmine-html-reporter:
         specifier: 2.2.0
-        version: 2.2.0(jasmine-core@7.0.1)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
+        version: 2.2.0(patch_hash=43ebbf3fb49c422fc51288ab1251872ee626561c3ad80765f67a1ddf3c75ac59)(jasmine-core@7.0.1)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
       marked:
         specifier: 18.0.9
         version: 18.0.9
@@ -19061,7 +19064,7 @@ snapshots:
       is-wsl: 2.2.0
       which: 3.0.1
 
-  karma-jasmine-html-reporter@2.2.0(jasmine-core@7.0.1)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
+  karma-jasmine-html-reporter@2.2.0(patch_hash=43ebbf3fb49c422fc51288ab1251872ee626561c3ad80765f67a1ddf3c75ac59)(jasmine-core@7.0.1)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
     dependencies:
       jasmine-core: 7.0.1
       karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
