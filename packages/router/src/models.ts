@@ -763,7 +763,7 @@ export interface Route {
    */
   resolve?: ResolveData;
   /**
-   * A function that returns a map of resources.
+   * A function that returns a record of resources.
    * This function is executed during the Main Loading Phase of a navigation.
    * @experimental
    * @internal

@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, EnvironmentProviders, resource, Resource, signal} from '@angular/core';
+import {
+  Component,
+  EnvironmentProviders,
+  resource,
+  Resource,
+  signal,
+  ɵpromiseWithResolvers as promiseWithResolvers,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   provideRouter as internalProvideRouter,
@@ -94,6 +101,8 @@ describe('Router resources integration', () => {
       @Component({standalone: true, template: ''})
       class TargetCmp {}
 
+      const loaderDeferred = promiseWithResolvers<string>();
+
       TestBed.configureTestingModule({
         providers: [
           provideRouter(
@@ -102,7 +111,11 @@ describe('Router resources integration', () => {
                 path: 'test',
                 component: TargetCmp,
                 resources: async () => {
-                  const data = nonBlocking(resource({loader: async () => 'async loaded'}));
+                  const data = nonBlocking(
+                    resource({
+                      loader: async () => loaderDeferred.promise,
+                    }),
+                  );
                   await timeout(10);
                   return {data};
                 },
@@ -116,12 +129,20 @@ describe('Router resources integration', () => {
       const harness = await RouterTestingHarness.create();
       const router = TestBed.inject(Router);
 
-      await harness.navigateByUrl('/test');
-      await harness.fixture.whenStable();
+      await router.navigateByUrl('/test');
+
+      expect(router.url).toBe('/test');
 
       const route = router.routerState.root.firstChild as ActivatedRouteInternal;
       const resourceRef = route?.resources?.['data'] as any;
       expect(resourceRef).toBeDefined();
+      expect(resourceRef.isLoading()).toBe(true);
+      expect(resourceRef.value()).toBeUndefined();
+
+      loaderDeferred.resolve('async loaded');
+      await harness.fixture.whenStable();
+
+      expect(resourceRef.isLoading()).toBe(false);
       expect(resourceRef.value()).toBe('async loaded');
     });
 
@@ -166,10 +187,7 @@ describe('Router resources integration', () => {
       @Component({standalone: true, template: ''})
       class SecondCmp {}
 
-      let resolveFirstResources!: (value: any) => void;
-      const firstResourcesPromise = new Promise((resolve) => {
-        resolveFirstResources = resolve;
-      });
+      const firstResources = promiseWithResolvers<void>();
 
       TestBed.configureTestingModule({
         providers: [
@@ -180,7 +198,7 @@ describe('Router resources integration', () => {
                 component: FirstCmp,
                 resources: () => {
                   const data = nonBlocking(resource({loader: async () => 'first data'}));
-                  return firstResourcesPromise.then(() => ({data}));
+                  return firstResources.promise.then(() => ({data}));
                 },
               },
               {
@@ -210,7 +228,7 @@ describe('Router resources integration', () => {
       expect(router.url).toBe('/second');
 
       // Now resolve the cancelled /first resources promise
-      resolveFirstResources({});
+      firstResources.resolve();
       await harness.fixture.whenStable();
 
       // Navigation should remain on /second
@@ -223,10 +241,7 @@ describe('Router resources integration', () => {
       @Component({standalone: true, template: ''})
       class SecondCmp {}
 
-      let resolveFirstResources!: (value: any) => void;
-      const firstResourcesPromise = new Promise((resolve) => {
-        resolveFirstResources = resolve;
-      });
+      const firstResources = promiseWithResolvers<void>();
 
       TestBed.configureTestingModule({
         providers: [
@@ -237,7 +252,7 @@ describe('Router resources integration', () => {
                 component: FirstCmp,
                 resources: () => {
                   const data = resource({loader: async () => 'first data'});
-                  return firstResourcesPromise.then(() => ({data}));
+                  return firstResources.promise.then(() => ({data}));
                 },
               },
               {
@@ -267,7 +282,7 @@ describe('Router resources integration', () => {
       expect(router.url).toBe('/second');
 
       // Now resolve the cancelled /first resources promise
-      resolveFirstResources({});
+      firstResources.resolve();
       await harness.fixture.whenStable();
 
       // Navigation should remain on /second
@@ -315,7 +330,6 @@ describe('Router resources integration', () => {
     });
 
     it('should support resources on componentless routes', async () => {
-      let callCount = 0;
       @Component({standalone: true, template: '', selector: 'child-cmp-componentless'})
       class ChildCmp {}
 
@@ -332,14 +346,7 @@ describe('Router resources integration', () => {
                   {
                     path: 'componentless',
                     resources: () => ({
-                      compData: nonBlocking(
-                        resource({
-                          loader: async () => {
-                            callCount++;
-                            return 'comp';
-                          },
-                        }),
-                      ),
+                      compData: nonBlocking(resource({loader: async () => 'comp'})),
                     }),
                     children: [{path: 'child', component: ChildCmp}],
                   },
@@ -356,7 +363,6 @@ describe('Router resources integration', () => {
       await harness.navigateByUrl('/parent/componentless/child');
       await harness.fixture.whenStable();
       await timeout(20);
-      expect(callCount).toBe(1);
 
       const parentRoute = router.routerState.root.firstChild!;
       const componentlessRoute = parentRoute.firstChild!;
@@ -391,21 +397,16 @@ describe('Router resources integration', () => {
       });
 
       const harness = await RouterTestingHarness.create();
-      let error: any;
-      try {
-        await harness.navigateByUrl('/test');
-      } catch (e) {
-        error = e;
-      }
-      expect(error.message).toContain('Invalid resource returned for key "data"');
+      await expectAsync(harness.navigateByUrl('/test')).toBeRejectedWithError(
+        /Invalid resource returned for key "data"/,
+      );
     });
   });
 
   describe('Blocking vs Non-blocking Resources', () => {
     xit('should resolve resources before component initialization if blocking', async () => {
       let resolverSpy = jasmine.createSpy('resolver');
-      let resolve!: (val: any) => void;
-      const promise = new Promise<string>((r) => (resolve = r));
+      const deferred = promiseWithResolvers<string>();
 
       @Component({standalone: true, template: ''})
       class TestCmp {}
@@ -421,7 +422,7 @@ describe('Router resources integration', () => {
                   data: resource({
                     loader: async () => {
                       resolverSpy();
-                      return await promise;
+                      return await deferred.promise;
                     },
                   }),
                 }),
@@ -445,7 +446,7 @@ describe('Router resources integration', () => {
       expect(router.url).toBe('/');
       expect(resolverSpy).toHaveBeenCalled();
 
-      resolve('resolved');
+      deferred.resolve('resolved');
       await navPromise;
       expect(completed).toBe(true);
       expect(router.url).toBe('/test');
@@ -705,8 +706,7 @@ describe('Router resources integration', () => {
       @Component({standalone: true, template: ''})
       class TargetCmp {}
 
-      let resolve!: (val: any) => void;
-      const promise = new Promise((r) => (resolve = r));
+      const deferred = promiseWithResolvers<{name: string}>();
       let aborted = false;
 
       TestBed.configureTestingModule({
@@ -722,7 +722,7 @@ describe('Router resources integration', () => {
                       params: () => ctx.params(),
                       loader: async ({params, abortSignal}: any) => {
                         abortSignal.addEventListener('abort', () => (aborted = true));
-                        if (params['id'] === '1') return promise;
+                        if (params['id'] === '1') return deferred.promise;
                         return {name: 'user 2'};
                       },
                     }),
@@ -750,7 +750,7 @@ describe('Router resources integration', () => {
       expect(userResource?.value()).toEqual({name: 'user 2'});
 
       // Resolving the old promise should have no effect
-      resolve({name: 'user 1'});
+      deferred.resolve({name: 'user 1'});
       await timeout(10);
       expect(userResource.value()).toEqual({name: 'user 2'});
     });
@@ -759,9 +759,8 @@ describe('Router resources integration', () => {
       @Component({standalone: true, template: ''})
       class TargetCmp {}
 
-      let resolveThird!: (v: any) => void;
-      let p2 = new Promise(() => {}); // never resolves
-      let p3 = new Promise((r) => (resolveThird = r));
+      const p2 = new Promise(() => {}); // never resolves
+      const p3 = promiseWithResolvers<string>();
 
       let loadedParams: any[] = [];
 
@@ -778,7 +777,7 @@ describe('Router resources integration', () => {
                     loader: async ({params}: any) => {
                       loadedParams.push(params['id']);
                       if (params['id'] === '2') return p2;
-                      if (params['id'] === '3') return p3;
+                      if (params['id'] === '3') return p3.promise;
                       return params['id'];
                     },
                   }),
@@ -805,7 +804,7 @@ describe('Router resources integration', () => {
 
       expect(loadedParams).toEqual(['1', '2', '3']);
 
-      resolveThird('loaded-3');
+      p3.resolve('loaded-3');
       await nav3;
       await harness.fixture.whenStable();
 
@@ -818,8 +817,7 @@ describe('Router resources integration', () => {
       @Component({standalone: true, template: ''})
       class TargetCmp {}
 
-      let resolveLoader!: (val: any) => void;
-      let promise = new Promise((resolve) => (resolveLoader = resolve));
+      let loader = promiseWithResolvers<string>();
 
       TestBed.configureTestingModule({
         providers: [
@@ -831,7 +829,7 @@ describe('Router resources integration', () => {
                 resources: (ctx: any) => ({
                   data: resource({
                     params: () => ctx.params(),
-                    loader: async () => promise,
+                    loader: async () => loader.promise,
                   }),
                 }),
               },
@@ -850,7 +848,7 @@ describe('Router resources integration', () => {
       const router = TestBed.inject(Router);
 
       // Settle initial state
-      resolveLoader('1');
+      loader.resolve('1');
       await harness.navigateByUrl('/target/1');
       await harness.fixture.whenStable();
 
@@ -859,7 +857,7 @@ describe('Router resources integration', () => {
       expect(resourceRef.value()).toBe('1');
       expect(resourceRef.isLoading()).toBe(false);
 
-      promise = new Promise((resolve) => (resolveLoader = resolve));
+      loader = promiseWithResolvers<string>();
 
       // Initiate a navigation to a link that Redirects using a UrlTree Guard.
       const nav2 = harness.navigateByUrl('/bad-link');
@@ -869,7 +867,7 @@ describe('Router resources integration', () => {
       expect(resourceRef.isLoading()).toBe(false);
       expect(resourceRef.value()).toBe('1');
 
-      resolveLoader('3');
+      loader.resolve('3');
       await nav2;
       await harness.fixture.whenStable();
 

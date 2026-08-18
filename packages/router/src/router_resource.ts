@@ -29,9 +29,6 @@ import {
   NavigationCancellationCode,
 } from './events';
 
-export const NON_BLOCKING_SYMBOL: unique symbol = Symbol(
-  typeof ngDevMode === 'undefined' || ngDevMode ? '__isNonBlocking' : '',
-);
 export const BLOCKING_SYMBOL: unique symbol = Symbol(
   typeof ngDevMode === 'undefined' || ngDevMode ? '__isBlocking' : '',
 );
@@ -40,7 +37,6 @@ export const BLOCKING_SYMBOL: unique symbol = Symbol(
  * @internal
  */
 export interface InternalRouterResource<T = unknown> extends Resource<T> {
-  [NON_BLOCKING_SYMBOL]?: boolean;
   [BLOCKING_SYMBOL]?: boolean;
   reload(): boolean;
 }
@@ -51,7 +47,7 @@ export interface InternalRouterResource<T = unknown> extends Resource<T> {
  * @experimental
  */
 export function nonBlocking<T, R extends Resource<T>>(res: R): R {
-  (res as unknown as InternalRouterResource<T>)[NON_BLOCKING_SYMBOL] = true;
+  (res as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] = false;
   return res;
 }
 
@@ -72,8 +68,8 @@ export function routerResource<T>(source: Resource<T>): Resource<T> & {reload():
 
   const res = resourceFromSnapshots(snapshotSignal) as unknown as InternalRouterResource<T>;
 
-  if ((source as unknown as InternalRouterResource<T>)[NON_BLOCKING_SYMBOL]) {
-    res[NON_BLOCKING_SYMBOL] = true;
+  if ((source as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] === false) {
+    res[BLOCKING_SYMBOL] = false;
   } else {
     res[BLOCKING_SYMBOL] = true;
   }

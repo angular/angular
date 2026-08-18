@@ -724,7 +724,6 @@ export class NavigationTransitions {
           switchTap((t: NavigationTransition) => {
             const loadComponents = (route: ActivatedRouteSnapshot): Array<Promise<void>> => {
               const loaders: Array<Promise<void>> = [];
-
               if (route.routeConfig?._loadedComponent) {
                 route.component = route.routeConfig?._loadedComponent;
               } else if (route.routeConfig?.loadComponent) {
@@ -767,7 +766,7 @@ export class NavigationTransitions {
             return of(t);
           }),
 
-          this.routerResourcesFeature?.operator(abortController.signal) ?? ((t) => t),
+          this.routerResourcesFeature?.setupAndRunResources(abortController.signal) ?? ((t) => t),
           switchTap(() => this.afterPreactivation()),
 
           switchMap(() => {
@@ -813,11 +812,7 @@ export class NavigationTransitions {
               return;
             }
 
-            const traverse = (node: TreeNode<ActivatedRoute>) => {
-              node.value.pending?.set(false);
-              node.children.forEach(traverse);
-            };
-            traverse(t.targetRouterState!._root);
+            resetPendingRoutes(t.targetRouterState);
 
             completedOrAborted = true;
             this.currentNavigation.update((nav) => {
@@ -1061,11 +1056,16 @@ function rollbackState(t: NavigationTransition): void {
     r._localInjector?.destroy();
     r._localInjector = undefined;
   }
-  if (t.targetRouterState) {
-    const traverse = (node: TreeNode<ActivatedRoute>) => {
-      node.value.pending?.set(false);
-      node.children.forEach(traverse);
-    };
-    traverse(t.targetRouterState._root);
+  resetPendingRoutes(t.targetRouterState);
+}
+
+function resetPendingRoutes(targetRouterState?: RouterState | null): void {
+  if (!targetRouterState) {
+    return;
   }
+  const traverse = (node: TreeNode<ActivatedRoute>) => {
+    node.value.pending?.set(false);
+    node.children.forEach(traverse);
+  };
+  traverse(targetRouterState._root);
 }

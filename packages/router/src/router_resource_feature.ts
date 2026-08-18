@@ -13,7 +13,9 @@ import type {NavigationTransition} from './navigation_transition';
 import type {ActivatedRoute} from './router_state';
 
 export interface RouterResourcesFeatureImplementation {
-  operator(abortSignal: AbortSignal): OperatorFunction<NavigationTransition, NavigationTransition>;
+  setupAndRunResources(
+    abortSignal: AbortSignal,
+  ): OperatorFunction<NavigationTransition, NavigationTransition>;
 }
 
 export const ROUTER_RESOURCES_FEATURE = new InjectionToken<RouterResourcesFeatureImplementation>(

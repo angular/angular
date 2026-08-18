@@ -1036,6 +1036,7 @@
       "reportUnhandledError",
       "requiresRefreshOrTraversal",
       "resetConsumerBeforeComputation",
+      "resetPendingRoutes",
       "resetPreOrderHookFlags",
       "resolveData",
       "resolveDirectives",

@@ -11,7 +11,7 @@ import {ResourceContext, ResourceResult} from '../models';
 import {NavigationTransition} from '../navigation_transition';
 import {ActivatedRoute, ActivatedRouteSnapshot, initializeActivatedRoute} from '../router_state';
 import {TreeNode} from '../utils/tree';
-import {InternalRouterResource, NON_BLOCKING_SYMBOL, routerResource} from '../router_resource';
+import {BLOCKING_SYMBOL, InternalRouterResource, routerResource} from '../router_resource';
 import {switchTap} from './switch_tap';
 
 export function setupAndRunResources(
@@ -141,7 +141,7 @@ function prohibitBlockingResources(route: ActivatedRoute, resourceResult: Resour
 
   for (const r of Object.values(resourceResult)) {
     const res = r as InternalRouterResource;
-    if (res[NON_BLOCKING_SYMBOL]) {
+    if (res[BLOCKING_SYMBOL] === false) {
       continue;
     }
     throw new Error('blocking resources not implemented yet');

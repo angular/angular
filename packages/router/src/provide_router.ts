@@ -922,7 +922,7 @@ export function withRouterResources(): RouterResourcesFeature {
     {
       provide: ROUTER_RESOURCES_FEATURE,
       useValue: {
-        operator: setupAndRunResources,
+        setupAndRunResources,
       },
     },
   ];
