@@ -434,7 +434,7 @@ describe('Zone Browser', function () {
             }
 
             const onPropPatchedSymbol = zoneSymbol('on' + prop + 'patched');
-            if (obj.hasOwnProperty(onPropPatchedSymbol) && obj[onPropPatchedSymbol]) {
+            if (Object.hasOwn(obj, onPropPatchedSymbol) && obj[onPropPatchedSymbol]) {
               return true;
             }
             return false;

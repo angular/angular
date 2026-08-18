@@ -25,7 +25,7 @@ function merge(...sets: BooleanRecord[]): BooleanRecord {
   const res: BooleanRecord = {};
   for (const s of sets) {
     for (const v in s) {
-      if (s.hasOwnProperty(v)) res[v] = true;
+      if (Object.hasOwn(s, v)) res[v] = true;
     }
   }
   return res;
@@ -179,9 +179,9 @@ class SanitizingHtmlSerializer {
    */
   private startElement(element: Element): boolean {
     const tagName = getNodeName(element).toLowerCase();
-    if (!VALID_ELEMENTS.hasOwnProperty(tagName)) {
+    if (!Object.hasOwn(VALID_ELEMENTS, tagName)) {
       this.sanitizedSomething = true;
-      return !SKIP_TRAVERSING_CONTENT_IF_INVALID_ELEMENTS.hasOwnProperty(tagName);
+      return !Object.hasOwn(SKIP_TRAVERSING_CONTENT_IF_INVALID_ELEMENTS, tagName);
     }
     this.buf.push('<');
     this.buf.push(tagName);
@@ -190,7 +190,7 @@ class SanitizingHtmlSerializer {
       const elAttr = elAttrs.item(i);
       const attrName = elAttr!.name;
       const lower = attrName.toLowerCase();
-      if (!VALID_ATTRS.hasOwnProperty(lower)) {
+      if (!Object.hasOwn(VALID_ATTRS, lower)) {
         this.sanitizedSomething = true;
         continue;
       }
@@ -205,7 +205,7 @@ class SanitizingHtmlSerializer {
 
   private endElement(current: Element) {
     const tagName = getNodeName(current).toLowerCase();
-    if (VALID_ELEMENTS.hasOwnProperty(tagName) && !VOID_ELEMENTS.hasOwnProperty(tagName)) {
+    if (Object.hasOwn(VALID_ELEMENTS, tagName) && !Object.hasOwn(VOID_ELEMENTS, tagName)) {
       this.buf.push('</');
       this.buf.push(tagName);
       this.buf.push('>');

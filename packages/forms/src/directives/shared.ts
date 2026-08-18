@@ -370,7 +370,7 @@ function _throwInvalidValueAccessorError(dir: AbstractControlDirective) {
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
-  if (!changes.hasOwnProperty('model')) return false;
+  if (!Object.hasOwn(changes, 'model')) return false;
   const change = changes['model'];
 
   if (change.isFirstChange()) return true;

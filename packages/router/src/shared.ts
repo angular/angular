@@ -80,7 +80,7 @@ class ParamsAsMap implements ParamMap {
   }
 
   has(name: string): boolean {
-    return Object.prototype.hasOwnProperty.call(this.params, name);
+    return Object.hasOwn(this.params, name);
   }
 
   get(name: string): string | null {

@@ -562,7 +562,7 @@ describe('value accessors', () => {
       };
 
       it('verify that native `selectedOptions` field is used while detecting the list of selected options', async () => {
-        if (isNode || !HTMLSelectElement.prototype.hasOwnProperty('selectedOptions')) return;
+        if (isNode || !Object.hasOwn(HTMLSelectElement.prototype, 'selectedOptions')) return;
         const spy = spyOnProperty(
           HTMLSelectElement.prototype,
           'selectedOptions',

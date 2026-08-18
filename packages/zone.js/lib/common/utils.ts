@@ -210,7 +210,7 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
   }
 
   const onPropPatchedSymbol = zoneSymbol('on' + prop + 'patched');
-  if (obj.hasOwnProperty(onPropPatchedSymbol) && obj[onPropPatchedSymbol]) {
+  if (Object.hasOwn(obj, onPropPatchedSymbol) && obj[onPropPatchedSymbol]) {
     return;
   }
 
@@ -385,7 +385,7 @@ export function patchClass(className: string) {
   }
 
   for (prop in OriginalClass) {
-    if (prop !== 'prototype' && OriginalClass.hasOwnProperty(prop)) {
+    if (prop !== 'prototype' && Object.hasOwn(OriginalClass, prop)) {
       _global[className][prop] = OriginalClass[prop];
     }
   }
@@ -431,7 +431,7 @@ export function patchMethod(
   ) => (self: any, args: any[]) => any,
 ): Function | null {
   let proto = target;
-  while (proto && !proto.hasOwnProperty(name)) {
+  while (proto && !Object.hasOwn(proto, name)) {
     proto = ObjectGetPrototypeOf(proto);
   }
   if (!proto && target[name]) {
@@ -441,7 +441,7 @@ export function patchMethod(
 
   const delegateName = zoneSymbol(name);
   let delegate: Function | null = null;
-  if (proto && (!(delegate = proto[delegateName]) || !proto.hasOwnProperty(delegateName))) {
+  if (proto && (!(delegate = proto[delegateName]) || !Object.hasOwn(proto, delegateName))) {
     delegate = proto[delegateName] = proto[name];
     // check whether proto[name] is writable
     // some property is readonly in safari, such as HtmlCanvasElement.prototype.toBlob

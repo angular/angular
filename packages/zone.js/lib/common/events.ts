@@ -324,7 +324,7 @@ export function patchEventTarget(
     }
 
     let proto = obj;
-    while (proto && !proto.hasOwnProperty(ADD_EVENT_LISTENER)) {
+    while (proto && !Object.hasOwn(proto, ADD_EVENT_LISTENER)) {
       proto = ObjectGetPrototypeOf(proto);
     }
     if (!proto && obj[ADD_EVENT_LISTENER]) {

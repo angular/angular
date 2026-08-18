@@ -89,7 +89,7 @@ export class HostDirectivesResolver {
 
     if (allowedProperties !== null) {
       for (const publicName in allowedProperties) {
-        if (allowedProperties.hasOwnProperty(publicName)) {
+        if (Object.hasOwn(allowedProperties, publicName)) {
           const bindings = source.getByBindingPropertyName(publicName);
 
           if (bindings !== null) {

@@ -77,7 +77,7 @@ interface NodeWithKeyAndValue extends TmplAstNode {
 export function isTemplateNodeWithKeyAndValue(
   node: TmplAstNode | AST,
 ): node is NodeWithKeyAndValue {
-  return isTemplateNode(node) && node.hasOwnProperty('keySpan');
+  return isTemplateNode(node) && Object.hasOwn(node, 'keySpan');
 }
 
 export function isWithinKey(position: number, node: NodeWithKeyAndValue): boolean {

@@ -918,11 +918,11 @@ function dispatchNavigateEvent({
     if (options.history === 'push' || options.history === 'replace') {
       event.navigationType = options.history;
     }
-    if (options.hasOwnProperty('state')) {
+    if (Object.hasOwn(options, 'state')) {
       event.destination.state = options.state;
     }
     event.destination.url = destinationUrl.href;
-    if (options.hasOwnProperty('info')) {
+    if (Object.hasOwn(options, 'info')) {
       event.info = options.info;
     }
   }

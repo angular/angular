@@ -747,7 +747,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
    * property `blur` within the optional configuration object `placeholderConfig`.
    */
   protected shouldBlurPlaceholder(placeholderConfig?: ImagePlaceholderConfig): boolean {
-    if (!placeholderConfig || !placeholderConfig.hasOwnProperty('blur')) {
+    if (!placeholderConfig || !Object.hasOwn(placeholderConfig, 'blur')) {
       return true;
     }
     return Boolean(placeholderConfig.blur);
@@ -1042,7 +1042,7 @@ function assertNoPostInitInputChange(
   inputs: string[],
 ) {
   inputs.forEach((input) => {
-    const isUpdated = changes.hasOwnProperty(input);
+    const isUpdated = Object.hasOwn(changes, input);
     if (isUpdated && !changes[input].isFirstChange()) {
       if (input === 'ngSrc') {
         // When the `ngSrc` input changes, we detect that only in the
