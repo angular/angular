@@ -124,66 +124,25 @@ If you set `showCount` to `true` and then read `conditionalCount` again, the der
 
 Note that dependencies can be removed during a derivation as well as added. If you later set `showCount` back to `false`, then `count` will no longer be considered a dependency of `conditionalCount`.
 
-## Mental model
+## Mental Model
 
-Signals are best understood as a reactive state graph.
+Signals provide a structured way to manage how your application responds to data changes in real-time.
 
-Each signal represents a piece of state. Computed values derive state from other state, while effects react to state changes and perform side effects.
+Think of them as three complementary building blocks:
 
-A useful rule of thumb is:
+**Signals** store the actual data in your application. When this data changes, everything connected to it automatically updates—no manual refreshes needed.
 
-- Use `signal` for state.
-- Use `computed` for derived state.
-- Use `effect` for side effects.
+**Computed values** derive new information from existing signals. If you change the underlying data, computed values instantly reflect those changes without any extra work from developers.
 
-When working with signals, prefer deriving values over synchronizing state. If one value can be calculated from another, model that relationship with `computed` rather than manually keeping multiple pieces of state in sync.
+**Effects** are automatic actions triggered by data changes. Use them to sync with databases, update analytics, or refresh external systems whenever your data shifts.
 
-For a detailed comparison of `computed` and `effect`, including common mistakes and examples, see [Avoid using effects to synchronize state](./effect.md#avoid-using-effects-for-derived-state).
+### When to Use Each
 
-### Prefer derivation over synchronization
-
-When a value can be expressed as a function of other state, model it as a derivation instead of maintaining multiple sources of truth.
-
-Prefer:
-
-```ts
-const fullName = computed(() => `${firstName()} ${lastName()}`);
-```
-
-Over:
-
-```ts
-const fullName = signal('');
-
-effect(() => {
-  fullName.set(`${firstName()} ${lastName()}`);
-});
-```
-
-Derived state stays consistent automatically and avoids unnecessary mutable state.
-
-### Choosing between computed and effect
-
-Both `computed` and `effect` react to signal changes, but they serve different purposes.
-
-Use `computed` when you need to calculate a value from other signals:
-
-```ts
-const total = computed(() => price() * quantity());
-```
-
-Use `effect` when you need to update something outside Angular’s signal model, such as browser storage, logging, analytics, or a third-party UI library.
-
-```ts
-effect(() => {
-  localStorage.setItem('theme', theme());
-});
-```
-
-In general, you'll want to follow the general guidelines:
-
-- If you're calculating a value, use `computed`.
-- If you need to synchronize signal state to an external non-reactive system, use `effect`.
+| Component    | Purpose                  | Example                                          |
+| ------------ | ------------------------ | ------------------------------------------------ |
+| **Signal**   | Store changeable data    | User count, user preferences, form input         |
+| **Computed** | Calculate derived values | Total revenue, filtered results, percentages     |
+| **Effect**   | Respond to changes       | Log events, save to database, send notifications |
 
 ## Reactive contexts
 
