@@ -16,7 +16,9 @@ import {
   HOST,
   LView,
   T_HOST,
+  TVIEW,
 } from '../render3/interfaces/view';
+import {getParentRElement} from '../render3/node_manipulation';
 import {getComponent} from '../render3/util/discovery_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
 
@@ -25,6 +27,7 @@ import {markRNodeAsHavingHydrationMismatch} from './utils';
 import {DOC_PAGE_BASE_URL} from '../../../core/src/error_details_base_url';
 
 const AT_THIS_LOCATION = '<-- AT THIS LOCATION';
+const MAX_DOM_PATH_NODES = 4;
 
 const THIRD_PARTY_SCRIPTS_URL = `/guide/hydration#third-party-scripts-with-dom-manipulation`;
 
@@ -83,7 +86,9 @@ export function validateMatchingNode(
     const componentClassName = hostComponentDef?.type?.name;
 
     const componentHostElement = getDeclarationComponentHostElement(lView);
-    const expectedDom = describeExpectedDom(lView, tNode, isViewContainerAnchor);
+    const expectedDom = describeExpectedDom(lView, tNode, isViewContainerAnchor, {
+      includePath: true,
+    });
     const expected = `Angular expected this DOM:\n\n${expectedDom}\n\n`;
 
     let actual = '';
@@ -104,7 +109,10 @@ export function validateMatchingNode(
 
       header += `found ${actualNode}.\n\n`;
       const actualComponentHostElement = getClosestComponentHostElement(node);
-      const actualDom = describeDomFromNode(node, actualComponentHostElement);
+      const actualDom = describeDomFromNode(node, {
+        ancestorBoundary: actualComponentHostElement,
+        includePath: true,
+      });
       actual = `Actual DOM is:\n\n${actualDom}\n\n`;
 
       // DevTools only report hydration issues on the component level, so we attach extra debug
@@ -326,6 +334,16 @@ function describeTNode(tNode: TNode, innerContent: string = '…'): string {
   }
 }
 
+function describeTNodeForPath(tNode: TNode): string {
+  if (tNode.type !== TNodeType.Element) {
+    return describeTNode(tNode);
+  }
+
+  const attrs = stringifyTNodeAttrs(tNode);
+  const tag = tNode.value.toLowerCase();
+  return `<${tag}${attrs ? ' ' + attrs : ''}>`;
+}
+
 /**
  * Converts an RNode to a helpful readable string value for use in error messages
  *
@@ -350,6 +368,17 @@ function describeRNode(rNode: RNode, innerContent: string = '…'): string {
   }
 }
 
+function describeRNodeForPath(rNode: RNode): string {
+  const node = rNode as HTMLElement;
+  if (node.nodeType !== Node.ELEMENT_NODE) {
+    return describeRNode(rNode);
+  }
+
+  const tag = node.tagName.toLowerCase();
+  const attrs = stringifyRNodeAttrs(node);
+  return `<${tag}${attrs ? ' ' + attrs : ''}>`;
+}
+
 /**
  * Builds the string containing the expected DOM present given the LView and TNode
  * values for a readable error message
@@ -359,7 +388,12 @@ function describeRNode(rNode: RNode, innerContent: string = '…'): string {
  * @param isViewContainerAnchor boolean
  * @returns string
  */
-function describeExpectedDom(lView: LView, tNode: TNode, isViewContainerAnchor: boolean): string {
+function describeExpectedDom(
+  lView: LView,
+  tNode: TNode,
+  isViewContainerAnchor: boolean,
+  options: {includePath?: boolean} = {},
+): string {
   const lines: string[] = [];
   if (tNode.prev) {
     lines.push('…', describeTNode(tNode.prev));
@@ -373,7 +407,7 @@ function describeExpectedDom(lView: LView, tNode: TNode, isViewContainerAnchor: 
   }
   lines.push('…');
 
-  let content = lines.join('\n');
+  const ancestors: TNode[] = [];
   const declarationComponentLView = lView[DECLARATION_COMPONENT_VIEW];
   let currentLView: LView | null = lView;
   let parentTNode = tNode.parent;
@@ -381,7 +415,7 @@ function describeExpectedDom(lView: LView, tNode: TNode, isViewContainerAnchor: 
   while (currentLView !== null) {
     for (let parent = parentTNode; parent !== null; parent = parent.parent) {
       if (parent.type === TNodeType.Element) {
-        content = describeTNode(parent, `\n${indent(content)}\n`);
+        ancestors.push(parent);
       }
     }
 
@@ -394,9 +428,22 @@ function describeExpectedDom(lView: LView, tNode: TNode, isViewContainerAnchor: 
   }
 
   const componentHostElement = getDeclarationComponentHostElement(lView);
-  return componentHostElement === null
-    ? content
-    : describeRNode(componentHostElement, `\n${indent(content)}\n`);
+  let content = lines.join('\n');
+  const parentRNode = tNode.type ? getParentRElement(lView[TVIEW], tNode, lView) : null;
+  if (parentRNode !== null) {
+    content = describeRNode(parentRNode as unknown as Node, `\n${indent(content)}\n`);
+  }
+
+  if (!options.includePath) {
+    return content;
+  }
+
+  const path = ancestors.reverse().map(describeTNodeForPath);
+  if (componentHostElement !== null) {
+    path.unshift(describeRNodeForPath(componentHostElement));
+  }
+  path.push(isViewContainerAnchor ? '<!-- container -->' : describeTNodeForPath(tNode));
+  return `DOM path: ${formatDomPath(path)}\n\n${content}`;
 }
 
 /**
@@ -404,10 +451,13 @@ function describeExpectedDom(lView: LView, tNode: TNode, isViewContainerAnchor: 
  * readable error message
  *
  * @param node the RNode
- * @param ancestorBoundary the last ancestor to include in the description
+ * @param options configuration for the DOM description
  * @returns string
  */
-function describeDomFromNode(node: RNode, ancestorBoundary: RNode | null = null): string {
+function describeDomFromNode(
+  node: RNode,
+  options: {ancestorBoundary?: RNode | null; includePath?: boolean} = {},
+): string {
   const lines: string[] = [];
   const currentNode = node as HTMLElement;
   if (currentNode.previousSibling) {
@@ -419,15 +469,36 @@ function describeDomFromNode(node: RNode, ancestorBoundary: RNode | null = null)
   }
 
   let content = lines.join('\n');
-  let parent = currentNode.parentNode;
-  while (parent?.nodeType === Node.ELEMENT_NODE) {
+  const parent = currentNode.parentNode;
+  if (parent?.nodeType === Node.ELEMENT_NODE) {
     content = describeRNode(parent, `\n${indent(content)}\n`);
-    if (ancestorBoundary === null || parent === ancestorBoundary) {
+  }
+
+  if (!options.includePath) {
+    return content;
+  }
+
+  const path: string[] = [];
+  let pathNode: Node | null = currentNode;
+  while (
+    pathNode !== null &&
+    (pathNode === currentNode || pathNode.nodeType === Node.ELEMENT_NODE)
+  ) {
+    path.unshift(describeRNodeForPath(pathNode));
+    if (pathNode === options.ancestorBoundary) {
       break;
     }
-    parent = parent.parentNode;
+    pathNode = pathNode.parentNode;
   }
-  return content;
+  return `DOM path: ${formatDomPath(path)}\n\n${content}`;
+}
+
+function formatDomPath(nodes: string[]): string {
+  if (nodes.length <= MAX_DOM_PATH_NODES) {
+    return nodes.join(' > ');
+  }
+
+  return [nodes[0], '...', ...nodes.slice(-(MAX_DOM_PATH_NODES - 1))].join(' > ');
 }
 
 function indent(value: string): string {

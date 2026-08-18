@@ -6252,36 +6252,41 @@ describe('platform-server full application hydration integration', () => {
         });
       });
 
-      it('should show the full DOM ancestry for an element node mismatch', async () => {
+      it('should show a bounded DOM path for a mismatch in otherwise identical branches', async () => {
         @Component({
           selector: 'app',
           template: `
             <main id="content">
-              <section aria-label="Profile">
-                <div class="name"><b>Alice</b></div>
-              </section>
+              <div class="layout">
+                <section aria-label="Account">
+                  <div class="name"><b>Alice</b></div>
+                </section>
+                <section aria-label="Billing">
+                  <div class="name"><b>Bob</b></div>
+                </section>
+              </div>
             </main>
           `,
         })
-        class NestedElementMismatchComponent {
+        class AmbiguousBranchMismatchComponent {
           private doc = inject(DOCUMENT);
 
           ngAfterViewInit() {
-            const b = this.doc.querySelector('b');
+            const b = this.doc.querySelector('[aria-label="Billing"] b');
             const span = this.doc.createElement('span');
-            span.textContent = 'Alice';
+            span.textContent = 'Bob';
             b?.parentNode?.replaceChild(span, b);
           }
         }
 
-        const html = await ssr(NestedElementMismatchComponent);
+        const html = await ssr(AmbiguousBranchMismatchComponent);
 
-        resetTViewsFor(NestedElementMismatchComponent);
+        resetTViewsFor(AmbiguousBranchMismatchComponent);
 
         const result = await prepareEnvironmentAndHydrate(
           doc,
           html,
-          NestedElementMismatchComponent,
+          AmbiguousBranchMismatchComponent,
           {
             envProviders: [withNoopErrorHandler()],
           },
@@ -6292,70 +6297,51 @@ describe('platform-server full application hydration integration', () => {
 
         expect(result.message).toContain(
           'Angular expected this DOM:\n\n' +
-            '<app>\n' +
-            '  <main id="content">\n' +
-            '    <section aria-label="Profile">\n' +
-            '      <div class="name">\n' +
-            '        <b>…</b>  <-- AT THIS LOCATION',
+            'DOM path: <app> > ... > <section aria-label="Billing"> > <div class="name"> > <b>\n\n' +
+            '<div class="name">\n' +
+            '  <b>…</b>  <-- AT THIS LOCATION',
         );
         expect(result.message).toContain(
           'Actual DOM is:\n\n' +
-            '<app>\n' +
-            '  <main id="content">\n' +
-            '    <section aria-label="Profile">\n' +
-            '      <div class="name">\n' +
-            '        <span>…</span>  <-- AT THIS LOCATION',
+            'DOM path: <app> > ... > <section aria-label="Billing"> > <div class="name"> > <span>\n\n' +
+            '<div class="name">\n' +
+            '  <span>…</span>  <-- AT THIS LOCATION',
         );
         verifyNodeHasMismatchInfo(doc);
       });
 
-      it('should show the full DOM ancestry after browser HTML normalization', async () => {
+      it('should include a non-element mismatch in the actual DOM path', async () => {
         @Component({
           selector: 'app',
-          template: `
-            <main>
-              <table>
-                <tr>
-                  <td>Cell</td>
-                </tr>
-              </table>
-            </main>
-          `,
+          template: `<main>
+            <div class="content"><b>Bold</b></div>
+          </main>`,
         })
-        class BrowserNormalizedTableComponent {}
+        class CommentNodeMismatchComponent {
+          private doc = inject(DOCUMENT);
 
-        const html = await ssr(BrowserNormalizedTableComponent);
-        const normalizedHtml = html
-          .replace('<tr>', '<tbody><tr>')
-          .replace('</tr>', '</tr></tbody>');
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('b');
+            b?.parentNode?.replaceChild(this.doc.createComment('mismatch'), b);
+          }
+        }
 
-        resetTViewsFor(BrowserNormalizedTableComponent);
+        const html = await ssr(CommentNodeMismatchComponent);
 
-        const result = await prepareEnvironmentAndHydrate(
-          doc,
-          normalizedHtml,
-          BrowserNormalizedTableComponent,
-          {
-            envProviders: [withNoopErrorHandler()],
-          },
-        ).catch((err: unknown) => err);
+        resetTViewsFor(CommentNodeMismatchComponent);
+
+        const result = await prepareEnvironmentAndHydrate(doc, html, CommentNodeMismatchComponent, {
+          envProviders: [withNoopErrorHandler()],
+        }).catch((err: unknown) => err);
 
         expect(result).toBeInstanceOf(Error);
         if (!(result instanceof Error)) return;
 
         expect(result.message).toContain(
-          'Angular expected this DOM:\n\n' +
-            '<app>\n' +
-            '  <main>\n' +
-            '    <table>\n' +
-            '      <tr>…</tr>  <-- AT THIS LOCATION',
-        );
-        expect(result.message).toContain(
           'Actual DOM is:\n\n' +
-            '<app>\n' +
-            '  <main>\n' +
-            '    <table>\n' +
-            '      <tbody>…</tbody>  <-- AT THIS LOCATION',
+            'DOM path: <app> > <main> > <div class="content"> > <!-- mismatch -->\n\n' +
+            '<div class="content">\n' +
+            '  <!-- mismatch -->  <-- AT THIS LOCATION',
         );
         verifyNodeHasMismatchInfo(doc);
       });
