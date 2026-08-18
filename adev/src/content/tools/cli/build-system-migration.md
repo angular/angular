@@ -573,7 +573,7 @@ If you deploy via a CI/CD pipeline (for example Azure DevOps release tasks, IIS,
 
 If you'd rather keep your existing deploy path unchanged, you can flatten the output back to `dist/<project-name>` by setting `outputPath` in `angular.json`:
 
-```conf - angular.json
+```config - angular.json
  \`\`\`json
 "outputPath": {
   "base": "dist/<project-name>"
