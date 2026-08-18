@@ -40,6 +40,7 @@ import {
   ViewChildren,
   ViewContainerRef,
 } from '../../src/core';
+import {getComponentDef} from '../../src/render3/def_getters';
 import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '../../testing';
 
 describe('change detection', () => {
@@ -55,6 +56,21 @@ describe('change detection', () => {
       });
       TestBed.inject(ApplicationRef);
     }).not.toThrow();
+  });
+  it('defaults an unspecified changeDetection strategy to OnPush, matching the AOT compiler default', () => {
+    // The `@Component` decorator itself must default to OnPush, the same way the AOT
+    // compiler does (see `compileComponentFromMetadata` in
+    // packages/compiler/src/render3/view/compiler.ts). Before this fix, the JIT decorator
+    // in this file still defaulted to `ChangeDetectionStrategy.Eager`, so a component
+    // without an explicit `changeDetection` behaved differently under TestBed/JIT than in
+    // a production AOT build.
+    @Component({
+      selector: 'default-cd-comp',
+      template: '',
+    })
+    class DefaultCdComponent {}
+
+    expect(getComponentDef(DefaultCdComponent)!.onPush).toBe(true);
   });
   describe('embedded views', () => {
     @Directive({
