@@ -40,6 +40,7 @@ export {AbstractFormDirective} from './directives/reactive_directives/abstract_f
 export {FormArrayDirective} from './directives/reactive_directives/form_array_directive';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
 export {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';
+export {WebMcpFormDirective} from './directives/reactive_directives/webmcp_form_directive';
 export {
   NgSelectOption,
   SelectControlValueAccessor,

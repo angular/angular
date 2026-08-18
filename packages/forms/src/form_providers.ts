@@ -13,6 +13,7 @@ import {
   NG_MODEL_WITH_FORM_CONTROL_WARNING,
   REACTIVE_DRIVEN_DIRECTIVES,
   TEMPLATE_DRIVEN_DIRECTIVES,
+  WebMcpFormDirective,
 } from './directives';
 import {
   CALL_SET_DISABLED_STATE,
@@ -68,7 +69,8 @@ export class FormsModule {
  */
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],
-  exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES],
+  imports: [WebMcpFormDirective],
+  exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES, WebMcpFormDirective],
 })
 export class ReactiveFormsModule {
   /**

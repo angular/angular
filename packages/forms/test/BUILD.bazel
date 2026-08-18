@@ -12,6 +12,8 @@ ts_project(
         "//packages/core",
         "//packages/core/testing",
         "//packages/forms",
+        "//packages/forms:node_modules/@mcp-b/webmcp-polyfill",
+        "//packages/forms:node_modules/@mcp-b/webmcp-types",
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
