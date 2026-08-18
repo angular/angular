@@ -303,7 +303,8 @@ groups:
         contains_any_globs(files
             .exclude('.pullapprove.yml') 
             .exclude('tools/manual_api_docs/blocks/*.md')
-            .exclude('tools/manual_api_docs/elements/*.md'),
+            .exclude('tools/manual_api_docs/elements/*.md')
+            .exclude('.agent/**/*.md'),
         [
           '{*,.*}',
           '.agent/**/{*,.*}',
