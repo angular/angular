@@ -185,7 +185,7 @@ function mergeBindingMaps(
   Object.keys(newMap).forEach((publicName) => {
     const alias = newMap[publicName];
 
-    if (!targetMap.hasOwnProperty(publicName) || targetMap[publicName] === alias) {
+    if (!Object.hasOwn(targetMap, publicName) || targetMap[publicName] === alias) {
       targetMap[publicName] = alias;
     } else if (typeof ngDevMode === 'undefined' || ngDevMode) {
       const message =
@@ -248,7 +248,7 @@ function patchDeclaredInputs(
   exposedInputs: HostDirectiveBindingMap,
 ): void {
   for (const publicName in exposedInputs) {
-    if (exposedInputs.hasOwnProperty(publicName)) {
+    if (Object.hasOwn(exposedInputs, publicName)) {
       const remappedPublicName = exposedInputs[publicName];
       const privateName = declaredInputs[publicName];
 
@@ -258,7 +258,7 @@ function patchDeclaredInputs(
       // with the wrong name so we have a non-user-friendly assertion here just in case.
       if (
         (typeof ngDevMode === 'undefined' || ngDevMode) &&
-        declaredInputs.hasOwnProperty(remappedPublicName)
+        Object.hasOwn(declaredInputs, remappedPublicName)
       ) {
         assertEqual(
           declaredInputs[remappedPublicName],
@@ -324,8 +324,8 @@ function validateMappings<T>(
   const bindings = bindingType === 'input' ? def.inputs : def.outputs;
 
   for (const publicName in hostDirectiveBindings) {
-    if (hostDirectiveBindings.hasOwnProperty(publicName)) {
-      if (!bindings.hasOwnProperty(publicName)) {
+    if (Object.hasOwn(hostDirectiveBindings, publicName)) {
+      if (!Object.hasOwn(bindings, publicName)) {
         throw new RuntimeError(
           RuntimeErrorCode.HOST_DIRECTIVE_UNDEFINED_BINDING,
           `Directive ${className} does not have an ${bindingType} with a public name of ${publicName}.`,
@@ -334,7 +334,7 @@ function validateMappings<T>(
 
       const remappedPublicName = hostDirectiveBindings[publicName];
 
-      if (bindings.hasOwnProperty(remappedPublicName) && remappedPublicName !== publicName) {
+      if (Object.hasOwn(bindings, remappedPublicName) && remappedPublicName !== publicName) {
         throw new RuntimeError(
           RuntimeErrorCode.HOST_DIRECTIVE_CONFLICTING_ALIAS,
           `Cannot alias ${bindingType} ${publicName} of host directive ${className} to ${remappedPublicName}, because it already has a different ${bindingType} with the same public name.`,

@@ -417,7 +417,7 @@ export class Driver implements Debuggable, UpdateSource {
     }
     const desc = data.notification as {[key: string]: string | undefined};
     let options: {[key: string]: string | undefined} = {};
-    NOTIFICATION_OPTION_NAMES.filter((name) => desc.hasOwnProperty(name)).forEach(
+    NOTIFICATION_OPTION_NAMES.filter((name) => Object.hasOwn(desc, name)).forEach(
       (name) => (options[name] = desc[name]),
     );
     await this.scope.registration.showNotification(desc['title']!, options);
@@ -671,7 +671,7 @@ export class Driver implements Debuggable, UpdateSource {
 
       // Make sure latest manifest is correctly installed. If not (e.g. corrupted data),
       // it could stay locked in EXISTING_CLIENTS_ONLY or SAFE_MODE state.
-      if (!this.versions.has(latest.latest) && !manifests.hasOwnProperty(latest.latest)) {
+      if (!this.versions.has(latest.latest) && !Object.hasOwn(manifests, latest.latest)) {
         this.debugger.log(
           `Missing manifest for latest version hash ${latest.latest}`,
           'initialize: read from DB',

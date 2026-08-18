@@ -106,14 +106,14 @@ export function i18nPostprocess(
    * Step 2: replace all ICU vars (like "VAR_PLURAL")
    */
   result = result.replace(PP_ICU_VARS_REGEXP, (match, start, key, _type, _idx, end): string => {
-    return replacements.hasOwnProperty(key) ? `${start}${replacements[key]}${end}` : match;
+    return Object.hasOwn(replacements, key) ? `${start}${replacements[key]}${end}` : match;
   });
 
   /**
    * Step 3: replace all placeholders used inside ICUs in a form of {PLACEHOLDER}
    */
   result = result.replace(PP_ICU_PLACEHOLDERS_REGEXP, (match, key): string => {
-    return replacements.hasOwnProperty(key) ? (replacements[key] as string) : match;
+    return Object.hasOwn(replacements, key) ? (replacements[key] as string) : match;
   });
 
   /**
@@ -121,7 +121,7 @@ export function i18nPostprocess(
    * multiple ICUs have the same placeholder name
    */
   result = result.replace(PP_ICUS_REGEXP, (match, key): string => {
-    if (replacements.hasOwnProperty(key)) {
+    if (Object.hasOwn(replacements, key)) {
       const list = replacements[key] as string[];
       if (!list.length) {
         throw new Error(`i18n postprocess: unmatched ICU - ${match} with key: ${key}`);

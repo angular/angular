@@ -808,7 +808,7 @@ function walkIcuTree(
       case Node.ELEMENT_NODE:
         const element = currentNode as Element;
         const tagName = element.tagName.toLowerCase();
-        if (VALID_ELEMENTS.hasOwnProperty(tagName)) {
+        if (Object.hasOwn(VALID_ELEMENTS, tagName)) {
           addCreateNodeAndAppend(create, ELEMENT_MARKER, tagName, parentIdx, newIndex);
           tView.data[newIndex] = tagName;
           const elAttrs = element.attributes;
@@ -821,7 +821,7 @@ function walkIcuTree(
             const tagNameWithNamespace = namespace ? `:${namespace}:${tagName}` : tagName;
 
             if (hasBinding) {
-              if (VALID_ATTRS.hasOwnProperty(lowerAttrName)) {
+              if (Object.hasOwn(VALID_ATTRS, lowerAttrName)) {
                 generateBindingUpdateOpCodes(
                   update,
                   attr.value,

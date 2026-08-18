@@ -178,8 +178,7 @@ export function makeTemplateDiagnostic(
 const TemplateSourceFile = Symbol('TemplateSourceFile');
 
 type TemplateSourceMappingWithSourceFile = (
-  | ExternalTemplateSourceMapping
-  | IndirectSourceMapping
+  ExternalTemplateSourceMapping | IndirectSourceMapping
 ) & {
   [TemplateSourceFile]?: ts.SourceFile;
 };
@@ -223,6 +222,6 @@ function parseTemplateAsSourceFile(fileName: string, template: string): ts.Sourc
 
 export function isTemplateDiagnostic(diagnostic: ts.Diagnostic): diagnostic is TemplateDiagnostic {
   return (
-    diagnostic.hasOwnProperty('componentFile') && ts.isSourceFile((diagnostic as any).componentFile)
+    Object.hasOwn(diagnostic, 'componentFile') && ts.isSourceFile((diagnostic as any).componentFile)
   );
 }

@@ -291,9 +291,9 @@ export class TestBedCompiler {
     override: MetadataOverride<Component | Directive | Pipe>,
   ) {
     if (
-      override.add?.hasOwnProperty('standalone') ||
-      override.set?.hasOwnProperty('standalone') ||
-      override.remove?.hasOwnProperty('standalone')
+      (override.add && Object.hasOwn(override.add, 'standalone')) ||
+      (override.set && Object.hasOwn(override.set, 'standalone')) ||
+      (override.remove && Object.hasOwn(override.remove, 'standalone'))
     ) {
       throw new Error(
         `An override for the ${type.name} class has the \`standalone\` flag. ` +
@@ -766,7 +766,7 @@ export class TestBedCompiler {
       // Check whether a give Type has respective NG def (ɵcmp) and compile if def is
       // missing. That might happen in case a class without any Angular decorators extends another
       // class where Component/Directive/Pipe decorator is defined.
-      if (ɵisComponentDefPendingResolution(type) || !type.hasOwnProperty(NG_COMP_DEF)) {
+      if (ɵisComponentDefPendingResolution(type) || !Object.hasOwn(type, NG_COMP_DEF)) {
         this.pendingComponents.add(type);
       }
       this.seenComponents.add(type);
@@ -797,7 +797,7 @@ export class TestBedCompiler {
 
     const directive = this.resolvers.directive.resolve(type);
     if (directive) {
-      if (!type.hasOwnProperty(NG_DIR_DEF)) {
+      if (!Object.hasOwn(type, NG_DIR_DEF)) {
         this.pendingDirectives.add(type);
       }
       this.seenDirectives.add(type);
@@ -805,7 +805,7 @@ export class TestBedCompiler {
     }
 
     const pipe = this.resolvers.pipe.resolve(type);
-    if (pipe && !type.hasOwnProperty(NG_PIPE_DEF)) {
+    if (pipe && !Object.hasOwn(type, NG_PIPE_DEF)) {
       this.pendingPipes.add(type);
       return;
     }
@@ -1170,7 +1170,7 @@ function getComponentDef(value: Type<unknown>): ComponentDef<unknown> | null {
 }
 
 function hasNgModuleDef<T>(value: Type<T>): value is NgModuleType<T> {
-  return value.hasOwnProperty('ɵmod');
+  return Object.hasOwn(value, 'ɵmod');
 }
 
 function isNgModule<T>(value: Type<T>): boolean {
@@ -1229,7 +1229,7 @@ function getProviderToken(provider: Provider) {
 }
 
 function isModuleWithProviders(value: any): value is ModuleWithProviders<any> {
-  return value.hasOwnProperty('ngModule');
+  return Object.hasOwn(value, 'ngModule');
 }
 
 function forEachRight<T>(values: T[], fn: (value: T, idx: number) => void): void {

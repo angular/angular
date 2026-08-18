@@ -82,7 +82,7 @@ describe('r3 jit environment', () => {
       )
       .forEach((sym) => {
         // Assert that angularCoreEnv has a reference to the runtime symbol.
-        expect(angularCoreEnv.hasOwnProperty(sym.name)).toBe(
+        expect(Object.hasOwn(angularCoreEnv, sym.name)).toBe(
           true,
           `Missing symbol ${sym.name} in render3/jit/environment`,
         );

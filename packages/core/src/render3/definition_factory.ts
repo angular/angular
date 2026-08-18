@@ -29,7 +29,7 @@ export type FactoryFn<T> = {
 export function getFactoryDef<T>(type: any, throwNotFound: true): FactoryFn<T>;
 export function getFactoryDef<T>(type: any): FactoryFn<T> | null;
 export function getFactoryDef<T>(type: any, throwNotFound?: boolean): FactoryFn<T> | null {
-  const hasFactoryDef = type.hasOwnProperty(NG_FACTORY_DEF);
+  const hasFactoryDef = Object.hasOwn(type, NG_FACTORY_DEF);
   if (!hasFactoryDef && throwNotFound === true && ngDevMode) {
     throw new Error(`Type ${stringify(type)} does not have 'ɵfac' property.`);
   }

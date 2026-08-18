@@ -450,7 +450,7 @@ function extractQueriesMetadata(
   const signalQueriesMeta: R3QueryMetadataFacade[] = [];
   const decoratorQueriesMeta: R3QueryMetadataFacade[] = [];
   for (const field in propMetadata) {
-    if (propMetadata.hasOwnProperty(field)) {
+    if (Object.hasOwn(propMetadata, field)) {
       const annotations = propMetadata[field];
       annotations.forEach((ann) => {
         if (isQueryAnn(ann)) {

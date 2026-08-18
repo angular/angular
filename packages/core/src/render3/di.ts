@@ -158,7 +158,7 @@ export function bloomAdd(
   let id: number | undefined;
   if (typeof type === 'string') {
     id = type.charCodeAt(0) || 0;
-  } else if (type.hasOwnProperty(NG_ELEMENT_ID)) {
+  } else if (Object.hasOwn(type, NG_ELEMENT_ID)) {
     id = (type as any)[NG_ELEMENT_ID];
   }
 
@@ -830,8 +830,8 @@ export function bloomHashBitOrFactory(
     return token.charCodeAt(0) || 0;
   }
   const tokenId: number | undefined =
-    // First check with `hasOwnProperty` so we don't get an inherited ID.
-    token.hasOwnProperty(NG_ELEMENT_ID) ? (token as any)[NG_ELEMENT_ID] : undefined;
+    // First check with `Object.hasOwn` so we don't get an inherited ID.
+    Object.hasOwn(token, NG_ELEMENT_ID) ? (token as any)[NG_ELEMENT_ID] : undefined;
   // Negative token IDs are used for special objects such as `Injector`
   if (typeof tokenId === 'number') {
     if (tokenId >= 0) {
@@ -884,10 +884,7 @@ export function getNodeInjectorTNode(
   nodeInjector: NodeInjector,
 ): TElementNode | TContainerNode | TElementContainerNode | null {
   return (nodeInjector as any)._tNode as
-    | TElementNode
-    | TContainerNode
-    | TElementContainerNode
-    | null;
+    TElementNode | TContainerNode | TElementContainerNode | null;
 }
 
 export class NodeInjector implements Injector {

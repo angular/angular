@@ -890,8 +890,7 @@ export function parseDirectiveStyles(
     let unresolvedNode: ts.Node | null = null;
     if (Array.isArray(value)) {
       const entry = value.find((e) => e instanceof DynamicValue && e.isFromUnknownIdentifier()) as
-        | DynamicValue
-        | undefined;
+        DynamicValue | undefined;
       unresolvedNode = entry?.node ?? null;
     } else if (value instanceof DynamicValue && value.isFromUnknownIdentifier()) {
       unresolvedNode = value.node;
@@ -1468,7 +1467,7 @@ function parseInputFields(
     }
 
     // Validate that signal inputs are not accidentally declared in the `inputs` metadata.
-    if (inputMapping.isSignal && inputsFromClassDecorator.hasOwnProperty(classPropertyName)) {
+    if (inputMapping.isSignal && Object.hasOwn(inputsFromClassDecorator, classPropertyName)) {
       throw new FatalDiagnosticError(
         ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION,
         member.node ?? clazz,
@@ -1948,7 +1947,7 @@ function parseOutputFields(
     // in the `outputs` class metadata.
     if (
       (initializerOutput !== null || modelMapping !== null) &&
-      outputsFromMeta.hasOwnProperty(member.name)
+      Object.hasOwn(outputsFromMeta, member.name)
     ) {
       throw new FatalDiagnosticError(
         ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION,

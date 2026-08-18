@@ -108,7 +108,7 @@ export class TransferState {
    * Test whether a key exists in the store.
    */
   hasKey<T>(key: StateKey<T>): boolean {
-    return this.store.hasOwnProperty(key);
+    return Object.hasOwn(this.store, key);
   }
 
   /**
@@ -131,7 +131,7 @@ export class TransferState {
   toJson(): string {
     // Call the onSerialize callbacks and put those values into the store.
     for (const key in this.onSerializeCallbacks) {
-      if (this.onSerializeCallbacks.hasOwnProperty(key)) {
+      if (Object.hasOwn(this.onSerializeCallbacks, key)) {
         try {
           this.store[key] = this.onSerializeCallbacks[key]();
         } catch (e) {

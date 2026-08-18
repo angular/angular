@@ -130,7 +130,7 @@ export abstract class AbstractFormDirective
   /** @nodoc */
   protected onChanges(changes: SimpleChanges): void {
     this._checkFormPresent();
-    if (changes.hasOwnProperty('form')) {
+    if (Object.hasOwn(changes, 'form')) {
       this._updateValidators();
       this._updateDomValue();
       this._updateRegistrations();

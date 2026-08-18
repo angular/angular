@@ -628,12 +628,7 @@ export type TaskType = 'microTask' | 'macroTask' | 'eventTask';
  * Task type: `notScheduled`, `scheduling`, `scheduled`, `running`, `canceling`, 'unknown'.
  */
 export type TaskState =
-  | 'notScheduled'
-  | 'scheduling'
-  | 'scheduled'
-  | 'running'
-  | 'canceling'
-  | 'unknown';
+  'notScheduled' | 'scheduling' | 'scheduled' | 'running' | 'canceling' | 'unknown';
 
 /**
  */
@@ -862,7 +857,7 @@ export function initZone(): ZoneType {
     public getZoneWith(key: string): AmbientZone | null {
       let current: ZoneImpl | null = this;
       while (current) {
-        if (current._properties.hasOwnProperty(key)) {
+        if (Object.hasOwn(current._properties, key)) {
           return current;
         }
         current = current._parent;
