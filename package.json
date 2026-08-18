@@ -165,5 +165,10 @@
   },
   "resolutions": {
     "typescript": "6.0.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "form-data": "4.0.6"
+    }
   }
 }
