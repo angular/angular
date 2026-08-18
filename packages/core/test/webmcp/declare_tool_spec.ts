@@ -10,7 +10,7 @@ import {initializeWebMCPPolyfill, cleanupWebMCPPolyfill} from '@mcp-b/webmcp-pol
 import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
 import {inject, Injectable, Injector, runInInjectionContext} from '../../src/di';
 import {declareExperimentalWebMcpTool} from '../../src/webmcp/declare_tool';
-import {Execute} from '../../src/webmcp/types';
+import {Execute, ModelContext, ToolDescriptor} from '../../src/webmcp/types';
 import {RuntimeErrorCode} from '../../src/errors';
 
 // Whether or not the input type is `any`.
@@ -165,6 +165,38 @@ describe('declareExperimentalWebMcpTool', () => {
     expect(signal.aborted).toBeFalse();
 
     injector.destroy();
+    expect(signal.aborted).toBeTrue();
+  });
+
+  it('should pass an `AbortSignal` to the tool and abort it when the client signal aborts', async () => {
+    const injector = Injector.create({providers: []});
+    const execute = jasmine
+      .createSpy<Execute<JsonSchemaForInference>>('execute')
+      .and.returnValue({content: []});
+
+    const modelContext = (globalThis.document as any).modelContext;
+    const registerToolSpy = spyOn(modelContext, 'registerTool').and.callThrough();
+
+    await declareExperimentalWebMcpTool(
+      {
+        name: 'testTool',
+        description: 'A test tool',
+        inputSchema: {type: 'object', properties: {}},
+        execute,
+      },
+      injector,
+    );
+
+    const wrappedTool = registerToolSpy.calls.first()
+      .args[0] as ToolDescriptor<JsonSchemaForInference>;
+
+    const clientAbortCtrl = new AbortController();
+    await wrappedTool.execute({}, {signal: clientAbortCtrl.signal});
+
+    const [, {signal}] = execute.calls.first().args;
+    expect(signal.aborted).toBeFalse();
+
+    clientAbortCtrl.abort();
     expect(signal.aborted).toBeTrue();
   });
 
