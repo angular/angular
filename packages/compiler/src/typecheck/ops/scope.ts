@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CssSelector} from '../../directive_matching';
+import {isNgTemplate} from '../../ml_parser/tags';
 import {
   BoundAttribute,
   BoundEvent,
@@ -32,7 +34,6 @@ import {
   Variable,
   ViewportDeferredTrigger,
 } from '../../render3/r3_ast';
-import {isNgTemplate} from '../../ml_parser/tags';
 import {DirectiveOwner} from '../../render3/view/t2_api';
 import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
@@ -621,15 +622,23 @@ export class Scope {
     this.directiveOpMap.set(node, dirMap);
 
     // After expanding the directives, we might need to queue an operation to check any unclaimed
-    // inputs. Note that `ng-template` nodes that matched at least one directive are deliberately
-    // not checked: a binding may be used solely to trigger directive matching via its selector
-    // (e.g. `<ng-template [foo]>` where `[foo]` matches a directive without a `foo` input),
-    // which is valid at runtime since `ng-template` has no underlying DOM element.
-    if (node instanceof Element) {
+    // inputs.
+    if (
+      node instanceof Element ||
+      (isExplicitNgTemplate(node) && this.tcb.env.config.checkTypeOfNgTemplateBindings)
+    ) {
       // Go through the directives and remove any inputs that it claims from `elementInputs`.
       for (const dir of directives) {
         for (const propertyName of dir.inputs.propertyNames) {
           claimedInputs.add(propertyName);
+        }
+        if (isExplicitNgTemplate(node) && dir.selector !== null) {
+          const selectors = CssSelector.parse(dir.selector);
+          for (const selector of selectors) {
+            for (let i = 0; i < selector.attrs.length; i += 2) {
+              claimedInputs.add(selector.attrs[i]);
+            }
+          }
         }
       }
 
@@ -638,7 +647,7 @@ export class Scope {
       // web component), and should be checked against the DOM schema. If any directives match,
       // we must assume that the element could be custom (either a component, or a directive like
       // <router-outlet>) and shouldn't validate the element name itself.
-      const checkElement = directives.length === 0;
+      const checkElement = node instanceof Element && directives.length === 0;
       this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
     }
   }

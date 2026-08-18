@@ -4292,7 +4292,7 @@ runInEachFileSystem(() => {
           expect(diags.length).toBe(0);
         });
 
-        it('should not report unclaimed properties on an ng-template that matches a directive', () => {
+        it('should report unclaimed properties on an ng-template that matches a directive', () => {
           env.write(
             'test.ts',
             `
@@ -4310,7 +4310,11 @@ runInEachFileSystem(() => {
       `,
           );
           const diags = env.driveDiagnostics();
-          expect(diags.length).toBe(0);
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText)
+            .toBe(`Can't bind to 'bar' since it isn't a known property of 'ng-template'.
+1. If 'bar' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
+2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
         });
 
         it('should not report properties on an ng-template inside an explicitly namespaced element', () => {
