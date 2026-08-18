@@ -578,7 +578,7 @@ If you'd rather keep your existing deploy path unchanged, you can flatten the ou
 "outputPath": {
   "base": "dist/<project-name>"
 }
-\`\`\` 
+\`\`\`
 ```
 
 ## Bug reports
