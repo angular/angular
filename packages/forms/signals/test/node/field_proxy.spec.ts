@@ -141,4 +141,19 @@ describe('FieldTree proxy', () => {
       }
     }).toThrow();
   });
+
+  it('should return true for Symbol.iterator in the `has` handler for object field', () => {
+    const f = form(signal({x: 1, y: 2}), {injector: TestBed.inject(Injector)});
+    expect(Symbol.iterator in f).toBe(true);
+  });
+
+  it('should return true for Symbol.iterator in the `has` handler for array field', () => {
+    const f = form(signal([1, 2]), {injector: TestBed.inject(Injector)});
+    expect(Symbol.iterator in f).toBe(true);
+  });
+
+  it('should return false for Symbol.iterator in the `has` handler for primitive field', () => {
+    const f = form(signal(1), {injector: TestBed.inject(Injector)});
+    expect(Symbol.iterator in f).toBe(false);
+  });
 });
