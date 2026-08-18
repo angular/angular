@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, ɵRuntimeError as RuntimeError, Service, Signal} from '@angular/core';
+import {
+  computed,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵRuntimeError as RuntimeError,
+  Service,
+  Signal,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 import type {Router} from './router';
@@ -454,6 +460,17 @@ export class DefaultUrlSerializer implements UrlSerializer {
   /** Converts a `UrlTree` into a url */
   serialize(tree: UrlTree): string {
     const segment = `/${serializeSegment(tree.root, true)}`;
+    if (segment.startsWith('//')) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.PROTOCOL_RELATIVE_URL_NOT_ALLOWED,
+            `Cannot serialize a UrlTree that would produce a protocol-relative URL. Falling back to '/' instead.`,
+          ),
+        );
+      }
+      return '/';
+    }
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
       typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment)}` : '';

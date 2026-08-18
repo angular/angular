@@ -22,6 +22,15 @@ import {timeout} from '@angular/private/testing';
 
 describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
+  const protocolRelativeUrlWarning = `NG04019: Cannot serialize a UrlTree that would produce a protocol-relative URL. Falling back to '/' instead.`;
+
+  function expectProtocolRelativeUrlFallback(tree: UrlTree): void {
+    const warn = spyOn(console, 'warn');
+
+    expect(serializer.serialize(tree)).toEqual('/');
+    expect(warn).toHaveBeenCalledOnceWith(protocolRelativeUrlWarning);
+  }
+
   let router: Router;
   beforeEach(() => {
     router = TestBed.inject(Router);
@@ -132,6 +141,62 @@ describe('createUrlTree', () => {
     const p = serializer.parse('/');
     const t = await createRoot(p, [{segmentPath: '/one'}, 'two/three']);
     expect(serializer.serialize(t)).toEqual('/%2Fone/two%2Fthree');
+  });
+
+  describe('leading empty path commands', () => {
+    it('should fall back for absolute navigations that would serialize as protocol-relative', () => {
+      const t = router.createUrlTree(['/', '', '', 'attacker.example', 'collect']);
+
+      expectProtocolRelativeUrlFallback(t);
+    });
+
+    it('should fall back for an unsafe primary outlet string', async () => {
+      await router.navigateByUrl('/safe');
+      const t = router.createUrlTree([{outlets: {primary: '/attacker.example/collect'}}]);
+
+      expectProtocolRelativeUrlFallback(t);
+    });
+
+    it('should fall back for an unsafe primary outlet array', () => {
+      const t = router.createUrlTree([{outlets: {primary: ['', 'attacker.example', 'collect']}}]);
+
+      expectProtocolRelativeUrlFallback(t);
+    });
+
+    it('should fall back for unsafe parent-relative commands', async () => {
+      router.resetConfig([{path: 'source', component: class {}}]);
+      await router.navigateByUrl('/source');
+      const t = create(router.routerState.root.firstChild!, [
+        '../',
+        '',
+        'attacker.example',
+        'collect',
+      ]);
+
+      expectProtocolRelativeUrlFallback(t);
+    });
+
+    it('should fall back for an escaped slash after an empty path command', () => {
+      const t = router.createUrlTree(['/', '', {segmentPath: '/'}]);
+
+      expectProtocolRelativeUrlFallback(t);
+    });
+
+    it('should fall back for final empty path commands', () => {
+      const t = router.createUrlTree(['/', '', '']);
+
+      expectProtocolRelativeUrlFallback(t);
+    });
+
+    it('should not normalize a leading empty path command in a secondary outlet', () => {
+      const t = router.createUrlTree(['/', {outlets: {right: ['', 'child']}}]);
+
+      expect(t.root.children['right'].segments.map((segment) => segment.path)).toEqual([
+        '',
+        'child',
+      ]);
+      expect(serializer.serialize(t)).toEqual('/(right:/child)');
+    });
   });
 
   describe('named outlets', () => {
