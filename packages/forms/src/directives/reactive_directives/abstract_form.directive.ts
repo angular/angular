@@ -18,6 +18,7 @@ import {
   computed,
   signal,
   untracked,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
 import {FormGroup} from '../../model/form_group';
@@ -26,7 +27,8 @@ import {AbstractControl, FormSubmittedEvent} from '../../model/abstract_model';
 import {FormControl, isFormControl} from '../../model/form_control';
 import {ControlContainer} from '../control_container';
 import type {Form} from '../form_interface';
-import {missingFormException} from '../reactive_errors';
+import {RuntimeErrorCode} from '../../errors';
+import {formControlNameExample} from '../error_examples';
 import {
   CALL_SET_DISABLED_STATE,
   cleanUpControl,
@@ -129,7 +131,17 @@ export abstract class AbstractFormDirective
 
   /** @nodoc */
   protected onChanges(changes: SimpleChanges): void {
-    this._checkFormPresent();
+    if (!this.form) {
+      throw new RuntimeError(
+        RuntimeErrorCode.FORM_GROUP_MISSING_INSTANCE,
+        ngDevMode &&
+          `formGroup expects a FormGroup instance. Please pass one in.
+
+      Example:
+
+      ${formControlNameExample}`,
+      );
+    }
     if (Object.hasOwn(changes, 'form')) {
       this._updateValidators();
       this._updateDomValue();
@@ -375,12 +387,6 @@ export abstract class AbstractFormDirective
     setUpValidators(this.form, this);
     if (this._oldForm) {
       cleanUpValidators(this._oldForm, this);
-    }
-  }
-
-  private _checkFormPresent() {
-    if (!this.form && (typeof ngDevMode === 'undefined' || ngDevMode)) {
-      throw missingFormException();
     }
   }
 }
