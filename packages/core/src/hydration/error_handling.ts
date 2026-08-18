@@ -10,8 +10,14 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {getDeclarationComponentDef} from '../render3/instructions/element_validation';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RNode} from '../render3/interfaces/renderer_dom';
-import {HOST, LView, TVIEW} from '../render3/interfaces/view';
-import {getParentRElement} from '../render3/node_manipulation';
+import {
+  DECLARATION_COMPONENT_VIEW,
+  DECLARATION_VIEW,
+  HOST,
+  LView,
+  T_HOST,
+} from '../render3/interfaces/view';
+import {getComponent} from '../render3/util/discovery_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
 
 import {readPatchedData} from '../render3/context_discovery';
@@ -76,17 +82,19 @@ export function validateMatchingNode(
     const hostComponentDef = getDeclarationComponentDef(lView);
     const componentClassName = hostComponentDef?.type?.name;
 
+    const componentHostElement = getDeclarationComponentHostElement(lView);
     const expectedDom = describeExpectedDom(lView, tNode, isViewContainerAnchor);
     const expected = `Angular expected this DOM:\n\n${expectedDom}\n\n`;
 
     let actual = '';
-    const componentHostElement = unwrapRNode(lView[HOST]!);
     if (!node) {
       // No node found during hydration.
       header += `the node was not found.\n\n`;
 
       // Since the node is missing, we use the closest node to attach the error to
-      markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom);
+      if (componentHostElement !== null) {
+        markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom);
+      }
     } else {
       const actualNode = shortRNodeDescription(
         (node as Node).nodeType,
@@ -95,12 +103,16 @@ export function validateMatchingNode(
       );
 
       header += `found ${actualNode}.\n\n`;
-      const actualDom = describeDomFromNode(node);
+      const actualComponentHostElement = getClosestComponentHostElement(node);
+      const actualDom = describeDomFromNode(node, actualComponentHostElement);
       actual = `Actual DOM is:\n\n${actualDom}\n\n`;
 
       // DevTools only report hydration issues on the component level, so we attach extra debug
       // info to a component host element to make it available to DevTools.
-      markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom, actualDom);
+      const mismatchHostElement = actualComponentHostElement ?? componentHostElement;
+      if (mismatchHostElement !== null) {
+        markRNodeAsHavingHydrationMismatch(mismatchHostElement, expectedDom, actualDom);
+      }
     }
 
     const footer = getHydrationErrorFooter(componentClassName);
@@ -244,7 +256,7 @@ export function invalidSkipHydrationHost(rNode: RNode): Error {
 function stringifyTNodeAttrs(tNode: TNode): string {
   const results = [];
   if (tNode.attrs) {
-    for (let i = 0; i < tNode.attrs.length; ) {
+    for (let i = 0; i < tNode.attrs.length;) {
       const attrName = tNode.attrs[i++];
       // Once we reach the first flag, we know that the list of
       // attributes is over.
@@ -254,6 +266,12 @@ function stringifyTNodeAttrs(tNode: TNode): string {
       const attrValue = tNode.attrs[i++];
       results.push(`${attrName}="${shorten(attrValue as string)}"`);
     }
+  }
+  if (tNode.classesWithoutHost !== null) {
+    results.push(`class="${shorten(tNode.classesWithoutHost)}"`);
+  }
+  if (tNode.stylesWithoutHost !== null) {
+    results.push(`style="${shorten(tNode.stylesWithoutHost)}"`);
   }
   return results.join(' ');
 }
@@ -342,27 +360,43 @@ function describeRNode(rNode: RNode, innerContent: string = '…'): string {
  * @returns string
  */
 function describeExpectedDom(lView: LView, tNode: TNode, isViewContainerAnchor: boolean): string {
-  const spacer = '  ';
-  let content = '';
+  const lines: string[] = [];
   if (tNode.prev) {
-    content += spacer + '…\n';
-    content += spacer + describeTNode(tNode.prev) + '\n';
+    lines.push('…', describeTNode(tNode.prev));
   } else if (tNode.type && tNode.type & TNodeType.AnyContainer) {
-    content += spacer + '…\n';
+    lines.push('…');
   }
   if (isViewContainerAnchor) {
-    content += spacer + describeTNode(tNode) + '\n';
-    content += spacer + `<!-- container -->  ${AT_THIS_LOCATION}\n`;
+    lines.push(describeTNode(tNode), `<!-- container -->  ${AT_THIS_LOCATION}`);
   } else {
-    content += spacer + describeTNode(tNode) + `  ${AT_THIS_LOCATION}\n`;
+    lines.push(describeTNode(tNode) + `  ${AT_THIS_LOCATION}`);
   }
-  content += spacer + '…\n';
+  lines.push('…');
 
-  const parentRNode = tNode.type ? getParentRElement(lView[TVIEW], tNode, lView) : null;
-  if (parentRNode) {
-    content = describeRNode(parentRNode as unknown as Node, '\n' + content);
+  let content = lines.join('\n');
+  const declarationComponentLView = lView[DECLARATION_COMPONENT_VIEW];
+  let currentLView: LView | null = lView;
+  let parentTNode = tNode.parent;
+
+  while (currentLView !== null) {
+    for (let parent = parentTNode; parent !== null; parent = parent.parent) {
+      if (parent.type === TNodeType.Element) {
+        content = describeTNode(parent, `\n${indent(content)}\n`);
+      }
+    }
+
+    if (currentLView === declarationComponentLView) {
+      break;
+    }
+
+    parentTNode = currentLView[T_HOST]?.parent ?? null;
+    currentLView = currentLView[DECLARATION_VIEW];
   }
-  return content;
+
+  const componentHostElement = getDeclarationComponentHostElement(lView);
+  return componentHostElement === null
+    ? content
+    : describeRNode(componentHostElement, `\n${indent(content)}\n`);
 }
 
 /**
@@ -370,24 +404,53 @@ function describeExpectedDom(lView: LView, tNode: TNode, isViewContainerAnchor: 
  * readable error message
  *
  * @param node the RNode
+ * @param ancestorBoundary the last ancestor to include in the description
  * @returns string
  */
-function describeDomFromNode(node: RNode): string {
-  const spacer = '  ';
-  let content = '';
+function describeDomFromNode(node: RNode, ancestorBoundary: RNode | null = null): string {
+  const lines: string[] = [];
   const currentNode = node as HTMLElement;
   if (currentNode.previousSibling) {
-    content += spacer + '…\n';
-    content += spacer + describeRNode(currentNode.previousSibling) + '\n';
+    lines.push('…', describeRNode(currentNode.previousSibling));
   }
-  content += spacer + describeRNode(currentNode) + `  ${AT_THIS_LOCATION}\n`;
+  lines.push(describeRNode(currentNode) + `  ${AT_THIS_LOCATION}`);
   if (node.nextSibling) {
-    content += spacer + '…\n';
+    lines.push('…');
   }
-  if (node.parentNode) {
-    content = describeRNode(currentNode.parentNode as Node, '\n' + content);
+
+  let content = lines.join('\n');
+  let parent = currentNode.parentNode;
+  while (parent?.nodeType === Node.ELEMENT_NODE) {
+    content = describeRNode(parent, `\n${indent(content)}\n`);
+    if (ancestorBoundary === null || parent === ancestorBoundary) {
+      break;
+    }
+    parent = parent.parentNode;
   }
   return content;
+}
+
+function indent(value: string): string {
+  return value.replace(/^/gm, '  ');
+}
+
+function getDeclarationComponentHostElement(lView: LView): RNode | null {
+  const hostElement = lView[DECLARATION_COMPONENT_VIEW][HOST];
+  return hostElement === null ? null : unwrapRNode(hostElement);
+}
+
+function getClosestComponentHostElement(node: RNode): RNode | null {
+  let currentNode: Node | null = node as Node;
+  while (currentNode !== null) {
+    if (
+      currentNode.nodeType === Node.ELEMENT_NODE &&
+      getComponent(currentNode as Element) !== null
+    ) {
+      return currentNode;
+    }
+    currentNode = currentNode.parentNode;
+  }
+  return null;
 }
 
 /**

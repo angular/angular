@@ -6252,6 +6252,114 @@ describe('platform-server full application hydration integration', () => {
         });
       });
 
+      it('should show the full DOM ancestry for an element node mismatch', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <main id="content">
+              <section aria-label="Profile">
+                <div class="name"><b>Alice</b></div>
+              </section>
+            </main>
+          `,
+        })
+        class NestedElementMismatchComponent {
+          private doc = inject(DOCUMENT);
+
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('b');
+            const span = this.doc.createElement('span');
+            span.textContent = 'Alice';
+            b?.parentNode?.replaceChild(span, b);
+          }
+        }
+
+        const html = await ssr(NestedElementMismatchComponent);
+
+        resetTViewsFor(NestedElementMismatchComponent);
+
+        const result = await prepareEnvironmentAndHydrate(
+          doc,
+          html,
+          NestedElementMismatchComponent,
+          {
+            envProviders: [withNoopErrorHandler()],
+          },
+        ).catch((err: unknown) => err);
+
+        expect(result).toBeInstanceOf(Error);
+        if (!(result instanceof Error)) return;
+
+        expect(result.message).toContain(
+          'Angular expected this DOM:\n\n' +
+            '<app>\n' +
+            '  <main id="content">\n' +
+            '    <section aria-label="Profile">\n' +
+            '      <div class="name">\n' +
+            '        <b>…</b>  <-- AT THIS LOCATION',
+        );
+        expect(result.message).toContain(
+          'Actual DOM is:\n\n' +
+            '<app>\n' +
+            '  <main id="content">\n' +
+            '    <section aria-label="Profile">\n' +
+            '      <div class="name">\n' +
+            '        <span>…</span>  <-- AT THIS LOCATION',
+        );
+        verifyNodeHasMismatchInfo(doc);
+      });
+
+      it('should show the full DOM ancestry after browser HTML normalization', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <main>
+              <table>
+                <tr>
+                  <td>Cell</td>
+                </tr>
+              </table>
+            </main>
+          `,
+        })
+        class BrowserNormalizedTableComponent {}
+
+        const html = await ssr(BrowserNormalizedTableComponent);
+        const normalizedHtml = html
+          .replace('<tr>', '<tbody><tr>')
+          .replace('</tr>', '</tr></tbody>');
+
+        resetTViewsFor(BrowserNormalizedTableComponent);
+
+        const result = await prepareEnvironmentAndHydrate(
+          doc,
+          normalizedHtml,
+          BrowserNormalizedTableComponent,
+          {
+            envProviders: [withNoopErrorHandler()],
+          },
+        ).catch((err: unknown) => err);
+
+        expect(result).toBeInstanceOf(Error);
+        if (!(result instanceof Error)) return;
+
+        expect(result.message).toContain(
+          'Angular expected this DOM:\n\n' +
+            '<app>\n' +
+            '  <main>\n' +
+            '    <table>\n' +
+            '      <tr>…</tr>  <-- AT THIS LOCATION',
+        );
+        expect(result.message).toContain(
+          'Actual DOM is:\n\n' +
+            '<app>\n' +
+            '  <main>\n' +
+            '    <table>\n' +
+            '      <tbody>…</tbody>  <-- AT THIS LOCATION',
+        );
+        verifyNodeHasMismatchInfo(doc);
+      });
+
       it(
         'should throw a coded RuntimeError, not a raw TypeError, when an element ' +
           'instruction locates a Text node in production mode (ngDevMode off)',
