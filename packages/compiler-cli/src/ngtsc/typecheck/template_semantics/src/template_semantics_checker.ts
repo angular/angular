@@ -9,17 +9,20 @@
 import {
   AST,
   ASTWithSource,
+  Binary,
+  BindingType,
+  CssSelector,
   ImplicitReceiver,
   ParsedEventType,
   PropertyRead,
-  Binary,
   RecursiveAstVisitor,
+  ThisReceiver,
   TmplAstBoundEvent,
+  TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstRecursiveVisitor,
   TmplAstVariable,
-  ThisReceiver,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -27,6 +30,41 @@ import {ErrorCode, ngErrorCode} from '../../../diagnostics';
 import {TemplateDiagnostic, TemplateTypeChecker} from '../../api';
 import {isSignalReference} from '../../src/symbol_util';
 import {TemplateSemanticsChecker} from '../api/api';
+
+const NG_SKIP_HYDRATION_ATTR = 'ngSkipHydration';
+
+function selectorMatchesAttribute(
+  selectorStr: string | null,
+  attrName: string,
+  attrValue?: string,
+): boolean {
+  if (!selectorStr) {
+    return false;
+  }
+  try {
+    const selectors = CssSelector.parse(selectorStr);
+    for (const sel of selectors) {
+      if (attrName === 'class' && sel.classNames.length > 0) {
+        if (attrValue) {
+          const classes = attrValue.split(/\s+/);
+          if (sel.classNames.some((c) => classes.includes(c))) {
+            return true;
+          }
+        } else {
+          return true;
+        }
+      }
+      for (let i = 0; i < sel.attrs.length; i += 2) {
+        if (sel.attrs[i] === attrName) {
+          return true;
+        }
+      }
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
 
 export class TemplateSemanticsCheckerImpl implements TemplateSemanticsChecker {
   constructor(private templateTypeChecker: TemplateTypeChecker) {}
@@ -41,10 +79,6 @@ export class TemplateSemanticsCheckerImpl implements TemplateSemanticsChecker {
 
 /** Visitor that verifies the semantics of a template. */
 class TemplateSemanticsVisitor extends TmplAstRecursiveVisitor {
-  private constructor(private expressionVisitor: ExpressionsSemanticsVisitor) {
-    super();
-  }
-
   static visit(
     nodes: TmplAstNode[],
     component: ts.ClassDeclaration,
@@ -56,9 +90,85 @@ class TemplateSemanticsVisitor extends TmplAstRecursiveVisitor {
       component,
       diagnostics,
     );
-    const templateVisitor = new TemplateSemanticsVisitor(expressionVisitor);
+    const templateVisitor = new TemplateSemanticsVisitor(
+      expressionVisitor,
+      templateTypeChecker,
+      component,
+      diagnostics,
+    );
     nodes.forEach((node) => node.visit(templateVisitor));
     return diagnostics;
+  }
+
+  private constructor(
+    private expressionVisitor: ExpressionsSemanticsVisitor,
+    private templateTypeChecker: TemplateTypeChecker,
+    private component: ts.ClassDeclaration,
+    private diagnostics: TemplateDiagnostic[],
+  ) {
+    super();
+  }
+
+  override visitElement(element: TmplAstElement) {
+    super.visitElement(element);
+
+    const directives = this.templateTypeChecker.getDirectivesOfNode(this.component, element);
+    const hostlessComponent = directives?.find((dir) => dir.isComponent && dir.isHostless);
+
+    if (hostlessComponent !== undefined) {
+      for (const input of element.inputs) {
+        const isInputClaimed = directives?.some((dir) =>
+          dir.inputs.hasBindingPropertyName(input.name),
+        );
+        if (
+          input.type === BindingType.Attribute ||
+          input.type === BindingType.Class ||
+          input.type === BindingType.Style ||
+          input.type === BindingType.Animation
+        ) {
+          if (!isInputClaimed) {
+            this.reportHostlessBindingError(input);
+          }
+        } else if (input.type === BindingType.Property) {
+          if (!isInputClaimed) {
+            this.reportHostlessBindingError(input);
+          }
+        }
+      }
+      for (const output of element.outputs) {
+        const isOutputClaimed = directives?.some((dir) =>
+          dir.outputs.hasBindingPropertyName(output.name),
+        );
+        if (!isOutputClaimed) {
+          this.reportHostlessBindingError(output);
+        }
+      }
+      for (const attribute of element.attributes) {
+        if (attribute.name === NG_SKIP_HYDRATION_ATTR) continue;
+        const isClaimed = directives?.some((dir) => {
+          if (dir.inputs.hasBindingPropertyName(attribute.name)) return true;
+          if (selectorMatchesAttribute(dir.selector, attribute.name, attribute.value)) {
+            return true;
+          }
+          return false;
+        });
+        if (!isClaimed) {
+          this.reportHostlessBindingError(attribute);
+        }
+      }
+    }
+  }
+
+  private reportHostlessBindingError(node: TmplAstNode) {
+    this.diagnostics.push(
+      this.templateTypeChecker.makeTemplateDiagnostic(
+        this.component,
+        node.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.HOSTLESS_COMPONENT_UNSUPPORTED_BINDING),
+        'Hostless components cannot have DOM bindings.',
+      ),
+    );
   }
 
   override visitBoundEvent(event: TmplAstBoundEvent): void {

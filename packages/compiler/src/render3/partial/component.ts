@@ -129,6 +129,10 @@ function createComponentDefinitionMap(
     definitionMap.set('preserveWhitespaces', o.literal(true));
   }
 
+  if (meta.isHostless === true) {
+    definitionMap.set('isHostless', o.literal(true));
+  }
+
   if (meta.defer.mode === DeferBlockDepsEmitMode.PerBlock) {
     const resolvers: o.Expression[] = [];
     let hasResolvers = false;

@@ -39,7 +39,9 @@ import {
   EnvironmentInjector,
   ErrorHandler,
   inject,
+  Injectable,
   Input,
+  input,
   NgZone,
   PendingTasks,
   Pipe,
@@ -87,6 +89,7 @@ import {
   verifyHasNoLog,
   verifyNodeHasMismatchInfo,
   verifyNodeHasSkipHydrationMarker,
+  verifyNodeWasHydrated,
   verifyNoNodesWereClaimedForHydration,
   withDebugConsole,
   withNoopErrorHandler,
@@ -146,6 +149,723 @@ describe('platform-server full application hydration integration', () => {
 
         expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
         expect(ssrContents).toContain(`<nested ${NGH_ATTR_NAME}`);
+      });
+
+      it('should add hydration annotations to hostless components during ssr', async () => {
+        @Component({
+          selector: 'hostless',
+          hostless: true,
+          template: 'This is a hostless component.',
+        })
+        class HostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [HostlessComponent],
+          template: ` <hostless /> `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`This is a hostless component.`);
+        expect(ssrContents).toMatch(/<!--ng-container ngh=\d+-->/);
+
+        resetTViewsFor(SimpleComponent, HostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/, ''), clientRootNode);
+      });
+
+      it('should support nested hostless components during hydration', async () => {
+        @Component({
+          selector: 'inner-hostless',
+          hostless: true,
+          template: '<span>Inner content</span>',
+        })
+        class InnerHostlessComponent {}
+
+        @Component({
+          selector: 'outer-hostless',
+          hostless: true,
+          imports: [InnerHostlessComponent],
+          template: `
+            <span>Outer before</span>
+            <inner-hostless />
+            <span>Outer after</span>
+          `,
+        })
+        class OuterHostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [OuterHostlessComponent],
+          template: `
+            <div>App header</div>
+            <outer-hostless />
+            <div>App footer</div>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Outer before');
+        expect(ssrContents).toContain('Inner content');
+        expect(ssrContents).toContain('Outer after');
+
+        resetTViewsFor(SimpleComponent, OuterHostlessComponent, InnerHostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should support multiple sibling hostless components during hydration', async () => {
+        @Component({
+          selector: 'hostless-a',
+          hostless: true,
+          template: '<span>Hostless A</span>',
+        })
+        class HostlessAComponent {}
+
+        @Component({
+          selector: 'hostless-b',
+          hostless: true,
+          template: '<span>Hostless B</span>',
+        })
+        class HostlessBComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [HostlessAComponent, HostlessBComponent],
+          template: `
+            <header>Header</header>
+            <hostless-a />
+            <hostless-b />
+            <footer>Footer</footer>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Hostless A');
+        expect(ssrContents).toContain('Hostless B');
+
+        resetTViewsFor(SimpleComponent, HostlessAComponent, HostlessBComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should support empty hostless components during hydration', async () => {
+        @Component({
+          selector: 'empty-hostless',
+          hostless: true,
+          template: '',
+        })
+        class EmptyHostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [EmptyHostlessComponent],
+          template: `
+            <div>Before</div>
+            <empty-hostless />
+            <div>After</div>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        resetTViewsFor(SimpleComponent, EmptyHostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should skip hydration when ngSkipHydration is set on hostless component in template', async () => {
+        @Component({
+          selector: 'hostless',
+          hostless: true,
+          template: '<p>Skipped hostless content</p>',
+        })
+        class HostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [HostlessComponent],
+          template: `
+            <header>Header</header>
+            <hostless ngSkipHydration />
+            <footer>Footer</footer>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Skipped hostless content');
+        expect(ssrContents).not.toMatch(/<!--ng-container ngh=\d+--><p>Skipped hostless content/);
+
+        resetTViewsFor(SimpleComponent, HostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        expect(ngDevMode!.componentsSkippedHydration).toBe(1);
+
+        const clientRootNode = compRef.location.nativeElement as HTMLElement;
+        const header = clientRootNode.querySelector('header')!;
+        const footer = clientRootNode.querySelector('footer')!;
+        verifyNodeWasHydrated(header);
+        verifyNodeWasHydrated(footer);
+
+        const commentNode = Array.from(clientRootNode.childNodes).find(
+          (n) => n.nodeType === Node.COMMENT_NODE,
+        ) as HTMLElement;
+        expect(commentNode).toBeDefined();
+        verifyNodeHasSkipHydrationMarker(commentNode);
+
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should skip hydration when ngSkipHydration="true" attribute is set on hostless component', async () => {
+        @Component({
+          selector: 'hostless',
+          hostless: true,
+          template: '<p>Attr skipped content</p>',
+        })
+        class HostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [HostlessComponent],
+          template: `
+            <header>Header</header>
+            <hostless ngSkipHydration="true" />
+            <footer>Footer</footer>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Attr skipped content');
+
+        resetTViewsFor(SimpleComponent, HostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        expect(ngDevMode!.componentsSkippedHydration).toBe(1);
+
+        const clientRootNode = compRef.location.nativeElement as HTMLElement;
+        const header = clientRootNode.querySelector('header')!;
+        const footer = clientRootNode.querySelector('footer')!;
+        verifyNodeWasHydrated(header);
+        verifyNodeWasHydrated(footer);
+
+        const commentNode = Array.from(clientRootNode.childNodes).find(
+          (n) => n.nodeType === Node.COMMENT_NODE,
+        ) as HTMLElement;
+        expect(commentNode).toBeDefined();
+        verifyNodeHasSkipHydrationMarker(commentNode);
+
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should skip hydration of entire subtree when ngSkipHydration is on outer hostless component', async () => {
+        @Component({
+          selector: 'inner-hostless',
+          hostless: true,
+          template: '<span>Inner content</span>',
+        })
+        class InnerHostlessComponent {}
+
+        @Component({
+          selector: 'outer-hostless',
+          hostless: true,
+          imports: [InnerHostlessComponent],
+          template: `
+            <div>Outer header</div>
+            <inner-hostless />
+            <div>Outer footer</div>
+          `,
+        })
+        class OuterHostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [OuterHostlessComponent],
+          template: `
+            <header>App top</header>
+            <outer-hostless ngSkipHydration />
+            <footer>App bottom</footer>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Outer header');
+        expect(ssrContents).toContain('Inner content');
+
+        resetTViewsFor(SimpleComponent, OuterHostlessComponent, InnerHostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        expect(ngDevMode!.componentsSkippedHydration).toBe(1);
+
+        const clientRootNode = compRef.location.nativeElement as HTMLElement;
+        const header = clientRootNode.querySelector('header')!;
+        const footer = clientRootNode.querySelector('footer')!;
+        verifyNodeWasHydrated(header);
+        verifyNodeWasHydrated(footer);
+
+        const commentNodes = Array.from(clientRootNode.childNodes).filter(
+          (n) => n.nodeType === Node.COMMENT_NODE,
+        ) as HTMLElement[];
+        expect(commentNodes.length).toBeGreaterThan(0);
+        const outerCommentNode = commentNodes[commentNodes.length - 1];
+        verifyNodeHasSkipHydrationMarker(outerCommentNode);
+
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should skip hydration of only inner component when ngSkipHydration is on inner hostless component', async () => {
+        @Component({
+          selector: 'inner-hostless',
+          hostless: true,
+          template: '<span>Inner skipped</span>',
+        })
+        class InnerHostlessComponent {}
+
+        @Component({
+          selector: 'outer-hostless',
+          hostless: true,
+          imports: [InnerHostlessComponent],
+          template: `
+            <div>Outer header</div>
+            <inner-hostless ngSkipHydration />
+            <div>Outer footer</div>
+          `,
+        })
+        class OuterHostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [OuterHostlessComponent],
+          template: `
+            <header>App top</header>
+            <outer-hostless />
+            <footer>App bottom</footer>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Outer header');
+        expect(ssrContents).toContain('Inner skipped');
+
+        resetTViewsFor(SimpleComponent, OuterHostlessComponent, InnerHostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        expect(ngDevMode!.componentsSkippedHydration).toBe(1);
+
+        const clientRootNode = compRef.location.nativeElement as HTMLElement;
+        const header = clientRootNode.querySelector('header')!;
+        const footer = clientRootNode.querySelector('footer')!;
+        verifyNodeWasHydrated(header);
+        verifyNodeWasHydrated(footer);
+
+        const outerDivs = clientRootNode.querySelectorAll('div');
+        expect(outerDivs.length).toBe(2);
+        verifyNodeWasHydrated(outerDivs[0]);
+        verifyNodeWasHydrated(outerDivs[1]);
+
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should hydrate hostless component containing @if and @for blocks', async () => {
+        @Component({
+          selector: 'control-flow-hostless',
+          hostless: true,
+          template: `
+            @if (show()) {
+              <div>Conditional text</div>
+            }
+            @for (item of items(); track item) {
+              <span>{{ item }}</span>
+            }
+          `,
+        })
+        class ControlFlowHostlessComponent {
+          show = signal(true);
+          items = signal(['A', 'B', 'C']);
+        }
+
+        @Component({
+          selector: 'app',
+          imports: [ControlFlowHostlessComponent],
+          template: `
+            <main>
+              <control-flow-hostless />
+            </main>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Conditional text');
+        expect(ssrContents).toContain('<span>A</span><span>B</span><span>C</span>');
+
+        resetTViewsFor(SimpleComponent, ControlFlowHostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should hydrate hostless component rendered inside an @if block', async () => {
+        @Component({
+          selector: 'hostless-child',
+          hostless: true,
+          template: '<span>Hostless inside if block</span>',
+        })
+        class HostlessChildComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [HostlessChildComponent],
+          template: `
+            @if (show()) {
+              <div>Before</div>
+              <hostless-child />
+              <div>After</div>
+            }
+          `,
+        })
+        class SimpleComponent {
+          show = signal(true);
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Hostless inside if block');
+
+        resetTViewsFor(SimpleComponent, HostlessChildComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should hydrate hostless component containing <ng-content>', async () => {
+        @Component({
+          selector: 'projecting-hostless',
+          hostless: true,
+          template: `
+            <div>Before projection</div>
+            <ng-content />
+            <div>After projection</div>
+          `,
+        })
+        class ProjectingHostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [ProjectingHostlessComponent],
+          template: `
+            <projecting-hostless>
+              <p>Projected content</p>
+            </projecting-hostless>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Before projection');
+        expect(ssrContents).toContain('Projected content');
+        expect(ssrContents).toContain('After projection');
+
+        resetTViewsFor(SimpleComponent, ProjectingHostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should hydrate hostless components inside an @for loop correctly', async () => {
+        @Component({
+          selector: 'item-hostless',
+          hostless: true,
+          template: '<span class="item">Item {{ id }}</span>',
+        })
+        class ItemHostlessComponent {
+          @Input() id: number = 0;
+        }
+
+        @Component({
+          selector: 'app',
+          imports: [ItemHostlessComponent],
+          template: `
+            <div class="list">
+              @for (item of items(); track item) {
+                <item-hostless [id]="item" />
+              }
+            </div>
+          `,
+        })
+        class SimpleComponent {
+          items = signal([1, 2, 3]);
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Item 1');
+        expect(ssrContents).toContain('Item 2');
+        expect(ssrContents).toContain('Item 3');
+
+        resetTViewsFor(SimpleComponent, ItemHostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement as HTMLElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+
+        // Mutate list dynamically post-hydration
+        compRef.instance.items.set([3, 4]);
+        appRef.tick();
+
+        const updatedItems = clientRootNode.querySelectorAll('.item') as NodeListOf<HTMLElement>;
+        expect(updatedItems.length).toBe(2);
+        expect(updatedItems[0].textContent).toBe('Item 3');
+        expect(updatedItems[1].textContent).toBe('Item 4');
+      });
+
+      it('should hydrate hostless component with content projection fallback correctly', async () => {
+        @Component({
+          selector: 'fallback-hostless',
+          hostless: true,
+          template: `
+            <header>Fallback Header</header>
+            <ng-content><span>Default fallback text</span></ng-content>
+            <footer>Fallback Footer</footer>
+          `,
+        })
+        class FallbackHostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [FallbackHostlessComponent],
+          template: `
+            <main>
+              <fallback-hostless />
+            </main>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Fallback Header');
+        expect(ssrContents).toContain('<span>Default fallback text</span>');
+        expect(ssrContents).toContain('Fallback Footer');
+
+        resetTViewsFor(SimpleComponent, FallbackHostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement as HTMLElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should hydrate hostless component providing services via providers', async () => {
+        @Injectable()
+        class HydratedService {
+          msg = 'Service from Hostless Provider';
+        }
+
+        @Component({
+          selector: 'consumer-child',
+          template: '<span class="msg">{{ service.msg }}</span>',
+        })
+        class ConsumerChildComponent {
+          service = inject(HydratedService);
+        }
+
+        @Component({
+          selector: 'provider-hostless',
+          hostless: true,
+          providers: [HydratedService],
+          imports: [ConsumerChildComponent],
+          template: `
+            <div class="box">
+              <consumer-child />
+            </div>
+          `,
+        })
+        class ProviderHostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [ProviderHostlessComponent],
+          template: `
+            <main>
+              <provider-hostless />
+            </main>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Service from Hostless Provider');
+
+        resetTViewsFor(SimpleComponent, ProviderHostlessComponent, ConsumerChildComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement as HTMLElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should hydrate hostless component that receives unprojected content (no ng-content)', async () => {
+        @Component({
+          selector: 'hostless-no-project',
+          hostless: true,
+          template: '<span>Hostless text</span>',
+        })
+        class HostlessNoProjectComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [HostlessNoProjectComponent],
+          template: `
+            <div>Before</div>
+            <hostless-no-project>
+              <p>Unprojected content</p>
+            </hostless-no-project>
+            <div>After</div>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Hostless text');
+        expect(ssrContents).not.toContain('Unprojected content');
+
+        resetTViewsFor(SimpleComponent, HostlessNoProjectComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement as HTMLElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
+      });
+
+      it('should hydrate empty hostless component alongside siblings', async () => {
+        @Component({
+          selector: 'empty-hostless',
+          hostless: true,
+          template: '',
+        })
+        class EmptyHostlessComponent {}
+
+        @Component({
+          selector: 'app',
+          imports: [EmptyHostlessComponent],
+          template: `
+            <div>Before</div>
+            <empty-hostless />
+            <div>After</div>
+          `,
+        })
+        class SimpleComponent {}
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        resetTViewsFor(SimpleComponent, EmptyHostlessComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement as HTMLElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents.replace(/ ngh=\d+/g, ''), clientRootNode);
       });
 
       it('should skip local ref slots while producing hydration annotations', async () => {

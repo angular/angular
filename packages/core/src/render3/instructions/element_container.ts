@@ -5,24 +5,31 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
+import {
+  invalidSkipHydrationHost,
+  validateMatchingNode,
+  validateNodeExists,
+} from '../../hydration/error_handling';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
+import {hasSkipHydrationAttrOnTNode} from '../../hydration/skip_hydration';
 import {
   canHydrateNode,
   getNgContainerSize,
   markRNodeAsClaimedByHydration,
+  markRNodeAsSkippedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
 import {assertDefined, assertNumber} from '../../util/assert';
 import {assertTNodeCreationIndex} from '../assert';
-import {createCommentNode} from '../dom_node_manipulation';
+import {createCommentNode, nativeRemoveNode} from '../dom_node_manipulation';
 import {TElementContainerNode, TNode, TNodeType} from '../interfaces/node';
-import {RComment} from '../interfaces/renderer_dom';
-import {isDirectiveHost} from '../interfaces/type_checks';
+import {RComment, RNode} from '../interfaces/renderer_dom';
+import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TVIEW, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {executeContentQueries} from '../queries/query_execution';
 import {
+  enterSkipHydrationBlock,
   getBindingsEnabled,
   getCurrentTNode,
   getLView,
@@ -212,7 +219,7 @@ export function ɵɵdomElementContainer(
   return ɵɵdomElementContainer;
 }
 
-let _locateOrCreateElementContainerNode: typeof locateOrCreateElementContainerNode = (
+export let _locateOrCreateElementContainerNode: typeof locateOrCreateElementContainerNode = (
   tView: TView,
   lView: LView,
   tNode: TNode,
@@ -263,6 +270,26 @@ function locateOrCreateElementContainerNode(
   if (ngDevMode) {
     validateMatchingNode(comment, Node.COMMENT_NODE, null, lView, tNode);
     markRNodeAsClaimedByHydration(comment);
+  }
+
+  if (hydrationInfo && hasSkipHydrationAttrOnTNode(tNode)) {
+    if (isComponentHost(tNode)) {
+      enterSkipHydrationBlock(tNode);
+
+      // Since this isn't hydratable, we need to empty the container's contents
+      // so there's no duplicate content after render.
+      const renderer = lView[RENDERER];
+      let nodeToRemove: RNode | null = currentRNode;
+      while (nodeToRemove && nodeToRemove !== comment) {
+        const next: RNode | null = (nodeToRemove as Node).nextSibling as RNode | null;
+        nativeRemoveNode(renderer, nodeToRemove);
+        nodeToRemove = next;
+      }
+
+      ngDevMode && markRNodeAsSkippedByHydration(comment);
+    } else if (ngDevMode) {
+      throw invalidSkipHydrationHost(comment);
+    }
   }
 
   return comment;

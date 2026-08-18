@@ -248,6 +248,7 @@ export class PartialComponentLinkerVersion1<
         : hasOnPushByDefault
           ? ChangeDetectionStrategy.OnPush
           : ChangeDetectionStrategy.Eager,
+      isHostless: metaObj.has('isHostless') ? metaObj.getBoolean('isHostless') : false,
       animations: metaObj.has('animations') ? metaObj.getOpaque('animations') : null,
       relativeContextFilePath: this.sourceUrl,
       relativeTemplatePath: null,

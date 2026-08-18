@@ -8,27 +8,27 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {
+  ɵallLeavingAnimations as allLeavingAnimations,
   APP_ID,
   CSP_NONCE,
   Inject,
   Injectable,
   InjectionToken,
+  makeEnvironmentProviders,
   NgZone,
   OnDestroy,
+  Optional,
   Renderer2,
   RendererFactory2,
   RendererStyleFlags2,
   RendererType2,
-  ViewEncapsulation,
   ɵRuntimeError as RuntimeError,
-  type ListenerOptions,
+  ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
   ɵTracingService as TracingService,
   ɵTracingSnapshot as TracingSnapshot,
-  Optional,
-  ɵallLeavingAnimations as allLeavingAnimations,
-  ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
-  makeEnvironmentProviders,
+  ViewEncapsulation,
   type EnvironmentProviders,
+  type ListenerOptions,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -726,7 +726,9 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
 
   applyToHost(element: any): void {
     this.applyStyles();
-    this.setAttribute(element, this.hostAttr, '');
+    if (element?.nodeType === 1 /* Node.ELEMENT_NODE */) {
+      this.setAttribute(element, this.hostAttr, '');
+    }
   }
 
   override createElement(parent: any, name: string): Element {

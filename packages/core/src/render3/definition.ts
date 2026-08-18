@@ -215,6 +215,7 @@ interface DirectiveDefinition<T> {
 }
 
 interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'> {
+  hostless?: boolean;
   /**
    * The number of nodes, local refs, and pipes in this component template.
    *
@@ -367,6 +368,7 @@ export function ɵɵdefineComponent<T>(
       schemas: componentDefinition.schemas || null,
       tView: null,
       id: '',
+      hostless: componentDefinition.hostless === true,
     };
 
     // TODO: Do we still need/want this ?

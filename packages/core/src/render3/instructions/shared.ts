@@ -390,7 +390,7 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TDirectiveH
   // The component view needs to be created before creating the node injector
   // since it is used to inject some special symbols like `ChangeDetectorRef`.
   if (isComponentHost(tNode)) {
-    ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode);
+    ngDevMode && assertTNodeType(tNode, TNodeType.AnyRNode | TNodeType.ElementContainer);
     createComponentLView(
       lView,
       tNode as TElementNode,

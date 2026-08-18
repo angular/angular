@@ -51,9 +51,7 @@ export type ScopedNode =
 
 /** Possible values that a reference can be resolved to. */
 export type ReferenceTarget<DirectiveT> =
-  | {directive: DirectiveT; node: Exclude<DirectiveOwner, HostElement>}
-  | Element
-  | Template;
+  {directive: DirectiveT; node: Exclude<DirectiveOwner, HostElement>} | Element | Template;
 
 /** Entity that is local to the template and defined within the template. */
 export type TemplateEntity = Reference | Variable | LetDeclaration;
@@ -127,6 +125,11 @@ export interface DirectiveMeta {
    * Whether the directive is a component.
    */
   isComponent: boolean;
+
+  /**
+   * Whether the component is hostless.
+   */
+  isHostless: boolean;
 
   /**
    * Set of inputs which this directive claims.

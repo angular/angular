@@ -44,13 +44,13 @@ import {
 import {unwrapLView, unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
+import {setJSActionAttributes} from '../event_delegation_utils';
 import {
   unsupportedProjectionOfDomNodes,
   validateMatchingNode,
   validateNodeExists,
 } from './error_handling';
 import {collectDomEventsInfo} from './event_replay';
-import {setJSActionAttributes} from '../event_delegation_utils';
 import {
   getOrComputeI18nChildren,
   isI18nHydrationEnabled,
@@ -77,7 +77,11 @@ import {
   TEMPLATES,
 } from './interfaces';
 import {calcPathForNode, isDisconnectedNode} from './node_lookup_utils';
-import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
+import {
+  hasSkipHydrationAttrOnTNode,
+  isInSkipHydrationBlock,
+  SKIP_HYDRATION_ATTR_NAME,
+} from './skip_hydration';
 import {EVENT_REPLAY_ENABLED_DEFAULT, IS_EVENT_REPLAY_ENABLED} from './tokens';
 import {
   convertHydrateTriggersToJsAction,
@@ -688,12 +692,35 @@ function serializeLView(
       // Note: Let declarations that return an array are also storing an array in the LView,
       // we need to exclude them.
       const targetNode = unwrapRNode(lView[i][HOST]!);
-      if (!(targetNode as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME)) {
+
+      let skipHydration = hasSkipHydrationAttrOnTNode(tNode);
+      if (!skipHydration) {
+        if ((targetNode as Node).nodeType === Node.ELEMENT_NODE) {
+          skipHydration = (targetNode as HTMLElement).hasAttribute(SKIP_HYDRATION_ATTR_NAME);
+        } else if ((targetNode as Node).nodeType === Node.COMMENT_NODE) {
+          skipHydration =
+            (targetNode as Comment).textContent?.includes(SKIP_HYDRATION_ATTR_NAME) ?? false;
+        }
+      }
+
+      if (!skipHydration) {
         annotateHostElementForHydration(
           targetNode as RElement,
           lView[i],
           parentDeferBlockId,
           context,
+        );
+      }
+
+      // A hostless component also acts as an <ng-container> in its parent's DOM.
+      if (tNode.type & TNodeType.ElementContainer) {
+        ngh[ELEMENT_CONTAINERS] ??= {};
+        const componentLView = lView[i] as LView;
+        const componentTView = componentLView[TVIEW];
+        ngh[ELEMENT_CONTAINERS][noOffsetIndex] = calcNumRootNodes(
+          componentTView,
+          componentLView,
+          componentTView.firstChild,
         );
       }
     } else {
@@ -832,12 +859,24 @@ function annotateHostElementForHydration(
     // - or uses ShadowDom view encapsulation, since Domino doesn't support
     //   shadow DOM, so we can not guarantee that client and server representations
     //   would exactly match
-    renderer.setAttribute(element, SKIP_HYDRATION_ATTR_NAME, '');
+    if ((element as HTMLElement).nodeType === Node.COMMENT_NODE) {
+      ngDevMode
+        ? renderer.setValue(element, `ng-container ${SKIP_HYDRATION_ATTR_NAME}`)
+        : renderer.setValue(element, SKIP_HYDRATION_ATTR_NAME);
+    } else {
+      renderer.setAttribute(element, SKIP_HYDRATION_ATTR_NAME, '');
+    }
     return null;
   } else {
     const ngh = serializeLView(lView, parentDeferBlockId, context);
     const index = context.serializedViewCollection.add(ngh);
-    renderer.setAttribute(element, NGH_ATTR_NAME, index.toString());
+    if ((element as HTMLElement).nodeType === Node.COMMENT_NODE) {
+      ngDevMode
+        ? renderer.setValue(element, `ng-container ${NGH_ATTR_NAME}=${index}`)
+        : renderer.setValue(element, `${NGH_ATTR_NAME}=${index}`);
+    } else {
+      renderer.setAttribute(element, NGH_ATTR_NAME, index.toString());
+    }
     return index;
   }
 }

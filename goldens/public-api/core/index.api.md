@@ -275,6 +275,7 @@ export interface Component extends Directive {
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
+    hostless?: boolean;
     imports?: (Type<any> | ReadonlyArray<any>)[];
     preserveWhitespaces?: boolean;
     schemas?: SchemaMetadata[];

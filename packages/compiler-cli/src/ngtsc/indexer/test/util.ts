@@ -7,7 +7,6 @@
  */
 
 import {
-  BoundTarget,
   ClassPropertyMapping,
   CssSelector,
   DirectiveMatcher,
@@ -24,8 +23,8 @@ import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
-import {ComponentMeta} from '../src/context';
 import {AbstractBoundTemplate} from '../src/api';
+import {ComponentMeta} from '../src/context';
 
 /** Dummy file URL */
 function getTestFilePath(): AbsoluteFsPath {
@@ -64,6 +63,7 @@ export function getBoundTemplate(
     selector,
     name: declaration.name.getText(),
     isComponent: true,
+    isHostless: false,
     inputs: ClassPropertyMapping.fromMappedObject({}),
     outputs: ClassPropertyMapping.fromMappedObject({}),
     exportAs: null,

@@ -551,6 +551,12 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       changeDetection = new o.WrappedNodeExpr(component.get('changeDetection')!);
     }
 
+    let isHostless = false;
+    if (component.has('hostless')) {
+      const expr = component.get('hostless')!;
+      isHostless = this.evaluator.evaluate(expr) === true;
+    }
+
     let animations: o.Expression | null = null;
     let legacyAnimationTriggerNames: LegacyAnimationTriggerNames | null = null;
     if (component.has('animations')) {
@@ -709,6 +715,21 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       schemas = extractSchemas(component.get('schemas')!, this.evaluator, 'Component');
     } else if (metadata.isStandalone) {
       schemas = [];
+    }
+
+    if (isHostless && directiveResult.hostBindingNodes?.rawNodes?.length > 0) {
+      if (diagnostics === undefined) {
+        diagnostics = [];
+      }
+      for (const node of directiveResult.hostBindingNodes.rawNodes) {
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.HOSTLESS_COMPONENT_WITH_HOST_BINDINGS,
+            node,
+            `Hostless components cannot have host bindings.`,
+          ),
+        );
+      }
     }
 
     // Parse the template.
@@ -974,6 +995,37 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       }
     }
 
+    if (isHostless) {
+      if (
+        encapsulation === ViewEncapsulation.ShadowDom ||
+        encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom
+      ) {
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.HOSTLESS_COMPONENT_SHADOW_DOM,
+            component.get('encapsulation') ?? component.get('hostless')!,
+            'Hostless components cannot use Shadow DOM encapsulation.',
+          ),
+        );
+      }
+
+      if (component.has('animations')) {
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.HOSTLESS_COMPONENT_ANIMATIONS,
+            component.get('animations')!,
+            'Hostless components cannot have animations.',
+          ),
+        );
+      }
+    }
+
     // Collect all explicitly deferred symbols from the `@Component.deferredImports` field
     // (if it exists) and populate the `DeferredSymbolTracker` state. These operations are safe
     // for the local compilation mode, since they don't require accessing/resolving symbols
@@ -1012,6 +1064,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           template,
           encapsulation,
           changeDetection,
+          isHostless,
           styles,
           externalStyles,
           legacyOptionalChaining: this.legacyOptionalChaining,
@@ -1096,6 +1149,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       name: node.name.text,
       selector: analysis.meta.selector,
       exportAs: analysis.meta.exportAs,
+      isHostless: analysis.meta.isHostless,
       inputs: analysis.inputs,
       inputFieldNamesFromMetadataArray: analysis.inputFieldNamesFromMetadataArray,
       outputs: analysis.outputs,

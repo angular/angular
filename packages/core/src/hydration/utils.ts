@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -8,16 +8,24 @@
 
 import {Injector} from '../di/injector';
 import type {ViewRef} from '../linker/view_ref';
-import {getComponent} from '../render3/util/discovery_utils';
 import {LContainer} from '../render3/interfaces/container';
 import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {isRootView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, TVIEW, TViewType} from '../render3/interfaces/view';
+import {getComponent} from '../render3/util/discovery_utils';
 import {makeStateKey, StateKey, TransferState} from '../transfer_state';
 import {assertDefined, assertEqual} from '../util/assert';
 import type {HydrationContext} from './annotate';
 
+import {hoverEventNames, interactionEventNames} from '../../primitives/defer/src/triggers';
+import {DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
+import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
+import {sharedMapFunction} from '../event_delegation_utils';
+import {isDetachedByI18n} from '../i18n/utils';
+import {TNode} from '../render3/interfaces/node';
+import {isInSkipHydrationBlock} from '../render3/state';
 import {
   BlockSummary,
   CONTAINERS,
@@ -34,14 +42,6 @@ import {
   SerializedView,
 } from './interfaces';
 import {IS_INCREMENTAL_HYDRATION_ENABLED, JSACTION_BLOCK_ELEMENT_MAP} from './tokens';
-import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
-import {DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
-import {hoverEventNames, interactionEventNames} from '../../primitives/defer/src/triggers';
-import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
-import {sharedMapFunction} from '../event_delegation_utils';
-import {isDetachedByI18n} from '../i18n/utils';
-import {isInSkipHydrationBlock} from '../render3/state';
-import {TNode} from '../render3/interfaces/node';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -123,7 +123,16 @@ export function retrieveHydrationInfoImpl(
   injector: Injector,
   isRootView = false,
 ): DehydratedView | null {
-  let nghAttrValue = rNode.getAttribute(NGH_ATTR_NAME);
+  let nghAttrValue: string | null = null;
+  if ((rNode as HTMLElement).nodeType === 8 /* Node.COMMENT_NODE */) {
+    const match = (rNode as HTMLElement).textContent?.match(/ngh=([a-z0-9|]+)/);
+    if (match) {
+      nghAttrValue = match[1];
+    }
+  } else if (typeof (rNode as HTMLElement).getAttribute === 'function') {
+    nghAttrValue = (rNode as HTMLElement).getAttribute(NGH_ATTR_NAME);
+  }
+
   if (nghAttrValue == null) return null;
 
   // For cases when a root component also acts as an anchor node for a ViewContainerRef
@@ -187,11 +196,22 @@ export function retrieveHydrationInfoImpl(
   if (remainingNgh) {
     // If we have only used one of the ngh ids, store the remaining one
     // back on this RNode.
-    rNode.setAttribute(NGH_ATTR_NAME, remainingNgh);
+    if ((rNode as any).nodeType === Node.COMMENT_NODE) {
+      (rNode as any).textContent = (rNode as any).textContent?.replace(
+        /ngh=[a-z0-9|]+/,
+        `ngh=${remainingNgh}`,
+      );
+    } else {
+      rNode.setAttribute(NGH_ATTR_NAME, remainingNgh);
+    }
   } else {
     // The `ngh` attribute is cleared from the DOM node now
     // that the data has been retrieved for all indices.
-    rNode.removeAttribute(NGH_ATTR_NAME);
+    if ((rNode as any).nodeType === Node.COMMENT_NODE) {
+      (rNode as any).textContent = (rNode as any).textContent?.replace(/ ?ngh=[a-z0-9|]+/, '');
+    } else {
+      rNode.removeAttribute(NGH_ATTR_NAME);
+    }
   }
 
   // Note: don't check whether this node was claimed for hydration,
@@ -375,7 +395,10 @@ export function markRNodeAsHavingHydrationMismatch(
   // The RNode can be a standard HTMLElement (not an Angular component or directive)
   // The devtools component tree only displays Angular components & directives
   // Therefore we attach the debug info to the closest component/directive
-  while (node && !getComponent(node as Element)) {
+  while (
+    node &&
+    ((node as Node).nodeType !== 1 /* Node.ELEMENT_NODE */ || !getComponent(node as Element))
+  ) {
     node = node?.parentNode as RNode;
   }
 

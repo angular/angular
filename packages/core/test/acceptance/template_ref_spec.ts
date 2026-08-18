@@ -156,8 +156,8 @@ describe('TemplateRef', () => {
         `);
 
       expect(rootNodes.length).toBe(2);
-      expect(rootNodes[0].nodeType).toBe(Node.COMMENT_NODE);
-      expect(rootNodes[1].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[0].nodeType).toBe(Node.TEXT_NODE);
+      expect(rootNodes[1].nodeType).toBe(Node.COMMENT_NODE);
     });
 
     xit('should descend into ICU containers', () => {

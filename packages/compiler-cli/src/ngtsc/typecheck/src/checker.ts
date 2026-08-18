@@ -9,17 +9,15 @@
 import {
   AST,
   BoundTarget,
-  ForeignComponentMeta,
   CssSelector,
   DomElementSchemaRegistry,
   ExternalExpr,
+  ForeignComponentMeta,
   LiteralPrimitive,
   ParseSourceSpan,
   PropertyRead,
   ReferenceTarget,
   SafePropertyRead,
-  ScopedNode,
-  Target,
   TemplateEntity,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
@@ -53,7 +51,7 @@ import {
   PipeMeta,
 } from '../../metadata';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
-import {ProgramDriver, UpdateMode, InliningMode} from '../../program_driver';
+import {InliningMode, ProgramDriver, UpdateMode} from '../../program_driver';
 import {
   ClassDeclaration,
   DeclarationNode,
@@ -61,12 +59,12 @@ import {
   ReflectionHost,
 } from '../../reflection';
 import {
+  ComponentScope,
   ComponentScopeKind,
   ComponentScopeReader,
+  LocalModuleScope,
   StandaloneScope,
   TypeCheckScopeRegistry,
-  LocalModuleScope,
-  ComponentScope,
 } from '../../scope';
 import {isShim} from '../../shims';
 import {
@@ -90,7 +88,6 @@ import {
   PotentialImportKind,
   PotentialImportMode,
   PotentialPipe,
-  ReferenceSymbol,
   ProgramTypeCheckAdapter,
   SelectorlessComponentSymbol,
   SelectorlessDirectiveSymbol,
@@ -106,19 +103,19 @@ import {
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
+import {findAllMatchingNodes} from './comments';
 import {CompletionEngine} from './completion';
 import {
   ShimTypeCheckingData,
-  TypeCheckData,
   TypeCheckContextImpl,
+  TypeCheckData,
   TypeCheckingHost,
 } from './context';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
-import {SymbolBuilder, SymbolDirectiveMeta, SymbolBoundTarget} from './template_symbol_builder';
-import {findAllMatchingNodes} from './comments';
+import {SymbolBoundTarget, SymbolBuilder, SymbolDirectiveMeta} from './template_symbol_builder';
 import {TCB_FUNCTION_PREFIX} from './type_check_file';
 
 export class TypeCheckableDirectiveMetaAdapter implements SymbolDirectiveMeta {
@@ -156,6 +153,9 @@ export class TypeCheckableDirectiveMetaAdapter implements SymbolDirectiveMeta {
   }
   get isComponent() {
     return this.meta.isComponent;
+  }
+  get isHostless() {
+    return this.meta.isHostless;
   }
   get inputs() {
     return this.meta.inputs;
@@ -1752,6 +1752,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         moduleSpecifier: dep.ref.bestGuessOwningModule?.specifier,
       },
       isComponent: dep.isComponent,
+      isHostless: dep.isHostless,
       isStructural: dep.isStructural,
       selector: dep.selector,
       ngModule,

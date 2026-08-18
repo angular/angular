@@ -9339,5 +9339,93 @@ suppress
         expect(diags.length).toBe(0);
       });
     });
+
+    describe('hostless components', () => {
+      it('should report an error when a DOM binding is applied to a hostless component', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-hostless-comp',
+            template: '',
+            hostless: true,
+            standalone: false,
+          })
+          export class MyHostlessComp {}
+
+          @Component({
+            selector: 'test',
+            standalone: false,
+            template: \`
+              <my-hostless-comp [id]="id" />
+              <my-hostless-comp [class.active]="true" />
+              <my-hostless-comp [style.color]="color" />
+              <my-hostless-comp (click)="onClick()" />
+              <my-hostless-comp title="Title" />
+            \`,
+          })
+          export class TestCmp {
+            id = 'my-id';
+            color = 'red';
+            onClick() {}
+          }
+
+          @NgModule({
+            declarations: [MyHostlessComp, TestCmp],
+          })
+          export class TestModule {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(5);
+        expect(diags[0].messageText).toContain('Hostless components cannot have DOM bindings.');
+        expect(diags[1].messageText).toContain('Hostless components cannot have DOM bindings.');
+        expect(diags[2].messageText).toContain('Hostless components cannot have DOM bindings.');
+        expect(diags[3].messageText).toContain('Hostless components cannot have DOM bindings.');
+        expect(diags[4].messageText).toContain('Hostless components cannot have DOM bindings.');
+      });
+
+      it('should not report an error when an input binding or output binding is applied to a hostless component', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, Input, Output, EventEmitter, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-hostless-comp',
+            template: '',
+            standalone: false,
+            hostless: true,
+          })
+          export class MyHostlessComp {
+            @Input() myInput: string;
+            @Output() myOutput = new EventEmitter<void>();
+          }
+
+          @Component({
+            selector: 'test',
+            standalone: false,
+            template: \`
+              <my-hostless-comp [myInput]="'hello'" (myOutput)="onOutput()" />
+            \`,
+          })
+          export class TestCmp {
+            onOutput() {}
+          }
+
+          @NgModule({
+            declarations: [MyHostlessComp, TestCmp],
+          })
+          export class TestModule {}
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+    });
   });
 });

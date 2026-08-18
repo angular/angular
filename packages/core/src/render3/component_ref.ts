@@ -16,7 +16,7 @@ import {
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {AbstractType, Type} from '../interface/type';
+import {Type} from '../interface/type';
 import {ComponentRef as AbstractComponentRef} from '../linker/component_factory';
 import {createElementRef, ElementRef} from '../linker/element_ref';
 import {NgModuleRef} from '../linker/ng_module_factory';
@@ -65,7 +65,7 @@ import {retrieveHydrationInfo} from '../hydration/utils';
 import {getComponentName} from '../internal/get_closest_component_name';
 import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
 import {ChainedInjector} from './chained_injector';
-import {createElementNode, setupStaticAttributes} from './dom_node_manipulation';
+import {createCommentNode, createElementNode, setupStaticAttributes} from './dom_node_manipulation';
 import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
 import {getDocument} from './interfaces/document';
 import {unregisterLView} from './interfaces/lview_tracking';
@@ -315,9 +315,16 @@ export class ComponentFactory<T> {
     const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
 
     const hostRenderer = environment.rendererFactory.createRenderer(null, cmpDef);
+    const isHostless = cmpDef.hostless === true && !rootSelectorOrNode;
+
     const hostElement = rootSelectorOrNode
       ? locateHostElement(hostRenderer, rootSelectorOrNode, cmpDef.encapsulation, rootViewInjector)
-      : createHostElement(cmpDef, hostRenderer);
+      : isHostless
+        ? (createCommentNode(
+            hostRenderer,
+            ngDevMode ? `hostless ${getComponentName(cmpDef)}` : '',
+          ) as RElement)
+        : createHostElement(cmpDef, hostRenderer);
     assertNotScriptHostElement(hostElement);
 
     const sharedStylesHost = rootViewInjector.get(SHARED_STYLES_HOST, null);
@@ -374,7 +381,7 @@ export class ComponentFactory<T> {
       const hostTNode = directiveHostFirstCreatePass(
         HEADER_OFFSET,
         rootLView,
-        TNodeType.Element,
+        isHostless ? TNodeType.ElementContainer : TNodeType.Element,
         TNodeName.DynamicHost,
         () => rootTView.directiveRegistry,
         true,

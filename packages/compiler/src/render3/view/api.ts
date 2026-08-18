@@ -289,6 +289,11 @@ export interface R3ComponentMetadata<
   changeDetection: ChangeDetectionStrategy | o.Expression | null;
 
   /**
+   * Whether the component is hostless.
+   */
+  isHostless: boolean;
+
+  /**
    * Relative path to the component's template from the root of the project.
    * Used to generate debugging information.
    */
@@ -364,9 +369,7 @@ export interface R3TemplateDependency {
  * A dependency that's used within a component template
  */
 export type R3TemplateDependencyMetadata =
-  | R3DirectiveDependencyMetadata
-  | R3PipeDependencyMetadata
-  | R3NgModuleDependencyMetadata;
+  R3DirectiveDependencyMetadata | R3PipeDependencyMetadata | R3NgModuleDependencyMetadata;
 
 /**
  * Information about a directive that is used in a component template. Only the stable, public

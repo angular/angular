@@ -6,46 +6,45 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from '../api';
-import {Environment} from './environment';
-import {
-  ImportFlags,
-  ReferenceEmitKind,
-  Reference,
-  ReferenceEmitter,
-  assertSuccessfulReferenceEmit,
-} from '../../imports';
-import {ImportManager, translateType} from '../../translator';
 import {
   AbsoluteSourceSpan,
-  ExternalExpr,
-  ExpressionType,
-  TransplantedType,
   BoundTarget,
-  ReferenceTarget,
-  TmplAstElement,
-  TmplAstTemplate,
-  WrappedNodeExpr,
   ClassPropertyMapping,
   ConflictingHostDirectiveBinding,
-  TcbGenericContextBehavior,
-  TcbTypeCheckBlockMetadata,
-  TcbDirectiveMetadata,
-  TcbPipeMetadata,
-  TcbTypeParameter,
-  TcbReferenceMetadata,
-  TcbReferenceKey,
+  ExpressionType,
+  ExternalExpr,
+  ReferenceTarget,
   TcbComponentMetadata,
+  TcbDirectiveMetadata,
+  TcbGenericContextBehavior,
   TcbInputMapping,
+  TcbPipeMetadata,
+  TcbReferenceKey,
+  TcbReferenceMetadata,
+  TcbTypeCheckBlockMetadata,
+  TcbTypeParameter,
+  TmplAstElement,
+  TmplAstTemplate,
+  TransplantedType,
+  WrappedNodeExpr,
 } from '@angular/compiler';
-import {InputMapping} from '../../metadata';
-import {requiresInlineTypeCtor} from './type_constructor';
-import {tempPrint} from './tcb_print';
-import {generateTcbTypeParameters} from './tcb_util';
-import {TypeParameterEmitter} from './type_parameter_emitter';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import ts from 'typescript';
 import {absoluteFromSourceFile} from '../../file_system';
+import {
+  ImportFlags,
+  Reference,
+  ReferenceEmitKind,
+  assertSuccessfulReferenceEmit,
+} from '../../imports';
+import {InputMapping} from '../../metadata';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {translateType} from '../../translator';
+import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from '../api';
+import {Environment} from './environment';
+import {tempPrint} from './tcb_print';
+import {generateTcbTypeParameters} from './tcb_util';
+import {requiresInlineTypeCtor} from './type_constructor';
+import {TypeParameterEmitter} from './type_parameter_emitter';
 
 /**
  * Adapts the compiler's `TypeCheckBlockMetadata` (which includes full TS AST nodes)
@@ -100,6 +99,7 @@ export function adaptTypeCheckBlockMetadata(
 
     const tcbDir: TcbDirectiveMetadata = {
       isComponent: dir.isComponent,
+      isHostless: dir.isHostless,
       name: dir.name,
       selector: dir.selector,
       exportAs: dir.exportAs,
@@ -223,8 +223,7 @@ export function adaptTypeCheckBlockMetadata(
     getDeferBlocks: () => meta.boundTarget.getDeferBlocks(),
     getConflictingHostDirectiveBindings: (node) =>
       meta.boundTarget.getConflictingHostDirectiveBindings(node) as
-        | ConflictingHostDirectiveBinding<TcbDirectiveMetadata>[]
-        | null,
+        ConflictingHostDirectiveBinding<TcbDirectiveMetadata>[] | null,
   };
 
   const pipes = new Map<string, TcbPipeMetadata>();

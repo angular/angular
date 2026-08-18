@@ -29,6 +29,7 @@ import {assertDefined} from '../../util/assert';
 import {assertTNodeCreationIndex} from '../assert';
 import {clearElementContents, createElementNode} from '../dom_node_manipulation';
 import {ComponentDef} from '../interfaces/definition';
+import {_locateOrCreateElementContainerNode} from './element_container';
 import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
@@ -111,6 +112,17 @@ export function ɵɵelementStart(
       )
     : (tView.data[adjustedIndex] as TElementNode);
 
+  let isHostless = false;
+  if (isComponentHost(tNode)) {
+    const def = tView.data[tNode.directiveStart + tNode.componentOffset] as ComponentDef<{}>;
+    if (def.hostless) {
+      isHostless = true;
+      if (tView.firstCreatePass) {
+        tNode.type = TNodeType.ElementContainer;
+      }
+    }
+  }
+
   // If the node is a component host and we have a tracing service, we need to wrap the init logic.
   if (isComponentHost(tNode)) {
     const tracingService = lView[ENVIRONMENT].tracingService;
@@ -119,13 +131,13 @@ export function ɵɵelementStart(
       const def = tView.data[tNode.directiveStart + tNode.componentOffset] as ComponentDef<{}>;
 
       return tracingService.componentCreate(getComponentName(def), () => {
-        initializeElement(index, name, lView, tNode, localRefsIndex);
+        initializeElement(index, name, lView, tNode, localRefsIndex, isHostless);
         return ɵɵelementStart;
       });
     }
   }
 
-  initializeElement(index, name, lView, tNode, localRefsIndex);
+  initializeElement(index, name, lView, tNode, localRefsIndex, isHostless);
   return ɵɵelementStart;
 }
 
@@ -135,8 +147,15 @@ function initializeElement(
   lView: LView,
   tNode: TElementNode,
   localRefsIndex: number | undefined,
+  isHostless: boolean = false,
 ) {
-  elementLikeStartShared(tNode, lView, index, name, _locateOrCreateElementNode);
+  elementLikeStartShared(
+    tNode,
+    lView,
+    index,
+    isHostless ? (ngDevMode ? `hostless ${name}` : '') : name,
+    isHostless ? _locateOrCreateElementContainerNode : _locateOrCreateElementNode,
+  );
 
   if (isDirectiveHost(tNode)) {
     const tView = lView[TVIEW];
@@ -165,7 +184,7 @@ export function ɵɵelementEnd(): typeof ɵɵelementEnd {
   ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
 
   const currentTNode = elementLikeEndShared(initialTNode);
-  ngDevMode && assertTNodeType(currentTNode, TNodeType.AnyRNode);
+  ngDevMode && assertTNodeType(currentTNode, TNodeType.AnyRNode | TNodeType.ElementContainer);
 
   if (tView.firstCreatePass) {
     directiveHostEndFirstCreatePass(tView, currentTNode);

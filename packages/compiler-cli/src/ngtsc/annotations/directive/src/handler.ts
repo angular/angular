@@ -48,7 +48,6 @@ import {
   ClassMemberKind,
   Decorator,
   ReflectionHost,
-  reflectObjectLiteral,
 } from '../../../reflection';
 import {LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../../scope';
 import {
@@ -73,13 +72,11 @@ import {
   getUndecoratedClassWithAngularFeaturesDiagnostic,
   InjectableClassRegistry,
   isAngularDecorator,
-  parseStandaloneOption,
   readBaseClass,
   ReferencesRegistry,
   resolveProvidersRequiringFactory,
   toFactoryMetadata,
   UndecoratedMetadataExtractor,
-  unwrapExpression,
   validateHostDirectives,
 } from '../../common';
 
@@ -311,6 +308,7 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
       name: node.name.text,
       selector: analysis.meta.selector,
       exportAs: analysis.meta.exportAs,
+      isHostless: false,
       inputs: analysis.inputs,
       inputFieldNamesFromMetadataArray: analysis.inputFieldNamesFromMetadataArray,
       outputs: analysis.outputs,

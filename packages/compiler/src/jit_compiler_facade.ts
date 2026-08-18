@@ -359,6 +359,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       animations: facade.animations != null ? new WrappedNodeExpr(facade.animations) : null,
       viewProviders:
         facade.viewProviders != null ? new WrappedNodeExpr(facade.viewProviders) : null,
+      isHostless: facade.isHostless ?? false,
       relativeContextFilePath: '',
       i18nUseExternalIds: true,
       relativeTemplatePath: null,
@@ -717,6 +718,7 @@ function convertDeclareComponentFacadeToMetadata(
     defer,
     changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.OnPush,
     encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
+    isHostless: decl.isHostless ?? false,
     declarationListEmitMode: DeclarationListEmitMode.ClosureResolved,
     relativeContextFilePath: '',
     i18nUseExternalIds: true,

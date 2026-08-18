@@ -11,7 +11,7 @@ import {icuContainerIterate} from './i18n/i18n_tree_shaking';
 import {CONTAINER_HEADER_OFFSET, LContainer, LContainerFlags, NATIVE} from './interfaces/container';
 import {TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
 import {RNode} from './interfaces/renderer_dom';
-import {isLContainer} from './interfaces/type_checks';
+import {isComponentHost, isLContainer} from './interfaces/type_checks';
 import {
   DECLARATION_COMPONENT_VIEW,
   FLAGS,
@@ -23,7 +23,7 @@ import {
 } from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {getProjectionNodes} from './node_manipulation';
-import {getLViewParent, unwrapRNode} from './util/view_utils';
+import {getComponentLViewByIndex, getLViewParent, unwrapRNode} from './util/view_utils';
 
 export function collectNativeNodes(
   tView: TView,
@@ -79,14 +79,27 @@ export function collectNativeNodes(
         // The container's anchor comment node is always physically positioned after any views
         // rendered inside the container, so we always push it here at the end.
         result.push(anchor);
-      } else {
+      } else if (!(tNode.type & TNodeType.ElementContainer)) {
         result.push(unwrapRNode(lNode));
       }
     }
 
     const tNodeType = tNode.type;
     if (tNodeType & TNodeType.ElementContainer) {
-      collectNativeNodes(tView, lView, tNode.child, result);
+      if (isComponentHost(tNode)) {
+        const componentLView = getComponentLViewByIndex(tNode.index, lView);
+        collectNativeNodes(
+          componentLView[TVIEW],
+          componentLView,
+          componentLView[TVIEW].firstChild,
+          result,
+        );
+      } else {
+        collectNativeNodes(tView, lView, tNode.child, result);
+      }
+      if (lNode !== null && !isLContainer(lNode)) {
+        result.push(unwrapRNode(lNode));
+      }
     } else if (tNodeType & TNodeType.Icu) {
       const nextRNode = icuContainerIterate(tNode as TIcuContainerNode, lView);
       let rNode: RNode | null;

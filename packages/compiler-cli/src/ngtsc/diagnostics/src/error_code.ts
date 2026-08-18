@@ -163,6 +163,21 @@ export enum ErrorCode {
   COMPONENT_UNKNOWN_DEFERRED_IMPORT = 2022,
 
   /**
+   * Raised when a hostless component has host bindings.
+   */
+  HOSTLESS_COMPONENT_WITH_HOST_BINDINGS = 2029,
+
+  /**
+   * Raised when a hostless component uses Shadow DOM encapsulation.
+   */
+  HOSTLESS_COMPONENT_SHADOW_DOM = 2030,
+
+  /**
+   * Raised when a hostless component has animations.
+   */
+  HOSTLESS_COMPONENT_ANIMATIONS = 2031,
+
+  /**
    * Raised when a `standalone: false` component is declared but `strictStandalone` is set.
    */
   NON_STANDALONE_NOT_ALLOWED = 2023,
@@ -484,6 +499,11 @@ export enum ErrorCode {
    * Raised when a `@content` block name conflicts with an input binding on the parent foreign component.
    */
   CONFLICTING_CONTENT_AND_PROPERTY = 8029,
+
+  /**
+   * Raised when a hostless component is bound to a DOM property, attribute, class, style or event.
+   */
+  HOSTLESS_COMPONENT_UNSUPPORTED_BINDING = 8030,
 
   /**
    * A two way binding in a template has an incorrect syntax,

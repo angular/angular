@@ -367,6 +367,9 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   /** Whether or not this component is signal-based. */
   readonly signals: boolean;
 
+  /** Whether the component is hostless and should not render a host element. */
+  readonly hostless?: boolean;
+
   /**
    * Registry of directives and components that may be found in this view.
    *
