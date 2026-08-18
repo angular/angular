@@ -4221,6 +4221,24 @@ describe('reactive forms integration tests', () => {
       );
     });
 
+    it("should throw a coded error, instead of crashing, if a form isn't passed into formGroup in production mode", async () => {
+      // `_checkFormPresent` (the source of the `formGroup expects a FormGroup instance` error
+      // above) is itself gated behind `ngDevMode`, so it's compiled away in a production build.
+      // Simulate that here to reproduce what a real production app hits when `[formGroup]` is
+      // bound before the form input is wired up (e.g. an async-loaded form that hasn't arrived
+      // yet): `FormGroupDirective.ngOnChanges` runs with a null/undefined `form`.
+      const _global: {ngDevMode: any} = global as any;
+      const originalNgDevMode = _global.ngDevMode;
+      try {
+        _global.ngDevMode = false;
+        const fixture = initTest(FormGroupComp);
+        const error = await getRenderError(fixture);
+        expect((error as any).code).toBe(1003);
+      } finally {
+        _global.ngDevMode = originalNgDevMode;
+      }
+    });
+
     it('should throw if formControlName is used without a control container', async () => {
       TestBed.overrideComponent(FormGroupComp, {
         set: {

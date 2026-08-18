@@ -184,6 +184,13 @@ export function setUpDisabledChangeHandler(control: FormControl, dir: NgControl)
  * @param dir Directive instance that contains validators to be setup.
  */
 export function setUpValidators(control: AbstractControl, dir: AbstractControlDirective): void {
+  if (control == null) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_CONTROL_FOR_VALIDATORS,
+      ngDevMode && 'Cannot set up validators: the given form control is null or undefined.',
+    );
+  }
+
   const validators = getControlValidators(control);
   if (dir.validator !== null) {
     control.setValidators(mergeValidators<ValidatorFn>(validators, dir.validator));
