@@ -9,6 +9,7 @@ ts_project(
     deps = [
         "//:node_modules/reflect-metadata",
         "//:node_modules/zone.js",
+        "//packages/zone.js/lib",
     ],
 )
 

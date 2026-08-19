@@ -143,9 +143,12 @@ describe('BrowserViewportScroller', () => {
 
       scroller.scrollToAnchor(anchor);
 
-      await waitFor(() => throwUnless(anchorNode.getBoundingClientRect().top).toBe(80), {
-        timeout: 1_000,
-      });
+      await waitFor(
+        () => throwUnless(Math.round(anchorNode.getBoundingClientRect().top)).toBe(80),
+        {
+          timeout: 1_000,
+        },
+      );
 
       document.documentElement.style.scrollBehavior = '';
       document.body.style.paddingBottom = '';

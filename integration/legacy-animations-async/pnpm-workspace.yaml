@@ -14,3 +14,4 @@ minimumReleaseAgeExclude:
   - '@schematics/*'
   - 'ng-packagr'
   - 'zone.js'
+  - 'karma-jasmine-html-reporter'

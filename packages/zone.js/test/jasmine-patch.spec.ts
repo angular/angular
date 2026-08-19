@@ -9,10 +9,10 @@
 import {ifEnvSupports} from './test-util';
 
 function supportJasmineSpec() {
-  return jasmine && (jasmine as any)['Spec'];
+  return typeof jasmine !== 'undefined' && typeof jasmine.getEnv === 'function';
 }
 
-(supportJasmineSpec as any).message = 'jasmine spec';
+(supportJasmineSpec as unknown as {message: string}).message = 'jasmine spec';
 
 ifEnvSupports(supportJasmineSpec, () => {
   beforeEach(() => {
@@ -27,7 +27,7 @@ ifEnvSupports(supportJasmineSpec, () => {
     let itZone: Zone | null = null;
     const syncZone = Zone.current;
     try {
-      Zone.current.scheduleMicroTask('dontallow', (): any => null);
+      Zone.current.scheduleMicroTask('dontallow', (): void => {});
     } catch (e) {
       throwOnAsync = true;
     }
@@ -84,9 +84,9 @@ ifEnvSupports(supportJasmineSpec, () => {
     xit('createSpyObj with properties should be able to be retrieved from the spy', () => {
       const spy = jasmine.createSpyObj('obj', ['someFunction'], {prop1: 'foo'});
       expect(spy.prop1).toEqual('foo');
-      const desc: any = Object.getOwnPropertyDescriptor(spy, 'prop1');
-      expect(desc.enumerable).toBe(true);
-      expect(desc.configurable).toBe(true);
+      const desc = Object.getOwnPropertyDescriptor(spy, 'prop1');
+      expect(desc?.enumerable).toBe(true);
+      expect(desc?.configurable).toBe(true);
     });
   });
 })();

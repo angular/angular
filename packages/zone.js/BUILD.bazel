@@ -1,4 +1,5 @@
 load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//packages/zone.js:bundles.bzl", "BUNDLES_ENTRY_POINTS")
 load("//packages/zone.js:tools.bzl", "generate_rollup_bundle", "npm_package", "ts_config", "ts_project")
 
@@ -83,4 +84,14 @@ npm_package(
 alias(
     name = "pkg",
     actual = ":npm_package",
+)
+
+pkg_tar(
+    name = "npm_package_archive",
+    srcs = [":npm_package"],
+    extension = "tar.gz",
+    package_dir = "package",
+    strip_prefix = "./npm_package",
+    tags = ["manual"],
+    visibility = ["//visibility:public"],
 )

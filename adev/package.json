@@ -75,7 +75,7 @@
     "karma-chrome-launcher": "3.2.0",
     "karma-coverage": "2.2.1",
     "karma-jasmine": "5.1.0",
-    "karma-jasmine-html-reporter": "2.2.0",
+    "karma-jasmine-html-reporter": "2.3.0",
     "marked": "18.0.9",
     "mermaid": "11.16.1",
     "ngx-progressbar": "14.0.0",

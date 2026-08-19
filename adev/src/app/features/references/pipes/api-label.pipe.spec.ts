@@ -21,7 +21,7 @@ describe('ApiLabel', () => {
     expect(result).toBe('C');
   });
 
-  it(`should return short label when labelType equals short`, () => {
+  it(`should return full label when labelType equals full`, () => {
     const result = pipe.transform(ApiItemType.CLASS, 'full');
     expect(result).toBe('Class');
   });

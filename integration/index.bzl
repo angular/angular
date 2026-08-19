@@ -34,7 +34,10 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     # tests. Any given integration does not need to use all of these packages.
     npm_packages = {}
     for pkg in INTEGRATION_PACKAGES:
-        npm_packages["//:node_modules/%s/dir" % pkg] = pkg
+        if pkg == "zone.js":
+            npm_packages["//packages/zone.js:npm_package"] = "zone.js"
+        else:
+            npm_packages["//:node_modules/%s/dir" % pkg] = pkg
 
     integration_test(
         name = name,

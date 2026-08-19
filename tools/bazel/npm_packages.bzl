@@ -92,6 +92,7 @@ def ng_package(readme_md = None, license_banner = None, license = None, deps = [
         name = "npm_package_archive",
         srcs = [":npm_package"],
         extension = "tar.gz",
+        package_dir = "package",
         strip_prefix = "./npm_package",
         # should not be built unless it is a dependency of another rule
         tags = ["manual"],
@@ -147,6 +148,7 @@ def npm_package(srcs = [], **kwargs):
         name = "npm_package_archive",
         srcs = [":npm_package"],
         extension = "tar.gz",
+        package_dir = "package",
         strip_prefix = "./npm_package",
         # should not be built unless it is a dependency of another rule
         tags = ["manual"],

@@ -14,4 +14,8 @@ import 'zone.js/plugins/proxy';
 import 'zone.js/plugins/sync-test';
 import 'zone.js/plugins/async-test';
 import 'zone.js/plugins/fake-async-test';
-import 'zone.js/plugins/jasmine-patch';
+import {patchJasmine} from '../../packages/zone.js/lib/jasmine/jasmine';
+
+declare const Zone: import('../../packages/zone.js/lib/zone-impl').ZoneType;
+
+patchJasmine(Zone);

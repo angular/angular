@@ -921,19 +921,23 @@ describe('public testing API', () => {
   });
 
   describe('errors', () => {
-    let originalJasmineIt: (description: string, func: () => void) => jasmine.Spec;
+    let originalJasmineIt:
+      ((description: string, fn: (done: DoneFn) => void) => unknown) | undefined;
 
     const patchJasmineIt = () => {
-      let resolve: (result: any) => void;
-      let reject: (error: any) => void;
+      let resolve: (result: unknown) => void;
+      let reject: (error: unknown) => void;
       const promise = new Promise((res, rej) => {
         resolve = res;
         reject = rej;
       });
-      const jasmineEnv = jasmine.getEnv() as any;
-      originalJasmineIt = jasmineEnv.it;
-      jasmineEnv.it = (description: string, fn: (done: DoneFn) => void): any => {
-        const done = <DoneFn>(() => resolve(null));
+      const globalObj = globalThis as unknown as Record<string, unknown>;
+      originalJasmineIt = globalObj['it'] as (
+        description: string,
+        fn: (done: DoneFn) => void,
+      ) => unknown;
+      globalObj['it'] = (description: string, fn: (done: DoneFn) => void): unknown => {
+        const done = (() => resolve(null)) as DoneFn;
         done.fail = (err) => reject(err);
         fn(done);
         return null;
@@ -941,7 +945,9 @@ describe('public testing API', () => {
       return promise;
     };
 
-    const restoreJasmineIt = () => ((jasmine.getEnv() as any).it = originalJasmineIt);
+    const restoreJasmineIt = () => {
+      (globalThis as unknown as Record<string, unknown>)['it'] = originalJasmineIt;
+    };
 
     it('should fail when an asynchronous error is thrown', (done) => {
       const itPromise = patchJasmineIt();

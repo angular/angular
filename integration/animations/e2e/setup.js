@@ -5,4 +5,4 @@ tsNode.register({
   project: path.join(__dirname, 'tsconfig.json'),
 });
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;

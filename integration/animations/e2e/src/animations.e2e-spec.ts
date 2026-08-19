@@ -21,12 +21,12 @@ describe('Animations Integration', () => {
   beforeEach(async () => {
     page = await browser.newPage();
     // Use a retry loop to wait for ng serve to be fully ready
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 30; i++) {
       try {
         await page.goto('http://localhost:4208/');
         break;
       } catch (e) {
-        if (i === 9) throw e;
+        if (i === 29) throw e;
         await new Promise((res) => setTimeout(res, 2000));
       }
     }
