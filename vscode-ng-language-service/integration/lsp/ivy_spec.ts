@@ -2420,7 +2420,7 @@ export class AppComponent {
           'changes': {
             [APP_COMPONENT_MODULE_URI]: [
               {
-                'newText': '\nimport { BarComponent } from "./bar.component";',
+                'newText': "\nimport { BarComponent } from './bar.component';",
                 'range': {
                   // Line numbers adjusted for HighlightDirective import
                   'start': {'line': 6, 'character': 57},
