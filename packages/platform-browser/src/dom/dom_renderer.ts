@@ -20,6 +20,7 @@ import {
   RendererStyleFlags2,
   RendererType2,
   ViewEncapsulation,
+  ɵdescribeDomNode as describeDomNode,
   ɵRuntimeError as RuntimeError,
   type ListenerOptions,
   ɵTracingService as TracingService,
@@ -359,11 +360,10 @@ class DefaultDomRenderer2 implements Renderer2 {
       if (refChild != null && refChild.parentNode !== targetParent) {
         throw new RuntimeError(
           RuntimeErrorCode.INSERT_BEFORE_NODE_NOT_FOUND,
-          ngDevMode
-            ? `Angular could not insert a node before ${describeDomNode(refChild)} because it is no longer a child of ${describeDomNode(targetParent)}. ` +
-                `This can happen when code outside of Angular's control (for example, a browser extension or a script that directly manipulates the DOM) ` +
-                `has moved or removed a node that Angular is still managing.`
-            : describeDomNode(refChild),
+          ngDevMode &&
+            `Angular could not insert a node before ${describeDomNode(refChild)} because it is no longer a child of ${describeDomNode(targetParent)}. ` +
+              `This can happen when code outside of Angular's control (for example, a browser extension or a script that directly manipulates the DOM) ` +
+              `has moved or removed a node that Angular is still managing.`,
         );
       }
       targetParent.insertBefore(newChild, refChild);
@@ -553,13 +553,6 @@ function checkNoSyntheticProp(name: string, nameKind: string) {
 
 function isTemplateNode(node: any): node is HTMLTemplateElement {
   return node.tagName === 'TEMPLATE' && node.content !== undefined;
-}
-
-// Short description of a node for error messages. Truncates text so a huge text node can't blow
-// up the message, same idea as `shorten()` in core's `hydration/error_handling.ts`.
-function describeDomNode(node: Node): string {
-  const textContent = node.textContent?.slice(0, 50);
-  return textContent ? `${node.nodeName} ("${textContent}")` : node.nodeName;
 }
 
 class ShadowDomRenderer extends DefaultDomRenderer2 {
