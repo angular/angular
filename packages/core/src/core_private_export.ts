@@ -96,6 +96,7 @@ export {
   withIncrementalHydration as ɵwithIncrementalHydration,
 } from './hydration/api';
 export {CACHE_ACTIVE as ɵCACHE_ACTIVE} from './hydration/cache';
+export {describeDomNode as ɵdescribeDomNode} from './hydration/error_handling';
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
 export {resetIncrementalHydrationRuntimeForTests as ɵresetIncrementalHydrationRuntimeForTests} from './hydration/incremental_runtime';
 export {

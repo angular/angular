@@ -6313,12 +6313,11 @@ describe('platform-server full application hydration integration', () => {
           } catch (e: unknown) {
             const error = e as Error;
             // This is the fixed behavior: a coded NG0500 RuntimeError, not a raw
-            // TypeError. Unlike other production RuntimeErrors, this one keeps a
-            // minimal message (the mismatched node's `nodeName` and `textContent`)
-            // rather than an empty one, since it's cheap (no DOM-printing machinery)
-            // and helps debugging a hydration mismatch that's otherwise invisible in prod.
+            // TypeError. Production intentionally gets a bare code with no
+            // description — building one (even a cheap one) is debug-only work
+            // that shouldn't ship unconditionally in production bundles.
             expect(error instanceof TypeError).toBe(false);
-            expect(error.message).toBe('NG0500: #text ("Not an element anymore!")');
+            expect(error.message).toBe('NG0500');
             expect(error.message).not.toContain('hasAttribute is not a function');
           } finally {
             (globalThis as any).ngDevMode = previousNgDevMode;
@@ -6390,6 +6389,148 @@ describe('platform-server full application hydration integration', () => {
           } finally {
             (globalThis as any).ngDevMode = previousNgDevMode;
           }
+        },
+      );
+
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when siblingAfter runs out ' +
+          'of DOM siblings to skip in production mode (ngDevMode off)',
+        async () => {
+          // Regression test. `siblingAfter` walks forward a fixed number of DOM siblings
+          // (based on the server-serialized container size) to find a container's anchor
+          // comment node. The dev-mode check that would normally catch a missing sibling
+          // (`validateSiblingNodeExists`) is gated behind `ngDevMode`, so it's removed from
+          // production builds. If the client DOM has fewer real siblings than the server
+          // expected (here, two of the three `@for`-rendered items are removed before
+          // hydration runs), production keeps walking past the end of the DOM and throws a
+          // raw TypeError instead of a coded RuntimeError.
+          @Component({
+            selector: 'app',
+            template: `
+              <div id="abc">
+                @for (item of items; track item) {
+                  <p>{{ item }}</p>
+                }
+              </div>
+            `,
+          })
+          class SimpleComponent {
+            items = [1, 2, 3];
+            private doc = inject(DOCUMENT);
+            private isServer = isPlatformServer(inject(PLATFORM_ID));
+            ngAfterViewInit() {
+              // Only change the DOM on the server, right before it gets serialized. The
+              // serialized container size still says "3 items", but the DOM hydration
+              // actually sees will only have 1.
+              if (this.isServer) {
+                const items = this.doc.querySelectorAll('#abc p');
+                items[1]?.remove();
+                items[2]?.remove();
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          // Simulate a production build. `siblingAfter` only calls
+          // `validateSiblingNodeExists` when `ngDevMode` is truthy, so turning it off here
+          // means the walk runs fully unguarded.
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            });
+            fail('Expected the hydration process to throw.');
+          } catch (e: unknown) {
+            const error = e as Error;
+            // This is the fixed behavior: a coded NG0501 RuntimeError, not a raw TypeError.
+            // Production intentionally gets a bare code with no description.
+            expect(error instanceof TypeError).toBe(false);
+            expect(error.message).toBe('NG0501');
+            expect(error.message).not.toContain("reading 'nextSibling'");
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        },
+      );
+
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when an @if branch is ' +
+          're-entered after a hydration mismatch corrupted its template on the first pass',
+        async () => {
+          // Regression test for getParentRElement() (node_manipulation.ts) receiving a null
+          // TNode. Unlike the siblingAfter/navigateToNode bugs above, this one isn't gated
+          // behind ngDevMode at all in the original code — it reproduces every time, with no
+          // need to simulate a production build.
+          //
+          // The mechanism: an @if/@switch branch's content is its own embedded template, with
+          // its own TView, built lazily the first time that branch is actually rendered
+          // (renderView() in render.ts). If an error is thrown partway through that *first*
+          // pass — here, a hydration node-mismatch on the branch's *second* child, so the
+          // first child's TNode is created but the second's never is — TView.firstCreatePass
+          // still gets flipped to false in render.ts's `catch` block before the error
+          // propagates, and the TView is marked `incompleteFirstPass`. Unlike a *component's*
+          // TView (which gets rebuilt from scratch next time via
+          // getOrCreateComponentTView()'s `incompleteFirstPass` check), nothing rebuilds an
+          // *embedded view's* TView. So the next time this exact branch is selected again —
+          // here, by flipping the condition off and back on — its instructions see
+          // `!tView.firstCreatePass` and read straight from `tView.data[slot]` instead of
+          // creating a fresh TNode, and the second child's slot is still null from the
+          // interrupted first pass.
+          let instance!: SimpleComponent;
+
+          @Component({
+            selector: 'app',
+            template: `
+              @if (cond()) {
+                <span>first</span>
+                <span>{{ text() }}</span>
+              } @else {
+                <span>else</span>
+              }
+            `,
+          })
+          class SimpleComponent {
+            cond = signal(true);
+            text = signal('orig');
+            private doc = inject(DOCUMENT);
+            constructor() {
+              instance = this;
+            }
+            ngAfterViewInit() {
+              // Swap the second <span> for a <div>, bypassing Angular's own node tracking
+              // (mimics a third-party script mutating the DOM, like the test above), so
+              // hydration hits a tag mismatch on the branch's SECOND node specifically,
+              // interrupting its first creation pass after the first node already succeeded.
+              const spans = this.doc.querySelectorAll('app span');
+              if (spans.length >= 2) {
+                const bad = this.doc.createElement('div');
+                bad.textContent = spans[1].textContent;
+                spans[1].replaceWith(bad);
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [withNoopErrorHandler()],
+          });
+
+          // Re-enter the same @if branch: leave it, then come back. This is what exposes the
+          // corrupted TView from the interrupted first pass above.
+          instance.cond.set(false);
+          appRef.tick();
+          instance.cond.set(true);
+
+          expect(() => appRef.tick()).toThrowError(/NG0510/);
         },
       );
 
