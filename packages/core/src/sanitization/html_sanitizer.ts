@@ -16,13 +16,13 @@ import {_sanitizeUrl} from './url_sanitizer';
 type BooleanRecord = Record<string, boolean>;
 
 function tagSet(tags: string): BooleanRecord {
-  const res: BooleanRecord = {};
+  const res: BooleanRecord = Object.create(null);
   for (const t of tags.split(',')) res[t] = true;
   return res;
 }
 
 function merge(...sets: BooleanRecord[]): BooleanRecord {
-  const res: BooleanRecord = {};
+  const res: BooleanRecord = Object.create(null);
   for (const s of sets) {
     for (const v in s) {
       if (Object.hasOwn(s, v)) res[v] = true;
