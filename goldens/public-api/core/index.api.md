@@ -2137,6 +2137,11 @@ export interface WebMcpClient {
     signal: AbortSignal;
 }
 
+// @experimental
+export interface WebMcpComponentInspectorOptions {
+    maxDepth?: number;
+}
+
 // @public
 export interface WebMcpToolDescriptor<InputSchema extends JsonSchemaForInference> {
     description: string;
@@ -2147,6 +2152,9 @@ export interface WebMcpToolDescriptor<InputSchema extends JsonSchemaForInference
 
 // @public
 export type WebMcpToolExecute<InputSchema extends JsonSchemaForInference> = (args: InferArgsFromInputSchema<InputSchema>, client: WebMcpClient) => unknown;
+
+// @experimental
+export function withExperimentalWebMcpComponentInspector(options?: WebMcpComponentInspectorOptions): EnvironmentProviders;
 
 // @public
 export interface WritableResource<T> extends Resource<T> {

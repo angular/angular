@@ -8,6 +8,8 @@
 
 export {declareExperimentalWebMcpTool} from './declare_tool';
 export {provideExperimentalWebMcpTools} from './provide_tools';
+export {withExperimentalWebMcpComponentInspector} from './component_inspector';
+export type {WebMcpComponentInspectorOptions} from './component_inspector';
 export type {
   Execute as WebMcpToolExecute,
   Client as WebMcpClient,
