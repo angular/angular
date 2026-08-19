@@ -865,6 +865,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
               directive,
               this.tsLS,
               options?.includeCompletionsWithInsertText,
+              options,
             )
           : undefined;
 
@@ -1325,6 +1326,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
               directive,
               this.tsLS,
               preferences?.includeCompletionsWithInsertText,
+              preferences,
             )
           : undefined;
 
