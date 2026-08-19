@@ -34,7 +34,7 @@ import {CACHE_ACTIVE} from '../hydration/cache';
 import {DestroyRef} from '../linker/destroy_ref';
 import {PendingTasks} from '../pending_tasks';
 import {linkedSignal} from '../render3/reactivity/linked_signal';
-import {StateKey, TransferState} from '../transfer_state';
+import {makeStateKey, StateKey, TransferState} from '../transfer_state';
 
 /**
  * Constructs a `Resource` that projects a reactive request to an asynchronous operation defined by
@@ -80,7 +80,7 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
     options.equal ? wrapEqualityFn(options.equal) : undefined,
     options.debugName,
     options.injector ?? inject(Injector),
-    options.id as StateKey<T>,
+    options.id ? makeStateKey<T>(`ng-resource:${options.id}`) : undefined,
   );
 }
 

@@ -16,6 +16,7 @@ import {
   PLATFORM_ID,
   TransferState,
   makeStateKey,
+  resource,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {useAutoTick, timeout, withBody} from '@angular/private/testing';
@@ -172,6 +173,38 @@ describe('TransferCache', () => {
 
       expect(firstNext).toHaveBeenCalledTimes(1);
       expect(secondNext).not.toHaveBeenCalled();
+    });
+
+    it('should isolate resource cache entries from HTTP transfer cache keys', async () => {
+      configureInterceptor();
+      const request = new HttpRequest('GET', '/api/policy');
+      const cacheKey = generateHash(['GET', 'json', '/api/policy', '', ''].join('\0'));
+      const forgedResponse = {
+        [BODY]: {allowed: true},
+        [HEADERS]: {},
+        [STATUS]: 200,
+        [STATUS_TEXT]: 'OK',
+        [REQ_URL]: '/api/policy',
+        [RESPONSE_TYPE]: 'json',
+      };
+      const next = jasmine
+        .createSpy('next')
+        .and.returnValue(of(new HttpResponse({body: {allowed: false}})));
+      const previousServerMode = globalThis['ngServerMode'];
+      globalThis['ngServerMode'] = true;
+
+      try {
+        const collidingResource = TestBed.runInInjectionContext(() =>
+          resource({id: cacheKey, loader: async () => forgedResponse}),
+        );
+        await TestBed.inject(ApplicationRef).whenStable();
+
+        expect(collidingResource.value()).toBe(forgedResponse);
+        expect(runInterceptor(request, next).body).toEqual({allowed: false});
+        expect(next).toHaveBeenCalledTimes(1);
+      } finally {
+        globalThis['ngServerMode'] = previousServerMode;
+      }
     });
 
     it('should not cache responses with Cache-Control: no-store', () => {

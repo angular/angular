@@ -203,13 +203,13 @@ describe('rxResource()', () => {
     });
 
     it('should read from TransferState if a key is present', async () => {
-      const key = makeStateKey<number>('test-key');
+      const key = makeStateKey<number>('ng-resource:test-key');
       transferState.set(key, 123);
 
       const injector = TestBed.inject(Injector);
       const testResource = rxResource({
         stream: () => of(456),
-        id: key,
+        id: 'test-key',
         injector,
       });
 
@@ -239,7 +239,7 @@ describe('rxResource()', () => {
 
       expect(testResource.status()).toBe('resolved');
       expect(testResource.value()).toBe(789);
-      expect(transferState.get(key, null!)).toBe(789);
+      expect(transferState.get(makeStateKey<number>(`ng-resource:${key}`), null!)).toBe(789);
     });
 
     it('should write to TransferState on server when resolved (async)', async () => {
@@ -264,7 +264,7 @@ describe('rxResource()', () => {
       await waitFor(() => testResource.status() === 'resolved');
 
       expect(testResource.value()).toBe(101112);
-      expect(transferState.get(key, null!)).toBe(101112);
+      expect(transferState.get(makeStateKey<number>(`ng-resource:${key}`), null!)).toBe(101112);
     });
 
     it('should not write to TransferState on client when resolved', async () => {
@@ -282,7 +282,7 @@ describe('rxResource()', () => {
 
       expect(testResource.status()).toBe('resolved');
       expect(testResource.value()).toBe(131415);
-      expect(transferState.hasKey(key)).toBeFalse();
+      expect(transferState.hasKey(makeStateKey(`ng-resource:${key}`))).toBeFalse();
     });
   });
 

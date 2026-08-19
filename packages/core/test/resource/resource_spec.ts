@@ -1132,12 +1132,13 @@ describe('with TransferState', () => {
   });
 
   it('should read from TransferState if a key is present', async () => {
-    const key = makeStateKey<number>('test-key');
+    const key = makeStateKey<number>('ng-resource:test-key');
     transferState.set(key, 123);
+    transferState.set(makeStateKey<number>('test-key'), 999);
 
     const testResource = resource({
       loader: async () => 456,
-      id: key,
+      id: 'test-key',
       injector: TestBed.inject(Injector),
     });
 
@@ -1166,7 +1167,24 @@ describe('with TransferState', () => {
 
     expect(testResource.status()).toBe('resolved');
     expect(testResource.value()).toBe(789);
-    expect(transferState.get(makeStateKey<number>(key), null!)).toBe(789);
+    expect(transferState.get(makeStateKey<number>(`ng-resource:${key}`), null!)).toBe(789);
+    (globalThis as any).ngServerMode = undefined;
+  });
+
+  it('should namespace IDs that name Object prototype properties', async () => {
+    (globalThis as any).ngServerMode = true;
+
+    const testResource = resource({
+      loader: async () => 123,
+      id: '__proto__',
+      injector: TestBed.inject(Injector),
+    });
+
+    await flushMicrotasks();
+
+    expect(testResource.value()).toBe(123);
+    expect(transferState.get(makeStateKey<number>('ng-resource:__proto__'), null!)).toBe(123);
+    expect(transferState.hasKey(makeStateKey('__proto__'))).toBeFalse();
     (globalThis as any).ngServerMode = undefined;
   });
 
@@ -1183,6 +1201,6 @@ describe('with TransferState', () => {
 
     expect(testResource.status()).toBe('resolved');
     expect(testResource.value()).toBe(101112);
-    expect(transferState.hasKey(makeStateKey(key))).toBeFalse();
+    expect(transferState.hasKey(makeStateKey(`ng-resource:${key}`))).toBeFalse();
   });
 });

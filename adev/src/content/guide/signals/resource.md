@@ -157,6 +157,8 @@ const userResource = resource({
 
 The `id` value must be unique within your application and identical on the server and the client so that Angular can match the cached entry to the resource that requested it.
 
+Angular creates a namespaced `TransferState` key for each resource `id`. Use `id` only to identify the resource. Do not pass it to `makeStateKey` or access the resource's `TransferState` entry directly.
+
 IMPORTANT: Because the cached value is serialized into the page's HTML, avoid setting `id` on resources that load data specific to the user who triggered the server-side render, especially if the rendered HTML can be cached or shared between users.
 
 ## Chaining resources
@@ -252,9 +254,7 @@ function withPreviousValue<T>(input: Resource<T>): Resource<T> {
   return resourceFromSnapshots(derived);
 }
 
-@Component({
-  /*... */
-})
+@Component({/*... */})
 export class AwesomeProfile {
   userId = input.required<number>();
   user = withPreviousValue(httpResource(() => `/user/${this.userId()}`));
