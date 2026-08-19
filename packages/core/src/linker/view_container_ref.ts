@@ -508,6 +508,7 @@ class R3ViewContainerRef extends ViewContainerRef {
       environmentInjector,
       directives,
       bindings,
+      this._getHostElementNamespace(),
     );
     this.insertImpl(
       componentRef.hostView,
@@ -515,6 +516,28 @@ class R3ViewContainerRef extends ViewContainerRef {
       shouldAddViewToDom(this._hostTNode, dehydratedView),
     );
     return componentRef as ComponentRef<C>;
+  }
+
+  /** Returns the namespace used by nodes inserted at this container's render location. */
+  private _getHostElementNamespace(): string | null {
+    if (this._hostTNode.type & TNodeType.Element) {
+      const parentTNode = this._hostTNode.parent ?? this._hostLView[T_HOST];
+
+      // SVG foreignObject elements are namespace integration points: the foreignObject itself is
+      // SVG, but its children are HTML.
+      if (
+        parentTNode !== null &&
+        parentTNode.type & TNodeType.Element &&
+        typeof parentTNode.value === 'string' &&
+        parentTNode.value.toLowerCase() === 'foreignobject'
+      ) {
+        return null;
+      }
+
+      return parentTNode?.namespace ?? null;
+    }
+
+    return this._hostTNode.namespace;
   }
 
   override insert(viewRef: ViewRef, index?: number): ViewRef {
