@@ -174,7 +174,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REQUIRED_QUERY_NO_VALUE = -951,
     // (undocumented)
-    RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE = 991,
+    RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE = -991,
     // (undocumented)
     RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
     // (undocumented)
