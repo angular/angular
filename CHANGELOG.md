@@ -1,3 +1,12 @@
+<a name="21.2.21"></a>
+# 21.2.21 (2026-08-19)
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c19a36c2fb](https://github.com/angular/angular/commit/c19a36c2fbc51f41ce974ea1fd87f9f56b3e2444) | fix | disallow event handler attributes in Meta |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.1.2"></a>
 # 22.1.2 (2026-08-13)
 ### compiler
