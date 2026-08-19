@@ -154,3 +154,26 @@ export class UserProfile {
 The `stream` property accepts a factory function for an RxJS `Observable`. This factory function is passed the resource's `params` value and returns an `Observable`. The resource calls this factory function every time the `params` computation produces a new value. See [Resource loaders](/guide/signals/resource#resource-loaders) for more details on the parameters passed to the factory function.
 
 In all other ways, `rxResource` behaves like and provides the same APIs as `resource` for specifying parameters, reading values, checking loading state, and examining errors.
+
+### The stream must produce a value or an error
+
+The `Observable` you return from `stream` needs to end with either a value or an error — that's how the resource knows what to show. If the Observable completes without ever doing either of those, Angular doesn't have anything to put in the resource and throws the [`NG0991`](/errors/NG0991) error.
+
+This usually happens by accident when an error gets caught and silently discarded, for example with `catchError(() => EMPTY)`:
+
+```typescript
+import {EMPTY, catchError} from 'rxjs';
+
+// Don't do this — the error is thrown away and the stream completes with
+// nothing, which triggers NG0991.
+stream: ({params}) => this.userData.load(params.userId).pipe(catchError(() => EMPTY)),
+```
+
+Instead, either let the error propagate so the resource ends up in its `error` state, or catch it and emit a fallback value instead:
+
+```typescript
+import {of, catchError} from 'rxjs';
+
+// Do this instead — the resource resolves with `null` rather than erroring.
+stream: ({params}) => this.userData.load(params.userId).pipe(catchError(() => of(null))),
+```
