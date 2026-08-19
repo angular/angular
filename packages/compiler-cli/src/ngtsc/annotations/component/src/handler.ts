@@ -516,6 +516,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       this.jitDeclarationRegistry.jitDeclarations.add(node);
       return {};
     }
+    diagnostics = directiveResult.diagnostics;
 
     // Next, read the `@Component`-specific fields.
     const {
