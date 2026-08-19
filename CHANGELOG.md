@@ -1,3 +1,15 @@
+<a name="20.3.29"></a>
+
+# 20.3.29 (2026-08-19)
+
+### platform-browser
+
+| Commit                                                                                           | Type | Description                               |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------------- |
+| [7538744c10](https://github.com/angular/angular/commit/7538744c1048701d12e86e992704ea5fa13df4f4) | fix  | disallow event handler attributes in Meta |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.28"></a>
 
 # 20.3.28 (2026-08-13)
