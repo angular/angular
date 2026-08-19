@@ -254,6 +254,8 @@ To learn more about troubleshooting Trusted Type configurations, the following r
 
 [Prevent DOM-based cross-site scripting vulnerabilities with Trusted Types](https://web.dev/trusted-types/#how-to-use-trusted-types)
 
+For a worked example that traces attacker-controlled sources to unsafe DOM sinks, see [DOM XSS prevention in JavaScript](https://frontendatlas.com/javascript/trivia/js-xss-dom-sinks).
+
 </docs-callout>
 
 ### Use the AOT template compiler
