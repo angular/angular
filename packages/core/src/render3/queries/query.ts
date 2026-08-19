@@ -146,6 +146,17 @@ class TQueries_ implements TQueries {
     return queriesForTemplateRef !== null ? new TQueries_(queriesForTemplateRef) : null;
   }
 
+  cloneForRebuild(inheritedQueryCount: number): TQueries {
+    const clones: TQuery[] = [];
+    for (let i = 0; i < inheritedQueryCount; i++) {
+      const stale = this.getByIndex(i);
+      const clone = new TQuery_(stale.metadata);
+      clone.indexInDeclarationView = stale.indexInDeclarationView;
+      clones.push(clone);
+    }
+    return new TQueries_(clones);
+  }
+
   template(tView: TView, tNode: TNode): void {
     ngDevMode &&
       assertFirstCreatePass(
