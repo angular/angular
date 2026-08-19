@@ -868,6 +868,35 @@ describe('R3 template transform', () => {
   });
 
   describe('parser errors', () => {
+    it('should report malformed binding-like attribute names', () => {
+      const errors = parse('<app-test-component ([var1]="true"></app-test-component>', {
+        ignoreError: true,
+      }).errors;
+
+      expect(errors.map((error) => error.msg)).toEqual([`Invalid attribute name "([var1]".`]);
+    });
+
+    it('should report static attribute names that cannot be passed to setAttribute', () => {
+      const errors = parse('<div ;></div><div `></div><div ngNonBindable><span #></span></div>', {
+        ignoreError: true,
+      }).errors;
+
+      expect(errors.map((error) => error.msg)).toEqual([
+        `Invalid attribute name ";".`,
+        'Invalid attribute name "`".',
+        `Invalid attribute name "#".`,
+      ]);
+    });
+
+    it('should allow valid bindings and static XML attribute names', () => {
+      const errors = parse(
+        `<div [class.data-[size='large']:p-8]="expr" data-test="value" élève="value"></div>`,
+        {ignoreError: true},
+      ).errors;
+
+      expect(errors).toEqual([]);
+    });
+
     it('should only report errors on the node on which the error occurred', () => {
       const errors = parse(
         `

@@ -59,6 +59,11 @@ const BINDING_DELIMS = {
   EVENT: {start: '(', end: ')'},
 };
 
+// Attribute names are passed to `setAttribute` at runtime, which requires an XML Name. Binding
+// syntax is handled before this check and therefore does not need to match this expression.
+const VALID_STATIC_ATTRIBUTE_NAME =
+  /^[:A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff\u0370-\u037d\u037f-\u1fff\u200c-\u200d\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd\u{10000}-\u{effff}][:A-Z_a-z\-.0-9\u00b7\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff\u0300-\u037d\u037f-\u1fff\u200c-\u200d\u203f-\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff\uf900-\ufdcf\ufdf0-\ufffd\u{10000}-\u{effff}]*$/u;
+
 const TEMPLATE_ATTR_PREFIX = '*';
 
 // TODO(crisbeto): any other tag names that shouldn't be allowed here?
@@ -127,11 +132,16 @@ class HtmlAstToIvyAst implements html.Visitor {
    * These are typically blocks connected to other blocks or text nodes between connected blocks.
    */
   private processedNodes = new Set<html.Block | html.Text>();
+  private readonly nonBindableVisitor: NonBindableVisitor;
 
   constructor(
     private bindingParser: BindingParser,
     private options: Render3ParseOptions,
-  ) {}
+  ) {
+    this.nonBindableVisitor = new NonBindableVisitor((message, span) =>
+      this.reportError(message, span),
+    );
+  }
 
   // HTML visitor
   visitElement(element: html.Element): t.Node | null {
@@ -183,7 +193,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       // The `NonBindableVisitor` may need to return an array of nodes for blocks so we need
       // to flatten the array here. Avoid doing this for the `HtmlAstToIvyAst` since `flat` creates
       // a new array.
-      children = html.visitAll(NON_BINDABLE_VISITOR, element.children).flat(Infinity);
+      children = html.visitAll(this.nonBindableVisitor, element.children).flat(Infinity);
     } else {
       children = html.visitAll(this, element.children, element.children);
     }
@@ -415,7 +425,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       // The `NonBindableVisitor` may need to return an array of nodes for blocks so we need
       // to flatten the array here. Avoid doing this for the `HtmlAstToIvyAst` since `flat` creates
       // a new array.
-      children = html.visitAll(NON_BINDABLE_VISITOR, component.children).flat(Infinity);
+      children = html.visitAll(this.nonBindableVisitor, component.children).flat(Infinity);
     } else {
       children = html.visitAll(this, component.children, component.children);
     }
@@ -921,6 +931,9 @@ class HtmlAstToIvyAst implements html.Visitor {
       keySpan,
       attribute.valueTokens ?? null,
     );
+    if (!hasBinding && !VALID_STATIC_ATTRIBUTE_NAME.test(name)) {
+      this.reportError(`Invalid attribute name "${name}".`, srcSpan);
+    }
     return hasBinding;
   }
 
@@ -1176,6 +1189,8 @@ class HtmlAstToIvyAst implements html.Visitor {
 }
 
 class NonBindableVisitor implements html.Visitor {
+  constructor(private reportError: (message: string, span: ParseSourceSpan) => void) {}
+
   visitElement(ast: html.Element): t.Element | null {
     const preparsedElement = preparseElement(ast);
     if (
@@ -1211,6 +1226,9 @@ class NonBindableVisitor implements html.Visitor {
   }
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
+    if (!VALID_STATIC_ATTRIBUTE_NAME.test(attribute.name)) {
+      this.reportError(`Invalid attribute name "${attribute.name}".`, attribute.sourceSpan);
+    }
     return new t.TextAttribute(
       attribute.name,
       attribute.value,
@@ -1278,8 +1296,6 @@ class NonBindableVisitor implements html.Visitor {
     return null;
   }
 }
-
-const NON_BINDABLE_VISITOR = new NonBindableVisitor();
 
 function addEvents(events: ParsedEvent[], boundEvents: t.BoundEvent[]) {
   boundEvents.push(...events.map((e) => t.BoundEvent.fromParsedEvent(e)));
