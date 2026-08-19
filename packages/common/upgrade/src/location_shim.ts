@@ -667,14 +667,15 @@ export class $locationShim {
         if (typeof search === 'string' || typeof search === 'number') {
           this.$$search = this.urlCodec.decodeSearch(search.toString());
         } else if (typeof search === 'object' && search !== null) {
-          // Copy the object so it's never mutated
-          search = {...search};
-          // remove object undefined or null properties
-          for (const key in search) {
-            if (search[key] == null) delete search[key];
+          // Copy the object into a null-prototype object so it's never mutated and immune to prototype pollution
+          const searchObj: {[key: string]: unknown} = Object.create(null);
+          for (const [key, value] of Object.entries(search)) {
+            if (value != null) {
+              searchObj[key] = value;
+            }
           }
 
-          this.$$search = search;
+          this.$$search = searchObj;
         } else {
           throw new Error(
             'LocationProvider.search(): First argument must be a string or an object.',
