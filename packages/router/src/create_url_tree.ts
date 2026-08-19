@@ -560,8 +560,8 @@ function createNewSegmentChildren(outlets: {[name: string]: readonly unknown[] |
   return children;
 }
 
-function stringify(params: Params): Params {
-  const res: Params = {};
+function stringify(params: Params): {[key: string]: string | string[]} {
+  const res: {[key: string]: string | string[]} = {};
   for (const [key, value] of Object.entries(params)) {
     res[key] = Array.isArray(value) ? value.map((item) => `${item}`) : `${value}`;
   }

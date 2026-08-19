@@ -1067,10 +1067,14 @@ export type UrlMatchResult = {
 export class UrlSegment {
     constructor(
     path: string,
-    parameters: Params);
+    parameters: {
+        [name: string]: string | string[];
+    });
     // (undocumented)
     get parameterMap(): ParamMap;
-    parameters: Params;
+    parameters: {
+        [name: string]: string | string[];
+    };
     path: string;
     toString(): string;
 }

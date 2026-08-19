@@ -383,7 +383,7 @@ export class UrlSegment {
     public path: string,
 
     /** The matrix parameters associated with a segment */
-    public parameters: Params,
+    public parameters: {[name: string]: string | string[]},
   ) {}
 
   get parameterMap(): ParamMap {
@@ -582,7 +582,7 @@ export function serializePath(path: UrlSegment): string {
   return `${encodeUriSegment(path.path)}${serializeMatrixParams(path.parameters)}`;
 }
 
-function serializeMatrixParams(params: Params): string {
+function serializeMatrixParams(params: {[key: string]: string | string[]}): string {
   return Object.entries(params)
     .map(([key, value]) => {
       return Array.isArray(value)
@@ -723,15 +723,15 @@ class UrlParser {
     return new UrlSegment(decode(path), this.parseMatrixParams());
   }
 
-  private parseMatrixParams(): Params {
-    const params: Params = {};
+  private parseMatrixParams(): {[key: string]: string | string[]} {
+    const params: {[key: string]: string | string[]} = {};
     while (this.consumeOptional(';')) {
       this.parseParam(params);
     }
     return params;
   }
 
-  private parseParam(params: Params): void {
+  private parseParam(params: {[key: string]: string | string[]}): void {
     const key = matchMatrixKeySegments(this.remaining);
     if (!key) {
       return;
@@ -746,19 +746,7 @@ class UrlParser {
       }
     }
 
-    const decodedKey = decode(key);
-    const decodedVal = decode(value);
-
-    if (Object.hasOwn(params, decodedKey)) {
-      let currentVal = params[decodedKey];
-      if (!Array.isArray(currentVal)) {
-        currentVal = [currentVal];
-        params[decodedKey] = currentVal;
-      }
-      currentVal.push(decodedVal);
-    } else {
-      params[decodedKey] = decodedVal;
-    }
+    appendParam(params, decode(key), decode(value));
   }
 
   // Parse a single query parameter `name[=value]`
@@ -777,21 +765,7 @@ class UrlParser {
       }
     }
 
-    const decodedKey = decodeQuery(key);
-    const decodedVal = decodeQuery(value);
-
-    if (Object.hasOwn(params, decodedKey)) {
-      // Append to existing values
-      let currentVal = params[decodedKey];
-      if (!Array.isArray(currentVal)) {
-        currentVal = [currentVal];
-        params[decodedKey] = currentVal;
-      }
-      currentVal.push(decodedVal);
-    } else {
-      // Create a new value
-      params[decodedKey] = decodedVal;
-    }
+    appendParam(params, decodeQuery(key), decodeQuery(value));
   }
 
   // parse `(a/b//outlet_name:c/d)`
@@ -857,6 +831,19 @@ class UrlParser {
         (typeof ngDevMode === 'undefined' || ngDevMode) && `Expected "${str}".`,
       );
     }
+  }
+}
+
+function appendParam(params: Params, key: string, value: string): void {
+  if (Object.hasOwn(params, key)) {
+    let currentVal = params[key];
+    if (!Array.isArray(currentVal)) {
+      currentVal = [currentVal];
+      params[key] = currentVal;
+    }
+    currentVal.push(value);
+  } else {
+    params[key] = value;
   }
 }
 
