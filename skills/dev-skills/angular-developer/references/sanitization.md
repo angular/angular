@@ -109,4 +109,3 @@ To enable Trusted Types in Angular:
 - **Minimize Bypassing**: Only bypass sanitization as a last resort. Always sanitize, strip, or validate content on the backend before relying on `DomSanitizer`.
 - **Never Trust Direct User Input**: Never pass raw, unvalidated user input directly into any `bypassSecurityTrust...` method. Pre-sanitize with a library like [DomPurify](https://github.com/cure53/dompurify) before calling `bypassSecurityTrustHtml`.
 - **Avoid Direct DOM Manipulation**: Do not use native DOM APIs like `Element.innerHTML` or `Element.setAttribute` directly. Use Angular template bindings (`[innerHTML]`, `[attr.href]`), which automatically apply sanitization.
-- **Use Computed Signals for Sanitization**: When using `DomSanitizer` in components, wrap the conversion inside a `computed` signal so it recalculates only when the input changes.
