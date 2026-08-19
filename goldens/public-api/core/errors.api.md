@@ -62,6 +62,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HYDRATION_MISSING_NODE = -502,
     // (undocumented)
+    HYDRATION_MISSING_NODE_ON_PATH = 509,
+    // (undocumented)
     HYDRATION_MISSING_SIBLINGS = -501,
     // (undocumented)
     HYDRATION_NODE_MISMATCH = -500,
@@ -145,6 +147,8 @@ export const enum RuntimeErrorCode {
     NO_SUPPORTING_DIFFER_FACTORY = 901,
     // (undocumented)
     OUTPUT_REF_DESTROYED = 953,
+    // (undocumented)
+    PARENT_NODE_NOT_FOUND = 510,
     // (undocumented)
     PIPE_NOT_FOUND = -302,
     // (undocumented)
