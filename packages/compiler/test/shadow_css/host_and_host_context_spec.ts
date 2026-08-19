@@ -187,6 +187,67 @@ describe('ShadowCss, :host and :host-context', () => {
       );
     });
 
+    it('should handle combinations of double :host-context and :where', () => {
+      // 1. :where on the outside containing two :host-context selectors chained
+      expect(
+        shim(':where(:host-context(.one):host-context(.two)) {}', 'contenta', 'a-host'),
+      ).toEqualCss(
+        ':where(.one.two[a-host]), :where(.one.two [a-host]), :where(.one .two[a-host]), ' +
+          ':where(.one .two [a-host]), :where(.two .one[a-host]), :where(.two .one [a-host]) {}',
+      );
+
+      // 2. :where on the outside containing two :host-context selectors as descendants
+      expect(
+        shim(':where(:host-context(.one) :host-context(.two)) {}', 'contenta', 'a-host'),
+      ).toEqualCss(
+        ':where(.one.two[a-host]), :where(.one.two [a-host]), :where(.one .two[a-host]), ' +
+          ':where(.one .two [a-host]), :where(.two .one[a-host]), :where(.two .one [a-host]) {}',
+      );
+
+      // 3. Mix: first :host-context inside :where, second :host-context outside
+      expect(
+        shim(':where(:host-context(.one)) :host-context(.two) {}', 'contenta', 'a-host'),
+      ).toEqualCss(
+        ':where(.one).two[a-host], :where(.one).two [a-host], :where(.one) .two[a-host], ' +
+          ':where(.one) .two [a-host], .two :where(.one)[a-host], .two :where(.one) [a-host] {}',
+      );
+
+      // 4. Mix: first :host-context outside, second :host-context inside :where
+      expect(
+        shim(':host-context(.one) :where(:host-context(.two)) {}', 'contenta', 'a-host'),
+      ).toEqualCss(
+        '.one:where(.two)[a-host], .one:where(.two) [a-host], .one :where(.two)[a-host], ' +
+          '.one :where(.two) [a-host], :where(.two) .one[a-host], :where(.two) .one [a-host] {}',
+      );
+
+      // 5. Two :host-context selectors with :where inside
+      expect(
+        shim(':host-context(:where(.one)) :host-context(:where(.two)) {}', 'contenta', 'a-host'),
+      ).toEqualCss(
+        ':where(.one):where(.two)[a-host], :where(.one):where(.two) [a-host], ' +
+          ':where(.one) :where(.two)[a-host], :where(.one) :where(.two) [a-host], ' +
+          ':where(.two) :where(.one)[a-host], :where(.two) :where(.one) [a-host] {}',
+      );
+
+      // 6. Mix: one :host-context inside :where, one :host-context with :where inside
+      expect(
+        shim(':where(:host-context(.one)) :host-context(:where(.two)) {}', 'contenta', 'a-host'),
+      ).toEqualCss(
+        ':where(.one):where(.two)[a-host], :where(.one):where(.two) [a-host], ' +
+          ':where(.one) :where(.two)[a-host], :where(.one) :where(.two) [a-host], ' +
+          ':where(.two) :where(.one)[a-host], :where(.two) :where(.one) [a-host] {}',
+      );
+
+      // 7. Mix: one :host-context with :where inside, one :host-context inside :where
+      expect(
+        shim(':host-context(:where(.one)) :where(:host-context(.two)) {}', 'contenta', 'a-host'),
+      ).toEqualCss(
+        ':where(.one):where(.two)[a-host], :where(.one):where(.two) [a-host], ' +
+          ':where(.one) :where(.two)[a-host], :where(.one) :where(.two) [a-host], ' +
+          ':where(.two) :where(.one)[a-host], :where(.two) :where(.one) [a-host] {}',
+      );
+    });
+
     it('should handle tag selector', () => {
       expect(shim(':host-context(div) {}', 'contenta', 'a-host')).toEqualCss(
         'div[a-host], div [a-host] {}',
@@ -212,6 +273,12 @@ describe('ShadowCss, :host and :host-context', () => {
       );
       expect(shim(':host-context([a=b]) {}', 'contenta', 'a-host')).toEqualCss(
         '[a=b][a-host], [a=b] [a-host] {}',
+      );
+      expect(
+        shim(':host-context([data-theme="dark,compact"]) .button {}', 'contenta', 'a-host'),
+      ).toEqualCss(
+        '[data-theme="dark,compact"][a-host] .button[contenta], ' +
+          '[data-theme="dark,compact"] [a-host] .button[contenta] {}',
       );
     });
 
@@ -278,6 +345,13 @@ describe('ShadowCss, :host and :host-context', () => {
       );
     });
 
+    it('should distribute preceding prefix across all permutations of multi-argument :host-context', () => {
+      expect(shim('div :host-context(.foo, .bar) span {}', 'contenta', 'a-host')).toEqualCss(
+        'div .foo[a-host] span[contenta], div .foo [a-host] span[contenta], ' +
+          'div .bar[a-host] span[contenta], div .bar [a-host] span[contenta] {}',
+      );
+    });
+
     it('should handle :host-context with comma-separated child selector', () => {
       expect(shim(':host-context(.foo) a:not(.a, .b) {}', 'contenta', 'a-host')).toEqualCss(
         '.foo[a-host] a[contenta]:not(.a, .b), .foo [a-host] a[contenta]:not(.a, .b) {}',
@@ -325,6 +399,23 @@ describe('ShadowCss, :host and :host-context', () => {
       );
     });
 
+    it('should handle selectors on different elements (prefixed :host-context)', () => {
+      expect(shim('.foo :host-context(div) :host(.x) > .y {}', 'contenta', 'a-host')).toEqualCss(
+        '.foo div .x[a-host] > .y[contenta] {}',
+      );
+
+      expect(
+        shim(
+          'body[data-cm-color-scheme=dark] :host-context(.cm-gm2) .cfc-message-warning {}',
+          'contenta',
+          'a-host',
+        ),
+      ).toEqualCss(
+        'body[data-cm-color-scheme=dark] .cm-gm2[a-host] .cfc-message-warning[contenta], ' +
+          'body[data-cm-color-scheme=dark] .cm-gm2 [a-host] .cfc-message-warning[contenta] {}',
+      );
+    });
+
     it('should parse multiple rules containing :host-context and :host', () => {
       const input = `
             :host-context(outer1) :host(bar) {}
@@ -332,6 +423,36 @@ describe('ShadowCss, :host and :host-context', () => {
         `;
       expect(shim(input, 'contenta', 'a-host')).toEqualCss(
         'outer1 bar[a-host] {} ' + 'outer2 foo[a-host] {}',
+      );
+    });
+
+    it('should maintain prefixed context on all host-context permutations in multi-rule stylesheets containing :host', () => {
+      const input = `
+        body[data-cm-color-scheme="dark"] :host-context(.cm-gm2) .foo {}
+        :host {}
+      `;
+      expect(shim(input, 'contenta', 'a-host')).toEqualCss(
+        'body[data-cm-color-scheme="dark"] .cm-gm2[a-host] .foo[contenta], ' +
+          'body[data-cm-color-scheme="dark"] .cm-gm2 [a-host] .foo[contenta] {} ' +
+          '[a-host] {}',
+      );
+    });
+
+    it('should handle preceding tag before :host-context', () => {
+      expect(shim('div:host-context(.bar) .zot { color: red; }', 'contenta', 'a-host')).toEqualCss(
+        'div.bar[a-host] .zot[contenta], div.bar [a-host] .zot[contenta] { color: red; }',
+      );
+    });
+
+    it('should handle preceding component selector before :host-context', () => {
+      expect(shim('app-card:host-context(.dark-theme) {}', 'contenta', 'a-host')).toEqualCss(
+        'app-card.dark-theme[a-host], app-card.dark-theme [a-host] {}',
+      );
+    });
+
+    it('should handle preceding class selector before :host-context', () => {
+      expect(shim('.foo :host-context(.bar) {}', 'contenta', 'a-host')).toEqualCss(
+        '.foo .bar[a-host], .foo .bar [a-host] {}',
       );
     });
   });
