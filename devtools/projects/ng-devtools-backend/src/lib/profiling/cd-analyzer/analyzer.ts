@@ -190,8 +190,8 @@ export class CdAnalyzerImpl implements CdAnalyzer {
   }
 
   private emit(current: CdData[], all: CdData[]) {
-    for (const l of this.listeners) {
-      l(current, all);
+    for (const listener of this.listeners) {
+      listener(current, all);
     }
   }
 }

@@ -46,6 +46,7 @@ function emitLatestCdData(cdAnalyzer: CdAnalyzer, messageBus: MessageBus<Events>
 function serializeCdData(data: CdData[]): CdElementData[] {
   return data.map((value) => ({
     element: value.elementPosition,
-    cdPassDurations: value.cdPassDurations,
+    cdCount: value.cdPassDurations.length,
+    lastCdPassDuration: value.cdPassDurations[value.cdPassDurations.length - 1],
   }));
 }

@@ -214,27 +214,18 @@ export class DirectiveExplorerComponent {
   }
 
   subscribeToBackendEvents(): void {
-    const latestCmpExplorerView = this._messageBus.on(
-      'latestComponentExplorerView',
-      (view: ComponentExplorerView) => {
-        this.forest.set(view.forest);
+    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
+      this.forest.set(view.forest);
 
-        this.currentSelectedElement.set(this._clickedElement);
-        if (view.properties && this._clickedElement) {
-          this._propResolver.setProperties(this._clickedElement, view.properties);
-        }
-      },
-    );
-
-    const cmpTreeDirty = this._messageBus.on('componentTreeDirty', () => this.refresh());
-
-    const latestCdData = this._messageBus.on('latestCdData', (cdData) => this.cdData.set(cdData));
-
-    inject(DestroyRef).onDestroy(() => {
-      latestCmpExplorerView();
-      cmpTreeDirty();
-      latestCdData();
+      this.currentSelectedElement.set(this._clickedElement);
+      if (view.properties && this._clickedElement) {
+        this._propResolver.setProperties(this._clickedElement, view.properties);
+      }
     });
+
+    this._messageBus.on('componentTreeDirty', () => this.refresh());
+
+    this._messageBus.on('latestCdData', (cdData) => this.cdData.set(cdData));
   }
 
   refresh(): void {

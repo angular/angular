@@ -106,20 +106,6 @@ export class TreeNodeComponent {
     return undefined;
   });
 
-  protected readonly printableCdData = computed(() => {
-    const cdData = this.nodeCdData();
-    if (!cdData) {
-      return null;
-    }
-
-    const cyclesLength = cdData.cdPassDurations.length;
-
-    return {
-      cyclesCount: cyclesLength,
-      lastCdPassDuration: cdData.cdPassDurations[cyclesLength - 1],
-    };
-  });
-
   private readonly nodeNameString = computed(() => getFullNodeNameString(this.node()));
 
   private matchedText: HTMLElement | null = null;
