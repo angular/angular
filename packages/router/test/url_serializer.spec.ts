@@ -348,6 +348,20 @@ describe('url serializer', () => {
       });
     });
 
+    it('should parse encoded parens around an outlet route', () => {
+      const tree = url.parse('/%28modal:reset%29');
+
+      expect(tree.root.children['modal'].segments[0].path).toBe('reset');
+      expect(url.serialize(tree)).toBe('/(modal:reset)');
+    });
+
+    it('should parse encoded parens around a child outlet route', () => {
+      const tree = url.parse('/parent/%28modal:reset%29');
+
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].path).toBe('parent');
+      expect(tree.root.children[PRIMARY_OUTLET].children['modal'].segments[0].path).toBe('reset');
+    });
+
     it('should serialize encoded parens in matrix params', () => {
       const testUrl = '/abc;foo=%28one%29';
 

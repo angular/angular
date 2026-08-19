@@ -600,9 +600,37 @@ function serializeQueryParams(params: {[key: string]: any}): string {
   return strParams.length ? `?${strParams.join('&')}` : '';
 }
 
-const SEGMENT_RE = /^[^\/()?;#]+/;
-function matchSegments(str: string): string {
-  const match = str.match(SEGMENT_RE);
+const SEGMENT_RE_DEFAULT = /^[^\/()?;#]+/;
+const SEGMENT_RE_ENCODED_PARENS = /^(?:(?!%28|%29)[^\/()?;#])+/i;
+const SEGMENT_RE_ENCODED_CLOSING_PAREN = /^(?:(?!%29)[^\/()?;#])+/i;
+
+/** Hexadecimal codes for URL syntax characters used by the router. */
+const EncodedUrlCharacters = {
+  OpenParenthesis: '28',
+  ClosingParenthesis: '29',
+} as const;
+
+/** Modes used when matching URL segments, including segments with encoded parentheses. */
+const SegmentMatchMode = {
+  Default: 'default',
+  EncodedParentheses: 'encodedParentheses',
+  EncodedClosingParenthesis: 'encodedClosingParenthesis',
+} as const;
+type SegmentMatchMode = (typeof SegmentMatchMode)[keyof typeof SegmentMatchMode];
+
+function matchSegments(str: string, mode: SegmentMatchMode = SegmentMatchMode.Default): string {
+  let segmentRegex: RegExp;
+  switch (mode) {
+    case SegmentMatchMode.EncodedParentheses:
+      segmentRegex = SEGMENT_RE_ENCODED_PARENS;
+      break;
+    case SegmentMatchMode.EncodedClosingParenthesis:
+      segmentRegex = SEGMENT_RE_ENCODED_CLOSING_PAREN;
+      break;
+    default:
+      segmentRegex = SEGMENT_RE_DEFAULT;
+  }
+  const match = str.match(segmentRegex);
   return match ? match[0] : '';
 }
 
@@ -628,6 +656,7 @@ function matchUrlQueryParamValue(str: string): string {
 
 class UrlParser {
   private remaining: string;
+  private segmentMatchMode: SegmentMatchMode = SegmentMatchMode.Default;
 
   constructor(private url: string) {
     this.remaining = url;
@@ -676,23 +705,35 @@ class UrlParser {
     this.consumeOptional('/');
 
     const segments: UrlSegment[] = [];
-    if (!this.peekStartsWith('(')) {
+    if (!(
+      this.peekStartsWith('(') || this.peekEncodedAt(0, EncodedUrlCharacters.OpenParenthesis)
+    )) {
       segments.push(this.parseSegment());
     }
 
-    while (this.peekStartsWith('/') && !this.peekStartsWith('//') && !this.peekStartsWith('/(')) {
+    while (
+      this.peekStartsWith('/') &&
+      !this.peekStartsWith('//') &&
+      !(
+        this.peekStartsWith('/(') ||
+        (this.peekStartsWith('/') && this.peekEncodedAt(1, EncodedUrlCharacters.OpenParenthesis))
+      )
+    ) {
       this.capture('/');
       segments.push(this.parseSegment());
     }
 
     let children: {[outlet: string]: UrlSegmentGroup} = {};
-    if (this.peekStartsWith('/(')) {
+    if (
+      this.peekStartsWith('/(') ||
+      (this.peekStartsWith('/') && this.peekEncodedAt(1, EncodedUrlCharacters.OpenParenthesis))
+    ) {
       this.capture('/');
       children = this.parseParens(true, depth);
     }
 
     let res: {[outlet: string]: UrlSegmentGroup} = {};
-    if (this.peekStartsWith('(')) {
+    if (this.peekStartsWith('(') || this.peekEncodedAt(0, EncodedUrlCharacters.OpenParenthesis)) {
       res = this.parseParens(false, depth);
     }
 
@@ -706,7 +747,7 @@ class UrlParser {
   // parse a segment with its matrix parameters
   // ie `name;k1=v1;k2`
   private parseSegment(): UrlSegment {
-    const path = matchSegments(this.remaining);
+    const path = matchSegments(this.remaining, this.segmentMatchMode);
     if (path === '' && this.peekStartsWith(';')) {
       throw new RuntimeError(
         RuntimeErrorCode.EMPTY_PATH_WITH_PARAMS,
@@ -735,7 +776,12 @@ class UrlParser {
     this.capture(key);
     let value: any = '';
     if (this.consumeOptional('=')) {
-      const valueMatch = matchSegments(this.remaining);
+      const valueMatch = matchSegments(
+        this.remaining,
+        this.segmentMatchMode === SegmentMatchMode.EncodedParentheses
+          ? SegmentMatchMode.EncodedClosingParenthesis
+          : this.segmentMatchMode,
+      );
       if (valueMatch) {
         value = valueMatch;
         this.capture(value);
@@ -778,54 +824,88 @@ class UrlParser {
     }
   }
 
-  // parse `(a/b//outlet_name:c/d)`
+  // Parse an outlet group such as `(a/b//outlet_name:c/d)` or its percent-encoded equivalent `%28a/b//outlet_name:c/d%29`.
   private parseParens(allowPrimary: boolean, depth: number): {[outlet: string]: UrlSegmentGroup} {
     // The outlet name is taken verbatim from the URL, so it can be `__proto__`. Indexing a plain
     // object with that key assigns through the inherited `__proto__` setter instead of creating an
     // outlet, which drops the outlet and mutates the map's prototype (and throws under Node's
     // `--disable-proto=throw`). A null-prototype map makes `__proto__` an ordinary key.
     const segments: {[key: string]: UrlSegmentGroup} = Object.create(null);
-    this.capture('(');
+    // The match mode is chosen from the opening delimiter of the group.
+    // If the group starts with an encoded opening parenthesis (%28), then we are parsing an
+    // encoded outlet group and must treat %29 as the closing delimiter as well.
+    // Otherwise, the group uses literal parentheses and we match against the unencoded form.
+    const previousSegmentMatchMode = this.segmentMatchMode;
+    this.segmentMatchMode = this.peekEncodedAt(0, EncodedUrlCharacters.OpenParenthesis)
+      ? SegmentMatchMode.EncodedParentheses
+      : SegmentMatchMode.Default;
 
-    while (!this.consumeOptional(')') && this.remaining.length > 0) {
-      const path = matchSegments(this.remaining);
-
-      const next = this.remaining[path.length];
-
-      // if is is not one of these characters, then the segment was unescaped
-      // or the group was not closed
-      if (next !== '/' && next !== ')' && next !== ';') {
-        throw new RuntimeError(
-          RuntimeErrorCode.UNPARSABLE_URL,
-          (typeof ngDevMode === 'undefined' || ngDevMode) && `Cannot parse url '${this.url}'`,
-        );
+    try {
+      if (this.segmentMatchMode === SegmentMatchMode.EncodedParentheses) {
+        this.captureEncoded(EncodedUrlCharacters.OpenParenthesis);
+      } else {
+        this.capture('(');
       }
 
-      let outletName: string | undefined;
-      if (path.indexOf(':') > -1) {
-        outletName = path.slice(0, path.indexOf(':'));
-        this.capture(outletName);
-        this.capture(':');
-      } else if (allowPrimary) {
-        outletName = PRIMARY_OUTLET;
+      while (
+        !this.consumeOptional(')') &&
+        !this.consumeOptionalEncoded(EncodedUrlCharacters.ClosingParenthesis) &&
+        this.remaining.length > 0
+      ) {
+        const path = matchSegments(this.remaining, this.segmentMatchMode);
+
+        const next = this.remaining[path.length];
+
+        // if is is not one of these characters (including the encoded closing parenthesis), then the segment was unescaped
+        // or the group was not closed
+        if (
+          next !== '/' &&
+          next !== ')' &&
+          next !== ';' &&
+          !(
+            this.segmentMatchMode === SegmentMatchMode.EncodedParentheses &&
+            this.peekEncodedAt(path.length, EncodedUrlCharacters.ClosingParenthesis)
+          )
+        ) {
+          throw new RuntimeError(
+            RuntimeErrorCode.UNPARSABLE_URL,
+            (typeof ngDevMode === 'undefined' || ngDevMode) && `Cannot parse url '${this.url}'`,
+          );
+        }
+
+        let outletName: string | undefined;
+        if (path.indexOf(':') > -1) {
+          outletName = path.slice(0, path.indexOf(':'));
+          this.capture(outletName);
+          this.capture(':');
+        } else if (allowPrimary) {
+          outletName = PRIMARY_OUTLET;
+        }
+
+        const children = this.parseChildren(depth + 1);
+        segments[outletName ?? PRIMARY_OUTLET] =
+          Object.keys(children).length === 1 && children[PRIMARY_OUTLET]
+            ? children[PRIMARY_OUTLET]
+            : new UrlSegmentGroup([], children);
+        this.consumeOptional('//');
       }
 
-      const children = this.parseChildren(depth + 1);
-      segments[outletName ?? PRIMARY_OUTLET] =
-        Object.keys(children).length === 1 && children[PRIMARY_OUTLET]
-          ? children[PRIMARY_OUTLET]
-          : new UrlSegmentGroup([], children);
-      this.consumeOptional('//');
+      return segments;
+    } finally {
+      this.segmentMatchMode = previousSegmentMatchMode;
     }
-
-    return segments;
   }
 
   private peekStartsWith(str: string): boolean {
     return this.remaining.startsWith(str);
   }
 
-  // Consumes the prefix when it is present and returns whether it has been consumed
+  // Check for an encoded delimiter prefix at a specific position.
+  private peekEncodedAt(offset: number, hex: string): boolean {
+    return this.remaining.slice(offset, offset + 3).toLowerCase() === `%${hex}`;
+  }
+
+  // Consume a literal prefix when present.
   private consumeOptional(str: string): boolean {
     if (this.peekStartsWith(str)) {
       this.remaining = this.remaining.substring(str.length);
@@ -834,6 +914,26 @@ class UrlParser {
     return false;
   }
 
+  // Consume an encoded delimiter when present.
+  private consumeOptionalEncoded(hex: string): boolean {
+    if (this.peekEncodedAt(0, hex)) {
+      this.remaining = this.remaining.substring(3);
+      return true;
+    }
+    return false;
+  }
+
+  // Require and consume an encoded delimiter.
+  private captureEncoded(hex: string): void {
+    if (!this.consumeOptionalEncoded(hex)) {
+      throw new RuntimeError(
+        RuntimeErrorCode.UNEXPECTED_VALUE_IN_URL,
+        (typeof ngDevMode === 'undefined' || ngDevMode) && `Expected "%${hex}".`,
+      );
+    }
+  }
+
+  // Require and consume a literal prefix.
   private capture(str: string): void {
     if (!this.consumeOptional(str)) {
       throw new RuntimeError(

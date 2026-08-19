@@ -495,6 +495,14 @@ describe('recognize', () => {
         checkActivatedRoute(s.root.children[0].children[0], 'b', {}, ComponentB, 'b');
       });
 
+      it('should recognize an outlet route with encoded parentheses', async () => {
+        const s = await recognize(
+          [{path: 'reset', outlet: 'modal', component: ComponentB}],
+          '%28modal:reset%29',
+        );
+        checkActivatedRoute(s.root.children[0], 'reset', {}, ComponentB, 'modal');
+      });
+
       it('should work for outlets adjacent to empty path', async () => {
         const s = await recognize(
           [
