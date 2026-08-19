@@ -383,7 +383,7 @@ export class UrlSegment {
     public path: string,
 
     /** The matrix parameters associated with a segment */
-    public parameters: {[name: string]: string},
+    public parameters: Params,
   ) {}
 
   get parameterMap(): ParamMap {
@@ -582,9 +582,13 @@ export function serializePath(path: UrlSegment): string {
   return `${encodeUriSegment(path.path)}${serializeMatrixParams(path.parameters)}`;
 }
 
-function serializeMatrixParams(params: {[key: string]: string}): string {
+function serializeMatrixParams(params: Params): string {
   return Object.entries(params)
-    .map(([key, value]) => `;${encodeUriSegment(key)}=${encodeUriSegment(value)}`)
+    .map(([key, value]) => {
+      return Array.isArray(value)
+        ? value.map((item) => `;${encodeUriSegment(key)}=${encodeUriSegment(item)}`).join('')
+        : `;${encodeUriSegment(key)}=${encodeUriSegment(value)}`;
+    })
     .join('');
 }
 
@@ -719,15 +723,15 @@ class UrlParser {
     return new UrlSegment(decode(path), this.parseMatrixParams());
   }
 
-  private parseMatrixParams(): {[key: string]: string} {
-    const params: {[key: string]: string} = {};
+  private parseMatrixParams(): Params {
+    const params: Params = {};
     while (this.consumeOptional(';')) {
       this.parseParam(params);
     }
     return params;
   }
 
-  private parseParam(params: {[key: string]: string}): void {
+  private parseParam(params: Params): void {
     const key = matchMatrixKeySegments(this.remaining);
     if (!key) {
       return;
@@ -742,7 +746,19 @@ class UrlParser {
       }
     }
 
-    params[decode(key)] = decode(value);
+    const decodedKey = decode(key);
+    const decodedVal = decode(value);
+
+    if (Object.hasOwn(params, decodedKey)) {
+      let currentVal = params[decodedKey];
+      if (!Array.isArray(currentVal)) {
+        currentVal = [currentVal];
+        params[decodedKey] = currentVal;
+      }
+      currentVal.push(decodedVal);
+    } else {
+      params[decodedKey] = decodedVal;
+    }
   }
 
   // Parse a single query parameter `name[=value]`

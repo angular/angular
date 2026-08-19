@@ -159,11 +159,12 @@ describe('recognize', () => {
         {path: 'a', component: ComponentA, children: [{path: 'b', component: ComponentB}]},
         {path: 'c', component: ComponentC, outlet: 'left'},
       ],
-      'a;a1=11;a2=22/b;b1=111;b2=222(left:c;c1=1111;c2=2222)',
+      'a;a1=11;a2=22;a2=33/b;b1=111;b2=222(left:c;c1=1111;c2=2222)',
       'emptyOnly',
     );
     const c = s.root.children;
-    checkActivatedRoute(c[0], 'a', {a1: '11', a2: '22'}, ComponentA);
+    checkActivatedRoute(c[0], 'a', {a1: '11', a2: ['22', '33']}, ComponentA);
+    expect(c[0].paramMap.getAll('a2')).toEqual(['22', '33']);
     checkActivatedRoute(c[0].firstChild!, 'b', {b1: '111', b2: '222'}, ComponentB);
     checkActivatedRoute(c[1], 'c', {c1: '1111', c2: '2222'}, ComponentC, 'left');
   });

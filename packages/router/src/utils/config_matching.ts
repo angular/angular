@@ -13,7 +13,7 @@ import {map} from 'rxjs/operators';
 import {PartialMatchRouteSnapshot, Route} from '../models';
 import {runCanMatchGuards} from '../operators/check_guards';
 import {ActivatedRouteSnapshot} from '../router_state';
-import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
+import {defaultUrlMatcher, Params, PRIMARY_OUTLET} from '../shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
 import {getOrCreateRouteInjectorIfNeeded, getOutlet} from './config';
@@ -22,7 +22,7 @@ export interface MatchResult {
   matched: boolean;
   consumedSegments: UrlSegment[];
   remainingSegments: UrlSegment[];
-  parameters: {[k: string]: string};
+  parameters: Params;
   positionalParamSegments: {[k: string]: UrlSegment};
 }
 

@@ -169,6 +169,24 @@ describe('url serializer', () => {
     expect(url.serialize(tree)).toEqual('/one;a=');
   });
 
+  it('should handle multiple matrix params of the same name as an array', () => {
+    const tree = url.parse('/one;a=foo;a=bar;a=swaz');
+    const segment = tree.root.children[PRIMARY_OUTLET].segments[0];
+
+    expect(segment.parameters).toEqual({a: ['foo', 'bar', 'swaz']});
+    expect(segment.parameterMap.get('a')).toEqual('foo');
+    expect(segment.parameterMap.getAll('a')).toEqual(['foo', 'bar', 'swaz']);
+    expect(url.serialize(tree)).toEqual('/one;a=foo;a=bar;a=swaz');
+  });
+
+  it('should preserve commas in matrix param values', () => {
+    const tree = url.parse('/one;a=foo,bar');
+    const segment = tree.root.children[PRIMARY_OUTLET].segments[0];
+
+    expect(segment.parameterMap.getAll('a')).toEqual(['foo,bar']);
+    expect(url.serialize(tree)).toEqual('/one;a=foo,bar');
+  });
+
   it('should parse query params (root)', () => {
     const tree = url.parse('/?a=1&b=2');
     expect(tree.root.children).toEqual({});

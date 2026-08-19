@@ -452,6 +452,24 @@ describe('createUrlTree', () => {
     expect(serializer.serialize(t)).toEqual('/a/b;aa=22;bb=33');
   });
 
+  it('should support matrix parameters with multiple values', async () => {
+    const p = serializer.parse('/a');
+    const t = await createRoot(p, ['/a', {m: ['v1', 'v2']}]);
+    const segment = t.root.children[PRIMARY_OUTLET].segments[0];
+
+    expect(segment.parameters).toEqual({m: ['v1', 'v2']});
+    expect(segment.parameterMap.get('m')).toEqual('v1');
+    expect(segment.parameterMap.getAll('m')).toEqual(['v1', 'v2']);
+    expect(serializer.serialize(t)).toEqual('/a;m=v1;m=v2');
+  });
+
+  it('should omit matrix parameters with empty arrays as values', async () => {
+    const p = serializer.parse('/a');
+    const t = await createRoot(p, ['/a', {m: [], n: 1}]);
+
+    expect(serializer.serialize(t)).toEqual('/a;n=1');
+  });
+
   it('should stringify matrix parameters', async () => {
     await router.navigateByUrl('/a');
     const relative = create(router.routerState.root.children[0], [{pp: 22}]);
