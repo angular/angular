@@ -19,7 +19,8 @@ import * as eventLib from './event';
  * Since maps from event to action are immutable we can use a single map
  * to represent the empty map.
  */
-const EMPTY_ACTION_MAP: {[key: string]: string} = {};
+// tslint:disable-next-line:no-toplevel-property-access
+const EMPTY_ACTION_MAP: {[key: string]: string} = /* @__PURE__ */ Object.create(null);
 
 /**
  * This regular expression matches a semicolon.
@@ -258,7 +259,7 @@ export class ActionResolver {
       } else {
         actionMap = cache.getParsed(jsactionAttribute);
         if (!actionMap) {
-          actionMap = {};
+          actionMap = Object.create(null) as {[key: string]: string | undefined};
           const values = jsactionAttribute.split(REGEXP_SEMICOLON);
           for (let idx = 0; idx < values.length; idx++) {
             const value = values[idx];
