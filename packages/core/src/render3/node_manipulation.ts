@@ -8,6 +8,7 @@
 
 import {consumerDestroy, setActiveConsumer} from '../../primitives/signals';
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {ViewEncapsulation} from '../metadata/view';
@@ -486,7 +487,20 @@ function executeOnDestroys(tView: TView, lView: LView): void {
  * @param tNode: `TNode` for which we wish to retrieve render parent.
  * @param lView: Current `LView`.
  */
-export function getParentRElement(tView: TView, tNode: TNode, lView: LView): RElement | null {
+export function getParentRElement(
+  tView: TView,
+  tNode: TNode | null,
+  lView: LView,
+): RElement | null {
+  // `tNode` is normally always defined here. Guard against it anyway so production throws a
+  // coded RuntimeError instead of a raw TypeError when dereferencing `tNode.parent` below.
+  if (tNode === null) {
+    throw new RuntimeError(
+      RuntimeErrorCode.PARENT_NODE_NOT_FOUND,
+      ngDevMode &&
+        'getParentRElement() was called with a null TNode, so no parent element could be resolved. This usually means a TNode was never created for this node, or was already destroyed.',
+    );
+  }
   return getClosestRElement(tView, tNode.parent, lView);
 }
 

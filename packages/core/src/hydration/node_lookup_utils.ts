@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {
@@ -184,6 +185,16 @@ export function siblingAfter<T extends RNode>(skip: number, from: RNode): T | nu
   let currentNode = from;
   for (let i = 0; i < skip; i++) {
     ngDevMode && validateSiblingNodeExists(currentNode);
+    // `validateSiblingNodeExists` above would normally catch a missing sibling too, but it's
+    // dev-mode only. Guard against it here so production throws a coded RuntimeError instead
+    // of a raw TypeError when dereferencing `currentNode` below.
+    if (currentNode == null) {
+      throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_MISSING_SIBLINGS,
+        ngDevMode &&
+          'During hydration Angular expected more sibling nodes to be present. This usually means the client-rendered DOM no longer matches the server-rendered HTML.',
+      );
+    }
     currentNode = currentNode.nextSibling!;
   }
   return currentNode as T;
@@ -219,6 +230,16 @@ function navigateToNode(from: Node, instructions: (number | NodeNavigationStep)[
       if (ngDevMode && !node) {
         throw nodeNotFoundAtPathError(from, stringifyNavigationInstructions(instructions));
       }
+      // `nodeNotFoundAtPathError` above would normally catch a missing node too, but it's
+      // dev-mode only. Guard against it here so production throws a coded RuntimeError instead
+      // of a raw TypeError when dereferencing `node` below.
+      if (!node) {
+        throw new RuntimeError(
+          RuntimeErrorCode.HYDRATION_MISSING_NODE_ON_PATH,
+          ngDevMode &&
+            'During hydration Angular was unable to locate a node using a recorded navigation path. This usually means the client-rendered DOM no longer matches the server-rendered HTML.',
+        );
+      }
       switch (step) {
         case NODE_NAVIGATION_STEP_FIRST_CHILD:
           node = node.firstChild!;
@@ -231,6 +252,17 @@ function navigateToNode(from: Node, instructions: (number | NodeNavigationStep)[
   }
   if (ngDevMode && !node) {
     throw nodeNotFoundAtPathError(from, stringifyNavigationInstructions(instructions));
+  }
+  // Same as above: `node` can legitimately end up null here (the path's last step ran off
+  // the end of the real DOM) without the loop ever dereferencing it further, so the raw
+  // TypeError guard above never gets a chance to fire for this case. Catch it here instead,
+  // since this function's return type promises a non-null `RNode`.
+  if (!node) {
+    throw new RuntimeError(
+      RuntimeErrorCode.HYDRATION_MISSING_NODE_ON_PATH,
+      ngDevMode &&
+        'During hydration Angular was unable to locate a node using a recorded navigation path. This usually means the client-rendered DOM no longer matches the server-rendered HTML.',
+    );
   }
   return node as RNode;
 }

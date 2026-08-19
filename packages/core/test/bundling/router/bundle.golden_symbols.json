@@ -568,7 +568,6 @@
       "defaultUrlMatcher",
       "defer",
       "delayChangeDetectionForEvents",
-      "describeDomNode",
       "destroyLView",
       "destroyViewTree",
       "detachMovedView",
