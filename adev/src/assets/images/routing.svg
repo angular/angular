@@ -107,7 +107,7 @@
     d="M32.8389 19.0624H24.959V26.9423H32.8389V19.0624Z"
     stroke="var(--primary-contrast)"
     stroke-width="0.5"
-    stroke-miterlimit="10"black
+    stroke-miterlimit="10"
   />
   <path
     d="M17.7204 0.725342H13.5276V4.91808H17.7204V0.725342Z"
