@@ -16,7 +16,7 @@ import {IdentityTracker} from '../../directive-forest/identity-tracker/identity-
 let analyzer: CdAnalyzerImpl | null = null;
 
 // A set of analyzer consumers
-const consumers = new Set<string>([]);
+const consumers = new Set<Symbol>();
 
 /**
  * Data emitted from the `CDAnalyzer` for a specific component
@@ -47,37 +47,23 @@ export interface CdAnalyzer {
 
 /**
  * Get the current `CDAnalyzer` (existing or new).
- *
- * If a consumer key is NOT provided, the function will
- * return an analyzer ONLY if it already exists.
- *
- * If a consumer key is provided, the function will
- * always return an analyzer – the existing one or
- * a newly created.
+ * @returns An object with the analyzer and a dispose function.
+ * The analyzer will be disposed only when there are no remaining consumers.
  */
-export function getCdAnalyzer(consumer: string): CdAnalyzer;
-export function getCdAnalyzer(): CdAnalyzer | null;
-export function getCdAnalyzer(consumer?: string): CdAnalyzer | null {
-  if (consumer === undefined) {
-    return analyzer;
-  }
-  if (!consumer.length) {
-    throw new Error('The consumer cannot be an empty string.');
-  }
-
+export function getCdAnalyzer(): {analyzer: CdAnalyzer; disposeFn: () => void} {
   if (!analyzer) {
     analyzer = new CdAnalyzerImpl(getProfiler());
   }
+  const consumer = Symbol('consumer');
   consumers.add(consumer);
 
-  return analyzer;
+  return {
+    analyzer,
+    disposeFn: () => gracefullyDisposeAnalyzer(consumer),
+  };
 }
 
-/**
- * Attempts to dispose an analyzer if the provided
- * consumer is the only remaining dependent.
- */
-export function gracefullyDisposeAnalyzer(consumer: string) {
+function gracefullyDisposeAnalyzer(consumer: Symbol) {
   consumers.delete(consumer);
 
   if (!consumers.size) {
@@ -108,7 +94,10 @@ export class CdAnalyzerImpl implements CdAnalyzer {
         this.inCd = true;
 
         runOutsideAngular(() => {
-          Promise.resolve().then(() => {
+          // The queued microtask quarantees that it will
+          // be executed right after the current synchronous CD cycle
+          // completes, marking its end.
+          queueMicrotask(() => {
             this.inCd = false;
 
             for (const [cmpId, time] of this.currCycleAccumProcessingTimes) {
@@ -190,8 +179,8 @@ export class CdAnalyzerImpl implements CdAnalyzer {
   }
 
   private emit(current: CdData[], all: CdData[]) {
-    for (const l of this.listeners) {
-      l(current, all);
+    for (const listener of this.listeners) {
+      listener(current, all);
     }
   }
 }

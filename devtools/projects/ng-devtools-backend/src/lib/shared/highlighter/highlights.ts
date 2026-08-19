@@ -108,6 +108,10 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
     return this.template.type;
   }
 
+  get isDestroyed() {
+    return this.destroyed;
+  }
+
   /** Update a label of the highlight. */
   updateLabel(labelId: keyof T, ...props: Parameters<T[keyof T]>) {
     const labelContent = this.template.labels[labelId].content(...props);
@@ -122,9 +126,8 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
 
   /**
    * Remove the highlight.
-   * @param silent Do not log reference-related warnings. Check method implementation.
    */
-  destroy(silent?: boolean) {
+  destroy() {
     // Since there is a chance that there are references
     // outside of `highlighter.ts`, we store the destroy state.
     // Ideally, we should clean up all references.
@@ -134,9 +137,7 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
     // are not guaranteed to happen immediately.
     // This is merely a warning to be diligent with references storing.
     if (this.destroyed) {
-      if (!silent) {
-        debugLog.warn('The highlight has already been destroyed. Check references storing.');
-      }
+      debugLog.warn('The highlight has already been destroyed. Check references storing.');
       return;
     }
     if (this.ttlTimeout) {

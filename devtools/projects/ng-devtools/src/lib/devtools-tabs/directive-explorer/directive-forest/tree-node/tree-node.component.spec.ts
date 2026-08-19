@@ -283,8 +283,8 @@ describe('TreeNodeComponent', () => {
   });
 
   describe('Change detection cycle pills', () => {
-    function setCdData(cdPassDurations: number[]) {
-      const cdData: CdElementData = {element: [0], cdPassDurations};
+    function setCdData(lastCdPassDuration: number, cdCount: number) {
+      const cdData: CdElementData = {element: [0], lastCdPassDuration, cdCount};
       fixture.componentRef.setInput('nodeCdData', cdData);
       return fixture.whenStable();
     }
@@ -295,21 +295,21 @@ describe('TreeNodeComponent', () => {
     });
 
     it('should render the number of recorded CD cycles', async () => {
-      await setCdData([1.2, 3.4, 5.6]);
+      await setCdData(5.6, 3);
 
       const cycleCount = fixture.debugElement.query(By.css('.cycle-count'));
       expect(cycleCount.nativeElement.textContent).toBe('x3');
     });
 
     it('should render the duration of the last CD cycle, rounded to one decimal', async () => {
-      await setCdData([1.2, 3.456]);
+      await setCdData(3.456, 2);
 
       const cycleDuration = fixture.debugElement.query(By.css('.cycle-duration'));
       expect(cycleDuration.nativeElement.textContent).toBe('3.5 ms');
     });
 
     it('should NOT mark the pill as a dropped frame, if under 60 fps (16.6 ms)', async () => {
-      await setCdData([10]);
+      await setCdData(10, 1);
 
       const cycleDuration = fixture.debugElement.query(By.css('.cycle-duration'));
       expect(cycleDuration.nativeElement.classList.contains('frame-dropped')).toBeFalse();
@@ -319,7 +319,7 @@ describe('TreeNodeComponent', () => {
     });
 
     it('should mark the pill as a dropped frame, if over 60 fps (16.6 ms)', async () => {
-      await setCdData([20]);
+      await setCdData(20, 1);
 
       const cycleDuration = fixture.debugElement.query(By.css('.cycle-duration'));
       expect(cycleDuration.nativeElement.classList.contains('frame-dropped')).toBeTrue();

@@ -386,7 +386,8 @@ export type TransferStateValue =
 
 export interface CdElementData {
   element: ElementPosition;
-  cdPassDurations: number[];
+  lastCdPassDuration: number;
+  cdCount: number;
 }
 
 export interface Events {

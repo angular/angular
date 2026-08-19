@@ -8,4 +8,4 @@
 
 export {enableCdHighlighting, disableCdHighlighting} from './highlighting';
 export {enableCdDataStream, disableCdDataStream} from './data-stream';
-export {type CdData, getCdAnalyzer, gracefullyDisposeAnalyzer} from './analyzer';
+export {type CdData, getCdAnalyzer} from './analyzer';

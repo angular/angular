@@ -19,25 +19,26 @@ import {
   HighlightType,
 } from '../../shared/highlighter/highlights';
 import {ngDebugClient} from '../../shared/ng-debug-api/ng-debug-api';
-import {CdAnalyzer, getCdAnalyzer, gracefullyDisposeAnalyzer} from './analyzer';
+import {CdAnalyzer, getCdAnalyzer} from './analyzer';
 
 // State of change detection highlighting
 let isCdHighlightingEnabled = false;
 
 let cdAnalyzerUnsubscriber: (() => void) | undefined;
-
-const ANALYZER_CONSUMER_KEY = 'cd-highlighting';
+let cdAnalyzerDispose: (() => void) | undefined;
 
 export function enableCdHighlighting() {
   if (!isCdHighlightingEnabled) {
-    initCdHighlighting(getCdAnalyzer(ANALYZER_CONSUMER_KEY));
+    const {analyzer, disposeFn} = getCdAnalyzer();
+    cdAnalyzerDispose = disposeFn;
+    initCdHighlighting(analyzer);
   }
   isCdHighlightingEnabled = true;
 }
 
 export function disableCdHighlighting() {
   cdAnalyzerUnsubscriber?.();
-  gracefullyDisposeAnalyzer(ANALYZER_CONSUMER_KEY);
+  cdAnalyzerDispose?.();
   removeHighlightsByType(HighlightType.ChangeDetection);
   isCdHighlightingEnabled = false;
 }
@@ -58,11 +59,14 @@ function initCdHighlighting(cdAnalyzer: CdAnalyzer) {
       }
 
       const currentHighlight = activeHighlights.get(element)?.deref();
-      // We use silent mode for the destroy, since it's not guaranteed
-      // that the WeakRef will be immediately disposed after the highlight
-      // has been cleaned up from the global state. Still, we use a WeakRef
-      // to avoid any other leakages.
-      currentHighlight?.destroy(true);
+
+      // We check if the highlight is already detroyed, before attempting to destroy it.
+      // This is needed in order to avoid warning messages for already destroyed instance.
+      // In the case of CD highlighting, this can occur due to WeakRef<Highlight> not being
+      // immediately cleared by GC after all references had been removed.
+      if (!currentHighlight?.isDestroyed) {
+        currentHighlight?.destroy();
+      }
 
       const newHighlight = highlightElement(element, changeDetectionHighlightTemplate, {
         'component-name': [getDirectiveName(cmp)],

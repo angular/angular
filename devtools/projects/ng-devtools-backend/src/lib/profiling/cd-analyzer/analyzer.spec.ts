@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CdAnalyzerImpl, CdData, getCdAnalyzer, gracefullyDisposeAnalyzer} from './analyzer';
+import {CdAnalyzerImpl, CdData, getCdAnalyzer} from './analyzer';
 import {Profiler, Hooks} from '../profiler';
 import type {ElementPosition} from '../../../../../protocol';
 import {IdentityTracker} from '../../directive-forest/identity-tracker/identity-tracker';
@@ -181,23 +181,23 @@ describe('CD analyzer', () => {
     });
   });
 
-  describe('getCdAnalyzer and gracefullyDisposeAnalyzer', () => {
+  describe('getCdAnalyzer', () => {
     const globalWithDebugApi = window as unknown as {ng?: unknown};
     let origDebugApi: unknown;
-
-    const CONSM_FOO = 'consumer-foo';
-    const CONSM_BAR = 'consumer-bar';
+    let disposeFns: Array<() => void>;
 
     beforeEach(() => {
       origDebugApi = globalWithDebugApi.ng;
       globalWithDebugApi.ng = {};
+      disposeFns = [];
     });
 
     afterEach(() => {
       // Ensure no analyzer/consumer state leaks into the next test,
       // regardless of whether the test itself disposed everything it created.
-      gracefullyDisposeAnalyzer(CONSM_FOO);
-      gracefullyDisposeAnalyzer(CONSM_BAR);
+      for (const dispose of disposeFns) {
+        dispose();
+      }
 
       if (!origDebugApi) {
         delete globalWithDebugApi.ng;
@@ -206,34 +206,38 @@ describe('CD analyzer', () => {
       }
     });
 
+    // Track the returned `disposeFn` so the analyzer gets cleaned up in `afterEach`.
+    function trackedGetCdAnalyzer() {
+      const result = getCdAnalyzer();
+      disposeFns.push(result.disposeFn);
+      return result;
+    }
+
     it('should reuse the same analyzer instance for multiple consumers', () => {
-      const foo = getCdAnalyzer(CONSM_FOO);
-      const bar = getCdAnalyzer(CONSM_BAR);
+      const foo = trackedGetCdAnalyzer();
+      const bar = trackedGetCdAnalyzer();
 
-      expect(foo).not.toBeNull();
-      expect(foo).toBe(bar);
+      expect(foo.analyzer).not.toBeNull();
+      expect(foo.analyzer).toBe(bar.analyzer);
     });
 
-    it('should throw an error for an empty consumer key', () => {
-      expect(() => getCdAnalyzer('')).toThrowError('The consumer cannot be an empty string.');
+    it('should dispose the analyzer, if there is a single consumer', () => {
+      const foo = trackedGetCdAnalyzer();
+
+      foo.disposeFn();
+
+      const bar = trackedGetCdAnalyzer();
+      expect(bar.analyzer).not.toBe(foo.analyzer);
     });
 
-    it('should gracefully dispose an analyzer, if there is a single consumer', () => {
-      expect(getCdAnalyzer()).toBeNull();
+    it('should keep the analyzer after a disposal attempt when there are multiple consumers', () => {
+      const foo = trackedGetCdAnalyzer();
+      const bar = trackedGetCdAnalyzer();
 
-      const created = getCdAnalyzer(CONSM_FOO);
-      expect(getCdAnalyzer()).toBe(created);
+      foo.disposeFn();
 
-      gracefullyDisposeAnalyzer(CONSM_FOO);
-      expect(getCdAnalyzer()).toBeNull();
-    });
-
-    it('should keep an analyzer after disposal attempt when there are multiple consumers', () => {
-      const foo = getCdAnalyzer(CONSM_FOO);
-      getCdAnalyzer(CONSM_BAR);
-
-      gracefullyDisposeAnalyzer(CONSM_FOO);
-      expect(getCdAnalyzer(CONSM_BAR)).toBe(foo);
+      const baz = trackedGetCdAnalyzer();
+      expect(baz.analyzer).toBe(foo.analyzer);
     });
   });
 });

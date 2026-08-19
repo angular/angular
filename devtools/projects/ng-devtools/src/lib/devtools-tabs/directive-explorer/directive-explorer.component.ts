@@ -18,7 +18,7 @@ import {
   computed,
   DestroyRef,
   untracked,
-  effect,
+  linkedSignal,
 } from '@angular/core';
 import {
   CdElementData,
@@ -123,7 +123,6 @@ export class DirectiveExplorerComponent {
   readonly forest = signal<DevToolsNode[]>([]);
   readonly splitDirection = signal<'horizontal' | 'vertical'>('horizontal');
   readonly parents = signal<FlatNode[] | null>(null);
-  readonly cdData = signal<CdElementData[] | null>(null);
 
   readonly signalsOpen = signal(false);
 
@@ -150,6 +149,18 @@ export class DirectiveExplorerComponent {
 
   protected readonly forestSplitSize = signal<number>(FOREST_VER_SPLIT_SIZE);
   protected readonly signalGraphSplitSize = signal<number>(SIGNAL_GRAPH_VER_SPLIT_SIZE);
+
+  protected readonly cdData = linkedSignal<boolean, CdElementData[] | null>({
+    source: this.settings.showCdInExplorer,
+    computation: (showCdInExplorer, prev) => {
+      // We reset the `cdData` if the feature
+      // is disabled from the settings.
+      if (!showCdInExplorer) {
+        return null;
+      }
+      return prev?.value ?? null;
+    },
+  });
 
   private readonly currentElementPos = computed(() => this.currentSelectedElement()?.position);
 
@@ -182,13 +193,6 @@ export class DirectiveExplorerComponent {
     inject(DestroyRef).onDestroy(() => {
       this.signalGraph.destroy();
     });
-
-    effect(() => {
-      // Clean the CD data if the feature is disabled.
-      if (!this.settings.showCdInExplorer()) {
-        this.cdData.set(null);
-      }
-    });
   }
 
   private isNonTopLevelFirefoxFrame() {
@@ -214,27 +218,18 @@ export class DirectiveExplorerComponent {
   }
 
   subscribeToBackendEvents(): void {
-    const latestCmpExplorerView = this._messageBus.on(
-      'latestComponentExplorerView',
-      (view: ComponentExplorerView) => {
-        this.forest.set(view.forest);
+    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
+      this.forest.set(view.forest);
 
-        this.currentSelectedElement.set(this._clickedElement);
-        if (view.properties && this._clickedElement) {
-          this._propResolver.setProperties(this._clickedElement, view.properties);
-        }
-      },
-    );
-
-    const cmpTreeDirty = this._messageBus.on('componentTreeDirty', () => this.refresh());
-
-    const latestCdData = this._messageBus.on('latestCdData', (cdData) => this.cdData.set(cdData));
-
-    inject(DestroyRef).onDestroy(() => {
-      latestCmpExplorerView();
-      cmpTreeDirty();
-      latestCdData();
+      this.currentSelectedElement.set(this._clickedElement);
+      if (view.properties && this._clickedElement) {
+        this._propResolver.setProperties(this._clickedElement, view.properties);
+      }
     });
+
+    this._messageBus.on('componentTreeDirty', () => this.refresh());
+
+    this._messageBus.on('latestCdData', (cdData) => this.cdData.set(cdData));
   }
 
   refresh(): void {

@@ -56,10 +56,10 @@
     <span class="console-reference trait"> == $ng0 </span>
   }
 
-  @if (printableCdData(); as cd) {
+  @if (nodeCdData(); as cd) {
     @let below60fps = cd.lastCdPassDuration > FPS_60;
 
-    <span class="pill cycle-count">x{{ cd.cyclesCount }}</span>
+    <span class="pill cycle-count">x{{ cd.cdCount }}</span>
     <span
       class="pill cycle-duration"
       [class.frame-dropped]="below60fps"

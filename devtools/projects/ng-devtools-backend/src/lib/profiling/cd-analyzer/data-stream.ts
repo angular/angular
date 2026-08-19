@@ -13,18 +13,19 @@
  */
 
 import {CdElementData, Events, MessageBus} from '../../../../../protocol';
-import {CdAnalyzer, CdData, getCdAnalyzer, gracefullyDisposeAnalyzer} from './analyzer';
+import {CdAnalyzer, CdData, getCdAnalyzer} from './analyzer';
 
 // State of change detection data streaming
 let isCdDataStreamEnabled = false;
 let cdAnalyzerUnsubscriber: (() => void) | undefined;
-
-const ANALYZER_CONSUMER_KEY = 'cd-data-stream';
+let cdAnalyzerDispose: (() => void) | undefined;
 
 export function enableCdDataStream(messageBus: MessageBus<Events>) {
   return () => {
     if (!isCdDataStreamEnabled) {
-      emitLatestCdData(getCdAnalyzer(ANALYZER_CONSUMER_KEY), messageBus);
+      const {analyzer, disposeFn} = getCdAnalyzer();
+      cdAnalyzerDispose = disposeFn;
+      emitLatestCdData(analyzer, messageBus);
     }
     isCdDataStreamEnabled = true;
   };
@@ -32,7 +33,7 @@ export function enableCdDataStream(messageBus: MessageBus<Events>) {
 
 export function disableCdDataStream() {
   cdAnalyzerUnsubscriber?.();
-  gracefullyDisposeAnalyzer(ANALYZER_CONSUMER_KEY);
+  cdAnalyzerDispose?.();
   isCdDataStreamEnabled = false;
 }
 
@@ -46,6 +47,7 @@ function emitLatestCdData(cdAnalyzer: CdAnalyzer, messageBus: MessageBus<Events>
 function serializeCdData(data: CdData[]): CdElementData[] {
   return data.map((value) => ({
     element: value.elementPosition,
-    cdPassDurations: value.cdPassDurations,
+    cdCount: value.cdPassDurations.length,
+    lastCdPassDuration: value.cdPassDurations[value.cdPassDurations.length - 1] ?? 0,
   }));
 }
