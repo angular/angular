@@ -253,6 +253,7 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
     }
 
     return {
+      diagnostics: directiveResult.diagnostics,
       analysis: {
         inputs: directiveResult.inputs,
         inputFieldNamesFromMetadataArray: directiveResult.inputFieldNamesFromMetadataArray,

@@ -40,7 +40,12 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
+import {
+  ErrorCode,
+  FatalDiagnosticError,
+  makeDiagnostic,
+  makeRelatedInformation,
+} from '../../../diagnostics';
 import {
   assertSuccessfulReferenceEmit,
   ImportedSymbolsTracker,
@@ -151,6 +156,7 @@ export function extractDirectiveMetadata(
       rawHostDirectives: ts.Expression | null;
       inputFieldNamesFromMetadataArray: Set<string>;
       hostBindingNodes: HostBindingNodes;
+      diagnostics: ts.Diagnostic[] | undefined;
     }
   | {jitForced: true} {
   let directive: Map<string, ts.Expression>;
@@ -372,6 +378,7 @@ export function extractDirectiveMetadata(
     );
 
   let isStandalone = implicitStandaloneValue;
+  let diagnostics: ts.Diagnostic[] | undefined;
   if (directive.has('standalone')) {
     const expr = directive.get('standalone')!;
     const resolved = evaluator.evaluate(expr);
@@ -381,11 +388,13 @@ export function extractDirectiveMetadata(
     isStandalone = resolved;
 
     if (!isStandalone && strictStandalone) {
-      throw new FatalDiagnosticError(
-        ErrorCode.NON_STANDALONE_NOT_ALLOWED,
-        expr,
-        `Only standalone components/directives are allowed when 'strictStandalone' is enabled.`,
-      );
+      diagnostics = [
+        makeDiagnostic(
+          ErrorCode.NON_STANDALONE_NOT_ALLOWED,
+          expr,
+          `Only standalone components/directives are allowed when 'strictStandalone' is enabled.`,
+        ),
+      ];
     }
   }
   let isSignal = false;
@@ -471,6 +480,7 @@ export function extractDirectiveMetadata(
     hostDirectives,
     rawHostDirectives,
     hostBindingNodes,
+    diagnostics,
     // Track inputs from class metadata. This is useful for migration efforts.
     inputFieldNamesFromMetadataArray: new Set(
       Object.values(inputsFromMeta).map((i) => i.classPropertyName),
