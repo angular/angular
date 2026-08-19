@@ -8,6 +8,7 @@
 
 import {consumerDestroy, setActiveConsumer} from '../../primitives/signals';
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {ViewEncapsulation} from '../metadata/view';
@@ -486,7 +487,30 @@ function executeOnDestroys(tView: TView, lView: LView): void {
  * @param tNode: `TNode` for which we wish to retrieve render parent.
  * @param lView: Current `LView`.
  */
-export function getParentRElement(tView: TView, tNode: TNode, lView: LView): RElement | null {
+export function getParentRElement(
+  tView: TView,
+  tNode: TNode | null,
+  lView: LView,
+): RElement | null {
+  // `tNode` can genuinely be null here, not just as a defensive type-widening measure. An
+  // `@if`/`@switch` branch's content is its own embedded view with its own `TView`, built the
+  // first time that branch is rendered. If an error interrupts that first creation pass (for
+  // example, a hydration mismatch on one of the branch's later nodes, after an earlier node's
+  // `TNode` was already created), `TView.firstCreatePass` still gets flipped to `false` before
+  // the error propagates (see `renderView()`'s `catch` block in `instructions/render.ts`),
+  // permanently marking the view's `TNode` data as "already created" even though it isn't.
+  // Unlike a component's `TView`, nothing rebuilds an embedded view's `TView` afterward, so the
+  // next time that same branch is selected, its instructions read directly from the still-null
+  // slot in `tView.data` instead of creating a fresh `TNode` — which is what surfaces here.
+  // Guard against it so production throws a coded RuntimeError instead of a raw TypeError when
+  // dereferencing `tNode.parent` below.
+  if (tNode === null) {
+    throw new RuntimeError(
+      RuntimeErrorCode.PARENT_NODE_NOT_FOUND,
+      ngDevMode &&
+        'getParentRElement() was called with a null TNode, so no parent element could be resolved. This usually means a TNode was never created for this node, or was already destroyed.',
+    );
+  }
   return getClosestRElement(tView, tNode.parent, lView);
 }
 
