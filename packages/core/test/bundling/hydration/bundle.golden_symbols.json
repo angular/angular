@@ -435,6 +435,7 @@
       "createContainerAnchorImpl",
       "createDeferBlockInjector",
       "createDehydratedBlockRegistry",
+      "createDictionary",
       "createDirectivesInstances",
       "createElementNode",
       "createElementRef",
