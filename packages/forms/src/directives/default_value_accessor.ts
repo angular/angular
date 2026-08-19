@@ -91,6 +91,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
   // selector: '[ngModel],[formControl],[formControlName]',
   host: {
     '(input)': '_handleInput($any($event.target).value)',
+    '(change)': '_handleInput($any($event.target).value)',
     '(blur)': 'onTouched()',
     '(compositionstart)': '_compositionStart()',
     '(compositionend)': '_compositionEnd($any($event.target).value)',

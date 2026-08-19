@@ -738,6 +738,35 @@ describe('reactive forms integration tests', () => {
         ],
       });
     });
+
+    it('should update the control value when change event is dispatched (generic form filling)', async () => {
+      const fixture = initTest(FormControlComp);
+      const control = new FormControl('old');
+      fixture.componentInstance.control = control;
+      await fixture.whenStable();
+
+      const input = fixture.debugElement.query(By.css('input'));
+      input.nativeElement.value = 'new';
+      dispatchEvent(input.nativeElement, 'change');
+      await fixture.whenStable();
+
+      expect(control.value).toEqual('new');
+    });
+
+    it('should update the number control value when change event is dispatched (generic form filling)', async () => {
+      const fixture = initTest(MinMaxFormControlComp);
+      const control = new FormControl(1);
+      fixture.componentInstance.control = control;
+      fixture.componentInstance.form = new FormGroup({'control': control});
+      await fixture.whenStable();
+
+      const input = fixture.debugElement.query(By.css('input'));
+      input.nativeElement.value = '42';
+      dispatchEvent(input.nativeElement, 'change');
+      await fixture.whenStable();
+
+      expect(control.value).toEqual(42);
+    });
   });
 
   describe('programmatic changes', () => {
