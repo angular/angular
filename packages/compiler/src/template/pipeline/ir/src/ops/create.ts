@@ -1409,6 +1409,12 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   loadingMinimumTime: number | null;
   loadingAfterTime: number | null;
 
+  /**
+   * Number of retry attempts requested via `@error (retry N)`. `null` when
+   * no `retry` parameter was provided.
+   */
+  errorRetryCount: number | null;
+
   placeholderConfig: o.Expression | null;
   loadingConfig: o.Expression | null;
 
@@ -1460,6 +1466,7 @@ export function createDeferOp(
     placeholderMinimumTime: null,
     errorView: null,
     errorSlot: null,
+    errorRetryCount: null,
     ownResolverFn,
     resolverFn,
     flags: null,

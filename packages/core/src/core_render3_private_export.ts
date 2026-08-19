@@ -110,6 +110,7 @@ export {
   ɵɵdeclareLet,
   ɵɵdefer,
   ɵɵdeferEnableTimerScheduling,
+  ɵɵdeferEnableRetry,
   ɵɵdeferHydrateNever,
   ɵɵdeferHydrateOnHover,
   ɵɵdeferHydrateOnIdle,
