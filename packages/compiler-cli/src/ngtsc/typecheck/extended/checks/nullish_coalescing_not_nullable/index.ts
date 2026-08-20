@@ -81,7 +81,9 @@ export const factory: TemplateCheckFactory<
   create: (options: NgCompilerOptions) => {
     // Require `strictNullChecks` to be enabled.
     const strictNullChecks =
-      options.strictNullChecks === undefined ? !!options.strict : !!options.strictNullChecks;
+      options.strictNullChecks === undefined
+        ? options.strict !== false
+        : !!options.strictNullChecks;
     if (!strictNullChecks) {
       return null;
     }
