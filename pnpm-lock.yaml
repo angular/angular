@@ -223,8 +223,8 @@ importers:
         specifier: ^8.0.0
         version: 8.0.2
       domino:
-        specifier: https://github.com/angular/domino.git#f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56'
+        specifier: https://github.com/angular/domino.git#04f987dc08ff3736b427f50941adf1722458528f
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f'
       esbuild:
         specifier: 0.25.9
         version: 0.25.9
@@ -1249,8 +1249,8 @@ importers:
         specifier: 3.7.2
         version: 3.7.2
       domino:
-        specifier: https://github.com/angular/domino.git#f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56'
+        specifier: https://github.com/angular/domino.git#04f987dc08ff3736b427f50941adf1722458528f
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f'
       esbuild-plugin-umd-wrapper:
         specifier: 3.0.0
         version: 3.0.0
@@ -1300,8 +1300,8 @@ importers:
   packages/zone.js/test/typings:
     dependencies:
       domino:
-        specifier: https://github.com/angular/domino.git#f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56'
+        specifier: https://github.com/angular/domino.git#04f987dc08ff3736b427f50941adf1722458528f
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f'
       zone.js:
         specifier: workspace:*
         version: link:../..
@@ -1504,8 +1504,8 @@ packages:
     resolution: {integrity: sha512-qLYVXcpSBmsA/9fITB1cT2y37V1Yo3ybWEwvafnbAh8izabrMV0hh+J9Ajh9bPk092T7LS8Xt9eTu0OquBXkbw==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56':
-    resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f':
+    resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f}
     version: 2.1.6
 
   '@angular/material@20.2.10':
@@ -13429,7 +13429,7 @@ snapshots:
       tslib: 2.8.1
       zone.js: 0.15.1
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/f88e5aa49cf2804d7c2df22ef1640eb4ec43dd56': {}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f': {}
 
   '@angular/material@20.2.10(@angular/cdk@20.2.10(rxjs@7.8.2))(rxjs@7.8.2)':
     dependencies:
