@@ -28,6 +28,7 @@ describe('strict-safe-navigation-narrow migration', () => {
             root: '',
             architect: {
               build: {
+                builder: '@angular/build:application',
                 options: {
                   tsConfig: './tsconfig.json',
                 },
@@ -137,5 +138,45 @@ describe('strict-safe-navigation-narrow migration', () => {
     expect(
       tsconfig.angularCompilerOptions.extendedDiagnostics.checks.nullishCoalescingNotNullable,
     ).toBe('suppress');
+  });
+
+  it('should not migrate tsconfig files of projects that do not use an Angular builder', async () => {
+    tree.overwrite(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {
+          'angular-app': {
+            root: '',
+            architect: {
+              build: {
+                builder: '@angular/build:application',
+                options: {tsConfig: './tsconfig.app.json'},
+              },
+            },
+          },
+          'node-lib': {
+            root: '',
+            architect: {
+              build: {
+                builder: '@nx/js:tsc',
+                options: {tsConfig: './tsconfig.lib.json'},
+              },
+            },
+          },
+        },
+      }),
+    );
+    tree.create('/tsconfig.app.json', JSON.stringify({compilerOptions: {target: 'es2020'}}));
+    tree.create('/tsconfig.lib.json', JSON.stringify({compilerOptions: {target: 'es2020'}}));
+
+    const runMigration = migrate();
+    await runMigration(tree, {} as any);
+
+    const appTsconfig = parseConfig(tree, '/tsconfig.app.json');
+    expect(
+      appTsconfig.angularCompilerOptions.extendedDiagnostics.checks.nullishCoalescingNotNullable,
+    ).toBe('suppress');
+    expect(parseConfig(tree, '/tsconfig.lib.json').angularCompilerOptions).toBeUndefined();
   });
 });

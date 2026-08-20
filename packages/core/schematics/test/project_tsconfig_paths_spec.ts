@@ -100,4 +100,59 @@ describe('project tsconfig paths', () => {
 
     expect((await getProjectTsConfigPaths(testTree)).buildPaths).toEqual(['tsconfig.json']);
   });
+
+  it('should only return tsconfig paths of Angular builders when `angularBuildersOnly` is set', async () => {
+    testTree.create('/tsconfig.app.json', '');
+    testTree.create('/tsconfig.nx.json', '');
+    testTree.create('/tsconfig.lib.json', '');
+    testTree.create('/tsconfig.ngx-build-plus.json', '');
+    testTree.create(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {
+          angular_app: {
+            root: '',
+            architect: {
+              build: {
+                builder: '@angular/build:application',
+                options: {tsConfig: './tsconfig.app.json'},
+              },
+            },
+          },
+          nx_angular_app: {
+            root: '',
+            architect: {
+              build: {
+                builder: '@nx/angular:webpack-browser',
+                options: {tsConfig: './tsconfig.nx.json'},
+              },
+            },
+          },
+          node_lib: {
+            root: '',
+            architect: {
+              build: {builder: '@nx/js:tsc', options: {tsConfig: './tsconfig.lib.json'}},
+            },
+          },
+          ngx_build_plus_app: {
+            root: '',
+            architect: {
+              build: {
+                builder: 'ngx-build-plus:browser',
+                options: {tsConfig: './tsconfig.ngx-build-plus.json'},
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    const {buildPaths} = await getProjectTsConfigPaths(testTree, {angularBuildersOnly: true});
+    expect(buildPaths).toEqual([
+      'tsconfig.app.json',
+      'tsconfig.nx.json',
+      'tsconfig.ngx-build-plus.json',
+    ]);
+  });
 });
