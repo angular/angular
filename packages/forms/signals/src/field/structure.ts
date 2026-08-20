@@ -23,6 +23,7 @@ import {LogicNode} from '../schema/logic_node';
 import type {FieldPathNode} from '../schema/path_node';
 import {deepSignal} from '../util/deep_signal';
 import {isArray, isObject} from '../util/type_guards';
+import {EQUALITY} from '../schema/logic_node';
 import type {FieldAdapter} from './field_adapter';
 import type {FormFieldManager} from './manager';
 import type {FieldNode, ParentFieldNode} from './node';
@@ -294,7 +295,18 @@ export abstract class FieldNodeStructure {
       computation: (
         value: unknown,
         previous: {source: unknown; value: ChildrenData | undefined} | undefined,
-      ): ChildrenData | undefined => this.computeChildrenMap(value, previous?.value, false),
+      ): ChildrenData | undefined => {
+        // Check if source changed using custom 'equality' function.
+        const equalityFn = this.node.metadata(EQUALITY)?.();
+        if (previous !== undefined && equalityFn) {
+          if (equalityFn(previous.source, value)) {
+            // Values are equal according to the 'equality' function, no update needed.
+            return previous.value;
+          }
+        }
+
+        return this.computeChildrenMap(value, previous?.value, false);
+      },
     });
   }
 
@@ -520,7 +532,11 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
 
     this.pathKeys = computed(() => [...parent.structure.pathKeys(), this.keyInParent()]);
 
-    this.value = deepSignal(this.parent.structure.value, this.keyInParent);
+    this.value = deepSignal(this.parent.structure.value, this.keyInParent, (a, b) => {
+      const equalityFn = this.node.metadata(EQUALITY)?.();
+      // Default signal equality when no custom comparator is configured.
+      return equalityFn ? equalityFn(a, b) : Object.is(a, b);
+    });
     this.childrenMap = this.createChildrenMap();
     this.fieldManager.structures.add(this);
   }
