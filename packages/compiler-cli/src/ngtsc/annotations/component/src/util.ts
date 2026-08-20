@@ -120,7 +120,11 @@ export function validateAndFlattenComponentImports(
         validateAndFlattenComponentImports(blockValue, propExpr, isDeferred);
 
       diagnostics.push(...blockDiagnostics);
-      flattened.push(...blockImports);
+      for (const blockImport of blockImports) {
+        if (!flattened.some((existing) => existing.node === blockImport.node)) {
+          flattened.push(blockImport);
+        }
+      }
       importsByBlock.set(blockName, blockImports);
     }
     return {imports: flattened, importsByBlock, diagnostics};

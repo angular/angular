@@ -2547,6 +2547,46 @@ runInEachFileSystem(() => {
           "Directive 'DirB' (used on element 'div') was imported via `@Component.deferredImports` under block 'blockB', but is used in a `@defer` block configured for 'blockC'",
         );
       });
+
+      it('should allow the same dependency across multiple defer blocks without duplicate symbol diagnostics', () => {
+        env.write(
+          'dirs.ts',
+          `
+          import { Directive } from '@angular/core';
+          @Directive({ selector: '[dirA]' })
+          export class DirA {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { DirA } from './dirs';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              blockA: [DirA],
+              blockB: [DirA],
+            },
+            template: \`
+              @defer (name blockA) {
+                <div dirA></div>
+              }
+              @defer (name blockB) {
+                <div dirA></div>
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
   });
 });
