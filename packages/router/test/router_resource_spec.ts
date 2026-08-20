@@ -476,8 +476,7 @@ describe('Router resources integration', () => {
 
       // 3. Retry the identical route with same parameters using onSameUrlNavigation: 'reload'
       shouldError = false;
-      router.onSameUrlNavigation = 'reload';
-      await harness.navigateByUrl('/test/1');
+      await router.navigateByUrl('/test/1', {onSameUrlNavigation: 'reload'});
       await harness.fixture.whenStable();
 
       expect(router.url).toBe('/test/1'); // Succeeded!
