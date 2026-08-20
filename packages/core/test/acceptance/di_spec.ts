@@ -7193,4 +7193,129 @@ describe('di', () => {
       );
     });
   });
+
+  describe('control flow + viewProviders', () => {
+    it('should not allow projected content to see viewProviders when wrapped in @if', () => {
+      const token = new InjectionToken<string>('token');
+
+      @Component({
+        selector: 'app-child-component',
+        template: '{{value}}',
+      })
+      class ChildComponent {
+        value = inject(token);
+      }
+
+      @Component({
+        selector: 'app-provider-component',
+        providers: [{provide: token, useValue: 'provider'}],
+        viewProviders: [{provide: token, useValue: 'viewProvider'}],
+        template: `
+          <div>
+            Projected<br />
+            <ng-content></ng-content>
+          </div>
+        `,
+      })
+      class ProviderComponent {}
+
+      @Component({
+        selector: 'app-test-new-flow',
+        imports: [ProviderComponent, ChildComponent],
+        template: `
+          <app-provider-component>
+            @if (true) {
+              <app-child-component />
+            }
+          </app-provider-component>
+        `,
+      })
+      class TestNewFlowComponent {}
+
+      @Component({
+        selector: 'app-test-old-flow',
+        imports: [ProviderComponent, ChildComponent, CommonModule],
+        template: `
+          <app-provider-component>
+            <app-child-component *ngIf="flag" />
+          </app-provider-component>
+        `,
+      })
+      class TestOldFlowComponent {
+        flag = true;
+      }
+
+      // Test old syntax it's ok
+      const oldFixture = TestBed.createComponent(TestOldFlowComponent);
+      oldFixture.detectChanges();
+      expect(oldFixture.nativeElement.textContent).toContain('provider');
+      expect(oldFixture.nativeElement.textContent).not.toContain('viewProvider');
+
+      // Test that the new syntax behaves like the old one
+      const newFixture = TestBed.createComponent(TestNewFlowComponent);
+      newFixture.detectChanges();
+      expect(newFixture.nativeElement.textContent).toContain('provider');
+      expect(newFixture.nativeElement.textContent).not.toContain('viewProvider');
+    });
+
+    it('should allow a directive in an @if block to inject a token from viewProviders', () => {
+      const TOKEN = new InjectionToken<string>('token');
+
+      @Directive({
+        selector: '[testDir]',
+      })
+      class TestDir {
+        value = inject(TOKEN);
+      }
+
+      @Component({
+        selector: 'test-comp',
+        imports: [TestDir],
+        viewProviders: [{provide: TOKEN, useValue: 'view-value'}],
+        template: `
+          @if (true) {
+            <div testDir></div>
+          }
+        `,
+      })
+      class TestComp {
+        @ViewChild(TestDir) testDir!: TestDir;
+      }
+
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.testDir.value).toBe('view-value');
+    });
+
+    it('should allow a directive in nested @if blocks to inject a token from viewProviders', () => {
+      const TOKEN = new InjectionToken<string>('token');
+
+      @Directive({
+        selector: '[testDir]',
+      })
+      class TestDir {
+        value = inject(TOKEN);
+      }
+
+      @Component({
+        selector: 'test-comp',
+        imports: [TestDir],
+        viewProviders: [{provide: TOKEN, useValue: 'view-value'}],
+        template: `
+          @if (true) {
+            <div testDir></div>
+          }
+        `,
+      })
+      class TestComp {
+        @ViewChild(TestDir) testDir!: TestDir;
+      }
+
+      const fixture = TestBed.createComponent(TestComp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.testDir.value).toBe('view-value');
+    });
+  });
 });
