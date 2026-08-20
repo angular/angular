@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {inject, Service} from '@angular/core';
 
-const ANGULAR_DEV = 'https://angular.dev';
+import {ANGULAR_DEV} from '../constants/links';
 
 /**
  * Information about the deployment of this application.
