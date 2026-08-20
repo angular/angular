@@ -9,12 +9,13 @@
 import type {ɵFrameworkAgnosticGlobalUtils as GlobalUtils} from '@angular/core';
 import {getAppRoots} from '../../directive-forest/component-tree/get-roots';
 import {Framework} from '../../directive-forest/core-enums';
+import {AngularDevtoolsError} from '../utils/error';
 
 /** Returns a handle to window.ng APIs (global angular debugging). */
 export const ngDebugClient = () => {
   if (typeof (window as any).ng === 'undefined') {
-    throw new Error(
-      'Angular DevTools: Angular debugging APIs are not available. Ensure that your Angular app is in development mode and does not invoke `enableProdMode()`.',
+    throw new AngularDevtoolsError(
+      'Angular debugging APIs are not available. Ensure that your Angular app is in development mode and does not invoke `enableProdMode()`.',
     );
   }
   return (window as any).ng as Partial<GlobalUtils>;

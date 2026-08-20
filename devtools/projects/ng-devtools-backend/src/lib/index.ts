@@ -10,6 +10,9 @@ import {Events, MessageBus} from '../../../protocol';
 
 import {subscribeToClientEvents} from './client-event-subscribers';
 
-export const initializeMessageBus = (messageBus: MessageBus<Events>) => {
-  subscribeToClientEvents(messageBus);
+export const initializeMessageBus = (
+  messageBus: MessageBus<Events>,
+  ngDevtoolsDevMode?: boolean,
+) => {
+  subscribeToClientEvents(messageBus, ngDevtoolsDevMode);
 };

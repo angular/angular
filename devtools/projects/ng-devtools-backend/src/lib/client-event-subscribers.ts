@@ -75,11 +75,13 @@ import {
   removeHydrationHighlights,
 } from './hydration/hydration-highlighting';
 import {removeAllHighlights} from './shared/highlighter';
+import {debugLog, log, setupLogging} from './shared/utils/log';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
+  ngDevtoolsDevMode?: boolean,
   depsForTestOnly?: {
     profiler?: new (...args: any[]) => Profiler;
   },
@@ -123,9 +125,9 @@ export const subscribeToClientEvents = (
   const SAFE_LOG_LEVELS = new Set(['log', 'info', 'warn', 'debug', 'error']);
   messageBus.on('log', ({message, level}) => {
     if (SAFE_LOG_LEVELS.has(level)) {
-      console[level](`[Angular DevTools]: ${message}`);
+      log[level](message);
     } else {
-      console.warn(`[Angular DevTools]: Invalid log level attempted: ${level}`);
+      debugLog.warn(`Invalid log level attempted: ${level}`);
     }
   });
 
@@ -144,6 +146,8 @@ export const subscribeToClientEvents = (
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
   }
+
+  setupLogging(ngDevtoolsDevMode ?? false);
 };
 
 //
@@ -198,7 +202,7 @@ const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string)
   if (router) {
     ngDebugClient().ɵnavigateByUrl?.(router, path);
   } else {
-    console.warn('Router not found or navigateByUrl method not available');
+    log.warn('Router not found or navigateByUrl method not available');
   }
 };
 
@@ -255,7 +259,7 @@ const getNestedPropertiesCallback =
     for (const prop of propPath) {
       data = unwrapSignal(data[prop]);
       if (!data) {
-        console.error('Cannot access the properties', propPath, 'of', node);
+        log.error('Cannot access the properties', propPath, 'of', node);
       }
     }
     messageBus.emit('nestedProperties', [
@@ -313,7 +317,7 @@ const getSignalNestedPropertiesCallback =
     for (const prop of propPath) {
       data = (data as Record<string, object>)[prop];
       if (!data) {
-        console.error('Cannot access the properties', propPath, 'of', node);
+        log.error('Cannot access the properties', propPath, 'of', node);
       }
     }
     messageBus.emit('signalNestedProperties', [

@@ -9,6 +9,7 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
         "//devtools/projects/protocol",
     ],
 )
