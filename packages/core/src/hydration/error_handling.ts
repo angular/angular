@@ -443,7 +443,7 @@ function describeExpectedDom(
     path.unshift(describeRNodeForPath(componentHostElement));
   }
   path.push(isViewContainerAnchor ? '<!-- container -->' : describeTNodeForPath(tNode));
-  return `DOM path: ${formatDomPath(path)}\n\n${content}`;
+  return `DOM path:\n${formatDomPath(path)}\n\n${content}`;
 }
 
 /**
@@ -490,15 +490,18 @@ function describeDomFromNode(
     }
     pathNode = pathNode.parentNode;
   }
-  return `DOM path: ${formatDomPath(path)}\n\n${content}`;
+  return `DOM path:\n${formatDomPath(path)}\n\n${content}`;
 }
 
 function formatDomPath(nodes: string[]): string {
-  if (nodes.length <= MAX_DOM_PATH_NODES) {
-    return nodes.join(' > ');
-  }
+  const boundedNodes =
+    nodes.length <= MAX_DOM_PATH_NODES
+      ? nodes
+      : [nodes[0], '...', ...nodes.slice(-(MAX_DOM_PATH_NODES - 1))];
 
-  return [nodes[0], '...', ...nodes.slice(-(MAX_DOM_PATH_NODES - 1))].join(' > ');
+  return boundedNodes
+    .map((node, index) => (index === 0 ? node : `${'   '.repeat(index - 1)} └─ ${node}`))
+    .join('\n');
 }
 
 function indent(value: string): string {

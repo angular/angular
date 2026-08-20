@@ -6297,13 +6297,23 @@ describe('platform-server full application hydration integration', () => {
 
         expect(result.message).toContain(
           'Angular expected this DOM:\n\n' +
-            'DOM path: <app> > ... > <section aria-label="Billing"> > <div class="name"> > <b>\n\n' +
+            'DOM path:\n' +
+            '<app>\n' +
+            ' └─ ...\n' +
+            '    └─ <section aria-label="Billing">\n' +
+            '       └─ <div class="name">\n' +
+            '          └─ <b>\n\n' +
             '<div class="name">\n' +
             '  <b>…</b>  <-- AT THIS LOCATION',
         );
         expect(result.message).toContain(
           'Actual DOM is:\n\n' +
-            'DOM path: <app> > ... > <section aria-label="Billing"> > <div class="name"> > <span>\n\n' +
+            'DOM path:\n' +
+            '<app>\n' +
+            ' └─ ...\n' +
+            '    └─ <section aria-label="Billing">\n' +
+            '       └─ <div class="name">\n' +
+            '          └─ <span>\n\n' +
             '<div class="name">\n' +
             '  <span>…</span>  <-- AT THIS LOCATION',
         );
@@ -6339,7 +6349,11 @@ describe('platform-server full application hydration integration', () => {
 
         expect(result.message).toContain(
           'Actual DOM is:\n\n' +
-            'DOM path: <app> > <main> > <div class="content"> > <!-- mismatch -->\n\n' +
+            'DOM path:\n' +
+            '<app>\n' +
+            ' └─ <main>\n' +
+            '    └─ <div class="content">\n' +
+            '       └─ <!-- mismatch -->\n\n' +
             '<div class="content">\n' +
             '  <!-- mismatch -->  <-- AT THIS LOCATION',
         );
