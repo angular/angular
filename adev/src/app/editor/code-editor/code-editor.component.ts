@@ -29,6 +29,7 @@ import {TerminalType} from '../terminal/terminal-handler.service';
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {IconComponent} from '@angular/docs';
+import {ANGULAR_DEV} from '../../core/constants/links';
 import {MatTooltip} from '@angular/material/tooltip';
 import {DownloadManager} from '../download-manager.service';
 import {LoadingStep} from '../enums/loading-steps';
@@ -43,8 +44,6 @@ export const REQUIRED_FILES = new Set([
   'src/index.html',
   'src/app/app.component.ts',
 ]);
-
-const ANGULAR_DEV = 'https://angular.dev';
 
 @Component({
   selector: 'docs-tutorial-code-editor',
