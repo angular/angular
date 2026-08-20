@@ -46,19 +46,13 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
   configOrLogic?:
     | {when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>}
     | NoInfer<LogicFn<TValue, boolean, TPathKind>>,
-) {
+): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  let logic: LogicFn<TValue, boolean, TPathKind>;
-  if (typeof configOrLogic === 'object' && configOrLogic !== null && 'when' in configOrLogic) {
-    logic = configOrLogic.when ?? (() => true);
-  } else if (typeof configOrLogic === 'function') {
-    logic = configOrLogic;
-  } else {
-    logic = () => true;
-  }
+  const logic =
+    typeof configOrLogic === 'function' ? configOrLogic : (configOrLogic?.when ?? (() => true));
 
   pathNode.builder.addReadonlyRule(logic);
 }
