@@ -4,7 +4,6 @@
     "types": ["node", "jasmine", "selenium-webdriver"],
     "module": "esnext",
     "moduleResolution": "nodenext",
-    "strict": true,
     "sourceMap": true,
     "declaration": true
   }
