@@ -13,9 +13,11 @@ import {
   ElementRef,
   EnvironmentInjector,
   afterRenderEffect,
+  computed,
   effect,
   inject,
   input,
+  linkedSignal,
   signal,
   untracked,
   viewChild,
@@ -23,7 +25,7 @@ import {
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatTab, MatTabGroup, MatTabLabel} from '@angular/material/tabs';
 import {Title} from '@angular/platform-browser';
-import {debounceTime, from, map, switchMap} from 'rxjs';
+import {from, switchMap} from 'rxjs';
 
 import {TerminalType} from '../terminal/terminal-handler.service';
 
@@ -81,25 +83,22 @@ export class CodeEditor {
   private readonly location = inject(Location);
   private readonly environmentInjector = inject(EnvironmentInjector);
 
-  private readonly errors$ = this.diagnosticsState.diagnostics$.pipe(
-    // Display errors one second after code update
-    debounceTime(1000),
-    map((diagnosticsItem) =>
-      diagnosticsItem
-        .filter((item) => item.severity === 'error')
-        .sort((a, b) =>
-          a.lineNumber != b.lineNumber
-            ? a.lineNumber - b.lineNumber
-            : a.characterPosition - b.characterPosition,
-        ),
-    ),
-    takeUntilDestroyed(this.destroyRef),
-  );
-
   readonly TerminalType = TerminalType;
 
-  protected readonly displayErrorsBox = signal<boolean>(false);
-  protected readonly errors = signal<DiagnosticWithLocation[]>([]);
+  protected readonly errors = computed(() =>
+    this.nodeRuntimeState.loadingStep() !== LoadingStep.READY
+      ? []
+      : this.diagnosticsState
+          .diagnostics()
+          .filter((item) => item.severity === 'error')
+          .sort((a, b) =>
+            a.lineNumber != b.lineNumber
+              ? a.lineNumber - b.lineNumber
+              : a.characterPosition - b.characterPosition,
+          ),
+  );
+
+  protected readonly displayErrorsBox = linkedSignal(() => this.errors().length > 0);
   protected readonly files = this.codeMirrorEditor.openFiles;
   protected readonly isCreatingFile = signal<boolean>(false);
   protected readonly isRenamingFile = signal<boolean>(false);
@@ -120,7 +119,6 @@ export class CodeEditor {
 
       untracked(() => {
         this.codeMirrorEditor.init(parent);
-        this.listenToDiagnosticsChange();
 
         this.listenToTabChange();
         this.setSelectedTabOnTutorialChange();
@@ -306,16 +304,6 @@ export class CodeEditor {
       return false;
     }
     return true;
-  }
-
-  private listenToDiagnosticsChange(): void {
-    this.errors$.subscribe((diagnostics) => {
-      if (this.nodeRuntimeState.loadingStep() !== LoadingStep.READY) {
-        return;
-      }
-      this.errors.set(diagnostics);
-      this.displayErrorsBox.set(diagnostics.length > 0);
-    });
   }
 
   private setSelectedTabOnTutorialChange() {
