@@ -927,6 +927,17 @@ describe('R3 template transform', () => {
       expectFromHtml('<script></script>a').toEqual([['Text', 'a']]);
     });
 
+    it('should ignore <script> elements inherited into custom namespaces', () => {
+      expectFromHtml(
+        '<xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml"><script [textContent]="evil"></script><span>safe</span></xhtml:div>',
+      ).toEqual([
+        ['Element', ':xhtml:div'],
+        ['TextAttribute', ':xmlns:xhtml', 'http://www.w3.org/1999/xhtml'],
+        ['Element', ':xhtml:span'],
+        ['Text', 'safe'],
+      ]);
+    });
+
     it('should ignore <style> elements', () => {
       expectFromHtml('<style></style>a').toEqual([['Text', 'a']]);
     });
@@ -994,6 +1005,17 @@ describe('R3 template transform', () => {
         ['Element', 'div'],
         ['TextAttribute', 'ngNonBindable', ''],
         ['Text', 'a'],
+      ]);
+    });
+
+    it('should ignore custom-namespaced <script> elements inside of elements with ngNonBindable', () => {
+      expectFromHtml(
+        '<foo:div ngNonBindable><script>evil</script><span>safe</span></foo:div>',
+      ).toEqual([
+        ['Element', ':foo:div'],
+        ['TextAttribute', 'ngNonBindable', ''],
+        ['Element', ':foo:span'],
+        ['Text', 'safe'],
       ]);
     });
 
