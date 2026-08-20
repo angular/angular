@@ -126,6 +126,18 @@ mySignal.set(3);
 
 Here, only the last value (3) will be logged.
 
+For the same reason, the `ReplaySubject` holds the value the effect propagated last, not the current value of the signal. If you subscribe right after updating the signal, you receive the previous value until the effect runs again.
+
+```ts
+// `mySignal` holds 0, and the effect has already propagated that value.
+mySignal.set(1);
+obs$.pipe(take(1)).subscribe((value) => console.log(value));
+```
+
+Here, 0 is logged instead of 1.
+
+IMPORTANT: If you need the current value of a signal synchronously, read the signal directly instead of subscribing to the Observable.
+
 ## Using `rxResource` for async data
 
 Angular's [`resource` function](/guide/signals/resource) gives you a way to incorporate async data into your application's signal-based code. Building on top of this pattern, `rxResource` lets you define a resource where the source of your data is defined in terms of an RxJS `Observable`. Instead of accepting a `loader` function, `rxResource` accepts a `stream` function that accepts an RxJS `Observable`.
