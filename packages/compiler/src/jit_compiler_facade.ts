@@ -363,6 +363,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       i18nUseExternalIds: true,
       relativeTemplatePath: null,
       foreignImports: null,
+      enableTemplateSourceLocations: false,
     };
     const jitExpressionSourceMap = `ng:///${facade.name}.js`;
     return this.compileComponentFromMeta(angularCoreEnv, jitExpressionSourceMap, meta);
@@ -724,6 +725,7 @@ function convertDeclareComponentFacadeToMetadata(
     hasDirectiveDependencies,
     legacyOptionalChaining: decl.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
     foreignImports: null,
+    enableTemplateSourceLocations: false,
   };
 }
 

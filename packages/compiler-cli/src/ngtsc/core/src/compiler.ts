@@ -397,6 +397,7 @@ export class NgCompiler {
   private readonly implicitStandaloneValue: boolean;
   private readonly enableSelectorless: boolean;
   private readonly emitDeclarationOnly: boolean;
+  private readonly enableTemplateSourceLocations: boolean;
 
   /**
    * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
@@ -472,6 +473,7 @@ export class NgCompiler {
       this.angularCoreVersion === null ||
       coreVersionSupportsFeature(this.angularCoreVersion, '>= 18.1.0');
     this.enableSelectorless = options['_enableSelectorless'] ?? false;
+    this.enableTemplateSourceLocations = options['enableTemplateSourceLocations'] ?? false;
     this.emitDeclarationOnly =
       !!options.emitDeclarationOnly && !!options._experimentalAllowEmitDeclarationOnly;
     // Standalone by default is enabled since v19. We need to toggle it here,
@@ -1549,6 +1551,7 @@ export class NgCompiler {
         this.enableSelectorless,
         this.emitDeclarationOnly,
         this.options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
+        this.enableTemplateSourceLocations,
       ),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`

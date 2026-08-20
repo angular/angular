@@ -291,6 +291,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     private readonly enableSelectorless: boolean,
     private readonly emitDeclarationOnly: boolean,
     private readonly legacyOptionalChaining: boolean,
+    private readonly enableTemplateSourceLocations: boolean,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -1024,6 +1025,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           rawImports: rawImports !== null ? new o.WrappedNodeExpr(rawImports) : undefined,
           relativeTemplatePath,
           foreignImports: null,
+          enableTemplateSourceLocations: this.enableTemplateSourceLocations,
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         classMetadata: this.includeClassMetadata

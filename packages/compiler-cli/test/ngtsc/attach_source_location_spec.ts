@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setEnableTemplateSourceLocations} from '@angular/compiler';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
@@ -18,16 +17,33 @@ runInEachFileSystem(() => {
     let env!: NgtscTestEnvironment;
 
     beforeEach(() => {
-      setEnableTemplateSourceLocations(true);
       env = NgtscTestEnvironment.setup(testFiles);
-      env.tsconfig();
     });
 
-    afterEach(() => {
-      setEnableTemplateSourceLocations(false);
+    it('should not attach template source locations by default', () => {
+      env.tsconfig();
+      env.write(
+        `test.ts`,
+        `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              <div><span>
+                <strong>Hello</strong>
+              </span></div>
+            \`,
+          })
+          class Comp {}
+         `,
+      );
+      env.driveMain();
+      const content = env.getContents('test.js');
+      expect(content).not.toContain('ɵɵattachSourceLocations');
     });
 
     it('should attach the source location in an inline template', () => {
+      env.tsconfig({enableTemplateSourceLocations: true});
       env.write(
         `test.ts`,
         `
@@ -52,6 +68,7 @@ runInEachFileSystem(() => {
     });
 
     it('should attach the source location in an external template', () => {
+      env.tsconfig({enableTemplateSourceLocations: true});
       env.write(
         'test.html',
         `
@@ -79,6 +96,7 @@ runInEachFileSystem(() => {
     });
 
     it('should attach the source location to structural directives', () => {
+      env.tsconfig({enableTemplateSourceLocations: true});
       env.write(
         `test.ts`,
         `
@@ -107,6 +125,7 @@ runInEachFileSystem(() => {
     });
 
     it('should not attach the source location to ng-container', () => {
+      env.tsconfig({enableTemplateSourceLocations: true});
       env.write(
         `test.ts`,
         `
