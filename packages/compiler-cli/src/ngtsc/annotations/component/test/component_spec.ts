@@ -164,6 +164,7 @@ function setup(
     /* enableSelectorless */ false,
     /* emitDeclarationOnly */ false,
     /* enableInlineStyles */ true,
+    /* enableTemplateSourceLocations */ false,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};
 }

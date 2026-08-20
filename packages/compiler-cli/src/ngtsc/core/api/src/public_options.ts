@@ -340,11 +340,18 @@ export interface BazelAndG3Options {
   _experimentalAllowEmitDeclarationOnly?: boolean;
 
   /**
-   * Whether to follow the Javascript optional chaining specs: returning `undefined` instead of `null` for null-safe navigation operations.
+   * Whether to follow the Javascript optional chaining specs: returning `undefined` instead of
+   * `null` for null-safe navigation operations.
    *
    * Defaults to `false`.
    */
   legacyOptionalChaining?: boolean;
+
+  /**
+   * Whether to generate additional code that adds the source location
+   * of elements to the DOM as an attribute.
+   */
+  enableTemplateSourceLocations?: boolean;
 }
 
 /**
