@@ -126,15 +126,14 @@ mySignal.set(3);
 
 Here, only the last value (3) will be logged.
 
-For the same reason, the `ReplaySubject` holds the value the effect propagated last, not the current value of the signal. If you subscribe right after updating the signal, you receive the previous value until the effect runs again.
+The `ReplaySubject` holds the value the effect propagated last, not the current value of the signal. If you subscribe right after updating the signal, you receive the previous value until the effect runs again.
 
 ```ts
-// `mySignal` holds 0, and the effect has already propagated that value.
-mySignal.set(1);
+mySignal.set(4);
 obs$.pipe(take(1)).subscribe((value) => console.log(value));
 ```
 
-Here, 0 is logged instead of 1.
+Here, the new subscriber receives 3 instead of 4.
 
 IMPORTANT: If you need the current value of a signal synchronously, read the signal directly instead of subscribing to the Observable.
 
