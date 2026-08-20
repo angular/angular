@@ -985,6 +985,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
         explicitlyDeferredTypes ??= [];
         explicitlyDeferredTypes.push({
           symbolName: importDetails.name,
+          localSymbolName: deferredType.text,
           importPath: importDetails.from,
           isDefaultImport: isDefaultImport(importDetails.node),
         });
@@ -2251,8 +2252,12 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     for (const [_, deps] of resolution.deferPerBlockDependencies) {
       for (const deferBlockDep of deps) {
         const node = deferBlockDep.declaration.node;
-        const importInfo = resolution.deferrableDeclToImportDecl.get(node) ?? null;
-        if (importInfo !== null && this.deferredSymbolTracker.canDefer(importInfo.node)) {
+        const deferrableImport = resolution.deferrableDeclToImportDecl.get(node) ?? null;
+        if (
+          deferrableImport !== null &&
+          this.deferredSymbolTracker.canDefer(deferrableImport.importInfo.node)
+        ) {
+          const {importInfo, localSymbolName} = deferrableImport;
           deferBlockDep.isDeferrable = true;
           deferBlockDep.symbolName = importInfo.name;
           deferBlockDep.importPath = importInfo.from;
@@ -2264,7 +2269,12 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           // because the object literals are different between each block.
           if (!seenDeps.has(node)) {
             seenDeps.add(node);
-            deferrableTypes.push(deferBlockDep as R3DeferPerComponentDependency);
+            deferrableTypes.push({
+              symbolName: importInfo.name,
+              localSymbolName,
+              importPath: importInfo.from,
+              isDefaultImport: deferBlockDep.isDefaultImport,
+            });
           }
         }
       }
@@ -2528,10 +2538,13 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       return;
     }
 
-    // Keep track of how this class made it into the current source file.
-    // Store the full `Import` info so that callers can correctly determine the
-    // exported name (handling aliasing) and the module specifier.
-    resolutionData.deferrableDeclToImportDecl.set(decl.node, imp);
+    // Keep track of how this class made it into the current source file. Both the `Import` and
+    // the local name are necessary, because an aliased import (e.g. `import {Foo as Bar}`) has a
+    // different exported and local name and the generated code needs to refer to both.
+    resolutionData.deferrableDeclToImportDecl.set(decl.node, {
+      importInfo: imp,
+      localSymbolName: node.text,
+    });
 
     this.deferredSymbolTracker.markAsDeferrableCandidate(
       node,
@@ -2632,7 +2645,11 @@ function removeDeferrableTypesFromComponentDecorator(
   deferrableTypes: R3DeferPerComponentDependency[],
 ) {
   if (analysis.classMetadata) {
-    const deferrableSymbols = new Set(deferrableTypes.map((t) => t.symbolName));
+    // Note that the decorator refers to the dependencies by their local names, which is what has
+    // to be matched here. They can differ from the exported names for an aliased import.
+    const deferrableSymbols = new Set(
+      deferrableTypes.map((t) => t.localSymbolName ?? t.symbolName),
+    );
     const rewrittenDecoratorsNode = removeIdentifierReferences(
       (analysis.classMetadata.decorators as o.WrappedNodeExpr<ts.Node>).node,
       deferrableSymbols,
