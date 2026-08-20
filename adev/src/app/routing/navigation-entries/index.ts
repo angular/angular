@@ -1792,15 +1792,21 @@ export const ALL_ITEMS = [
   ...TUTORIALS_SUB_NAVIGATION_DATA,
 ];
 
+interface ApiManifestPackage {
+  normalizedModuleName: string;
+  moduleLabel: string;
+  entries: {name: string; category: string | undefined}[];
+}
+
 function getApiNavigationItems(): NavigationItem[] {
-  const manifest = API_MANIFEST_JSON as any; // TODO(mri): Use proper type when the refactoring of #66252 gets in.
+  const manifest = API_MANIFEST_JSON as ApiManifestPackage[];
 
   const apiNavigationItems: NavigationItem[] = [];
 
   for (const packageEntry of manifest) {
     const packageNavigationItem: NavigationItem = {
       label: packageEntry.moduleLabel,
-      children: packageEntry.entries.map((api: any) => ({
+      children: packageEntry.entries.map((api) => ({
         path: getApiUrl(packageEntry, api.name),
         label: api.name,
         category: api.category,
@@ -1813,7 +1819,7 @@ function getApiNavigationItems(): NavigationItem[] {
   return apiNavigationItems;
 }
 
-function getApiUrl(packageEntry: any, apiName: string): string {
+function getApiUrl(packageEntry: ApiManifestPackage, apiName: string): string {
   const packageName = packageEntry.normalizedModuleName
     // packages like `angular_core` should be `core`
     // packages like `angular_animation_browser` should be `animation/browser`
