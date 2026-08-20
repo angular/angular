@@ -11,7 +11,7 @@ import {Subscription} from 'rxjs';
 
 import {ComponentNgElementStrategyFactory} from './component-factory-strategy';
 import {NgElementStrategy, NgElementStrategyFactory} from './element-strategy';
-import {getComponentInputs, getDefaultAttributeToPropertyInputs} from './utils';
+import {camelToDashCase, getComponentInputs, getDefaultAttributeToPropertyInputs} from './utils';
 
 /**
  * Prototype for a class constructor based on an Angular component
@@ -105,6 +105,20 @@ export interface NgElementConfig {
    * The strategy controls how the transformation is performed.
    */
   strategyFactory?: NgElementStrategyFactory;
+  /**
+   * Whether to reflect input property values back to their corresponding HTML
+   * attributes. When `true`, assigning a primitive value (`string`, `number` or
+   * `boolean`) to an input property updates the matching attribute so the
+   * property and attribute stay in sync.
+   *
+   * Non-primitive values (objects, arrays, functions) are never reflected, since
+   * they cannot be meaningfully serialized to an attribute. A boolean `true`
+   * reflects as an empty attribute and `false`/`null`/`undefined` removes the
+   * attribute.
+   *
+   * Defaults to `false` to preserve the existing behavior.
+   */
+  reflectProperties?: boolean;
 }
 
 /**
@@ -140,6 +154,17 @@ export function createCustomElement<P>(
 
   const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
+  // Reverse map (property name -> attribute name) used when reflecting property
+  // values back to attributes. Only built when `reflectProperties` is enabled,
+  // to avoid the allocation for the default (non-reflecting) case.
+  let propertyToAttributeInputs: Map<string, string> | undefined;
+  if (config.reflectProperties) {
+    propertyToAttributeInputs = new Map<string, string>();
+    inputs.forEach(({propName, templateName}) => {
+      propertyToAttributeInputs!.set(propName, camelToDashCase(templateName));
+    });
+  }
+
   class NgElementImpl extends NgElement {
     // Work around a bug in closure typed optimizations(b/79557487) where it is not honoring static
     // field externs. So using quoted access to explicitly prevent renaming.
@@ -174,6 +199,12 @@ export function createCustomElement<P>(
 
     private _ngElementStrategy?: NgElementStrategy;
 
+    // Whether a property value is currently being reflected to an attribute.
+    // Set/removeAttribute fire `attributeChangedCallback` synchronously for the
+    // single attribute being written, so a boolean flag is enough to avoid
+    // feeding that reflected change straight back into the strategy.
+    private _isReflecting = false;
+
     constructor(private readonly injector?: Injector) {
       super();
     }
@@ -184,8 +215,37 @@ export function createCustomElement<P>(
       newValue: string,
       namespace?: string,
     ): void {
+      // Ignore the change we caused ourselves while reflecting a property value.
+      if (this._isReflecting) {
+        return;
+      }
       const [propName, transform] = attributeToPropertyInputs[attrName]!;
       this.ngElementStrategy.setInputValue(propName, newValue, transform);
+    }
+
+    /**
+     * Reflects a primitive input property value to its matching attribute. No-op
+     * for non-primitive values, which cannot be serialized to an attribute.
+     */
+    private _reflectPropertyToAttribute(propName: string, value: unknown): void {
+      const attrName = propertyToAttributeInputs?.get(propName);
+      if (attrName === undefined) {
+        return;
+      }
+
+      this._isReflecting = true;
+      try {
+        if (value === null || value === undefined || value === false) {
+          this.removeAttribute(attrName);
+        } else if (value === true) {
+          this.setAttribute(attrName, '');
+        } else if (typeof value === 'string' || typeof value === 'number') {
+          this.setAttribute(attrName, String(value));
+        }
+        // Objects, arrays, functions and symbols are intentionally not reflected.
+      } finally {
+        this._isReflecting = false;
+      }
     }
 
     override connectedCallback(): void {
@@ -245,6 +305,9 @@ export function createCustomElement<P>(
       },
       set(newValue: any): void {
         this.ngElementStrategy.setInputValue(propName, newValue, transform);
+        if (config.reflectProperties) {
+          this._reflectPropertyToAttribute(propName, newValue);
+        }
       },
       configurable: true,
       enumerable: true,
