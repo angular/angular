@@ -104,10 +104,7 @@ export function ɵɵstyleProp(
  *
  * @codeGenApi
  */
-export function ɵɵclassProp(
-  className: string,
-  value: boolean | undefined | null,
-): typeof ɵɵclassProp {
+export function ɵɵclassProp(className: string, value: any): typeof ɵɵclassProp {
   checkStylingProperty(className, value, null, true);
   return ɵɵclassProp;
 }
