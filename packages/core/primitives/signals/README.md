@@ -47,23 +47,6 @@ Because the calculation function used to create the `computed` is executed in a 
 
 Similarly to signals, the `computed` can (optionally) specify an equality comparator function.
 
-### Side effects: `createWatch()`
-
-The signals library provides an operation to watch a reactive function and receive notifications when the dependencies of that function change. This is used within Angular to build `effect()`.
-
-`effect()` schedules and runs a side-effectful function inside a reactive context. Signal dependencies of this function are captured, and the side effect is re-executed whenever any of its dependencies produces a new value.
-
-```typescript
-const counter = signal(0);
-effect(() => console.log('The counter is:', counter()));
-// The counter is: 0
-
-counter.set(1);
-// The counter is: 1
-```
-
-Effects do not execute synchronously with the set (see the section on glitch-free execution below), but are scheduled and resolved by the framework. The exact timing of effects is unspecified.
-
 ## Untracked
 
 `untracked` executes an arbitrary function in a non-reactive (non-tracking) context. All signals read inside of the function are not added as a dependency to a surrounding `effect`.

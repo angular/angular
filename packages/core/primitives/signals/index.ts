@@ -9,24 +9,11 @@
 import {installDevToolsSignalFormatter} from './src/formatter';
 
 export {ComputedNode, createComputed} from './src/computed';
-export {
-  ComputationFn,
-  LinkedSignalNode,
-  LinkedSignalGetter,
-  PreviousValue,
-  createLinkedSignal,
-  linkedSignalSetFn,
-  linkedSignalUpdateFn,
-} from './src/linked_signal';
-export {ValueEqualityFn, defaultEquals} from './src/equality';
+export {BASE_EFFECT_NODE, BaseEffectNode, runEffect} from './src/effect';
+export {defaultEquals, ValueEqualityFn} from './src/equality';
 export {setThrowInvalidWriteToSignalError} from './src/errors';
+export {installDevToolsSignalFormatter} from './src/formatter';
 export {
-  REACTIVE_NODE,
-  Reactive,
-  ReactiveHookFn,
-  ReactiveNode,
-  ReactiveNodeKind,
-  SIGNAL,
   consumerAfterComputation,
   consumerBeforeComputation,
   consumerDestroy,
@@ -40,30 +27,42 @@ export {
   producerIncrementEpoch,
   producerMarkClean,
   producerNotifyConsumers,
-  producerUpdateValueVersion,
   producerUpdatesAllowed,
+  producerUpdateValueVersion,
+  Reactive,
+  REACTIVE_NODE,
+  ReactiveHookFn,
+  ReactiveNode,
+  ReactiveNodeKind,
   resetConsumerBeforeComputation,
   runPostProducerCreatedFn,
   setActiveConsumer,
   setPostProducerCreatedFn,
+  SIGNAL,
   Version,
 } from './src/graph';
 export {
-  SIGNAL_NODE,
-  SignalGetter,
-  SignalNode,
+  ComputationFn,
+  createLinkedSignal,
+  LinkedSignalGetter,
+  LinkedSignalNode,
+  linkedSignalSetFn,
+  linkedSignalUpdateFn,
+  PreviousValue,
+} from './src/linked_signal';
+export {
   createSignal,
   runPostSignalSetFn,
   setPostSignalSetFn,
+  SIGNAL_NODE,
   signalGetFn,
+  SignalGetter,
+  SignalNode,
   signalSetFn,
   signalUpdateFn,
 } from './src/signal';
-export {Watch, WatchCleanupFn, WatchCleanupRegisterFn, createWatch} from './src/watch';
-export {setAlternateWeakRefImpl} from './src/weak_ref';
 export {untracked} from './src/untracked';
-export {runEffect, BASE_EFFECT_NODE, BaseEffectNode} from './src/effect';
-export {installDevToolsSignalFormatter} from './src/formatter';
+export {setAlternateWeakRefImpl} from './src/weak_ref';
 
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.

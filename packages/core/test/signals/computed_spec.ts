@@ -8,12 +8,12 @@
 
 import {computed, signal} from '../../src/core';
 import {
-  createWatch,
   ReactiveNode,
   SIGNAL,
   defaultEquals,
   setPostProducerCreatedFn,
 } from '../../primitives/signals';
+import {createTestingEffect} from './effect_util';
 
 describe('computed', () => {
   it('should create computed', () => {
@@ -145,14 +145,13 @@ describe('computed', () => {
     const derived = computed(() => source().toUpperCase());
 
     let watchCount = 0;
-    const w = createWatch(
+    const w = createTestingEffect(
       () => {
         derived();
       },
       () => {
         watchCount++;
       },
-      false,
     );
 
     w.run();
