@@ -14,10 +14,10 @@ import {SchemaMetadata} from '../../metadata/schema';
 import {ViewEncapsulation} from '../../metadata/view';
 import {FactoryFn} from '../definition_factory';
 
+import type {ControlDirectiveDef} from './control';
 import {TAttributes, TConstantsOrFactory} from './node';
 import {CssSelectorList} from './projection';
 import type {TView} from './view';
-import type {ControlDirectiveDef} from './control';
 
 /**
  * Definition of what a template rendering function should look like for a component.
@@ -280,6 +280,32 @@ export interface DirectiveDef<T> {
         privateName: string,
       ) => void)
     | null;
+
+  /**
+   * Unique ID for the directive. Used in style encapsulation.
+   */
+  readonly id: string;
+
+  /**
+   * A set of styles that the directive needs to be present for directive to render correctly.
+   */
+  readonly styles: string[];
+
+  /**
+   * Defines arbitrary developer-defined data to be stored on a renderer type. This is useful for
+   * plugins that want to associate the data with the header.
+   */
+  readonly data: {[kind: string]: any};
+
+  /**
+   * The view encapsulation type for the directive / component.
+   */
+  readonly encapsulation: ViewEncapsulation;
+
+  /**
+   * Function to get external runtime styles.
+   */
+  getExternalStyles?: ((encapsulationId?: string) => string[]) | null;
 }
 
 /**
