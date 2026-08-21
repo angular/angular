@@ -1399,7 +1399,7 @@ export class MyApp {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     {{message}}
-    @defer (on viewport({trigger: button, rootMargin: '123px', threshold: 59})) {
+    @defer (on viewport({trigger: button, rootMargin: '123px', scrollMargin: '456px', threshold: 59})) {
       {{message}}
     } @placeholder {
       <button #button>Click me</button>
@@ -1411,7 +1411,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     {{message}}
-    @defer (on viewport({trigger: button, rootMargin: '123px', threshold: 59})) {
+    @defer (on viewport({trigger: button, rootMargin: '123px', scrollMargin: '456px', threshold: 59})) {
       {{message}}
     } @placeholder {
       <button #button>Click me</button>
@@ -1440,7 +1440,7 @@ export class MyApp {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     {{message}}
-    @defer (prefetch on viewport({trigger: button, rootMargin: '123px', threshold: 59})) {
+    @defer (prefetch on viewport({trigger: button, rootMargin: '123px', scrollMargin: '456px', threshold: 59})) {
       {{message}}
     } @placeholder {
       <button #button>Click me</button>
@@ -1452,7 +1452,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     {{message}}
-    @defer (prefetch on viewport({trigger: button, rootMargin: '123px', threshold: 59})) {
+    @defer (prefetch on viewport({trigger: button, rootMargin: '123px', scrollMargin: '456px', threshold: 59})) {
       {{message}}
     } @placeholder {
       <button #button>Click me</button>
@@ -1481,7 +1481,7 @@ export class MyApp {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     {{message}}
-    @defer (hydrate on viewport({rootMargin: '123px', threshold: 59})) {
+    @defer (hydrate on viewport({rootMargin: '123px', scrollMargin: '456px', threshold: 59})) {
       {{message}}
     }
   `, isInline: true });
@@ -1491,7 +1491,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: `
     {{message}}
-    @defer (hydrate on viewport({rootMargin: '123px', threshold: 59})) {
+    @defer (hydrate on viewport({rootMargin: '123px', scrollMargin: '456px', threshold: 59})) {
       {{message}}
     }
   `,

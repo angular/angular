@@ -4589,7 +4589,9 @@ describe('@defer', () => {
     it('should take the `on viewport` options into account when creating IntersectionObserver', async () => {
       @Component({
         template: `
-          @defer (on viewport({trigger, rootMargin: '123px', threshold: 0.5})) {
+          @defer (
+            on viewport({trigger, rootMargin: '123px', scrollMargin: '456px', threshold: 0.5})
+          ) {
             Hello
           }
           <button #trigger></button>
@@ -4600,19 +4602,26 @@ describe('@defer', () => {
       class MyCmp {}
 
       const fixture = TestBed.createComponent(MyCmp);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
       expect(activeObservers.length).toBe(1);
       expect(activeObservers[0].observedElements.size).toBe(1);
       expect(activeObservers[0].observedElements.has(button)).toBe(true);
-      expect(activeObservers[0].options).toEqual({rootMargin: '123px', threshold: 0.5});
+      expect(activeObservers[0].options).toEqual({
+        rootMargin: '123px',
+        scrollMargin: '456px',
+        threshold: 0.5,
+      });
     });
 
     it('should take the `prefetch on viewport` options into account when creating IntersectionObserver', async () => {
       @Component({
         template: `
-          @defer (prefetch on viewport({trigger, rootMargin: '123px', threshold: 0.5})) {
+          @defer (
+            on interaction(trigger);
+            prefetch on viewport({trigger, rootMargin: '123px', scrollMargin: '456px', threshold: 0.5})
+          ) {
             Hello
           }
           <button #trigger></button>
@@ -4623,32 +4632,27 @@ describe('@defer', () => {
       class MyCmp {}
 
       const fixture = TestBed.createComponent(MyCmp);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
       expect(activeObservers.length).toBe(1);
       expect(activeObservers[0].observedElements.size).toBe(1);
       expect(activeObservers[0].observedElements.has(button)).toBe(true);
-      expect(activeObservers[0].options).toEqual({rootMargin: '123px', threshold: 0.5});
+      expect(activeObservers[0].options).toEqual({
+        rootMargin: '123px',
+        scrollMargin: '456px',
+        threshold: 0.5,
+      });
     });
 
-    it('should create different intersection observers depending on their options', async () => {
+    it('should create different intersection observers for different `rootMargin` values', async () => {
       @Component({
         template: `
-          @defer (on viewport(trigger)) {
+          @defer (on viewport({trigger, rootMargin: '123px'})) {
             One
           }
-          @defer (on viewport({trigger, rootMargin: '123px'})) {
-            Two
-          }
           @defer (on viewport({trigger, rootMargin: '1vh'})) {
-            Three
-          }
-          @defer (on viewport(trigger)) {
-            One Duplicate
-          }
-          @defer (on viewport({trigger, rootMargin: '123px'})) {
-            Two Duplicate
+            Two
           }
 
           <button #trigger></button>
@@ -4659,21 +4663,89 @@ describe('@defer', () => {
       class MyCmp {}
 
       const fixture = TestBed.createComponent(MyCmp);
-      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+      expect(activeObservers.length).toBe(2);
+      expect(activeObservers[0].observedElements.size).toBe(1);
+      expect(activeObservers[0].observedElements.has(button)).toBe(true);
+      expect(activeObservers[0].options).toEqual({rootMargin: '123px'});
+
+      expect(activeObservers[1].observedElements.size).toBe(1);
+      expect(activeObservers[1].observedElements.has(button)).toBe(true);
+      expect(activeObservers[1].options).toEqual({rootMargin: '1vh'});
+    });
+
+    it('should create different intersection observers for different `scrollMargin` values', async () => {
+      @Component({
+        template: `
+          @defer (on viewport({trigger, scrollMargin: '1px'})) {
+            One
+          }
+          @defer (on viewport({trigger, scrollMargin: '2px'})) {
+            Two
+          }
+
+          <button #trigger></button>
+        `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyCmp {}
+
+      const fixture = TestBed.createComponent(MyCmp);
+      await fixture.whenStable();
+
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+      expect(activeObservers.length).toBe(2);
+      expect(activeObservers[0].observedElements.size).toBe(1);
+      expect(activeObservers[0].observedElements.has(button)).toBe(true);
+      expect(activeObservers[0].options).toEqual({scrollMargin: '1px'});
+
+      expect(activeObservers[1].observedElements.size).toBe(1);
+      expect(activeObservers[1].observedElements.has(button)).toBe(true);
+      expect(activeObservers[1].options).toEqual({scrollMargin: '2px'});
+    });
+
+    it('should reuse an intersection observer only when both margins match', async () => {
+      @Component({
+        template: `
+          @defer (on viewport({trigger, rootMargin: '123px', scrollMargin: '1px'})) {
+            One
+          }
+          @defer (on viewport({trigger, rootMargin: '123px', scrollMargin: '2px'})) {
+            Two
+          }
+          @defer (on viewport({trigger, rootMargin: '1vh', scrollMargin: '1px'})) {
+            Three
+          }
+          @defer (on viewport({trigger, rootMargin: '123px', scrollMargin: '1px'})) {
+            One Duplicate
+          }
+
+          <button #trigger></button>
+        `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MyCmp {}
+
+      const fixture = TestBed.createComponent(MyCmp);
+      await fixture.whenStable();
 
       const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
       expect(activeObservers.length).toBe(3);
       expect(activeObservers[0].observedElements.size).toBe(1);
       expect(activeObservers[0].observedElements.has(button)).toBe(true);
-      expect(activeObservers[0].options).toBe(null);
+      expect(activeObservers[0].options).toEqual({rootMargin: '123px', scrollMargin: '1px'});
 
       expect(activeObservers[1].observedElements.size).toBe(1);
       expect(activeObservers[1].observedElements.has(button)).toBe(true);
-      expect(activeObservers[1].options).toEqual({rootMargin: '123px'});
+      expect(activeObservers[1].options).toEqual({rootMargin: '123px', scrollMargin: '2px'});
 
       expect(activeObservers[2].observedElements.size).toBe(1);
       expect(activeObservers[2].observedElements.has(button)).toBe(true);
-      expect(activeObservers[2].options).toEqual({rootMargin: '1vh'});
+      expect(activeObservers[2].options).toEqual({rootMargin: '1vh', scrollMargin: '1px'});
     });
 
     it('should not attach observer if rendering manually', async () => {
