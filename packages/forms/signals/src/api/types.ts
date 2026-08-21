@@ -910,7 +910,7 @@ export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> =
  * @see [Custom validation rules](guide/forms/signals/validation#using-validatepromise)
  *
  * @category validation
- * @publicApi 22.0
+ * @publicApi 22.2
  */
 export type FieldValidatorPromise<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
