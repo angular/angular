@@ -168,7 +168,7 @@ export type GuardResult = boolean | UrlTree | RedirectCommand;
  */
 export class RedirectCommand extends Error {
   constructor(
-    readonly redirectTo: UrlTree,
+    readonly redirectTo: UrlTree | `/${string}`,
     readonly navigationBehaviorOptions?: NavigationBehaviorOptions,
   ) {
     super();
