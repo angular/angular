@@ -8,25 +8,25 @@
 
 import {AST, BindingType} from '../../expression_parser/ast';
 import {BindingPropertyName, ClassPropertyName} from '../../property_mapping';
-import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
 import {BoundAttribute, Component, Directive, Element, Template} from '../../render3/r3_ast';
-import type {Context} from './context';
-import type {Scope} from './scope';
+import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
+import {isUnsafeObjectKey} from '../../render3/util';
+import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
+import {getBoundAttributes, widenBinding} from './bindings';
 import {declareVariable, TcbExpr} from './codegen';
-import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
-const REGISTRY = new DomElementSchemaRegistry();
+import type {Context} from './context';
 import {tcbExpression, unwrapWritableSignal} from './expression';
+import {LocalSymbol} from './references';
+import type {Scope} from './scope';
 import {
   checkUnsupportedFieldBindings,
-  CustomFormControlType,
   customFormControlBannedInputFields,
+  CustomFormControlType,
   expandBoundAttributesForField,
 } from './signal_forms';
-import {getBoundAttributes, widenBinding} from './bindings';
-import {LocalSymbol} from './references';
-import {isUnsafeObjectKey} from '../../render3/util';
+const REGISTRY = new DomElementSchemaRegistry();
 
 /**
  * Translates the given attribute binding to a `ts.Expression`.
@@ -128,7 +128,38 @@ export class TcbDirectiveInputsOp extends TcbOp {
 
           const id = new TcbExpr(this.tcb.allocateId());
           this.scope.addStatement(declareVariable(id, type));
+
+          // The expression is assigned to the temporary variable to perform the type check.
+          // The result is then cast to `any` and assigned to the actual property. This avoids
+          // type mismatch errors (e.g., when assigning a string to a boolean input) while also
+          // providing a TCB node that the Language Service can resolve to the actual class property.
+          assignment = new TcbExpr(`(${id.print()} = ${assignment.print()}) as any`);
+
+          if (dirId === null) {
+            dirId = this.scope.resolve(this.node, this.dir);
+          }
+
           target = id;
+
+          // If strict checking of access modifiers is disabled and the field is restricted
+          // (i.e. private/protected/readonly), generate an assignment into a temporary variable
+          // that has the type of the field. This achieves type-checking but circumvents the access
+          // modifiers.
+          if (
+            !this.tcb.env.config.honorAccessModifiersForInputBindings &&
+            this.dir.restrictedInputFields.has(fieldName)
+          ) {
+            const targetId = new TcbExpr(this.tcb.allocateId());
+            const targetType = new TcbExpr(
+              `(typeof ${dirId.print()})[${TcbExpr.quoteAndEscape(fieldName)}]`,
+            );
+            this.scope.addStatement(declareVariable(targetId, targetType));
+            target = targetId;
+          } else {
+            target = this.dir.stringLiteralInputFields.has(fieldName)
+              ? new TcbExpr(`${dirId.print()}[${TcbExpr.quoteAndEscape(fieldName)}]`)
+              : new TcbExpr(`${dirId.print()}.${fieldName}`);
+          }
         } else if (this.dir.undeclaredInputFields.has(fieldName)) {
           // If no coercion declaration is present nor is the field declared (i.e. the input is
           // declared in a `@Directive` or `@Component` decorator's `inputs` property) there is no
