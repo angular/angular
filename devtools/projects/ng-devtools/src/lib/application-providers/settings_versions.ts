@@ -34,7 +34,9 @@ interface SettingsDataBase {
 export interface SettingsDataV2 extends SettingsDataBase {
   [DATA_VERSION_KEY]: 2;
   'show_comment_nodes@components': boolean;
+  'show_cd_in_explorer@components': boolean;
   'performance_track@profiling': boolean;
+  'highlight_change_detection@profiling': boolean;
   'theme@general': ThemePreference;
   'active_tab@general': string;
   'show_hydration_overlays@components': boolean;

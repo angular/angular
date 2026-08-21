@@ -18,6 +18,7 @@
           [forest]="forest()"
           [currentSelectedElement]="currentSelectedElement()!"
           [showCommentNodes]="showCommentNodes()"
+          [cdData]="cdData() ?? undefined"
         />
         @if (parents()) {
           <ng-breadcrumbs

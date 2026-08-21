@@ -16,6 +16,7 @@ import {
 } from './highlights';
 import {createOverlayWithLabels, getComponentRect} from './dom';
 import {findDirectiveAndHost} from '../../directive-forest/component-tree/component-tree';
+import {runOutsideAngular} from '../utils/general';
 
 // A global synchronous event emitter that handles all highlight destroy events.
 const highlightDestroyEvents = new EventEmitter<[highlight: Highlight]>();
@@ -50,53 +51,57 @@ const WINDOW_RESIZE_DEBOUNCE = 200;
 let resizeTimeout: ReturnType<typeof setTimeout>;
 let animationFrameId: ReturnType<typeof requestAnimationFrame>;
 let isWindowResizing = false;
+let resizeObserver: ResizeObserver;
 
-window.addEventListener('resize', () => {
-  isWindowResizing = true;
-  if (resizeTimeout) {
-    clearTimeout(resizeTimeout);
-  }
-  resizeTimeout = setTimeout(() => {
-    const positions: [Highlight, DOMRect][] = [];
-
-    // We perform the DOM read first to avoid thrashing.
-    // All consecutive `getBoundingClientRect` should be practically free.
-    forEachActiveHighlight((h, t) => {
-      positions.push([h, t.getBoundingClientRect()]);
-    });
-
-    // We update the positions (DOM write).
-    for (const [highlight, rect] of positions) {
-      highlight.position(rect);
+// Wrap Zone.js monkey-patched code for Zone-based apps.
+runOutsideAngular(() => {
+  window.addEventListener('resize', () => {
+    isWindowResizing = true;
+    if (resizeTimeout) {
+      clearTimeout(resizeTimeout);
     }
+    resizeTimeout = setTimeout(() => {
+      const positions: [Highlight, DOMRect][] = [];
 
-    isWindowResizing = false;
-  }, WINDOW_RESIZE_DEBOUNCE);
-});
+      // We perform the DOM read first to avoid thrashing.
+      // All consecutive `getBoundingClientRect` should be practically free.
+      forEachActiveHighlight((h, t) => {
+        positions.push([h, t.getBoundingClientRect()]);
+      });
 
-const resizeObserver = new ResizeObserver((entries) => {
-  // Ignore events that are already handled by window.resize.
-  if (isWindowResizing) {
-    return;
-  }
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId);
-  }
-  animationFrameId = requestAnimationFrame(() => {
-    const positions: [Highlight, DOMRect][] = [];
-
-    // We perform the DOM read first to avoid thrashing.
-    // All consecutive `getBoundingClientRect` should be practically free.
-    for (const {target} of entries) {
-      for (const highlight of activeHighlights.get(target) ?? []) {
-        positions.push([highlight, target.getBoundingClientRect()]);
+      // We update the positions (DOM write).
+      for (const [highlight, rect] of positions) {
+        highlight.position(rect);
       }
-    }
 
-    // We update the positions (DOM write).
-    for (const [highlight, rect] of positions) {
-      highlight.position(rect);
+      isWindowResizing = false;
+    }, WINDOW_RESIZE_DEBOUNCE);
+  });
+
+  resizeObserver = new ResizeObserver((entries) => {
+    // Ignore events that are already handled by window.resize.
+    if (isWindowResizing) {
+      return;
     }
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+    }
+    animationFrameId = requestAnimationFrame(() => {
+      const positions: [Highlight, DOMRect][] = [];
+
+      // We perform the DOM read first to avoid thrashing.
+      // All consecutive `getBoundingClientRect` should be practically free.
+      for (const {target} of entries) {
+        for (const highlight of activeHighlights.get(target) ?? []) {
+          positions.push([highlight, target.getBoundingClientRect()]);
+        }
+      }
+
+      // We update the positions (DOM write).
+      for (const [highlight, rect] of positions) {
+        highlight.position(rect);
+      }
+    });
   });
 });
 
@@ -126,6 +131,7 @@ highlightDestroyEvents.subscribe(([highlight]) => {
     // remove the target element from the global vars.
     if (!targetHighlights.length) {
       activeHighlights.delete(target);
+      resizeObserver.unobserve(target);
 
       const targetElsIdx = targetElements.findIndex((wr) => wr.deref() === target);
       if (targetElsIdx > -1) {
@@ -164,6 +170,10 @@ export function highlightElement<T extends HighlightLabelDefinition = HighlightL
 ): Highlight | null {
   const dir = findDirectiveAndHost(targetElement).directive;
   if (!dir) {
+    console.warn(
+      'Highlighter: Unable to find the corresponding directive to the provided element -',
+      targetElement,
+    );
     return null;
   }
 

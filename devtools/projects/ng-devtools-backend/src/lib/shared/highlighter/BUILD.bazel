@@ -12,6 +12,7 @@ ts_project(
     deps = [
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
         "//devtools/projects/protocol",
     ],
 )

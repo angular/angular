@@ -132,5 +132,21 @@ export class DevToolsComponent implements OnDestroy {
         this.messageBus.emit('removeHydrationOverlay');
       }
     });
+
+    effect(() => {
+      if (this.settings.highlightChangeDetection()) {
+        this.messageBus.emit('enableCdHighlighting');
+      } else {
+        this.messageBus.emit('disableCdHighlighting');
+      }
+    });
+
+    effect(() => {
+      if (this.settings.showCdInExplorer()) {
+        this.messageBus.emit('enableCdDataStream');
+      } else {
+        this.messageBus.emit('disableCdDataStream');
+      }
+    });
   }
 }

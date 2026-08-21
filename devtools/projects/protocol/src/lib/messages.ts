@@ -383,6 +383,12 @@ export interface SupportedApis {
 export type TransferStateValue =
   string | number | boolean | null | undefined | Record<string, unknown> | unknown[];
 
+export interface CdElementData {
+  element: ElementPosition;
+  lastCdPassDuration: number;
+  cdCount: number;
+}
+
 export interface Events {
   handshake: () => void;
   shutdown: () => void;
@@ -448,6 +454,13 @@ export interface Events {
 
   getTransferState: () => void;
   transferStateData: (data: Record<string, TransferStateValue> | null) => void;
+
+  enableCdHighlighting: () => void;
+  disableCdHighlighting: () => void;
+
+  enableCdDataStream: () => void;
+  disableCdDataStream: () => void;
+  latestCdData: (cdData: CdElementData[]) => void;
 
   contentScriptConnected: (frameId: number, name: string, url: string) => void;
   contentScriptDisconnected: (frameId: number, name: string, url: string) => void;
