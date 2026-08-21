@@ -764,7 +764,7 @@ export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKi
 
 // @public
 export function validatePromise<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: NoInfer<FieldValidatorPromise<TValue, TPathKind>>, config?: {
-    debounce?: DebounceTimer<FieldContext<TValue, TPathKind> | undefined>;
+    debounce?: DebounceTimer<TValue | undefined>;
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
     onError?: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
 }): void;
