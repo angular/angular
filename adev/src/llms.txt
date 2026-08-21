@@ -45,9 +45,8 @@ Angular — Deliver web apps with confidence 🚀
 ## Dependency injection (DI)
 
 - [Dependency Injection overview](https://angular.dev/guide/di)
-- [Understanding Dependency injection](https://angular.dev/guide/di/dependency-injection)
-- [Creating an injectable service](https://angular.dev/guide/di/creating-injectable-service)
-- [Configuring dependency providers](https://angular.dev/guide/di/dependency-injection-providers)
+- [Creating and using services](https://angular.dev/guide/di/creating-and-using-services)
+- [Defining dependency providers](https://angular.dev/guide/di/defining-dependency-providers)
 - [Lazy loading services](https://angular.dev/guide/di/lazy-loading-services)
 - [Injection context](https://angular.dev/guide/di/dependency-injection-context)
 - [Hierarchical injectors](https://angular.dev/guide/di/hierarchical-dependency-injection)
@@ -94,7 +93,6 @@ Angular — Deliver web apps with confidence 🚀
 - [SSR Overview](https://angular.dev/guide/performance)
 - [Server and hybrid rendering](https://angular.dev/guide/ssr)
 - [Rendering strategies in Angular](https://angular.dev/guide/routing/rendering-strategies)
-- [Hybrid rendering with server routing](https://angular.dev/guide/hybrid-rendering)
 - [Hydration](https://angular.dev/guide/hydration)
 - [Incremental Hydration](https://angular.dev/guide/incremental-hydration)
 

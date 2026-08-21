@@ -39,9 +39,9 @@ adev/src/content/guide/signals/resource.md
 
 ## Dependency injection
 
-adev/src/content/guide/di/dependency-injection.md
-adev/src/content/guide/di/creating-injectable-service.md
-adev/src/content/guide/di/dependency-injection-providers.md
+adev/src/content/guide/di/overview.md
+adev/src/content/guide/di/creating-and-using-services.md
+adev/src/content/guide/di/defining-dependency-providers.md
 adev/src/content/guide/di/lazy-loading-services.md
 adev/src/content/guide/di/dependency-injection-context.md
 adev/src/content/guide/di/hierarchical-dependency-injection.md
