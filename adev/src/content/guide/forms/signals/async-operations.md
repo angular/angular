@@ -1,6 +1,6 @@
 # Async operations
 
-Some validation requires data from external sources like backend APIs or third-party services. Signal Forms provides two functions for asynchronous validation: `validateHttp()` for HTTP-based validation and `validateAsync()` for custom resource-based validation.
+Some validation requires data from external sources like backend APIs or third-party services. Signal Forms provides three functions for asynchronous validation: `validateHttp()` for HTTP-based validation, `validatePromise()` for simple promise-based function validation, and `validateAsync()` for custom resource-based validation.
 
 ## When to use async validation
 
@@ -788,5 +788,6 @@ For detailed API documentation, see:
 
 - [`validateHttp()`](api/forms/signals/validateHttp) - HTTP-based async validation
 - [`validateAsync()`](api/forms/signals/validateAsync) - Custom resource-based async validation
+- [`validatePromise()`](api/forms/signals/validatePromise) - Promise-based async validation
 - [`httpResource()`](api/common/http/httpResource) - Angular's HTTP resource API
 - [`resource()`](api/core/resource) - Angular's resource primitive
