@@ -160,8 +160,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       domino:
-        specifier: https://github.com/angular/domino.git#e0779df0c5cf1b854f6718c6e92831dd47b0f602
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/e0779df0c5cf1b854f6718c6e92831dd47b0f602'
+        specifier: https://github.com/angular/domino.git#04f987dc08ff3736b427f50941adf1722458528f
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f'
       esbuild:
         specifier: 0.28.1
         version: 0.28.1
@@ -248,8 +248,8 @@ importers:
         specifier: ^9.0.0
         version: 9.1.1
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#fe8d168ef720af0b12276b21f820b2c93e3d342e
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/fe8d168ef720af0b12276b21f820b2c93e3d342e(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#bcad06e14cb29b52b0856020af5e2ab868075602
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/bcad06e14cb29b52b0856020af5e2ab868075602(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))
       '@babel/plugin-transform-async-generator-functions':
         specifier: ^8.0.0
         version: 8.0.1(@babel/core@8.0.1)
@@ -1226,8 +1226,8 @@ importers:
         specifier: 3.7.2
         version: 3.7.2
       domino:
-        specifier: https://github.com/angular/domino.git#e0779df0c5cf1b854f6718c6e92831dd47b0f602
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/e0779df0c5cf1b854f6718c6e92831dd47b0f602'
+        specifier: https://github.com/angular/domino.git#04f987dc08ff3736b427f50941adf1722458528f
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f'
       esbuild-plugin-umd-wrapper:
         specifier: 3.0.0
         version: 3.0.0
@@ -1274,8 +1274,8 @@ importers:
   packages/zone.js/test/typings:
     dependencies:
       domino:
-        specifier: https://github.com/angular/domino.git#e0779df0c5cf1b854f6718c6e92831dd47b0f602
-        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/e0779df0c5cf1b854f6718c6e92831dd47b0f602'
+        specifier: https://github.com/angular/domino.git#04f987dc08ff3736b427f50941adf1722458528f
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f'
       zone.js:
         specifier: workspace:*
         version: link:../..
@@ -1589,8 +1589,8 @@ packages:
       '@angular/compiler':
         optional: true
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/e0779df0c5cf1b854f6718c6e92831dd47b0f602':
-    resolution: {gitHosted: true, integrity: sha512-28zoNA3RGXJGO/akdTTPcF6Z58qr0HE5IY8eIgsQ+K36spZhk4mpov0JgChecHs3aFWu7MDZO3citm1XD0qn3g==, tarball: https://codeload.github.com/angular/domino/tar.gz/e0779df0c5cf1b854f6718c6e92831dd47b0f602}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f}
     version: 2.1.6
 
   '@angular/material@22.1.3':
@@ -1603,9 +1603,9 @@ packages:
       '@angular/platform-browser': ^22.0.0 || ^23.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/fe8d168ef720af0b12276b21f820b2c93e3d342e':
-    resolution: {gitHosted: true, integrity: sha512-6sQRCd29gx7lREERjAupLXS6orZKqCwNssMKW2YQYBYwulyLTK4G31M2yu5+m2Izly7VsfVQyeOVk+ZmD9j2jA==, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/fe8d168ef720af0b12276b21f820b2c93e3d342e}
-    version: 0.0.0-630fa0aa7ce9b7127b1ec4464b6af02d34f8154b
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/bcad06e14cb29b52b0856020af5e2ab868075602':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/bcad06e14cb29b52b0856020af5e2ab868075602}
+    version: 0.0.0-6d918a6dd670e28afd4ba54d00b805d4aba43dca
     hasBin: true
 
   '@angular/ssr@22.1.5':
@@ -2770,8 +2770,8 @@ packages:
     resolution: {integrity: sha512-IJn+8A3QZJfe7FUtWqHVNo3xJs7KFpurCWGWCiCz3oEh+BkRymKZ1QxfAbU2yGMDzTytLGQ2IV6T2r3cuo75/w==}
     engines: {node: '>=18'}
 
-  '@google/genai@2.17.0':
-    resolution: {integrity: sha512-Cnw71bRtYXnGkN/K1YLb4Wz3yPwIe/7c5kw4VkbXAX508A9HHZCTMsBUhaAjTHDfD9Tn2veHxyJXK1Dxxtcx4g==}
+  '@google/genai@2.17.1':
+    resolution: {integrity: sha512-CdZ3M/titoH81hXXkvOikrOW26bC9IXh9iYT7u+r+5p7wi1LnMEnB0AbJfDeWAkjuneP4oJ299BtCt6twmORWg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.25.2
@@ -11961,7 +11961,7 @@ snapshots:
     optionalDependencies:
       '@angular/compiler': link:packages/compiler
 
-  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/e0779df0c5cf1b854f6718c6e92831dd47b0f602': {}
+  '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/04f987dc08ff3736b427f50941adf1722458528f': {}
 
   '@angular/material@22.1.3(@angular/cdk@22.1.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
@@ -11973,12 +11973,12 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/fe8d168ef720af0b12276b21f820b2c93e3d342e(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/bcad06e14cb29b52b0856020af5e2ab868075602(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))':
     dependencies:
       '@actions/core': 3.0.1
       '@conventional-changelog/git-client': 3.1.2(conventional-commits-filter@6.0.1)(conventional-commits-parser@7.1.2)
       '@google-cloud/spanner': 8.0.0(supports-color@11.0.0)
-      '@google/genai': 2.17.0(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))(bufferutil@4.1.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)
+      '@google/genai': 2.17.1(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))(bufferutil@4.1.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)
       '@inquirer/prompts': 8.5.2(@types/node@24.13.3)
       '@inquirer/type': 4.0.7(@types/node@24.13.3)
       '@octokit/auth-app': 8.3.0
@@ -13345,7 +13345,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@2.17.0(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))(bufferutil@4.1.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)':
+  '@google/genai@2.17.1(@modelcontextprotocol/sdk@1.30.0(@cfworker/json-schema@4.1.1)(supports-color@11.0.0))(bufferutil@4.1.0)(supports-color@11.0.0)(utf-8-validate@6.0.6)':
     dependencies:
       google-auth-library: 10.9.1(supports-color@11.0.0)
       p-retry: 4.6.2
