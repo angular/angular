@@ -67,11 +67,11 @@ importers:
         specifier: 10.0.4
         version: 10.0.4
       jasmine:
-        specifier: 6.3.0
-        version: 6.3.0
+        specifier: 7.0.0
+        version: 7.0.0
       jasmine-core:
-        specifier: 6.3.0
-        version: 6.3.0
+        specifier: 7.0.2
+        version: 7.0.2
       puppeteer:
         specifier: 25.6.0
         version: 25.6.0
@@ -96,6 +96,7 @@ packages:
   '@angular-devkit/build-angular@22.2.0-next.3':
     resolution: {integrity: sha512-rip/ClRr/dl2r1QxKzix0Hz2ChVYbddz7LzdgwaV4MoyiLOVGztDmSpKzqdUGDJ0HqlwG22pcvs0bsXehX5yfg==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0 || ^22.2.0-next.0
       '@angular/core': ^22.0.0 || ^22.2.0-next.0
@@ -1432,6 +1433,7 @@ packages:
   '@ngtools/webpack@22.2.0-next.3':
     resolution: {integrity: sha512-ZZVg3bwbBwf4ByFKwSpXGllCQswvJVYU5IY/BIiaUTsFzlTcq8rPtWNBE5EX/LEVq4Om1obAeWY6vDhmDWV+2w==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0 || ^22.2.0-next.0
       typescript: '>=6.0 <6.1'
@@ -2693,11 +2695,11 @@ packages:
     resolution: {integrity: sha512-Vtgk7L/R2JHyyGW07spoFlB8/lpjiOLTjMdms6AFMraYt3BaJauod/NGrfnVG/y4Ix1JEuMRPDPEj2ua+zz1/Q==}
     engines: {node: '>=10'}
 
-  jasmine-core@6.3.0:
-    resolution: {integrity: sha512-eMm5qBovNjNoGOcgE/W207+wrcK5zrQv0Rg/rWGboUJUmZp0dFCpHTyjpuDAfCwRCqg7f9U2q2jtv/aUuzdCQg==}
+  jasmine-core@7.0.2:
+    resolution: {integrity: sha512-YMVijt84KPQQFm1db1AQAxTXfq0k3wU06OkepLViljURFqiRQ7EYYX2eUAshhUv9fA9t1E2N65GrdqvupA9VPQ==}
 
-  jasmine@6.3.0:
-    resolution: {integrity: sha512-u6L7yYtrtS1JALlp7f4k7Wz7o7ZKXauSKKkXc0L3qUkKrdaxYvNiMHhHp5gtTuVZZXVihXRxS7bWwDBX1wJ7EQ==}
+  jasmine@7.0.0:
+    resolution: {integrity: sha512-rnjiyg1LAhFZMoyU8ei/Wqyvti5oCzFhW7ZtkD6o+CSx3LpU9aYurPrh5BKyX3coGvmdEVYPC2HYh1rrBvZoWg==}
     hasBin: true
 
   jest-worker@27.5.1:
@@ -6408,13 +6410,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jasmine-core@6.3.0: {}
+  jasmine-core@7.0.2: {}
 
-  jasmine@6.3.0:
+  jasmine@7.0.0:
     dependencies:
       '@jasminejs/reporters': 1.1.0
       glob: 13.0.6
-      jasmine-core: 6.3.0
+      jasmine-core: 7.0.2
 
   jest-worker@27.5.1:
     dependencies:
