@@ -23,6 +23,16 @@ ts_project(
     ],
 )
 
+ts_project(
+    name = "log",
+    srcs = ["log.ts"],
+)
+
+ts_project(
+    name = "error",
+    srcs = ["error.ts"],
+)
+
 ts_test_library(
     name = "test_lib",
     srcs = [

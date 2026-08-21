@@ -9,6 +9,7 @@
 import {EventEmitter} from '@angular/core';
 import {Highlight, HighlightLabelDefinition, HighlightTemplate, HighlightType} from './highlights';
 import {OVERLAY_CLASS} from './dom';
+import {debugLog} from '../utils/log';
 
 function createTemplate(overrides?: Partial<HighlightTemplate<any>>): HighlightTemplate<any> {
   return {
@@ -222,12 +223,12 @@ describe('Highlight', () => {
       const highlight = createHighlight(createTemplate(), {
         title: document.createElement('div'),
       });
-      spyOn(console, 'warn');
+      spyOn(debugLog, 'warn');
 
       highlight.destroy();
       highlight.destroy();
 
-      expect(console.warn).toHaveBeenCalledOnceWith(
+      expect(debugLog.warn).toHaveBeenCalledOnceWith(
         'The highlight has already been destroyed. Check references storing.',
       );
     });
