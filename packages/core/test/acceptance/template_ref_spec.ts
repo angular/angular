@@ -277,7 +277,7 @@ describe('TemplateRef', () => {
       @ViewChild('containerRef', {read: ViewContainerRef}) containerRef!: ViewContainerRef;
     }
 
-    it('should update if the context of a view ref is mutated', () => {
+    it('should update if the context of a view ref is mutated', async () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const context = {name: 'Frodo'};
@@ -289,12 +289,12 @@ describe('TemplateRef', () => {
 
       context.name = 'Bilbo';
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
     });
 
-    it('should update if the context of a view ref is replaced', () => {
+    it('should update if the context of a view ref is replaced', async () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
@@ -305,12 +305,12 @@ describe('TemplateRef', () => {
 
       viewRef.context = {name: 'Bilbo'};
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
     });
 
-    it('should use the latest context information inside template listeners', () => {
+    it('should use the latest context information inside template listeners', async () => {
       const events: string[] = [];
 
       @Component({
@@ -342,12 +342,12 @@ describe('TemplateRef', () => {
 
       viewRef.context = {name: 'Bilbo'};
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
       button.click();
       expect(events).toEqual(['Frodo', 'Bilbo']);
     });
 
-    it('should warn if the context of an embedded view ref is replaced', () => {
+    it('should warn if the context of an embedded view ref is replaced', async () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
@@ -359,7 +359,7 @@ describe('TemplateRef', () => {
 
       viewRef.context = {name: 'Bilbo'};
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(console.warn).toHaveBeenCalledTimes(1);
       expect(console.warn).toHaveBeenCalledWith(

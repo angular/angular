@@ -41,7 +41,7 @@ describe('signal inputs', () => {
     }),
   );
 
-  it('should be possible to bind to an input', () => {
+  it('should be possible to bind to an input', async () => {
     @Component({
       selector: 'input-comp',
       template: 'input:{{input()}}',
@@ -66,12 +66,12 @@ describe('signal inputs', () => {
 
     fixture.componentInstance.value = 2;
     fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
   });
 
-  it('should be possible to use an input in a computed expression', () => {
+  it('should be possible to use an input in a computed expression', async () => {
     @Component({
       selector: 'input-comp',
       template: 'changed:{{changed()}}',
@@ -97,12 +97,12 @@ describe('signal inputs', () => {
 
     fixture.componentInstance.value = 2;
     fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toBe('changed:computed-2');
   });
 
-  it('should be possible to use an input in an effect', () => {
+  it('should be possible to use an input in an effect', async () => {
     let effectLog: unknown[] = [];
 
     @Component({
@@ -137,7 +137,7 @@ describe('signal inputs', () => {
 
     fixture.componentInstance.value = 2;
     fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(effectLog).toEqual([1, 2]);
   });
@@ -194,7 +194,7 @@ describe('signal inputs', () => {
     expect(transformRunCount).toBe(1);
   });
 
-  it('should be possible to bind to an inherited input', () => {
+  it('should be possible to bind to an inherited input', async () => {
     @Directive()
     class BaseDir {
       input = input<number>();
@@ -222,12 +222,12 @@ describe('signal inputs', () => {
 
     fixture.componentInstance.value = 2;
     fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
   });
 
-  it('should support two-way binding to signal input and @Output decorated member', () => {
+  it('should support two-way binding to signal input and @Output decorated member', async () => {
     @Directive({selector: '[dir]'})
     class Dir {
       value = input(0);
@@ -255,14 +255,14 @@ describe('signal inputs', () => {
     // Changing the value from within the directive.
     host.dir.valueChange.emit(2);
     fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value).toBe(2);
     expect(host.dir.value()).toBe(2);
 
     // Changing the value from the outside.
     host.value = 3;
     fixture.changeDetectorRef.markForCheck();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(host.value).toBe(3);
     expect(host.dir.value()).toBe(3);
   });
@@ -634,7 +634,7 @@ describe('signal inputs', () => {
 
       TestBed.configureTestingModule({animationsEnabled: true});
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const notification = fixture.nativeElement.querySelector('notification');
 
