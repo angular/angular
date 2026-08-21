@@ -32,8 +32,8 @@
     "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
     "concurrently": "10.0.4",
-    "jasmine": "6.3.0",
-    "jasmine-core": "6.3.0",
+    "jasmine": "7.0.0",
+    "jasmine-core": "7.0.2",
     "puppeteer": "25.6.0",
     "ts-node": "^10.9.1",
     "typescript": "6.0.3"

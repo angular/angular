@@ -55,8 +55,8 @@ importers:
         specifier: ^20.14.8
         version: 20.19.43
       jasmine-core:
-        specifier: 6.3.0
-        version: 6.3.0
+        specifier: 7.0.2
+        version: 7.0.2
       jasmine-spec-reporter:
         specifier: ~7.0.0
         version: 7.0.0
@@ -71,7 +71,7 @@ importers:
         version: 5.1.0(karma@6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1))
       karma-jasmine-html-reporter:
         specifier: ^2.1.0
-        version: 2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)))(karma@6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1))
+        version: 2.2.0(jasmine-core@7.0.2)(karma-jasmine@5.1.0(karma@6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)))(karma@6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1))
       protractor:
         specifier: ^7.0.0
         version: 7.0.0(supports-color@8.1.1)
@@ -96,6 +96,7 @@ packages:
   '@angular-devkit/build-angular@22.2.0-next.3':
     resolution: {integrity: sha512-rip/ClRr/dl2r1QxKzix0Hz2ChVYbddz7LzdgwaV4MoyiLOVGztDmSpKzqdUGDJ0HqlwG22pcvs0bsXehX5yfg==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0 || ^22.2.0-next.0
       '@angular/core': ^22.0.0 || ^22.2.0-next.0
@@ -1414,6 +1415,7 @@ packages:
   '@ngtools/webpack@22.2.0-next.3':
     resolution: {integrity: sha512-ZZVg3bwbBwf4ByFKwSpXGllCQswvJVYU5IY/BIiaUTsFzlTcq8rPtWNBE5EX/LEVq4Om1obAeWY6vDhmDWV+2w==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0 || ^22.2.0-next.0
       typescript: '>=6.0 <6.1'
@@ -3008,8 +3010,8 @@ packages:
   jasmine-core@4.6.1:
     resolution: {integrity: sha512-VYz/BjjmC3klLJlLwA4Kw8ytk0zDSmbbDLNs794VnWmkcCB7I9aAL/D48VNQtmITyPvea2C3jdUMfc3kAoy0PQ==}
 
-  jasmine-core@6.3.0:
-    resolution: {integrity: sha512-eMm5qBovNjNoGOcgE/W207+wrcK5zrQv0Rg/rWGboUJUmZp0dFCpHTyjpuDAfCwRCqg7f9U2q2jtv/aUuzdCQg==}
+  jasmine-core@7.0.2:
+    resolution: {integrity: sha512-YMVijt84KPQQFm1db1AQAxTXfq0k3wU06OkepLViljURFqiRQ7EYYX2eUAshhUv9fA9t1E2N65GrdqvupA9VPQ==}
 
   jasmine-spec-reporter@7.0.0:
     resolution: {integrity: sha512-OtC7JRasiTcjsaCBPtMO0Tl8glCejM4J4/dNuOJdA8lBjz4PmWjYQ6pzb0uzpBNAWJMDudYuj9OdXJWqM2QTJg==}
@@ -7399,7 +7401,7 @@ snapshots:
 
   jasmine-core@4.6.1: {}
 
-  jasmine-core@6.3.0: {}
+  jasmine-core@7.0.2: {}
 
   jasmine-spec-reporter@7.0.0:
     dependencies:
@@ -7469,9 +7471,9 @@ snapshots:
     dependencies:
       which: 1.3.1
 
-  karma-jasmine-html-reporter@2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)))(karma@6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)):
+  karma-jasmine-html-reporter@2.2.0(jasmine-core@7.0.2)(karma-jasmine@5.1.0(karma@6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)))(karma@6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)):
     dependencies:
-      jasmine-core: 6.3.0
+      jasmine-core: 7.0.2
       karma: 6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)
       karma-jasmine: 5.1.0(karma@6.4.4(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1))
 
