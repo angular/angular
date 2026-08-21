@@ -30,7 +30,7 @@ import {RuntimeErrorCode} from './errors';
 import {platformServer} from './server';
 import {PlatformState} from './platform_state';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
-import {createScript} from './transfer_state';
+import {createScript, toInlineScriptJson} from './transfer_state';
 import {resolveUrl} from './url';
 
 /**
@@ -168,12 +168,21 @@ function insertEventRecordScript(
   // Note: this is only true when build with the CLI tooling, which inserts the script in the HTML
   if (eventDispatchScript) {
     // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
+    //
+    // Note: every interpolated value is passed through `toInlineScriptJson`
+    // (rather than a raw string or a bare `JSON.stringify`) because this
+    // script is built via string concatenation and then serialized back to
+    // an HTML string. `APP_ID` in particular can be overridden per-render
+    // (e.g. `{provide: APP_ID, useValue: ...}` in per-request providers), so
+    // it must not be trusted to be free of characters like `"` or `</script`
+    // that could otherwise break out of the string literal, or out of the
+    // `<script>` tag itself.
     const replayScriptContents =
       `window.__jsaction_bootstrap(` +
       `document.body,` +
-      `"${appId}",` +
-      `${JSON.stringify(Array.from(regular))},` +
-      `${JSON.stringify(Array.from(capture))}` +
+      `${toInlineScriptJson(appId)},` +
+      `${toInlineScriptJson(Array.from(regular))},` +
+      `${toInlineScriptJson(Array.from(capture))}` +
       `);`;
 
     const replayScript = createScript(doc, replayScriptContents, nonce);
