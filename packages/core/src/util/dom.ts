@@ -7,11 +7,16 @@
  */
 
 /**
- * Disallowed strings in the comment.
+ * Matches the `<` or `>` of a disallowed string in the comment.
+ *
+ * The delimiter is matched together with the surrounding context rather than the disallowed string
+ * as a whole, so that disallowed strings sharing characters (such as the `--` of `<!--` and `--!>`
+ * in `<!--!>`) are all escaped. A pattern matching the whole string would consume the shared
+ * characters with the first match and never see the second one.
  *
  * see: https://html.spec.whatwg.org/multipage/syntax.html#comments
  */
-const COMMENT_DISALLOWED = /^>|^->|<!--|-->|--!>|<!-$/g;
+const COMMENT_DISALLOWED = /(^-?|--!?)>|<(?=!--|!-$)/g;
 /**
  * Delimiter in the disallowed strings which needs to be wrapped with zero with character.
  */
