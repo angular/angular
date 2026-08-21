@@ -33,7 +33,7 @@ import {validateAsync} from './validate_async';
  * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
  * @see [Custom validation rules](guide/forms/signals/validation#using-validatepromise)
  * @category validation
- * @publicApi 22.0
+ * @publicApi 22.2
  */
 export function validatePromise<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
