@@ -160,6 +160,9 @@ export type FieldTree<TModel, TKey extends string | number = string | number, TM
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, ValidationResult<ValidationError.WithoutFieldTree>, TPathKind>;
 
 // @public
+export type FieldValidatorPromise<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, Promise<ValidationResult<ValidationError.WithoutFieldTree>>, TPathKind>;
+
+// @public
 export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
 // @public
@@ -758,6 +761,13 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
 
 // @public
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, opts: HttpValidatorOptions<TValue, TResult, TPathKind>): void;
+
+// @public
+export function validatePromise<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: NoInfer<FieldValidatorPromise<TValue, TPathKind>>, config?: {
+    debounce?: DebounceTimer<FieldContext<TValue, TPathKind> | undefined>;
+    when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+    onError?: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
+}): void;
 
 // @public
 export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProperties<TSchema>>(path: SchemaPath<TModel> & SchemaPathTree<TModel>, schema: StandardSchemaV1<TSchema> | LogicFn<TModel, StandardSchemaV1<unknown> | undefined>): void;

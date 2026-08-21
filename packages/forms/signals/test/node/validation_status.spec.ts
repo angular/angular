@@ -18,6 +18,7 @@ import {
   requiredError,
   validate,
   validateAsync,
+  validatePromise,
   validateTree,
   ValidationError,
 } from '../../public_api';
@@ -237,6 +238,34 @@ describe('validation status', () => {
       expect(f().valid()).toBe(false);
       expect(f().invalid()).toBe(false);
 
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(true);
+    });
+
+    it('should support promise-based async validators', async () => {
+      const f = form(
+        signal('VALID'),
+        (p) => {
+          validatePromise(p, async ({value}) => {
+            return value() === 'VALID' ? null : [{kind: 'custom'}];
+          });
+        },
+        {injector},
+      );
+
+      await Promise.resolve();
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(true);
+      expect(f().invalid()).toBe(false);
+
+      f().value.set('INVALID');
+
+      await Promise.resolve();
       await appRef.whenStable();
 
       expect(f().pending()).toBe(false);
