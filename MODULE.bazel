@@ -18,28 +18,28 @@ bazel_dep(name = "yq.bzl", version = "0.3.6")
 bazel_dep(name = "rules_angular")
 git_override(
     module_name = "rules_angular",
-    commit = "c1d74dbcda5f0ee9529dc78c485f34628c3985d5",
+    commit = "334ed4f0bf82cfcf21b1d8bd501d2294b186061e",
     remote = "https://github.com/angular/rules_angular.git",
 )
 
 bazel_dep(name = "devinfra")
 git_override(
     module_name = "devinfra",
-    commit = "630fa0aa7ce9b7127b1ec4464b6af02d34f8154b",
+    commit = "6d918a6dd670e28afd4ba54d00b805d4aba43dca",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
 bazel_dep(name = "rules_sass")
 git_override(
     module_name = "rules_sass",
-    commit = "d3806bb8c4e2faa96bb212795e3b0c8f56a19afc",
+    commit = "3d7f0cd2afe29c157780c9cd00f8530111430d17",
     remote = "https://github.com/angular/rules_sass.git",
 )
 
 bazel_dep(name = "rules_browsers")
 git_override(
     module_name = "rules_browsers",
-    commit = "5836240755b286b6224ecccb7045c318b1279def",
+    commit = "dd75910a556e309d6f475d54214551be919a21d1",
     remote = "https://github.com/angular/rules_browsers.git",
 )
 
