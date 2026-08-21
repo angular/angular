@@ -131,6 +131,8 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
 
+  messageBus.on('toggleWatchSignal', toggleWatchSignal(messageBus));
+
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     inspector.ref = setupInspector(messageBus);
 
@@ -626,7 +628,10 @@ const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('transferStateData', [collected ? merged : null]);
 };
 
+let lastSignalGraphElement: ElementPosition | null = null;
+
 const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: ElementPosition) => {
+  lastSignalGraphElement = element;
   // We assume that a new request for a signal graph
   // should invalidate the current ref cache.
   componentSignalGraphRef.clear();
@@ -660,9 +665,18 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
         epoch: node.epoch,
         preview: serializeValue(node.value),
         debuggable: !!node.debuggableFn,
+        watched: node.watched ?? false,
       };
     });
     messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
+  }
+};
+
+const toggleWatchSignal = (messageBus: MessageBus<Events>) => (id: string) => {
+  const ng = ngDebugClient();
+  ng.toggleWatchSignal?.(id);
+  if (lastSignalGraphElement) {
+    getSignalGraphCallback(messageBus)(lastSignalGraphElement);
   }
 };
 
