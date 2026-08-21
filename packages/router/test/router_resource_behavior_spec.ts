@@ -2,11 +2,21 @@
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
- * Use of this source code is governed by an MIT-style license $can be
+ * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, signal, WritableSignal, resource, ɵpromiseWithResolvers} from '@angular/core';
+import {
+  Component,
+  computed,
+  Resource,
+  ResourceStatus,
+  Signal,
+  signal,
+  WritableSignal,
+  resource,
+  ɵpromiseWithResolvers,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {provideRouter, Router, UrlTree} from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
@@ -454,6 +464,49 @@ describe('routerResource behavior tests', () => {
       resolveSubject.next('updated-2');
       await harness.fixture.whenStable();
       expect(wrapped.value()).toBe('updated-2');
+    });
+
+    it('should complete rollback recovery when a resource has a value even while remaining in loading state', async () => {
+      const valueSignal = signal<string | undefined>('initial');
+      const hasValueSignal = signal<boolean>(true);
+
+      const customResource: Resource<string> = {
+        value: valueSignal as Signal<string>,
+        status: signal<ResourceStatus>('loading').asReadonly(),
+        isLoading: signal(true).asReadonly(),
+        hasValue: (() => hasValueSignal()) as any,
+        error: signal<Error | undefined>(undefined).asReadonly(),
+        snapshot: computed(() => ({
+          status: 'loading' as const,
+          value: valueSignal()!,
+        })),
+      };
+
+      const wrapped = TestBed.runInInjectionContext(() => routerResource(customResource));
+      expect(wrapped.value()).toBe('initial');
+
+      // Start navigation to route2 with a failing guard to trigger rollback
+      guardPromise2 = Promise.reject(new Error('Navigation failed'));
+      try {
+        await harness.navigateByUrl('/route2');
+      } catch {}
+
+      // Reset value and set hasValue to false to simulate recovery fetch starting
+      valueSignal.set(undefined);
+      hasValueSignal.set(false);
+      await timeout();
+
+      // Wrapped snapshot should be frozen at 'initial' during recovery loading
+      expect(wrapped.value()).toBe('initial');
+
+      // Resource receives value while isLoading() remains true and status is 'loading'
+      valueSignal.set('recovered-stream-1');
+      hasValueSignal.set(true);
+      await harness.fixture.whenStable();
+
+      // Rollback recovery unfreezes because hasValue is true despite isLoading being true
+      expect(wrapped.value()).toBe('recovered-stream-1');
+      expect(wrapped.isLoading()).toBe(true);
     });
   });
 });
