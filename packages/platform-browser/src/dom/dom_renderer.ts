@@ -439,10 +439,15 @@ class DefaultDomRenderer2 implements Renderer2 {
     if (isVariable) {
       style = style.replace('%NS%', this.cssVarNamespace);
     }
+    const styleDeclaration = getStyleDeclaration(el);
     if (isVariable || flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
-      el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
+      styleDeclaration.setProperty(
+        style,
+        value,
+        flags & RendererStyleFlags2.Important ? 'important' : '',
+      );
     } else {
-      el.style[style] = value;
+      (styleDeclaration as any)[style] = value;
     }
   }
 
@@ -451,11 +456,12 @@ class DefaultDomRenderer2 implements Renderer2 {
     if (isVariable) {
       style = style.replace('%NS%', this.cssVarNamespace);
     }
+    const styleDeclaration = getStyleDeclaration(el);
     if (isVariable || flags & RendererStyleFlags2.DashCase) {
       // removeProperty has no effect when used on camelCased properties.
-      el.style.removeProperty(style);
+      styleDeclaration.removeProperty(style);
     } else {
-      el.style[style] = '';
+      (styleDeclaration as any)[style] = '';
     }
   }
 
@@ -560,6 +566,32 @@ function isTemplateNode(node: any): node is HTMLTemplateElement {
 function describeDomNode(node: Node): string {
   const textContent = node.textContent?.slice(0, 50);
   return textContent ? `${node.nodeName} ("${textContent}")` : node.nodeName;
+}
+
+function getStyleDeclaration(el: any): CSSStyleDeclaration {
+  const style = el.style;
+  // Named form controls expose an element or RadioNodeList here,
+  // neither of which has these methods.
+  if (
+    style != null &&
+    typeof style.setProperty === 'function' &&
+    typeof style.removeProperty === 'function'
+  ) {
+    return style;
+  }
+
+  for (
+    let prototype = Object.getPrototypeOf(el);
+    prototype;
+    prototype = Object.getPrototypeOf(prototype)
+  ) {
+    const styleGetter = Object.getOwnPropertyDescriptor(prototype, 'style')?.get;
+    if (styleGetter) {
+      // Form-associated controls can shadow inherited properties through named property access.
+      return styleGetter.call(el);
+    }
+  }
+  return el.style;
 }
 
 class ShadowDomRenderer extends DefaultDomRenderer2 {
