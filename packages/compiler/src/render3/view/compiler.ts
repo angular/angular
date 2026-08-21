@@ -164,6 +164,8 @@ export function compileDirectiveFromMetadata(
 ): R3CompiledExpression {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
+  compileStylesAndEncapsulation(definitionMap, meta, constantPool);
+
   const expression = o
     .importExpr(R3.defineDirective)
     .callFn([definitionMap.toLiteralMap()], undefined, true);
@@ -268,34 +270,7 @@ export function compileComponentFromMetadata(
 
   let hasStyles = !!meta.externalStyles?.length;
   // e.g. `styles: [str1, str2]`
-  if (meta.styles && meta.styles.length) {
-    const namespacedStyles = meta.styles.map((s) => namespaceCssVariables(s));
-    const styleValues =
-      meta.encapsulation == core.ViewEncapsulation.Emulated
-        ? compileStyles(namespacedStyles, CONTENT_ATTR, HOST_ATTR)
-        : namespacedStyles;
-    const styleNodes = styleValues.reduce((result, style) => {
-      if (style.trim().length > 0) {
-        result.push(constantPool.getConstLiteral(o.literal(style)));
-      }
-      return result;
-    }, [] as o.Expression[]);
-
-    if (styleNodes.length > 0) {
-      hasStyles = true;
-      definitionMap.set('styles', o.literalArr(styleNodes));
-    }
-  }
-
-  if (!hasStyles && meta.encapsulation === core.ViewEncapsulation.Emulated) {
-    // If there is no style, don't generate css selectors on elements
-    meta.encapsulation = core.ViewEncapsulation.None;
-  }
-
-  // Only set view encapsulation if it's not the default value
-  if (meta.encapsulation !== core.ViewEncapsulation.Emulated) {
-    definitionMap.set('encapsulation', o.literal(meta.encapsulation));
-  }
+  compileStylesAndEncapsulation(definitionMap, meta, constantPool);
 
   // e.g. `animation: [trigger('123', [])]`
   if (meta.animations !== null) {
@@ -798,4 +773,60 @@ export function compileDeferResolverFunction(
   }
 
   return o.arrowFn([], o.literalArr(depExpressions));
+}
+
+function compileStylesAndEncapsulation(
+  definitionMap: DefinitionMap<any>,
+  meta: R3ComponentMetadata<R3TemplateDependency> | R3DirectiveMetadata,
+  constantPool: ConstantPool,
+) {
+  let hasStyles = 'externalStyles' in meta ? !!meta.externalStyles?.length : false;
+  const isComponent = (meta as any).template !== undefined;
+
+  if (
+    !isComponent &&
+    meta.encapsulation !== undefined &&
+    meta.encapsulation !== core.ViewEncapsulation.Emulated &&
+    meta.encapsulation !== core.ViewEncapsulation.None
+  ) {
+    throw new Error(
+      `Directives only support ViewEncapsulation.Emulated and ViewEncapsulation.None, but received encapsulation ${meta.encapsulation}`,
+    );
+  }
+
+  if (meta.styles && meta.styles.length) {
+    const namespacedStyles = isComponent
+      ? meta.styles.map((s) => namespaceCssVariables(s))
+      : meta.styles;
+    const styleValues =
+      meta.encapsulation === core.ViewEncapsulation.Emulated ||
+      (!isComponent && meta.encapsulation === undefined)
+        ? compileStyles(namespacedStyles, isComponent ? CONTENT_ATTR : HOST_ATTR, HOST_ATTR)
+        : namespacedStyles;
+    const styleNodes = styleValues.reduce((result, style) => {
+      if (style.trim().length > 0) {
+        result.push(constantPool.getConstLiteral(o.literal(style)));
+      }
+      return result;
+    }, [] as o.Expression[]);
+
+    if (styleNodes.length > 0) {
+      hasStyles = true;
+      definitionMap.set('styles', o.literalArr(styleNodes));
+    }
+  }
+
+  if (
+    isComponent &&
+    !hasStyles &&
+    (meta.encapsulation === core.ViewEncapsulation.Emulated || meta.encapsulation === undefined)
+  ) {
+    // If there is no style, don't generate css selectors on elements
+    meta.encapsulation = core.ViewEncapsulation.None;
+  }
+
+  // Only set view encapsulation if it's not the default value
+  if (meta.encapsulation !== undefined && meta.encapsulation !== core.ViewEncapsulation.Emulated) {
+    definitionMap.set('encapsulation', o.literal(meta.encapsulation));
+  }
 }

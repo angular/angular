@@ -6,20 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentDef, ComponentDefFeature} from '../interfaces/definition';
+import {ViewEncapsulation} from '../../metadata/view';
+import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
 
 /**
- * A feature that adds support for external runtime styles for a component.
+ * A feature that adds support for external runtime styles for a directive or component.
  * An external runtime style is a URL to a CSS stylesheet that contains the styles
- * for a given component. For browsers, this URL will be used in an appended `link` element
- * when the component is rendered. This feature is typically used for Hot Module Replacement
- * (HMR) of component stylesheets by leveraging preexisting global stylesheet HMR available
+ * for a given directive or component. For browsers, this URL will be used in an appended `link` element
+ * when the component or directive is rendered. This feature is typically used for Hot Module Replacement
+ * (HMR) of stylesheets by leveraging preexisting global stylesheet HMR available
  * in most development servers.
  *
  * @codeGenApi
  */
-export function ɵɵExternalStylesFeature(styleUrls: string[]): ComponentDefFeature {
-  return (definition: ComponentDef<unknown>) => {
+export function ɵɵExternalStylesFeature(styleUrls: string[]): DirectiveDefFeature {
+  return (definition: DirectiveDef<unknown>) => {
     if (styleUrls.length < 1) {
       return;
     }
@@ -33,7 +34,7 @@ export function ɵɵExternalStylesFeature(styleUrls: string[]): ComponentDefFeat
           '?ngcomp' +
           (encapsulationId ? '=' + encodeURIComponent(encapsulationId) : '') +
           '&e=' +
-          definition.encapsulation,
+          (definition.encapsulation ?? ViewEncapsulation.Emulated),
       );
 
       return urls;

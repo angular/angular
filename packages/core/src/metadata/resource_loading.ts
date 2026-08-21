@@ -8,15 +8,15 @@
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import type {Component} from './directives';
+import type {Component, Directive} from './directives';
 
-let componentResourceResolutionQueue = new Map<Type<any>, Component>();
+let componentResourceResolutionQueue = new Map<Type<any>, Component | Directive>();
 
 // Track when existing ɵcmp for a Type is waiting on resources.
 const componentDefPendingResolution = new Set<Type<any>>();
 
 /**
- * Used to resolve resource URLs on `@Component` when used with JIT compilation.
+ * Used to resolve resource URLs on `@Component` and `@Directive` when used with JIT compilation.
  *
  * Example:
  * ```ts
@@ -70,18 +70,23 @@ export async function resolveComponentResources(
 
   const resolutionPromises = Array.from(currentQueue).map(async ([type, component]) => {
     if (component.styleUrl && component.styleUrls?.length) {
+      const isComponent =
+        (component as Component).templateUrl !== undefined ||
+        (component as Component).template !== undefined;
+      const decoratorName = isComponent ? '@Component' : '@Directive';
+      const entity = isComponent ? 'the component' : 'the directive';
       throw new Error(
-        '@Component cannot define both `styleUrl` and `styleUrls`. ' +
-          'Use `styleUrl` if the component has one stylesheet, or `styleUrls` if it has multiple',
+        `${decoratorName} cannot define both \`styleUrl\` and \`styleUrls\`. ` +
+          `Use \`styleUrl\` if ${entity} has one stylesheet, or \`styleUrls\` if it has multiple`,
       );
     }
 
     const componentTasks: Promise<void>[] = [];
 
-    if (component.templateUrl) {
+    if ((component as Component).templateUrl) {
       componentTasks.push(
-        cachedResourceResolve(component.templateUrl).then((template) => {
-          component.template = template;
+        cachedResourceResolve((component as Component).templateUrl!).then((template) => {
+          (component as Component).template = template;
         }),
       );
     }
@@ -116,7 +121,7 @@ export async function resolveComponentResources(
 
 export function maybeQueueResolutionOfComponentResources(
   type: Type<any>,
-  metadata: Component,
+  metadata: Component | Directive,
 ): void {
   if (componentNeedsResolution(metadata)) {
     componentResourceResolutionQueue.set(type, metadata);
@@ -128,15 +133,15 @@ export function isComponentDefPendingResolution(type: Type<any>): boolean {
   return componentDefPendingResolution.has(type);
 }
 
-export function componentNeedsResolution(component: Component): boolean {
+export function componentNeedsResolution(component: Component | Directive): boolean {
   return !!(
-    (component.templateUrl && !Object.hasOwn(component, 'template')) ||
+    ((component as Component).templateUrl && (component as Component).template === undefined) ||
     component.styleUrls?.length ||
     component.styleUrl
   );
 }
 
-export function clearResolutionOfComponentResourcesQueue(): Map<Type<any>, Component> {
+export function clearResolutionOfComponentResourcesQueue(): Map<Type<any>, Component | Directive> {
   const old = componentResourceResolutionQueue;
   componentResourceResolutionQueue = new Map();
   return old;

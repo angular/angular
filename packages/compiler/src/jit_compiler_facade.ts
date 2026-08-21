@@ -615,6 +615,8 @@ function convertDeclareDirectiveFacadeToMetadata(
     isSignal: declaration.isSignal ?? false,
     hostDirectives,
     legacyOptionalChaining: declaration.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
+    styles: declaration.styles ?? [],
+    encapsulation: declaration.encapsulation,
   };
 }
 

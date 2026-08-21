@@ -402,9 +402,15 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TDirectiveH
     getOrCreateNodeInjectorForNode(tNode, lView);
   }
 
+  const isElem = tNode.type === TNodeType.Element;
+  const native = isElem ? (getNativeByTNode(tNode, lView) as RElement) : null;
   const initialInputs = tNode.initialInputs;
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
+    if (!isComponentDef(def) && def.styles.length > 0 && native !== null) {
+      const rendererFactory = lView[ENVIRONMENT].rendererFactory;
+      rendererFactory.createRenderer(native, def as any);
+    }
     const directive = getNodeInjectable(lView, tView, i, tNode);
     attachPatchData(directive, lView);
 

@@ -212,6 +212,16 @@ interface DirectiveDefinition<T> {
    * Whether this directive/component is signal-based.
    */
   signals?: boolean;
+
+  /**
+   * A set of styles that the directive needs to be present for directive to render correctly.
+   */
+  styles?: string[];
+
+  /**
+   * Defines template and style encapsulation options available for Directive's {@link /api/core/Directive Directive}.
+   */
+  encapsulation?: ViewEncapsulation;
 }
 
 interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'> {
@@ -567,7 +577,10 @@ export function ɵɵdefineDirective<T>(
   directiveDefinition: DirectiveDefinition<T>,
 ): DirectiveDef<any> {
   return noSideEffects(() => {
-    const def = getNgDirectiveDef(directiveDefinition);
+    const def: Writable<DirectiveDef<T>> = getNgDirectiveDef(directiveDefinition);
+    if (def.styles.length > 0) {
+      def.id = getComponentId(def as any);
+    }
     initFeatures(def);
 
     return def;
@@ -643,6 +656,11 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     inputs: parseAndConvertInputsForDefinition(directiveDefinition.inputs, declaredInputs),
     outputs: parseAndConvertOutputsForDefinition(directiveDefinition.outputs),
     debugInfo: null,
+    styles: directiveDefinition.styles || EMPTY_ARRAY,
+    encapsulation: directiveDefinition.encapsulation ?? ViewEncapsulation.Emulated,
+    data: EMPTY_OBJ,
+    getExternalStyles: null,
+    id: '',
   };
 }
 

@@ -101,7 +101,6 @@ function createComponentDefinitionMap(
     definitionMap.set('minVersion', o.literal('17.0.0'));
   }
 
-  definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
   definitionMap.set('dependencies', compileUsedDependenciesMetadata(meta));
   definitionMap.set('viewProviders', meta.viewProviders);
   definitionMap.set('animations', meta.animations);
@@ -116,12 +115,6 @@ function createComponentDefinitionMap(
       o
         .importExpr(R3.ChangeDetectionStrategy)
         .prop(core.ChangeDetectionStrategy[meta.changeDetection]),
-    );
-  }
-  if (meta.encapsulation !== core.ViewEncapsulation.Emulated) {
-    definitionMap.set(
-      'encapsulation',
-      o.importExpr(R3.ViewEncapsulation).prop(core.ViewEncapsulation[meta.encapsulation]),
     );
   }
 
