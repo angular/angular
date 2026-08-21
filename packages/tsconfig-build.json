@@ -19,7 +19,7 @@
     "moduleResolution": "bundler",
     "module": "esnext",
     "target": "es2022",
-    "lib": ["es2020", "es2022", "dom", "dom.iterable"],
+    "lib": ["es2022", "dom", "dom.iterable", "es2024.promise"],
     "skipLibCheck": true,
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
     "types": [],
@@ -36,9 +36,9 @@
       "@angular/common/locales/*": ["./common/locales/*"],
       "@angular/compiler-cli": ["./compiler-cli"],
       "@angular/compiler-cli/*": ["./compiler-cli/*"],
-      "@angular/compiler-cli/src/ngtsc/reflection":  ["./compiler-cli/src/ngtsc/reflection/index"],
-      "@angular/compiler-cli/src/ngtsc/metadata":  ["./compiler-cli/src/ngtsc/metadata/index"],
-      "@angular/compiler-cli/private/migrations":  ["./compiler-cli/private/migrations"],
+      "@angular/compiler-cli/src/ngtsc/reflection": ["./compiler-cli/src/ngtsc/reflection/index"],
+      "@angular/compiler-cli/src/ngtsc/metadata": ["./compiler-cli/src/ngtsc/metadata/index"],
+      "@angular/compiler-cli/private/migrations": ["./compiler-cli/private/migrations"],
       "@angular/core/schematics/utils/tsurge/*": ["./core/schematics/utils/tsurge/*"]
     }
   },
