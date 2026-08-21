@@ -216,6 +216,7 @@ export class Project {
     start: number,
     end: number,
     errorCodes: readonly number[],
+    preferences: ts.UserPreferences = {},
   ): readonly ts.CodeFixAction[] {
     const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
     return this.ngLS.getCodeFixesAtPosition(
@@ -226,6 +227,7 @@ export class Project {
       {},
       {
         includeCompletionsForModuleExports: true,
+        ...preferences,
       },
     );
   }
