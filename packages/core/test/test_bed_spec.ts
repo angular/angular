@@ -1757,6 +1757,64 @@ describe('TestBed', () => {
       expect(() => TestBed.createComponent(RootAotComponent)).toThrow();
     });
 
+    it('should warn when overrideComponent is called on an AOT component with unsafe overrides', () => {
+      const RootAotComponent = getAOTCompiledComponent('root', [], []);
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      const warnSpy = spyOn(console, 'warn');
+      TestBed.overrideComponent(RootAotComponent, {
+        set: {template: `Override of a root template!`},
+      });
+
+      expect(warnSpy).toHaveBeenCalled();
+      expect(warnSpy.calls.mostRecent().args[0]).toContain(
+        "WARNING: 'TestBed.overrideComponent' was called on 'ComponentClass' with template/import/schema overrides in AOT mode",
+      );
+    });
+
+    it('should NOT warn when overrideComponent is called on an AOT component with safe overrides (like providers)', () => {
+      const RootAotComponent = getAOTCompiledComponent('root', [], []);
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      const warnSpy = spyOn(console, 'warn');
+      TestBed.overrideComponent(RootAotComponent, {
+        set: {providers: []},
+      });
+
+      const hasOverrideWarning = warnSpy.calls
+        .allArgs()
+        .some(
+          (args) =>
+            typeof args[0] === 'string' &&
+            args[0].includes("WARNING: 'TestBed.overrideComponent' was called"),
+        );
+      expect(hasOverrideWarning).toBeFalse();
+    });
+
+    it('should NOT warn when overrideComponent is called on a JIT component', () => {
+      @Component({
+        selector: 'jit-comp',
+        template: 'JIT template',
+      })
+      class JitComponent {}
+
+      TestBed.configureTestingModule({imports: [JitComponent]});
+
+      const warnSpy = spyOn(console, 'warn');
+      TestBed.overrideComponent(JitComponent, {
+        set: {template: `Override of JIT template!`},
+      });
+
+      const hasOverrideWarning = warnSpy.calls
+        .allArgs()
+        .some(
+          (args) =>
+            typeof args[0] === 'string' &&
+            args[0].includes("WARNING: 'TestBed.overrideComponent' was called"),
+        );
+      expect(hasOverrideWarning).toBeFalse();
+    });
+
     it('should not throw an error in AOT component is overriden but has no async metadata', () => {
       const RootAotComponent = getAOTCompiledComponent('root', [], []);
       TestBed.configureTestingModule({imports: [RootAotComponent]});
