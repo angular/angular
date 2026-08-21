@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DebounceTimer, resource, Signal} from '@angular/core';
+import {DebounceTimer, ResourceSnapshot, resource, Signal} from '@angular/core';
 import {
   FieldContext,
   FieldValidatorPromise,
@@ -39,7 +39,7 @@ export function validatePromise<TValue, TPathKind extends PathKind = PathKind.Ro
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   logic: NoInfer<FieldValidatorPromise<TValue, TPathKind>>,
   config?: {
-    debounce?: DebounceTimer<FieldContext<TValue, TPathKind> | undefined>;
+    debounce?: DebounceTimer<TValue | undefined>;
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
     onError?: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
   },
@@ -48,9 +48,21 @@ export function validatePromise<TValue, TPathKind extends PathKind = PathKind.Ro
   const debounce =
     typeof configOpts.debounce === 'function'
       ? (
-          value: {ctx: FieldContext<TValue, TPathKind>; value: TValue} | undefined,
-          lastValue: unknown,
-        ) => (configOpts.debounce as Function)(value?.ctx, lastValue)
+          params: {ctx: FieldContext<TValue, TPathKind>; value: TValue} | undefined,
+          lastValue: ResourceSnapshot<
+            {ctx: FieldContext<TValue, TPathKind>; value: TValue} | undefined
+          >,
+        ) => {
+          const mappedLastValue =
+            lastValue.status === 'error'
+              ? lastValue
+              : ({
+                  status: lastValue.status,
+                  value: lastValue.value?.value,
+                } as ResourceSnapshot<TValue | undefined>);
+
+          return (configOpts.debounce as Function)(params?.value, mappedLastValue);
+        }
       : configOpts.debounce;
 
   validateAsync(path, {
