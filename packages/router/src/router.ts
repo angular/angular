@@ -385,7 +385,7 @@ export class Router {
    * ]);
    * ```
    */
-  resetConfig(config: Routes): void {
+  resetConfig(config: Readonly<Routes>): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && validateConfig(config);
     this.config = config.map(standardizeConfig);
     this.navigated = false;
