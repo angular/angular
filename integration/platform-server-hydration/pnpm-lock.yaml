@@ -64,8 +64,8 @@ importers:
         specifier: 3.0.7
         version: 3.0.7
       concurrently:
-        specifier: 10.0.4
-        version: 10.0.4
+        specifier: 10.0.5
+        version: 10.0.5
       jasmine-core:
         specifier: 6.3.0
         version: 6.3.0
@@ -99,6 +99,7 @@ packages:
   '@angular-devkit/build-angular@22.2.0-next.3':
     resolution: {integrity: sha512-rip/ClRr/dl2r1QxKzix0Hz2ChVYbddz7LzdgwaV4MoyiLOVGztDmSpKzqdUGDJ0HqlwG22pcvs0bsXehX5yfg==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0 || ^22.2.0-next.0
       '@angular/core': ^22.0.0 || ^22.2.0-next.0
@@ -1424,6 +1425,7 @@ packages:
   '@ngtools/webpack@22.2.0-next.3':
     resolution: {integrity: sha512-ZZVg3bwbBwf4ByFKwSpXGllCQswvJVYU5IY/BIiaUTsFzlTcq8rPtWNBE5EX/LEVq4Om1obAeWY6vDhmDWV+2w==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0 || ^22.2.0-next.0
       typescript: '>=6.0 <6.1'
@@ -2233,8 +2235,8 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  concurrently@10.0.4:
-    resolution: {integrity: sha512-trZql+7l/0+WRAsAnEdctr4+iiOS6ZrViI6H8QWcCF9MFS/LT0dKpe8vluB1to6it+OxSI4VospFTIFMW8DJRw==}
+  concurrently@10.0.5:
+    resolution: {integrity: sha512-JaP/CoftUrCcAFW/g//RbgEGwlelnEae6cfBLgH6ZdO6s8jPkn6p9SB9u6pdVxYXoiSnFqseOlHfrEfF82TVOg==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -6382,7 +6384,7 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  concurrently@10.0.4:
+  concurrently@10.0.5:
     dependencies:
       chalk: 5.6.2
       rxjs: 7.8.2
