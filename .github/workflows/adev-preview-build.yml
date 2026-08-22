@@ -34,6 +34,8 @@ jobs:
       - uses: angular/dev-infra/github-actions/previews/pack-and-upload-artifact@6d918a6dd670e28afd4ba54d00b805d4aba43dca # main
         with:
           workflow-artifact-name: 'adev-preview'
+          angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY || 'bypassed_for_forks' }}
+          triggering-label: 'adev: preview'
           pull-number: '${{github.event.pull_request.number}}'
           artifact-build-revision: '${{github.event.pull_request.head.sha}}'
           deploy-directory: './dist/bin/adev/dist/browser'
