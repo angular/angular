@@ -164,7 +164,7 @@ Use a `button` element to add a button to the bottom of the form to trigger the 
 The button in the preceding snippet also has a `disabled` binding attached to it to disable the button when `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Basic form validation is covered in the [Validating form input](#validating-form-input) section.
 </docs-step>
 
-<docs-step title="Display the component">
+<docs-step title="Display the component {#display-the-component-form-group}">
 To display the `ProfileEditor` component that contains the form, add it to a component template.
 
 <docs-code header="app.component.html (profile editor)" path="adev/src/content/examples/reactive-forms/src/app/app.component.1.html" region="app-profile-editor"/>

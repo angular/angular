@@ -36,13 +36,13 @@ Adding the class `animated-class` to an element would trigger the animation on t
 
 The animations package allowed you to define various states using the [`state()`](api/animations/state) function within a component. Examples might be an `open` or `closed` state containing the styles for each respective state within the definition. For example:
 
-#### With Animations Package
+#### With Animations Package {#animating-state-and-styles-with-animations-package}
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="state1"/>
 
 This same behavior can be accomplished natively by using CSS classes, either with a keyframe animation or transition styling.
 
-#### With Native CSS
+#### With Native CSS {#animating-state-and-styles-with-native-css}
 
 <docs-code header="animations.css" path="adev/src/content/examples/animations/src/app/animations.css" region="animation-states"/>
 
@@ -66,7 +66,7 @@ Similarly, you can use `transition-duration`, `transition-delay`, and `transitio
 
 The animations package required specifying triggers using the `trigger()` function and nesting all of your states within it. With native CSS, this is unnecessary. Animations can be triggered by toggling CSS styles or classes. Once a class is present on an element, the animation will occur. Removing the class will revert the element back to whatever CSS is defined for that element. This results in significantly less code to do the same animation. Here's an example:
 
-#### With Animations Package
+#### With Animations Package {#triggering-an-animation-with-animations-package}
 
 <docs-code-multifile>
     <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/animations-package/open-close.ts" />
@@ -74,7 +74,7 @@ The animations package required specifying triggers using the `trigger()` functi
     <docs-code header="open-close.css" path="adev/src/content/examples/animations/src/app/animations-package/open-close.css"/>
 </docs-code-multifile>
 
-#### With Native CSS
+#### With Native CSS {#triggering-an-animation-with-native-css}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/open-close.ts">
     <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/native-css/open-close.ts" />
@@ -94,7 +94,7 @@ These state matching patterns are not needed at all when animating with CSS dire
 
 The animations package offers the ability to animate things that have been historically difficult to animate, like animating a set height to `height: auto`. You can now do this with pure CSS as well.
 
-#### With Animations Package
+#### With Animations Package {#automatic-property-calculation-with-animations-package}
 
 <docs-code-multifile>
     <docs-code header="auto-height.ts" path="adev/src/content/examples/animations/src/app/animations-package/auto-height.ts" />
@@ -104,7 +104,7 @@ The animations package offers the ability to animate things that have been histo
 
 You can use CSS Grid to animate to auto height.
 
-#### With Native CSS
+#### With Native CSS {#automatic-property-calculation-with-native-css}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/auto-height.ts">
     <docs-code header="auto-height.ts" path="adev/src/content/examples/animations/src/app/native-css/auto-height.ts" />
@@ -118,7 +118,7 @@ If you don't have to worry about supporting all browsers, you can also check out
 
 The animations package offered the previously mentioned pattern matching for entering and leaving but also included the shorthand aliases of `:enter` and `:leave`.
 
-#### With Animations Package
+#### With Animations Package {#enter-and-leave-with-animations-package}
 
 <docs-code-multifile>
     <docs-code header="insert-remove.ts" path="adev/src/content/examples/animations/src/app/animations-package/insert-remove.ts" />
@@ -126,7 +126,7 @@ The animations package offered the previously mentioned pattern matching for ent
     <docs-code header="insert-remove.css" path="adev/src/content/examples/animations/src/app/animations-package/insert-remove.css" />
 </docs-code-multifile>
 
-#### With Native CSS
+#### With Native CSS {#enter-with-native-css}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/insert.ts">
     <docs-code header="insert.ts" path="adev/src/content/examples/animations/src/app/native-css/insert.ts" />
@@ -134,7 +134,7 @@ The animations package offered the previously mentioned pattern matching for ent
     <docs-code header="insert.css" path="adev/src/content/examples/animations/src/app/native-css/insert.css"  />
 </docs-code-multifile>
 
-#### With Native CSS
+#### With Native CSS {#leave-with-native-css}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/remove.ts">
     <docs-code header="remove.ts" path="adev/src/content/examples/animations/src/app/native-css/remove.ts" />
@@ -148,7 +148,7 @@ For more information on `animate.enter` and `animate.leave`, see the [Enter and 
 
 Along with the aforementioned `:enter` and `:leave`, there's also `:increment` and `:decrement`. You can animate these also by adding and removing classes. Unlike the animation package built-in aliases, there is no automatic application of classes when the values go up or down. You can apply the appropriate classes programmatically. Here's an example:
 
-#### With Animations Package
+#### With Animations Package {#increment-and-decrement-with-animations-package}
 
 <docs-code-multifile>
     <docs-code header="increment-decrement.ts" path="adev/src/content/examples/animations/src/app/animations-package/increment-decrement.ts" />
@@ -156,7 +156,7 @@ Along with the aforementioned `:enter` and `:leave`, there's also `:increment` a
     <docs-code header="increment-decrement.css" path="adev/src/content/examples/animations/src/app/animations-package/increment-decrement.css" />
 </docs-code-multifile>
 
-#### With Native CSS
+#### With Native CSS {#increment-and-decrement-with-native-css}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/increment-decrement.ts">
     <docs-code header="increment-decrement.ts" path="adev/src/content/examples/animations/src/app/native-css/increment-decrement.ts" />
@@ -221,7 +221,7 @@ To toggle classes for child nodes within a template, you can use class and style
 
 The `stagger()` function allowed you to delay the animation of each item in a list of items by a specified time to create a cascade effect. You can replicate this behavior in native CSS by utilizing `animation-delay` or `transition-delay`. Here is an example of what that CSS might look like.
 
-#### With Animations Package
+#### With Animations Package {#stagger-with-animations-package}
 
 <docs-code-multifile>
     <docs-code header="stagger.ts" path="adev/src/content/examples/animations/src/app/animations-package/stagger.ts" />
@@ -229,7 +229,7 @@ The `stagger()` function allowed you to delay the animation of each item in a li
     <docs-code header="stagger.css" path="adev/src/content/examples/animations/src/app/animations-package/stagger.css" />
 </docs-code-multifile>
 
-#### With Native CSS
+#### With Native CSS {#stagger-with-native-css}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/stagger.ts">
     <docs-code header="stagger.ts" path="adev/src/content/examples/animations/src/app/native-css/stagger.ts" />
@@ -255,7 +255,7 @@ In this example, the `rotate` and `fade-in` animations fire at the same time.
 
 Items reordering in a list works out of the box using the previously described techniques. No additional special work is required. Items in a `@for` loop will be removed and re-added properly, which will fire off animations using `@starting-styles` for entry animations. Alternatively, you can use `animate.enter` for this same behavior. Use `animate.leave` to animate elements as they are removed, as seen in the example above.
 
-#### With Animations Package
+#### With Animations Package {#reordering-list-with-animations-package}
 
 <docs-code-multifile>
     <docs-code header="reorder.ts" path="adev/src/content/examples/animations/src/app/animations-package/reorder.ts" />
@@ -263,7 +263,7 @@ Items reordering in a list works out of the box using the previously described t
     <docs-code header="reorder.css" path="adev/src/content/examples/animations/src/app/animations-package/reorder.css" />
 </docs-code-multifile>
 
-#### With Native CSS
+#### With Native CSS {#reordering-list-with-native-css}
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/reorder.ts">
     <docs-code header="reorder.ts" path="adev/src/content/examples/animations/src/app/native-css/reorder.ts" />
