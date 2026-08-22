@@ -7,7 +7,7 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {provideRouter} from '@angular/router';
+import {ActivatedRoute, convertToParamMap, provideRouter} from '@angular/router';
 import {provideHttpClient} from '@angular/common/http';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {By} from '@angular/platform-browser';
@@ -89,6 +89,50 @@ describe('UpdateComponent', () => {
         // The test verifies the component renders without errors
         expect(badges.length).toBe(0);
       }
+    });
+  });
+
+  describe('version query parameter', () => {
+    function createWithVersions(v: string): ComponentFixture<UpdateComponent> {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [UpdateComponent],
+        providers: [
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          {
+            provide: ActivatedRoute,
+            useValue: {snapshot: {queryParamMap: convertToParamMap({v})}},
+          },
+        ],
+      });
+
+      return TestBed.createComponent(UpdateComponent);
+    }
+
+    it('should keep the default versions when "v" names versions that do not exist', () => {
+      const versionsFixture = createWithVersions('99.0-100.0');
+
+      expect(() => versionsFixture.detectChanges()).not.toThrow();
+      expect(versionsFixture.componentInstance['from'].name).toBe('21.0');
+      expect(versionsFixture.componentInstance['to'].name).toBe('22.0');
+    });
+
+    it('should keep the default versions when "v" has no target version', () => {
+      const versionsFixture = createWithVersions('21.0');
+
+      expect(() => versionsFixture.detectChanges()).not.toThrow();
+      expect(versionsFixture.componentInstance['from'].name).toBe('21.0');
+      expect(versionsFixture.componentInstance['to'].name).toBe('22.0');
+    });
+
+    it('should use the versions named by "v" when both exist', () => {
+      const versionsFixture = createWithVersions('20.0-21.0');
+      versionsFixture.detectChanges();
+
+      expect(versionsFixture.componentInstance['from'].name).toBe('20.0');
+      expect(versionsFixture.componentInstance['to'].name).toBe('21.0');
     });
   });
 

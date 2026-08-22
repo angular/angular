@@ -138,10 +138,15 @@ export default class UpdateComponent {
     // Detect versions of from and to
     const versions = queryMap.get('v');
     if (versions) {
-      const [from, to] = versions.split('-');
-      this.from = this.versions.find((version) => version.name === from)!;
-      this.to = this.versions.find((version) => version.name === to)!;
-      this.showUpdatePath();
+      const [fromName, toName] = versions.split('-');
+      const from = this.versions.find((version) => version.name === fromName);
+      const to = this.versions.find((version) => version.name === toName);
+
+      if (from && to) {
+        this.from = from;
+        this.to = to;
+        this.showUpdatePath();
+      }
     }
   }
 
