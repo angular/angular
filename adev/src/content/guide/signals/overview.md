@@ -124,6 +124,26 @@ If you set `showCount` to `true` and then read `conditionalCount` again, the der
 
 Note that dependencies can be removed during a derivation as well as added. If you later set `showCount` back to `false`, then `count` will no longer be considered a dependency of `conditionalCount`.
 
+## Mental Model
+
+Signals provide a structured way to manage how your application responds to data changes in real-time.
+
+Think of them as three complementary building blocks:
+
+**Signals** store the actual data in your application. When this data changes, everything connected to it automatically updates—no manual refreshes needed.
+
+**Computed values** derive new information from existing signals. If you change the underlying data, computed values instantly reflect those changes without any extra work from developers.
+
+**Effects** are automatic actions triggered by data changes. Use them to sync with databases, update analytics, or refresh external systems whenever your data shifts.
+
+### When to Use Each
+
+| Component    | Purpose                  | Example                                          |
+| ------------ | ------------------------ | ------------------------------------------------ |
+| **Signal**   | Store changeable data    | User count, user preferences, form input         |
+| **Computed** | Calculate derived values | Total revenue, filtered results, percentages     |
+| **Effect**   | Respond to changes       | Log events, save to database, send notifications |
+
 ## Reactive contexts
 
 A **reactive context** is a runtime state where Angular monitors signal reads to establish a dependency. The code reading the signal is the _consumer_, and the signal being read is the _producer_.
@@ -273,6 +293,37 @@ const doubled = computed(() => count() * 2);
 isWritableSignal(count); // true
 isWritableSignal(doubled); // false
 ```
+
+## Signals and RxJS
+
+Signals and RxJS solve different problems and are often used together.
+Signals model state and relationships between values.
+RxJS models events and asynchronous streams over time.
+
+A signal answers:
+
+> What is the current value?
+
+An Observable answers:
+
+> What values may be emitted over time?
+
+Signals are typically a good fit for:
+
+- Component state
+- UI state
+- Derived state
+- Relationships between values
+
+RxJS is typically a better fit for:
+
+- Event streams
+- WebSocket messages
+- Request orchestration
+- Cancellation and retry logic
+- Complex asynchronous workflows
+
+Signals are not intended to replace RxJS. Instead, they provide a simpler model for representing and deriving application state.
 
 ## Using signals with RxJS
 
