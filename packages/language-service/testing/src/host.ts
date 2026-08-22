@@ -10,11 +10,41 @@ import {absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_
 import {MockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
-const NOOP_FILE_WATCHER: ts.FileWatcher = {
-  close() {},
-};
-
 export class MockServerHost implements ts.server.ServerHost {
+  private readonly fileWatchers = new Map<string, Set<ts.FileWatcherCallback>>();
+
+  /**
+   * Deterministic queued scheduler for `setTimeout`/`setImmediate`.
+   *
+   * Real server hosts defer these callbacks to the event loop; running them synchronously (as
+   * this host previously did) can introduce reentrancy and mask ordering behavior in TypeScript's
+   * throttled project-graph updates. Callbacks are instead queued in insertion order — one
+   * id-space for both timer kinds, no wall-clock involvement — and run only when the test
+   * environment explicitly yields via `flushPendingTimers()`, mirroring the point where a real
+   * editor host would return to the server event loop.
+   */
+  private readonly pendingTimers = new Map<number, () => void>();
+  private nextTimerId = 1;
+
+  /**
+   * Runs queued timer callbacks in insertion order until none remain. Callbacks may schedule
+   * further callbacks; `maxIterations` guards against tests that would otherwise reschedule
+   * indefinitely.
+   */
+  flushPendingTimers(maxIterations = 10_000): void {
+    for (let iteration = 0; this.pendingTimers.size > 0; iteration++) {
+      if (iteration >= maxIterations) {
+        throw new Error(
+          `flushPendingTimers: callbacks kept scheduling further callbacks after ` +
+            `${maxIterations} iterations; a test is likely rescheduling indefinitely.`,
+        );
+      }
+      const [id, callback] = this.pendingTimers.entries().next().value as [number, () => void];
+      this.pendingTimers.delete(id);
+      callback();
+    }
+  }
+
   get newLine(): string {
     return '\n';
   }
@@ -72,7 +102,21 @@ export class MockServerHost implements ts.server.ServerHost {
     pollingInterval?: number,
     options?: ts.WatchOptions,
   ): ts.FileWatcher {
-    return NOOP_FILE_WATCHER;
+    const normalizedPath = this.resolvePath(path);
+    let callbacks = this.fileWatchers.get(normalizedPath);
+    if (callbacks === undefined) {
+      callbacks = new Set();
+      this.fileWatchers.set(normalizedPath, callbacks);
+    }
+    callbacks.add(callback);
+    return {
+      close: () => {
+        callbacks!.delete(callback);
+        if (callbacks!.size === 0) {
+          this.fileWatchers.delete(normalizedPath);
+        }
+      },
+    };
   }
 
   watchDirectory(
@@ -81,23 +125,38 @@ export class MockServerHost implements ts.server.ServerHost {
     recursive?: boolean,
     options?: ts.WatchOptions,
   ): ts.FileWatcher {
-    return NOOP_FILE_WATCHER;
+    return {close() {}};
   }
 
-  setTimeout(callback: (...args: any[]) => void, ms: number, ...args: any[]) {
-    throw new Error('Method not implemented.');
+  invokeFileWatcher(path: string, eventKind: ts.FileWatcherEventKind): void {
+    const normalizedPath = this.resolvePath(path);
+    for (const callback of this.fileWatchers.get(normalizedPath) ?? []) {
+      callback(normalizedPath, eventKind);
+    }
   }
 
-  clearTimeout(timeoutId: any): void {
-    throw new Error('Method not implemented.');
+  setTimeout(callback: (...args: unknown[]) => void, ms: number, ...args: unknown[]): number {
+    const id = this.nextTimerId++;
+    this.pendingTimers.set(id, () => callback(...args));
+    return id;
   }
 
-  setImmediate(callback: (...args: any[]) => void, ...args: any[]) {
-    throw new Error('Method not implemented.');
+  clearTimeout(timeoutId: unknown): void {
+    if (typeof timeoutId === 'number') {
+      this.pendingTimers.delete(timeoutId);
+    }
   }
 
-  clearImmediate(timeoutId: any): void {
-    throw new Error('Method not implemented.');
+  setImmediate(callback: (...args: unknown[]) => void, ...args: unknown[]): number {
+    const id = this.nextTimerId++;
+    this.pendingTimers.set(id, () => callback(...args));
+    return id;
+  }
+
+  clearImmediate(timeoutId: unknown): void {
+    if (typeof timeoutId === 'number') {
+      this.pendingTimers.delete(timeoutId);
+    }
   }
 
   write(s: string): void {

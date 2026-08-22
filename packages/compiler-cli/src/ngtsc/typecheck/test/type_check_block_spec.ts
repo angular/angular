@@ -1023,6 +1023,107 @@ describe('type check blocks', () => {
     });
   });
 
+  describe('custom element schemas from Custom Elements Manifests', () => {
+    const CUSTOM_ELEMENT_SCHEMAS = [
+      {
+        tagName: 'my-button',
+        properties: [
+          {name: 'count', type: 'number' as const, checkType: 'number'},
+          {name: 'items', type: 'object' as const},
+        ],
+        attributes: [
+          {
+            name: 'variant',
+            checkType: "'primary' | 'secondary'",
+            stringLiteralValues: ['primary', 'secondary'],
+          },
+          {name: 'disabled', checkType: 'boolean'},
+          {name: 'data', checkType: 'object'},
+        ],
+        events: [
+          {name: 'countchange', checkType: 'CustomEvent'},
+          {name: 'countChange', checkType: 'CustomEvent<number>'},
+        ],
+      },
+    ];
+    const CONFIG: Partial<TypeCheckingConfig> = {
+      ...ALL_ENABLED_CONFIG,
+      customElementsManifestSchemas: CUSTOM_ELEMENT_SCHEMAS,
+    };
+
+    it('should check binding values against self-contained check types', () => {
+      const block = tcb(`<my-button [count]="1"></my-button>`, undefined, CONFIG);
+      expect(block).toContain('var _t1 = null! as (number);');
+      expect(block).toContain('_t1 = (1);');
+    });
+
+    it('should check interpolated property values against manifest property types', () => {
+      const block = tcb(`<my-button count="{{value}}"></my-button>`, undefined, CONFIG);
+      expect(block).toContain('var _t1 = null! as (number);');
+      expect(block).toContain('_t1 = (("" + (((this).value)))) as string;');
+    });
+
+    it('should not check complex static attribute types', () => {
+      const block = tcb(`<my-button data="value"></my-button>`, undefined, CONFIG);
+      expect(block).not.toContain('null! as (object)');
+    });
+
+    it('should not check static attributes when checkTypeOfAttributes is disabled', () => {
+      const block = tcb(`<my-button variant="invalid"></my-button>`, undefined, {
+        ...CONFIG,
+        checkTypeOfAttributes: false,
+      });
+      expect(block).not.toContain(`null! as ('primary' | 'secondary')`);
+    });
+
+    it('should widen binding values when strictNullInputBindings is disabled', () => {
+      const block = tcb(`<my-button [count]="1"></my-button>`, undefined, {
+        ...CONFIG,
+        strictNullInputBindings: false,
+      });
+      expect(block).toContain('var _t1 = null! as (number);');
+      expect(block).toContain('_t1 = ((1)!);');
+    });
+
+    it('should check the input side of two-way bindings', () => {
+      const block = tcb(`<my-button [(count)]="value"></my-button>`, undefined, CONFIG);
+      expect(block).toContain('null! as (number)');
+    });
+
+    it('should type the event side of two-way bindings when the change event is declared', () => {
+      const block = tcb(`<my-button [(count)]="value"></my-button>`, undefined, CONFIG);
+      expect(block).toContain('($event: (CustomEvent<number>))');
+    });
+
+    it('should take precedence over DOM property checking', () => {
+      const block = tcb(`<my-button [count]="1"></my-button>`, undefined, {
+        ...CONFIG,
+        checkTypeOfDomBindings: true,
+      });
+      expect(block).toContain('var _t1 = null! as (number);');
+      expect(block).not.toContain('["count"] =');
+    });
+
+    it('should keep DOM property checking for properties without a check type', () => {
+      const block = tcb(`<my-button [items]="[1]"></my-button>`, undefined, {
+        ...CONFIG,
+        checkTypeOfDomBindings: true,
+      });
+      expect(block).toContain('["items"] = ([1]);');
+    });
+
+    it('should declare $event with self-contained event check types', () => {
+      const block = tcb(
+        `<my-button (countchange)="handle($event)"></my-button>`,
+        undefined,
+        CONFIG,
+      );
+      expect(block).toContain('($event: (CustomEvent)): any => { (this).handle($event); }');
+      expect(block).toContain('document.addEventListener;');
+      expect(block).not.toContain('addEventListener("countchange"');
+    });
+  });
+
   describe('template guards', () => {
     it('should emit invocation guards', () => {
       const DIRECTIVES: TestDeclaration[] = [

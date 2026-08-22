@@ -8,6 +8,7 @@
 
 import {
   AST,
+  ɵCustomElementsManifestSchema as CustomElementsManifestSchema,
   ForeignComponentMeta,
   LiteralPrimitive,
   ParseSourceSpan,
@@ -310,6 +311,20 @@ export interface TemplateTypeChecker {
    * Retrieve any potential DOM events.
    */
   getPotentialDomEvents(tagName: string): string[];
+
+  /**
+   * Retrieve the tag names of custom elements declared in the Custom Elements Manifests
+   * configured via the `customElementsManifests` compiler option.
+   */
+  getPotentialCustomElementsManifestTags(): Set<string>;
+
+  /**
+   * Retrieve the schema of a custom element declared in the Custom Elements Manifests
+   * configured via the `customElementsManifests` compiler option, or `null` if the tag is not
+   * declared in any manifest. Carries documentation and deprecation metadata for editor
+   * tooling.
+   */
+  getCustomElementsManifestSchema(tagName: string): CustomElementsManifestSchema | null;
 
   /**
    * Retrieve the type checking engine's metadata for the given directive class, if available.
