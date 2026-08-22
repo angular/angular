@@ -18,6 +18,8 @@ import type {FieldContext, LogicFn, PathKind, SchemaPath, SchemaPathRules} from 
  * @param config Optional configuration object.
  *  - `when`: A reactive function that returns `true` (or a string reason) when the field is disabled,
  *    and `false` when it is not disabled. Can also be a static string reason.
+ *  - `validate`: A reactive function that returns `true` when validation should still run even
+ *    though the field is disabled.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
@@ -29,7 +31,10 @@ import type {FieldContext, LogicFn, PathKind, SchemaPath, SchemaPathRules} from 
  */
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  config?: {when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>},
+  config?: {
+    when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>;
+    validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+  },
 ): void;
 
 /**
@@ -45,7 +50,10 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   configOrLogic?:
-    | {when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>}
+    | {
+        when?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>;
+        validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+      }
     | string
     | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>,
 ): void {
@@ -54,10 +62,12 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
   let logic: string | LogicFn<TValue, boolean | string, TPathKind> | undefined;
+  let validate: LogicFn<TValue, boolean, TPathKind> | undefined;
   if (typeof configOrLogic === 'function' || typeof configOrLogic === 'string') {
     logic = configOrLogic;
   } else {
     logic = configOrLogic?.when;
+    validate = configOrLogic?.validate;
   }
 
   pathNode.builder.addDisabledReasonRule((ctx) => {
@@ -72,4 +82,8 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
     }
     return result ? {fieldTree: ctx.fieldTree} : undefined;
   });
+
+  if (validate) {
+    pathNode.builder.addForceValidateRule(validate);
+  }
 }
