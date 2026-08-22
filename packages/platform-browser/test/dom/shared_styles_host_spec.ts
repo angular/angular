@@ -233,4 +233,155 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual('');
     });
   });
+
+  describe('replaceStyles', () => {
+    it('should mutate inline style node textContent in-place', () => {
+      ssh.addStyles(['a { color: red; }']);
+      ssh.addHost(someHost);
+      const originalStyleNode = someHost.querySelector('style');
+      expect(someHost.innerHTML).toEqual('<style>a { color: red; }</style>');
+
+      ssh.replaceStyles(['a { color: red; }'], ['a { color: blue; }']);
+
+      const updatedStyleNode = someHost.querySelector('style');
+      expect(someHost.innerHTML).toEqual('<style>a { color: blue; }</style>');
+      expect(updatedStyleNode).toBe(originalStyleNode);
+    });
+
+    it('should mutate external link href in-place', () => {
+      ssh.addStyles([], ['component-1.css?v=1']);
+      ssh.addHost(someHost);
+      const originalLinkNode = someHost.querySelector('link');
+      expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="component-1.css?v=1">');
+
+      ssh.replaceStyles([], [], ['component-1.css?v=1'], ['component-1.css?v=2']);
+
+      const updatedLinkNode = someHost.querySelector('link');
+      expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="component-1.css?v=2">');
+      expect(updatedLinkNode).toBe(originalLinkNode);
+    });
+
+    it('should mutate style nodes across multiple host nodes in-place', () => {
+      const secondHost = getDOM().createElement('div');
+      ssh.addStyles(['a { color: red; }']);
+      ssh.addHost(someHost);
+      ssh.addHost(secondHost);
+
+      const style1 = someHost.querySelector('style');
+      const style2 = secondHost.querySelector('style');
+
+      ssh.replaceStyles(['a { color: red; }'], ['a { color: green; }']);
+
+      expect(someHost.innerHTML).toEqual('<style>a { color: green; }</style>');
+      expect(secondHost.innerHTML).toEqual('<style>a { color: green; }</style>');
+      expect(someHost.querySelector('style')).toBe(style1);
+      expect(secondHost.querySelector('style')).toBe(style2);
+    });
+
+    it('should merge usage and remove duplicate element when replacing with an existing style', () => {
+      ssh.addStyles(['a { color: blue; }']);
+      ssh.addStyles(['a { color: red; }']);
+      ssh.addHost(someHost);
+      expect(someHost.children.length).toBe(2);
+
+      ssh.replaceStyles(['a { color: red; }'], ['a { color: blue; }']);
+
+      expect(someHost.children.length).toBe(1);
+      expect(someHost.innerHTML).toEqual('<style>a { color: blue; }</style>');
+
+      ssh.removeStyles(['a { color: blue; }']);
+      expect(someHost.children.length).toBe(1);
+
+      ssh.removeStyles(['a { color: blue; }']);
+      expect(someHost.children.length).toBe(0);
+    });
+
+    it('should merge usage and remove duplicate link when replacing with an existing URL', () => {
+      ssh.addStyles([], ['a.css']);
+      ssh.addStyles([], ['b.css']);
+      ssh.addHost(someHost);
+      expect(someHost.children.length).toBe(2);
+
+      ssh.replaceStyles([], [], ['b.css'], ['a.css']);
+
+      expect(someHost.children.length).toBe(1);
+      expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="a.css">');
+    });
+
+    it('should handle arrays of different lengths by adding or removing styles', () => {
+      ssh.addStyles(['a { color: red; }', 'b { color: red; }']);
+      ssh.addHost(someHost);
+      expect(someHost.children.length).toBe(2);
+
+      ssh.replaceStyles(['a { color: red; }', 'b { color: red; }'], ['a { color: blue; }']);
+
+      expect(someHost.children.length).toBe(1);
+      expect(someHost.innerHTML).toEqual('<style>a { color: blue; }</style>');
+    });
+
+    it('should mutate style in-place and preserve usage count for multiple instances of an emulated component', () => {
+      const emulatedStyleRed = 'a[_ngcontent-c1] { color: red; }';
+      const emulatedStyleBlue = 'a[_ngcontent-c1] { color: blue; }';
+
+      ssh.addStyles([emulatedStyleRed]); // Instance 1
+      ssh.addStyles([emulatedStyleRed]); // Instance 2
+      ssh.addHost(someHost);
+
+      const originalStyleNode = someHost.querySelector('style');
+      expect(someHost.innerHTML).toEqual(`<style>${emulatedStyleRed}</style>`);
+
+      ssh.replaceStyles([emulatedStyleRed], [emulatedStyleBlue]);
+
+      // Style node is mutated in-place and shared across active instances
+      expect(someHost.innerHTML).toEqual(`<style>${emulatedStyleBlue}</style>`);
+      expect(someHost.querySelector('style')).toBe(originalStyleNode);
+
+      // Unmounting Instance 1 should NOT remove the style node
+      ssh.removeStyles([emulatedStyleBlue]);
+      expect(someHost.innerHTML).toEqual(`<style>${emulatedStyleBlue}</style>`);
+
+      // Unmounting Instance 2 removes the style node
+      ssh.removeStyles([emulatedStyleBlue]);
+      expect(someHost.innerHTML).toEqual('');
+    });
+
+    it('should not mutate style in-place when un-encapsulated style has usage > 1 to protect other components', () => {
+      // Simulate Component A and Component B sharing the same initial un-encapsulated style
+      ssh.addStyles(['a { color: red; }']); // Comp A
+      ssh.addStyles(['a { color: red; }']); // Comp B
+      ssh.addHost(someHost);
+
+      expect(someHost.innerHTML).toEqual('<style>a { color: red; }</style>');
+
+      // Comp A (ViewEncapsulation.None) changes style to blue
+      ssh.replaceStyles(
+        ['a { color: red; }'],
+        ['a { color: blue; }'],
+        [],
+        [],
+        /* isScoped */ false,
+      );
+
+      // Comp B must retain its red style while Comp A receives its new blue style
+      expect(someHost.children.length).toBe(2);
+      expect(someHost.innerHTML).toEqual(
+        '<style>a { color: red; }</style><style>a { color: blue; }</style>',
+      );
+    });
+    it('should not lose styles when style arrays overlap or shift positions', () => {
+      ssh.addStyles(['a { color: red; }', 'b { color: red; }']);
+      ssh.addHost(someHost);
+      expect(someHost.children.length).toBe(2);
+
+      ssh.replaceStyles(
+        ['a { color: red; }', 'b { color: red; }'],
+        ['b { color: red; }', 'c { color: red; }'],
+      );
+
+      expect(someHost.children.length).toBe(2);
+      expect(someHost.innerHTML).toEqual(
+        '<style>b { color: red; }</style><style>c { color: red; }</style>',
+      );
+    });
+  });
 });
