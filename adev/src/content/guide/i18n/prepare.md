@@ -124,7 +124,7 @@ Include [interpolations](guide/templates/binding#render-dynamic-text-with-text-i
 $localize`string_to_translate ${variable_name}`;
 ```
 
-### Name the interpolation placeholder
+### Name the interpolation placeholder {#name-the-interpolation-placeholder-in-code}
 
 ```ts
 $localize`string_to_translate ${variable_name}:placeholder_name:`;
