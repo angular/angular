@@ -178,6 +178,20 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     expect(registry.securityContext(':svg:a', 'href', true)).toBe(SecurityContext.URL);
     expect(registry.securityContext(':svg:a', 'xlink:href', true)).toBe(SecurityContext.URL);
 
+    // SVG elements that load external resources (image, feImage, use)
+    expect(registry.securityContext(':svg:image', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:image', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:image', 'href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:image', 'xlink:href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:feImage', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:feImage', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:feImage', 'href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:feImage', 'xlink:href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:use', 'href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:use', 'xlink:href', false)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:use', 'href', true)).toBe(SecurityContext.URL);
+    expect(registry.securityContext(':svg:use', 'xlink:href', true)).toBe(SecurityContext.URL);
+
     // MathML link attributes
     expect(registry.securityContext(':math:math', 'href', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext(':math:math', 'xlink:href', false)).toBe(SecurityContext.URL);
