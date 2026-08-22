@@ -599,6 +599,7 @@ export abstract class DestroyRef {
 
 // @public
 export interface Directive {
+    encapsulation?: ViewEncapsulation;
     exportAs?: string;
     host?: {
         [key: string]: string;
@@ -622,6 +623,9 @@ export interface Directive {
     };
     selector?: string;
     standalone?: boolean;
+    styles?: string | string[];
+    styleUrl?: string;
+    styleUrls?: string[];
 }
 
 // @public

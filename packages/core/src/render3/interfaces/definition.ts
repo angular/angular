@@ -280,6 +280,32 @@ export interface DirectiveDef<T> {
         privateName: string,
       ) => void)
     | null;
+
+  /**
+   * Unique ID for the directive. Used in style encapsulation.
+   */
+  readonly id: string;
+
+  /**
+   * A set of styles that the directive needs to be present for directive to render correctly.
+   */
+  readonly styles: string[];
+
+  /**
+   * Defines arbitrary developer-defined data to be stored on a renderer type. This is useful for
+   * plugins that want to associate the data with the header.
+   */
+  readonly data: {[kind: string]: any};
+
+  /**
+   * The view encapsulation type for the directive / component.
+   */
+  readonly encapsulation?: ViewEncapsulation;
+
+  /**
+   * Function to get external runtime styles.
+   */
+  getExternalStyles?: ((encapsulationId?: string) => string[]) | null;
 }
 
 /**

@@ -295,11 +295,26 @@ function hasSelectorScope<T>(
 export function compileDirective(type: Type<any>, directive: Directive | null): void {
   let ngDirectiveDef: any = null;
 
+  // Metadata may have resources which need to be resolved.
+  maybeQueueResolutionOfComponentResources(type, directive || {});
+
   addDirectiveFactoryDef(type, directive || {});
 
   Object.defineProperty(type, NG_DIR_DEF, {
     get: () => {
       if (ngDirectiveDef === null) {
+        if (componentNeedsResolution(directive || {})) {
+          const error = [`Directive '${type.name}' is not resolved:`];
+          if (directive?.styleUrls && directive.styleUrls.length) {
+            error.push(` - styleUrls: ${JSON.stringify(directive.styleUrls)}`);
+          }
+          if (directive?.styleUrl) {
+            error.push(` - styleUrl: ${directive.styleUrl}`);
+          }
+          error.push(`Did you run and wait for 'resolveComponentResources()'?`);
+          throw new Error(error.join('\n'));
+        }
+
         // `directive` can be null in the case of abstract directives as a base class
         // that use `@Directive()` with no selector. In that case, pass empty object to the
         // `directiveMetadata` function instead of null.
@@ -401,6 +416,9 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
       metadata.hostDirectives?.map((directive) =>
         typeof directive === 'function' ? {directive} : directive,
       ) || null,
+    styles:
+      typeof metadata.styles === 'string' ? [metadata.styles] : metadata.styles || EMPTY_ARRAY,
+    encapsulation: metadata.encapsulation,
   };
 }
 

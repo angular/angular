@@ -20,10 +20,13 @@ import {
   R3ClassMetadata,
   R3DirectiveMetadata,
   R3TargetBinder,
+  ViewEncapsulation,
   WrappedNodeExpr,
 } from '@angular/compiler';
 import ts from 'typescript';
 
+import {absoluteFrom} from '../../../file_system';
+import {DependencyTracker} from '../../../incremental/api';
 import {ImportedSymbolsTracker, Reference, ReferenceEmitter} from '../../../imports';
 import {
   extractSemanticTypeParameters,
@@ -38,6 +41,7 @@ import {
   MetadataReader,
   MetadataRegistry,
   MetaKind,
+  Resource,
   ResourceRegistry,
 } from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
@@ -66,6 +70,7 @@ import {
   compileNgFactoryDefField,
   compileResults,
   createSourceSpan,
+  createValueHasWrongTypeError,
   extractClassMetadata,
   findAngularDecorator,
   getDirectiveDiagnostics,
@@ -76,7 +81,11 @@ import {
   parseStandaloneOption,
   readBaseClass,
   ReferencesRegistry,
+  resolveEncapsulationEnumValueLocally,
+  resolveEnumValue,
+  resolveLiteral,
   resolveProvidersRequiringFactory,
+  ResourceLoader,
   toFactoryMetadata,
   UndecoratedMetadataExtractor,
   unwrapExpression,
@@ -90,10 +99,19 @@ import {
 } from '../../../typecheck/api';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 import {
+  extractDirectiveStyleUrls,
+  extractInlineStyleResources,
+  makeResourceNotFoundError,
+  ResourceTypeForDiagnostics,
+  StyleUrlMeta,
+  transformDecoratorResources,
+} from './resources';
+import {
   extractDirectiveMetadata,
   extractHostBindingResources,
   getDirectiveUndecoratedMetadataExtractor,
   HostBindingNodes,
+  parseDirectiveStyles,
 } from './shared';
 import {DirectiveSymbol} from './symbol';
 
@@ -110,12 +128,12 @@ const FIELD_DECORATORS = [
 const LIFECYCLE_HOOKS = new Set([
   'ngOnChanges',
   'ngOnInit',
-  'ngOnDestroy',
   'ngDoCheck',
-  'ngAfterViewInit',
-  'ngAfterViewChecked',
+  'ngOnDestroy',
   'ngAfterContentInit',
   'ngAfterContentChecked',
+  'ngAfterViewInit',
+  'ngAfterViewChecked',
 ]);
 
 export interface DirectiveHandlerData {
@@ -168,6 +186,9 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
     private readonly typeCheckHostBindings: boolean,
     private readonly emitDeclarationOnly: boolean,
     private readonly legacyOptionalChaining: boolean,
+    private readonly resourceLoader: ResourceLoader | null = null,
+    private readonly depTracker: DependencyTracker | null = null,
+    private readonly externalRuntimeStyles: boolean = false,
   ) {
     this.undecoratedMetadataExtractor = getDirectiveUndecoratedMetadataExtractor(
       reflector,
@@ -178,6 +199,67 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'DirectiveDecoratorHandler';
   private readonly undecoratedMetadataExtractor: UndecoratedMetadataExtractor;
+  private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
+  private preanalyzeStylesCache = new Map<ClassDeclaration, string[] | null>();
+
+  preanalyze(
+    node: ClassDeclaration,
+    decorator: Readonly<Decorator | null>,
+  ): Promise<void> | undefined {
+    if (
+      decorator === null ||
+      decorator.args === null ||
+      decorator.args.length === 0 ||
+      !this.resourceLoader ||
+      !this.resourceLoader.canPreload
+    ) {
+      return undefined;
+    }
+
+    const meta = resolveLiteral(decorator, this.literalCache);
+    const directive = reflectObjectLiteral(meta);
+    const containingFile = node.getSourceFile().fileName;
+
+    const resolveStyleUrl = (styleUrl: string): Promise<void> | undefined => {
+      try {
+        const resourceUrl = this.resourceLoader!.resolve(styleUrl, containingFile);
+        return this.resourceLoader!.preload(resourceUrl, {
+          type: 'style',
+          containingFile,
+          className: node.name.text,
+        });
+      } catch {
+        return undefined;
+      }
+    };
+
+    const directiveStyleUrls = extractDirectiveStyleUrls(this.evaluator, directive);
+
+    return (async () => {
+      let styles: string[] | null = null;
+      let orderOffset = 0;
+      const rawStyles = parseDirectiveStyles(directive, this.evaluator, this.compilationMode);
+      if (rawStyles?.length) {
+        styles = await Promise.all(
+          rawStyles.map((style) =>
+            this.resourceLoader!.preprocessInline(style, {
+              type: 'style',
+              containingFile,
+              order: orderOffset++,
+              className: node.name.text,
+            }),
+          ),
+        );
+      }
+      this.preanalyzeStylesCache.set(node, styles);
+
+      if (this.externalRuntimeStyles) {
+        return;
+      }
+
+      await Promise.all(directiveStyleUrls.map((styleUrl) => resolveStyleUrl(styleUrl.url)));
+    })();
+  }
 
   detect(
     node: ClassDeclaration,
@@ -252,6 +334,119 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
       );
     }
 
+    const containingFile = node.getSourceFile().fileName;
+    const styles: string[] = [];
+    const externalStyles: string[] = [];
+    let styleResources: Set<Resource> | null = null;
+    let diagnostics: ts.Diagnostic[] | undefined = undefined;
+    const directive = directiveResult.decorator;
+
+    if (this.resourceLoader !== null) {
+      styleResources = extractInlineStyleResources(directive);
+      const styleUrls: StyleUrlMeta[] = extractDirectiveStyleUrls(this.evaluator, directive);
+
+      for (const styleUrl of styleUrls) {
+        try {
+          const resourceUrl = this.resourceLoader.resolve(styleUrl.url, containingFile);
+          if (this.externalRuntimeStyles) {
+            externalStyles.push(resourceUrl);
+            continue;
+          }
+          if (
+            styleUrl.source === ResourceTypeForDiagnostics.StylesheetFromDecorator &&
+            ts.isStringLiteralLike(styleUrl.expression)
+          ) {
+            styleResources.add({
+              path: absoluteFrom(resourceUrl),
+              node: styleUrl.expression,
+            });
+          }
+          const resourceStr = this.resourceLoader.load(resourceUrl);
+          styles.push(resourceStr);
+          if (this.depTracker !== null) {
+            this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
+          }
+        } catch {
+          if (this.depTracker !== null) {
+            this.depTracker.recordDependencyAnalysisFailure(node.getSourceFile());
+          }
+          if (diagnostics === undefined) {
+            diagnostics = [];
+          }
+          diagnostics.push(
+            makeResourceNotFoundError(
+              styleUrl.url,
+              styleUrl.expression,
+              ResourceTypeForDiagnostics.StylesheetFromDecorator,
+            ).toDiagnostic(),
+          );
+        }
+      }
+
+      if (this.preanalyzeStylesCache.has(node)) {
+        const inlineStyles = this.preanalyzeStylesCache.get(node)!;
+        this.preanalyzeStylesCache.delete(node);
+        if (inlineStyles?.length) {
+          if (this.externalRuntimeStyles) {
+            externalStyles.push(...inlineStyles);
+          } else {
+            styles.push(...inlineStyles);
+          }
+        }
+      } else {
+        if (this.resourceLoader.canPreprocess) {
+          throw new Error('Inline resource processing requires asynchronous preanalyze.');
+        }
+
+        if (directive.has('styles')) {
+          const litStyles = parseDirectiveStyles(directive, this.evaluator, this.compilationMode);
+          if (litStyles !== null) {
+            styles.push(...litStyles);
+          }
+        }
+      }
+    } else if (directive.has('styles')) {
+      const litStyles = parseDirectiveStyles(directive, this.evaluator, this.compilationMode);
+      if (litStyles !== null) {
+        styles.push(...litStyles);
+      }
+    }
+
+    if (styles.length > 0) {
+      analysis.styles = styles;
+    }
+    if (externalStyles.length > 0) {
+      analysis.externalStyles = externalStyles;
+    }
+
+    const encapsulation: number =
+      (this.compilationMode !== CompilationMode.LOCAL
+        ? resolveEnumValue(
+            this.evaluator,
+            directive,
+            'encapsulation',
+            'ViewEncapsulation',
+            this.isCore,
+          )
+        : resolveEncapsulationEnumValueLocally(directive.get('encapsulation'))) ??
+      ViewEncapsulation.Emulated;
+
+    if (
+      directive.has('encapsulation') &&
+      encapsulation !== ViewEncapsulation.Emulated &&
+      encapsulation !== ViewEncapsulation.None
+    ) {
+      throw createValueHasWrongTypeError(
+        directive.get('encapsulation')!,
+        encapsulation,
+        `encapsulation must be ViewEncapsulation.Emulated or ViewEncapsulation.None`,
+      );
+    }
+
+    if (encapsulation !== ViewEncapsulation.Emulated) {
+      analysis.encapsulation = encapsulation;
+    }
+
     return {
       analysis: {
         inputs: directiveResult.inputs,
@@ -266,7 +461,7 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
               this.reflector,
               this.isCore,
               this.annotateForClosureCompiler,
-              undefined,
+              (dec) => transformDecoratorResources(dec, directiveResult.decorator, styles, null),
               this.undecoratedMetadataExtractor,
             )
           : null,
@@ -279,10 +474,11 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<
         hostBindingNodes: directiveResult.hostBindingNodes,
         resources: {
           template: null,
-          styles: null,
+          styles: styleResources,
           hostBindings: extractHostBindingResources(directiveResult.hostBindingNodes),
         },
       },
+      diagnostics,
     };
   }
 
