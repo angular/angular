@@ -110,6 +110,16 @@ describe('TransferCache', () => {
       }
     }
 
+    function runOnBrowser<T>(callback: () => T): T {
+      const previousServerMode = globalThis['ngServerMode'];
+      globalThis['ngServerMode'] = false;
+      try {
+        return callback();
+      } finally {
+        globalThis['ngServerMode'] = previousServerMode;
+      }
+    }
+
     function runInterceptor(
       req: HttpRequest<unknown>,
       next: (req: HttpRequest<unknown>) => Observable<HttpResponse<unknown>>,
@@ -250,6 +260,127 @@ describe('TransferCache', () => {
 
       expect(firstNext).toHaveBeenCalledTimes(1);
       expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not reuse cached responses when Vary request headers differ', () => {
+      configureInterceptor();
+
+      const firstRequest = new HttpRequest('GET', '/test-vary', null, {
+        headers: new HttpHeaders({
+          'X-Tenant-ID': 'private-header-value-a',
+          'X-Locale': 'en',
+        }),
+      });
+      const secondRequest = new HttpRequest('GET', '/test-vary', null, {
+        headers: new HttpHeaders({
+          'X-Tenant-ID': 'private-header-value-b',
+          'X-Locale': 'fr',
+        }),
+      });
+
+      const firstNext = jasmine.createSpy('firstNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: 'response-a',
+            headers: new HttpHeaders({Vary: ['X-Tenant-ID', 'X-Locale']}),
+          }),
+        ),
+      );
+      const secondNext = jasmine.createSpy('secondNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: 'response-b',
+            headers: new HttpHeaders({Vary: 'x-locale, x-tenant-id'}),
+          }),
+        ),
+      );
+      const thirdNext = jasmine
+        .createSpy('thirdNext')
+        .and.returnValue(of(new HttpResponse({body: 'network-should-not-run'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(firstRequest, firstNext).body).toBe('response-a');
+        expect(runInterceptor(secondRequest, secondNext).body).toBe('response-b');
+        expect(runInterceptor(secondRequest, thirdNext).body).toBe('response-b');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+      expect(thirdNext).not.toHaveBeenCalled();
+
+      const serializedState = TestBed.inject(TransferState).toJson();
+      expect(serializedState).not.toContain('private-header-value-a');
+      expect(serializedState).not.toContain('private-header-value-b');
+    });
+
+    it('should not cache responses with Vary: *', () => {
+      configureInterceptor();
+
+      const request = new HttpRequest('GET', '/test-vary-star');
+      const firstNext = jasmine.createSpy('firstNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: 'first-response',
+            headers: new HttpHeaders({Vary: '*'}),
+          }),
+        ),
+      );
+      const secondNext = jasmine
+        .createSpy('secondNext')
+        .and.returnValue(of(new HttpResponse({body: 'second-response'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(request, firstNext).body).toBe('first-response');
+        expect(runInterceptor(request, secondNext).body).toBe('second-response');
+      });
+
+      expect(firstNext).toHaveBeenCalledTimes(1);
+      expect(secondNext).toHaveBeenCalledTimes(1);
+    });
+
+    it('should validate Vary request headers when reusing server state in the browser', () => {
+      configureInterceptor();
+
+      const serverRequest = new HttpRequest('GET', '/test-hydration-vary', null, {
+        headers: new HttpHeaders({'X-Tenant-ID': 'tenant-a'}),
+      });
+      const matchingBrowserRequest = new HttpRequest('GET', '/test-hydration-vary', null, {
+        headers: new HttpHeaders({'x-tenant-id': 'tenant-a'}),
+      });
+      const differentBrowserRequest = new HttpRequest('GET', '/test-hydration-vary', null, {
+        headers: new HttpHeaders({'X-Tenant-ID': 'tenant-b'}),
+      });
+
+      const serverNext = jasmine.createSpy('serverNext').and.returnValue(
+        of(
+          new HttpResponse({
+            body: 'server-response-a',
+            headers: new HttpHeaders({Vary: 'X-Tenant-ID'}),
+          }),
+        ),
+      );
+      const matchingBrowserNext = jasmine
+        .createSpy('matchingBrowserNext')
+        .and.returnValue(of(new HttpResponse({body: 'network-should-not-run'})));
+      const differentBrowserNext = jasmine
+        .createSpy('differentBrowserNext')
+        .and.returnValue(of(new HttpResponse({body: 'browser-response-b'})));
+
+      runOnServer(() => {
+        expect(runInterceptor(serverRequest, serverNext).body).toBe('server-response-a');
+      });
+      runOnBrowser(() => {
+        expect(runInterceptor(matchingBrowserRequest, matchingBrowserNext).body).toBe(
+          'server-response-a',
+        );
+        expect(runInterceptor(differentBrowserRequest, differentBrowserNext).body).toBe(
+          'browser-response-b',
+        );
+      });
+
+      expect(serverNext).toHaveBeenCalledTimes(1);
+      expect(matchingBrowserNext).not.toHaveBeenCalled();
+      expect(differentBrowserNext).toHaveBeenCalledTimes(1);
     });
 
     it('should not cache requests with Cache-Control: no-store', () => {

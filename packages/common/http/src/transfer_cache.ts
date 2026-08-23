@@ -115,6 +115,8 @@ export const STATUS = 's';
 export const STATUS_TEXT = 'st';
 export const REQ_URL = 'u';
 export const RESPONSE_TYPE = 'rt';
+const VARY_HEADERS = 'vh';
+const VARY_HEADERS_HASH = 'vhh';
 
 interface TransferHttpResponse {
   /** body */
@@ -129,6 +131,10 @@ interface TransferHttpResponse {
   [REQ_URL]: string;
   /** responseType */
   [RESPONSE_TYPE]: HttpRequest<unknown>['responseType'];
+  /** request header names from the response's Vary header */
+  [VARY_HEADERS]?: string[];
+  /** hash of the request header values selected by Vary */
+  [VARY_HEADERS_HASH]?: string;
 }
 
 interface CacheOptions extends HttpTransferCacheOptions {
@@ -233,6 +239,14 @@ export function retrieveStateFromCache(
     return null;
   }
 
+  const varyHeaders = response[VARY_HEADERS];
+  if (
+    varyHeaders?.length &&
+    response[VARY_HEADERS_HASH] !== generateRequestHeadersHash(req.headers, varyHeaders)
+  ) {
+    return null;
+  }
+
   const {
     [BODY]: undecodedBody,
     [RESPONSE_TYPE]: responseType,
@@ -312,11 +326,13 @@ export function transferCacheInterceptorFn(
       tap((event: HttpEvent<unknown>) => {
         if (event instanceof HttpResponse) {
           const {headers, body, status, statusText} = event;
+          const varyHeaders = getVaryHeaders(headers);
 
           // Only cache successful HTTP responses that are not non-cacheable.
           if (
-            !options.includeNonCacheableRequests &&
-            (hasUncacheableCacheControl(headers) || hasSetCookieHeader(headers))
+            varyHeaders === null ||
+            (!options.includeNonCacheableRequests &&
+              (hasUncacheableCacheControl(headers) || hasSetCookieHeader(headers)))
           ) {
             return;
           }
@@ -332,6 +348,12 @@ export function transferCacheInterceptorFn(
             [STATUS_TEXT]: statusText,
             [REQ_URL]: requestUrl,
             [RESPONSE_TYPE]: responseType,
+            ...(varyHeaders.length
+              ? {
+                  [VARY_HEADERS]: varyHeaders,
+                  [VARY_HEADERS_HASH]: generateRequestHeadersHash(req.headers, varyHeaders),
+                }
+              : {}),
           });
         }
       }),
@@ -368,6 +390,40 @@ function hasUncacheableCacheControl(headers: HttpHeaders): boolean {
 
 function hasSetCookieHeader(headers: HttpHeaders): boolean {
   return headers.has('set-cookie');
+}
+
+/**
+ * Gets the normalized request header names from a response's `Vary` header.
+ *
+ * @returns `null` for `Vary: *`, which cannot be matched by a future request.
+ */
+function getVaryHeaders(headers: HttpHeaders): string[] | null {
+  const varyValues = headers.getAll('vary');
+  if (!varyValues) {
+    return [];
+  }
+
+  const headerNames = new Set<string>();
+  for (const varyValue of varyValues) {
+    for (const value of varyValue.split(',')) {
+      const headerName = value.trim().toLowerCase();
+      if (headerName === '*') {
+        return null;
+      }
+      if (headerName) {
+        headerNames.add(headerName);
+      }
+    }
+  }
+
+  return Array.from(headerNames).sort();
+}
+
+/** Hashes request header values without serializing them into transfer state. */
+function generateRequestHeadersHash(headers: HttpHeaders, headerNames: string[]): string {
+  return generateHash(
+    JSON.stringify(headerNames.map((headerName) => [headerName, headers.getAll(headerName)])),
+  );
 }
 
 function isNonCacheableRequest(cache: RequestCache): boolean {
