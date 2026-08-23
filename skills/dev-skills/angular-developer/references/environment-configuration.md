@@ -81,10 +81,15 @@ Load the configuration before the application starts:
 ```ts
 import {Service, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {tap} from 'rxjs';
+
+interface AppConfig {
+  apiUrl: string;
+}
 
 @Service()
 export class AppConfigService {
-  private config!: {apiUrl: string};
+  private config!: AppConfig;
 
   private readonly http = inject(HttpClient);
 
