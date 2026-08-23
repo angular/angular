@@ -428,6 +428,24 @@ describe('url serializer', () => {
     });
   });
 
+  describe('trailing slashes', () => {
+    // Regression test: https://github.com/angular/angular/issues/42733
+    it('should not create an empty segment for a trailing slash', () => {
+      const tree = url.parse('/one/two/');
+
+      expectSegment(tree.root.children[PRIMARY_OUTLET], 'one/two');
+      expect(url.serialize(tree)).toEqual('/one/two');
+    });
+
+    it('should preserve query params and fragments after a trailing slash', () => {
+      expect(url.serialize(url.parse('/test/?foo=bar#frag'))).toEqual('/test?foo=bar#frag');
+    });
+
+    it('should not create an empty segment for a trailing slash in a secondary outlet', () => {
+      expect(url.serialize(url.parse('/one(left:two/)'))).toEqual('/one(left:two)');
+    });
+  });
+
   describe('multiple leading slashes', () => {
     // Regression test: https://github.com/angular/angular/issues/66233
     // `///path` was parsed into an empty UrlSegment followed by `path`, which the serializer

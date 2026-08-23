@@ -681,6 +681,18 @@ class UrlParser {
     }
 
     while (this.peekStartsWith('/') && !this.peekStartsWith('//') && !this.peekStartsWith('/(')) {
+      // A trailing slash does not represent a meaningful URL segment. Consuming it here avoids
+      // creating an empty UrlSegment, which can make `navigateByUrl` match a wildcard or a route
+      // with an extra parameter instead of the otherwise matching route.
+      if (
+        this.remaining === '/' ||
+        this.peekStartsWith('/?') ||
+        this.peekStartsWith('/#') ||
+        this.peekStartsWith('/)')
+      ) {
+        this.capture('/');
+        break;
+      }
       this.capture('/');
       segments.push(this.parseSegment());
     }
