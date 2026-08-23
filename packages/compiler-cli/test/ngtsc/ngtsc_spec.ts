@@ -5656,6 +5656,61 @@ runInEachFileSystem((os: string) => {
       );
     });
 
+    // https://github.com/angular/angular/issues/69322
+    it('should report a missing import for a directive applied on <ng-template>', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, Directive, input, signal} from '@angular/core';
+
+        @Directive({selector: 'ng-template[auiTypedOption]'})
+        export class TypedOptionDirective {
+          auiTypedOption = input.required<any>();
+        }
+
+        @Component({
+          imports: [], // TypedOptionDirective is intentionally not imported.
+          template: '<ng-template [auiTypedOption]="searchResult()"></ng-template>',
+        })
+        export class TestCmp {
+          searchResult = signal({name: 'test'});
+        }
+    `,
+      );
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(1);
+      expect(errors[0].messageText).toContain(
+        `Can't bind to 'auiTypedOption' since it isn't a known property of 'ng-template'.`,
+      );
+    });
+
+    // https://github.com/angular/angular/issues/69322
+    it('should not report a directive applied on <ng-template> when it is imported', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, Directive, input, signal} from '@angular/core';
+
+        @Directive({selector: 'ng-template[auiTypedOption]'})
+        export class TypedOptionDirective {
+          auiTypedOption = input.required<any>();
+        }
+
+        @Component({
+          imports: [TypedOptionDirective],
+          template: '<ng-template [auiTypedOption]="searchResult()"></ng-template>',
+        })
+        export class TestCmp {
+          searchResult = signal({name: 'test'});
+        }
+    `,
+      );
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(0);
+    });
+
     it('should handle $any used inside a listener', () => {
       env.write(
         'test.ts',

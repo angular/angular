@@ -187,6 +187,135 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('checks unclaimed property bindings on <ng-template>', () => {
+      // https://github.com/angular/angular/issues/69322
+      const messages = diagnose(
+        `<ng-template [auiTypedOption]="searchResult"></ng-template>`,
+        `
+      class TestComponent {
+        searchResult: {name: string};
+      }`,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(1, 14): Can't bind to 'auiTypedOption' since it isn't a known property of 'ng-template'.\n1. If 'auiTypedOption' is an Angular directive, then add 'CommonModule' to the '@NgModule.imports' of this component.\n2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`,
+      ]);
+    });
+
+    it('does not report a property bound to a matched directive on <ng-template>', () => {
+      const messages = diagnose(
+        `<ng-template [auiTypedOption]="searchResult"></ng-template>`,
+        `
+      class TypedOptionDirective {
+        auiTypedOption: any;
+      }
+      class TestComponent {
+        searchResult: {name: string};
+      }`,
+        [
+          {
+            type: 'directive',
+            name: 'TypedOptionDirective',
+            selector: 'ng-template[auiTypedOption]',
+            inputs: {auiTypedOption: 'auiTypedOption'},
+          },
+        ],
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('does not report ngTemplateOutlet bound on <ng-template>', () => {
+      const messages = diagnose(
+        `<ng-template [ngTemplateOutlet]="tpl"></ng-template>`,
+        `
+      import {TemplateRef} from '@angular/core';
+      class NgTemplateOutlet {
+        ngTemplateOutlet: TemplateRef<unknown> | null;
+      }
+      class TestComponent {
+        tpl: TemplateRef<unknown> | null = null;
+      }`,
+        [
+          {
+            type: 'directive',
+            name: 'NgTemplateOutlet',
+            selector: '[ngTemplateOutlet]',
+            inputs: {ngTemplateOutlet: 'ngTemplateOutlet'},
+          },
+        ],
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('does not report *ngIf expanded onto <ng-template>', () => {
+      const messages = diagnose(
+        `<ng-template [ngIf]="cond"></ng-template>`,
+        `
+      class TestComponent {
+        cond = true;
+      }`,
+        [ngIfDeclaration()],
+        [ngIfDts()],
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('does not report a *ngIf shorthand wrapping an element with its own bound property', () => {
+      // The `[id]` binding on the inner `div` is hoisted onto the synthetic wrapper `Template`
+      // node generated for the `*ngIf` shorthand. It must only be checked once, against `div`,
+      // not a second time against the synthetic wrapper.
+      const messages = diagnose(
+        `<div *ngIf="cond" [id]="elId"></div>`,
+        `
+      class TestComponent {
+        cond = true;
+        elId = 'foo';
+      }`,
+        [ngIfDeclaration()],
+        [ngIfDts()],
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('does not report a *ngIf shorthand wrapping a directive-claimed property that is unrelated to NgIf', () => {
+      // `[input]` is hoisted onto the synthetic wrapper `Template`, but is only claimed by `Dir`
+      // on the inner `div` -- not by `NgIf`. The wrapper's own directive match set (based only on
+      // the `ngIf`/`ngIfElse`-style template attributes) must not cause this to be misreported as
+      // an unclaimed binding on the wrapper.
+      const messages = diagnose(
+        `<div dir *ngIf="cond" [input]="value"></div>`,
+        `
+      class Dir {
+        input: string;
+      }
+      class TestComponent {
+        cond = true;
+        value = 'foo';
+      }`,
+        [
+          ngIfDeclaration(),
+          {type: 'directive', name: 'Dir', selector: '[dir]', inputs: {input: 'input'}},
+        ],
+        [ngIfDts()],
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('does not report <ng-template let-x>', () => {
+      const messages = diagnose(
+        `<ng-template let-x="foo">{{x}}</ng-template>`,
+        `
+      class TestComponent {}`,
+      );
+
+      expect(messages).toEqual([]);
+    });
+
     it('should disallow binding to event properties starting with on', () => {
       const messages = diagnose(
         `<div [onclick]="handler"></div>`,

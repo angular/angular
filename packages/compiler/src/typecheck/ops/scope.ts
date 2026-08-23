@@ -547,6 +547,20 @@ export class Scope {
     }
   }
 
+  /**
+   * Whether `node` is a literal `<ng-template>` element written directly in the template, as
+   * opposed to a synthetic `Template` node generated for structural directive shorthand (e.g.
+   * `<div *ngIf="cond">`, whose `tagName` is `'div'`, or `<ng-template *ngIf="cond">`, whose
+   * `tagName` is `null`).
+   *
+   * Property bindings on synthetic `Template` nodes are hoisted copies of bindings that already
+   * live (and are separately checked) on the wrapped element, so they must not be treated as
+   * unclaimed inputs of the wrapper itself. See https://github.com/angular/angular/issues/69322.
+   */
+  private isLiteralNgTemplate(node: Template): boolean {
+    return node.tagName === 'ng-template';
+  }
+
   private appendDirectivesAndInputsOfElementLikeNode(node: Element | Template): void {
     // Collect all the inputs on the element.
     const claimedInputs = new Set<string>();
@@ -573,6 +587,18 @@ export class Scope {
             new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs),
           );
         }
+      } else if (node instanceof Template && this.isLiteralNgTemplate(node)) {
+        // A literal `<ng-template>` (as opposed to a synthetic `Template` generated for
+        // structural directive shorthand, e.g. `<div *ngIf="cond">`) behaves like an element for
+        // the purposes of unclaimed property bindings: `<ng-template [foo]="bar">` should be
+        // reported the same way `<div [foo]="bar">` would be if no directive claims `foo`.
+        // See https://github.com/angular/angular/issues/69322.
+        this.opQueue.push(
+          new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs),
+        );
+        this.opQueue.push(
+          new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ false, claimedInputs),
+        );
       }
       return;
     }
@@ -633,7 +659,7 @@ export class Scope {
 
     // After expanding the directives, we might need to queue an operation to check any unclaimed
     // inputs.
-    if (node instanceof Element) {
+    if (node instanceof Element || (node instanceof Template && this.isLiteralNgTemplate(node))) {
       // Go through the directives and remove any inputs that it claims from `elementInputs`.
       for (const dir of directives) {
         for (const propertyName of dir.inputs.propertyNames) {
@@ -645,8 +671,10 @@ export class Scope {
       // If there are no directives which match this element, then it's a "plain" DOM element (or a
       // web component), and should be checked against the DOM schema. If any directives match,
       // we must assume that the element could be custom (either a component, or a directive like
-      // <router-outlet>) and shouldn't validate the element name itself.
-      const checkElement = directives.length === 0;
+      // <router-outlet>) and shouldn't validate the element name itself. `<ng-template>` itself is
+      // always a known element, so `checkElement` is irrelevant for `Template` nodes (see
+      // `TcbDomSchemaCheckerOp`, which only checks the element name for `Element`/`Component`).
+      const checkElement = node instanceof Element && directives.length === 0;
       this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
     }
   }
@@ -853,7 +881,7 @@ export class Scope {
         continue;
       }
 
-      if (node instanceof Element) {
+      if (node instanceof Element || this.isLiteralNgTemplate(node)) {
         const claimedInputs = new Set<string>();
         let directives = this.tcb.boundTarget.getDirectivesOfNode(node);
 
@@ -877,11 +905,16 @@ export class Scope {
             }
           }
         }
-        const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
-        if (!isForeign) {
-          this.opQueue.push(
-            new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs),
-          );
+        if (node instanceof Element) {
+          const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
+          if (!isForeign) {
+            this.opQueue.push(
+              new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs),
+            );
+          }
+        } else {
+          // `<ng-template>` itself is always a known element; `checkElement` is not applicable.
+          this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, false, claimedInputs));
         }
       }
 
