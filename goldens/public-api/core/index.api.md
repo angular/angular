@@ -80,7 +80,7 @@ export interface AfterViewInit {
 }
 
 // @public
-export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
+export const ANIMATION_MODULE_TYPE: InjectionToken<"BrowserAnimations" | "NoopAnimations">;
 
 // @public
 export type AnimationCallbackEvent = {
