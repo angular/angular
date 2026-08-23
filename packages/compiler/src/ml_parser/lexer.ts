@@ -548,7 +548,7 @@ class _Tokenizer {
     return error;
   }
 
-  private handleError(e: any) {
+  private handleError(e: unknown) {
     if (e instanceof CursorError) {
       e = this._createError(e.msg, this._cursor.getSpan(e.cursor));
     }
