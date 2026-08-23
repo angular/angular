@@ -14,7 +14,7 @@ import {
   untracked,
   ɵWritable as Writable,
 } from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 
 import {
   asyncValidatorsDroppedWithOptsWarning,
@@ -507,7 +507,7 @@ export abstract class AbstractControl<
   _hasRequired = signal(false);
 
   private _parent: FormGroup | FormArray | null = null;
-  private _asyncValidationSubscription: any;
+  private _asyncValidationSubscription: Subscription | undefined;
 
   /**
    * Contains the result of merging synchronous validators into a single validator function
