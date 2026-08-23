@@ -19,8 +19,9 @@ import {getCurrentTNode, getLView} from '../state';
 /**
  * Returns the value associated to the given token from the injectors.
  *
- * `directiveInject` is intended to be used for directive, component and pipe factories.
- *  All other injection use `inject` which does not walk the node injector tree.
+ * `directiveInject` is intended to be used for directive and component factories. Pipe factories
+ * use `inject` so their dependencies are resolved from the injector creating the pipe. When a pipe
+ * is created in a view, `inject` is configured to use `directiveInject`.
  *
  * Usage example (in factory function):
  *
