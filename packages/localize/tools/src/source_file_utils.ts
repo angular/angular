@@ -451,8 +451,8 @@ export class BabelParseError extends Error {
   }
 }
 
-export function isBabelParseError(e: any): e is BabelParseError {
-  return e.type === 'BabelParseError';
+export function isBabelParseError(e: unknown): e is BabelParseError {
+  return typeof e === 'object' && e !== null && 'type' in e && e.type === 'BabelParseError';
 }
 
 export function buildCodeFrameError(

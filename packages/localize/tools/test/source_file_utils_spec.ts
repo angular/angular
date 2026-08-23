@@ -15,9 +15,11 @@ import generate from '@babel/generator';
 import {ɵmakeTemplateObject} from '../../index';
 
 import {
+  BabelParseError,
   buildLocalizeReplacement,
   getLocation,
   isArrayOfExpressions,
+  isBabelParseError,
   isGlobalIdentifier,
   isNamedIdentifier,
   isStringLiteralArray,
@@ -34,6 +36,25 @@ runInNativeFileSystem('utils', () => {
   let fs: PathManipulation;
   beforeEach(() => (fs = getFileSystem()));
   describe('', () => {
+    describe('isBabelParseError()', () => {
+      it('should identify a BabelParseError', () => {
+        expect(
+          isBabelParseError(new BabelParseError(t.identifier('value'), 'test error')),
+        ).toBeTrue();
+      });
+
+      it('should return false for non-object values', () => {
+        expect(isBabelParseError(null)).toBeFalse();
+        expect(isBabelParseError(undefined)).toBeFalse();
+        expect(isBabelParseError('test error')).toBeFalse();
+        expect(isBabelParseError(1)).toBeFalse();
+      });
+
+      it('should return false for other errors', () => {
+        expect(isBabelParseError(new Error('test error'))).toBeFalse();
+      });
+    });
+
     describe('isNamedIdentifier()', () => {
       it('should return true if the expression is an identifier with name `$localize`', () => {
         const taggedTemplate = getTaggedTemplate('$localize ``;');
