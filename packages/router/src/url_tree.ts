@@ -733,7 +733,7 @@ class UrlParser {
       return;
     }
     this.capture(key);
-    let value: any = '';
+    let value = '';
     if (this.consumeOptional('=')) {
       const valueMatch = matchSegments(this.remaining);
       if (valueMatch) {
@@ -752,7 +752,7 @@ class UrlParser {
       return;
     }
     this.capture(key);
-    let value: any = '';
+    let value = '';
     if (this.consumeOptional('=')) {
       const valueMatch = matchUrlQueryParamValue(this.remaining);
       if (valueMatch) {
