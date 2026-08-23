@@ -132,6 +132,14 @@ function _unknownEntityErrorMsg(entitySrc: string): string {
   return `Unknown entity "${entitySrc}" - use the "&#<decimal>;" or  "&#x<hex>;" syntax`;
 }
 
+function _unterminatedInterpolationErrorMsg(): string {
+  return (
+    'Unterminated interpolation. Could not find a closing "}}" - this can happen if a quote ' +
+    '(" or \') inside the interpolation expression is not closed, causing the rest of the ' +
+    'template to be treated as part of the expression.'
+  );
+}
+
 function _unparsableEntityErrorMsg(type: CharacterReferenceType, entityStr: string): string {
   return `Unable to parse entity "${entityStr}" - ${type} character reference entities must end with ";"`;
 }
@@ -1332,9 +1340,21 @@ class _Tokenizer {
       }
     }
 
-    // We hit EOF without finding a closing interpolation marker
+    // We have stopped consuming the interpolation without finding its closing marker. This is
+    // either because we hit a premature end (e.g. the end of an attribute value) - which is
+    // handled elsewhere and is not an error here - or because we hit the actual end of the file.
+    // The latter can happen, for example, if a quote inside the interpolation expression is never
+    // closed (e.g. `{{ a ? b : ' }}`), which causes the `}}` that follows to be treated as part
+    // of the (still open) string instead of as the end of the interpolation.
+    const isRealEof = this._cursor.peek() === chars.$EOF;
     parts.push(this._getProcessedChars(expressionStart, this._cursor));
     this._endToken(parts);
+    if (isRealEof) {
+      throw this._createError(
+        _unterminatedInterpolationErrorMsg(),
+        this._cursor.getSpan(interpolationStart),
+      );
+    }
   }
 
   private _consumeDirective(start: CharacterCursor, nameStart: CharacterCursor) {

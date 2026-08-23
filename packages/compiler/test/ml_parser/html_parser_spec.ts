@@ -2011,6 +2011,16 @@ describe('HtmlParser', () => {
         ]);
       });
 
+      it('should report an unterminated interpolation caused by an unclosed quote (#59507)', () => {
+        // The `'` right before the final `}}` is never closed, so the `}}` is treated as part
+        // of the (still open) string and the interpolation is never terminated. Previously this
+        // was silently treated as plain text with no diagnostic at all.
+        const {errors} = parser.parse(`{{ name ? (name | translate) : ' }}`, 'TestComp');
+        expect(humanizeErrors(errors)).toEqual([
+          [jasmine.stringMatching(/^Unterminated interpolation\./), '0:0'],
+        ]);
+      });
+
       describe('incomplete element tag', () => {
         it('should parse and report incomplete tags after the tag name', () => {
           const {errors, rootNodes} = parser.parse('<div<span><div  </span>', 'TestComp');

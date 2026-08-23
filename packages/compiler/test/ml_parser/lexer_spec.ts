@@ -2474,12 +2474,19 @@ describe('HtmlLexer', () => {
       ]);
     });
 
-    it('should capture everything up to the end of file in the interpolation expression part if there are mismatched quotes', () => {
-      expect(tokenizeAndHumanizeParts('{{ "{{a}}\' }}')).toEqual([
+    it('should capture everything up to the end of file in the interpolation expression part if there are mismatched quotes, and report an error', () => {
+      // The `"` inside the interpolation is never closed, so the lexer never finds the `}}`
+      // that follows (it is treated as part of the still-open string) and runs to the end of
+      // the file. This is a template author error and should be reported (see #59507).
+      const input = '{{ "{{a}}\' }}';
+      const result = tokenize(input, 'someUrl', getHtmlTagDefinition);
+      expect(humanizeParts(result.tokens)).toEqual([
         [TokenType.TEXT, ''],
         [TokenType.INTERPOLATION, '{{', ' "{{a}}\' }}'],
-        [TokenType.TEXT, ''],
         [TokenType.EOF],
+      ]);
+      expect(result.errors.map((e) => e.msg)).toEqual([
+        jasmine.stringMatching(/^Unterminated interpolation\./),
       ]);
     });
 
@@ -3058,6 +3065,25 @@ describe('HtmlLexer', () => {
           '0:56',
         ],
       ]);
+    });
+
+    it('should report an unterminated interpolation caused by an unclosed quote (#59507)', () => {
+      // The `'` that opens the string right before the final `}}` is never closed, so the `}}`
+      // is treated as part of the string and the interpolation runs to the end of the template
+      // without ever finding its closing marker.
+      expect(tokenizeAndHumanizeErrors(`{{ name ? (name | translate) : ' }}`)).toEqual([
+        [jasmine.stringMatching(/^Unterminated interpolation\./), '0:0'],
+      ]);
+    });
+
+    it('should report an unterminated interpolation when there is no closing marker at all', () => {
+      expect(tokenizeAndHumanizeErrors(`{{ foo`)).toEqual([
+        [jasmine.stringMatching(/^Unterminated interpolation\./), '0:0'],
+      ]);
+    });
+
+    it('should not report an unterminated interpolation when it is prematurely (and validly) ended by a tag', () => {
+      expect(tokenizeAndHumanizeErrors(`{{ a <b></b>`)).toEqual([]);
     });
 
     it('should include 2 lines of context in message', () => {
