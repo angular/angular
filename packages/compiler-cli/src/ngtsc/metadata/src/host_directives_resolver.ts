@@ -13,7 +13,7 @@ import {ClassDeclaration} from '../../reflection';
 import {flattenInheritedDirectiveMetadata} from './inheritance';
 import {isHostDirectiveMetaForGlobalMode} from './util';
 
-const EMPTY_ARRAY: ReadonlyArray<any> = [];
+const EMPTY_ARRAY: ReadonlyArray<DirectiveMeta> = [];
 
 /** Resolves the host directives of a directive to a flat array of matches. */
 export class HostDirectivesResolver {
