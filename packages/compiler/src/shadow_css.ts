@@ -1110,6 +1110,24 @@ export function processRules(input: string, ruleCallback: (rule: CssRule) => Css
   return unescapeInStrings(escapedResult);
 }
 
+/**
+ * Checks whether a CSS stylesheet contains any `:host` or `:host-context` selectors.
+ */
+export function hasHostSelector(cssText: string): boolean {
+  let hasHost = false;
+  const cleanCss = cssText.replace(_commentRe, '');
+  processRules(cleanCss, (rule) => {
+    if (/:host\b/.test(rule.selector)) {
+      hasHost = true;
+    }
+    if (rule.content && rule.content.includes('{') && hasHostSelector(rule.content)) {
+      hasHost = true;
+    }
+    return rule;
+  });
+  return hasHost;
+}
+
 class StringWithEscapedBlocks {
   constructor(
     public escapedString: string,

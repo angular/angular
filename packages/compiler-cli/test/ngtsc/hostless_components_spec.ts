@@ -137,7 +137,7 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toContain('Hostless components cannot have animations');
     });
 
-    it('should allow :host in hostless component styles without errors', () => {
+    it('should throw an error if a hostless component has :host in its styles', () => {
       env.write(
         'test.ts',
         `
@@ -148,6 +148,48 @@ runInEachFileSystem(() => {
           template: '<div></div>',
           hostless: true,
           styles: [' :host { display: block; } ']
+        })
+        export class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain('Hostless components cannot have :host styles');
+    });
+
+    it('should throw an error if a hostless component has :host-context in its styles', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div></div>',
+          hostless: true,
+          styles: [' :host-context(.dark) { display: block; } ']
+        })
+        export class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain('Hostless components cannot have :host styles');
+    });
+
+    it('should not throw an error if a hostless component has normal styles without :host', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: '<div></div>',
+          hostless: true,
+          styles: [' div { color: red; } ']
         })
         export class TestCmp {}
       `,

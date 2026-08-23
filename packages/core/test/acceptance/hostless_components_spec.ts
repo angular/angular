@@ -647,6 +647,141 @@ describe('hostless components', () => {
     );
   });
 
+  it('should render multiple svg:g root elements in a parent svg', async () => {
+    @Component({
+      selector: 'my-multi-g-svg',
+      hostless: true,
+      template: `
+        <svg:g id="group-alpha" class="layer-1">
+          <circle cx="25" cy="25" r="20"></circle>
+          <text x="25" y="25">Alpha {{ label() }}</text>
+        </svg:g>
+        <svg:g id="group-beta" class="layer-2">
+          <rect x="50" y="50" width="30" height="30"></rect>
+          <text x="50" y="50">Beta {{ label() }}</text>
+        </svg:g>
+      `,
+    })
+    class MyMultiGSvg {
+      @Input() label = signal('Init');
+    }
+
+    @Component({
+      template: `
+        <svg viewBox="0 0 200 200">
+          <svg:defs>
+            <filter id="blur" />
+          </svg:defs>
+          <my-multi-g-svg [label]="appLabel" />
+          <svg:g id="native-group">
+            <line x1="0" y1="0" x2="100" y2="100" />
+          </svg:g>
+        </svg>
+      `,
+      imports: [MyMultiGSvg],
+    })
+    class App {
+      appLabel = signal('V1');
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const svgElement = fixture.nativeElement.querySelector('svg');
+    expect(svgElement).toBeTruthy();
+
+    const groupAlpha = svgElement.querySelector('#group-alpha');
+    const groupBeta = svgElement.querySelector('#group-beta');
+    const nativeGroup = svgElement.querySelector('#native-group');
+
+    expect(groupAlpha).toBeTruthy();
+    expect(groupBeta).toBeTruthy();
+    expect(nativeGroup).toBeTruthy();
+
+    // Verify SVG namespace on all g elements
+    expect(groupAlpha.namespaceURI).toBe('http://www.w3.org/2000/svg');
+    expect(groupBeta.namespaceURI).toBe('http://www.w3.org/2000/svg');
+    expect(nativeGroup.namespaceURI).toBe('http://www.w3.org/2000/svg');
+
+    if (isBrowser) {
+      expect(groupAlpha instanceof SVGGElement).toBeTrue();
+      expect(groupBeta instanceof SVGGElement).toBeTrue();
+      expect(nativeGroup instanceof SVGGElement).toBeTrue();
+    }
+
+    // Verify content rendered inside the g elements
+    expect(groupAlpha.querySelector('circle')).toBeTruthy();
+    expect(groupAlpha.querySelector('text').textContent).toBe('Alpha V1');
+    expect(groupBeta.querySelector('rect')).toBeTruthy();
+    expect(groupBeta.querySelector('text').textContent).toBe('Beta V1');
+
+    // Verify parent has children in the expected order without extra wrapper element
+    expect(fixture.nativeElement.innerHTML).toContain(
+      `<svg viewBox="0 0 200 200">
+        <defs><filter id="blur"></filter></defs>
+        <g id="group-alpha" class="layer-1"><circle cx="25" cy="25" r="20"></circle><text x="25" y="25">Alpha V1</text></g>
+        <g id="group-beta" class="layer-2"><rect x="50" y="50" width="30" height="30"></rect><text x="50" y="50">Beta V1</text></g>
+        <!--hostless my-multi-g-svg-->
+        <g id="native-group"><line x1="0" y1="0" x2="100" y2="100"></line></g>
+      </svg>`.replaceAll(/\s{2,}/g, ''),
+    );
+
+    // Verify dynamic signal updates across multiple g elements
+    fixture.componentInstance.appLabel.set('V2');
+    await fixture.whenStable();
+
+    expect(groupAlpha.querySelector('text').textContent).toBe('Alpha V2');
+    expect(groupBeta.querySelector('text').textContent).toBe('Beta V2');
+  });
+
+  it('should support multiple instances of hostless components with multiple svg:g elements', async () => {
+    @Component({
+      selector: 'my-svg-layers',
+      hostless: true,
+      template: `
+        <svg:g class="layer-primary" [attr.data-id]="prefix() + '-p'">
+          <circle cx="10" cy="10" r="5"></circle>
+        </svg:g>
+        <svg:g class="layer-secondary" [attr.data-id]="prefix() + '-s'">
+          <circle cx="20" cy="20" r="5"></circle>
+        </svg:g>
+      `,
+    })
+    class MySvgLayers {
+      @Input() prefix = signal('item');
+    }
+
+    @Component({
+      template: `
+        <svg>
+          <my-svg-layers [prefix]="p1" />
+          <my-svg-layers [prefix]="p2" />
+        </svg>
+      `,
+      imports: [MySvgLayers],
+    })
+    class App {
+      p1 = signal('first');
+      p2 = signal('second');
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const svg = fixture.nativeElement.querySelector('svg');
+    const allGroups = svg.querySelectorAll('g');
+    expect(allGroups.length).toBe(4);
+
+    expect(svg.querySelector('[data-id="first-p"]')).toBeTruthy();
+    expect(svg.querySelector('[data-id="first-s"]')).toBeTruthy();
+    expect(svg.querySelector('[data-id="second-p"]')).toBeTruthy();
+    expect(svg.querySelector('[data-id="second-s"]')).toBeTruthy();
+
+    for (const g of Array.from(allGroups) as Element[]) {
+      expect(g.namespaceURI).toBe('http://www.w3.org/2000/svg');
+    }
+  });
+
   it('should support directives on hostless component', async () => {
     @Directive({
       selector: '[testDir]',

@@ -169,6 +169,11 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/components/host-elements',
           },
           {
+            label: 'Hostless components',
+            path: 'guide/components/hostless-components',
+            contentPath: 'guide/components/hostless-components',
+          },
+          {
             label: 'Lifecycle',
             path: 'guide/components/lifecycle',
             contentPath: 'guide/components/lifecycle',

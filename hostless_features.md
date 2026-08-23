@@ -70,10 +70,16 @@ Because no physical host element exists in the DOM, the following features are r
 - **Reason**: Angular animations require a host element target.
 - **Compiler Error**: `ErrorCode.HOSTLESS_COMPONENT_ANIMATIONS = 2031`.
 
-### 5. `ElementRef` References the Comment Anchor
+### 5. No :host or :host-context in Styles (`NG2032`)
+
+- **Restriction**: Cannot use `:host` or `:host-context` selectors in component styles.
+- **Reason**: There is no host element in the DOM to attach host style scoping attributes to.
+- **Compiler Error**: `ErrorCode.HOSTLESS_COMPONENT_HOST_STYLE = 2032`.
+
+### 6. `ElementRef` References the Comment Anchor
 
 - **Behavior**: Injecting `ElementRef` or accessing `ComponentRef.location.nativeElement` returns the underlying `Comment` node rather than an `HTMLElement`.
 
-### 6. Root Application Bootstrapping
+### 7. Root Application Bootstrapping
 
 - **Behavior**: A hostless component cannot serve as the root component passed to `bootstrapApplication(MyHostless)` without a host element, because root application mounting requires an existing physical DOM element in `index.html`.

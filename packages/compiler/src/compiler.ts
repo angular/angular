@@ -250,6 +250,7 @@ export {
   ParseTemplateOptions,
 } from './render3/view/template';
 export {CombinedRecursiveAstVisitor} from './combined_visitor';
+export {hasHostSelector} from './shadow_css';
 
 // Note: BindingParser is intentionally exported as a type only, because it should
 // be constructed through `makeBindingParser`, rather than its constructor.

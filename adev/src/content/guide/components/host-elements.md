@@ -185,3 +185,7 @@ export class Button {
 ```
 
 HELPFUL: `HostAttributeToken` throws an error if the attribute is missing, unless the injection is marked as optional.
+
+## Hostless components
+
+If you need a component to render its template directly into the parent container without creating a host DOM element (such as inside tables, SVGs, or CSS Grid layouts), see the [Hostless components](guide/components/hostless-components) guide.

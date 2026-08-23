@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {hasHostSelector} from '../../src/shadow_css';
 import {shim} from './utils';
 
 describe('ShadowCss, :host and :host-context', () => {
@@ -333,6 +334,39 @@ describe('ShadowCss, :host and :host-context', () => {
       expect(shim(input, 'contenta', 'a-host')).toEqualCss(
         'outer1 bar[a-host] {} ' + 'outer2 foo[a-host] {}',
       );
+    });
+  });
+
+  describe('hasHostSelector', () => {
+    it('should detect :host selectors', () => {
+      expect(hasHostSelector(':host {}')).toBeTrue();
+      expect(hasHostSelector(':host { display: block; }')).toBeTrue();
+      expect(hasHostSelector(':host(.active) { color: red; }')).toBeTrue();
+      expect(hasHostSelector(':host[disabled] { opacity: 0.5; }')).toBeTrue();
+      expect(hasHostSelector(':host.active { color: blue; }')).toBeTrue();
+      expect(hasHostSelector(':host::before { content: ""; }')).toBeTrue();
+      expect(hasHostSelector('div > :host { color: red; }')).toBeTrue();
+    });
+
+    it('should detect :host-context selectors', () => {
+      expect(hasHostSelector(':host-context(.dark) { color: white; }')).toBeTrue();
+      expect(hasHostSelector(':host-context(div) .child { color: red; }')).toBeTrue();
+    });
+
+    it('should detect :host within nested @media rules', () => {
+      expect(hasHostSelector('@media (min-width: 600px) { :host { display: flex; } }')).toBeTrue();
+    });
+
+    it('should return false for regular selectors without :host', () => {
+      expect(hasHostSelector('div { color: red; }')).toBeFalse();
+      expect(hasHostSelector('.host-container { color: blue; }')).toBeFalse();
+      expect(hasHostSelector('#host-element { display: none; }')).toBeFalse();
+      expect(hasHostSelector('hosted { color: green; }')).toBeFalse();
+    });
+
+    it('should ignore :host inside comments and strings', () => {
+      expect(hasHostSelector('/* :host { display: block; } */ div { color: red; }')).toBeFalse();
+      expect(hasHostSelector('div::after { content: ":host"; }')).toBeFalse();
     });
   });
 });

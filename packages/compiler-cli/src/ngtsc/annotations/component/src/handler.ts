@@ -25,6 +25,7 @@ import {
   DomElementSchemaRegistry,
   ExternalExpr,
   FactoryTarget,
+  hasHostSelector,
   LegacyAnimationTriggerNames,
   makeBindingParser,
   MatchSource,
@@ -1021,6 +1022,24 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             ErrorCode.HOSTLESS_COMPONENT_ANIMATIONS,
             component.get('animations')!,
             'Hostless components cannot have animations.',
+          ),
+        );
+      }
+
+      if (styles.some((style) => hasHostSelector(style))) {
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        const targetNode =
+          component.get('styles') ??
+          component.get('styleUrls') ??
+          component.get('styleUrl') ??
+          component.get('hostless')!;
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.HOSTLESS_COMPONENT_HOST_STYLE,
+            targetNode,
+            'Hostless components cannot have :host styles.',
           ),
         );
       }
