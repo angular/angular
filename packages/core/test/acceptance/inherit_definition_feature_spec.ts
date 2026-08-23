@@ -68,6 +68,73 @@ describe('inheritance', () => {
     );
   });
 
+  // https://github.com/angular/angular/issues/66263
+  describe('pure function slots in inherited host bindings', () => {
+    it('should not write parent and child host bindings into the same LView slot', () => {
+      @Directive({host: {'[attr.parent]': '["parent"][0]'}})
+      class ParentDir {}
+
+      @Directive({host: {'[attr.child]': '["child"][0]'}, selector: '[some-dir]'})
+      class SomeDir extends ParentDir {}
+
+      @Component({template: '<div some-dir></div>', imports: [SomeDir]})
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      // Prior to the fix, this would throw NG0100 (ExpressionChangedAfterItHasBeenCheckedError)
+      // because both `pureFunction` instructions wrote into the same LView slot.
+      expect(() => fixture.detectChanges()).not.toThrow();
+
+      const div: HTMLDivElement = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('parent')).toBe('parent');
+      expect(div.getAttribute('child')).toBe('child');
+    });
+
+    it('should support pure functions across three levels of inheritance', () => {
+      @Directive({host: {'[attr.a]': '["a"][0]'}})
+      class ADir {}
+
+      @Directive({host: {'[attr.b]': '["b"][0]'}})
+      class BDir extends ADir {}
+
+      @Directive({host: {'[attr.c]': '["c"][0]'}, selector: '[some-dir]'})
+      class CDir extends BDir {}
+
+      @Component({template: '<div some-dir></div>', imports: [CDir]})
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      expect(() => fixture.detectChanges()).not.toThrow();
+
+      const div: HTMLDivElement = fixture.nativeElement.querySelector('div');
+      expect(div.getAttribute('a')).toBe('a');
+      expect(div.getAttribute('b')).toBe('b');
+      expect(div.getAttribute('c')).toBe('c');
+    });
+
+    it('should support a component inheriting pure function host bindings from a directive', () => {
+      @Directive({host: {'[attr.parent]': '["parent"][0]'}})
+      class ParentDir {}
+
+      @Component({
+        selector: 'some-cmp',
+        template: '',
+        host: {'[attr.child]': '["child"][0]'},
+      })
+      class SomeCmp extends ParentDir {}
+
+      @Component({template: '<some-cmp></some-cmp>', imports: [SomeCmp]})
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      expect(() => fixture.detectChanges()).not.toThrow();
+
+      const cmp: HTMLElement = fixture.nativeElement.querySelector('some-cmp');
+      expect(cmp.getAttribute('parent')).toBe('parent');
+      expect(cmp.getAttribute('child')).toBe('child');
+    });
+  });
+
   it('should ignore inherited ɵdir from polluted Object.prototype', () => {
     const originalDir = (Object.prototype as any).ɵdir;
     let hadOwnDir = false;

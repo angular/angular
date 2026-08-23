@@ -16,12 +16,12 @@ import {
   ContentQueriesFunction,
   DirectiveDef,
   DirectiveDefFeature,
-  HostBindingsFunction,
   RenderFlags,
   ViewQueriesFunction,
 } from '../interfaces/definition';
 import {TAttributes} from '../interfaces/node';
 import {isComponentDef} from '../interfaces/type_checks';
+import {getBindingRoot, getCurrentDirectiveIndex, setBindingRootForHostBindings} from '../state';
 import {mergeHostAttrs} from '../util/attrs_utils';
 import {stringifyForError} from '../util/stringify_utils';
 
@@ -82,8 +82,7 @@ export function ɵɵInheritDefinitionFeature(
         writeableDef.outputs = maybeUnwrapEmpty(definition.outputs);
 
         // Merge hostBindings
-        const superHostBindings = superDef.hostBindings;
-        superHostBindings && inheritHostBindings(definition, superHostBindings);
+        superDef.hostBindings && inheritHostBindings(definition, superDef);
 
         // Merge queries
         const superViewQuery = superDef.viewQuery;
@@ -214,12 +213,30 @@ function inheritContentQueries(
 
 function inheritHostBindings(
   definition: WritableDef,
-  superHostBindings: HostBindingsFunction<any>,
+  superDef: DirectiveDef<any> | ComponentDef<any>,
 ) {
+  const superHostBindings = superDef.hostBindings;
+  if (!superHostBindings) {
+    return;
+  }
+  // `superDef.hostVars` is the total number of binding slots that the superclass' `hostBindings`
+  // function (including anything it inherited itself) expects to own, starting at the binding
+  // root. It is already final at this point, because the superclass' own
+  // `InheritDefinitionFeature` ran when the superclass was defined, and the cumulative rewrite in
+  // `mergeHostAttrsAcrossInheritance` never changes it.
+  const superHostVars = superDef.hostVars;
   const prevHostBindings = definition.hostBindings;
   if (prevHostBindings) {
     definition.hostBindings = (rf: RenderFlags, ctx: any) => {
+      // Both functions were compiled independently, so each of them assumes that its slots start
+      // at the binding root (regular bindings first, followed by pure function/pipe slots, see
+      // `pure_function.ts` and `pipe.ts`). The merged function is invoked with a single binding
+      // root covering the sum of both `hostVars`, so we run the superclass' function as-is and
+      // then move the root (and the binding index) past the slots it owns before running the
+      // subclass' own function. Without this, pure function slots of the two functions overlap.
+      const bindingRoot = getBindingRoot();
       superHostBindings(rf, ctx);
+      setBindingRootForHostBindings(bindingRoot + superHostVars, getCurrentDirectiveIndex());
       prevHostBindings(rf, ctx);
     };
   } else {
