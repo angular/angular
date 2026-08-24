@@ -183,6 +183,17 @@ function createTransactionalSnapshot<T>(
   };
 }
 
+/**
+ * Creates reactive effects to bind the unwrapped values of blocking router resources
+ * to matching component inputs.
+ *
+ * Non-blocking resources are bound as the `Resource` instance itself through the standard
+ * route data stream in `RoutedComponentInputBinder`. In contrast, blocking resources have
+ * resolved before navigation completes and bind their unwrapped `.value()` to the component
+ * input. This sets up an `effect` for each matching blocking resource to keep the component
+ * input reactively updated, and returns the handled keys so the standard data subscription
+ * skips them.
+ */
 export function createResourceOutletBindingEffects(
   componentRef: ComponentRef<unknown>,
   route: ActivatedRoute,

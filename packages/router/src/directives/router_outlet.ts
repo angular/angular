@@ -511,6 +511,8 @@ export class RoutedComponentInputBinder {
     ])
       .pipe(
         switchMap(([queryParams, params, data], index) => {
+          // Precedence when keys collide is determined by the spread order:
+          // resources > data (including resolvers) > path params > query params
           data = {
             ...queryParams,
             ...params,
