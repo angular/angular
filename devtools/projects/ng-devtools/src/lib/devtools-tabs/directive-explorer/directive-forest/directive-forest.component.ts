@@ -285,7 +285,7 @@ export class DirectiveForestComponent {
 
   handleFilter(filterFn: FilterFn): void {
     this.currentlyMatchedIndex.set(-1);
-    this.matchedNodes.set(new Map());
+    const matched = new Map<number, NodeTextMatch[]>();
 
     for (let i = 0; i < this.dataSource.data.length; i++) {
       const node = this.dataSource.data[i];
@@ -293,13 +293,11 @@ export class DirectiveForestComponent {
       const matches = filterFn(fullName);
 
       if (matches.length) {
-        this.matchedNodes.update((matched) => {
-          const map = new Map(matched);
-          map.set(i, matches);
-          return map;
-        });
+        matched.set(i, matches);
       }
     }
+
+    this.matchedNodes.set(matched);
 
     // Select the first match, if there are any.
     if (this.matchesCount()) {
