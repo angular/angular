@@ -56,10 +56,12 @@ export function createOverlayWithLabels<T extends HighlightLabelDefinition>(
       overlay.style.backgroundColor = toCSSColor(...template.overlayColor, 0.35);
       break;
     case 'outline':
-      const color = toCSSColor(...template.overlayColor, 0.5);
-      overlay.style.border = `3px solid ${color}`;
-      overlay.style.boxSizing = 'border-box';
-      overlay.style.boxShadow = `inset 0 0 10px ${color}`;
+      {
+        const color = toCSSColor(...template.overlayColor, 0.5);
+        overlay.style.border = `3px solid ${color}`;
+        overlay.style.boxSizing = 'border-box';
+        overlay.style.boxShadow = `inset 0 0 10px ${color}`;
+      }
       break;
   }
 
