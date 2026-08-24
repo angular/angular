@@ -3166,6 +3166,29 @@ describe('runtime i18n', () => {
       ).toBeNull();
     });
 
+    it('should preserve SVG animation validation for elements created by i18n', () => {
+      @Component({
+        template: `
+          <section i18n>
+            Open profile
+            <svg>
+              <a><set attributeName="href" [attr.to]="payload"></set></a>
+            </svg>
+          </section>
+        `,
+      })
+      class ProfileComponent {
+        payload = 'javascript:alert(1)';
+      }
+
+      const fixture = TestBed.createComponent(ProfileComponent);
+
+      expect(() => fixture.detectChanges()).toThrowError(
+        /NG0910: Angular has detected that the `to` was applied as a binding to the <set>/,
+      );
+      expect(fixture.nativeElement.querySelector('set').getAttribute('to')).toBeNull();
+    });
+
     it('should not interpret text between adjacent interpolations as a structural marker', () => {
       @Component({
         template: `
