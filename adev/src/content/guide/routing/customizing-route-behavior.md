@@ -29,7 +29,7 @@ provideRouter(routes, withRouterConfig({canceledNavigationResolution: 'computed'
 
 ### React to same-URL navigations
 
-`onSameUrlNavigation` configures what should happen when the user asks to navigate to the current URL. The default `'ignore'` skips work, while `'reload'` re-runs guards and resolvers and refreshes component instances.
+`onSameUrlNavigation` configures what should happen when the user asks to navigate to the current URL. The default `'ignore'` skips work, while `'reload'` instructs the Router to process the URL in its navigation pipeline rather than skipping it. Guard and resolver reruns are governed by [`runGuardsAndResolvers`](api/router/RunGuardsAndResolvers), and component reuse is determined by the [route reuse strategy](#route-reuse-strategy).
 
 This is useful when you want repeated clicks on a list filter, left-nav item, or refresh button to trigger new data retrieval even though the URL does not change.
 
@@ -75,9 +75,7 @@ export const routes: Routes = [
 ```
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class Customer {
   private route = inject(ActivatedRoute);
 
@@ -94,9 +92,7 @@ This ensures matrix parameters, route data, and resolved values are available fu
 ```
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class Customer {
   private route = inject(ActivatedRoute);
 
