@@ -18,7 +18,7 @@ import {
   tmpHashTable,
   tmpManifestSingleAssetGroup,
 } from '../testing/mock';
-import {SwTestHarnessBuilder} from '../testing/scope';
+import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 import {envIsSupported} from '../testing/utils';
 
 (function () {
@@ -59,6 +59,33 @@ import {envIsSupported} from '../testing/utils';
         'test',
       );
     });
+
+    /**
+     * Build a scope in which `/foo.txt` is served as a response that has already been redirected
+     * to `/redirect-target.txt`, where `redirectedBody` is what the redirected response carries
+     * and `targetBody` is what a direct request for the redirect target returns.
+     */
+    function scopeForRedirect(redirectedBody: string, targetBody: string) {
+      const server = new MockServerStateBuilder()
+        .withStaticFiles(dist.extend().addFile('/redirect-target.txt', targetBody).build())
+        .withManifest(manifest)
+        .withRedirect('/foo.txt', '/redirect-target.txt', redirectedBody)
+        .build();
+      return new SwTestHarnessBuilder().withServerState(server).build();
+    }
+
+    function groupForScope(harness: SwTestHarness): PrefetchAssetGroup {
+      return new PrefetchAssetGroup(
+        harness,
+        harness,
+        idle,
+        manifest.assetGroups![0],
+        tmpHashTable(manifest),
+        new CacheDatabase(harness),
+        'test',
+      );
+    }
+
     it('initializes without crashing', async () => {
       await group.initializeFully();
     });
@@ -117,6 +144,35 @@ import {envIsSupported} from '../testing/utils';
       const err = await errorFrom(group.initializeFully());
       expect(err.message).toContain('Hash mismatch');
     });
+    it('caches a redirected resource whose redirect target matches the manifest hash', async () => {
+      // A hashed asset served through a redirect to another location, where that location serves
+      // the contents the manifest expects. This is the ordinary "assets are served from a CDN"
+      // deployment and must keep working.
+      const redirectScope = scopeForRedirect('this is foo', 'this is foo');
+      group = groupForScope(redirectScope);
+
+      await group.initializeFully();
+
+      const res = await group.handleFetch(redirectScope.newRequest('/foo.txt'), testEvent);
+      expect(await res!.text()).toEqual('this is foo');
+    });
+
+    it('throws if the redirect target does not match the manifest hash of the original URL', async () => {
+      // The browser follows the redirect before the service worker sees the response, so the
+      // redirected response carries the target's contents and is validated against the hash the
+      // manifest lists for `/foo.txt`. The redirect is then unwrapped with a second request, and
+      // it is that second response which gets cached under `/foo.txt`. Serving the expected
+      // contents first and different contents second must not result in the latter being cached
+      // unvalidated.
+      const redirectScope = scopeForRedirect('this is foo', 'malicious contents');
+      group = groupForScope(redirectScope);
+
+      const err = await errorFrom(group.initializeFully());
+      expect(err?.message).toContain('Hash mismatch');
+
+      expect(redirectScope.caches.original.dehydrate()).not.toContain('malicious contents');
+    });
+
     it('CacheQueryOptions are passed through', async () => {
       await group.initializeFully();
       const matchSpy = spyOn(MockCache.prototype, 'match').and.callThrough();
