@@ -18,12 +18,12 @@ import ts from 'typescript';
 import {AbsoluteFsPath} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManager} from '../../translator';
 import {TypeCheckBlockMetadata} from '../api';
 
 import {Environment} from './environment';
 import {ensureTypeCheckFilePreparationImports} from './tcb_util';
 import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
+import {TcbImportManager} from './tcb_import_manager';
 
 export const TCB_FUNCTION_PREFIX = '_tcb';
 
@@ -56,13 +56,7 @@ export class TypeCheckFile extends Environment {
   ) {
     super(
       config,
-      new ImportManager({
-        // This minimizes noticeable changes with older versions of `ImportManager`.
-        forceGenerateNamespacesForNewImports: true,
-        // Type check block code affects code completion and fix suggestions.
-        // We want to encourage single quotes for now, like we always did.
-        shouldUseSingleQuotes: () => true,
-      }),
+      new TcbImportManager(),
       refEmitter,
       ts.createSourceFile(
         compilerHost.getCanonicalFileName(fileName),
@@ -107,24 +101,15 @@ export class TypeCheckFile extends Environment {
     // import to e.g. `@angular/core` always exists to guarantee a stable graph.
     ensureTypeCheckFilePreparationImports(this);
 
-    const importChanges = this.importManager.finalize();
-    if (importChanges.updatedImports.size > 0) {
-      throw new Error(
-        'AssertionError: Expected no imports to be updated for a new type check file.',
-      );
-    }
+    const importChanges = this.importManager.finalize() as any;
 
-    const printer = ts.createPrinter();
     let source = this.sourceContent;
 
-    const newImports = importChanges.newImports.get(this.contextFile.fileName);
-    if (newImports !== undefined) {
+    if (importChanges.length > 0) {
       if (source.length > 0 && !source.endsWith('\n')) {
         source += '\n';
       }
-      source += newImports
-        .map((i) => printer.printNode(ts.EmitHint.Unspecified, i, this.contextFile))
-        .join('\n');
+      source += importChanges;
     }
 
     source += '\n';
