@@ -597,7 +597,16 @@ export class Driver implements Debuggable, UpdateSource {
 
     // Decide which version of the app to use to serve this request. This is asynchronous as in
     // some cases, a record will need to be written to disk about the assignment that is made.
-    const appVersion = await this.assignVersion(event);
+    let appVersion: AppVersion | null = null;
+    try {
+      appVersion = await this.assignVersion(event);
+    } catch (err) {
+      this.debugger.log(
+        err as Error,
+        `Failed to assign an app version: Driver.fetch(${event.request.url})`,
+      );
+    }
+
     // If there's a configured max age, check whether this version is within that age.
     const isVersionWithinMaxAge =
       appVersion?.manifest.applicationMaxAge === undefined ||
