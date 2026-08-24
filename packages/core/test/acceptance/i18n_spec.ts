@@ -1982,6 +1982,40 @@ describe('runtime i18n', () => {
       );
     });
 
+    it('should isolate attributes when a translation omits a binding', () => {
+      loadTranslations({
+        [computeMsgId('hello {$INTERPOLATION}')]: '',
+        [computeMsgId('bye {$INTERPOLATION}')]: 'au revoir {$INTERPOLATION}',
+      });
+      const fixture = initWithTemplate(
+        AppComp,
+        `<input i18n-title title="hello {{name}}" i18n-placeholder placeholder="bye {{description}}">`,
+      );
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('input').getAttribute('placeholder')).toBe(
+        'au revoir Web Framework',
+      );
+    });
+
+    it('should isolate attributes when a translation repeats a binding', () => {
+      loadTranslations({
+        [computeMsgId('hello {$INTERPOLATION}')]: 'bonjour {$INTERPOLATION}/{$INTERPOLATION}',
+        [computeMsgId('bye {$INTERPOLATION}')]: 'au revoir {$INTERPOLATION}',
+      });
+
+      const fixture = initWithTemplate(
+        AppComp,
+        `<input i18n-title title="hello {{name}}" i18n-placeholder placeholder="bye {{description}}">`,
+      );
+
+      fixture.detectChanges();
+
+      const input = fixture.nativeElement.querySelector('input');
+      expect(input.getAttribute('title')).toBe('bonjour Angular/Angular');
+      expect(input.getAttribute('placeholder')).toBe('au revoir Web Framework');
+    });
+
     it('on removed elements', () => {
       loadTranslations({
         [computeMsgId('text')]: 'texte',
@@ -3099,6 +3133,65 @@ describe('runtime i18n', () => {
       expect(() => initWithTemplate(AppComp, '<div i18n>Text</div>')).toThrowError(
         /Unable to parse ICU expression in "Text { count }" message./,
       );
+    });
+
+    it('should reject forged markers without weakening iframe srcdoc sanitization', () => {
+      const sourceMessage = '{VAR_SELECT, select, ready {Preview ready} other {Preview pending}}';
+      expect(() =>
+        loadTranslations({
+          [computeMsgId(sourceMessage)]: '�#0�Preview ready�/#0�',
+        }),
+      ).toThrowError(/reserved U\+FFFD character/);
+
+      loadTranslations({[computeMsgId(sourceMessage)]: sourceMessage});
+
+      @Component({
+        template: `
+          <iframe id="preview" [attr.srcdoc]="previewDocument"></iframe>
+          {previewState, select, ready {Preview ready} other {Preview pending}}
+        `,
+      })
+      class PreviewComponent {
+        previewState = 'ready';
+        previewDocument = `<img src="/missing.png" onerror="parent.document.documentElement.setAttribute('data-angular-i18n-xss','executed')">`;
+      }
+
+      const fixture = TestBed.createComponent(PreviewComponent);
+      fixture.detectChanges();
+
+      const iframe = fixture.nativeElement.querySelector('#preview') as HTMLIFrameElement;
+      expect(iframe.getAttribute('srcdoc')).not.toContain('onerror');
+      expect(
+        TestBed.inject(DOCUMENT).documentElement.getAttribute('data-angular-i18n-xss'),
+      ).toBeNull();
+    });
+
+    it('should not interpret text between adjacent interpolations as a structural marker', () => {
+      @Component({
+        template: `
+          <iframe id="preview" [attr.srcdoc]="previewDocument"></iframe>
+          <div i18n>{{ name }}#0{{ description }}</div>
+        `,
+      })
+      class PreviewComponent {
+        name = 'Angular';
+        description = 'Web Framework';
+        previewDocument = `<img src="/missing.png" onerror="alert('executed')">`;
+      }
+
+      const fixture = TestBed.createComponent(PreviewComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('div').textContent).toBe('Angular#0Web Framework');
+      expect(fixture.nativeElement.querySelector('#preview').getAttribute('srcdoc')).not.toContain(
+        'onerror',
+      );
+    });
+
+    it('should support self-closing elements with structural directives in an i18n block', () => {
+      const fixture = initWithTemplate(AppComp, `<div i18n><img *ngIf="true" /></div>`);
+
+      expect(fixture.nativeElement.querySelectorAll('img').length).toBe(1);
     });
   });
 
