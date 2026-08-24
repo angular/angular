@@ -58,10 +58,10 @@ import {Params} from './shared';
 import {StateManager} from './statemanager/state_manager';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {
-  containsTree,
   exactMatchOptions,
   IsActiveMatchOptions,
   isUrlTree,
+  matchesTree,
   subsetMatchOptions,
   UrlSegmentGroup,
   UrlSerializer,
@@ -636,11 +636,11 @@ export class Router {
       options = {...subsetMatchOptions, ...matchOptions};
     }
     if (isUrlTree(url)) {
-      return containsTree(this.currentUrlTree, url, options);
+      return matchesTree(this.currentUrlTree, url, options);
     }
 
     const urlTree = this.parseUrl(url);
-    return containsTree(this.currentUrlTree, urlTree, options);
+    return matchesTree(this.currentUrlTree, urlTree, options);
   }
 
   private removeEmptyProps(params: Params): Params {

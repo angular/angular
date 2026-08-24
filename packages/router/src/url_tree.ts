@@ -123,7 +123,7 @@ export function isActive(
 ): Signal<boolean> {
   const urlTree = url instanceof UrlTree ? url : router.parseUrl(url);
   return computed(() =>
-    containsTree(
+    matchesTree(
       router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(),
       urlTree,
       matchOptions,
@@ -132,7 +132,7 @@ export function isActive(
 }
 
 /**
- * Determines if a `UrlTree` is contained within another `UrlTree` based on the provided matching options.
+ * Determines if a `UrlTree` matches another `UrlTree` based on the provided matching options.
  *
  * @param container The outer or reference `UrlTree`.
  * @param containee The target `UrlTree` to test against the container.
@@ -144,7 +144,7 @@ export function isActive(
  *
  * @publicApi
  */
-export function containsTree(
+export function matchesTree(
   container: UrlTree,
   containee: UrlTree,
   options?: Partial<IsActiveMatchOptions>,

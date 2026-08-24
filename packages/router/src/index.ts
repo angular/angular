@@ -140,7 +140,7 @@ export {
   UrlSegmentGroup,
   UrlSerializer,
   UrlTree,
-  containsTree,
+  matchesTree,
 } from './url_tree';
 export {
   mapToCanActivate,

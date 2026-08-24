@@ -206,9 +206,6 @@ export interface ComponentInputBindingOptions {
 }
 
 // @public
-export function containsTree(container: UrlTree, containee: UrlTree, options?: Partial<IsActiveMatchOptions>): boolean;
-
-// @public
 export function convertToParamMap(params: Params): ParamMap;
 
 // @public
@@ -401,6 +398,9 @@ export function mapToCanMatch(providers: Array<Type<CanMatch>>): CanMatchFn[];
 
 // @public
 export function mapToResolve<T>(provider: Type<Resolve<T>>): ResolveFn<T>;
+
+// @public
+export function matchesTree(container: UrlTree, containee: UrlTree, options?: Partial<IsActiveMatchOptions>): boolean;
 
 // @public
 export type MaybeAsync<T> = T | Observable<T> | Promise<T>;

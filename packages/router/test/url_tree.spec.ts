@@ -9,10 +9,10 @@
 import {TestBed} from '@angular/core/testing';
 import {Router} from '../src/router';
 import {
-  containsTree,
   DefaultUrlSerializer,
   exactMatchOptions,
   isActive,
+  matchesTree,
   subsetMatchOptions,
 } from '../src/url_tree';
 
@@ -70,86 +70,86 @@ describe('UrlTree', () => {
     });
   });
 
-  describe('containsTree', () => {
+  describe('matchesTree', () => {
     describe('exact = true', () => {
       it('should return true when two tree are the same', () => {
         const url = '/one/(one//left:three)(right:four)';
         const t1 = serializer.parse(url);
         const t2 = serializer.parse(url);
-        expect(containsTree(t1, t2, exactMatchOptions)).toBe(true);
-        expect(containsTree(t2, t1, exactMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, exactMatchOptions)).toBe(true);
+        expect(matchesTree(t2, t1, exactMatchOptions)).toBe(true);
       });
 
       it('should return true when queryParams are the same', () => {
         const t1 = serializer.parse('/one/two?test=1&page=5');
         const t2 = serializer.parse('/one/two?test=1&page=5');
-        expect(containsTree(t1, t2, exactMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, exactMatchOptions)).toBe(true);
       });
 
       it('should return true when queryParams are the same but with different order', () => {
         const t1 = serializer.parse('/one/two?test=1&page=5');
         const t2 = serializer.parse('/one/two?page=5&test=1');
-        expect(containsTree(t1, t2, exactMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, exactMatchOptions)).toBe(true);
       });
 
       it('should return true when queryParams contains array params that are the same', () => {
         const t1 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=6');
         const t2 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=6');
-        expect(containsTree(t1, t2, exactMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, exactMatchOptions)).toBe(true);
       });
 
       it('should return false when queryParams contains array params but are not the same', () => {
         const t1 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=6');
         const t2 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=7');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(false);
       });
 
       it('should return false when queryParams are not the same', () => {
         const t1 = serializer.parse('/one/two?test=1&page=5');
         const t2 = serializer.parse('/one/two?test=1');
-        expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, exactMatchOptions)).toBe(false);
       });
 
       it('should return false when queryParams are not the same (multiple params)', () => {
         const t1 = serializer.parse('/one/two?test=4&test=4&test=2');
         const t2 = serializer.parse('/one/two?test=4&test=3&test=2');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(false);
       });
 
       it('should return true when queryParams are the same in different order', () => {
         const t1 = serializer.parse('/one/two?test=4&test=3&test=2');
         const t2 = serializer.parse('/one/two?test=2&test=3&test=4');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
       it('should return true when queryParams are the same in different order (with duplicates)', () => {
         const t1 = serializer.parse('/one/two?test=4&test=4&test=1');
         const t2 = serializer.parse('/one/two?test=1&test=4&test=4');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
       it('should return false when containee is missing queryParams', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two');
-        expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, exactMatchOptions)).toBe(false);
       });
 
       it('should return false when paths are not the same', () => {
         const t1 = serializer.parse('/one/two(right:three)');
         const t2 = serializer.parse('/one/two2(right:three)');
-        expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, exactMatchOptions)).toBe(false);
       });
 
       it('should return false when container has an extra child', () => {
         const t1 = serializer.parse('/one/two(right:three)');
         const t2 = serializer.parse('/one/two');
-        expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, exactMatchOptions)).toBe(false);
       });
 
       it('should return false when containee has an extra child', () => {
         const t1 = serializer.parse('/one/two');
         const t2 = serializer.parse('/one/two(right:three)');
-        expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, exactMatchOptions)).toBe(false);
       });
     });
 
@@ -189,85 +189,85 @@ describe('UrlTree', () => {
       it('should return true when containee is missing a segment', () => {
         const t1 = serializer.parse('/one/(two//left:three)(right:four)');
         const t2 = serializer.parse('/one/(two//left:three)');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
       it('should return true when containee is missing some paths', () => {
         const t1 = serializer.parse('/one/two/three');
         const t2 = serializer.parse('/one/two');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
       it('should return true container has its paths split into multiple segments', () => {
         const t1 = serializer.parse('/one/(two//left:three)');
         const t2 = serializer.parse('/one/two');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
       it('should return false when containee has extra segments', () => {
         const t1 = serializer.parse('/one/two');
         const t2 = serializer.parse('/one/(two//left:three)');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(false);
       });
 
       it('should return false containee has segments that the container does not have', () => {
         const t1 = serializer.parse('/one/(two//left:three)');
         const t2 = serializer.parse('/one/(two//right:four)');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(false);
       });
 
       it('should return false when containee has extra paths', () => {
         const t1 = serializer.parse('/one');
         const t2 = serializer.parse('/one/two');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(false);
       });
 
       it('should return true when queryParams are the same', () => {
         const t1 = serializer.parse('/one/two?test=1&page=5');
         const t2 = serializer.parse('/one/two?test=1&page=5');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
       it('should return true when container contains containees queryParams', () => {
         const t1 = serializer.parse('/one/two?test=1&u=5');
         const t2 = serializer.parse('/one/two?u=5');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
       it('should return true when containee does not have queryParams', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
       it('should return false when containee has but container does not have queryParams', () => {
         const t1 = serializer.parse('/one/two');
         const t2 = serializer.parse('/one/two?page=1');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(false);
       });
 
       it('should return true when container has array params but containee does not have', () => {
         const t1 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=6');
         const t2 = serializer.parse('/one/two?test=a&test=b');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
       it('should return false when containee has array params but container does not have', () => {
         const t1 = serializer.parse('/one/two?test=a&test=b');
         const t2 = serializer.parse('/one/two?test=a&test=b&pages=5&pages=6');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(false);
       });
 
       it('should return false when containee has different queryParams', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two?test=1');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(false);
       });
 
       it('should return false when containee has more queryParams than container', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two?page=5&test=1');
-        expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
+        expect(matchesTree(t1, t2, subsetMatchOptions)).toBe(false);
       });
     });
 
@@ -275,7 +275,7 @@ describe('UrlTree', () => {
       it('should return true when queryParams differ but are ignored', () => {
         const t1 = serializer.parse('/?test=1&page=2');
         const t2 = serializer.parse('/?test=3&page=4&x=y');
-        expect(containsTree(t1, t2, {...exactMatchOptions, queryParams: 'ignored'})).toBe(true);
+        expect(matchesTree(t1, t2, {...exactMatchOptions, queryParams: 'ignored'})).toBe(true);
       });
     });
 
@@ -283,13 +283,13 @@ describe('UrlTree', () => {
       it('should return false when fragments differ but options require exact match', () => {
         const t1 = serializer.parse('/#fragment1');
         const t2 = serializer.parse('/#fragment2');
-        expect(containsTree(t1, t2, {...exactMatchOptions, fragment: 'exact'})).toBe(false);
+        expect(matchesTree(t1, t2, {...exactMatchOptions, fragment: 'exact'})).toBe(false);
       });
 
       it('should return true when fragments differ but options ignore the fragment', () => {
         const t1 = serializer.parse('/#fragment1');
         const t2 = serializer.parse('/#fragment2');
-        expect(containsTree(t1, t2, {...exactMatchOptions, fragment: 'ignored'})).toBe(true);
+        expect(matchesTree(t1, t2, {...exactMatchOptions, fragment: 'ignored'})).toBe(true);
       });
     });
 
@@ -298,7 +298,7 @@ describe('UrlTree', () => {
         it('returns true when matrix params differ but are ignored', () => {
           const t1 = serializer.parse('/a;id=15;foo=foo');
           const t2 = serializer.parse('/a;abc=123');
-          expect(containsTree(t1, t2, {...exactMatchOptions, matrixParams: 'ignored'})).toBe(true);
+          expect(matchesTree(t1, t2, {...exactMatchOptions, matrixParams: 'ignored'})).toBe(true);
         });
       });
 
@@ -308,19 +308,19 @@ describe('UrlTree', () => {
         it('returns true when matrix params match', () => {
           const t1 = serializer.parse('/a;id=15;foo=foo');
           const t2 = serializer.parse('/a;id=15;foo=foo');
-          expect(containsTree(t1, t2, {...exactMatchOptions, matrixParams})).toBe(true);
+          expect(matchesTree(t1, t2, {...exactMatchOptions, matrixParams})).toBe(true);
         });
 
         it('returns false when matrix params differ', () => {
           const t1 = serializer.parse('/a;id=15;foo=foo');
           const t2 = serializer.parse('/a;abc=123');
-          expect(containsTree(t1, t2, {...exactMatchOptions, matrixParams})).toBe(false);
+          expect(matchesTree(t1, t2, {...exactMatchOptions, matrixParams})).toBe(false);
         });
 
         it('returns true when matrix params match on the subset of the matched url tree', () => {
           const t1 = serializer.parse('/a;id=15;foo=bar/c');
           const t2 = serializer.parse('/a;id=15;foo=bar');
-          expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
+          expect(matchesTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
         });
 
         it(
@@ -329,7 +329,7 @@ describe('UrlTree', () => {
           () => {
             const t1 = serializer.parse('/one;a=1/(two;b=2//left:three)');
             const t2 = serializer.parse('/one;a=1/two;b=2');
-            expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
+            expect(matchesTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
           },
         );
       });
@@ -340,25 +340,25 @@ describe('UrlTree', () => {
         it('returns true when matrix params match', () => {
           const t1 = serializer.parse('/a;id=15;foo=foo');
           const t2 = serializer.parse('/a;id=15;foo=foo');
-          expect(containsTree(t1, t2, {...exactMatchOptions, matrixParams})).toBe(true);
+          expect(matchesTree(t1, t2, {...exactMatchOptions, matrixParams})).toBe(true);
         });
 
         it('returns true when container has extra matrix params', () => {
           const t1 = serializer.parse('/a;id=15;foo=foo');
           const t2 = serializer.parse('/a;id=15');
-          expect(containsTree(t1, t2, {...exactMatchOptions, matrixParams})).toBe(true);
+          expect(matchesTree(t1, t2, {...exactMatchOptions, matrixParams})).toBe(true);
         });
 
         it('returns false when matrix params differ', () => {
           const t1 = serializer.parse('/a;id=15;foo=foo');
           const t2 = serializer.parse('/a;abc=123');
-          expect(containsTree(t1, t2, {...exactMatchOptions, matrixParams})).toBe(false);
+          expect(matchesTree(t1, t2, {...exactMatchOptions, matrixParams})).toBe(false);
         });
 
         it('returns true when matrix params match on the subset of the matched url tree', () => {
           const t1 = serializer.parse('/a;id=15;foo=bar/c');
           const t2 = serializer.parse('/a;id=15;foo=bar');
-          expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
+          expect(matchesTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
         });
 
         it(
@@ -367,7 +367,7 @@ describe('UrlTree', () => {
           () => {
             const t1 = serializer.parse('/one;a=1/(two;b=2//left:three)');
             const t2 = serializer.parse('/one;a=1/two');
-            expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
+            expect(matchesTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
           },
         );
       });
@@ -376,40 +376,40 @@ describe('UrlTree', () => {
         it('should default to subset matching when options are omitted', () => {
           const t1 = serializer.parse('/one/two/three');
           const t2 = serializer.parse('/one/two');
-          expect(containsTree(t1, t2)).toBe(true);
+          expect(matchesTree(t1, t2)).toBe(true);
         });
 
         it('should perform exact matching when passing exactMatchOptions', () => {
           const t1 = serializer.parse('/one/two/three');
           const t2 = serializer.parse('/one/two');
-          expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+          expect(matchesTree(t1, t2, exactMatchOptions)).toBe(false);
 
           const t3 = serializer.parse('/one/two');
-          expect(containsTree(t3, t2, exactMatchOptions)).toBe(true);
+          expect(matchesTree(t3, t2, exactMatchOptions)).toBe(true);
         });
 
         it('should require exact query parameter matches when passing exactMatchOptions', () => {
           const t1 = serializer.parse('/one/two?a=1&b=2');
           const t2 = serializer.parse('/one/two?a=1');
-          expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+          expect(matchesTree(t1, t2, exactMatchOptions)).toBe(false);
         });
 
         it('should default to subset matching when passed an empty options object', () => {
           const t1 = serializer.parse('/one/two/three');
           const t2 = serializer.parse('/one/two');
-          expect(containsTree(t1, t2, {})).toBe(true);
+          expect(matchesTree(t1, t2, {})).toBe(true);
         });
 
         it('should handle undefined options without throwing', () => {
           const t1 = serializer.parse('/one/two/three');
           const t2 = serializer.parse('/one/two');
-          expect(containsTree(t1, t2, undefined)).toBe(true);
+          expect(matchesTree(t1, t2, undefined)).toBe(true);
         });
 
         it('should handle null options gracefully', () => {
           const t1 = serializer.parse('/one/two/three');
           const t2 = serializer.parse('/one/two');
-          expect(containsTree(t1, t2, null as any)).toBe(true);
+          expect(matchesTree(t1, t2, null as any)).toBe(true);
         });
       });
 
@@ -417,13 +417,13 @@ describe('UrlTree', () => {
         it('should allow overriding specific options while applying subset defaults for the rest', () => {
           const t1 = serializer.parse('/one/two/three?test=1&page=5');
           const t2 = serializer.parse('/one/two?test=1');
-          expect(containsTree(t1, t2, {paths: 'subset'})).toBe(true);
+          expect(matchesTree(t1, t2, {paths: 'subset'})).toBe(true);
         });
 
         it('should enforce exact paths when explicitly set while keeping subset queryParams default', () => {
           const t1 = serializer.parse('/one/two/three?test=1&page=5');
           const t2 = serializer.parse('/one/two?test=1');
-          expect(containsTree(t1, t2, {paths: 'exact'})).toBe(false);
+          expect(matchesTree(t1, t2, {paths: 'exact'})).toBe(false);
         });
       });
     });
