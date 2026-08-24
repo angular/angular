@@ -7,11 +7,7 @@ ts_project(
     srcs = ["index.ts"],
     deps = [
         ":client_event_subscribers",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
-        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
-        "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
-        "//devtools/projects/ng-devtools-backend/src/lib/shared/state-serializer",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/protocol",
     ],
 )

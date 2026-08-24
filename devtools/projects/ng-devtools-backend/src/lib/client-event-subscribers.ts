@@ -53,7 +53,7 @@ import {
 import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
 import {disablePerformanceTrack, enablePerformanceTrack} from './profiling/performance-track';
 import {getProfiler, Profiler} from './profiling/profiler';
-import {ComponentTreeNode} from './shared/interfaces';
+import {ComponentTreeNode, DevtoolsBackendConfig} from './shared/interfaces';
 import {
   ngDebugClient,
   ngDebugDependencyInjectionApiIsSupported,
@@ -81,12 +81,14 @@ type InspectorRef = {ref: ComponentInspector | null};
 
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
-  ngDevtoolsDevMode?: boolean,
-  depsForTestOnly?: {
-    profiler?: new (...args: any[]) => Profiler;
+  config?: DevtoolsBackendConfig & {
+    depsForTestOnly?: {
+      profiler?: new (...args: any[]) => Profiler;
+    };
   },
 ): void => {
   const inspector: InspectorRef = {ref: null};
+  setupLogging(config?.devtoolsDevMode ?? false);
 
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
@@ -141,13 +143,11 @@ export const subscribeToClientEvents = (
     // update requests, instead we want to request an update at most
     // once every 250ms
     runOutsideAngular(() => {
-      getProfiler(depsForTestOnly)
+      getProfiler(config?.depsForTestOnly)
         .changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
   }
-
-  setupLogging(ngDevtoolsDevMode ?? false);
 };
 
 //

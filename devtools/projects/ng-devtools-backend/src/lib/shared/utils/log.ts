@@ -11,7 +11,7 @@ let isNgDevtoolsDevMode: boolean = false;
 export const LOG_MSG_PREFIX = '[Angular DevTools]';
 export const DEBUG_LOG_MSG_PREFIX = '[Angular DevTools DEV]';
 
-type LogType = 'log' | 'warn' | 'debug' | 'info' | 'error' | 'group';
+type LogType = 'log' | 'warn' | 'debug' | 'info' | 'error';
 
 export function setupLogging(devtoolsDevMode: boolean) {
   isNgDevtoolsDevMode = devtoolsDevMode;
@@ -41,7 +41,9 @@ debugLog.warn = (...data: any[]) => debugLogInternal('warn', ...data);
 debugLog.debug = (...data: any[]) => debugLogInternal('debug', ...data);
 debugLog.info = (...data: any[]) => debugLogInternal('info', ...data);
 debugLog.error = (...data: any[]) => debugLogInternal('error', ...data);
-debugLog.group = (...data: any[]) => debugLogInternal('group', ...data);
+
+// For compatibility purposes
+debugLog.log = (...data: any[]) => debugLogInternal('log', ...data);
 
 /**
  * Log Angular DevTools user-facing messages.
@@ -55,7 +57,6 @@ log.warn = (...data: any[]) => userLogInternal('warn', ...data);
 log.debug = (...data: any[]) => userLogInternal('debug', ...data);
 log.info = (...data: any[]) => userLogInternal('info', ...data);
 log.error = (...data: any[]) => userLogInternal('error', ...data);
-log.group = (...data: any[]) => userLogInternal('group', ...data);
 
 // For compatibility purposes
 log.log = (...data: any[]) => userLogInternal('log', ...data);
