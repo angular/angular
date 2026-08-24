@@ -3111,6 +3111,52 @@ describe('runtime i18n', () => {
         /Unable to parse ICU expression in "Text { count }" message./,
       );
     });
+
+    it('should preserve SVG animation validation for elements created by i18n', () => {
+      @Component({
+        template: `
+          <section i18n>
+            Open profile
+            <svg>
+              <a><set attributeName="href" [attr.to]="payload"></set></a>
+            </svg>
+          </section>
+        `,
+      })
+      class ProfileComponent {
+        payload = 'javascript:alert(1)';
+      }
+
+      const fixture = TestBed.createComponent(ProfileComponent);
+
+      expect(() => fixture.detectChanges()).toThrowError(
+        /NG0910: Angular has detected that the `to` was applied as a binding to the <set>/,
+      );
+      expect(fixture.nativeElement.querySelector('set').getAttribute('to')).toBeNull();
+    });
+
+    it('should create dynamic components in the SVG namespace inside an i18n block', () => {
+      @Component({selector: 'g[dynamic-group]', template: ''})
+      class SvgGroupComp {}
+
+      @Component({
+        template: `
+          <section i18n>
+            Chart
+            <svg><ng-container #container></ng-container></svg>
+          </section>
+        `,
+      })
+      class ChartComponent {
+        @ViewChild('container', {read: ViewContainerRef, static: true})
+        container!: ViewContainerRef;
+      }
+
+      const fixture = TestBed.createComponent(ChartComponent);
+      const componentRef = fixture.componentInstance.container.createComponent(SvgGroupComp);
+
+      expect(componentRef.location.nativeElement.namespaceURI).toBe('http://www.w3.org/2000/svg');
+    });
   });
 
   it('should handle extra HTML in translation as plain text', () => {
