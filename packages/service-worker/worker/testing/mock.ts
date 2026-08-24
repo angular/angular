@@ -110,8 +110,14 @@ export class MockServerStateBuilder {
     return this;
   }
 
-  withRedirect(from: string, to: string): MockServerStateBuilder {
-    this.resources.set(from, new MockResponse('', {redirected: true, url: to}));
+  /**
+   * Serve `from` as a response that has already been redirected to `to`.
+   *
+   * `body` defaults to empty, but can be set to model the browser behavior of following the
+   * redirect and exposing the *target's* contents on the redirected response.
+   */
+  withRedirect(from: string, to: string, body: string = ''): MockServerStateBuilder {
+    this.resources.set(from, new MockResponse(body, {redirected: true, url: to}));
     return this;
   }
 

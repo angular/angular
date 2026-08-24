@@ -363,9 +363,13 @@ export abstract class AssetGroup {
     }
   }
 
-  protected async fetchFromNetwork(req: Request, redirectLimit: number = 3): Promise<Response> {
+  protected async fetchFromNetwork(
+    req: Request,
+    redirectLimit: number = 3,
+    canonicalUrl: NormalizedUrl = this.adapter.normalizeUrl(req.url),
+  ): Promise<Response> {
     // Make a cache-busted request for the resource.
-    const res = await this.cacheBustedFetchFromNetwork(req);
+    const res = await this.cacheBustedFetchFromNetwork(req, canonicalUrl);
 
     // Check for redirected responses, and follow the redirects.
     if ((res as any)['redirected'] && !!res.url) {
@@ -376,8 +380,16 @@ export abstract class AssetGroup {
         );
       }
 
-      // Unwrap the redirect directly.
-      return this.fetchFromNetwork(this.newRequestWithMetadata(res.url, req), redirectLimit - 1);
+      // Unwrap the redirect directly. The response that is eventually returned here is cached
+      // under the *original* request, so `canonicalUrl` is carried through the recursion to keep
+      // validating against the hash the manifest specifies for that original URL. Validating
+      // against the redirect target instead would leave the cached contents unvalidated, since
+      // the target is not itself a manifest entry.
+      return this.fetchFromNetwork(
+        this.newRequestWithMetadata(res.url, req),
+        redirectLimit - 1,
+        canonicalUrl,
+      );
     }
 
     return res;
@@ -385,10 +397,14 @@ export abstract class AssetGroup {
 
   /**
    * Load a particular asset from the network, accounting for hash validation.
+   *
+   * `url` is the normalized URL whose manifest hash the response must satisfy. It differs from the
+   * URL of `req` when a redirect is being followed on behalf of a hashed asset.
    */
-  protected async cacheBustedFetchFromNetwork(req: Request): Promise<Response> {
-    const url = this.adapter.normalizeUrl(req.url);
-
+  protected async cacheBustedFetchFromNetwork(
+    req: Request,
+    url: NormalizedUrl = this.adapter.normalizeUrl(req.url),
+  ): Promise<Response> {
     // If a hash is available for this resource, then compare the fetched version with the
     // canonical hash. Otherwise, the network version will have to be trusted.
     if (this.hashes.has(url)) {
