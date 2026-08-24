@@ -15,7 +15,6 @@ generate_guides(
 js_library(
     name = "guide_files",
     srcs = glob(["**/*.md"]) + [
-        "//adev/src/content/reference/concepts:guide_files",
         "//adev/src/content/reference/configs:guide_files",
         "//adev/src/content/reference/errors:guide_files",
         "//adev/src/content/reference/errors:route-nav-items",

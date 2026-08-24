@@ -163,4 +163,16 @@ export const REDIRECT_ROUTES: Route[] = [
     path: 'signal-forms',
     redirectTo: '/playground?templateId=4-signal-forms',
   },
+  {
+    path: 'guide/http/security',
+    redirectTo: '/best-practices/security',
+  },
+  {
+    path: 'reference/concepts',
+    redirectTo: '/guide/ngmodules/overview',
+  },
+  {
+    path: 'guide/ngmodules',
+    redirectTo: '/guide/ngmodules/overview',
+  },
 ];

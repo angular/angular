@@ -108,5 +108,5 @@ adev/src/content/guide/animations/migration.md
 adev/src/content/guide/zoneless.md
 adev/src/content/reference/roadmap.md
 adev/src/content/best-practices/update.md
-adev/src/content/guide/http/security.md
 adev/src/content/guide/i18n/overview.md
+adev/src/content/guide/security.md
