@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {setActiveConsumer} from '../../../primitives/signals';
 import {Injector} from '../../di/injector';
 import {InternalInjectFlags} from '../../di/interface/injector';
 import {
@@ -28,8 +29,9 @@ import {TContainerNode, TNodeType} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {RNode} from '../interfaces/renderer_dom';
 import {isDestroyed} from '../interfaces/type_checks';
-import {FLAGS, HEADER_OFFSET, LView, RENDERER, TVIEW} from '../interfaces/view';
+import {ENVIRONMENT, FLAGS, HEADER_OFFSET, LView, RENDERER, TVIEW} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
+import {createViewEffect} from '../reactivity/effect';
 import {getLView, getTView, setCurrentTNode, setCurrentTNodeAsNotParent} from '../state';
 import {getOrCreateTNode} from '../tnode_manipulation';
 import {getConstant} from '../util/view_utils';
@@ -42,13 +44,13 @@ import {createAndRenderEmbeddedLView} from '../view_manipulation';
  *
  * @param index The index of the container in the data array.
  * @param foreignComponentIndex The index of the matched foreign component in the constant pool.
- * @param props Aggregate properties and static attributes.
+ * @param props A factory function returning aggregate properties/static attributes.
  * @codeGenApi
  */
 export function ɵɵforeignComponent(
   index: number,
   foreignComponentIndex: number,
-  props?: any,
+  props?: (() => any) | null,
 ): void {
   const lView = getLView();
   const tView = getTView();
@@ -83,30 +85,41 @@ export function ɵɵforeignComponent(
   // 4. Create the Foreign View and insert it at index 0 of the container
   const viewRef = createForeignView(lContainer, 0);
 
-  // 5. Resolve context and call the RENDER function to get the nodes and DisposeFn
-  // Context is optional because foreign components may not require context or a FOREIGN_CONTEXT
-  // provider might not be configured in the component/element injector hierarchy.
-  const context = getOrCreateInjectable(
-    tNode,
-    lView,
-    FOREIGN_CONTEXT,
-    InternalInjectFlags.Optional,
-  );
-  const [nodes, dispose] = foreignComponent[RENDER](props, context ?? undefined);
+  // 5. Create a run-once view effect to render the foreign component during runEffectsInView
+  const node = createViewEffect(lView, lView[ENVIRONMENT].changeDetectionScheduler!, () => {
+    // Destroy this effect the first time it's called to ensure it doesn't run more than once.
+    node.destroy();
 
-  // 6. Insert the returned nodes into the foreign view, between its head and tail comment anchors.
-  const tail = viewRef.tail as RNode;
-  const parent = tail.parentNode;
-  if (parent) {
-    for (let i = 0; i < nodes.length; i++) {
-      nativeInsertBefore(renderer, parent, nodes[i], tail, false);
+    if (isDestroyed(lView)) {
+      return;
     }
-  }
 
-  // 7. Register the DisposeFn in the foreign view's LView destroy hooks.
-  if (dispose) {
-    viewRef.onDestroy(dispose);
-  }
+    const prevConsumer = setActiveConsumer(null);
+    try {
+      const resolvedProps = props ? props() : undefined;
+      const context = getOrCreateInjectable(
+        tNode,
+        lView,
+        FOREIGN_CONTEXT,
+        InternalInjectFlags.Optional,
+      );
+      const [nodes, dispose] = foreignComponent[RENDER](resolvedProps, context ?? undefined);
+
+      const tail = viewRef.tail as RNode;
+      const parent = tail.parentNode;
+      if (parent) {
+        for (let i = 0; i < nodes.length; i++) {
+          nativeInsertBefore(renderer, parent, nodes[i], tail, false);
+        }
+      }
+
+      if (dispose) {
+        viewRef.onDestroy(dispose);
+      }
+    } finally {
+      setActiveConsumer(prevConsumer);
+    }
+  });
 }
 
 /**
@@ -188,8 +201,8 @@ export function ɵɵforeignContent(index: number, foreignComponentConstIndex: nu
       }
     });
 
-    // Extract and return the root nodes of the created view
     const embeddedTView = embeddedLView[TVIEW];
+    // Extract and return the root nodes of the created view
     return collectNativeNodes(embeddedTView, embeddedLView, embeddedTView.firstChild, []);
   };
 
