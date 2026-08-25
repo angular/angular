@@ -54,8 +54,6 @@ export function parseUrl(
     return originUrl || null;
   }
 
-  urlStr = urlStr.trim();
-
   // Fast-path: if the URL is a valid, standard absolute URL, parse and return it immediately.
   let resolved: URL | undefined;
   try {
