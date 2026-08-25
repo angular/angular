@@ -1497,6 +1497,193 @@ runInEachFileSystem(() => {
           );
         });
 
+        it('should correctly include eager dependencies that are only used inside a defer block when they overlap with deferredImports (empty block)', () => {
+          env.tsconfig({onlyExplicitDeferDependencyImports: true});
+
+          env.write(
+            'my-cmp.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'my-cmp',
+              template: 'MyCmp',
+              standalone: true
+            })
+            export class MyCmp {}
+          `,
+          );
+
+          env.write(
+            'test.ts',
+            `
+            import {Component} from '@angular/core';
+            import {MyCmp} from './my-cmp';
+            @Component({
+              selector: 'app-root',
+              standalone: true,
+              imports: [MyCmp],
+              // @ts-ignore
+              deferredImports: { block1: [] },
+              template: \`
+                @defer (name block1) {
+                  <my-cmp />
+                }
+              \`
+            })
+            export class AppRoot {}
+          `,
+          );
+
+          env.driveMain();
+          const jsContents = env.getContents('test.js');
+
+          // Verify that MyCmp is kept as an eager dependency
+          expect(jsContents).toContain('dependencies: [MyCmp]');
+        });
+
+        it('should not eager load components that are in the deferredImports object', () => {
+          env.tsconfig({onlyExplicitDeferDependencyImports: true});
+
+          env.write(
+            'my-cmp.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'my-cmp',
+              template: 'MyCmp',
+              standalone: true
+            })
+            export class MyCmp {}
+          `,
+          );
+
+          env.write(
+            'test.ts',
+            `
+            import {Component} from '@angular/core';
+            import {MyCmp} from './my-cmp';
+            @Component({
+              selector: 'app-root',
+              standalone: true,
+              // @ts-ignore
+              deferredImports: { block1: [MyCmp] },
+              template: \`
+                @defer (name block1) {
+                  <my-cmp />
+                }
+              \`
+            })
+            export class AppRoot {}
+          `,
+          );
+
+          env.driveMain();
+          const jsContents = env.getContents('test.js');
+
+          // Verify that MyCmp is not kept as an eager dependency
+          expect(jsContents).not.toContain('dependencies: [MyCmp]');
+
+          // Verify that MyCmp is deferred
+          expect(cleanNewLines(jsContents)).toContain('import("./my-cmp").then(m => m.MyCmp)');
+        });
+
+        it('should remove the import statement for explicitly deferred imports even in local compilation mode', () => {
+          env.tsconfig({
+            onlyExplicitDeferDependencyImports: true,
+            compilationMode: 'local',
+          });
+          env.write(
+            'my-cmp.ts',
+            `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'my-cmp',
+              template: 'MyCmp',
+              standalone: true
+            })
+            export class MyCmp {}
+          `,
+          );
+          env.write(
+            'test.ts',
+            `
+            import {Component} from '@angular/core';
+            import {MyCmp} from './my-cmp';
+            @Component({
+              selector: 'app-root',
+              standalone: true,
+              // @ts-ignore
+              deferredImports: { block1: [MyCmp] },
+              template: \`
+                @defer (name block1) {
+                  <my-cmp />
+                }
+              \`
+            })
+            export class AppRoot {}
+          `,
+          );
+
+          env.driveMain();
+          const jsContents = env.getContents('test.js');
+
+          // Verify that the import statement is completely removed
+          expect(jsContents).not.toContain('import { MyCmp } from "./my-cmp"');
+          expect(jsContents).not.toContain('import {MyCmp} from "./my-cmp"');
+        });
+
+        it('should report exactly one error (no duplicates) when an import is used in deferredImports but also provides eager symbols', () => {
+          env.write(
+            'my-cmp.ts',
+            `
+            import {Component, Directive} from '@angular/core';
+            @Component({
+              selector: 'my-cmp',
+              template: 'MyCmp',
+              standalone: true
+            })
+            export class MyCmp {}
+
+            @Directive({
+              selector: '[my-dir]',
+              standalone: true
+            })
+            export class MyDir {}
+          `,
+          );
+
+          env.write(
+            'test.ts',
+            `
+            import {Component} from '@angular/core';
+            import {MyCmp, MyDir} from './my-cmp';
+            @Component({
+              selector: 'app-root',
+              standalone: true,
+              imports: [MyDir], // MyDir is used eagerly
+              // @ts-ignore
+              deferredImports: { block1: [MyCmp] }, // MyCmp is deferred
+              template: \`
+                <div my-dir></div>
+                @defer (name block1) {
+                  <my-cmp />
+                }
+              \`
+            })
+            export class AppRoot {}
+          `,
+          );
+
+          const diags = env.driveDiagnostics();
+
+          // Verify that exactly one diagnostic is produced, ensuring no duplicate errors are generated
+          // because of multiple 'markAsDeferrableCandidate' registrations for the same import.
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toContain(
+            'This import contains symbols that are used both inside and outside of the `@Component.deferredImports`',
+          );
+        });
+
         it('should handle block-specific mapping in local compilation mode', () => {
           env.tsconfig({
             onlyExplicitDeferDependencyImports: true,

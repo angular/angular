@@ -94,7 +94,6 @@ import {
   ClassDeclaration,
   DeclarationNode,
   Decorator,
-  Import,
   isNamedClassDeclaration,
   ReflectionHost,
   reflectObjectLiteral,
@@ -2635,6 +2634,14 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             resolutionData,
           );
         }
+      }
+    }
+
+    // Any directive or pipe used inside a defer block that wasn't deferred
+    // must be added to eager dependencies to ensure it's available at runtime.
+    for (const decl of Array.from(deferrableDecls.values())) {
+      if (decl.kind !== R3TemplateDependencyKind.NgModule && !allDeferredDecls.has(decl.ref.node)) {
+        eagerlyUsedDecls.add(decl.ref.node);
       }
     }
   }
