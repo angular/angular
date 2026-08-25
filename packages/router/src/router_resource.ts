@@ -7,6 +7,8 @@
  */
 
 import {
+  ComponentRef,
+  EffectRef,
   inject,
   Injector,
   Resource,
@@ -18,8 +20,10 @@ import {
   effect,
   computed,
   assertInInjectionContext,
+  reflectComponentType,
 } from '@angular/core';
 import {Router} from './router';
+import type {ActivatedRoute} from './router_state';
 import {
   NavigationStart,
   NavigationEnd,
@@ -177,4 +181,46 @@ function createTransactionalSnapshot<T>(
     snapshot: computed(() => frozenSnapshot() ?? source.snapshot()),
     frozenSnapshot,
   };
+}
+
+/**
+ * Creates reactive effects to bind the unwrapped values of blocking router resources
+ * to matching component inputs.
+ *
+ * Non-blocking resources are bound as the `Resource` instance itself through the standard
+ * route data stream in `RoutedComponentInputBinder`. In contrast, blocking resources have
+ * resolved before navigation completes and bind their unwrapped `.value()` to the component
+ * input. This sets up an `effect` for each matching blocking resource to keep the component
+ * input reactively updated, and returns the handled keys so the standard data subscription
+ * skips them.
+ */
+export function createResourceOutletBindingEffects(
+  componentRef: ComponentRef<unknown>,
+  route: ActivatedRoute,
+  injector: Injector,
+): {createdEffects: EffectRef[]; handledKeys: string[]} {
+  const createdEffects: EffectRef[] = [];
+  const handledKeys: string[] = [];
+  const mirror = route.component ? reflectComponentType(route.component) : null;
+  if (!mirror) {
+    return {createdEffects, handledKeys};
+  }
+
+  for (const {templateName} of mirror.inputs) {
+    const resource = route.resources?.[templateName];
+    if (!resource || !(resource as InternalRouterResource)[BLOCKING_SYMBOL]) {
+      continue;
+    }
+
+    const effectRef = effect(
+      () => {
+        componentRef.setInput(templateName, resource.value());
+      },
+      {injector},
+    );
+    createdEffects.push(effectRef);
+    handledKeys.push(templateName);
+  }
+
+  return {createdEffects, handledKeys};
 }

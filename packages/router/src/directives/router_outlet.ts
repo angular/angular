@@ -10,6 +10,8 @@ import {
   ChangeDetectorRef,
   ComponentRef,
   Directive,
+  effect,
+  EffectRef,
   EnvironmentInjector,
   EventEmitter,
   inject,
@@ -27,14 +29,15 @@ import {
   SimpleChanges,
   ViewContainerRef,
 } from '@angular/core';
-import {combineLatest, Observable, of, Subscription} from 'rxjs';
+import {combineLatest, of, Subscription} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from '../errors';
+import type {RouterResourcesFeatureImplementation} from '../router_resource_feature';
 import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
-import {Params, PRIMARY_OUTLET} from '../shared';
+import {PRIMARY_OUTLET} from '../shared';
 import {ComponentInputBindingOptions} from '../router_config';
 
 /**
@@ -364,7 +367,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this.activated = ref;
     this._activatedRoute = activatedRoute;
     this.location.insert(ref.hostView);
-    this.inputBinder?.bindActivatedRouteToOutletComponent(this);
+    this.inputBinder?.bindActivatedRouteToOutletComponent(this, this.location.injector);
     this.attachEvents.emit(ref.instance);
   }
 
@@ -406,7 +409,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
-    this.inputBinder?.bindActivatedRouteToOutletComponent(this);
+    this.inputBinder?.bindActivatedRouteToOutletComponent(this, this.location.injector);
     this.activateEvents.emit(this.activated.instance);
   }
 }
@@ -459,24 +462,48 @@ export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>(
 export class RoutedComponentInputBinder {
   private outletDataSubscriptions = new Map<RouterOutlet, Subscription>();
   private outletSeenKeys = new Map<RouterOutlet, Set<string>>();
+  private outletEffects = new Map<RouterOutlet, EffectRef[]>();
 
-  constructor(private options: ComponentInputBindingOptions) {
+  constructor(
+    private options: ComponentInputBindingOptions,
+    private feature: RouterResourcesFeatureImplementation | null = null,
+  ) {
     this.options.queryParams ??= true;
   }
 
-  bindActivatedRouteToOutletComponent(outlet: RouterOutlet): void {
+  bindActivatedRouteToOutletComponent(outlet: RouterOutlet, injector: Injector): void {
     this.unsubscribeFromRouteData(outlet);
-    this.subscribeToRouteData(outlet);
+    this.subscribeToRouteData(outlet, injector);
   }
 
   unsubscribeFromRouteData(outlet: RouterOutlet): void {
     this.outletDataSubscriptions.get(outlet)?.unsubscribe();
     this.outletDataSubscriptions.delete(outlet);
     this.outletSeenKeys.delete(outlet);
+    this.outletEffects.get(outlet)?.forEach((effect) => effect.destroy());
+    this.outletEffects.delete(outlet);
   }
 
-  private subscribeToRouteData(outlet: RouterOutlet) {
+  private subscribeToRouteData(outlet: RouterOutlet, injector: Injector) {
     const {activatedRoute} = outlet;
+
+    const effects: EffectRef[] = [];
+    let keysBoundToBlockingResources: string[] = [];
+
+    if (this.feature?.createResourceOutletBindingEffects && outlet.activatedComponentRef) {
+      const {handledKeys, createdEffects} = this.feature.createResourceOutletBindingEffects(
+        outlet.activatedComponentRef,
+        activatedRoute,
+        injector,
+      );
+      effects.push(...createdEffects);
+      keysBoundToBlockingResources = handledKeys;
+    }
+
+    if (effects.length > 0) {
+      this.outletEffects.set(outlet, effects);
+    }
+
     const dataSubscription = combineLatest([
       this.options.queryParams ? activatedRoute.queryParams : of({}),
       activatedRoute.params,
@@ -484,7 +511,14 @@ export class RoutedComponentInputBinder {
     ])
       .pipe(
         switchMap(([queryParams, params, data], index) => {
-          data = {...queryParams, ...params, ...data};
+          // Precedence when keys collide is determined by the spread order:
+          // resources > data (including resolvers) > path params > query params
+          data = {
+            ...queryParams,
+            ...params,
+            ...data,
+            ...(activatedRoute.resources || {}),
+          };
           // Get the first result from the data subscription synchronously so it's available to
           // the component as soon as possible (and doesn't require a second change detection).
           if (index === 0) {
@@ -509,8 +543,8 @@ export class RoutedComponentInputBinder {
           return;
         }
 
-        const mirror = reflectComponentType(activatedRoute.component);
-        if (!mirror) {
+        const currentMirror = reflectComponentType(activatedRoute.component);
+        if (!currentMirror) {
           this.unsubscribeFromRouteData(outlet);
           return;
         }
@@ -527,7 +561,10 @@ export class RoutedComponentInputBinder {
 
         const behavior = this.options.unmatchedInputBehavior ?? 'alwaysUndefined';
 
-        for (const {templateName} of mirror.inputs) {
+        for (const {templateName} of currentMirror.inputs) {
+          if (keysBoundToBlockingResources.includes(templateName)) {
+            continue;
+          }
           const value = data[templateName];
           if (value !== undefined || behavior === 'alwaysUndefined' || seenKeys.has(templateName)) {
             outlet.activatedComponentRef.setInput(templateName, value);
