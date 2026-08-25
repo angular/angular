@@ -9,6 +9,8 @@
 import {EventEmitter} from '@angular/core';
 import {HydrationStatus} from '../../../../../protocol';
 import {positionOverlayElement, setLabelElementVisibility} from './dom';
+import {debugLog} from '../utils/log';
+import {AngularDevtoolsError} from '../utils/error';
 
 //
 // Types & classes
@@ -112,7 +114,7 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
     // Getting the warning, means that there might be a problem
     // with the code (i.e. there is chance for a memory leak).
     if (this.destroyed) {
-      console.warn('The highlight has already been destroyed. Check references storing.');
+      debugLog.warn('The highlight has already been destroyed. Check references storing.');
       return;
     }
     this.destroyEvents.emit([this]);
@@ -152,7 +154,7 @@ function validateTemplateLabels(template: HighlightTemplate) {
 
   for (const {x} of Object.values(template.labels)) {
     if (usedXPos.has(x)) {
-      throw new Error(
+      throw new AngularDevtoolsError(
         `The template (type: ${template.type}) has multiple labels with '${x}' X position.`,
       );
     }
@@ -219,7 +221,7 @@ function createHydrationHighlightTemplate(
           } else if (type === 'skipped') {
             icon = HYDRATION_SKIPPED_SVG;
           } else {
-            throw new Error(`No icon specified for type ${type}`);
+            throw new AngularDevtoolsError(`No icon specified for type ${type}`);
           }
 
           const svg = new DOMParser().parseFromString(icon, 'image/svg+xml')

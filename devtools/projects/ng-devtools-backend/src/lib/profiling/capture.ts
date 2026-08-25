@@ -22,6 +22,8 @@ import {DirectiveForestManager, getDirectiveForestManager} from '../directive-fo
 import {IdentityTracker} from '../directive-forest/identity-tracker/identity-tracker';
 import {getProfiler, Hooks} from './profiler';
 import {getDirectiveName} from '../directive-forest/component-tree/component-tree';
+import {debugLog} from '../shared/utils/log';
+import {AngularDevtoolsError} from '../shared/utils/error';
 
 let inProgress = false;
 let inChangeDetection = false;
@@ -36,7 +38,7 @@ const DIRECTIVE_CONTROL_FLOW: {[key in ControlFlowBlockType]: ElementProfile['ty
 
 export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   if (inProgress) {
-    throw new Error('Recording already in progress');
+    throw new AngularDevtoolsError('Recording already in progress');
   }
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
@@ -131,7 +133,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
         profile.changeDetection = current + duration;
         frameDuration += duration;
       } else {
-        console.warn('Could not find profile for', component);
+        debugLog.warn('Could not find profile for', component);
       }
     },
     onDestroy(
@@ -183,7 +185,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
         return;
       }
       if (!dir) {
-        console.warn('Could not find directive in onLifecycleHook callback', directive, hookName);
+        debugLog.warn('Could not find directive in onLifecycleHook callback', directive, hookName);
         return;
       }
       const duration = performance.now() - startTimestamp;
@@ -216,7 +218,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
         return;
       }
       if (!entry) {
-        console.warn(
+        debugLog.warn(
           'Could not find directive or component in onOutputEnd callback',
           componentOrDirective,
           outputName,
@@ -272,7 +274,7 @@ const insertElementProfile = (
     const pos = position[i];
     if (!frames[pos]) {
       // TODO(mgechev): consider how to ensure we don't hit this case
-      console.warn('Unable to find parent node for', profile, original);
+      debugLog.warn('Unable to find parent node for', profile, original);
       return;
     }
     frames = frames[pos].children;
