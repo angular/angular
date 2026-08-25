@@ -908,7 +908,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       text: string;
       start: number;
       end: number;
-      sourceFile: ts.SourceFile;
+      sourceFile?: ts.SourceFile;
     }[],
   ): NgTemplateDiagnostic<T> {
     const sfPath = absoluteFromSourceFile(clazz.getSourceFile());

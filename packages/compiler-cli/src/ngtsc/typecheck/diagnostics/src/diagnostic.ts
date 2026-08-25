@@ -25,6 +25,19 @@ interface DeprecatedDiagnosticInfo {
 /**
  * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
  *
+ * @param id The unique type-check ID for the component.
+ * @param mapping The source mapping for the template (direct, indirect, or external).
+ * @param span The source span within the template where the diagnostic occurred.
+ * @param category The diagnostic category (Error, Warning, Suggestion, Message).
+ * @param code The numeric Angular error code.
+ * @param messageText The primary diagnostic message.
+ * @param relatedMessages Optional list of secondary related messages:
+ *   - Omit `sourceFile` (leave `undefined`) when `start` and `end` offsets correspond to
+ *     positions within the template itself. The diagnostic will automatically associate them
+ *     with the template source file (such as the parsed external HTML file or inline template node).
+ *   - Specify `sourceFile` only when the message points to an external file (e.g., a component,
+ *     directive, or pipe TypeScript declaration file) where `start` and `end` are offsets within
+ *     that specific source file.
  * @param deprecatedDiagInfo Optional information about deprecation and related messages.
  */
 export function makeTemplateDiagnostic(
@@ -38,7 +51,7 @@ export function makeTemplateDiagnostic(
     text: string;
     start: number;
     end: number;
-    sourceFile: ts.SourceFile;
+    sourceFile?: ts.SourceFile;
   }[],
   deprecatedDiagInfo?: DeprecatedDiagnosticInfo,
 ): TemplateDiagnostic {
@@ -49,7 +62,7 @@ export function makeTemplateDiagnostic(
         relatedInformation.push({
           category: ts.DiagnosticCategory.Message,
           code: 0,
-          file: relatedMessage.sourceFile,
+          file: relatedMessage.sourceFile ?? mapping.node.getSourceFile(),
           start: relatedMessage.start,
           length: relatedMessage.end - relatedMessage.start,
           messageText: relatedMessage.text,
@@ -89,24 +102,24 @@ export function makeTemplateDiagnostic(
         ? `${componentSf.fileName} (${componentName} template)`
         : mapping.templateUrl;
 
-    let relatedInformation: ts.DiagnosticRelatedInformation[] = [];
-    if (relatedMessages !== undefined) {
-      for (const relatedMessage of relatedMessages) {
-        relatedInformation.push({
-          category: ts.DiagnosticCategory.Message,
-          code: 0,
-          file: relatedMessage.sourceFile,
-          start: relatedMessage.start,
-          length: relatedMessage.end - relatedMessage.start,
-          messageText: relatedMessage.text,
-        });
-      }
-    }
-
     let sf: ts.SourceFile;
     try {
       sf = getParsedTemplateSourceFile(fileName, mapping);
     } catch (e) {
+      let relatedInformation: ts.DiagnosticRelatedInformation[] = [];
+      if (relatedMessages !== undefined) {
+        for (const relatedMessage of relatedMessages) {
+          relatedInformation.push({
+            category: ts.DiagnosticCategory.Message,
+            code: 0,
+            file: relatedMessage.sourceFile ?? componentSf,
+            start: relatedMessage.start,
+            length: relatedMessage.end - relatedMessage.start,
+            messageText: relatedMessage.text,
+          });
+        }
+      }
+
       const failureChain = makeDiagnosticChain(
         `Failed to report an error in '${fileName}' at ${span.start.line + 1}:${
           span.start.col + 1
@@ -128,6 +141,20 @@ export function makeTemplateDiagnostic(
         relatedInformation,
         reportsDeprecated: deprecatedDiagInfo?.reportsDeprecated,
       };
+    }
+
+    let relatedInformation: ts.DiagnosticRelatedInformation[] = [];
+    if (relatedMessages !== undefined) {
+      for (const relatedMessage of relatedMessages) {
+        relatedInformation.push({
+          category: ts.DiagnosticCategory.Message,
+          code: 0,
+          file: relatedMessage.sourceFile ?? sf,
+          start: relatedMessage.start,
+          length: relatedMessage.end - relatedMessage.start,
+          messageText: relatedMessage.text,
+        });
+      }
     }
 
     let typeForMessage: string;
