@@ -46,6 +46,7 @@
       "errorHandler",
       "getBaseElementHref",
       "getDOM",
+      "getStyleDeclaration",
       "initDomAdapter",
       "isTemplateNode",
       "parseCookieValue",
