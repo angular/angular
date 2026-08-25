@@ -144,7 +144,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         );
         break;
       case ir.OpKind.ForeignComponent:
-        const propsExpr =
+        const propsMap =
           op.props.size > 0
             ? o.literalMap(
                 Array.from(op.props.entries()).map(([key, value]) => ({
@@ -154,6 +154,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 })),
               )
             : null;
+        const propsExpr = propsMap !== null ? o.arrowFn([], propsMap) : null;
         ir.OpList.replace(
           op,
           ng.foreignComponent(op.handle.slot!, o.literal(op.constIndex), propsExpr, op.sourceSpan),
