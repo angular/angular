@@ -427,7 +427,10 @@ describe('component input binding', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([{path: '**', component: MyComponent}], withComponentInputBinding()),
+        provideRouter(
+          [{path: '**', component: MyComponent}],
+          withComponentInputBinding({unmatchedInputBehavior: 'alwaysUndefined'}),
+        ),
       ],
     });
     const harness = await RouterTestingHarness.create();

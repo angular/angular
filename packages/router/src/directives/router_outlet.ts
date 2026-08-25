@@ -37,6 +37,8 @@ import {ActivatedRoute} from '../router_state';
 import {Params, PRIMARY_OUTLET} from '../shared';
 import {ComponentInputBindingOptions} from '../router_config';
 
+const UNMATCHED_INPUT_DEFAULT = 'undefinedIfStale';
+
 /**
  * An `InjectionToken` provided by the `RouterOutlet` and can be set using the `routerOutletData`
  * input.
@@ -525,12 +527,11 @@ export class RoutedComponentInputBinder {
           seenKeys.add(key);
         }
 
-        const behavior = this.options.unmatchedInputBehavior ?? 'alwaysUndefined';
+        const behavior = this.options.unmatchedInputBehavior ?? UNMATCHED_INPUT_DEFAULT;
 
         for (const {templateName} of mirror.inputs) {
-          const value = data[templateName];
-          if (value !== undefined || behavior === 'alwaysUndefined' || seenKeys.has(templateName)) {
-            outlet.activatedComponentRef.setInput(templateName, value);
+          if (behavior === 'alwaysUndefined' || seenKeys.has(templateName)) {
+            outlet.activatedComponentRef.setInput(templateName, data[templateName]);
           }
         }
       });
