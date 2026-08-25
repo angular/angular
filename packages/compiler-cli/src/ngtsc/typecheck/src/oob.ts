@@ -312,8 +312,12 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     const errorMsg = `The property and event halves of the two-way binding '${input.name}' are not bound to the same target.
             Find more at ${DOC_PAGE_BASE_URL}/guide/templates/two-way-binding`;
 
-    const relatedMessages: {text: string; start: number; end: number; sourceFile: ts.SourceFile}[] =
-      [];
+    const relatedMessages: {
+      text: string;
+      start: number;
+      end: number;
+      sourceFile?: ts.SourceFile;
+    }[] = [];
 
     if (inputConsumer.ref.nodeNameSpan && inputConsumer.ref.nodeFilePath) {
       const sf = this.getSourceFile(inputConsumer.ref.nodeFilePath);
@@ -336,7 +340,6 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         text: message,
         start: outputConsumer.sourceSpan.start.offset + 1,
         end: outputConsumer.sourceSpan.start.offset + outputConsumer.name.length + 1,
-        sourceFile: mapping.node.getSourceFile(),
       });
     } else {
       if (outputConsumer.ref.nodeNameSpan && outputConsumer.ref.nodeFilePath) {

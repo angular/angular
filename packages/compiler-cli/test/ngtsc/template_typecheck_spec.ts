@@ -2659,6 +2659,112 @@ runInEachFileSystem(() => {
           'Child nodes are defined here.',
         );
       });
+
+      it('should detect duplicate @content blocks in an external template', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            templateUrl: './test.html',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        env.write(
+          'test.html',
+          '<FancyButton> @content (icon) {} @content (icon) {} </FancyButton>',
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_DECLARATION));
+        expect(diags[0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(2);
+        expect(diags[0].relatedInformation![0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toEqual(
+          '@content (icon) {}',
+        );
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The @content block 'icon' was first defined here.",
+        );
+      });
+
+      it('should detect a conflict between a @content block and property binding in an external template', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            templateUrl: './test.html',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            myIcon = document.createTextNode('circle');
+          }
+        `,
+        );
+        env.write(
+          'test.html',
+          '<FancyButton [icon]="myIcon"> @content (icon) {square} </FancyButton>',
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {square}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(2);
+        expect(diags[0].relatedInformation![0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toEqual(
+          '[icon]="myIcon"',
+        );
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The property 'icon' is defined here.",
+        );
+      });
+
+      it('should detect a conflict between implicit children and [children] binding in an external template', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            templateUrl: './test.html',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            myChildren = [];
+          }
+        `,
+        );
+        env.write(
+          'test.html',
+          '<FancyButton [children]="myChildren"> <div>child</div> </FancyButton>',
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[children]="myChildren"');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(2);
+        expect(diags[0].relatedInformation![0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toEqual(
+          '<div>child</div>',
+        );
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          'Child nodes are defined here.',
+        );
+      });
     });
 
     it('should detect a duplicate variable declaration', () => {

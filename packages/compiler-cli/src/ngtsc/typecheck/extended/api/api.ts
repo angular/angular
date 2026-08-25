@@ -51,6 +51,10 @@ export interface TemplateContext<Code extends ErrorCode> {
   /**
    * Creates a template diagnostic with the given information for the template being processed and
    * using the diagnostic category configured for the extended template diagnostic.
+   *
+   * @param relatedInformation Optional list of secondary related messages:
+   *   - Omit `sourceFile` when `start` and `end` offsets are locations within the template itself.
+   *   - Specify `sourceFile` only when referencing a separate file (e.g. directive class declaration).
    */
   makeTemplateDiagnostic(
     sourceSpan: ParseSourceSpan,
@@ -59,7 +63,7 @@ export interface TemplateContext<Code extends ErrorCode> {
       text: string;
       start: number;
       end: number;
-      sourceFile: ts.SourceFile;
+      sourceFile?: ts.SourceFile;
     }[],
   ): NgTemplateDiagnostic<Code>;
 }
@@ -80,9 +84,9 @@ export interface TemplateCheckFactory<
 /**
  * This abstract class provides a base implementation for the run method.
  */
-export abstract class TemplateCheckWithVisitor<Code extends ErrorCode>
-  implements TemplateCheck<Code>
-{
+export abstract class TemplateCheckWithVisitor<
+  Code extends ErrorCode,
+> implements TemplateCheck<Code> {
   abstract code: Code;
 
   /**
