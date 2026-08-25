@@ -13,15 +13,20 @@
         </div>
       </div>
 
-      @if (!isUwu) {
-        <div class="title">
-          <h2>Productivity<br />Meets scalability</h2>
-          <h3>The framework for building scalable web apps with confidence</h3>
-        </div>
-      } @else {
+      @if (isUwu) {
         <!-- UwU logo -->
         <div class="uwu">
           <img src="assets/images/uwu.png" alt="Angular logo" />
+        </div>
+      } @else if (angieSrc) {
+        <!-- Angie mascot -->
+        <div class="angie">
+          <img [src]="angieSrc" alt="Angie, the Angular mascot" />
+        </div>
+      } @else {
+        <div class="title">
+          <h2>Productivity<br />Meets scalability</h2>
+          <h3>The framework for building scalable web apps with confidence</h3>
         </div>
       }
 

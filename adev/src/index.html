@@ -25,16 +25,21 @@
 
       if (location.search.includes('uwu')) {
         documentClassList.add('uwu');
+      } else if (location.search.includes('angie')) {
+        documentClassList.add('angie');
       }
     </script>
     <style>
-      .uwu-logo {
+      .uwu-logo,
+      .angie-logo {
         display: none;
       }
-      html.uwu .angular-logo {
+      html.uwu .angular-logo,
+      html.angie .angular-logo {
         display: none;
       }
-      html.uwu .uwu-logo {
+      html.uwu .uwu-logo,
+      html.angie .angie-logo {
         display: block !important;
       }
     </style>
