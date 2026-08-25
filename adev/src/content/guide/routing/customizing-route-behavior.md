@@ -29,7 +29,7 @@ provideRouter(routes, withRouterConfig({canceledNavigationResolution: 'computed'
 
 ### React to same-URL navigations
 
-`onSameUrlNavigation` configures what should happen when the user asks to navigate to the current URL. The default `'ignore'` skips work, while `'reload'` re-runs guards and resolvers and refreshes component instances.
+`onSameUrlNavigation` configures what should happen when the user asks to navigate to the current URL. The default `'ignore'` skips work, while `'reload'` reprocesses the navigation to the current URL. Whether guards and resolvers run again is additionally controlled by each route's `runGuardsAndResolvers` configuration, while component instance reuse is controlled separately by `RouteReuseStrategy`.
 
 This is useful when you want repeated clicks on a list filter, left-nav item, or refresh button to trigger new data retrieval even though the URL does not change.
 
