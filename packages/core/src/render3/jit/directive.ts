@@ -91,6 +91,13 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           type: type,
         });
 
+        if (metadata.foreignImports !== undefined) {
+          throw new Error(
+            `Foreign components are not supported in JIT mode. ` +
+              `Component '${type.name}' cannot specify 'foreignImports'.`,
+          );
+        }
+
         if (componentNeedsResolution(metadata)) {
           const error = [`Component '${type.name}' is not resolved:`];
           if (metadata.templateUrl) {
