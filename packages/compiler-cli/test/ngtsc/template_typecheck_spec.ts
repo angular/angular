@@ -3623,26 +3623,56 @@ runInEachFileSystem(() => {
           });
         });
 
-        it('should produce diagnostics for inputs which assign to readonly, private, and protected fields', () => {
+        it('should produce a diagnostic for inputs which assign to a readonly field, but allow private and protected fields', () => {
           env.write('test.ts', correctTypeInputsToRestrictedFields);
           expectIllegalAssignmentErrors(env.driveDiagnostics());
         });
 
-        it('should produce diagnostics for inputs which assign to readonly, private, and protected fields inherited from a base class', () => {
+        it('should produce a diagnostic for inputs which assign to a readonly field inherited from a base class, but allow private and protected fields', () => {
           env.write('test.ts', correctInputsToRestrictedFieldsFromBaseClass);
           expectIllegalAssignmentErrors(env.driveDiagnostics());
         });
 
         function expectIllegalAssignmentErrors(diags: ReadonlyArray<ts.Diagnostic>) {
-          expect(diags.length).toBe(3);
+          expect(diags.length).toBe(1);
           const actualMessages = diags.map((d) => d.messageText).sort();
           const expectedMessages = [
-            `Property 'protectedField' is protected and only accessible within class 'TestDir' and its subclasses.`,
-            `Property 'privateField' is private and only accessible within class 'TestDir'.`,
             `Cannot assign to 'readonlyField' because it is a read-only property.`,
           ].sort();
           expect(actualMessages).toEqual(expectedMessages);
         }
+
+        it('should allow binding to private and protected signal inputs, models, and outputs', () => {
+          env.write(
+            'test.ts',
+            `
+            import {Component, Directive, input, model, output} from '@angular/core';
+
+            @Directive({
+              selector: '[dir]',
+            })
+            export class TestDir {
+              protected protectedInput = input<string>();
+              private privateInput = input<string>();
+              protected protectedModel = model<string>();
+              private privateModel = model<string>();
+              protected protectedOutput = output<string>();
+              private privateOutput = output<string>();
+            }
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [protectedInput]="value" [privateInput]="value" [(protectedModel)]="value" [(privateModel)]="value" (protectedOutput)="value = $event" (privateOutput)="value = $event"></div>',
+              imports: [TestDir],
+            })
+            export class FooCmp {
+              value = "value";
+            }
+            `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
 
         it('should report invalid type assignment when field name is not a valid JS identifier', () => {
           env.write(

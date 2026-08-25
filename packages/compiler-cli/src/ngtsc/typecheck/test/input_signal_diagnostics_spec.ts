@@ -104,24 +104,20 @@ runInEachFileSystem(() => {
       },
       // restricted fields
       {
-        id: 'disallows access to private input',
+        id: 'allow access to private input',
         inputs: {
           pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'private'},
         },
         template: `<div dir [pattern]="'works'">`,
-        expected: [
-          `TestComponent.html(1, 11): Property 'pattern' is private and only accessible within class 'Dir'.`,
-        ],
+        expected: [],
       },
       {
-        id: 'disallows access to protected input',
+        id: 'allow access to protected input',
         inputs: {
           pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'protected'},
         },
         template: `<div dir [pattern]="'works'">`,
-        expected: [
-          `TestComponent.html(1, 11): Property 'pattern' is protected and only accessible within class 'Dir' and its subclasses.`,
-        ],
+        expected: [],
       },
       {
         // NOTE FOR REVIEWER: This is something different with input signals. The framework

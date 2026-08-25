@@ -278,7 +278,7 @@ runInEachFileSystem(() => {
         ]);
       });
 
-      it('should report an error when using a `private` field', () => {
+      it('should allow an output using a `private` field', () => {
         env.write(
           'test.ts',
           `
@@ -295,14 +295,7 @@ runInEachFileSystem(() => {
         );
         const diagnostics = env.driveDiagnostics();
 
-        expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining<ts.Diagnostic>({
-            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-              messageText: `Cannot use "output" on a class member that is declared as private.`,
-            }),
-          }),
-        ]);
+        expect(diagnostics.length).toBe(0);
       });
 
       it('should allow an output using a `protected` field', () => {

@@ -22,11 +22,11 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
 // accessing `protected` or `private` members works at runtime, so we can allow
 // such outputs that may not want to expose the `OutputRef` as part of the
 // component API, programmatically.
-// Note: `private` is omitted intentionally as this would be a conceptual confusion point.
 const allowedAccessLevels = [
   ClassMemberAccessLevel.PublicWritable,
   ClassMemberAccessLevel.PublicReadonly,
   ClassMemberAccessLevel.Protected,
+  ClassMemberAccessLevel.Private,
 ];
 
 /** Possible functions that can declare an output. */

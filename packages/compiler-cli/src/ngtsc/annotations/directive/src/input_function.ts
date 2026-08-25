@@ -24,11 +24,11 @@ export const INPUT_INITIALIZER_FN: InitializerApiFunction = {
   // Conceptually, the fields need to be publicly readable, but in practice,
   // accessing `protected` or `private` members works at runtime, so we can allow
   // cases where the input is intentionally not part of the public API, programmatically.
-  // Note: `private` is omitted intentionally as this would be a conceptual confusion point.
   allowedAccessLevels: [
     ClassMemberAccessLevel.PublicWritable,
     ClassMemberAccessLevel.PublicReadonly,
     ClassMemberAccessLevel.Protected,
+    ClassMemberAccessLevel.Private,
   ],
 };
 

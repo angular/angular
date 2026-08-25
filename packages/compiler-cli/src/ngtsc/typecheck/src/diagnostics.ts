@@ -15,10 +15,15 @@ import {getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 /**
  * This function will the check the source text of the TCB instead of doing a more expensive AST traversal (via getTokenAtPosition)
  */
-function isAccessOnThis(text: string, start: number): boolean {
-  return (
-    text.substring(start - 5, start) === 'this.' || text.substring(start - 7, start) === '(this).'
-  );
+function isAccessAllowed(text: string, start: number): boolean {
+  if (
+    text.substring(start - 5, start) === 'this.' ||
+    text.substring(start - 7, start) === '(this).'
+  ) {
+    return true;
+  }
+  const snippet = text.substring(Math.max(0, start - 15), start);
+  return /_t\d+\.$/.test(snippet);
 }
 
 /**
@@ -36,10 +41,14 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
     return false;
   } else if (code === 7006 /* Parameter '$event' implicitly has an 'any' type. */) {
     return false;
-  } else if (code === 2341 /* Property 'X' is private and only accessible within class */) {
+  } else if (
+    code === 2341 /* Property 'X' is private and only accessible within class */ ||
+    code ===
+      2445 /* Property 'X' is protected and only accessible within class 'Y' and its subclasses. */
+  ) {
     if (diagnostic.file !== undefined && diagnostic.start !== undefined) {
-      // Here we're discarding private property reads error to allow them to be used in template expressions
-      if (isAccessOnThis(diagnostic.file.text, diagnostic.start)) {
+      // Here we're discarding private/protected property reads error to allow them to be used in template expressions
+      if (isAccessAllowed(diagnostic.file.text, diagnostic.start)) {
         return false;
       }
     }

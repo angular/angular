@@ -435,7 +435,7 @@ runInEachFileSystem(() => {
         ]);
       });
 
-      it('should error when declared using a `private` field', () => {
+      it('should allow declaring using a `private` field', () => {
         env.write(
           'test.ts',
           `
@@ -451,14 +451,7 @@ runInEachFileSystem(() => {
         );
 
         const diagnostics = env.driveDiagnostics();
-        expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([
-          jasmine.objectContaining<ts.Diagnostic>({
-            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-              messageText: `Cannot use "input" on a class member that is declared as private.`,
-            }),
-          }),
-        ]);
+        expect(diagnostics.length).toBe(0);
       });
 
       it('should allow declaring using a `protected` field', () => {

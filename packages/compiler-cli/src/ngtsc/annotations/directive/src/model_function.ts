@@ -28,6 +28,7 @@ export const MODEL_INITIALIZER_FN: InitializerApiFunction = {
     ClassMemberAccessLevel.PublicWritable,
     ClassMemberAccessLevel.PublicReadonly,
     ClassMemberAccessLevel.Protected,
+    ClassMemberAccessLevel.Private,
   ],
 };
 
@@ -56,8 +57,7 @@ export function tryParseSignalModelMapping(
   validateAccessOfInitializerApiMember(model, member);
 
   const optionsNode = (model.isRequired ? model.call.arguments[0] : model.call.arguments[1]) as
-    | ts.Expression
-    | undefined;
+    ts.Expression | undefined;
   const options =
     optionsNode !== undefined ? parseAndValidateInputAndOutputOptions(optionsNode) : null;
   const classPropertyName = member.name;
