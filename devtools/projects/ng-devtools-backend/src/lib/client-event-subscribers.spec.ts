@@ -43,7 +43,10 @@ describe('ClientEventSubscriber', () => {
   });
 
   it('should setup inspector', () => {
-    subscribeToClientEvents(messageBusMock, {profiler: MockProfiler});
+    subscribeToClientEvents(messageBusMock, {
+      devtoolsDevMode: true,
+      depsForTestOnly: {profiler: MockProfiler},
+    });
 
     expect(messageBusMock.on).toHaveBeenCalledWith('inspectorStart', jasmine.any(Function));
     expect(messageBusMock.on).toHaveBeenCalledWith('inspectorEnd', jasmine.any(Function));

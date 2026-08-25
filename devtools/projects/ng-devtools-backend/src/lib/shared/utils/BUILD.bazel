@@ -23,13 +23,25 @@ ts_project(
     ],
 )
 
+ts_project(
+    name = "log",
+    srcs = ["log.ts"],
+)
+
+ts_project(
+    name = "error",
+    srcs = ["error.ts"],
+)
+
 ts_test_library(
     name = "test_lib",
     srcs = [
+        "log.spec.ts",
         "serialization.spec.ts",
         "signal-graph-ref.spec.ts",
     ],
     deps = [
+        ":log",
         ":serialization",
         ":signal-graph-ref",
         "//:node_modules/@angular/core",

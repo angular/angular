@@ -53,7 +53,7 @@ import {
 import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
 import {disablePerformanceTrack, enablePerformanceTrack} from './profiling/performance-track';
 import {getProfiler, Profiler} from './profiling/profiler';
-import {ComponentTreeNode} from './shared/interfaces';
+import {ComponentTreeNode, DevtoolsBackendConfig} from './shared/interfaces';
 import {
   ngDebugClient,
   ngDebugDependencyInjectionApiIsSupported,
@@ -75,16 +75,20 @@ import {
   removeHydrationHighlights,
 } from './hydration/hydration-highlighting';
 import {removeAllHighlights} from './shared/highlighter';
+import {debugLog, log, setupLogging} from './shared/utils/log';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
-  depsForTestOnly?: {
-    profiler?: new (...args: any[]) => Profiler;
+  config?: DevtoolsBackendConfig & {
+    depsForTestOnly?: {
+      profiler?: new (...args: any[]) => Profiler;
+    };
   },
 ): void => {
   const inspector: InspectorRef = {ref: null};
+  setupLogging(config?.devtoolsDevMode ?? false);
 
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
@@ -123,9 +127,9 @@ export const subscribeToClientEvents = (
   const SAFE_LOG_LEVELS = new Set(['log', 'info', 'warn', 'debug', 'error']);
   messageBus.on('log', ({message, level}) => {
     if (SAFE_LOG_LEVELS.has(level)) {
-      console[level](`[Angular DevTools]: ${message}`);
+      log[level](message);
     } else {
-      console.warn(`[Angular DevTools]: Invalid log level attempted: ${level}`);
+      debugLog.warn(`Invalid log level attempted: ${level}`);
     }
   });
 
@@ -141,7 +145,7 @@ export const subscribeToClientEvents = (
     // update requests, instead we want to request an update at most
     // once every 250ms
     runOutsideAngular(() => {
-      getProfiler(depsForTestOnly)
+      getProfiler(config?.depsForTestOnly)
         .changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
@@ -200,7 +204,7 @@ const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string)
   if (router) {
     ngDebugClient().ɵnavigateByUrl?.(router, path);
   } else {
-    console.warn('Router not found or navigateByUrl method not available');
+    log.warn('Router not found or navigateByUrl method not available');
   }
 };
 
@@ -257,7 +261,7 @@ const getNestedPropertiesCallback =
     for (const prop of propPath) {
       data = unwrapSignal(data[prop]);
       if (!data) {
-        console.error('Cannot access the properties', propPath, 'of', node);
+        log.error('Cannot access the properties', propPath, 'of', node);
       }
     }
     messageBus.emit('nestedProperties', [
@@ -315,7 +319,7 @@ const getSignalNestedPropertiesCallback =
     for (const prop of propPath) {
       data = (data as Record<string, object>)[prop];
       if (!data) {
-        console.error('Cannot access the properties', propPath, 'of', node);
+        log.error('Cannot access the properties', propPath, 'of', node);
       }
     }
     messageBus.emit('signalNestedProperties', [

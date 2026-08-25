@@ -7,6 +7,7 @@ ts_project(
     srcs = ["property-mutation.ts"],
     deps = [
         "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
     ],
 )
