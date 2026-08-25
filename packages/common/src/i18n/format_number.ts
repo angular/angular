@@ -43,7 +43,11 @@ function formatNumberToLocaleString(
   let isZero = false;
 
   if (!isFinite(value)) {
-    formattedText = getLocaleNumberSymbol(locale, NumberSymbol.Infinity);
+    // `Number.isNaN` (not `!isFinite`) so NaN uses the locale NaN symbol, not Infinity.
+    formattedText = getLocaleNumberSymbol(
+      locale,
+      Number.isNaN(value) ? NumberSymbol.NaN : NumberSymbol.Infinity,
+    );
   } else {
     let parsedNumber = parseNumber(value);
 
