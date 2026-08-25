@@ -415,6 +415,7 @@
       "getRootTViewTemplate",
       "getRuntimeErrorCode",
       "getSelectedIndex",
+      "getStyleDeclaration",
       "getStyleHost",
       "getTNode",
       "getTNodeFromLView",
