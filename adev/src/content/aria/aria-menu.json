@@ -255,7 +255,7 @@
         },
         {
           "name": "value",
-          "type": "InputSignal<V>",
+          "type": "InputSignal<V | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -264,7 +264,7 @@
           "description": "The value of the menu item.",
           "jsdocTags": [],
           "inputAlias": "value",
-          "isRequiredInput": true
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
@@ -622,7 +622,7 @@
         },
         {
           "name": "itemSelected",
-          "type": "OutputEmitterRef<V>",
+          "type": "OutputEmitterRef<V | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -840,7 +840,7 @@
         },
         {
           "name": "itemSelected",
-          "type": "OutputEmitterRef<V>",
+          "type": "OutputEmitterRef<V | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
