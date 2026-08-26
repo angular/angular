@@ -188,7 +188,7 @@ importers:
         version: 2.1.3
       karma-jasmine:
         specifier: ^5.0.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
       karma-sourcemap-loader:
         specifier: ^0.4.0
         version: 0.4.0
@@ -288,7 +288,7 @@ importers:
         version: 15.21.0(bufferutil@4.1.0)
       firebase-tools:
         specifier: ^15.0.0
-        version: 15.27.0(@cfworker/json-schema@4.1.1)(@types/node@20.19.43)(bufferutil@4.1.0)(encoding@0.1.13)(supports-color@11.0.0)
+        version: 15.27.0(@cfworker/json-schema@4.1.1)(@types/node@20.19.43)(bufferutil@4.1.0)(encoding@0.1.13)(supports-color@11.0.0)(utf-8-validate@6.0.6)
       get-tsconfig:
         specifier: ^4.10.1
         version: 4.14.2
@@ -306,7 +306,7 @@ importers:
         version: 2.2.1(supports-color@11.0.0)
       karma-jasmine-html-reporter:
         specifier: ^2.2.0
-        version: 2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
+        version: 2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
       prettier:
         specifier: ^3.8.0
         version: 3.9.6
@@ -552,7 +552,7 @@ importers:
         version: 2.2.1(supports-color@11.0.0)
       karma-jasmine:
         specifier: 5.1.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
       karma-jasmine-html-reporter:
         specifier: 2.3.0
         version: 2.3.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
@@ -17217,7 +17217,7 @@ snapshots:
       object.pick: 1.3.0
       parse-filepath: 1.0.2
 
-  firebase-tools@15.27.0(@cfworker/json-schema@4.1.1)(@types/node@20.19.43)(bufferutil@4.1.0)(encoding@0.1.13)(supports-color@11.0.0):
+  firebase-tools@15.27.0(@cfworker/json-schema@4.1.1)(@types/node@20.19.43)(bufferutil@4.1.0)(encoding@0.1.13)(supports-color@11.0.0)(utf-8-validate@6.0.6):
     dependencies:
       '@apphosting/common': 0.0.8
       '@electric-sql/pglite': 0.3.16
@@ -18978,19 +18978,19 @@ snapshots:
       is-wsl: 2.2.0
       which: 3.0.1
 
-  karma-jasmine-html-reporter@2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)):
+  karma-jasmine-html-reporter@2.2.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
     dependencies:
       jasmine-core: 6.3.0
       karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
-      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
+      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
 
   karma-jasmine-html-reporter@2.3.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
     dependencies:
       jasmine-core: 6.3.0
       karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
-      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
+      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
 
-  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)):
+  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
     dependencies:
       jasmine-core: 4.6.1
       karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
