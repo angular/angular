@@ -51,6 +51,7 @@ ng_project(
         "//packages/core/src/reflection",
         "//packages/core/src/util",
         "//packages/core/third_party/@mcp-b/webmcp-types",
+        "//packages/core/third_party/@modelcontextprotocol/server",
     ],
 )
 
@@ -70,15 +71,19 @@ ng_package(
         # Don't bundle vendored `@mcp-b/webmcp-types` dependency.
         "../third_party/@mcp-b/webmcp-types",
         "../../third_party/@mcp-b/webmcp-types",
+        "../third_party/@modelcontextprotocol/server",
+        "../../third_party/@modelcontextprotocol/server",
     ],
     nested_packages = [
         "//packages/core/schematics:npm_package",
         "//packages/core/third_party/@mcp-b/webmcp-types",
+        "//packages/core/third_party/@modelcontextprotocol/server",
     ],
     package = "@angular/core",
     substitutions = {
         # Link `@mcp-b/webmcp-types` to the vendored package.
         "\\./third_party/@mcp-b/webmcp-types": "../third_party/@mcp-b/webmcp-types/index.js",
+        "\\./third_party/@modelcontextprotocol/server": "../third_party/@modelcontextprotocol/server/index.js",
     },
     tags = [
         "release-with-framework",

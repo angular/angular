@@ -78,5 +78,15 @@ export async function declareExperimentalWebMcpTool<
   // Unregister when the associated `Injector` is destroyed.
   destroyRef.onDestroy(() => void abortCtrl.abort());
 
-  await modelContext.registerTool(wrappedTool, {signal: abortCtrl.signal});
+  try {
+    await modelContext.registerTool(wrappedTool, {signal: abortCtrl.signal});
+  } catch (error: unknown) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      // This happens when an Injector is created and then immediately destroyed
+      // such that the onDestroy above gets called before registerTool resolves
+      // We don't mind swallowing the error in this case.
+      return;
+    }
+    throw error;
+  }
 }

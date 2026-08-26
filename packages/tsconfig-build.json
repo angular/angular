@@ -17,7 +17,7 @@
     "moduleResolution": "bundler",
     "module": "esnext",
     "target": "es2022",
-    "lib": ["es2022", "dom", "dom.iterable", "es2024.promise"],
+    "lib": ["es2022", "es2024.promise", "dom", "dom.iterable"],
     "skipLibCheck": true,
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
     "types": [],

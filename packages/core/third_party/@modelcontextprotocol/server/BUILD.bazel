@@ -1,0 +1,10 @@
+load("//tools:defaults.bzl", "js_library")
+
+js_library(
+    name = "server",
+    srcs = [
+        "index.d.ts",
+        "package.json",
+    ],
+    visibility = ["//packages/core:__subpackages__"],
+)

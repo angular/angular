@@ -64,7 +64,7 @@ async function initWebMcpForm(
         // errors which are considered trusted.
         untrustedContentHint: false,
       },
-      execute: async (args: Record<string, unknown>) => {
+      execute: async (args: Record<string, unknown> | unknown[]) => {
         // Populate the form with changes from the agent.
         node.value.set(args);
 

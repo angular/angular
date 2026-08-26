@@ -9,7 +9,7 @@
 export {declareExperimentalWebMcpTool} from './declare_tool';
 export {provideExperimentalWebMcpTools} from './provide_tools';
 export type {
-  Execute as WebMcpToolExecute,
   Client as WebMcpClient,
   ToolDescriptor as WebMcpToolDescriptor,
+  Execute as WebMcpToolExecute,
 } from './types';
