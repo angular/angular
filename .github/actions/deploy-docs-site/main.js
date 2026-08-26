@@ -19631,7 +19631,7 @@ var require_dist = __commonJS({
     var TOKEN_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
     var QUOTE_REGEXP = /[\\"]/g;
     var TYPE_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+\/[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
-    var NullObject = (() => {
+    var NullObject2 = (() => {
       const C = function() {
       };
       C.prototype = /* @__PURE__ */ Object.create(null);
@@ -19654,55 +19654,55 @@ var require_dist = __commonJS({
       return result;
     }
     function parse4(header, options) {
-      const stopChar = options?.comma === true ? COMMA : 65536;
+      const stopChar = options?.comma === true ? COMMA2 : 65536;
       const len = header.length;
-      let index = skipOWS(header, options?.start ?? 0, len);
+      let index = skipOWS2(header, options?.start ?? 0, len);
       const valueStart = index;
-      index = skipValue(header, index, len, stopChar);
-      const valueEnd = trailingOWS(header, valueStart, index);
+      index = skipValue2(header, index, len, stopChar);
+      const valueEnd = trailingOWS2(header, valueStart, index);
       const type = header.slice(valueStart, valueEnd).toLowerCase();
       if (options?.parameters === false) {
-        return { type, index, parameters: new NullObject() };
+        return { type, index, parameters: new NullObject2() };
       }
-      return parseParameters(header, type, index, len, stopChar);
+      return parseParameters2(header, type, index, len, stopChar);
     }
-    var SP = 32;
-    var HTAB = 9;
-    var SEMI = 59;
-    var EQ = 61;
-    var DQUOTE = 34;
-    var BSLASH = 92;
-    var COMMA = 44;
-    function parseParameters(header, type, index, len, stopChar) {
-      const parameters = new NullObject();
+    var SP2 = 32;
+    var HTAB2 = 9;
+    var SEMI2 = 59;
+    var EQ2 = 61;
+    var DQUOTE2 = 34;
+    var BSLASH2 = 92;
+    var COMMA2 = 44;
+    function parseParameters2(header, type, index, len, stopChar) {
+      const parameters = new NullObject2();
       parameter:
         while (index < len) {
           if (header.charCodeAt(index) === stopChar)
             break;
-          index = skipOWS(header, index + 1, len);
+          index = skipOWS2(header, index + 1, len);
           const keyStart = index;
           while (index < len) {
             const code = header.charCodeAt(index);
             if (code === stopChar)
               break parameter;
-            if (code === SEMI)
+            if (code === SEMI2)
               continue parameter;
-            if (code === EQ) {
-              const keyEnd = trailingOWS(header, keyStart, index);
+            if (code === EQ2) {
+              const keyEnd = trailingOWS2(header, keyStart, index);
               const key = header.slice(keyStart, keyEnd).toLowerCase();
-              index = skipOWS(header, index + 1, len);
-              if (index < len && header.charCodeAt(index) === DQUOTE) {
+              index = skipOWS2(header, index + 1, len);
+              if (index < len && header.charCodeAt(index) === DQUOTE2) {
                 index++;
                 let value = "";
                 while (index < len) {
                   const code2 = header.charCodeAt(index++);
-                  if (code2 === DQUOTE) {
-                    index = skipValue(header, index, len, stopChar);
+                  if (code2 === DQUOTE2) {
+                    index = skipValue2(header, index, len, stopChar);
                     if (parameters[key] === void 0)
                       parameters[key] = value;
                     break;
                   }
-                  if (code2 === BSLASH && index < len) {
+                  if (code2 === BSLASH2 && index < len) {
                     value += header[index++];
                     continue;
                   }
@@ -19711,9 +19711,9 @@ var require_dist = __commonJS({
                 continue parameter;
               }
               const valueStart = index;
-              index = skipValue(header, index, len, stopChar);
+              index = skipValue2(header, index, len, stopChar);
               if (parameters[key] === void 0) {
-                const valueEnd = trailingOWS(header, valueStart, index);
+                const valueEnd = trailingOWS2(header, valueStart, index);
                 parameters[key] = header.slice(valueStart, valueEnd);
               }
               continue parameter;
@@ -19723,28 +19723,28 @@ var require_dist = __commonJS({
         }
       return { type, index, parameters };
     }
-    function skipValue(str, index, len, stopChar) {
+    function skipValue2(str, index, len, stopChar) {
       while (index < len) {
         const code = str.charCodeAt(index);
-        if (code === SEMI || code === stopChar)
+        if (code === SEMI2 || code === stopChar)
           break;
         index++;
       }
       return index;
     }
-    function skipOWS(header, index, len) {
+    function skipOWS2(header, index, len) {
       while (index < len) {
         const char = header.charCodeAt(index);
-        if (char !== SP && char !== HTAB)
+        if (char !== SP2 && char !== HTAB2)
           break;
         index++;
       }
       return index;
     }
-    function trailingOWS(header, start, end) {
+    function trailingOWS2(header, start, end) {
       while (end > start) {
         const char = header.charCodeAt(end - 1);
-        if (char !== SP && char !== HTAB)
+        if (char !== SP2 && char !== HTAB2)
           break;
         end--;
       }
@@ -38097,136 +38097,6 @@ import { styleText as styleText5 } from "node:util";
 import { styleText as styleText6 } from "node:util";
 import { styleText as styleText7 } from "node:util";
 var require4 = __cjsCompatRequire_ngDev3(import.meta.url);
-var require_dist2 = __commonJS2({
-  ""(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.format = format3;
-    exports.parse = parse32;
-    var TEXT_REGEXP = /^[\u0009\u0020-\u007e\u0080-\u00ff]*$/;
-    var TOKEN_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
-    var QUOTE_REGEXP = /[\\"]/g;
-    var TYPE_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+\/[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
-    var NullObject = (() => {
-      const C = function() {
-      };
-      C.prototype = /* @__PURE__ */ Object.create(null);
-      return C;
-    })();
-    function format3(obj) {
-      const { type, parameters } = obj;
-      if (!type || !TYPE_REGEXP.test(type)) {
-        throw new TypeError(`Invalid type: ${type}`);
-      }
-      let result = type;
-      if (parameters) {
-        for (const param of Object.keys(parameters)) {
-          if (!TOKEN_REGEXP.test(param)) {
-            throw new TypeError(`Invalid parameter name: ${param}`);
-          }
-          result += `; ${param}=${qstring(parameters[param])}`;
-        }
-      }
-      return result;
-    }
-    function parse32(header, options) {
-      const len = header.length;
-      let index = skipOWS(header, 0, len);
-      const valueStart = index;
-      index = skipValue(header, index, len);
-      const valueEnd = trailingOWS(header, valueStart, index);
-      const type = header.slice(valueStart, valueEnd).toLowerCase();
-      const parameters = options?.parameters === false ? new NullObject() : parseParameters(header, index, len);
-      return { type, parameters };
-    }
-    var SP = 32;
-    var HTAB = 9;
-    var SEMI = 59;
-    var EQ = 61;
-    var DQUOTE = 34;
-    var BSLASH = 92;
-    function parseParameters(header, index, len) {
-      const parameters = new NullObject();
-      parameter:
-        while (index < len) {
-          index = skipOWS(header, index + 1, len);
-          const keyStart = index;
-          while (index < len) {
-            const code = header.charCodeAt(index);
-            if (code === SEMI)
-              continue parameter;
-            if (code === EQ) {
-              const keyEnd = trailingOWS(header, keyStart, index);
-              const key = header.slice(keyStart, keyEnd).toLowerCase();
-              index = skipOWS(header, index + 1, len);
-              if (index < len && header.charCodeAt(index) === DQUOTE) {
-                index++;
-                let value = "";
-                while (index < len) {
-                  const code2 = header.charCodeAt(index++);
-                  if (code2 === DQUOTE) {
-                    index = skipValue(header, index, len);
-                    if (parameters[key] === void 0)
-                      parameters[key] = value;
-                    break;
-                  }
-                  if (code2 === BSLASH && index < len) {
-                    value += header[index++];
-                    continue;
-                  }
-                  value += String.fromCharCode(code2);
-                }
-                continue parameter;
-              }
-              const valueStart = index;
-              index = skipValue(header, index, len);
-              if (parameters[key] === void 0) {
-                const valueEnd = trailingOWS(header, valueStart, index);
-                parameters[key] = header.slice(valueStart, valueEnd);
-              }
-              continue parameter;
-            }
-            index++;
-          }
-        }
-      return parameters;
-    }
-    function skipValue(str, index, len) {
-      while (index < len) {
-        const char = str.charCodeAt(index);
-        if (char === SEMI)
-          break;
-        index++;
-      }
-      return index;
-    }
-    function skipOWS(header, index, len) {
-      while (index < len) {
-        const char = header.charCodeAt(index);
-        if (char !== SP && char !== HTAB)
-          break;
-        index++;
-      }
-      return index;
-    }
-    function trailingOWS(header, start, end) {
-      while (end > start) {
-        const char = header.charCodeAt(end - 1);
-        if (char !== SP && char !== HTAB)
-          break;
-        end--;
-      }
-      return end;
-    }
-    function qstring(str) {
-      if (TOKEN_REGEXP.test(str))
-        return str;
-      if (TEXT_REGEXP.test(str))
-        return `"${str.replace(QUOTE_REGEXP, "\\$&")}"`;
-      throw new TypeError(`Invalid parameter value: ${str}`);
-    }
-  }
-});
 var require_constants6 = __commonJS2({
   ""(exports, module) {
     "use strict";
@@ -57457,7 +57327,7 @@ var require_public_api = __commonJS2({
     exports.stringify = stringify;
   }
 });
-var require_dist22 = __commonJS2({
+var require_dist2 = __commonJS2({
   ""(exports) {
     "use strict";
     var composer = require_composer();
@@ -57930,7 +57800,109 @@ function withDefaults4(oldDefaults, newDefaults) {
   });
 }
 var endpoint2 = withDefaults4(null, DEFAULTS2);
-var import_content_type2 = __toESM2(require_dist2());
+var NullObject = (() => {
+  const C = function() {
+  };
+  C.prototype = /* @__PURE__ */ Object.create(null);
+  return C;
+})();
+function parse22(header, options) {
+  const stopChar = options?.comma === true ? COMMA : 65536;
+  const len = header.length;
+  let index = skipOWS(header, options?.start ?? 0, len);
+  const valueStart = index;
+  index = skipValue(header, index, len, stopChar);
+  const valueEnd = trailingOWS(header, valueStart, index);
+  const type = header.slice(valueStart, valueEnd).toLowerCase();
+  if (options?.parameters === false) {
+    return { type, index, parameters: new NullObject() };
+  }
+  return parseParameters(header, type, index, len, stopChar);
+}
+var SP = 32;
+var HTAB = 9;
+var SEMI = 59;
+var EQ = 61;
+var DQUOTE = 34;
+var BSLASH = 92;
+var COMMA = 44;
+function parseParameters(header, type, index, len, stopChar) {
+  const parameters = new NullObject();
+  parameter:
+    while (index < len) {
+      if (header.charCodeAt(index) === stopChar)
+        break;
+      index = skipOWS(header, index + 1, len);
+      const keyStart = index;
+      while (index < len) {
+        const code = header.charCodeAt(index);
+        if (code === stopChar)
+          break parameter;
+        if (code === SEMI)
+          continue parameter;
+        if (code === EQ) {
+          const keyEnd = trailingOWS(header, keyStart, index);
+          const key = header.slice(keyStart, keyEnd).toLowerCase();
+          index = skipOWS(header, index + 1, len);
+          if (index < len && header.charCodeAt(index) === DQUOTE) {
+            index++;
+            let value = "";
+            while (index < len) {
+              const code2 = header.charCodeAt(index++);
+              if (code2 === DQUOTE) {
+                index = skipValue(header, index, len, stopChar);
+                if (parameters[key] === void 0)
+                  parameters[key] = value;
+                break;
+              }
+              if (code2 === BSLASH && index < len) {
+                value += header[index++];
+                continue;
+              }
+              value += String.fromCharCode(code2);
+            }
+            continue parameter;
+          }
+          const valueStart = index;
+          index = skipValue(header, index, len, stopChar);
+          if (parameters[key] === void 0) {
+            const valueEnd = trailingOWS(header, valueStart, index);
+            parameters[key] = header.slice(valueStart, valueEnd);
+          }
+          continue parameter;
+        }
+        index++;
+      }
+    }
+  return { type, index, parameters };
+}
+function skipValue(str, index, len, stopChar) {
+  while (index < len) {
+    const code = str.charCodeAt(index);
+    if (code === SEMI || code === stopChar)
+      break;
+    index++;
+  }
+  return index;
+}
+function skipOWS(header, index, len) {
+  while (index < len) {
+    const char = header.charCodeAt(index);
+    if (char !== SP && char !== HTAB)
+      break;
+    index++;
+  }
+  return index;
+}
+function trailingOWS(header, start, end) {
+  while (end > start) {
+    const char = header.charCodeAt(end - 1);
+    if (char !== SP && char !== HTAB)
+      break;
+    end--;
+  }
+  return end;
+}
 var intRegex2 = /^-?\d+$/;
 var noiseValue2 = /^-?\d+n+$/;
 var originalStringify2 = JSON.stringify;
@@ -58210,7 +58182,7 @@ var JSONParseV22 = (text, reviver) => {
 };
 var MAX_INT2 = Number.MAX_SAFE_INTEGER.toString();
 var MAX_DIGITS2 = MAX_INT2.length;
-var stringsOrLargeNumbers2 = /"(?:\\.|[^"])*"|-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?/g;
+var stringsOrLargeNumbers2 = /"(?:[^"\\]|\\.)*"|-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?/g;
 var noiseValueWithQuotes2 = /^"-?\d+n+"$/;
 var applyReviverIteratively2 = (parsed, userReviver) => {
   const rootHolder = { "": parsed };
@@ -58329,7 +58301,7 @@ var RequestError2 = class extends Error {
     this.request = requestCopy;
   }
 };
-var VERSION22 = "10.0.13";
+var VERSION22 = "10.0.15";
 var defaults_default2 = {
   headers: {
     "user-agent": `octokit-request.js/${VERSION22} ${getUserAgent2()}`
@@ -58450,7 +58422,7 @@ async function getResponseData2(response) {
   if (!contentType) {
     return response.text().catch(noop3);
   }
-  const mimetype = (0, import_content_type2.parse)(contentType);
+  const mimetype = parse22(contentType);
   if (isJSONResponse2(mimetype)) {
     let text = "";
     try {
@@ -62592,11 +62564,16 @@ var effectScheduler = {
 function isFactory(value) {
   return typeof value === "function";
 }
+function isReducer(value) {
+  return typeof value === "function";
+}
 function useState(defaultValue) {
   return withPointer((pointer) => {
     const setState = AsyncResource2.bind(function setState2(newValue) {
-      if (pointer.get() !== newValue) {
-        pointer.set(newValue);
+      const currentValue = pointer.get();
+      const nextValue = isReducer(newValue) ? newValue(currentValue) : newValue;
+      if (!Object.is(currentValue, nextValue)) {
+        pointer.set(nextValue);
         handleChange();
       }
     });
@@ -62992,7 +62969,7 @@ function usePrefix({ status = "idle", theme }) {
 function useMemo(fn, dependencies) {
   return withPointer((pointer) => {
     const prev = pointer.get();
-    if (!prev || prev.dependencies.length !== dependencies.length || prev.dependencies.some((dep, i) => dep !== dependencies[i])) {
+    if (!pointer.initialized || prev.dependencies.length !== dependencies.length || prev.dependencies.some((dep, i) => dep !== dependencies[i])) {
       const value = fn();
       pointer.set({ value, dependencies });
       return value;
@@ -64457,11 +64434,27 @@ var dist_default7 = createPrompt((config, done) => {
     error2
   ];
 });
+function toDecimal(value) {
+  const [coefficient = "", exponent = "0"] = value.toString().toLowerCase().split("e");
+  const [integer = "", fraction = ""] = coefficient.split(".");
+  return {
+    significand: BigInt(`${integer}${fraction}`),
+    exponent: Number(exponent) - fraction.length
+  };
+}
 function isStepOf(value, step, min) {
-  const valuePow = value * Math.pow(10, 6);
-  const stepPow = step * Math.pow(10, 6);
-  const minPow = min * Math.pow(10, 6);
-  return (valuePow - (Number.isFinite(min) ? minPow : 0)) % stepPow === 0;
+  if (!Number.isFinite(value) || !Number.isFinite(step) || step === 0) {
+    return false;
+  }
+  const valueDecimal = toDecimal(value);
+  const stepDecimal = toDecimal(step);
+  const minDecimal = Number.isFinite(min) ? toDecimal(min) : void 0;
+  const exponent = Math.min(valueDecimal.exponent, stepDecimal.exponent, minDecimal?.exponent ?? Infinity);
+  const toInteger = (decimal) => decimal.significand * 10n ** BigInt(decimal.exponent - exponent);
+  const valueInteger = toInteger(valueDecimal);
+  const stepInteger = toInteger(stepDecimal);
+  const minInteger = minDecimal ? toInteger(minDecimal) : 0n;
+  return (valueInteger - minInteger) % stepInteger === 0n;
 }
 function validateNumber(value, { min, max, step }) {
   if (value == null || Number.isNaN(value)) {
@@ -64849,7 +64842,7 @@ var dist_default11 = createPrompt((config, done) => {
   const { pageSize = 7, validate: validate2 = () => true } = config;
   const theme = makeTheme(searchTheme, config.theme);
   const [status, setStatus] = useState("loading");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(config.initialValue ?? "");
   const [searchResults, setSearchResults] = useState([]);
   const [searchError, setSearchError] = useState();
   const defaultApplied = useRef(false);
@@ -64860,6 +64853,11 @@ var dist_default11 = createPrompt((config, done) => {
     return { first, last };
   }, [searchResults]);
   const [active = bounds.first, setActive] = useState();
+  useEffect((rl) => {
+    if (config.initialValue) {
+      rl.write(config.initialValue);
+    }
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
     setStatus("loading");
@@ -65157,7 +65155,7 @@ Prompt.input = dist_default7;
 Prompt.checkbox = dist_default4;
 Prompt.select = dist_default12;
 Prompt.editor = dist_default5;
-var import_yaml = __toESM2(require_dist22());
+var import_yaml = __toESM2(require_dist2());
 
 // 
 var require5 = __cjsCompatRequire_ngDev4(import.meta.url);
@@ -65380,7 +65378,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-HZ7F2LK6.mjs:
+@angular/ng-dev/bundles/chunk-Z3X5GOBV.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
