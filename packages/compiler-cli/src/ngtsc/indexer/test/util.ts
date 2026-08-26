@@ -57,15 +57,20 @@ export function getComponentDeclaration(componentStr: string, className: string)
 export function getBoundTemplate(
   template: string,
   options: ParseTemplateOptions = {},
-  components: Array<{selector: string | null; declaration: ClassDeclaration}> = [],
+  components: Array<{
+    selector: string | null;
+    declaration: ClassDeclaration;
+    inputs?: Record<string, string>;
+    outputs?: Record<string, string>;
+  }> = [],
 ): AbstractBoundTemplate<DeclarationNode> {
-  const componentsMeta = components.map(({selector, declaration}) => ({
+  const componentsMeta = components.map(({selector, declaration, inputs = {}, outputs = {}}) => ({
     ref: new Reference(declaration),
     selector,
     name: declaration.name.getText(),
     isComponent: true,
-    inputs: ClassPropertyMapping.fromMappedObject({}),
-    outputs: ClassPropertyMapping.fromMappedObject({}),
+    inputs: ClassPropertyMapping.fromMappedObject(inputs),
+    outputs: ClassPropertyMapping.fromMappedObject(outputs),
     exportAs: null,
     isStructural: false,
     animationTriggerNames: null,
@@ -105,6 +110,13 @@ export function getBoundTemplate(
     },
     getReferenceTarget(node) {
       return boundTemplate.getReferenceTarget(node);
+    },
+    getConsumerOfBinding(binding) {
+      const consumer = boundTemplate.getConsumerOfBinding(binding);
+      if (consumer && 'ref' in consumer && consumer.ref) {
+        return {ref: {node: consumer.ref.node}};
+      }
+      return null;
     },
     getExpressionTarget(ast) {
       return boundTemplate.getExpressionTarget(ast);

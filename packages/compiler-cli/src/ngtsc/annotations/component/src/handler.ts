@@ -1187,6 +1187,13 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       getReferenceTarget(node) {
         return boundTemplate.getReferenceTarget(node);
       },
+      getConsumerOfBinding(binding) {
+        const consumer = boundTemplate.getConsumerOfBinding(binding);
+        if (consumer && 'ref' in consumer && consumer.ref) {
+          return {ref: {node: consumer.ref.node}};
+        }
+        return null;
+      },
       getExpressionTarget(ast) {
         return boundTemplate.getExpressionTarget(ast);
       },
