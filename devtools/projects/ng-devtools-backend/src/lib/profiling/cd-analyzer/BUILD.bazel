@@ -16,6 +16,7 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:log",
         "//devtools/projects/protocol",
     ],
 )
