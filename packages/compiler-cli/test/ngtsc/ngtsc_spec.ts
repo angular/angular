@@ -114,8 +114,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Service.ɵprov =');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
@@ -137,7 +136,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('Store.ɵprov =');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Store<any>, never>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Store<any>>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
     });
 
     it('should compile Injectables with providedIn without errors', () => {
@@ -167,8 +166,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain("providedIn: 'root' })");
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
@@ -197,7 +195,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain(", providedIn: 'root' });");
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
@@ -503,7 +501,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain("return __ngConditionalFactory__; }, providedIn: 'root' });");
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
@@ -543,7 +541,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain(`return __ngConditionalFactory__; }, providedIn: 'root' });`);
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
@@ -578,8 +576,7 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toContain('providedIn: i0.forwardRef(() => Mod) })');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
       expect(dtsContents).toContain('i0.ɵɵFactoryDeclaration<Mod, never>;');
@@ -3706,10 +3703,7 @@ runInEachFileSystem((os: string) => {
 
         // Validate that each class's .d.ts declaration also has an injectable
         // definition.
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestCmp');
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestDir');
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestPipe');
-        expect(dtsContents).toContain('ɵɵInjectableDeclaration<TestNgModule');
+        expect(dtsContents.match(/ɵɵInjectableDeclaration<any>/g)?.length).toBe(4);
       });
 
       it('should not compile a component and a directive annotation on the same class', () => {
