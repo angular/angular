@@ -115,7 +115,7 @@ export class ApplicationInitStatus {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<ApplicationInitStatus, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<ApplicationInitStatus>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -155,7 +155,7 @@ export class ApplicationRef {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<ApplicationRef, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<ApplicationRef>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public (undocumented)
@@ -250,7 +250,7 @@ export class Compiler {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<Compiler, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<Compiler>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1466,7 +1466,7 @@ export class PlatformRef {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<PlatformRef, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<PlatformRef>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1913,7 +1913,7 @@ export class Testability implements PublicTestability {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<Testability, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<Testability>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1928,7 +1928,7 @@ export class TestabilityRegistry {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<TestabilityRegistry, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<TestabilityRegistry>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public

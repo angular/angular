@@ -375,7 +375,7 @@ export class FormBuilder {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormBuilder, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<FormBuilder>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -822,7 +822,7 @@ export abstract class NonNullableFormBuilder {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NonNullableFormBuilder, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<NonNullableFormBuilder>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -973,7 +973,7 @@ export class UntypedFormBuilder extends FormBuilder {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<UntypedFormBuilder, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<UntypedFormBuilder>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public

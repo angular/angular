@@ -193,7 +193,7 @@ export class ChildrenOutletContexts {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ChildrenOutletContexts, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<ChildrenOutletContexts>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -233,7 +233,7 @@ export class DefaultTitleStrategy extends TitleStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<DefaultTitleStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<DefaultTitleStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -534,7 +534,7 @@ export class NoPreloading implements PreloadingStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NoPreloading, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<NoPreloading>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -578,7 +578,7 @@ export class PreloadAllModules implements PreloadingStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PreloadAllModules, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<PreloadAllModules>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -738,7 +738,7 @@ export class Router {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Router, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<Router>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -773,7 +773,7 @@ export abstract class RouteReuseStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouteReuseStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<RouteReuseStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -958,7 +958,7 @@ export class RouterPreloader implements OnDestroy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterPreloader, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<RouterPreloader>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1029,7 +1029,7 @@ export abstract class TitleStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<TitleStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<TitleStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1049,7 +1049,7 @@ export abstract class UrlHandlingStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<UrlHandlingStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<UrlHandlingStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1103,7 +1103,7 @@ export abstract class UrlSerializer {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<UrlSerializer, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<UrlSerializer>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public

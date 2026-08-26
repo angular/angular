@@ -1,7 +1,7 @@
 import * as i0 from "@angular/core";
 export declare class Service {
     static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<Service>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class BaseModule {
     private service;

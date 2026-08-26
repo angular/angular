@@ -40,7 +40,7 @@ runInEachFileSystem(() => {
       expect(jsContents).toContain('TestService.ɵfac =');
       expect(jsContents).toContain('TestService.ɵprov =');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<TestService, never>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<TestService>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<any>;');
     });
 
     it('should report if an @Service class has another Angular decorator', () => {
