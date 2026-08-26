@@ -1,3 +1,16 @@
+<a name="20.3.30"></a>
+
+# 20.3.30 (2026-08-26)
+
+### platform-server
+
+| Commit                                                                                           | Type | Description                                              |
+| ------------------------------------------------------------------------------------------------ | ---- | -------------------------------------------------------- |
+| [9339a7a2de](https://github.com/angular/angular/commit/9339a7a2de437ed93f9cc3da7f32d0100412d599) | fix  | avoid stripping unicode whitespace during url resolution |
+| [89b20568df](https://github.com/angular/angular/commit/89b20568dfaee1ec8e0b3bcf1872acdddd2f4fef) | fix  | update domino to latest version                          |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.29"></a>
 
 # 20.3.29 (2026-08-19)
