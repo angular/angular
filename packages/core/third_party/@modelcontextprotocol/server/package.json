@@ -1,0 +1,10 @@
+{
+  "name": "@modelcontextprotocol/server",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    }
+  }
+}

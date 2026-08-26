@@ -13,8 +13,8 @@
     "zod": "^4.0.10"
   },
   "devDependencies": {
-    "@mcp-b/webmcp-polyfill": "^4.0.0",
-    "@mcp-b/webmcp-types": "^4.0.0"
+    "@mcp-b/webmcp-polyfill": "^5.0.0",
+    "@mcp-b/webmcp-types": "^5.0.0"
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",

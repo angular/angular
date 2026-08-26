@@ -12,7 +12,10 @@ genrule(
         readonly SRC_DIR="$(location //packages/core:node_modules/@mcp-b/webmcp-types/dir)"
         mkdir -p "$$(dirname "$(location dist/common.d.ts)")"
         cp "$${SRC_DIR}/dist/common.d.ts" "$(location dist/common.d.ts)"
+        # Rewrite bare imports of @modelcontextprotocol/server to use the vendored relative path
+        sed -i 's|@modelcontextprotocol/server|../../../@modelcontextprotocol/server/index.js|g' "$(location dist/common.d.ts)" || true
         cp "$${SRC_DIR}/dist/json-schema.d.ts" "$(location dist/json-schema.d.ts)"
+        sed -i 's|@modelcontextprotocol/server|../../../@modelcontextprotocol/server/index.js|g' "$(location dist/json-schema.d.ts)" || true
         cp "$${SRC_DIR}/LICENSE" "$(location LICENSE)"
     """,
 )
