@@ -29,3 +29,6 @@ export {
   SymbolDirectiveMeta,
 } from '../src/ngtsc/typecheck/src/template_symbol_builder';
 export * from '../src/ngtsc/indexer/src/api';
+export {findSourceLocation} from '../src/ngtsc/typecheck/src/tcb_util';
+export {shouldReportDiagnostic} from '../src/ngtsc/typecheck/src/diagnostics';
+export {getTokenAtPosition} from '../src/ngtsc/util/src/typescript';
