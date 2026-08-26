@@ -60,8 +60,7 @@ NOTE: Route resources execute in parallel and cannot access or depend on other r
 
 The `resources` map supports any Angular `Resource` implementation (such as `resource()`, `rxResource()`, or custom resources).
 
-```angular-ts
-import {Component, input} from '@angular/core';
+```ts
 import {Routes} from '@angular/router';
 import {rxResource} from '@angular/core/rxjs-interop';
 
@@ -171,8 +170,8 @@ NOTE: If a blocking resource throws an error, the router cancels the navigation 
 
 If a blocking resource needs to redirect the user (for example, if an item is not found), throw a `RedirectCommand` inside the resource loader. The router will cancel the current navigation and redirect to the specified URL:
 
-```angular-ts
-import {Component, inject, input, resource} from '@angular/core';
+```ts
+import {inject, resource} from '@angular/core';
 import {RedirectCommand, Router, Routes} from '@angular/router';
 
 const routes: Routes = [
