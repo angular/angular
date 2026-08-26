@@ -122,9 +122,24 @@ export function nativeControlCreate(
       input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
 
     if (controlValueChanged || radioValueChanged) {
-      setNativeControlValue(input, controlValue);
+      const isFocused = typeof document !== 'undefined' && document.activeElement === input;
+      if (!(isFocused && isIntermediate(input.value, controlValue))) {
+        setNativeControlValue(input, controlValue);
+      }
     }
 
     updateMode = true;
   };
+}
+
+function isIntermediate(inputValue: string, controlValue: unknown): boolean {
+  if (inputValue === '-' || inputValue === '.' || inputValue === '-.') return true;
+  if (inputValue.endsWith('.')) return true;
+  if (typeof controlValue === 'number' && !Number.isNaN(controlValue) && inputValue.includes('.')) {
+    const parsed = Number(inputValue);
+    if (!Number.isNaN(parsed) && parsed === controlValue && inputValue !== String(controlValue)) {
+      return true;
+    }
+  }
+  return false;
 }
