@@ -155,7 +155,7 @@ export class Highlight<T extends HighlightLabelDefinition = HighlightLabelDefini
       return;
     }
     if (this.destroyed) {
-      console.warn('Cannot display a destroyed highlight.');
+      debugLog.warn('Cannot display a destroyed highlight.');
       return;
     }
 

@@ -11,6 +11,7 @@ import type {ComponentInstance} from '../../shared/interfaces';
 import type {ElementPosition} from '../../../../../protocol';
 import {runOutsideAngular} from '../../shared/utils/general';
 import {IdentityTracker} from '../../directive-forest/identity-tracker/identity-tracker';
+import {debugLog} from '../../shared/utils/log';
 
 // Current analyzer instance
 let analyzer: CdAnalyzerImpl | null = null;
@@ -142,7 +143,7 @@ export class CdAnalyzerImpl implements CdAnalyzer {
       const cmpCurrCycleStartTime = this.currCycleStartTimes.get(id);
 
       if (!cmpData || cmpCurrCycleStartTime === undefined) {
-        console.warn('Unable to find corresponding CD start data for', cmp);
+        debugLog.warn('Unable to find corresponding CD start data for', cmp);
         return;
       }
 

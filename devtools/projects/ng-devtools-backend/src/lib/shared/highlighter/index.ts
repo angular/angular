@@ -17,6 +17,7 @@ import {
 import {createOverlayWithLabels, getComponentRect} from './dom';
 import {findDirectiveAndHost} from '../../directive-forest/component-tree/component-tree';
 import {runOutsideAngular} from '../utils/general';
+import {debugLog} from '../utils/log';
 
 // A global synchronous event emitter that handles all highlight destroy events.
 const highlightDestroyEvents = new EventEmitter<[highlight: Highlight]>();
@@ -170,7 +171,7 @@ export function highlightElement<T extends HighlightLabelDefinition = HighlightL
 ): Highlight | null {
   const dir = findDirectiveAndHost(targetElement).directive;
   if (!dir) {
-    console.warn(
+    debugLog.warn(
       'Highlighter: Unable to find the corresponding directive to the provided element -',
       targetElement,
     );
