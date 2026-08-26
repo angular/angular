@@ -696,7 +696,11 @@ function extractHostBindings(
         // through `this` so that further down the line it can't be confused for a literal value
         // (e.g. if there's a property called `true`). There is no size penalty, because all
         // values (except literals) are converted to `ctx.propName` eventually.
-        bindings.properties[hostPropertyName] = getSafePropertyAccessString('this', member.name);
+        const hostPropertyExpression = getSafePropertyAccessString('this', member.name);
+        const decoratorBinding = parseHostBindings({});
+        decoratorBinding.properties[hostPropertyName] = hostPropertyExpression;
+        assertValidHostBindings(decoratorBinding, decorator.args?.[0] ?? decorator.node);
+        bindings.properties[hostPropertyName] = hostPropertyExpression;
       });
     },
   );
@@ -2066,30 +2070,34 @@ function evaluateHostExpressionBindings(
     );
   }
 
-  const errors = verifyHostBindings(bindings, createSourceSpan(hostExpr));
+  assertValidHostBindings(bindings, hostExpr);
+
+  return bindings;
+}
+
+function assertValidHostBindings(bindings: ParsedHostBindings, node: ts.Node): void {
+  const errors = verifyHostBindings(bindings, createSourceSpan(node));
   if (errors.length > 0) {
     throw new FatalDiagnosticError(
       ErrorCode.HOST_BINDING_PARSE_ERROR,
-      getHostBindingErrorNode(errors[0], hostExpr),
+      getHostBindingErrorNode(errors[0], node),
       errors.map((error: ParseError) => error.msg).join('\n'),
     );
   }
-
-  return bindings;
 }
 
 /**
  * Attempts to match a parser error to the host binding expression that caused it.
  * @param error Error to match.
- * @param hostExpr Expression declaring the host bindings.
+ * @param node Node declaring the host bindings.
  */
-function getHostBindingErrorNode(error: ParseError, hostExpr: ts.Expression): ts.Node {
+function getHostBindingErrorNode(error: ParseError, node: ts.Node): ts.Node {
   // In the most common case the `host` object is an object literal with string values. We can
   // confidently match the error to its expression by looking at the string value that the parser
   // failed to parse and the initializers for each of the properties. If we fail to match, we fall
   // back to the old behavior where the error is reported on the entire `host` object.
-  if (ts.isObjectLiteralExpression(hostExpr)) {
-    for (const prop of hostExpr.properties) {
+  if (ts.isObjectLiteralExpression(node)) {
+    for (const prop of node.properties) {
       if (
         ts.isPropertyAssignment(prop) &&
         ts.isStringLiteralLike(prop.initializer) &&
@@ -2100,7 +2108,7 @@ function getHostBindingErrorNode(error: ParseError, hostExpr: ts.Expression): ts
     }
   }
 
-  return hostExpr;
+  return node;
 }
 
 /**
