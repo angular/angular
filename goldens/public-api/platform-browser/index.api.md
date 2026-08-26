@@ -60,7 +60,7 @@ export class CssVarNamespacer {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CssVarNamespacer, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<CssVarNamespacer>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -77,7 +77,7 @@ export abstract class DomSanitizer implements Sanitizer {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<DomSanitizer, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<DomSanitizer>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -94,7 +94,7 @@ export class EventManager {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<EventManager, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<EventManager>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -142,7 +142,7 @@ export class Meta {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Meta, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<Meta>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -209,7 +209,7 @@ export class Title {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Title, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<Title>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public (undocumented)

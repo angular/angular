@@ -20,7 +20,6 @@ import {
   MaybeForwardRefExpression,
   R3CompiledExpression,
   R3Reference,
-  typeWithParameters,
 } from './render3/util';
 import {DefinitionMap} from './render3/view/util';
 
@@ -146,9 +145,7 @@ export function compileInjectable(
 }
 
 export function createInjectableType(type: o.Expression, typeArgumentCount: number) {
-  return new o.ExpressionType(
-    o.importExpr(Identifiers.InjectableDeclaration, [typeWithParameters(type, typeArgumentCount)]),
-  );
+  return new o.ExpressionType(o.importExpr(Identifiers.InjectableDeclaration, [o.DYNAMIC_TYPE]));
 }
 
 export function delegateToFactory(

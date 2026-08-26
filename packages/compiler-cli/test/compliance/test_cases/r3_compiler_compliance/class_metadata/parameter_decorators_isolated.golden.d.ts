@@ -6,35 +6,35 @@ declare class Service {
 export declare class ParameterizedInjectable {
     constructor(service: Service, token: string, custom: Service, mixed: string);
     static ɵfac: i0.ɵɵFactoryDeclaration<ParameterizedInjectable, [null, null, null, { skipSelf: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<ParameterizedInjectable>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class NoCtor {
     static ɵfac: i0.ɵɵFactoryDeclaration<NoCtor, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<NoCtor>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class EmptyCtor {
     constructor();
     static ɵfac: i0.ɵɵFactoryDeclaration<EmptyCtor, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<EmptyCtor>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class NoDecorators {
     constructor(service: Service);
     static ɵfac: i0.ɵɵFactoryDeclaration<NoDecorators, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<NoDecorators>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class CustomInjectable {
     constructor(service: Service);
     static ɵfac: i0.ɵɵFactoryDeclaration<CustomInjectable, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<CustomInjectable>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class DerivedInjectable extends ParameterizedInjectable {
     static ɵfac: i0.ɵɵFactoryDeclaration<DerivedInjectable, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<DerivedInjectable>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export declare class DerivedInjectableWithCtor extends ParameterizedInjectable {
     constructor();
     static ɵfac: i0.ɵɵFactoryDeclaration<DerivedInjectableWithCtor, never>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<DerivedInjectableWithCtor>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export {};
 
