@@ -26,6 +26,7 @@ import {
   getNativeControlValue,
   inputRequiresValidityTracking,
   isInput,
+  parseDecimalNumber,
   setNativeControlValue,
   setNativeDomProperty,
 } from './native';
@@ -135,9 +136,9 @@ export function nativeControlCreate(
 function isIntermediate(inputValue: string, controlValue: unknown): boolean {
   if (inputValue === '-' || inputValue === '.' || inputValue === '-.') return true;
   if (inputValue.endsWith('.')) return true;
-  if (typeof controlValue === 'number' && !Number.isNaN(controlValue) && inputValue.includes('.')) {
-    const parsed = Number(inputValue);
-    if (!Number.isNaN(parsed) && parsed === controlValue && inputValue !== String(controlValue)) {
+  if (typeof controlValue === 'number' && !Number.isNaN(controlValue)) {
+    const parsed = parseDecimalNumber(inputValue);
+    if (parsed !== undefined && parsed === controlValue && inputValue !== String(controlValue)) {
       return true;
     }
   }
