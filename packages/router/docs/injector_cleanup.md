@@ -87,13 +87,39 @@ The current parent-first (pre-order) traversal was chosen for its implementation
 
 ### Destruction During Activation Traversal
 
-Another alternative considered was performing the destruction of injectors during the activation traversal itself. For instance, if a route is being deactivated and not stored for reuse, its injector could be destroyed immediately.
+Another alternative considered was performing the destruction of injectors during route deactivation in `ActivateRoutes` (similar to how components and `_localInjector` are destroyed).
 
-- **Pros**: This approach would not require any additional traversal logic, as the router is already traversing the route tree during activation.
-- **Cons**:
-  - This approach is not viable because of how the router handles route reuse. A child route can be stored for reuse even if its parent is not. Since the activation traversal is top-down, the router might encounter a parent route that is not being reused and destroy its injector, only to later discover that one of its children _is_ being reused and requires the parent's injector to remain alive. By deferring cleanup until after navigation completes, we can accurately identify all necessary injectors by looking at the final state of both the active route tree and the stored handles.
-  - We could handle the problem of descendants detaching after the parent injector was destroyed by _not_ querying `shouldDetach` in the first place on any descendants if the a parent injector was destroyed. However, this couples the detach logic with the injector destroy. You now need to be careful about destroying parents if you're going to detach a child. Our current approach handles this for you so the concerns are kept separate and the Router handles the question of what even can be destroyed safely.
-  - Additionally, there would be no good, safe way to destroy the injector for a previously stored handle that is being disposed of. For example, if a developer decides to drop a stored handle, they would need to manually destroy its injector, which could easily be done at the wrong time or forgotten entirely.
+- **Pros**: Would eliminate the need for an additional post-navigation traversal pass.
+- **Cons**: This approach is not viable for injectors attached to static `Route` configurations:
+  1. **Re-activation of the Same Route Config**: When navigating between parameter changes where the route is not reused (e.g., `/detail/1` to `/detail/2` with `shouldReuseRoute` returning `false`), `/detail/2` binds to `detailRoute._injector` during recognition. If deactivating `/detail/1` destroyed `detailRoute._injector`, it would destroy the injector that `/detail/2` has already captured and is about to activate with.
+  2. **Cross-Navigation Detached Handles**: While deactivation within a single transition is bottom-up (children are deactivated before parents), a child route could have been detached and stored in `RouteReuseStrategy` in an earlier navigation. If the parent route is deactivated in a subsequent navigation, destroying the parent's injector would break the DI hierarchy of the stored child handle. A local deactivation pass cannot detect this dependency without inspecting the entire reuse cache.
+  3. **Handling Discarded Handles and Preloading**: Injectors created during route preloading, or injectors left behind when a handle is evicted from `RouteReuseStrategy`, never undergo deactivation. A post-navigation sweep is the only mechanism that can reconcile these unreferenced injectors.
+
+### Fundamental Differences from `ActivatedRoute._localInjector`
+
+With the introduction of route-level resources, the router created a local `EnvironmentInjector` on `ActivatedRoute` instances (`route._localInjector`). A natural question is why `Route._injector` (and `Route._loadedInjector`) cannot share the exact same destruction timing and lifecycle as `ActivatedRoute._localInjector`:
+
+- `_localInjector` is destroyed immediately during deactivation in `ActivateRoutes` (`deactivateRouteAndOutlet`).
+- `_localInjector` is rolled back on `NavigationCancel` or `NavigationError` in `rollbackState`.
+- `_localInjector` is destroyed on handle eviction via `destroyDetachedRouteHandle(handle)`.
+
+The reasons these two injector types cannot share the same destruction logic are fundamental to where they live and their role in the DI hierarchy:
+
+1. **Storage Target & Cardinality (Static Definition vs. Activation Instance)**:
+   - `Route._injector` is attached directly to the **static `Route` definition**. When navigating between parameter changes of the same route config where the route is not reused (e.g., `/detail/1` to `/detail/2` with `shouldReuseRoute` returning `false`), both activations share the same static `Route` definition. During URL recognition, the incoming `/detail/2` snapshot captures the existing `detailRoute._injector`. If deactivation of `/detail/1` destroyed `detailRoute._injector`, it would destroy the injector that `/detail/2` has already captured and is about to activate its component with.
+   - `_localInjector` is an instance property on `ActivatedRoute`. `/detail/1` and `/detail/2` have completely distinct `ActivatedRoute` instances (`activatedRoute1._localInjector` vs. `activatedRoute2._localInjector`). Destroying instance 1 during deactivation has no impact on instance 2.
+
+2. **DI Hierarchy Position (Ancestor vs. Leaf)**:
+   - `Route._injector` is an **ancestor injector** for all child routes and their component hierarchies. If a child route was detached and stored in `RouteReuseStrategy` in an earlier navigation, destroying a deactivated parent's `Route._injector` severs the DI hierarchy for that stored child handle. When the child is later reattached, any dependency lookups ascending to the parent injector will fail. A local deactivation step cannot detect this dependency without inspecting the entire reuse cache.
+   - `_localInjector` is strictly a **leaf injector** containing only route-level resources for that specific route. Descendant routes do not inherit from a parent route's `_localInjector` (they inherit from `parentSnapshot._environmentInjector`, which points to `Route._injector`). Therefore, destroying a deactivated parent's `_localInjector` never corrupts a child's DI chain.
+
+3. **Creation Timing & Non-Activation Lifecycles**:
+   - `Route._injector` is created during URL recognition (`canMatch`) or preloading (`RouterPreloader`), well before activation. A preloaded route may never be activated, so it can never be deactivated; only a post-navigation sweep can reclaim it.
+   - `_localInjector` is created strictly during preactivation (`setupAndRunResources`) for a specific `ActivatedRoute`, so its lifecycle is 1:1 with that route's activation and deactivation.
+
+4. **Detached Handle Disposal**:
+   - `destroyDetachedRouteHandle(handle)` can safely destroy `handle.route.value._localInjector` because that injector belongs exclusively to that handle's `ActivatedRoute` instance.
+   - It cannot destroy `handle.route.value.routeConfig._injector`, because that static `Route` config might currently be active in another outlet or shared by another cached handle.
 
 ### 3.2. Manual DetachedRouteHandle Cleanup
 

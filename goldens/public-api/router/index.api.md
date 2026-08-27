@@ -102,6 +102,9 @@ export class ActivationStart {
 }
 
 // @public
+export type AutoCleanupInjectorsFeature = RouterFeature<RouterFeatureKind.AutoCleanupInjectorsFeature>;
+
+// @public
 export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
     retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
     shouldAttach(route: ActivatedRouteSnapshot): boolean;
@@ -766,7 +769,9 @@ export type RouterConfigurationFeature = RouterFeature<RouterFeatureKind.RouterC
 // @public
 export abstract class RouteReuseStrategy {
     abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
+    retrieveStoredRouteHandles?(): Array<DetachedRouteHandle>;
     abstract shouldAttach(route: ActivatedRouteSnapshot): boolean;
+    shouldDestroyInjector?(route: Route): boolean;
     abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
     abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
     abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void;
@@ -794,7 +799,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | ExperimentalAutoCleanupInjectorsFeature | RouterHashLocationFeature | ExperimentalPlatformNavigationFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | AutoCleanupInjectorsFeature | RouterHashLocationFeature | ExperimentalPlatformNavigationFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -1140,6 +1145,9 @@ export interface ViewTransitionsFeatureOptions {
 }
 
 // @public
+export function withAutoCleanupInjectors(): AutoCleanupInjectorsFeature;
+
+// @public
 export function withComponentInputBinding(options?: ComponentInputBindingOptions): ComponentInputBindingFeature;
 
 // @public
@@ -1151,8 +1159,8 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
 // @public
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature;
 
-// @public
-export function withExperimentalAutoCleanupInjectors(): ExperimentalAutoCleanupInjectorsFeature;
+// @public @deprecated
+export function withExperimentalAutoCleanupInjectors(): AutoCleanupInjectorsFeature;
 
 // @public
 export function withExperimentalPlatformNavigation(): ExperimentalPlatformNavigationFeature;

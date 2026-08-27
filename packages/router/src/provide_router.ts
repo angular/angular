@@ -732,15 +732,15 @@ export function withNavigationErrorHandler(
 }
 
 /**
- * A type alias for providers returned by `withExperimentalAutoCleanupInjectors` for use with `provideRouter`.
+ * A type alias for providers returned by `withAutoCleanupInjectors` for use with `provideRouter`.
  *
- * @see {@link withExperimentalAutoCleanupInjectors}
+ * @see {@link withAutoCleanupInjectors}
  * @see {@link provideRouter}
  *
- * @experimental 21.1
+ * @publicApi 22.2
  */
-export type ExperimentalAutoCleanupInjectorsFeature =
-  RouterFeature<RouterFeatureKind.ExperimentalAutoCleanupInjectorsFeature>;
+export type AutoCleanupInjectorsFeature =
+  RouterFeature<RouterFeatureKind.AutoCleanupInjectorsFeature>;
 
 /**
  * Enables automatic destruction of unused route injectors.
@@ -755,12 +755,23 @@ export type ExperimentalAutoCleanupInjectorsFeature =
  * should also implement `retrieveStoredRouteHandles` to ensure injectors for handles that will be
  * reattached are not destroyed.
  *
- * @experimental 21.1
+ * @publicApi 22.2
  */
-export function withExperimentalAutoCleanupInjectors(): ExperimentalAutoCleanupInjectorsFeature {
-  return routerFeature(RouterFeatureKind.ExperimentalAutoCleanupInjectorsFeature, [
+export function withAutoCleanupInjectors(): AutoCleanupInjectorsFeature {
+  return routerFeature(RouterFeatureKind.AutoCleanupInjectorsFeature, [
     {provide: ROUTE_INJECTOR_CLEANUP, useValue: routeInjectorCleanup},
   ]);
+}
+
+/**
+ * Enables automatic destruction of unused route injectors.
+ *
+ * @deprecated Use `withAutoCleanupInjectors` instead.
+ * @see {@link withAutoCleanupInjectors}
+ * @publicApi
+ */
+export function withExperimentalAutoCleanupInjectors(): AutoCleanupInjectorsFeature {
+  return withAutoCleanupInjectors();
 }
 
 /**
@@ -954,7 +965,7 @@ export type RouterFeatures =
   | NavigationErrorHandlerFeature
   | ComponentInputBindingFeature
   | ViewTransitionsFeature
-  | ExperimentalAutoCleanupInjectorsFeature
+  | AutoCleanupInjectorsFeature
   | RouterHashLocationFeature
   | ExperimentalPlatformNavigationFeature;
 
@@ -972,6 +983,6 @@ export const enum RouterFeatureKind {
   NavigationErrorHandlerFeature,
   ComponentInputBindingFeature,
   ViewTransitionsFeature,
-  ExperimentalAutoCleanupInjectorsFeature,
+  AutoCleanupInjectorsFeature,
   ExperimentalPlatformNavigationFeature,
 }
