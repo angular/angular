@@ -92,6 +92,11 @@ export const globalSources: any = {};
 const EVENT_NAME_SYMBOL_REGX = new RegExp('^' + ZONE_SYMBOL_PREFIX + '(\\w+)(true|false)$');
 const IMMEDIATE_PROPAGATION_SYMBOL = zoneSymbol('propagationStopped');
 
+// Recognised members of the `AddEventListenerOptions` WebIDL dictionary, used
+// by `copyEventListenerOptions` to recover accessors and non-enumerable
+// properties that a caller-supplied options object may expose.
+const KNOWN_EVENT_LISTENER_OPTIONS = ['capture', 'once', 'passive', 'signal'];
+
 function prepareEventNames(eventName: string, eventNameToString?: (eventName: string) => string) {
   const falseEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + FALSE_STR;
   const trueEventName = (eventNameToString ? eventNameToString(eventName) : eventName) + TRUE_STR;
@@ -381,7 +386,8 @@ export function patchEventTarget(
         return {passive: true};
       }
       if (typeof options === 'object' && options.passive !== false) {
-        return {...options, passive: true};
+        options.passive = true;
+        return options;
       }
       return options;
     }
@@ -492,27 +498,22 @@ export function patchEventTarget(
     const passiveEvents: string[] = _global[zoneSymbol('PASSIVE_EVENTS')];
 
     function copyEventListenerOptions(options: any) {
-      if (typeof options === 'object' && options !== null) {
-        // We need to destructure the target `options` object since it may
-        // be frozen or sealed (possibly provided implicitly by a third-party
-        // library), or its properties may be readonly.
-        const newOptions: any = {...options};
-        // The `signal` option was recently introduced, which caused regressions in
-        // third-party scenarios where `AbortController` was directly provided to
-        // `addEventListener` as options. For instance, in cases like
-        // `document.addEventListener('keydown', callback, abortControllerInstance)`,
-        // which is valid because `AbortController` includes a `signal` getter, spreading
-        // `{...options}` wouldn't copy the `signal`. Additionally, using `Object.create`
-        // isn't feasible since `AbortController` is a built-in object type, and attempting
-        // to create a new object directly with it as the prototype might result in
-        // unexpected behavior.
-        if (options.signal) {
-          newOptions.signal = options.signal;
-        }
-        return newOptions;
+      if (typeof options !== 'object' || options === null) {
+        return options;
       }
-
-      return options;
+      // Spread copies own enumerable properties, invoking any getters exactly once.
+      const newOptions: any = {...options};
+      // Anything the spread could not see (inherited accessors such as
+      // `AbortController.prototype.signal`, or non-enumerable properties defined
+      // via `Object.defineProperty`) is read directly from the source, exactly once. Reading
+      // from `options` rather than `newOptions` also gives prototype getters the
+      // correct receiver.
+      for (const key of KNOWN_EVENT_LISTENER_OPTIONS) {
+        if (!Object.hasOwn(newOptions, key) && key in options) {
+          newOptions[key] = options[key];
+        }
+      }
+      return newOptions;
     }
 
     const makeAddListener = function (
@@ -556,7 +557,7 @@ export function patchEventTarget(
         }
 
         const passive = !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
-        const options = copyEventListenerOptions(buildEventListenerOptions(arguments[2], passive));
+        const options = buildEventListenerOptions(copyEventListenerOptions(arguments[2]), passive);
         const signal: AbortSignal | undefined = options?.signal;
         if (signal?.aborted) {
           // the signal is an aborted one, just return without attaching the event listener.
