@@ -48,8 +48,17 @@ export function debounced<T>(
 
   let active: Promise<void> | void | undefined;
   let pendingValue: T | undefined;
+  let activeTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const cancelTimer = () => {
+    if (activeTimer !== undefined) {
+      clearTimeout(activeTimer);
+      activeTimer = undefined;
+    }
+  };
 
   injector.get(DestroyRef).onDestroy(() => {
+    cancelTimer();
     active = undefined;
   });
 
@@ -93,6 +102,7 @@ export function debounced<T>(
       } catch (err) {
         rethrowFatalErrors(err);
         state.set({status: 'error', error: err as Error});
+        cancelTimer();
         active = pendingValue = undefined;
         return;
       } finally {
@@ -109,9 +119,18 @@ export function debounced<T>(
         if (equal(value, currentState.value!)) return;
       }
 
+      // The value has changed, so any pending timer from a previous wait is now obsolete.
+      cancelTimer();
+
       const waitFn =
         typeof wait === 'number'
-          ? () => new Promise<void>((resolve) => setTimeout(resolve, wait))
+          ? () =>
+              new Promise<void>((resolve) => {
+                activeTimer = setTimeout(() => {
+                  activeTimer = undefined;
+                  resolve();
+                }, wait);
+              })
           : wait;
 
       const result = waitFn(value, currentState);

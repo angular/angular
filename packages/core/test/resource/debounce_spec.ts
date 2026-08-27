@@ -332,6 +332,145 @@ describe('debounced', () => {
     expect(res.value()).toBe('recovered');
   });
 
+  describe('timer cleanup', () => {
+    // A distinctive delay, so the timers scheduled by `debounced` can be told apart from
+    // any scheduled by change detection or the test infrastructure.
+    const WAIT = 1234;
+
+    let setSpy: jasmine.Spy;
+    let clearSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      setSpy = spyOn(globalThis, 'setTimeout').and.callThrough();
+      clearSpy = spyOn(globalThis, 'clearTimeout').and.callThrough();
+    });
+
+    function timerIds(): unknown[] {
+      return setSpy.calls
+        .all()
+        .filter((call) => call.args[1] === WAIT)
+        .map((call) => call.returnValue);
+    }
+
+    function lastTimerId(): unknown {
+      return timerIds().at(-1);
+    }
+
+    function wasCleared(id: unknown): boolean {
+      return clearSpy.calls.allArgs().some(([arg]) => arg === id);
+    }
+
+    function fireTimer(id: unknown): void {
+      setSpy.calls
+        .all()
+        .find((call) => call.returnValue === id)!
+        .args[0]();
+    }
+
+    it('should clear the previous timer when a newer value supersedes it', () => {
+      const source = signal('initial');
+      debounced(source, WAIT, {injector});
+
+      TestBed.tick();
+
+      expect(lastTimerId()).toBeUndefined();
+
+      source.set('a');
+      TestBed.tick();
+
+      const firstTimer = lastTimerId();
+
+      expect(firstTimer).toBeDefined();
+      expect(wasCleared(firstTimer)).withContext('timer for "a" cleared too early').toBe(false);
+
+      source.set('b');
+      TestBed.tick();
+
+      expect(wasCleared(firstTimer)).withContext('timer for "a" not cleared').toBe(true);
+
+      const secondTimer = lastTimerId();
+
+      expect(secondTimer).not.toBe(firstTimer);
+
+      source.set('c');
+      TestBed.tick();
+
+      expect(wasCleared(secondTimer)).withContext('timer for "b" not cleared').toBe(true);
+
+      const ids = timerIds();
+
+      expect(ids.length).toBe(3);
+      expect(ids.filter((id) => wasCleared(id)).length)
+        .withContext('exactly one timer should still be queued')
+        .toBe(2);
+    });
+
+    it('should not clear a timer that has already fired', async () => {
+      const source = signal('initial');
+      const res = debounced(source, WAIT, {injector});
+
+      TestBed.tick();
+      source.set('a');
+      TestBed.tick();
+
+      const firstTimer = lastTimerId();
+
+      fireTimer(firstTimer);
+      await timeout();
+
+      expect(res.status()).toBe('resolved');
+
+      source.set('b');
+      TestBed.tick();
+
+      expect(wasCleared(firstTimer)).withContext('fired timer cleared').toBe(false);
+      expect(lastTimerId()).not.toBe(firstTimer);
+    });
+
+    it('should clear the pending timer when the injector is destroyed', () => {
+      const inj = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
+      const source = signal('initial');
+      debounced(source, WAIT, {injector: inj});
+
+      TestBed.tick();
+      source.set('updated');
+      TestBed.tick();
+
+      const timer = lastTimerId();
+
+      expect(timer).toBeDefined();
+
+      inj.destroy();
+
+      expect(wasCleared(timer)).withContext('timer outlived the injector').toBe(true);
+    });
+
+    it('should clear the pending timer when the source throws', () => {
+      const val = signal('initial');
+      const source = computed(() => {
+        if (val() === 'error') throw new Error('fail');
+        return val();
+      });
+      const res = debounced(source, WAIT, {injector});
+
+      TestBed.tick();
+      val.set('updated');
+      TestBed.tick();
+
+      expect(res.status()).toBe('loading');
+
+      const timer = lastTimerId();
+
+      expect(timer).toBeDefined();
+
+      val.set('error');
+      TestBed.tick();
+
+      expect(res.status()).toBe('error');
+      expect(wasCleared(timer)).withContext('timer survived the error').toBe(true);
+    });
+  });
+
   it('should throw if used in params of another resource', () => {
     const res = resource({
       params: () => debounced(signal(1), 1),
