@@ -2184,6 +2184,73 @@ describe('Zone Browser', function () {
         expect(logs).toEqual(['click2']);
       });
 
+      // Options exposed as accessors or non-enumerable properties must still
+      // reach the native call. https://github.com/angular/angular/issues/54142
+      describe('event listener options built with accessors', function () {
+        it('should invoke a non-enumerable `passive` getter (MDN feature-detect pattern)', function () {
+          let getCount = 0;
+          const opts = Object.defineProperty({}, 'passive', {
+            get: () => {
+              getCount++;
+              return false;
+            },
+          });
+          const listener = () => {};
+          button.addEventListener('click', listener, opts as any);
+          expect(getCount).toBe(1);
+          button.removeEventListener('click', listener, opts as any);
+        });
+
+        it('should honour `capture: true` supplied as an accessor', function () {
+          const opts = Object.defineProperty({}, 'capture', {get: () => true});
+          const inner = document.createElement('span');
+          button.appendChild(inner);
+          let phase = -1;
+          const listener = (e: Event) => {
+            phase = e.eventPhase;
+          };
+          button.addEventListener('click', listener, opts as any);
+          inner.dispatchEvent(clickEvent);
+          expect(phase).toBe(Event.CAPTURING_PHASE);
+
+          button.removeEventListener('click', listener, opts as any);
+          phase = -1;
+          inner.dispatchEvent(clickEvent);
+          expect(phase).toBe(-1);
+          button.removeChild(inner);
+        });
+
+        it('should honour `once: true` supplied as an accessor', function () {
+          const opts = Object.defineProperty({}, 'once', {get: () => true});
+          let callCount = 0;
+          button.addEventListener('click', () => callCount++, opts as any);
+          button.dispatchEvent(clickEvent);
+          button.dispatchEvent(clickEvent);
+          expect(callCount).toBe(1);
+        });
+
+        // `AbortController.prototype.signal` is a prototype accessor, so an
+        // own-properties-only copy would drop it.
+        it('should honour `signal` on an AbortController passed as options', function () {
+          const ac = new AbortController();
+          const logs: string[] = [];
+          button.addEventListener('click', () => logs.push('click'), ac);
+          button.dispatchEvent(clickEvent);
+          ac.abort();
+          button.dispatchEvent(clickEvent);
+          expect(logs).toEqual(['click']);
+          expect(button.eventListeners!('click').length).toBe(0);
+        });
+
+        // https://github.com/angular/angular/pull/55796
+        it('should accept a frozen options object', function () {
+          const opts = Object.freeze({capture: true, once: true});
+          const listener = () => {};
+          expect(() => button.addEventListener('click', listener, opts as any)).not.toThrow();
+          button.removeEventListener('click', listener, opts as any);
+        });
+      });
+
       // https://github.com/angular/angular/issues/56148
       it('should store the remove abort listener on the task itself and not the task data', function () {
         const logs: string[] = [];
