@@ -6,7 +6,7 @@ The Angular Router integrates with Angular Signals through the `resources` route
 
 Route resources offer several advantages over traditional [data resolvers](/guide/routing/data-resolvers):
 
-- **Parallel execution**: Route resources run concurrently in parallel across all matched routes, eliminating the sequential waterfall delays of resolvers.
+- **Parallel execution**: Route resources run concurrently across all matched routes, eliminating the sequential waterfall delays of resolvers.
 - **Non-blocking data loading**: Use `nonBlocking()` to activate the route immediately and render loading skeletons or UI states while data loads in the background.
 - **Reload without renavigation**: Call `.reload()` on individual resources or update signal parameters to refresh data without triggering a full route navigation, rerun guards, or re-match routes.
 - **Reactive data fetching**: Resources integrate directly with Angular Signals, automatically re-evaluating when signal dependencies change and exposing reactive status signals like `isLoading()` and `error()`.
@@ -63,9 +63,9 @@ TIP: Notice we map the exact primitive ID we need in `params: () => ctx.params()
 
 Traditional data resolvers execute sequentially from parent routes to child routes. If a parent route resolver takes 200ms and a child route resolver takes 300ms, the navigation is blocked for 500ms total.
 
-In contrast, all route resources across the entire matched route hierarchy execute concurrently in parallel during navigation. In the same scenario, navigation completes in 300ms (the time of the slowest resource), eliminating network waterfalls.
+In contrast, all route resources across the entire matched route hierarchy execute concurrently during navigation. In the same scenario, navigation completes in 300ms (the time of the slowest resource), eliminating network waterfalls.
 
-NOTE: Because route resources execute concurrently in parallel, they cannot read or depend on other resources defined on the route. If you need dependent data fetching (where request B requires the output of request A), perform the sequential sequence within a single resource's loader function.
+TIP: If a resource depends on data from another resource, you can compose the requests within a single resource's loader function, or reactively derive the dependent resource's `params` from the other resource's signal.
 
 ### ResourceContext
 

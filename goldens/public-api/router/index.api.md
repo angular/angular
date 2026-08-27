@@ -47,6 +47,7 @@ export class ActivatedRoute {
     get pathFromRoot(): ActivatedRoute[];
     get queryParamMap(): Observable<ParamMap>;
     queryParams: Observable<Params>;
+    resources?: ResourceResult;
     get root(): ActivatedRoute;
     get routeConfig(): Route | null;
     snapshot: ActivatedRouteSnapshot;
@@ -72,6 +73,7 @@ export class ActivatedRouteSnapshot {
     // (undocumented)
     get queryParamMap(): ParamMap;
     queryParams: Params;
+    resources?: ResourceResult;
     get root(): ActivatedRouteSnapshot;
     readonly routeConfig: Route | null;
     get title(): string | undefined;

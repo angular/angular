@@ -10,6 +10,8 @@ import {
   Component,
   computed,
   EnvironmentProviders,
+  EnvironmentInjector,
+  inject,
   resource,
   Resource,
   ResourceStatus,
@@ -856,6 +858,126 @@ describe('Router resources integration', () => {
       valueSignal.set('streamed-2');
       await harness.fixture.whenStable();
       expect(resourceRef.value()).toBe('streamed-2');
+    });
+
+    describe('dependent resources', () => {
+      it('should support resources depending on each other on the same route', async () => {
+        const {promise: userPromise, resolve: resolveUser} = promiseWithResolvers<any>();
+        const {promise: teamPromise, resolve: resolveTeam} = promiseWithResolvers<any>();
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user-team',
+            component: TargetCmp,
+            resources: () => {
+              const user = resource({
+                loader: () => userPromise,
+              });
+              const team = resource({
+                params: () => user.value()?.teamId,
+                loader: async ({params: teamId}) => {
+                  if (!teamId) {
+                    return new Promise(() => {});
+                  }
+                  return teamPromise;
+                },
+              });
+              return {user, team};
+            },
+          },
+        ]);
+
+        const nav = harness.navigateByUrl('/user-team');
+        await timeout();
+
+        // Navigation is blocked because both user and team are loading
+        expect(router.url).not.toBe('/user-team');
+
+        // Resolve user first
+        resolveUser({id: 'u1', teamId: 't42'});
+        await timeout();
+
+        // Navigation should still be blocked waiting for team
+        expect(router.url).not.toBe('/user-team');
+
+        // Resolve team
+        resolveTeam({id: 't42', name: 'Angular Team'});
+        await nav;
+        await harness.fixture.whenStable();
+
+        expect(router.url).toBe('/user-team');
+        const resources = (router.routerState.root.firstChild as ActivatedRouteInternal)
+          ?.resources as any;
+        expect(resources['user'].value()).toEqual({id: 'u1', teamId: 't42'});
+        expect(resources['team'].value()).toEqual({id: 't42', name: 'Angular Team'});
+      });
+
+      it('should support child route resource depending on shared signal updated by parent resource', async () => {
+        const {promise: parentPromise, resolve: resolveParent} = promiseWithResolvers<any>();
+        const {promise: childPromise, resolve: resolveChild} = promiseWithResolvers<any>();
+
+        const sharedUserSignal = signal<any>(undefined);
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user/:id',
+            component: TargetCmp,
+            resources: () => ({
+              user: resource({
+                loader: async () => {
+                  const user = await parentPromise;
+                  sharedUserSignal.set(user);
+                  return user;
+                },
+              }),
+            }),
+            children: [
+              {
+                path: 'details',
+                component: TargetCmp,
+                resources: () => ({
+                  details: resource({
+                    params: () => sharedUserSignal()?.role,
+                    loader: async ({params: role}) => {
+                      if (!role) {
+                        return new Promise(() => {});
+                      }
+                      return childPromise;
+                    },
+                  }),
+                }),
+              },
+            ],
+          },
+        ]);
+
+        const nav = harness.navigateByUrl('/user/1/details');
+        await timeout();
+
+        // Navigation is blocked
+        expect(router.url).not.toBe('/user/1/details');
+
+        // Resolve parent
+        resolveParent({id: '1', role: 'admin'});
+        await timeout();
+
+        // Still blocked on child
+        expect(router.url).not.toBe('/user/1/details');
+
+        // Resolve child
+        resolveChild({role: 'admin', permissions: ['read', 'write']});
+        await nav;
+        await harness.fixture.whenStable();
+
+        expect(router.url).toBe('/user/1/details');
+        const parentRoute = router.routerState.root.firstChild as ActivatedRouteInternal;
+        const childRoute = parentRoute.firstChild as ActivatedRouteInternal;
+        expect(parentRoute.resources?.['user'].value()).toEqual({id: '1', role: 'admin'});
+        expect(childRoute.resources?.['details'].value()).toEqual({
+          role: 'admin',
+          permissions: ['read', 'write'],
+        });
+      });
     });
   });
 });

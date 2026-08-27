@@ -909,7 +909,7 @@ export function withViewTransitions(
  * @see {@link withRouterResources}
  * @see {@link provideRouter}
  *
- * @experimental
+ * @developerPreview 22.2
  */
 export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.RouterResourcesFeature>;
 
@@ -930,7 +930,7 @@ export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.RouterResou
  * );
  * ```
  *
- * @experimental
+ * @developerPreview 22.2
  * @returns A set of providers for use with `provideRouter`.
  */
 export function withRouterResources(): RouterResourcesFeature {

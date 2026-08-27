@@ -494,7 +494,6 @@ export class RoutedComponentInputBinder {
       const {handledKeys, createdEffects} = this.feature.createResourceOutletBindingEffects(
         outlet.activatedComponentRef,
         activatedRoute,
-        injector,
       );
       effects.push(...createdEffects);
       keysBoundToBlockingResources = handledKeys;
