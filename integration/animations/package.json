@@ -34,9 +34,9 @@
     "concurrently": "10.0.5",
     "jasmine": "6.3.0",
     "jasmine-core": "6.3.0",
-    "puppeteer": "25.8.0",
+    "puppeteer": "25.9.0",
     "ts-node": "^10.9.1",
     "typescript": "6.0.3"
   },
-  "packageManager": "pnpm@11.22.0"
+  "packageManager": "pnpm@11.24.0"
 }
