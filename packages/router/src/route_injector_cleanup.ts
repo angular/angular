@@ -9,11 +9,7 @@
 import {InjectionToken} from '@angular/core';
 
 import {Route, Routes} from './models';
-import {
-  DetachedRouteHandleInternal,
-  ExperimentalRouteReuseStrategy,
-  RouteReuseStrategy,
-} from './route_reuse_strategy';
+import {DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {ActivatedRouteSnapshot, RouterState} from './router_state';
 
 /**
@@ -37,8 +33,7 @@ export function routeInjectorCleanup(
   }
 
   // For stored routes, collect them and all their parents by iterating pathFromRoot.
-  const storedHandles =
-    (routeReuseStrategy as ExperimentalRouteReuseStrategy).retrieveStoredRouteHandles?.() || [];
+  const storedHandles = routeReuseStrategy.retrieveStoredRouteHandles?.() || [];
   for (const handle of storedHandles) {
     const internalHandle = handle as DetachedRouteHandleInternal;
     if (internalHandle?.route?.value?.snapshot) {
@@ -75,7 +70,7 @@ function destroyUnusedInjectors(
       !!(
         (route._injector || route._loadedInjector) &&
         !activeRoutes.has(route) &&
-        ((strategy as ExperimentalRouteReuseStrategy).shouldDestroyInjector?.(route) ?? false)
+        (strategy.shouldDestroyInjector?.(route) ?? false)
       );
 
     if (route.children) {

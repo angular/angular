@@ -9,7 +9,7 @@
 import {initializeWebMCPPolyfill, cleanupWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
 import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
 import {Component, createEnvironmentInjector, EnvironmentInjector} from '../../src/core';
-import {provideRouter, Router, withExperimentalAutoCleanupInjectors} from '@angular/router';
+import {provideRouter, Router, withAutoCleanupInjectors} from '@angular/router';
 import {provideExperimentalWebMcpTools} from '../../src/webmcp/provide_tools';
 import {Execute} from '../../src/webmcp/types';
 import {TestBed} from '../../testing';
@@ -103,7 +103,7 @@ describe('provideExperimentalWebMcpTools', () => {
               ],
             },
           ],
-          withExperimentalAutoCleanupInjectors(),
+          withAutoCleanupInjectors(),
         ),
       ],
     });

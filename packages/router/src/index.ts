@@ -72,6 +72,7 @@ export * from './models_deprecated';
 export {Navigation, NavigationExtras, UrlCreationOptions} from './navigation_transition';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 export {
+  AutoCleanupInjectorsFeature,
   ComponentInputBindingFeature,
   DebugTracingFeature,
   DisabledInitialNavigationFeature,
@@ -91,6 +92,7 @@ export {
   withDisabledInitialNavigation,
   withEnabledBlockingInitialNavigation,
   withExperimentalAutoCleanupInjectors,
+  withAutoCleanupInjectors,
   withExperimentalPlatformNavigation,
   withHashLocation,
   withInMemoryScrolling,
