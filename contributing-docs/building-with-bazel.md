@@ -83,7 +83,7 @@ using the proper flags with your Bazel test runs in Angular.
   e.g. `pnpm bazel test packages/core/test:test --config=debug`
 
 The process should automatically connect to the debugger.
-For more, see the [rules_nodejs Debugging documentation](https://bazelbuild.github.io/rules_nodejs/index.html#debugging).
+For more, see the [rules_nodejs Debugging documentation](https://github.com/bazel-contrib/rules_nodejs/blob/stable/docs/debugging.md).
 
 - Click on "Resume script execution" to let the code run until the first `debugger` statement or a
   previously set breakpoint.
