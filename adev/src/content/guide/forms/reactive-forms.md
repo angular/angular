@@ -207,6 +207,34 @@ Display the value for the form group instance in the component template using th
 </docs-step>
 </docs-workflow>
 
+### Splitting a form into child components
+
+You can split a large form into child components while keeping the form model in the parent
+component. Apply the `formGroupName` directive to the child component's host element to connect it
+to the relevant nested `FormGroup`. Changes to controls in the child then propagate to the parent
+form, including value and validity changes.
+
+The following child component imports `ReactiveFormsModule` so that its template can use reactive
+form directives. Controls in the component view need the host `FormGroupName` directive exposed as
+their `ControlContainer`, so the component provides it through `viewProviders`.
+
+<docs-code header="address-editor.component.ts" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/address-editor/address-editor.component.ts"/>
+
+Controls in the child template can then use `formControlName` as usual.
+
+<docs-code header="address-editor.component.html" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/address-editor/address-editor.component.html"/>
+
+Import the child component and bind it to the nested address group by name.
+
+<docs-code header="profile-editor.component.ts (import address editor)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="address-editor-import"/>
+
+<docs-code header="profile-editor.component.html (address editor)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.html" region="address-editor"/>
+
+The parent remains the source of truth for the entire form. It can read the latest nested values and
+validation status from `profileForm`, so the child does not need to emit its form value separately.
+You can repeat this pattern at deeper levels by applying another `formGroupName` directive to the
+next child component.
+
 ### Updating parts of the data model
 
 When updating the value for a form group instance that contains multiple controls, you might only want to update parts of the model.

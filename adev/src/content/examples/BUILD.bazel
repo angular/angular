@@ -1,4 +1,5 @@
 load("//adev/shared-docs:defaults.bzl", "copy_to_bin")
+load("//tools:defaults.bzl", "ng_project", "zoneless_web_test_suite")
 
 # All example files.
 filegroup(
@@ -22,4 +23,32 @@ copy_to_bin(
         ],
     ),
     visibility = ["//visibility:public"],
+)
+
+ng_project(
+    name = "reactive_forms_profile_editor_test_lib",
+    testonly = True,
+    srcs = [
+        "reactive-forms/src/app/profile-editor/address-editor/address-editor.component.ts",
+        "reactive-forms/src/app/profile-editor/profile-editor.component.spec.ts",
+        "reactive-forms/src/app/profile-editor/profile-editor.component.ts",
+    ],
+    assets = [
+        "reactive-forms/src/app/profile-editor/address-editor/address-editor.component.css",
+        "reactive-forms/src/app/profile-editor/address-editor/address-editor.component.html",
+        "reactive-forms/src/app/profile-editor/profile-editor.component.css",
+        "reactive-forms/src/app/profile-editor/profile-editor.component.html",
+    ],
+    tsconfig = "//packages:tsconfig_test",
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/forms",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "reactive_forms_profile_editor_test",
+    deps = [":reactive_forms_profile_editor_test_lib"],
 )
