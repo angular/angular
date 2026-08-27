@@ -1401,7 +1401,7 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
       vscode-languageserver-textdocument:
-        specifier: ^1.0.12
+        specifier: 1.0.12
         version: 1.0.12
       vscode-uri:
         specifier: 3.1.0
