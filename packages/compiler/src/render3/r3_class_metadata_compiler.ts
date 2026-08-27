@@ -85,10 +85,16 @@ export function compileComponentClassMetadata(
     return compileClassMetadata(metadata);
   }
 
+  const uniqueDeps = new Map<string, R3DeferPerComponentDependency>();
+  for (const dep of dependencies) {
+    uniqueDeps.set(dep.symbolName, dep);
+  }
+  const dedupedDependencies = Array.from(uniqueDeps.values());
+
   return internalCompileSetClassMetadataAsync(
     metadata,
-    dependencies.map((dep) => new o.FnParam(dep.symbolName, o.DYNAMIC_TYPE)),
-    compileComponentMetadataAsyncResolver(dependencies),
+    dedupedDependencies.map((dep) => new o.FnParam(dep.symbolName, o.DYNAMIC_TYPE)),
+    compileComponentMetadataAsyncResolver(dedupedDependencies),
   );
 }
 

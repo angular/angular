@@ -2774,6 +2774,56 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+
+      it('should not duplicate explicitly deferred dependencies in generated setClassMetadataAsync', () => {
+        env.write(
+          'dirs.ts',
+          `
+          import { Directive } from '@angular/core';
+          @Directive({ selector: '[dirA]' })
+          export class DirA {}
+        `,
+        );
+
+        env.write(
+          '/test.ts',
+          `
+          import { Component } from '@angular/core';
+          import { DirA } from './dirs';
+
+          @Component({
+            selector: 'test-cmp',
+            // @ts-ignore
+            deferredImports: {
+              blockA: [DirA],
+              blockB: [DirA],
+            },
+            template: \`
+              @defer (name blockA) {
+                <div dirA></div>
+              }
+              @defer (name blockB) {
+                <div dirA></div>
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        // Make sure we do not generate a duplicate parameter like (DirA, DirA)
+        expect(jsContents).not.toContain('DirA, DirA');
+
+        // Ensure that setClassMetadataAsync has exactly one parameter for DirA
+        expect(cleanNewLines(jsContents)).toContain(
+          'i0.ɵsetClassMetadataAsync(TestCmp, ' +
+            '() => [/* @ts-ignore */ import("./dirs").then(m => m.DirA)], ' +
+            'DirA => { i0.ɵsetClassMetadata(TestCmp',
+        );
+      });
     });
   });
 });

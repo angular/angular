@@ -1005,7 +1005,13 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             const blockDeps = this.collectExplicitlyDeferredSymbols(node, initializer);
             explicitlyDeferredTypesByBlock.set(blockName, blockDeps);
             explicitlyDeferredTypes ??= [];
-            explicitlyDeferredTypes.push(...blockDeps);
+            for (const dep of blockDeps) {
+              if (
+                !explicitlyDeferredTypes.some((existing) => existing.symbolName === dep.symbolName)
+              ) {
+                explicitlyDeferredTypes.push(dep);
+              }
+            }
           }
         }
       }
