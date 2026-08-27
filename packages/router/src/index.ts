@@ -7,6 +7,7 @@
  */
 
 export {createUrlTreeFromSnapshot} from './create_url_tree';
+export {nonBlocking} from './router_resource';
 export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
 export {ROUTER_OUTLET_DATA, RouterOutlet, RouterOutletContract} from './directives/router_outlet';
@@ -65,6 +66,8 @@ export {
   RunGuardsAndResolvers,
   UrlMatcher,
   UrlMatchResult,
+  ResourceContext,
+  ResourceResult,
 } from './models';
 export {ViewTransitionInfo, ViewTransitionsFeatureOptions} from './utils/view_transition';
 
@@ -100,6 +103,8 @@ export {
   withPreloading,
   withRouterConfig,
   withViewTransitions,
+  withRouterResources,
+  RouterResourcesFeature,
 } from './provide_router';
 
 export {

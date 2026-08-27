@@ -21,7 +21,7 @@ import {Observable} from 'rxjs';
 export {DefaultExport} from '@angular/core';
 
 import type {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
-import {ParamMap, Params} from './shared';
+import {Params} from './shared';
 import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 
 /**
@@ -766,7 +766,6 @@ export interface Route {
    * A function that returns a record of resources.
    * This function is executed during the Main Loading Phase of a navigation.
    * @experimental
-   * @internal
    */
   resources?: (ctx: ResourceContext) => ResourceResult | Promise<ResourceResult>;
 

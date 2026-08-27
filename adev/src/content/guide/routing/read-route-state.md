@@ -30,6 +30,7 @@ The `ActivatedRoute` can provide different information about the route. Some com
 | `data`        | An `Observable` that contains the `data` object provided for the route. Also contains any resolved values from the resolve guard. |
 | `params`      | An `Observable` that contains the required and optional parameters specific to the route.                                         |
 | `queryParams` | An `Observable` that contains the query parameters available to all routes.                                                       |
+| `resources`   | An optional record of `Resource` instances defined on the route (when `withRouterResources` is enabled).                          |
 
 Check out the [`ActivatedRoute` API docs](/api/router/ActivatedRoute) for a complete list of what you can access with in the route.
 

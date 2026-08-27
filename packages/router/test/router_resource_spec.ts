@@ -19,17 +19,15 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  provideRouter as internalProvideRouter,
+  provideRouter,
   Router,
   NavigationError,
   withNavigationErrorHandler,
   RedirectCommand,
-  ɵwithRouterResources as withRouterResources,
-  ɵnonBlocking as nonBlocking,
+  withRouterResources,
+  nonBlocking,
   ActivatedRoute,
   Route,
-  ɵResourceContext as ResourceContext,
-  ɵResourceResult as ResourceResult,
   RouterFeatures,
 } from '@angular/router';
 import {RouterTestingHarness} from '../testing';
@@ -38,28 +36,9 @@ import {rxResource} from '@angular/core/rxjs-interop';
 import {of} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
-// TODO: Use the public @angular/router API once exposed
-type InternalRoute = Route & {
-  /**
-   * A function that returns a map of resources.
-   * This function is executed during the Main Loading Phase of a navigation.
-   * @experimental
-   * @internal
-   */
-  resources?: (ctx: ResourceContext) => ResourceResult | Promise<ResourceResult>;
-  children?: InternalRoute[];
-};
-
-export function provideRouter(
-  routes: InternalRoute[],
-  ...features: RouterFeatures[]
-): EnvironmentProviders {
-  return internalProvideRouter(routes, withRouterResources(), ...features);
-}
-
-async function setupRouter(routes: InternalRoute[], ...features: RouterFeatures[]) {
+async function setupRouter(routes: Route[], ...features: RouterFeatures[]) {
   TestBed.configureTestingModule({
-    providers: [provideRouter(routes, ...features)],
+    providers: [provideRouter(routes, ...features, withRouterResources())],
   });
   const harness = await RouterTestingHarness.create();
   const router = TestBed.inject(Router);

@@ -407,6 +407,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/data-resolvers',
           },
           {
+            label: 'Data fetching with resources',
+            path: 'guide/routing/data-fetching-with-resources',
+            contentPath: 'guide/routing/data-fetching-with-resources',
+            status: 'new',
+          },
+          {
             label: 'Lifecycle and events',
             path: 'guide/routing/lifecycle-and-events',
             contentPath: 'guide/routing/lifecycle-and-events',

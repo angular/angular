@@ -43,6 +43,8 @@ You can also control this behavior on individual navigations rather than globall
 router.navigate(['/some-path'], {onSameUrlNavigation: 'reload'});
 ```
 
+TIP: If you use [route resources](/guide/routing/data-fetching-with-resources#reloading-resources-without-renavigation), you can refresh data on-demand by calling `.reload()` on the resource or by updating signals read in `params`, without needing to configure `onSameUrlNavigation` or trigger a router navigation.
+
 ### Control parameter inheritance
 
 `paramsInheritanceStrategy` defines how route parameters and data flow from parent routes.

@@ -16,7 +16,7 @@ import {
   RouterOutlet,
   withComponentInputBinding,
   ROUTER_OUTLET_DATA,
-  ɵwithRouterResources as withRouterResources,
+  withRouterResources,
   ɵnonBlocking as nonBlocking,
   Route,
   RouterFeatures,
