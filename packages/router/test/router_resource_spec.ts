@@ -774,6 +774,30 @@ describe('Router resources integration', () => {
       expect(handleCount).toBe(1);
       expect((errorRef as Error).message).toBe('Resource failed!');
     });
+
+    it('should redirect when a blocking resource throws a RedirectCommand', async () => {
+      const {harness, router} = await setupRouter([
+        {
+          path: 'test',
+          component: TargetCmp,
+          resources: () => ({
+            data: resource({
+              loader: async () => {
+                throw new RedirectCommand(TestBed.inject(Router).parseUrl('/redirected'));
+              },
+            }),
+          }),
+        },
+        {
+          path: 'redirected',
+          component: TargetCmp,
+        },
+      ]);
+
+      await harness.navigateByUrl('/test');
+
+      expect(router.url).toBe('/redirected');
+    });
   });
 
   describe('rxResource Integration', () => {
