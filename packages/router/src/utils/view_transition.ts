@@ -72,7 +72,7 @@ export function createViewTransition(
   injector: Injector,
   from: ActivatedRouteSnapshot,
   to: ActivatedRouteSnapshot,
-  hasUAVisualTransition: boolean,
+  hasUAVisualTransition?: boolean,
 ): Promise<void> | undefined {
   const transitionOptions = injector.get(VIEW_TRANSITION_OPTIONS);
   const document = injector.get(DOCUMENT);

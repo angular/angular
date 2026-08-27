@@ -313,7 +313,7 @@ export class Router {
     source: NavigationTrigger,
     state: RestoredState | null | undefined,
     extras: NavigationExtras,
-    hasUAVisualTransition: boolean = false,
+    hasUAVisualTransition?: boolean,
   ) {
     // TODO: restoredState should always include the entire state, regardless
     // of navigationId. This requires a breaking change to update the type on
@@ -667,7 +667,7 @@ export class Router {
     source: NavigationTrigger,
     restoredState: RestoredState | null,
     extras: NavigationExtras,
-    hasUAVisualTransition: boolean = false,
+    hasUAVisualTransition?: boolean,
     priorPromise?: {
       resolve: (result: boolean | PromiseLike<boolean>) => void;
       reject: (reason?: any) => void;

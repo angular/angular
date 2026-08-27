@@ -153,7 +153,7 @@ export abstract class StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
-      hasUAVisualTransition: boolean,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike;
 
@@ -195,7 +195,7 @@ export class HistoryStateManager extends StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
-      hasUAVisualTransition: boolean,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike {
     return this.location.subscribe((event) => {
@@ -210,7 +210,7 @@ export class HistoryStateManager extends StateManager {
             {
               replaceUrl: true,
             },
-            event.hasUAVisualTransition === true,
+            event.hasUAVisualTransition,
           );
         });
       }

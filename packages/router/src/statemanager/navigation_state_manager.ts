@@ -101,7 +101,7 @@ export class NavigationStateManager extends StateManager {
   private nonRouterCurrentEntryChangeSubject = new Subject<{
     path: string;
     state: RestoredState | null | undefined;
-    hasUAVisualTransition: boolean;
+    hasUAVisualTransition?: boolean;
   }>();
 
   nonRouterEntryChangeListener?: SubscriptionLike;
@@ -131,7 +131,7 @@ export class NavigationStateManager extends StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
-      hasUAVisualTransition: boolean,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike {
     this.activeHistoryEntry = this.navigation.currentEntry!;
@@ -544,7 +544,7 @@ export class NavigationStateManager extends StateManager {
     this.nonRouterCurrentEntryChangeSubject.next({
       path,
       state,
-      hasUAVisualTransition: event.hasUAVisualTransition === true,
+      hasUAVisualTransition: event.hasUAVisualTransition,
     });
   }
 

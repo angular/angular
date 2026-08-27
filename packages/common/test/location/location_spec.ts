@@ -236,6 +236,17 @@ describe('Location Class', () => {
 
       expect(hasUAVisualTransition).toBeTrue();
     });
+
+    it('should not add a UA visual transition when the platform event does not provide one', () => {
+      let hasOwnUAVisualTransition: boolean | undefined;
+      location.subscribe((event) => {
+        hasOwnUAVisualTransition = Object.hasOwn(event, 'hasUAVisualTransition');
+      });
+
+      locationStrategy.simulatePopState('/test');
+
+      expect(hasOwnUAVisualTransition).toBeFalse();
+    });
   });
 
   describe('location.normalize(url) should return only route', () => {

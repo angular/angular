@@ -156,7 +156,6 @@ describe('navigation', () => {
         jasmine.objectContaining({
           canIntercept: true,
           hashChange: false,
-          hasUAVisualTransition: false,
           info: undefined,
           navigationType: 'push',
           userInitiated: false,
@@ -170,6 +169,7 @@ describe('navigation', () => {
           }),
         }),
       );
+      expect(Object.hasOwn(navigateEvent, 'hasUAVisualTransition')).toBeFalse();
       expect(navigateEvent.destination.getState()).toBeUndefined();
       const committedEntry = await committed;
       expect(committedEntry).toEqual(
@@ -959,7 +959,7 @@ describe('navigation', () => {
       expect(locals.popStateEvents.length).toBe(1);
       const popStateEvent = locals.popStateEvents[0];
       expect(popStateEvent.state).toBeNull();
-      expect(popStateEvent.hasUAVisualTransition).toBeFalse();
+      expect(Object.hasOwn(popStateEvent, 'hasUAVisualTransition')).toBeFalse();
       expect(locals.navigation.canGoBack).toBeTrue();
       expect(locals.navigation.canGoForward).toBeTrue();
       const finishedEntry = await finished;

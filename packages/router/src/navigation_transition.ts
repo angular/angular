@@ -317,7 +317,7 @@ export interface NavigationTransition {
   urlAfterRedirects?: UrlTree;
   rawUrl: UrlTree;
   extras: NavigationExtras;
-  hasUAVisualTransition: boolean;
+  hasUAVisualTransition?: boolean;
   resolve: (value: boolean | PromiseLike<boolean>) => void;
   reject: (reason?: any) => void;
   promise: Promise<boolean>;

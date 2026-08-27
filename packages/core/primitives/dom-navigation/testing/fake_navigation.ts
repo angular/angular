@@ -811,7 +811,7 @@ function dispatchNavigateEvent({
   canIntercept,
   userInitiated,
   hashChange,
-  hasUAVisualTransition = false,
+  hasUAVisualTransition,
   navigationType,
   destination,
   info,
@@ -841,7 +841,9 @@ function dispatchNavigateEvent({
   event.canIntercept = canIntercept;
   event.userInitiated = userInitiated;
   event.hashChange = hashChange;
-  event.hasUAVisualTransition = hasUAVisualTransition;
+  if (hasUAVisualTransition) {
+    event.hasUAVisualTransition = true;
+  }
   event.signal = eventAbortController.signal;
   event.abortController = eventAbortController;
   event.info = info;
@@ -1171,14 +1173,16 @@ function createPopStateEvent({
   hasUAVisualTransition,
 }: {
   state: unknown;
-  hasUAVisualTransition: boolean;
+  hasUAVisualTransition?: boolean;
 }) {
   const event = new Event('popstate', {
     bubbles: false,
     cancelable: false,
   }) as {-readonly [P in keyof PopStateEvent]: PopStateEvent[P]};
   event.state = state;
-  event.hasUAVisualTransition = hasUAVisualTransition;
+  if (hasUAVisualTransition) {
+    event.hasUAVisualTransition = true;
+  }
   return event as PopStateEvent;
 }
 

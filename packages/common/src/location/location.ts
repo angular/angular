@@ -77,13 +77,16 @@ export class Location implements OnDestroy {
     // https://developer.mozilla.org/en-US/docs/Web/API/URL/URL#parameters
     this._basePath = _stripOrigin(stripTrailingSlash(_stripIndexHtml(baseHref)));
     this._locationStrategy.onPopState((ev) => {
-      this._subject.next({
+      const popStateEvent: PopStateEvent = {
         'url': this.path(true),
         'pop': true,
         'state': ev.state,
         'type': ev.type,
-        'hasUAVisualTransition': ev.hasUAVisualTransition,
-      });
+      };
+      if (ev.hasUAVisualTransition) {
+        popStateEvent.hasUAVisualTransition = true;
+      }
+      this._subject.next(popStateEvent);
     });
   }
 
