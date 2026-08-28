@@ -619,6 +619,7 @@
       "providerToRecord",
       "publishSignalConfiguration",
       "queueEnterAnimations",
+      "readInputFromDirective",
       "refreshContentQueries",
       "refreshView",
       "registerHostBindingOpCodes",
