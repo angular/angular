@@ -44,6 +44,7 @@ import {
   PLATFORM_ID,
   provideZoneChangeDetection,
   provideZonelessChangeDetection,
+  Service,
   ɵsetClassMetadata as setClassMetadata,
   ɵɵsetNgModuleScope as setNgModuleScope,
   signal,
@@ -2749,7 +2750,7 @@ describe('TestBed module teardown', () => {
 
     const spy = spyOn(console, 'error');
     expect(() => TestBed.resetTestingModule()).toThrowError(
-      '1 component threw errors during cleanup',
+      '1 fixture threw errors during cleanup',
     );
     expect(spy).toHaveBeenCalledTimes(1);
   });
@@ -2776,7 +2777,7 @@ describe('TestBed module teardown', () => {
 
     const spy = spyOn(console, 'error');
     expect(() => TestBed.resetTestingModule()).toThrowError(
-      '3 components threw errors during cleanup',
+      '3 fixtures threw errors during cleanup',
     );
     expect(spy).toHaveBeenCalledTimes(3);
   });
@@ -2962,5 +2963,198 @@ describe('TestBed module `errorOnUnknownProperties`', () => {
     expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(true);
     TestBed.resetTestingModule();
     expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(false);
+  });
+});
+
+describe('TestBed.createDirective', () => {
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+  });
+
+  it('should be able to create a directive', () => {
+    @Directive({
+      host: {'class': 'foo'},
+    })
+    class Dir {}
+
+    const fixture = TestBed.createDirective(Dir, {tagName: 'div'});
+    fixture.detectChanges();
+
+    expect(fixture.directiveInstance).toBeInstanceOf(Dir);
+    expect(fixture.nativeElement.classList.contains('foo')).toBe(true);
+  });
+
+  it('should be able to attach an input binding to the directive', () => {
+    @Directive()
+    class Dir {
+      @Input() value = 'initial';
+    }
+
+    const value = signal('override');
+    const fixture = TestBed.createDirective(Dir, {
+      tagName: 'div',
+      bindings: [inputBinding('value', value)],
+    });
+    fixture.detectChanges();
+    expect(fixture.directiveInstance.value).toBe('override');
+
+    value.set('override-changed');
+    fixture.detectChanges();
+    expect(fixture.directiveInstance.value).toBe('override-changed');
+  });
+
+  it('should be able to attach an output binding to the directive', () => {
+    @Directive()
+    class Dir {
+      @Output() event = new EventEmitter<void>();
+    }
+
+    let emitCount = 0;
+    const fixture = TestBed.createDirective(Dir, {
+      tagName: 'div',
+      bindings: [outputBinding('event', () => emitCount++)],
+    });
+    fixture.detectChanges();
+    expect(emitCount).toBe(0);
+
+    fixture.directiveInstance.event.emit();
+    fixture.detectChanges();
+    expect(emitCount).toBe(1);
+  });
+
+  it('should be able to set the tag name of the host element', () => {
+    @Directive({selector: 'hello-world'})
+    class Dir {}
+
+    const fixture = TestBed.createDirective(Dir, {tagName: 'my-dir'});
+    expect(fixture.nativeElement.tagName).toBe('MY-DIR');
+  });
+
+  it('should infer the tag name from the selector by default', () => {
+    @Directive({selector: 'my-inferred-tag[hello-world]'})
+    class Dir {}
+
+    const fixture = TestBed.createDirective(Dir);
+    expect(fixture.nativeElement.tagName).toBe('MY-INFERRED-TAG');
+  });
+
+  it('should throw if the directive selector does not set a tag name and `tagName` is not specified', () => {
+    @Directive({selector: '[dir]'})
+    class Dir {}
+
+    expect(() => TestBed.createDirective(Dir)).toThrowError(
+      /Cannot determine tag name for Dir, because one was not set in the options object and the selector for Dir does not include a tag name/,
+    );
+  });
+
+  it('should throw if the directive selector specifies multiple tag name', () => {
+    @Directive({selector: 'button[my-dir], a[my-dir]'})
+    class Dir {}
+
+    expect(() => TestBed.createDirective(Dir)).toThrowError(
+      /Directive Dir specifies multiple tag names in its selector \(button, a\)/,
+    );
+  });
+
+  it('should be able to create non-standalone directive declared in an imported module', () => {
+    @Directive({
+      standalone: false,
+      selector: '[dir]',
+      host: {
+        '[class.foo]': 'isFoo',
+      },
+    })
+    class Dir {
+      @Input() value = 'initial';
+      isFoo = true;
+    }
+
+    TestBed.configureTestingModule({declarations: [Dir]});
+
+    const fixture = TestBed.createDirective(Dir, {
+      tagName: 'div',
+      bindings: [inputBinding('value', () => 'hello')],
+    });
+    fixture.detectChanges();
+
+    expect(fixture.directiveInstance).toBeInstanceOf(Dir);
+    expect(fixture.directiveInstance.value).toBe('hello');
+    expect(fixture.nativeElement.classList.contains('foo')).toBe(true);
+  });
+
+  it('should be able to use dependency injection', () => {
+    @Service()
+    class SomeService {
+      readonly value = 'hello';
+    }
+
+    @Directive()
+    class Dir {
+      readonly service = inject(SomeService);
+    }
+
+    const fixture = TestBed.createDirective(Dir, {tagName: 'div'});
+    expect(fixture.directiveInstance.service.value).toBe('hello');
+  });
+
+  it('should be able to inject provider from the test module', () => {
+    @Injectable()
+    class MyService {
+      readonly message = 'hello';
+    }
+
+    @Directive({
+      standalone: false,
+      selector: '[dir]',
+    })
+    class Dir {
+      readonly service = inject(MyService);
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [Dir],
+      providers: [MyService],
+    });
+
+    const fixture = TestBed.createDirective(Dir, {tagName: 'div'});
+    fixture.detectChanges();
+
+    expect(fixture.directiveInstance.service.message).toBe('hello');
+  });
+
+  it('should be able to inject provider from an imported module', () => {
+    @Injectable()
+    class ModuleService {
+      value = 'hello-module';
+    }
+
+    @Injectable()
+    class DirProvidedService {
+      value = 'hello-directive';
+    }
+
+    @Directive({
+      standalone: false,
+      selector: '[dir]',
+      providers: [DirProvidedService],
+    })
+    class Dir {
+      readonly moduleService = inject(ModuleService);
+      readonly dirService = inject(DirProvidedService);
+    }
+
+    @NgModule({
+      declarations: [Dir],
+      exports: [Dir],
+      providers: [ModuleService],
+    })
+    class DirModule {}
+
+    TestBed.configureTestingModule({imports: [DirModule]});
+    const fixture = TestBed.createDirective(Dir, {tagName: 'div'});
+    const dir = fixture.directiveInstance;
+
+    expect(dir.moduleService.value).toBe('hello-module');
+    expect(dir.dirService.value).toBe('hello-directive');
   });
 });
