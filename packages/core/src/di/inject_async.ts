@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DestroyRef} from '../core';
 import {IDLE_SERVICE} from '../defer/idle_service';
+import {ElementRef} from '../linker/element_ref';
 import {DefaultExport, maybeUnwrapDefaultExport} from '../util/default_export';
 import {promiseWithResolvers} from '../util/promise_with_resolvers';
 import {assertInInjectionContext} from './contextual';
@@ -110,6 +112,11 @@ export interface InjectAsyncOptions {
  */
 export type PrefetchTrigger = () => Promise<void>;
 
+/** Helper to extract HTMLElement from raw Element or ElementRef. */
+function unwrapElement(target: HTMLElement | ElementRef<HTMLElement>): HTMLElement {
+  return target instanceof ElementRef ? target.nativeElement : target;
+}
+
 /**
  * A `PrefetchTrigger` helper function to provide the logic of triggering dependency loading
  * when the browser becomes idle.
@@ -140,6 +147,117 @@ export function onIdle(options?: {timeout?: number}): Promise<void> {
   const idleService = inject(IDLE_SERVICE);
   const {promise, resolve} = promiseWithResolvers<void>();
   idleService.requestOnIdle(() => resolve(), options);
+
+  return promise;
+}
+
+/**
+ * A `PrefetchTrigger` helper function to provide the logic of triggering dependency loading
+ * after a timer delay.
+ *
+ * @usageNotes
+ *
+ * ```ts
+ * injectAsync(() => import('./my.service'), {prefetch: () => onTimer(1000)});
+ * ```
+ *
+ * @see [Prefetching the dependency](guide/di/lazy-loading-services#prefetching-the-dependency)
+ *
+ * @publicApi 22.0
+ */
+export function onTimer(delay: number): Promise<void> {
+  if (ngDevMode) {
+    assertInInjectionContext(onTimer);
+  }
+
+  const destroyRef = inject(DestroyRef);
+  const {promise, resolve} = promiseWithResolvers<void>();
+
+  const timerId = setTimeout(() => resolve(), delay);
+
+  destroyRef.onDestroy(() => clearTimeout(timerId));
+
+  return promise;
+}
+
+/**
+ * A `PrefetchTrigger` helper function to provide the logic of triggering dependency loading
+ * when the user hovers over a target element.
+ *
+ * @usageNotes
+ *
+ * ```ts
+ * const buttonRef = inject(ElementRef);
+ * injectAsync(() => import('./my.service'), {prefetch: () => onHover(buttonRef)});
+ * ```
+ *
+ * @see [Prefetching the dependency](guide/di/lazy-loading-services#prefetching-the-dependency)
+ *
+ * @publicApi 22.0
+ */
+export function onHover(target: HTMLElement | ElementRef<HTMLElement>): Promise<void> {
+  if (ngDevMode) {
+    assertInInjectionContext(onHover);
+  }
+
+  const element = unwrapElement(target);
+  const destroyRef = inject(DestroyRef);
+  const {promise, resolve} = promiseWithResolvers<void>();
+
+  const controller = new AbortController();
+
+  element.addEventListener(
+    'pointerenter',
+    () => {
+      controller.abort();
+      resolve();
+    },
+    {signal: controller.signal},
+  );
+
+  destroyRef.onDestroy(() => controller.abort());
+
+  return promise;
+}
+
+/**
+ * A `PrefetchTrigger` helper function to provide the logic of triggering dependency loading
+ * when the user interacts with a target element.
+ *
+ * @usageNotes
+ *
+ * ```ts
+ * const buttonRef = inject(ElementRef);
+ * injectAsync(() => import('./my.service'), {prefetch: () => onInteraction(buttonRef)});
+ * ```
+ *
+ * @see [Prefetching the dependency](guide/di/lazy-loading-services#prefetching-the-dependency)
+ *
+ * @publicApi 22.0
+ */
+export function onInteraction(target: HTMLElement | ElementRef<HTMLElement>): Promise<void> {
+  if (ngDevMode) {
+    assertInInjectionContext(onInteraction);
+  }
+
+  const element = unwrapElement(target);
+  const destroyRef = inject(DestroyRef);
+  const {promise, resolve} = promiseWithResolvers<void>();
+
+  const controller = new AbortController();
+
+  const handler = () => {
+    controller.abort();
+    resolve();
+  };
+
+  const events = ['pointerenter', 'focus', 'click'];
+
+  for (const event of events) {
+    element.addEventListener(event, handler, {signal: controller.signal});
+  }
+
+  destroyRef.onDestroy(() => controller.abort());
 
   return promise;
 }

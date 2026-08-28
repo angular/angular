@@ -1340,6 +1340,9 @@ export interface OnDestroy {
 }
 
 // @public
+export function onHover(target: HTMLElement | ElementRef<HTMLElement>): Promise<void>;
+
+// @public
 export function onIdle(options?: {
     timeout?: number;
 }): Promise<void>;
@@ -1348,6 +1351,12 @@ export function onIdle(options?: {
 export interface OnInit {
     ngOnInit(): void;
 }
+
+// @public
+export function onInteraction(target: HTMLElement | ElementRef<HTMLElement>): Promise<void>;
+
+// @public
+export function onTimer(delay: number): Promise<void>;
 
 // @public
 export interface Optional {

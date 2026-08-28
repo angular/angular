@@ -22,6 +22,9 @@ import {
   InjectionToken,
   Injector,
   onIdle,
+  onTimer,
+  onHover,
+  onInteraction,
   ProviderToken,
   runInInjectionContext,
 } from '@angular/core';
@@ -89,15 +92,6 @@ describe('injectAsync', () => {
 
       const foo = await fooPromise();
       expect(foo).toBeInstanceOf(MyMockedFooService);
-    });
-  });
-
-  it('should inject asynchronously with onIdle trigger', async () => {
-    await TestBed.runInInjectionContext(async () => {
-      const fooPromise = injectAsync(() => Promise.resolve(FooService), {prefetch: onIdle});
-
-      const foo = await fooPromise();
-      expect(foo).toBeInstanceOf(FooService);
     });
   });
 
@@ -248,60 +242,6 @@ describe('injectAsync', () => {
     });
   });
 
-  it('should fire on onIdle timeout', async () => {
-    jasmine.clock().install();
-    jasmine.clock().autoTick();
-
-    const idleService: IdleService = {
-      requestOnIdle(
-        callback: (deadline?: IdleDeadline) => void,
-        options?: IdleRequestOptions,
-      ): number {
-        // Do not run idle callbacks eagerly in tests; only honor explicit timeout path.
-        if (options?.timeout == null) {
-          return -1;
-        }
-
-        return setTimeout(callback, options.timeout) as unknown as number;
-      },
-      cancelOnIdle(id: number): void {
-        if (id !== -1) {
-          clearTimeout(id);
-        }
-      },
-    };
-
-    TestBed.configureTestingModule({
-      providers: [{provide: IDLE_SERVICE, useValue: idleService}],
-    });
-
-    let loaderCalled = false;
-    const loader = () =>
-      new Promise<ProviderToken<FooService>>((resolve) => {
-        loaderCalled = true;
-        resolve(FooService);
-      });
-
-    await TestBed.runInInjectionContext(async () => {
-      const fooPromise = injectAsync(loader, {prefetch: () => onIdle({timeout: 500})});
-
-      jasmine.clock().tick(300);
-      await Promise.resolve(); // wait for the loader promise to resolve
-      expect(loaderCalled).toBe(false);
-
-      // Simulate the passage of time until the onIdle timeout fires
-      jasmine.clock().tick(600);
-      await Promise.resolve(); // wait for the loader promise to resolve
-
-      expect(loaderCalled).toBe(true);
-
-      const foo = await fooPromise();
-      expect(foo).toBeInstanceOf(FooService);
-    });
-
-    jasmine.clock().uninstall();
-  });
-
   it('should not cause an unhandled promise rejection if prefetch trigger rejects', async () => {
     await TestBed.runInInjectionContext(async () => {
       const fooPromise = injectAsync(() => Promise.resolve(FooService), {
@@ -334,6 +274,250 @@ describe('injectAsync', () => {
 
       expect(error).toBeDefined();
       expect(error.message).toBe('loader error');
+    });
+  });
+
+  describe('built-in prefetch triggers', () => {
+    describe('onIdle', () => {
+      it('should inject asynchronously with onIdle trigger', async () => {
+        await TestBed.runInInjectionContext(async () => {
+          const fooPromise = injectAsync(() => Promise.resolve(FooService), {prefetch: onIdle});
+
+          const foo = await fooPromise();
+          expect(foo).toBeInstanceOf(FooService);
+        });
+      });
+
+      it('should fire on onIdle timeout', async () => {
+        jasmine.clock().install();
+        jasmine.clock().autoTick();
+
+        const idleService: IdleService = {
+          requestOnIdle(
+            callback: (deadline?: IdleDeadline) => void,
+            options?: IdleRequestOptions,
+          ): number {
+            // Do not run idle callbacks eagerly in tests; only honor explicit timeout path.
+            if (options?.timeout == null) {
+              return -1;
+            }
+
+            return setTimeout(callback, options.timeout) as unknown as number;
+          },
+          cancelOnIdle(id: number): void {
+            if (id !== -1) {
+              clearTimeout(id);
+            }
+          },
+        };
+
+        TestBed.configureTestingModule({
+          providers: [{provide: IDLE_SERVICE, useValue: idleService}],
+        });
+
+        let loaderCalled = false;
+        const loader = () =>
+          new Promise<ProviderToken<FooService>>((resolve) => {
+            loaderCalled = true;
+            resolve(FooService);
+          });
+
+        await TestBed.runInInjectionContext(async () => {
+          const fooPromise = injectAsync(loader, {prefetch: () => onIdle({timeout: 500})});
+
+          jasmine.clock().tick(300);
+          await Promise.resolve(); // wait for the loader promise to resolve
+          expect(loaderCalled).toBe(false);
+
+          // Simulate the passage of time until the onIdle timeout fires
+          jasmine.clock().tick(600);
+          await Promise.resolve(); // wait for the loader promise to resolve
+
+          expect(loaderCalled).toBe(true);
+
+          const foo = await fooPromise();
+          expect(foo).toBeInstanceOf(FooService);
+        });
+
+        jasmine.clock().uninstall();
+      });
+    });
+
+    describe('onTimer', () => {
+      it('should trigger prefetching after specified delay', async () => {
+        jasmine.clock().install();
+        jasmine.clock().autoTick();
+
+        let loaderCalled = false;
+        const loader = () => {
+          loaderCalled = true;
+          return Promise.resolve(FooService);
+        };
+
+        await TestBed.runInInjectionContext(async () => {
+          const fooPromise = injectAsync(loader, {prefetch: () => onTimer(200)});
+
+          jasmine.clock().tick(100);
+          await Promise.resolve();
+          expect(loaderCalled).toBe(false);
+
+          jasmine.clock().tick(150);
+          await Promise.resolve();
+          expect(loaderCalled).toBe(true);
+
+          const foo = await fooPromise();
+          expect(foo).toBeInstanceOf(FooService);
+        });
+
+        jasmine.clock().uninstall();
+      });
+    });
+
+    describe('onHover', () => {
+      it('should trigger prefetching on pointerenter event', async () => {
+        const button = document.createElement('button');
+        let loaderCalled = false;
+        const loader = () => {
+          loaderCalled = true;
+          return Promise.resolve(FooService);
+        };
+
+        await TestBed.runInInjectionContext(async () => {
+          const fooPromise = injectAsync(loader, {prefetch: () => onHover(button)});
+
+          expect(loaderCalled).toBe(false);
+
+          button.dispatchEvent(new Event('pointerenter'));
+          await Promise.resolve();
+
+          expect(loaderCalled).toBe(true);
+          const foo = await fooPromise();
+          expect(foo).toBeInstanceOf(FooService);
+        });
+      });
+
+      it('should unsubscribe event listener after triggering', async () => {
+        const button = document.createElement('button');
+        let loaderCallCount = 0;
+
+        await TestBed.runInInjectionContext(async () => {
+          injectAsync(
+            () => {
+              loaderCallCount++;
+              return Promise.resolve(FooService);
+            },
+            {prefetch: () => onHover(button)},
+          );
+
+          // Fire first hover to trigger prefetch
+          button.dispatchEvent(new Event('pointerenter'));
+          await Promise.resolve();
+
+          expect(loaderCallCount).toBe(1);
+
+          // Fire subsequent hovers - listener must be detached
+          button.dispatchEvent(new Event('pointerenter'));
+          button.dispatchEvent(new Event('pointerenter'));
+          await Promise.resolve();
+
+          // Loader should still only have been called once
+          expect(loaderCallCount).toBe(1);
+        });
+      });
+    });
+
+    describe('onInteraction', () => {
+      it('should trigger prefetching on pointerenter', async () => {
+        const button = document.createElement('button');
+        let loaderCalled = false;
+
+        await TestBed.runInInjectionContext(async () => {
+          const fooPromise = injectAsync(
+            () => {
+              loaderCalled = true;
+              return Promise.resolve(FooService);
+            },
+            {prefetch: () => onInteraction(button)},
+          );
+
+          button.dispatchEvent(new Event('pointerenter'));
+          await Promise.resolve();
+
+          expect(loaderCalled).toBe(true);
+          expect(await fooPromise()).toBeInstanceOf(FooService);
+        });
+      });
+
+      it('should trigger prefetching on focus', async () => {
+        const button = document.createElement('button');
+        let loaderCalled = false;
+
+        await TestBed.runInInjectionContext(async () => {
+          const fooPromise = injectAsync(
+            () => {
+              loaderCalled = true;
+              return Promise.resolve(FooService);
+            },
+            {prefetch: () => onInteraction(button)},
+          );
+
+          button.dispatchEvent(new Event('focus'));
+          await Promise.resolve();
+
+          expect(loaderCalled).toBe(true);
+          expect(await fooPromise()).toBeInstanceOf(FooService);
+        });
+      });
+
+      it('should trigger prefetching on click', async () => {
+        const button = document.createElement('button');
+        let loaderCalled = false;
+
+        await TestBed.runInInjectionContext(async () => {
+          const fooPromise = injectAsync(
+            () => {
+              loaderCalled = true;
+              return Promise.resolve(FooService);
+            },
+            {prefetch: () => onInteraction(button)},
+          );
+
+          button.dispatchEvent(new Event('click'));
+          await Promise.resolve();
+
+          expect(loaderCalled).toBe(true);
+          expect(await fooPromise()).toBeInstanceOf(FooService);
+        });
+      });
+
+      it('should clean up all listeners once any single event triggers', async () => {
+        const button = document.createElement('button');
+        let loaderCallCount = 0;
+
+        await TestBed.runInInjectionContext(async () => {
+          injectAsync(
+            () => {
+              loaderCallCount++;
+              return Promise.resolve(FooService);
+            },
+            {prefetch: () => onInteraction(button)},
+          );
+
+          // Fire 'focus' to trigger the prefetch and abort remaining listeners
+          button.dispatchEvent(new Event('focus'));
+          await Promise.resolve();
+
+          expect(loaderCallCount).toBe(1);
+
+          // Fire more events - they should be detached and ignored
+          button.dispatchEvent(new Event('pointerenter'));
+          button.dispatchEvent(new Event('click'));
+          await Promise.resolve();
+
+          // Loader should still have only been executed once
+          expect(loaderCallCount).toBe(1);
+        });
+      });
     });
   });
 });

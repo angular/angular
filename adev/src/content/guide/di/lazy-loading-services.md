@@ -46,14 +46,16 @@ private exporter = injectAsync(() => import('./report-exporter'));
 
 By default, the lazy chunk is only fetched when you invoke the returned function. You can start the download earlier by passing a `prefetch` trigger in the options. A trigger is any function that returns a `Promise`, when it resolves, Angular kicks off the loader.
 
-Angular ships with `onIdle`, a built-in trigger that waits until the browser becomes idle:
+Angular ships with built-in trigger helpers for common prefetching strategies: `onIdle`, `onTimer`, `onHover`, and `onInteraction`.
+
+### Prefetching on idle
+
+`onIdle` waits until the browser becomes idle before kicking off the download:
 
 ```ts
 import {Component, injectAsync, onIdle} from '@angular/core';
 
-@Component({
-  /* … */
-})
+@Component({/* … */})
 export class Report {
   private exporter = injectAsync(() => import('./report-exporter').then((m) => m.ReportExporter), {
     prefetch: onIdle,
@@ -67,19 +69,75 @@ You can also configure `onIdle` with a maximum wait time so the prefetch always 
 injectAsync(loader, {prefetch: () => onIdle({timeout: 1_000})});
 ```
 
+### Prefetching on a timer
+
+`onTimer` delays prefetching by a specified number of milliseconds:
+
+```ts
+import {Component, injectAsync, onTimer} from '@angular/core';
+
+@Component({/* … */})
+export class Report {
+  // Starts downloading 2 seconds after injection context initialization
+  private exporter = injectAsync(() => import('./report-exporter').then((m) => m.ReportExporter), {
+    prefetch: () => onTimer(2_000),
+  });
+}
+```
+
+### Prefetching on user hover
+
+`onHover` triggers prefetching as soon as the user hovers over a target element (`pointerenter`). It accepts either a raw `HTMLElement` or an `ElementRef`:
+
+```ts
+import {Component, ElementRef, injectAsync, onHover, viewChild} from '@angular/core';
+
+@Component({
+  template: `<button #exportBtn (click)="export()">Export Report</button>`,
+})
+export class Report {
+  private exportBtn = viewChild.required<ElementRef<HTMLButtonElement>>('exportBtn');
+
+  // Prefetches as soon as the user hovers over the button
+  private exporter = injectAsync(() => import('./report-exporter').then((m) => m.ReportExporter), {
+    prefetch: () => onHover(this.exportBtn()),
+  });
+}
+```
+
+### Prefetching on user interaction
+
+`onInteraction` triggers prefetching when the user performs any common interaction with the target element (`pointerenter`, `focus`, or `click`). Like `onHover`, it accepts either a raw `HTMLElement` or an `ElementRef`:
+
+```ts
+import {Component, ElementRef, injectAsync, onInteraction, viewChild} from '@angular/core';
+
+@Component({
+  template: `<button #exportBtn (click)="export()">Export Report</button>`,
+})
+export class Report {
+  private exportBtn = viewChild.required<ElementRef<HTMLButtonElement>>('exportBtn');
+
+  // Prefetches on hover, focus, or click
+  private exporter = injectAsync(() => import('./report-exporter').then((m) => m.ReportExporter), {
+    prefetch: () => onInteraction(this.exportBtn()),
+  });
+}
+```
+
 NOTE: Prefetching is opportunistic. If the user invokes the feature before the prefetch fires, Angular still loads the dependency immediately and resolves your `await` as soon as it's ready.
 
 ## Provide a custom prefetch trigger
 
-A `PrefetchTrigger` is just a function that returns a promise, the loader runs as soon as the promise resolves. Use this to align prefetching with your own signals, such as a hover or a scheduler tick:
+A `PrefetchTrigger` is just a function that returns a promise; the loader runs as soon as the promise resolves. Use this to create custom prefetch behavior, such as delaying until the next animation frame:
 
 ```ts
 import {PrefetchTrigger} from '@angular/core';
 
-export function onHover(target: HTMLElement): PrefetchTrigger {
+export function onNextFrame(): PrefetchTrigger {
   return () =>
     new Promise<void>((resolve) => {
-      target.addEventListener('pointerenter', () => resolve(), {once: true});
+      requestAnimationFrame(() => resolve());
     });
 }
 ```

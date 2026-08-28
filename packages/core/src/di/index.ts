@@ -17,7 +17,15 @@ export {forwardRef, ForwardRefFn, resolveForwardRef} from './forward_ref';
 export {HostAttributeToken} from './host_attribute_token';
 export {HOST_TAG_NAME} from './host_tag_name_token';
 export {ENVIRONMENT_INITIALIZER} from './initializer_token';
-export {injectAsync, InjectAsyncOptions, onIdle, PrefetchTrigger} from './inject_async';
+export {
+  injectAsync,
+  InjectAsyncOptions,
+  onIdle,
+  onTimer,
+  onHover,
+  onInteraction,
+  PrefetchTrigger,
+} from './inject_async';
 export {Injectable, InjectableDecorator, InjectableProvider} from './injectable';
 export {InjectionToken} from './injection_token';
 export {DestroyableInjector, Injector} from './injector';
