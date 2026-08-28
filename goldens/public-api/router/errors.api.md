@@ -37,8 +37,6 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     OUTLET_NOT_ACTIVATED = 4012,
     // (undocumented)
-    PROTOCOL_RELATIVE_URL_NOT_ALLOWED = 4019,
-    // (undocumented)
     ROOT_SEGMENT_MATRIX_PARAMS = 4003,
     // (undocumented)
     TWO_SEGMENTS_WITH_SAME_OUTLET = 4006,

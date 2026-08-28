@@ -2286,26 +2286,26 @@ describe('TestBed', () => {
       });
       TestBed.createComponent(ComponentWithNoAnnotations);
 
-      expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeTruthy();
-      expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
+      expect(Object.hasOwn(ComponentWithNoAnnotations, 'ɵcmp')).toBeTruthy();
+      expect(Object.hasOwn(SomeComponent, 'ɵcmp')).toBeTruthy();
 
-      expect(DirectiveWithNoAnnotations.hasOwnProperty('ɵdir')).toBeTruthy();
-      expect(SomeDirective.hasOwnProperty('ɵdir')).toBeTruthy();
+      expect(Object.hasOwn(DirectiveWithNoAnnotations, 'ɵdir')).toBeTruthy();
+      expect(Object.hasOwn(SomeDirective, 'ɵdir')).toBeTruthy();
 
-      expect(PipeWithNoAnnotations.hasOwnProperty('ɵpipe')).toBeTruthy();
-      expect(SomePipe.hasOwnProperty('ɵpipe')).toBeTruthy();
+      expect(Object.hasOwn(PipeWithNoAnnotations, 'ɵpipe')).toBeTruthy();
+      expect(Object.hasOwn(SomePipe, 'ɵpipe')).toBeTruthy();
 
       TestBed.resetTestingModule();
 
       // ng defs should be removed from classes with no annotations
-      expect(ComponentWithNoAnnotations.hasOwnProperty('ɵcmp')).toBeFalsy();
-      expect(DirectiveWithNoAnnotations.hasOwnProperty('ɵdir')).toBeFalsy();
-      expect(PipeWithNoAnnotations.hasOwnProperty('ɵpipe')).toBeFalsy();
+      expect(Object.hasOwn(ComponentWithNoAnnotations, 'ɵcmp')).toBeFalsy();
+      expect(Object.hasOwn(DirectiveWithNoAnnotations, 'ɵdir')).toBeFalsy();
+      expect(Object.hasOwn(PipeWithNoAnnotations, 'ɵpipe')).toBeFalsy();
 
       // ng defs should be preserved on super types
-      expect(SomeComponent.hasOwnProperty('ɵcmp')).toBeTruthy();
-      expect(SomeDirective.hasOwnProperty('ɵdir')).toBeTruthy();
-      expect(SomePipe.hasOwnProperty('ɵpipe')).toBeTruthy();
+      expect(Object.hasOwn(SomeComponent, 'ɵcmp')).toBeTruthy();
+      expect(Object.hasOwn(SomeDirective, 'ɵdir')).toBeTruthy();
+      expect(Object.hasOwn(SomePipe, 'ɵpipe')).toBeTruthy();
     });
 
     it('should cleanup scopes (configured via `TestBed.configureTestingModule`) between tests', () => {

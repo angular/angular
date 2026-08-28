@@ -94,7 +94,7 @@ export function setClassMetadata(
     const clazz = type as TypeWithMetadata;
 
     if (decorators !== null) {
-      if (clazz.hasOwnProperty('decorators') && clazz.decorators !== undefined) {
+      if (Object.hasOwn(clazz, 'decorators') && clazz.decorators !== undefined) {
         clazz.decorators.push(...decorators);
       } else {
         clazz.decorators = decorators as any[];
@@ -111,7 +111,7 @@ export function setClassMetadata(
       // different decorator types. Decorators on individual fields are not merged, as it's
       // also incredibly unlikely that a field will be decorated both with an Angular
       // decorator and a non-Angular decorator that's also been downleveled.
-      if (clazz.hasOwnProperty('propDecorators') && clazz.propDecorators !== undefined) {
+      if (Object.hasOwn(clazz, 'propDecorators') && clazz.propDecorators !== undefined) {
         clazz.propDecorators = {...clazz.propDecorators, ...propDecorators};
       } else {
         clazz.propDecorators = propDecorators;

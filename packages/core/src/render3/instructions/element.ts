@@ -8,6 +8,7 @@
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {
+  describeDomNode,
   invalidSkipHydrationHost,
   validateMatchingNode,
   validateNodeExists,
@@ -376,19 +377,12 @@ function locateOrCreateElementNodeImpl(
     // `hasSkipHydrationAttrOnRElement` below calls `.hasAttribute`, which needs `native` to be
     // an Element. `validateMatchingNode` above would normally catch a wrong node type, but it's
     // dev-mode only. Guard against it here too, cheaply, so production throws a coded
-    // RuntimeError instead of a raw TypeError. In production, skip the full sentence and just
-    // include the mismatched node's `nodeName`/`textContent` so the error stays cheap to build.
+    // RuntimeError instead of a raw TypeError.
     if ((native as unknown as Node).nodeType !== Node.ELEMENT_NODE) {
-      const node = native as unknown as Node;
-      // Truncate so a large text node can't blow up the error message, same as
-      // `shorten()` in `hydration/error_handling.ts`.
-      const textContent = node.textContent && node.textContent.slice(0, 50);
-      const description = textContent ? `${node.nodeName} ("${textContent}")` : node.nodeName;
       throw new RuntimeError(
         RuntimeErrorCode.HYDRATION_NODE_MISMATCH,
-        ngDevMode
-          ? `During hydration Angular expected an element at this location, but found a ${description} node instead.`
-          : description,
+        ngDevMode &&
+          `During hydration Angular expected an element at this location, but found a ${describeDomNode(native as unknown as Node)} node instead.`,
       );
     }
 

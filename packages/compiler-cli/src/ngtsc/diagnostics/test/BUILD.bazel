@@ -1,0 +1,17 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["format_compiler_error_spec.ts"],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [":test_lib"],
+)

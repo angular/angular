@@ -63,6 +63,7 @@ import {ActivateRoutes} from './operators/activate_routes';
 import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
+import {ROUTER_RESOURCES_FEATURE} from './router_resource_feature';
 import {switchTap} from './operators/switch_tap';
 import {TitleStrategy} from './page_title_strategy';
 import type {Router} from './router';
@@ -83,7 +84,7 @@ import {UrlSerializer, UrlTree} from './url_tree';
 import {abortSignalToObservable} from './utils/abort_signal_to_observable';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
-import {ACTIVATED_ROUTE_INJECTOR_FEATURE} from './activated_route_injector_feature';
+import {TreeNode} from './utils/tree';
 
 /**
  * @description
@@ -369,7 +370,7 @@ export class NavigationTransitions {
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
   private readonly createViewTransition = inject(CREATE_VIEW_TRANSITION, {optional: true});
   private readonly navigationErrorHandler = inject(NAVIGATION_ERROR_HANDLER, {optional: true});
-  private readonly activatedRouteInjectorFeature = inject(ACTIVATED_ROUTE_INJECTOR_FEATURE, {
+  private readonly routerResourcesFeature = inject(ROUTER_RESOURCES_FEATURE, {
     optional: true,
   });
 
@@ -765,11 +766,9 @@ export class NavigationTransitions {
             return of(t);
           }),
 
-          this.activatedRouteInjectorFeature?.operator() ?? ((t) => t),
-
+          this.routerResourcesFeature?.setupAndRunResources(abortController.signal) ?? ((t) => t),
           switchTap(() => this.afterPreactivation()),
 
-          // TODO(atscott): Move this into the last block below.
           switchMap(() => {
             const {currentSnapshot, targetSnapshot} = overallTransitionState;
             const viewTransitionStarted = this.createViewTransition?.(
@@ -813,6 +812,8 @@ export class NavigationTransitions {
               return;
             }
 
+            resetPendingRoutes(t.targetRouterState);
+
             completedOrAborted = true;
             this.currentNavigation.update((nav) => {
               (nav as Writable<Navigation>).abort = noop;
@@ -832,7 +833,7 @@ export class NavigationTransitions {
 
           takeUntil(
             abortSignalToObservable(abortController.signal).pipe(
-              // Ignore aborts if we are already completed, canceled, or are in the activation stage (we have targetRouterState)
+              // Ignore aborts if we are already completed, canceled, or the transition has entered the non-abortable activation stage
               filter(() => !completedOrAborted && abortable),
               tap(() => {
                 this.cancelNavigationTransition(
@@ -893,7 +894,7 @@ export class NavigationTransitions {
           }),
           catchError((e) => {
             completedOrAborted = true;
-            discardNewActivatedRoutes(overallTransitionState);
+            rollbackState(overallTransitionState);
             // If the application is already destroyed, the catch block should not
             // execute anything in practice because other resources have already
             // been released and destroyed.
@@ -996,7 +997,7 @@ export class NavigationTransitions {
     reason: string,
     code: NavigationCancellationCode,
   ) {
-    discardNewActivatedRoutes(t);
+    rollbackState(t);
     const navCancel = new NavigationCancel(
       t.id,
       this.urlSerializer.serialize(t.extractedUrl),
@@ -1050,11 +1051,21 @@ export function isBrowserTriggeredNavigation(source: NavigationTrigger) {
   return source !== IMPERATIVE_NAVIGATION;
 }
 
-function discardNewActivatedRoutes(t: NavigationTransition): void {
-  if (!t.newlyCreatedRoutes) {
+function rollbackState(t: NavigationTransition): void {
+  for (const r of t.newlyCreatedRoutes ?? []) {
+    r._localInjector?.destroy();
+    r._localInjector = undefined;
+  }
+  resetPendingRoutes(t.targetRouterState);
+}
+
+function resetPendingRoutes(targetRouterState?: RouterState | null): void {
+  if (!targetRouterState) {
     return;
   }
-  for (const r of t.newlyCreatedRoutes) {
-    r._localInjector?.destroy();
-  }
+  const traverse = (node: TreeNode<ActivatedRoute>) => {
+    node.value.pending?.set(false);
+    node.children.forEach(traverse);
+  };
+  traverse(targetRouterState._root);
 }

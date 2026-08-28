@@ -105,7 +105,7 @@ export class SearchResults {
 
 As the `query` signal changes, the `query$` Observable emits the latest query and triggers a new HTTP request.
 
-### Injection context
+### Injection context {#injection-context-to-observable}
 
 `toObservable` by default needs to run in an [injection context](guide/di/dependency-injection-context), such as during construction of a component or service. If an injection context is not available, you can manually specify the `Injector` to use instead.
 

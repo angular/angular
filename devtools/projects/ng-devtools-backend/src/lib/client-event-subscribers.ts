@@ -34,6 +34,7 @@ import {
 } from '../../../shared-utils';
 
 import {ComponentInspector} from './component-inspector/component-inspector';
+import {setConsoleReference} from './console/set-console-reference';
 import {
   getDirectiveCdStrategy,
   getElementInjectorElement,
@@ -50,41 +51,50 @@ import {
   serializeResolutionPath,
   updateState,
 } from './directive-forest/component-tree/component-tree';
-import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
-import {disablePerformanceTrack, enablePerformanceTrack} from './profiling/performance-track';
-import {getProfiler, Profiler} from './profiling/profiler';
-import {ComponentTreeNode} from './shared/interfaces';
-import {
-  ngDebugClient,
-  ngDebugDependencyInjectionApiIsSupported,
-} from './shared/ng-debug-api/ng-debug-api';
-import {getSupportedApis} from './shared/ng-debug-api/supported-apis';
-import {
-  getRouterCallableConstructRef,
-  parseRoutes,
-  RoutePropertyType,
-} from './router-tree/router-tree';
-import {setConsoleReference} from './console/set-console-reference';
-import {serializeDirectiveState, serializeValue} from './shared/state-serializer/state-serializer';
-import {runOutsideAngular, unwrapSignal} from './shared/utils/general';
-import {sanitizeObject} from './shared/utils/serialization';
-import {SignalGraphRef} from './shared/utils/signal-graph-ref';
 import {getDirectiveForestManager} from './directive-forest/manager';
 import {
   highlightHydrationNodes,
   removeHydrationHighlights,
 } from './hydration/hydration-highlighting';
+import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
+import {
+  disableCdDataStream,
+  disableCdHighlighting,
+  enableCdDataStream,
+  enableCdHighlighting,
+} from './profiling/cd-analyzer';
+import {disablePerformanceTrack, enablePerformanceTrack} from './profiling/performance-track';
+import {getProfiler, Profiler} from './profiling/profiler';
+import {
+  getRouterCallableConstructRef,
+  parseRoutes,
+  RoutePropertyType,
+} from './router-tree/router-tree';
 import {removeAllHighlights} from './shared/highlighter';
+import {ComponentTreeNode, DevtoolsBackendConfig} from './shared/interfaces';
+import {
+  ngDebugClient,
+  ngDebugDependencyInjectionApiIsSupported,
+} from './shared/ng-debug-api/ng-debug-api';
+import {getSupportedApis} from './shared/ng-debug-api/supported-apis';
+import {serializeDirectiveState, serializeValue} from './shared/state-serializer/state-serializer';
+import {runOutsideAngular, unwrapSignal} from './shared/utils/general';
+import {debugLog, log, setupLogging} from './shared/utils/log';
+import {sanitizeObject} from './shared/utils/serialization';
+import {SignalGraphRef} from './shared/utils/signal-graph-ref';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
-  depsForTestOnly?: {
-    profiler?: new (...args: any[]) => Profiler;
+  config?: DevtoolsBackendConfig & {
+    depsForTestOnly?: {
+      profiler?: new (...args: any[]) => Profiler;
+    };
   },
 ): void => {
   const inspector: InspectorRef = {ref: null};
+  setupLogging(config?.devtoolsDevMode ?? false);
 
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
@@ -100,7 +110,7 @@ export const subscribeToClientEvents = (
   messageBus.on('startProfiling', startProfilingCallback(messageBus));
   messageBus.on('stopProfiling', stopProfilingCallback(messageBus));
 
-  messageBus.on('setSelectedComponent', selectedComponentCallback(inspector));
+  messageBus.on('setSelectedComponent', selectedComponentCallback);
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
@@ -120,16 +130,24 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getTransferState', getTransferStateCallback(messageBus));
 
+  messageBus.on('enableCdHighlighting', enableCdHighlighting);
+  messageBus.on('disableCdHighlighting', disableCdHighlighting);
+
+  messageBus.on('enableCdDataStream', enableCdDataStream(messageBus));
+  messageBus.on('disableCdDataStream', disableCdDataStream);
+
   const SAFE_LOG_LEVELS = new Set(['log', 'info', 'warn', 'debug', 'error']);
   messageBus.on('log', ({message, level}) => {
     if (SAFE_LOG_LEVELS.has(level)) {
-      console[level](`[Angular DevTools]: ${message}`);
+      log[level](message);
     } else {
-      console.warn(`[Angular DevTools]: Invalid log level attempted: ${level}`);
+      debugLog.warn(`Invalid log level attempted: ${level}`);
     }
   });
 
   messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
+
+  messageBus.on('toggleWatchSignal', toggleWatchSignal(messageBus));
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     inspector.ref = setupInspector(messageBus);
@@ -139,7 +157,7 @@ export const subscribeToClientEvents = (
     // update requests, instead we want to request an update at most
     // once every 250ms
     runOutsideAngular(() => {
-      getProfiler(depsForTestOnly)
+      getProfiler(config?.depsForTestOnly)
         .changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
@@ -198,7 +216,7 @@ const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string)
   if (router) {
     ngDebugClient().ɵnavigateByUrl?.(router, path);
   } else {
-    console.warn('Router not found or navigateByUrl method not available');
+    log.warn('Router not found or navigateByUrl method not available');
   }
 };
 
@@ -227,13 +245,12 @@ const stopProfilingCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('profilerResults', [stopProfiling()]);
 };
 
-const selectedComponentCallback = (inspector: InspectorRef) => (position: ElementPosition) => {
+const selectedComponentCallback = (position: ElementPosition) => {
   const node = queryDirectiveForest(
     position,
     getDirectiveForestManager().getIndexedDirectiveForest(),
   );
   setConsoleReference({node, position});
-  inspector.ref?.highlightByPosition(position);
 };
 
 const getNestedPropertiesCallback =
@@ -255,7 +272,7 @@ const getNestedPropertiesCallback =
     for (const prop of propPath) {
       data = unwrapSignal(data[prop]);
       if (!data) {
-        console.error('Cannot access the properties', propPath, 'of', node);
+        log.error('Cannot access the properties', propPath, 'of', node);
       }
     }
     messageBus.emit('nestedProperties', [
@@ -313,7 +330,7 @@ const getSignalNestedPropertiesCallback =
     for (const prop of propPath) {
       data = (data as Record<string, object>)[prop];
       if (!data) {
-        console.error('Cannot access the properties', propPath, 'of', node);
+        log.error('Cannot access the properties', propPath, 'of', node);
       }
     }
     messageBus.emit('signalNestedProperties', [
@@ -626,7 +643,10 @@ const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
   messageBus.emit('transferStateData', [collected ? merged : null]);
 };
 
+let lastSignalGraphElement: ElementPosition | null = null;
+
 const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: ElementPosition) => {
+  lastSignalGraphElement = element;
   // We assume that a new request for a signal graph
   // should invalidate the current ref cache.
   componentSignalGraphRef.clear();
@@ -660,9 +680,18 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
         epoch: node.epoch,
         preview: serializeValue(node.value),
         debuggable: !!node.debuggableFn,
+        watched: node.watched ?? false,
       };
     });
     messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
+  }
+};
+
+const toggleWatchSignal = (messageBus: MessageBus<Events>) => (id: string) => {
+  const ng = ngDebugClient();
+  ng.toggleWatchSignal?.(id);
+  if (lastSignalGraphElement) {
+    getSignalGraphCallback(messageBus)(lastSignalGraphElement);
   }
 };
 

@@ -22,6 +22,7 @@ import {Footer} from './core/layout/footer/footer.component';
 import {Navigation} from './core/layout/navigation/navigation.component';
 import {ProgressBarComponent} from './core/layout/progress-bar/progress-bar.component';
 import {SecondaryNavigation} from './core/layout/secondary-navigation/secondary-navigation.component';
+import {ANGULAR_DEV} from './core/constants/links';
 import {HeaderService} from './core/services/header.service';
 
 @Component({
@@ -101,7 +102,7 @@ export class AppComponent {
       // In debug this shortcut allows us to open the same page on adev
       // Helpful to compare differences
       event.preventDefault();
-      window.open(`https://angular.dev/${location.pathname}`, '_blank');
+      window.open(`${ANGULAR_DEV}/${location.pathname}`, '_blank');
     }
   }
 

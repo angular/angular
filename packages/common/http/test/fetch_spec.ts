@@ -708,6 +708,19 @@ describe('FetchBackend', () => {
       expect(infiniteStreamFactory.cancelCount).toBe(1);
     });
 
+    it('cancels an unread response stream when the declared size exceeds the limit', async () => {
+      infiniteStreamFactory.declaredContentLength = 2049;
+
+      const req = new HttpRequest('GET', '/test', {responseType: 'text'});
+      const events = await trackEvents(backend.handle(req));
+      const error = events[1] as HttpErrorResponse;
+
+      expect(events.length).toBe(2);
+      expect(error instanceof HttpErrorResponse).toBeTrue();
+      expect(error.error.code).toBe(RuntimeErrorCode.FETCH_RESPONSE_BODY_TOO_LARGE);
+      expect(infiniteStreamFactory.cancelCount).toBe(1);
+    });
+
     it('allows disabling the size limit via dependency injection', async () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
@@ -854,6 +867,7 @@ class MockFetchRequest {
 
 class InfiniteStreamFetchFactory extends FetchFactory {
   public cancelCount = 0;
+  public declaredContentLength?: number;
 
   override fetch = async (_input: RequestInfo | URL, _init?: RequestInit): Promise<Response> => {
     const stream = new ReadableStream<Uint8Array>({
@@ -868,7 +882,12 @@ class InfiniteStreamFetchFactory extends FetchFactory {
     return new Response(stream, {
       status: HttpStatusCode.Ok,
       statusText: 'OK',
-      headers: {'Content-Type': 'text/plain'},
+      headers: {
+        'Content-Type': 'text/plain',
+        ...(this.declaredContentLength === undefined
+          ? {}
+          : {'Content-Length': `${this.declaredContentLength}`}),
+      },
     });
   };
 }
@@ -885,7 +904,7 @@ class FiniteChunkFetchFactory extends FetchFactory {
     return new Response(stream, {
       status: HttpStatusCode.Ok,
       statusText: 'OK',
-      headers: {'Content-Type': 'text/plain'},
+      headers: {'Content-Type': 'text/plain', 'Content-Length': '2'},
     });
   };
 }

@@ -390,41 +390,88 @@ IMPORTANT: Emit `touch` on `blur` (when focus leaves the control), not on `focus
 
 Controls sometimes display values differently than the form model stores them - a date picker might display "January 15, 2024" while storing "2024-01-15", or a currency input might show "$1,234.56" while storing 1234.56.
 
-Use `linkedSignal()` (from `@angular/core`) to transform the model value for display, and handle input events to parse user input back to the storage format:
+Use `transformedValue()` (from `@angular/forms/signals`) to keep the raw value shown in the UI in sync with the model value. It takes the control's `value` model signal plus a `parse` and a `format` function, and returns a writable signal holding the raw value:
+
+- `format` converts the model value into the raw value the template renders.
+- `parse` converts what the user typed back into a model value, and can report parse errors instead.
 
 ```angular-ts
-import {formatCurrency} from '@angular/common';
-import {ChangeDetectionStrategy, Component, linkedSignal, model} from '@angular/core';
-import {FormValueControl} from '@angular/forms/signals';
+import {Component, model} from '@angular/core';
+import {FormValueControl, transformedValue} from '@angular/forms/signals';
 
 @Component({
-  selector: 'app-currency-input',
+  selector: 'number-input',
   template: `
-    <input
-      type="text"
-      [value]="displayValue()"
-      (input)="displayValue.set($event.target.value)"
-      (blur)="updateModel()"
-    />
+    <input type="text" [value]="rawValue()" (input)="rawValue.set($event.target.value)" />
   `,
 })
-export class CurrencyInput implements FormValueControl<number> {
-  // Stores numeric value (1234.56)
-  readonly value = model.required<number>();
+export class NumberInput implements FormValueControl<number | null> {
+  readonly value = model.required<number | null>();
 
-  // Stores display value ("1,234.56")
-  readonly displayValue = linkedSignal(() => formatCurrency(this.value(), 'en', 'USD'));
-
-  // Update the model from the display value.
-  updateModel() {
-    this.value.set(parseCurrency(this.displayValue()));
-  }
+  protected readonly rawValue = transformedValue(this.value, {
+    parse: (val: string): number => ({value: val ? Number(val) : null}),
+    format: (val: number): string => val?.toString() ?? '',
+  });
 }
+```
 
-// Converts a currency string to a number (e.g. "USD1,234.56" -> 1234.56).
-function parseCurrency(value: string): number {
-  return parseFloat(value.replace(/^[^\d-]+/, '').replace(/,/g, ''));
+Writing to the returned signal (`rawValue.set(...)`) runs `parse` and writes the result into `value`. Whenever the model changes from elsewhere - a `reset()`, a schema rule, or another part of the app - `format` runs again and the raw value updates to match.
+
+### Reporting parse errors
+
+Sometimes the raw value has no valid model representation - a half-typed date, or letters in a numeric field. The `NumberInput` above has this problem: `Number('abc')` is `NaN`, which `parse` happily writes into the model.
+
+Return `{error}` instead:
+
+```ts
+export class NumberInput implements FormValueControl<number | null> {
+  readonly value = model.required<number | null>();
+
+  protected readonly rawValue = transformedValue(this.value, {
+    parse: (val) => {
+      const parsed = val ? Number(val) : null;
+
+      return Number.isNaN(parsed)
+        ? {error: {kind: 'parse', message: `${val} is not a number`}}
+        : {value: parsed};
+    },
+    format: (val) => val?.toString() ?? '',
+  });
 }
+```
+
+Return both `value` and `error` when you want to update the model _and_ flag a problem.
+
+When the control is bound with `[formField]`, parse errors are automatically reported to the field, so they show up in the field's `errors()` signal alongside validation errors:
+
+```angular-ts
+@Component({
+  imports: [NumberInput, FormField],
+  template: `
+    <number-input [formField]="orderForm.amount" />
+
+    @for (error of orderForm.amount().errors(); track $index) {
+      <!-- {kind: 'parse', message: '...'} is reported here too -->
+      <p class="error">{{ error.message }}</p>
+    }
+  `,
+})
+export class Order {
+  orderModel = signal<{amount: number | null}>({amount: null});
+  orderForm = form(this.orderModel);
+}
+```
+
+A field with parse errors is invalid, which blocks submission the same way a failed validation rule does.
+
+HELPFUL: Signal Forms uses the same mechanism for native inputs. When the browser cannot parse a value (for example, a partially typed date in `<input type="date">`), it surfaces as a `parse` error on the field. See [Native HTML validation](guide/forms/signals/validation#native-html-validation) for details.
+
+### Resetting
+
+Calling `reset()` on the field clears any pending parse errors and re-formats the raw value from the model, so a control left in an unparseable state returns to a clean display value:
+
+```ts
+orderForm.amount().reset();
 ```
 
 ## Validation integration
@@ -495,7 +542,7 @@ registrationForm = form(this.registrationModel, (path) => {
 
 The consumer's model must initialize every field with a defined value. In Signal Forms, `undefined` signifies the absence of a field and not an empty value. For a reusable email control, that means the consumer should use `''` as the initial value, and not leave the property undefined. See the [Form Models guide](guide/forms/signals/models) for details on choosing initial values.
 
-In addition, controls should not register their own effects for state management. The form system manages field state through internal effects. This means that your control receives state updates through input signals. If a control needs to transform values, use `linkedSignal()` as shown in the "[Value transformation](#value-transformation)" section rather than an `effect()`.
+In addition, controls should not register their own effects for state management. The form system manages field state through internal effects. This means that your control receives state updates through input signals. If a control needs to transform values, use `transformedValue()` as shown in the "[Value transformation](#value-transformation)" section rather than an `effect()`.
 
 ## Next steps
 

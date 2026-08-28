@@ -37,6 +37,8 @@ export interface ToObservableOptions {
  * As it reflects a state, the observable will always emit the latest value upon subscription.
  *
  * The signal's value will be propagated into the `Observable`'s subscribers using an `effect`.
+ * Because the `effect` runs asynchronously, the observable is not guaranteed to be immediately synchronized when the signal is updated.
+ * If the signal is updated multiple times before the `effect` runs, the observable will only emit the last signal value.
  *
  * `toObservable` must be called in an injection context unless an injector is provided via options.
  *

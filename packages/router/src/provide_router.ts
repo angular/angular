@@ -36,6 +36,7 @@ import {
 import {of, Subject} from 'rxjs';
 
 import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outlet';
+import {createResourceOutletBindingEffects} from './router_resource';
 import {Event, NavigationError, stringifyEvent} from './events';
 import {RedirectCommand, Routes} from './models';
 import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
@@ -48,6 +49,7 @@ import {
   RouterConfigOptions,
 } from './router_config';
 import {ROUTES} from './router_config_loader';
+import {setupAndRunResources} from './operators/setup_and_run_resources';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
@@ -63,8 +65,7 @@ import {
   VIEW_TRANSITION_OPTIONS,
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
-import {ACTIVATED_ROUTE_INJECTOR_FEATURE} from './activated_route_injector_feature';
-import {setupActivatedRouteInjectors} from './operators/setup_activated_route_injectors';
+import {ROUTER_RESOURCES_FEATURE} from './router_resource_feature';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -363,8 +364,7 @@ export type EnabledBlockingInitialNavigationFeature =
  * @publicApi
  */
 export type InitialNavigationFeature =
-  | EnabledBlockingInitialNavigationFeature
-  | DisabledInitialNavigationFeature;
+  EnabledBlockingInitialNavigationFeature | DisabledInitialNavigationFeature;
 
 /**
  * Configures initial navigation to start before the root component is created.
@@ -840,7 +840,11 @@ export function withComponentInputBinding(
   options: ComponentInputBindingOptions = {},
 ): ComponentInputBindingFeature {
   const providers = [
-    {provide: INPUT_BINDER, useFactory: () => new RoutedComponentInputBinder(options)},
+    {
+      provide: INPUT_BINDER,
+      useFactory: () =>
+        new RoutedComponentInputBinder(options, inject(ROUTER_RESOURCES_FEATURE, {optional: true})),
+    },
   ];
 
   return routerFeature(RouterFeatureKind.ComponentInputBindingFeature, providers);
@@ -888,14 +892,43 @@ export function withViewTransitions(
   return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
 }
 
-export type ActivatedRouteInjectorFeature =
-  RouterFeature<RouterFeatureKind.ViewTransitionsFeature /* temporary - not public API. Must reuse existing */>;
-export function withActivatedRouteInjectors(): ActivatedRouteInjectorFeature {
+/**
+ * A type alias for providers returned by `withRouterResources` for use with `provideRouter`.
+ *
+ * @see {@link withRouterResources}
+ * @see {@link provideRouter}
+ *
+ * @experimental
+ */
+export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
+
+/**
+ * Enables `resources` capabilities for Route definitions.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable the feature:
+ * ```ts
+ * const appRoutes: Routes = [];
+ * bootstrapApplication(AppComponent,
+ *   {
+ *     providers: [
+ *       provideRouter(appRoutes, withRouterResources())
+ *     ]
+ *   }
+ * );
+ * ```
+ *
+ * @experimental
+ * @returns A set of providers for use with `provideRouter`.
+ */
+export function withRouterResources(): RouterResourcesFeature {
   const providers = [
     {
-      provide: ACTIVATED_ROUTE_INJECTOR_FEATURE,
+      provide: ROUTER_RESOURCES_FEATURE,
       useValue: {
-        operator: setupActivatedRouteInjectors,
+        setupAndRunResources,
+        createResourceOutletBindingEffects,
       },
     },
   ];

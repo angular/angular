@@ -217,9 +217,7 @@ class HtmlAstToIvyAst implements html.Visitor {
         attrs.bound,
         boundEvents,
         directives,
-        [
-          /* no template attributes */
-        ],
+        [/* no template attributes */],
         children,
         references,
         variables,

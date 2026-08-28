@@ -429,6 +429,8 @@ export function checkUnsupportedFieldBindings(
       unsupportedBindingFields.has(input.name.toLowerCase())
     ) {
       tcb.oobRecorder.formFieldUnsupportedBinding(tcb.id, input);
+    } else if (input.type === BindingType.TwoWay && unsupportedBindingFields.has(input.name)) {
+      tcb.oobRecorder.formFieldUnsupportedBinding(tcb.id, input);
     }
   }
 

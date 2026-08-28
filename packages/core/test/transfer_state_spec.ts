@@ -91,6 +91,31 @@ describe('TransferState', () => {
     expect(transferState.hasKey(TEST_KEY)).toBe(true);
   });
 
+  it('does not read inherited properties', () => {
+    const transferState = TestBed.inject(TransferState);
+    const constructorKey = makeStateKey<unknown>('constructor');
+    const store = (transferState as unknown as {store: Record<string, unknown>}).store;
+    Object.setPrototypeOf(store, {constructor: 'inherited'});
+
+    expect(transferState.get(constructorKey, 'default')).toBe('default');
+    expect(transferState.hasKey(constructorKey)).toBeFalse();
+  });
+
+  it('supports keys that name object prototype properties', () => {
+    const transferState = TestBed.inject(TransferState);
+    const prototypeKey = makeStateKey<{cached: boolean}>('__proto__');
+    const value = {cached: true};
+
+    transferState.set(prototypeKey, value);
+
+    expect(transferState.get(prototypeKey, {cached: false})).toBe(value);
+    expect(transferState.hasKey(prototypeKey)).toBeTrue();
+
+    transferState.remove(prototypeKey);
+
+    expect(transferState.get(prototypeKey, null!)).toBeNull();
+  });
+
   it("supports setting and accessing value '0' via get", () => {
     const transferState: TransferState = TestBed.inject(TransferState);
     transferState.set(TEST_KEY, 0);
@@ -135,6 +160,16 @@ describe('TransferState', () => {
     value = 'changed';
 
     expect(transferState.toJson()).toBe('{"test":20,"delayed":"changed"}');
+  });
+
+  it('calls onSerialize callbacks whose keys name object prototype properties', () => {
+    const transferState = TestBed.inject(TransferState);
+    const prototypeKey = makeStateKey<string>('__proto__');
+
+    transferState.onSerialize(prototypeKey, () => 'serialized');
+
+    expect(transferState.toJson()).toBe('{"__proto__":"serialized"}');
+    expect(transferState.get(prototypeKey, null!)).toBe('serialized');
   });
 
   it('should provide an ability to detect whether the state is empty', () => {
@@ -189,5 +224,15 @@ describe('TransferState', () => {
 
     expect(transferState.get(DELAYED_KEY, null)).toBe(relativeLink);
     expect(transferState.toJson()).toBe(encodedState);
+  });
+
+  it('restores keys that name object prototype properties into a dictionary', () => {
+    addScriptTag(doc, APP_ID, '{"__proto__":{"cached":true},"constructor":"state"}');
+    const transferState = TestBed.inject(TransferState);
+
+    expect(transferState.get(makeStateKey<{cached: boolean}>('__proto__'), null)).toEqual({
+      cached: true,
+    });
+    expect(transferState.get(makeStateKey<string>('constructor'), null)).toBe('state');
   });
 });

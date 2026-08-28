@@ -27,7 +27,7 @@ import {
   R3HostMetadata,
   R3TemplateDependency,
 } from './api';
-import {getTemplateSourceLocationsEnabled} from './config';
+import {ENABLE_TEMPLATE_SOURCE_LOCATIONS} from './config';
 import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {makeBindingParser} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from './util';
@@ -214,7 +214,7 @@ export function compileComponentFromMetadata(
     meta.defer,
     allDeferrableDepsFn,
     meta.relativeTemplatePath,
-    getTemplateSourceLocationsEnabled(),
+    meta.enableTemplateSourceLocations || ENABLE_TEMPLATE_SOURCE_LOCATIONS,
     meta.legacyOptionalChaining,
     meta.foreignImports,
   );
@@ -735,7 +735,7 @@ export function createHostDirectivesMappingArray(
   const elements: o.LiteralExpr[] = [];
 
   for (const publicName in mapping) {
-    if (mapping.hasOwnProperty(publicName)) {
+    if (Object.hasOwn(mapping, publicName)) {
       elements.push(o.literal(publicName), o.literal(mapping[publicName]));
     }
   }

@@ -90,6 +90,26 @@ describe('Meta service', () => {
     expect(actual!.getAttribute('content')).toEqual('4321');
   });
 
+  it('should reject event handler attributes targeting a body meta tag', () => {
+    doc.body.appendChild(defaultMeta);
+
+    const evil = 'alert(1)';
+
+    expect(metaService.getTag('property="fb:app_id"')).toBe(defaultMeta);
+    expect(() =>
+      metaService.updateTag({
+        property: 'fb:app_id',
+        style: 'content-visibility:auto',
+        oncontentvisibilityautostatechange: evil,
+      }),
+    ).toThrowError(
+      /NG05203: The Meta service does not allow setting event handler attribute 'oncontentvisibilityautostatechange'/,
+    );
+
+    expect(defaultMeta.getAttribute('style')).toBeNull();
+    expect(defaultMeta.getAttribute('oncontentvisibilityautostatechange')).toBeNull();
+  });
+
   it('should not allow a custom selector to match off target elements like the body tag', () => {
     // This payload attempts to break out of the `meta[name="..."]` constraint entirely
     // and inject a comma to target arbitrary DOM elements like the `body` tag via the
@@ -144,6 +164,42 @@ describe('Meta service', () => {
     metaService.removeTagElement(actual);
   });
 
+  it('should reject event handler attributes without adding a tag', () => {
+    const selector = 'name="og:title"';
+    const evil = 'alert(1)';
+
+    expect(() =>
+      metaService.addTag({
+        name: 'og:title',
+        style: 'content-visibility:auto',
+        oncontentvisibilityautostatechange: evil,
+      }),
+    ).toThrowError(
+      /NG05203: The Meta service does not allow setting event handler attribute 'oncontentvisibilityautostatechange'/,
+    );
+
+    expect(metaService.getTag(selector)).toBeNull();
+  });
+
+  it('should reject event handler attributes in addTags without adding tags', () => {
+    const selector = 'name="og:title"';
+    const evil = 'alert(1)';
+
+    expect(() =>
+      metaService.addTags([
+        {
+          name: 'og:title',
+          style: 'content-visibility:auto',
+          oncontentvisibilityautostatechange: evil,
+        },
+      ]),
+    ).toThrowError(
+      /NG05203: The Meta service does not allow setting event handler attribute 'oncontentvisibilityautostatechange'/,
+    );
+
+    expect(metaService.getTag(selector)).toBeNull();
+  });
+
   it('should add httpEquiv meta tag as http-equiv', () => {
     metaService.addTag({httpEquiv: 'refresh', content: '3;url=http://test'});
 
@@ -154,6 +210,22 @@ describe('Meta service', () => {
 
     // clean up
     metaService.removeTagElement(actual);
+  });
+
+  it('should add attributes whose names match Object prototype keys', () => {
+    const meta = metaService.addTag({
+      name: 'prototype-keys',
+      constructor: 'constructor',
+      toString: 'toString',
+      ['__proto__']: '__proto__',
+    })!;
+
+    expect(meta.getAttribute('constructor')).toEqual('constructor');
+    expect(meta.getAttribute('toString')).toEqual('toString');
+    expect(meta.getAttribute('__proto__')).toEqual('__proto__');
+
+    // clean up
+    metaService.removeTagElement(meta);
   });
 
   it('should escape selector values when deriving the match selector', () => {

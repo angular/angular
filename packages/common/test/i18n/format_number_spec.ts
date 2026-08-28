@@ -38,6 +38,16 @@ describe('Format number', () => {
         expect(formatNumber(1e100, ɵDEFAULT_LOCALE_ID)).toEqual('1E+100');
       });
 
+      it('should format NaN and Infinity with locale symbols', () => {
+        expect(formatNumber(NaN, ɵDEFAULT_LOCALE_ID)).toEqual('NaN');
+        expect(formatNumber(Infinity, ɵDEFAULT_LOCALE_ID)).toEqual('∞');
+        expect(formatNumber(-Infinity, ɵDEFAULT_LOCALE_ID)).toEqual('-∞');
+        expect(formatPercent(NaN, ɵDEFAULT_LOCALE_ID)).toEqual('NaN%');
+        expect(formatPercent(Infinity, ɵDEFAULT_LOCALE_ID)).toEqual('∞%');
+        expect(formatCurrency(NaN, ɵDEFAULT_LOCALE_ID, '$')).toEqual('$NaN');
+        expect(formatCurrency(Infinity, ɵDEFAULT_LOCALE_ID, '$')).toEqual('$∞');
+      });
+
       it('should throw if minFractionDigits is explicitly higher than maxFractionDigits', () => {
         expect(() => formatNumber(1.1, ɵDEFAULT_LOCALE_ID, '3.4-2')).toThrowError(
           /is higher than the maximum/,

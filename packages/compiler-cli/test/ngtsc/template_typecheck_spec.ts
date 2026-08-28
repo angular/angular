@@ -1044,6 +1044,49 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
       });
+
+      it('should properly short-circuit safe navigation chains', () => {
+        env.tsconfig({
+          fullTemplateTypeCheck: true,
+          strictTemplates: true,
+          strictSafeNavigationTypes: true,
+        });
+
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+
+          type MyType = {
+            data: {
+              foo: {
+                bar: () => boolean;
+              };
+              0: {
+                bar: boolean;
+              };
+            };
+          };
+
+          @Component({
+            selector: 'test',
+            template: '{{ value?.data.foo.bar() }} {{ value?.data["foo"] }} {{ value?.data[0].bar }}',
+            standalone: false,
+          })
+          class TestCmp {
+            value: MyType | null = null;
+          }
+
+          @NgModule({
+            declarations: [TestCmp],
+          })
+          class Module {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
     });
 
     describe('strictOutputEventTypes', () => {
@@ -1805,7 +1848,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`No directive found with exportAs 'unknownTarget'.`);
+      expect(diags[0].messageText).toMatch(
+        /No directive found with exportAs 'unknownTarget'\. Find more at .*/,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknownTarget');
     });
 
@@ -1832,7 +1877,9 @@ runInEachFileSystem(() => {
       );
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toBe(`No directive found with exportAs 'unknownTarget'.`);
+      expect(diags[0].messageText).toMatch(
+        /No directive found with exportAs 'unknownTarget'\. Find more at .*/,
+      );
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('unknownTarget');
     });
 
@@ -2608,6 +2655,112 @@ runInEachFileSystem(() => {
         expect(getSourceCodeForDiagnostic(diags[0])).toEqual('children="Hello, property!"');
         expect(diags[0].relatedInformation).toBeDefined();
         expect(diags[0].relatedInformation!.length).toEqual(1);
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          'Child nodes are defined here.',
+        );
+      });
+
+      it('should detect duplicate @content blocks in an external template', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            templateUrl: './test.html',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {}
+        `,
+        );
+        env.write(
+          'test.html',
+          '<FancyButton> @content (icon) {} @content (icon) {} </FancyButton>',
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_DECLARATION));
+        expect(diags[0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(2);
+        expect(diags[0].relatedInformation![0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toEqual(
+          '@content (icon) {}',
+        );
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The @content block 'icon' was first defined here.",
+        );
+      });
+
+      it('should detect a conflict between a @content block and property binding in an external template', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            templateUrl: './test.html',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            myIcon = document.createTextNode('circle');
+          }
+        `,
+        );
+        env.write(
+          'test.html',
+          '<FancyButton [icon]="myIcon"> @content (icon) {square} </FancyButton>',
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('@content (icon) {square}');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(2);
+        expect(diags[0].relatedInformation![0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toEqual(
+          '[icon]="myIcon"',
+        );
+        expect(diags[0].relatedInformation![0].messageText).toEqual(
+          "The property 'icon' is defined here.",
+        );
+      });
+
+      it('should detect a conflict between implicit children and [children] binding in an external template', () => {
+        env.write(
+          'test.ts',
+          `
+          ${foreignSetupCode}
+
+          @Component({
+            selector: 'test',
+            templateUrl: './test.html',
+            foreignImports: [frameworkImport(FancyButton)],
+          })
+          export class TestCmp {
+            myChildren = [];
+          }
+        `,
+        );
+        env.write(
+          'test.html',
+          '<FancyButton [children]="myChildren"> <div>child</div> </FancyButton>',
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toEqual(1);
+        expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONFLICTING_CONTENT_AND_PROPERTY));
+        expect(diags[0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0])).toEqual('[children]="myChildren"');
+        expect(diags[0].relatedInformation).toBeDefined();
+        expect(diags[0].relatedInformation!.length).toEqual(2);
+        expect(diags[0].relatedInformation![0].file?.fileName).toMatch(/test\.html$/);
+        expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toEqual(
+          '<div>child</div>',
+        );
         expect(diags[0].relatedInformation![0].messageText).toEqual(
           'Child nodes are defined here.',
         );
@@ -4061,9 +4214,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
-1. If 'foo' is an Angular component, then verify that it is part of this module.
-2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+        expect(diags[0].messageText).toMatch(
+          /^'foo' is not a known element:\n1\. If 'foo' is an Angular component, then verify that it is part of this module\.\n2\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should check for unknown elements in standalone components', () => {
@@ -4084,9 +4237,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
-1. If 'foo' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.`);
+        expect(diags[0].messageText).toMatch(
+          /^'foo' is not a known element:\n1\. If 'foo' is an Angular component, then verify that it is included in the '@Component\.imports' of this component\.\n2\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@Component\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should check for unknown properties in standalone components', () => {
@@ -4136,9 +4289,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
-1. If 'my-foo' is an Angular component, then verify that it is part of this module.
-2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
+        expect(diags[0].messageText).toMatch(
+          /^'my-foo' is not a known element:\n1\. If 'my-foo' is an Angular component, then verify that it is part of this module\.\n2\. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule\.schemas' of this component to suppress this message\. Find more at .*$/,
+        );
       });
 
       it('should have a descriptive error for unknown elements that contain a dash in standalone components', () => {
@@ -4159,9 +4312,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'my-foo' is not a known element:
-1. If 'my-foo' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.`);
+        expect(diags[0].messageText).toMatch(
+          /^'my-foo' is not a known element:\n1\. If 'my-foo' is an Angular component, then verify that it is included in the '@Component\.imports' of this component\.\n2\. If 'my-foo' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component\.schemas' of this component to suppress this message\. Find more at .*$/,
+        );
       });
 
       it('should check for unknown properties', () => {
@@ -4183,8 +4336,8 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
-          `Can't bind to 'foo' since it isn't a known property of 'div'.`,
+        expect(diags[0].messageText).toMatch(
+          /Can't bind to 'foo' since it isn't a known property of 'div'\. Find more at .*/,
         );
       });
 
@@ -4207,8 +4360,8 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(
-          `Can't bind to 'foo' since it isn't a known property of 'div'.`,
+        expect(diags[0].messageText).toMatch(
+          /Can't bind to 'foo' since it isn't a known property of 'div'\. Find more at .*/,
         );
       });
 
@@ -4256,14 +4409,12 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(2);
-        expect(diags[0].messageText).toBe(`'custom-element' is not a known element:
-1. If 'custom-element' is an Angular component, then verify that it is part of this module.
-2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.`);
-        expect(diags[1].messageText)
-          .toBe(`Can't bind to 'foo' since it isn't a known property of 'custom-element'.
-1. If 'custom-element' is an Angular component and it has 'foo' input, then verify that it is part of this module.
-2. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
-3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+        expect(diags[0].messageText).toMatch(
+          /^'custom-element' is not a known element:\n1\. If 'custom-element' is an Angular component, then verify that it is part of this module\.\n2\. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule\.schemas' of this component to suppress this message\. Find more at .*$/,
+        );
+        expect(diags[1].messageText).toMatch(
+          /^Can't bind to 'foo' since it isn't a known property of 'custom-element'\.\n1\. If 'custom-element' is an Angular component and it has 'foo' input, then verify that it is part of this module\.\n2\. If 'custom-element' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule\.schemas' of this component to suppress this message\.\n3\. To allow any property add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should not produce diagnostics for custom-elements-style elements when using the CUSTOM_ELEMENTS_SCHEMA', () => {
@@ -4392,9 +4543,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
-1. If 'foo' is an Angular component, then verify that it is part of this module.
-2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+        expect(diags[0].messageText).toMatch(
+          /^'foo' is not a known element:\n1\. If 'foo' is an Angular component, then verify that it is part of this module\.\n2\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should check for unknown elements without explicit namespace inside an SVG foreignObject', () => {
@@ -4422,9 +4573,9 @@ runInEachFileSystem(() => {
         );
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe(`'foo' is not a known element:
-1. If 'foo' is an Angular component, then verify that it is part of this module.
-2. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule.schemas' of this component.`);
+        expect(diags[0].messageText).toMatch(
+          /^'foo' is not a known element:\n1\. If 'foo' is an Angular component, then verify that it is part of this module\.\n2\. To allow any element add 'NO_ERRORS_SCHEMA' to the '@NgModule\.schemas' of this component\. Find more at .*$/,
+        );
       });
 
       it('should allow math elements', () => {
@@ -4876,7 +5027,9 @@ suppress
         // typings since the inputs/outputs haven't been exposed.
         expect(messages).toEqual([
           `Argument of type 'Event' is not assignable to parameter of type 'string'.`,
-          `Can't bind to 'input' since it isn't a known property of 'div'.`,
+          jasmine.stringMatching(
+            /Can't bind to 'input' since it isn't a known property of 'div'\. Find more at .*/,
+          ),
         ]);
       });
 

@@ -54,7 +54,7 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
         validate?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
       }
     | NoInfer<LogicFn<TValue, boolean, TPathKind>>,
-) {
+): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);

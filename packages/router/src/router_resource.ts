@@ -7,6 +7,8 @@
  */
 
 import {
+  ComponentRef,
+  EffectRef,
   inject,
   Injector,
   Resource,
@@ -17,10 +19,11 @@ import {
   ResourceSnapshot,
   effect,
   computed,
-  WritableResource,
   assertInInjectionContext,
+  reflectComponentType,
 } from '@angular/core';
 import {Router} from './router';
+import type {ActivatedRoute} from './router_state';
 import {
   NavigationStart,
   NavigationEnd,
@@ -29,6 +32,40 @@ import {
   NavigationSkipped,
   NavigationCancellationCode,
 } from './events';
+
+export const BLOCKING_SYMBOL: unique symbol = Symbol(
+  typeof ngDevMode === 'undefined' || ngDevMode ? '__isBlocking' : '',
+);
+export const SOURCE_RESOURCE_SYMBOL: unique symbol = Symbol(
+  typeof ngDevMode === 'undefined' || ngDevMode ? '__sourceResource' : '',
+);
+
+/**
+ * Checks if a resource has a value or has transitioned to a resolved/non-loading status.
+ */
+export function hasValueOrResolved(res: Resource<unknown>): boolean {
+  const status = res.status();
+  return res.hasValue() || (status !== 'loading' && status !== 'reloading');
+}
+
+/**
+ * @internal
+ */
+export interface InternalRouterResource<T = unknown> extends Resource<T> {
+  [SOURCE_RESOURCE_SYMBOL]: Resource<T>;
+  [BLOCKING_SYMBOL]?: boolean;
+  reload(): boolean;
+}
+
+/**
+ * Marks a resource as non-blocking. The Router will NOT wait for this resource to resolve
+ * before completing the navigation.
+ * @experimental
+ */
+export function nonBlocking<T, R extends Resource<T>>(res: R): R {
+  (res as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] = false;
+  return res;
+}
 
 /**
  * Wraps a Resource to make it cooperative with the Angular Router, freezing its state
@@ -45,7 +82,11 @@ export function routerResource<T>(source: Resource<T>): Resource<T> & {reload():
     injector,
   );
 
-  const res = resourceFromSnapshots(snapshotSignal) as Resource<T> & {reload(): boolean};
+  const res = resourceFromSnapshots(snapshotSignal) as unknown as InternalRouterResource<T>;
+
+  res[SOURCE_RESOURCE_SYMBOL] = source;
+  res[BLOCKING_SYMBOL] =
+    (source as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] !== false;
 
   if (typeof (source as any).reload === 'function') {
     res.reload = function (): boolean {
@@ -99,10 +140,18 @@ function createTransactionalSnapshot<T>(
         // Freeze the snapshot at the start of navigation to keep the UI stable.
         frozenSnapshot.set(source.snapshot());
       }
-    } else if (e instanceof NavigationEnd || e instanceof NavigationSkipped) {
-      // Navigation succeeded or was skipped, so we can unfreeze and use the live state.
+    } else if (e instanceof NavigationEnd) {
+      // Navigation succeeded, so we can unfreeze and use the live state.
       frozenSnapshot.set(null);
       isRollbackRecoveryPending.set(false);
+    } else if (e instanceof NavigationSkipped) {
+      // If a navigation is skipped while we have a frozen snapshot (e.g. navigating to the
+      // current URL to cancel an in-flight navigation), the in-flight navigation is aborted
+      // and parameter rollback begins. We must maintain the frozen snapshot until the rollback
+      // recovery load completes to prevent flashing a loading state.
+      if (frozenSnapshot() !== null) {
+        isRollbackRecoveryPending.set(true);
+      }
     } else if (e instanceof NavigationCancel || e instanceof NavigationError) {
       const isRollback =
         e instanceof NavigationError ||
@@ -120,7 +169,7 @@ function createTransactionalSnapshot<T>(
 
   effect(
     () => {
-      if (isRollbackRecoveryPending() && !source.isLoading()) {
+      if (isRollbackRecoveryPending() && hasValueOrResolved(source)) {
         isRollbackRecoveryPending.set(false);
         frozenSnapshot.set(null);
       }
@@ -132,4 +181,46 @@ function createTransactionalSnapshot<T>(
     snapshot: computed(() => frozenSnapshot() ?? source.snapshot()),
     frozenSnapshot,
   };
+}
+
+/**
+ * Creates reactive effects to bind the unwrapped values of blocking router resources
+ * to matching component inputs.
+ *
+ * Non-blocking resources are bound as the `Resource` instance itself through the standard
+ * route data stream in `RoutedComponentInputBinder`. In contrast, blocking resources have
+ * resolved before navigation completes and bind their unwrapped `.value()` to the component
+ * input. This sets up an `effect` for each matching blocking resource to keep the component
+ * input reactively updated, and returns the handled keys so the standard data subscription
+ * skips them.
+ */
+export function createResourceOutletBindingEffects(
+  componentRef: ComponentRef<unknown>,
+  route: ActivatedRoute,
+  injector: Injector,
+): {createdEffects: EffectRef[]; handledKeys: string[]} {
+  const createdEffects: EffectRef[] = [];
+  const handledKeys: string[] = [];
+  const mirror = route.component ? reflectComponentType(route.component) : null;
+  if (!mirror) {
+    return {createdEffects, handledKeys};
+  }
+
+  for (const {templateName} of mirror.inputs) {
+    const resource = route.resources?.[templateName];
+    if (!resource || !(resource as InternalRouterResource)[BLOCKING_SYMBOL]) {
+      continue;
+    }
+
+    const effectRef = effect(
+      () => {
+        componentRef.setInput(templateName, resource.value());
+      },
+      {injector},
+    );
+    createdEffects.push(effectRef);
+    handledKeys.push(templateName);
+  }
+
+  return {createdEffects, handledKeys};
 }

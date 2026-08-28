@@ -120,6 +120,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files.exclude('packages/core/primitives/*'), [
+          '.agent/skills/**/{*,.*}',
           'contributing-docs/public-api-surface.md',
           'dev-app/**/{*,.*}',
           'integration/**/{*,.*}',
@@ -206,6 +207,7 @@ groups:
         - crisbeto
         - devversion
         - kirjs
+        - alan-agius4
         - ~thePunderWoman
         - ~pkozlowski-opensource
         - ~amishne
@@ -302,7 +304,8 @@ groups:
         contains_any_globs(files
             .exclude('.pullapprove.yml') 
             .exclude('tools/manual_api_docs/blocks/*.md')
-            .exclude('tools/manual_api_docs/elements/*.md'),
+            .exclude('tools/manual_api_docs/elements/*.md')
+            .exclude('.agent/**/*.md'),
         [
           '{*,.*}',
           '.agent/**/{*,.*}',
@@ -497,7 +500,7 @@ groups:
         - iteriani # Thomas Nguyen
         - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
-        - ENAML # Ethan Cline
+        - e-cline # Ethan Cline
 
   ####################################################################################
   # Override managed result groups

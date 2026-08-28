@@ -13,6 +13,15 @@ import {makeTemplateDiagnostic} from '../diagnostics';
 import {getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 
 /**
+ * This function will the check the source text of the TCB instead of doing a more expensive AST traversal (via getTokenAtPosition)
+ */
+function isAccessOnThis(text: string, start: number): boolean {
+  return (
+    text.substring(start - 5, start) === 'this.' || text.substring(start - 7, start) === '(this).'
+  );
+}
+
+/**
  * Determines if the diagnostic should be reported. Some diagnostics are produced because of the
  * way TCBs are generated; those diagnostics should not be reported as type check errors of the
  * template.
@@ -27,7 +36,15 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
     return false;
   } else if (code === 7006 /* Parameter '$event' implicitly has an 'any' type. */) {
     return false;
+  } else if (code === 2341 /* Property 'X' is private and only accessible within class */) {
+    if (diagnostic.file !== undefined && diagnostic.start !== undefined) {
+      // Here we're discarding private property reads error to allow them to be used in template expressions
+      if (isAccessOnThis(diagnostic.file.text, diagnostic.start)) {
+        return false;
+      }
+    }
   }
+
   return true;
 }
 

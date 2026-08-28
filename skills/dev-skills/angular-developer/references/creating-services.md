@@ -10,21 +10,20 @@ You can generate a service using the Angular CLI:
 ng generate service my-data
 ```
 
-Or you can manually create a TypeScript class and decorate it with `@Service()`.
+Or you can manually create a TypeScript class and decorate it with `@Service()`. For reactive state management, store data in a private `signal()` and expose it publicly via `.asReadonly()`:
 
 ```ts
-import {Service} from '@angular/core';
+import {Service, signal} from '@angular/core';
 
 @Service()
 export class BasicDataStore {
-  private data: string[] = [];
+  private readonly dataSignal = signal<string[]>([]);
+
+  // Expose state as a read-only signal to prevent direct external mutation
+  readonly data = this.dataSignal.asReadonly();
 
   addData(item: string): void {
-    this.data.push(item);
-  }
-
-  getData(): string[] {
-    return [...this.data];
+    this.dataSignal.update((items) => [...items, item]);
   }
 }
 ```
@@ -39,7 +38,7 @@ Using `@Service` is the recommended approach for most services. It tells Angular
 
 #### The `autoProvided` option
 
-If you don't want to create a singleton of your service, you can set `@Service({autoProvided: false})` and declare the service a `providers` array.
+If you don't want to create a singleton of your service, you can set `@Service({autoProvided: false})` and declare the service in a `providers` array.
 
 ## Injecting a Service
 
@@ -55,36 +54,33 @@ import {BasicDataStore} from './basic-data-store.service';
   selector: 'app-example',
   template: `
     <div>
-      <p>Data items: {{ dataStore.getData().length }}</p>
+      <p>Data items: {{ dataStore.data().length }}</p>
       <button (click)="dataStore.addData('New Item')">Add Item</button>
     </div>
   `,
 })
 export class Example {
   // Inject the service as a class field
-  dataStore = inject(BasicDataStore);
+  readonly dataStore = inject(BasicDataStore);
 }
 ```
 
 ### Injecting into Another Service
 
-Services can inject other services in the exact same way.
+Services can inject other services in the exact same way. Use `computed()` to derive values from injected services reactively:
 
 ```ts
-import {Injectable, inject} from '@angular/core';
+import {Service, computed, inject, signal} from '@angular/core';
 import {AdvancedDataStore} from './advanced-data-store.service';
 
 @Service()
-export class BasicDataStore {
+export class CombinedDataStore {
   // Injecting another service
-  private advancedDataStore = inject(AdvancedDataStore);
+  private readonly advancedDataStore = inject(AdvancedDataStore);
+  private readonly dataSignal = signal<string[]>([]);
 
-  private data: string[] = [];
-
-  getData(): string[] {
-    // Combine data from this service and the injected service
-    return [...this.data, ...this.advancedDataStore.getData()];
-  }
+  // Combine reactive state from this service and the injected service
+  readonly allData = computed(() => [...this.dataSignal(), ...this.advancedDataStore.data()]);
 }
 ```
 

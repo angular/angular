@@ -50,6 +50,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           epoch: 1,
           debuggable: true,
           preview: dummyPreview,
+          watched: false,
         },
         {
           id: 'b',
@@ -57,6 +58,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           epoch: 1,
           debuggable: false,
           preview: dummyPreview,
+          watched: false,
         },
       ],
       edges: [{producer: 0, consumer: 1}],
@@ -73,6 +75,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           preview: dummyPreview,
           nodeType: 'signal',
           clusterId: undefined,
+          watched: false,
         },
         {
           id: 'b',
@@ -82,6 +85,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           preview: dummyPreview,
           nodeType: 'signal',
           clusterId: undefined,
+          watched: false,
         },
       ],
       edges: [{producer: 0, consumer: 1}],
@@ -99,6 +103,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#myRsrc.stream',
+          watched: false,
         },
         {
           id: 'b',
@@ -107,6 +112,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#myRsrc.value',
+          watched: false,
         },
         {
           id: 'c',
@@ -114,6 +120,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           epoch: 1,
           debuggable: false,
           preview: dummyPreview,
+          watched: false,
         },
       ],
       edges: [
@@ -134,6 +141,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'stream',
           nodeType: 'signal',
           clusterId: 'cl_myRsrc',
+          watched: false,
         },
         {
           id: 'b',
@@ -144,6 +152,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'value',
           nodeType: 'signal',
           clusterId: 'cl_myRsrc',
+          watched: false,
         },
         {
           id: 'c',
@@ -153,6 +162,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           preview: dummyPreview,
           nodeType: 'signal',
           clusterId: undefined,
+          watched: false,
         },
         {
           id: 'cl_myRsrc',
@@ -187,6 +197,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#rsrc1.stream',
+          watched: false,
         },
         {
           id: 'b',
@@ -195,6 +206,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#rsrc1.value',
+          watched: false,
         },
         {
           id: 'c',
@@ -203,6 +215,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#rsrc2.state',
+          watched: false,
         },
         {
           id: 'd',
@@ -211,6 +224,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#rsrc2.value',
+          watched: false,
         },
         {
           id: 'e',
@@ -218,6 +232,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           epoch: 1,
           debuggable: false,
           preview: dummyPreview,
+          watched: false,
         },
         {
           id: 'f',
@@ -225,6 +240,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           epoch: 1,
           debuggable: false,
           preview: dummyPreview,
+          watched: false,
         },
       ],
       edges: [
@@ -247,6 +263,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'stream',
           nodeType: 'signal',
           clusterId: 'cl_rsrc1',
+          watched: false,
         },
         {
           id: 'b',
@@ -257,6 +274,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'value',
           nodeType: 'signal',
           clusterId: 'cl_rsrc1',
+          watched: false,
         },
         {
           id: 'c',
@@ -267,6 +285,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'state',
           nodeType: 'signal',
           clusterId: 'cl_rsrc2',
+          watched: false,
         },
         {
           id: 'd',
@@ -277,6 +296,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'value',
           nodeType: 'signal',
           clusterId: 'cl_rsrc2',
+          watched: false,
         },
         {
           id: 'e',
@@ -286,6 +306,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           preview: dummyPreview,
           nodeType: 'signal',
           clusterId: undefined,
+          watched: false,
         },
         {
           id: 'f',
@@ -295,6 +316,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           preview: dummyPreview,
           nodeType: 'signal',
           clusterId: undefined,
+          watched: false,
         },
         {
           id: 'cl_rsrc1',
@@ -344,6 +366,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#foo.signalFoo',
+          watched: false,
         },
         {
           id: 'b',
@@ -352,6 +375,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#bar.computedBar',
+          watched: false,
         },
         {
           id: 'c',
@@ -359,6 +383,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           epoch: 1,
           debuggable: false,
           preview: dummyPreview,
+          watched: false,
         },
       ],
       edges: [
@@ -379,6 +404,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'signalFoo',
           nodeType: 'signal',
           clusterId: 'cl_foo',
+          watched: false,
         },
         {
           id: 'b',
@@ -389,6 +415,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'computedBar',
           nodeType: 'signal',
           clusterId: 'cl_bar',
+          watched: false,
         },
         {
           id: 'c',
@@ -398,6 +425,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           preview: dummyPreview,
           nodeType: 'signal',
           clusterId: undefined,
+          watched: false,
         },
         {
           id: 'cl_foo',
@@ -447,6 +475,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#foo.signalFoo',
+          watched: false,
         },
         {
           id: 'b',
@@ -455,6 +484,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#foo.computedFoo',
+          watched: false,
         },
         {
           id: 'c',
@@ -463,6 +493,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#bar.computedBar',
+          watched: false,
         },
         {
           id: 'd',
@@ -471,6 +502,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#bar.signalBar',
+          watched: false,
         },
         {
           id: 'e',
@@ -478,6 +510,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           epoch: 1,
           debuggable: false,
           preview: dummyPreview,
+          watched: false,
         },
       ],
       edges: [
@@ -500,6 +533,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'signalFoo',
           nodeType: 'signal',
           clusterId: 'cl_foo',
+          watched: false,
         },
         {
           id: 'b',
@@ -510,6 +544,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'computedFoo',
           nodeType: 'signal',
           clusterId: 'cl_foo',
+          watched: false,
         },
         {
           id: 'c',
@@ -520,6 +555,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'computedBar',
           nodeType: 'signal',
           clusterId: 'cl_bar',
+          watched: false,
         },
         {
           id: 'd',
@@ -530,6 +566,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'signalBar',
           nodeType: 'signal',
           clusterId: 'cl_bar',
+          watched: false,
         },
         {
           id: 'e',
@@ -539,6 +576,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           preview: dummyPreview,
           nodeType: 'signal',
           clusterId: undefined,
+          watched: false,
         },
         {
           id: 'cl_foo',
@@ -594,6 +632,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#foo.signalFoo',
+          watched: false,
         },
         {
           id: 'b',
@@ -602,6 +641,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#bar.computedBar',
+          watched: false,
         },
         {
           id: 'c',
@@ -610,6 +650,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
           label: 'Resource#baz.computedBaz',
+          watched: false,
         },
         {
           id: 'd',
@@ -617,6 +658,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           epoch: 1,
           debuggable: false,
           preview: dummyPreview,
+          watched: false,
         },
       ],
       edges: [
@@ -639,6 +681,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'signalFoo',
           nodeType: 'signal',
           clusterId: 'cl_foo',
+          watched: false,
         },
         {
           id: 'b',
@@ -649,6 +692,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'computedBar',
           nodeType: 'signal',
           clusterId: 'cl_bar',
+          watched: false,
         },
         {
           id: 'c',
@@ -659,6 +703,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           label: 'computedBaz',
           nodeType: 'signal',
           clusterId: 'cl_baz',
+          watched: false,
         },
         {
           id: 'd',
@@ -668,6 +713,7 @@ describe('convertToDevtoolsSignalGraph', () => {
           preview: dummyPreview,
           nodeType: 'signal',
           clusterId: undefined,
+          watched: false,
         },
         {
           id: 'cl_foo',

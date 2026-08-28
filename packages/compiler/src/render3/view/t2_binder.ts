@@ -163,8 +163,7 @@ export function findMatchingDirectivesAndPipes(template: string, directiveSelect
 
 /** Object used to match template nodes to directives. */
 export type DirectiveMatcher<DirectiveT extends DirectiveMeta> =
-  | SelectorMatcher<DirectiveT[]>
-  | SelectorlessMatcher<DirectiveT>;
+  SelectorMatcher<DirectiveT[]> | SelectorlessMatcher<DirectiveT>;
 
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
@@ -199,6 +198,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     const usedPipes = new Set<string>();
     const eagerPipes = new Set<string>();
     const deferBlocks: DeferBlockScopes = [];
+    const pipes = new Map<BindingPipe, DeferredBlock[]>();
     const conflictingHostDirectiveBindings = new Map<
       DirectiveOwner,
       ConflictingHostDirectiveBinding<DirectiveT>[]
@@ -241,6 +241,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         usedPipes,
         eagerPipes,
         deferBlocks,
+        pipes,
       );
     }
 
@@ -257,6 +258,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         usedPipes,
         eagerPipes,
         deferBlocks,
+        pipes,
       );
     }
 
@@ -275,6 +277,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
       usedPipes,
       eagerPipes,
       deferBlocks,
+      pipes,
       conflictingHostDirectiveBindings,
     );
   }
@@ -296,7 +299,7 @@ class Scope implements Visitor {
   /**
    * Set of element-like nodes that belong to this scope.
    */
-  readonly elementLikeInScope = new Set<Element | Component>();
+  readonly elementLikeInScope = new Set<DirectiveOwner>();
 
   /**
    * Child `Scope`s for immediately nested `ScopedNode`s.
@@ -369,6 +372,7 @@ class Scope implements Visitor {
   }
 
   visitTemplate(template: Template) {
+    this.elementLikeInScope.add(template);
     template.directives.forEach((node) => node.visit(this));
 
     // References on a <ng-template> are defined in the outer scope, so capture them before
@@ -454,6 +458,7 @@ class Scope implements Visitor {
   }
 
   visitDirective(directive: Directive) {
+    this.elementLikeInScope.add(directive);
     directive.references.forEach((current) => this.visitReference(current));
   }
 
@@ -472,6 +477,21 @@ class Scope implements Visitor {
     node.references.forEach((current) => this.visitReference(current));
     node.children.forEach((current) => current.visit(this));
     this.elementLikeInScope.add(node);
+  }
+
+  /**
+   * Returns all enclosing `DeferredBlock`s for this scope, ordered from outermost to innermost.
+   */
+  getEnclosingDeferBlocks(): DeferredBlock[] {
+    const blocks: DeferredBlock[] = [];
+    let current: Scope | null = this;
+    while (current !== null) {
+      if (current.rootNode instanceof DeferredBlock) {
+        blocks.push(current.rootNode);
+      }
+      current = current.parentScope;
+    }
+    return blocks.reverse();
   }
 
   private maybeDeclare(thing: TemplateEntity) {
@@ -972,6 +992,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     private scope: Scope,
     private rootNode: ScopedNode | null,
     private level: number,
+    private pipes: Map<BindingPipe, DeferredBlock[]>,
   ) {
     super();
   }
@@ -997,6 +1018,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     usedPipes: Set<string>,
     eagerPipes: Set<string>,
     deferBlocks: DeferBlockScopes,
+    pipes: Map<BindingPipe, DeferredBlock[]>,
   ): void {
     const template = nodeOrNodes instanceof Template ? nodeOrNodes : null;
     // The top-level template has nesting level 0.
@@ -1010,6 +1032,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       scope,
       template,
       0,
+      pipes,
     );
     binder.ingest(nodeOrNodes);
   }
@@ -1162,6 +1185,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     if (!this.scope.isDeferred) {
       this.eagerPipes.add(ast.name);
     }
+    this.pipes.set(ast, this.scope.getEnclosingDeferBlocks());
     return super.visitPipe(ast, context);
   }
 
@@ -1190,6 +1214,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       childScope,
       node,
       this.level + 1,
+      this.pipes,
     );
     binder.ingest(node);
   }
@@ -1237,6 +1262,7 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     private usedPipes: Set<string>,
     private eagerPipes: Set<string>,
     rawDeferred: DeferBlockScopes,
+    private pipes: Map<BindingPipe, DeferredBlock[]>,
     private conflictingHostDirectiveBindings: Map<
       DirectiveOwner,
       ConflictingHostDirectiveBinding<DirectiveT>[]
@@ -1368,7 +1394,12 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     return null;
   }
 
-  isDeferred(element: Element): boolean {
+  isDeferred(node: DirectiveOwner): boolean {
+    return this.getDeferBlocksOfNode(node).length > 0;
+  }
+
+  getDeferBlocksOfNode(node: DirectiveOwner): DeferredBlock[] {
+    const blocks: DeferredBlock[] = [];
     for (const block of this.deferredBlocks) {
       if (!this.deferredScopes.has(block)) {
         continue;
@@ -1379,15 +1410,20 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
       while (stack.length > 0) {
         const current = stack.pop()!;
 
-        if (current.elementLikeInScope.has(element)) {
-          return true;
+        if (current.elementLikeInScope.has(node)) {
+          blocks.push(block);
+          break;
         }
 
         stack.push(...current.childScopes.values());
       }
     }
 
-    return false;
+    return blocks;
+  }
+
+  getDeferBlocksOfPipe(ast: BindingPipe): DeferredBlock[] {
+    return this.pipes.get(ast) ?? [];
   }
 
   referencedDirectiveExists(name: string): boolean {

@@ -206,6 +206,9 @@ export interface ComponentInputBindingOptions {
 }
 
 // @public
+export function containsTree(container: UrlTree, containee: UrlTree, options?: Partial<IsActiveMatchOptions>): boolean;
+
+// @public
 export function convertToParamMap(params: Params): ParamMap;
 
 // @public

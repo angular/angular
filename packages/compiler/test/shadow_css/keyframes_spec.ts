@@ -259,6 +259,17 @@ describe('ShadowCss, keyframes and animations', () => {
     expect(shim(css, 'host-a')).toEqual(expected);
   });
 
+  it('should correctly process animations defined in minified rules nested in an at-rule', () => {
+    let css = '@keyframes foo {}@media screen{.test{animation:foo 1s forwards}}';
+    let expected =
+      '@keyframes host-a_foo {}@media screen{.test[host-a]{animation:host-a_foo 1s forwards}}';
+    expect(shim(css, 'host-a')).toEqual(expected);
+    css = '@keyframes foo {}@supports (display:grid){.test{animation-name:foo}}';
+    expected =
+      '@keyframes host-a_foo {}@supports (display:grid){.test[host-a]{animation-name:host-a_foo}}';
+    expect(shim(css, 'host-a')).toEqual(expected);
+  });
+
   it('should ignore keywords values when scoping local animations', () => {
     const css = `
         div {

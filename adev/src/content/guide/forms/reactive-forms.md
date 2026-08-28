@@ -164,7 +164,7 @@ Use a `button` element to add a button to the bottom of the form to trigger the 
 The button in the preceding snippet also has a `disabled` binding attached to it to disable the button when `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Basic form validation is covered in the [Validating form input](#validating-form-input) section.
 </docs-step>
 
-<docs-step title="Display the component">
+<docs-step title="Display the component {#display-the-component-form-group}">
 To display the `ProfileEditor` component that contains the form, add it to a component template.
 
 <docs-code header="app.component.html (profile editor)" path="adev/src/content/examples/reactive-forms/src/app/app.component.1.html" region="app-profile-editor"/>
@@ -385,9 +385,7 @@ NOTE: In zoneless applications, mutating a reactive forms model (for example cal
 import {ChangeDetectorRef, Component, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class ProfileEditor {
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -615,9 +613,7 @@ When updating form controls programmatically, you have precise control over how 
 By default `emitEvent: true`, any change to a control emits events through the `valueChanges` and `statusChanges` observables. Setting `emitEvent: false` suppresses these emissions, which is useful when setting values programmatically without triggering reactive behavior like auto-save, avoiding circular updates between controls, or performing bulk updates where events should emit only once at the end.
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class BlogPostEditor {
   postForm = new FormGroup({
     title: new FormControl(''),

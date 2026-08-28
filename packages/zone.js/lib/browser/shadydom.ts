@@ -26,7 +26,7 @@ export function patchShadyDom(Zone: ZoneType): void {
       Document.prototype,
     ];
     prototypes.forEach(function (proto) {
-      if (proto && proto.hasOwnProperty('addEventListener')) {
+      if (proto && Object.hasOwn(proto, 'addEventListener')) {
         proto[Zone.__symbol__('addEventListener')] = null;
         proto[Zone.__symbol__('removeEventListener')] = null;
         api.patchEventTarget(global, api, [proto]);

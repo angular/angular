@@ -7,11 +7,7 @@ ts_project(
     srcs = ["index.ts"],
     deps = [
         ":client_event_subscribers",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
-        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
-        "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
-        "//devtools/projects/ng-devtools-backend/src/lib/shared/state-serializer",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/protocol",
     ],
 )
@@ -54,6 +50,7 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
         "//devtools/projects/ng-devtools-backend/src/lib/hydration:hydration-highlighting",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/cd-analyzer",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
         "//devtools/projects/ng-devtools-backend/src/lib/router-tree",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
@@ -61,6 +58,7 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/state-serializer",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:log",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:serialization",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:signal-graph-ref",
         "//devtools/projects/protocol",

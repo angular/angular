@@ -7,6 +7,7 @@
 // @public
 export interface BazelAndG3Options {
     annotateForClosureCompiler?: boolean;
+    enableTemplateSourceLocations?: boolean;
     _experimentalAllowEmitDeclarationOnly?: boolean;
     generateDeepReexports?: boolean;
     generateExtraImportsInLocalMode?: boolean;

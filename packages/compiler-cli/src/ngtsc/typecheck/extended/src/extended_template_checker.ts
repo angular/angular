@@ -85,7 +85,7 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
             text: string;
             start: number;
             end: number;
-            sourceFile: ts.SourceFile;
+            sourceFile?: ts.SourceFile;
           }[],
         ): NgTemplateDiagnostic<ErrorCode> => {
           return this.partialCtx.templateTypeChecker.makeTemplateDiagnostic(

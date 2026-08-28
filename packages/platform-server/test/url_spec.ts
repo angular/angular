@@ -68,6 +68,22 @@ describe('resolveUrl', () => {
       const url = 'ht\ntp://evil.com/path';
       expect(() => resolveUrl(url, 'http://test.com')).toThrowError(/NG05703/);
     });
+
+    it('should not trim unicode whitespace into protocol-relative URLs', () => {
+      const urls = ['\u00A0//attacker.example/collect', '\uFEFF//attacker.example/collect'];
+
+      for (const urlStr of urls) {
+        const urlWithProtocolRelative = resolveUrl(urlStr, 'http://test.com', {
+          allowProtocolRelative: true,
+        });
+        expect(urlWithProtocolRelative.origin).toBe('http://test.com');
+        expect(urlWithProtocolRelative.pathname).toContain('//attacker.example/collect');
+
+        const urlWithoutProtocolRelative = resolveUrl(urlStr, 'http://test.com');
+        expect(urlWithoutProtocolRelative.origin).toBe('http://test.com');
+        expect(urlWithoutProtocolRelative.pathname).toContain('//attacker.example/collect');
+      }
+    });
   });
 
   describe('without origin', () => {
@@ -76,6 +92,7 @@ describe('resolveUrl', () => {
       expect(resolveUrl('deep/path')).toBeNull();
       expect(resolveUrl('/\\attacker.com/deep/path')).toBeNull();
       expect(resolveUrl('\\\\attacker.com/deep/path')).toBeNull();
+      expect(resolveUrl('\u00A0//attacker.com/deep/path')).toBeNull();
     });
 
     it('should parse valid absolute URLs', () => {

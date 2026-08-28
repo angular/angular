@@ -16,6 +16,7 @@ import {
   ElementRef,
   inject,
   input,
+  linkedSignal,
   output,
   resource,
   signal,
@@ -79,6 +80,10 @@ export class DemoAppComponent {
   objectComputed = computed(() => {
     const original = this.objectSignal();
     return {...original, age: original.age + 1};
+  });
+  linkedPrimitive = linkedSignal({
+    source: this.primitiveSignal,
+    computation: (value) => value * 2,
   });
 
   demoRsrc = resource({

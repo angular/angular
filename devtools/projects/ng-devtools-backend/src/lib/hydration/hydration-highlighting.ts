@@ -17,6 +17,7 @@ import {
   HighlightType,
 } from '../shared/highlighter/highlights';
 import {ComponentTreeNode} from '../shared/interfaces';
+import {AngularDevtoolsError} from '../shared/utils/error';
 
 export function highlightHydrationNodes(): void {
   const forest: ComponentTreeNode[] = getDirectiveForestManager().getDirectiveForest();
@@ -58,7 +59,7 @@ function highlightHydrationElement(node: Element, {status}: HydrationStatus) {
       template = hydrationSkippedHighlightTemplate;
       break;
     default:
-      throw new Error(`Unsupported hydration status highlighting: ${status}`);
+      throw new AngularDevtoolsError(`Unsupported hydration status highlighting: ${status}`);
   }
 
   highlightElement(node, template, {'icon': [status]});

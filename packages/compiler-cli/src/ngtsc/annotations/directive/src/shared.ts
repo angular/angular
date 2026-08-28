@@ -40,7 +40,12 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
+import {
+  ErrorCode,
+  FatalDiagnosticError,
+  makeDiagnostic,
+  makeRelatedInformation,
+} from '../../../diagnostics';
 import {
   assertSuccessfulReferenceEmit,
   ImportedSymbolsTracker,
@@ -151,6 +156,7 @@ export function extractDirectiveMetadata(
       rawHostDirectives: ts.Expression | null;
       inputFieldNamesFromMetadataArray: Set<string>;
       hostBindingNodes: HostBindingNodes;
+      diagnostics: ts.Diagnostic[] | undefined;
     }
   | {jitForced: true} {
   let directive: Map<string, ts.Expression>;
@@ -372,6 +378,7 @@ export function extractDirectiveMetadata(
     );
 
   let isStandalone = implicitStandaloneValue;
+  let diagnostics: ts.Diagnostic[] | undefined;
   if (directive.has('standalone')) {
     const expr = directive.get('standalone')!;
     const resolved = evaluator.evaluate(expr);
@@ -381,11 +388,13 @@ export function extractDirectiveMetadata(
     isStandalone = resolved;
 
     if (!isStandalone && strictStandalone) {
-      throw new FatalDiagnosticError(
-        ErrorCode.NON_STANDALONE_NOT_ALLOWED,
-        expr,
-        `Only standalone components/directives are allowed when 'strictStandalone' is enabled.`,
-      );
+      diagnostics = [
+        makeDiagnostic(
+          ErrorCode.NON_STANDALONE_NOT_ALLOWED,
+          expr,
+          `Only standalone components/directives are allowed when 'strictStandalone' is enabled.`,
+        ),
+      ];
     }
   }
   let isSignal = false;
@@ -471,6 +480,7 @@ export function extractDirectiveMetadata(
     hostDirectives,
     rawHostDirectives,
     hostBindingNodes,
+    diagnostics,
     // Track inputs from class metadata. This is useful for migration efforts.
     inputFieldNamesFromMetadataArray: new Set(
       Object.values(inputsFromMeta).map((i) => i.classPropertyName),
@@ -890,8 +900,7 @@ export function parseDirectiveStyles(
     let unresolvedNode: ts.Node | null = null;
     if (Array.isArray(value)) {
       const entry = value.find((e) => e instanceof DynamicValue && e.isFromUnknownIdentifier()) as
-        | DynamicValue
-        | undefined;
+        DynamicValue | undefined;
       unresolvedNode = entry?.node ?? null;
     } else if (value instanceof DynamicValue && value.isFromUnknownIdentifier()) {
       unresolvedNode = value.node;
@@ -1468,7 +1477,7 @@ function parseInputFields(
     }
 
     // Validate that signal inputs are not accidentally declared in the `inputs` metadata.
-    if (inputMapping.isSignal && inputsFromClassDecorator.hasOwnProperty(classPropertyName)) {
+    if (inputMapping.isSignal && Object.hasOwn(inputsFromClassDecorator, classPropertyName)) {
       throw new FatalDiagnosticError(
         ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION,
         member.node ?? clazz,
@@ -1948,7 +1957,7 @@ function parseOutputFields(
     // in the `outputs` class metadata.
     if (
       (initializerOutput !== null || modelMapping !== null) &&
-      outputsFromMeta.hasOwnProperty(member.name)
+      Object.hasOwn(outputsFromMeta, member.name)
     ) {
       throw new FatalDiagnosticError(
         ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION,

@@ -174,13 +174,21 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
   };
 }
 
-function createHostElement(componentDef: ComponentDef<unknown>, renderer: Renderer): RElement {
+function createHostElement(
+  componentDef: ComponentDef<unknown>,
+  renderer: Renderer,
+  hostElementNamespace: string | null,
+): RElement {
   // Determine a tag name used for creating host elements when this component is created
   // dynamically. Default to 'div' if this component did not specify any tag name in its
   // selector.
   const tagName = inferTagNameFromDefinition(componentDef);
   const namespace =
-    tagName === 'svg' ? SVG_NAMESPACE : tagName === 'math' ? MATH_ML_NAMESPACE : null;
+    tagName === 'svg'
+      ? SVG_NAMESPACE
+      : tagName === 'math'
+        ? MATH_ML_NAMESPACE
+        : hostElementNamespace;
   return createElementNode(renderer, tagName, namespace);
 }
 
@@ -262,6 +270,7 @@ export class ComponentFactory<T> {
     environmentInjector?: NgModuleRef<any> | EnvironmentInjector | undefined,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     componentBindings?: Binding[],
+    hostElementNamespace?: string | null,
   ): AbstractComponentRef<T> {
     profiler(ProfilerEvent.DynamicComponentStart);
 
@@ -286,6 +295,7 @@ export class ComponentFactory<T> {
             rootSelectorOrNode,
             directives,
             componentBindings,
+            hostElementNamespace,
           ),
         );
       } else {
@@ -296,6 +306,7 @@ export class ComponentFactory<T> {
           rootSelectorOrNode,
           directives,
           componentBindings,
+          hostElementNamespace,
         );
       }
     } finally {
@@ -310,6 +321,7 @@ export class ComponentFactory<T> {
     rootSelectorOrNode?: any,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     componentBindings?: Binding[],
+    hostElementNamespace?: string | null,
   ) {
     const cmpDef = this.componentDef;
     const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
@@ -317,7 +329,7 @@ export class ComponentFactory<T> {
     const hostRenderer = environment.rendererFactory.createRenderer(null, cmpDef);
     const hostElement = rootSelectorOrNode
       ? locateHostElement(hostRenderer, rootSelectorOrNode, cmpDef.encapsulation, rootViewInjector)
-      : createHostElement(cmpDef, hostRenderer);
+      : createHostElement(cmpDef, hostRenderer, hostElementNamespace ?? null);
     assertNotScriptHostElement(hostElement);
 
     const sharedStylesHost = rootViewInjector.get(SHARED_STYLES_HOST, null);

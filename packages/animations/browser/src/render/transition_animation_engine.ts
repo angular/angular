@@ -112,7 +112,7 @@ class StateValue {
     input: any,
     public namespaceId: string = '',
   ) {
-    const isObj = input && input.hasOwnProperty('value');
+    const isObj = input && Object.hasOwn(input, 'value');
     const value = isObj ? input['value'] : input;
     this.value = normalizeTriggerValue(value);
     if (isObj) {
@@ -246,7 +246,7 @@ class AnimationTransitionNamespace {
 
     let fromState = triggersWithStates.get(triggerName);
     const toState = new StateValue(value, this.id);
-    const isObj = value && value.hasOwnProperty('value');
+    const isObj = value && Object.hasOwn(value, 'value');
     if (!isObj && fromState) {
       toState.absorbOptions(fromState.options);
     }
@@ -1918,7 +1918,7 @@ function objEquals(a: {[key: string]: any}, b: {[key: string]: any}): boolean {
   if (k1.length != k2.length) return false;
   for (let i = 0; i < k1.length; i++) {
     const prop = k1[i];
-    if (!b.hasOwnProperty(prop) || a[prop] !== b[prop]) return false;
+    if (!Object.hasOwn(b, prop) || a[prop] !== b[prop]) return false;
   }
   return true;
 }

@@ -1,6 +1,6 @@
 ---
 name: angular-developer
-description: Generates Angular code and provides architectural guidance. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, or CLI tooling.
+description: Generates Angular code and provides architectural guidance. Trigger when creating projects, components, services, or HTTP communication, or for best practices on reactivity (signals, linkedSignal, resource, httpResource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, naming conventions, or CLI tooling.
 license: MIT
 metadata:
   author: Copyright 2026 Google LLC
@@ -20,7 +20,7 @@ metadata:
 If no guidelines are provided by the user, here are some default rules to follow when creating a new Angular project:
 
 1. Use the latest stable version of Angular unless the user specifies otherwise.
-2. Use Signals Forms for form management in new projects (available in Angular v21 and newer) [Find out more](references/signal-forms.md).
+2. Use Signal Forms for form management in new projects (stable in Angular v22 and newer) [Find out more](references/signal-forms.md).
 
 **Execution Rules for `ng new`:**
 When asked to create a new Angular project, you must determine the correct execution command by following these strict steps:
@@ -45,10 +45,11 @@ When asked to create a new Angular project, you must determine the correct execu
 
 When working with Angular components, consult the following references based on the task:
 
-- **Fundamentals**: Anatomy, metadata, core concepts, and template control flow (@if, @for, @switch). Read [components.md](references/components.md)
+- **Fundamentals**: Anatomy, metadata, core concepts, self-closing tags, and template control flow (@if, @for, @switch). Read [components.md](references/components.md)
 - **Inputs**: Signal-based inputs, transforms, and model inputs. Read [inputs.md](references/inputs.md)
 - **Outputs**: Signal-based outputs and custom event best practices. Read [outputs.md](references/outputs.md)
 - **Host Elements**: Host bindings and attribute injection. Read [host-elements.md](references/host-elements.md)
+- **Naming Conventions**: Modern Angular v20+ naming style ("Intent over Role") for files, components, services, directives, pipes, and models. Read [naming-conventions.md](references/naming-conventions.md)
 
 If you require deeper documentation not found in the references above, read the documentation at `https://angular.dev/guide/components`.
 
@@ -71,7 +72,7 @@ When communicating with backend services, use Angular HTTP APIs and consult the 
 
 In most cases for new apps, **prefer signal forms**. When making a forms decision, analyze the project and consider the following guidelines:
 
-- If the application is using v21 or newer and this is a new form, **prefer signal forms**.
+- If the application is using v22 or newer and this is a new form, **prefer Signal Forms**.
 - For older applications or when working with existing forms, use the appropriate form type that matches the applications current form strategy.
 
 - **Signal Forms**: Use signals for form state management. Read [signal-forms.md](references/signal-forms.md)

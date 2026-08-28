@@ -506,14 +506,14 @@ function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule)
 
   declarations.forEach((declaration) => {
     declaration = resolveForwardRef(declaration);
-    if (declaration.hasOwnProperty(NG_COMP_DEF)) {
+    if (Object.hasOwn(declaration, NG_COMP_DEF)) {
       // A `ɵcmp` field exists - go ahead and patch the component directly.
       const component = declaration as Type<any> & {ɵcmp: ComponentDef<any>};
       const componentDef = getComponentDef(component)!;
       patchComponentDefWithScope(componentDef, transitiveScopes);
     } else if (
-      !declaration.hasOwnProperty(NG_DIR_DEF) &&
-      !declaration.hasOwnProperty(NG_PIPE_DEF)
+      !Object.hasOwn(declaration, NG_DIR_DEF) &&
+      !Object.hasOwn(declaration, NG_PIPE_DEF)
     ) {
       // Set `ngSelectorScope` for future reference when the component compilation finishes.
       (declaration as Type<any> & {ngSelectorScope?: any}).ngSelectorScope = moduleType;
@@ -532,7 +532,7 @@ export function patchComponentDefWithScope<C>(
   componentDef.directiveDefs = () =>
     Array.from(transitiveScopes.compilation.directives)
       .map((dir) =>
-        dir.hasOwnProperty(NG_COMP_DEF) ? getComponentDef(dir)! : getDirectiveDef(dir)!,
+        Object.hasOwn(dir, NG_COMP_DEF) ? getComponentDef(dir)! : getDirectiveDef(dir)!,
       )
       .filter((def) => !!def);
   componentDef.pipeDefs = () =>

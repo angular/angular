@@ -327,7 +327,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
   ): T {
     assertNotDestroyed(this);
 
-    if (token.hasOwnProperty(NG_ENV_ID)) {
+    if (Object.hasOwn(token, NG_ENV_ID)) {
       return (token as any)[NG_ENV_ID](this);
     }
 

@@ -504,7 +504,6 @@
       "defaultIterableDiffersFactory",
       "defaultThrowError",
       "delayChangeDetectionForEvents",
-      "describeDomNode",
       "destroyLView",
       "destroyViewTree",
       "detachMovedView",

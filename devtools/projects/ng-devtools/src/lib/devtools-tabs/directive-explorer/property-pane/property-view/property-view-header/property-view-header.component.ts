@@ -12,12 +12,13 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {MatToolbar} from '@angular/material/toolbar';
 import {Platform} from '@angular/cdk/platform';
 import {FrameManager} from '../../../../../application-services/frame_manager';
+import {ButtonComponent} from '../../../../../shared/button/button.component';
 
 @Component({
   selector: 'ng-property-view-header',
   templateUrl: './property-view-header.component.html',
   styleUrls: ['./property-view-header.component.scss'],
-  imports: [MatToolbar, MatTooltip, MatIcon],
+  imports: [MatToolbar, MatTooltip, MatIcon, ButtonComponent],
 })
 export class PropertyViewHeaderComponent {
   readonly directive = input.required<string>();
@@ -39,13 +40,12 @@ export class PropertyViewHeaderComponent {
       : 'Open Source',
   );
 
-  // output that emits directive
   handleViewSource(event: MouseEvent): void {
     event.stopPropagation();
     this.viewSource.emit();
   }
 
-  handlelogInstance(event: MouseEvent): void {
+  handleLogInstance(event: MouseEvent): void {
     event.stopPropagation();
     this.logInstance.emit();
   }

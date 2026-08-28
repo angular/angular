@@ -255,7 +255,7 @@ Every node in the tree, including the root form object, provides the same signal
 | `readonly()` | Returns `true` if the node is readonly                                          |
 | `errors()`   | Returns an array of validation errors with `kind` and `message` properties      |
 
-### Complete example
+### Complete example {#complete-example-validation}
 
 <docs-code-multifile preview path="adev/src/content/examples/signal-forms/src/login-validation/app/app.ts">
   <docs-code header="app.ts" path="adev/src/content/examples/signal-forms/src/login-validation/app/app.ts"/>

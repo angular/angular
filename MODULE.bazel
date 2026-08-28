@@ -6,8 +6,8 @@ module(
 
 bazel_dep(name = "rules_pkg", version = "1.3.0")
 bazel_dep(name = "rules_nodejs", version = "6.7.5")
-bazel_dep(name = "aspect_rules_ts", version = "3.10.0")
-bazel_dep(name = "aspect_rules_js", version = "3.4.0")
+bazel_dep(name = "aspect_rules_ts", version = "3.10.1")
+bazel_dep(name = "aspect_rules_js", version = "3.4.1")
 bazel_dep(name = "aspect_rules_esbuild", version = "0.27.0")
 bazel_dep(name = "aspect_rules_jasmine", version = "2.0.4")
 bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
@@ -18,28 +18,28 @@ bazel_dep(name = "yq.bzl", version = "0.3.6")
 bazel_dep(name = "rules_angular")
 git_override(
     module_name = "rules_angular",
-    commit = "c1d74dbcda5f0ee9529dc78c485f34628c3985d5",
+    commit = "ed98d720477b10c13f3d0ccee72f929c777f6ccd",
     remote = "https://github.com/angular/rules_angular.git",
 )
 
 bazel_dep(name = "devinfra")
 git_override(
     module_name = "devinfra",
-    commit = "630fa0aa7ce9b7127b1ec4464b6af02d34f8154b",
+    commit = "fa43fd2864c3bec677cd47f4e095370850cdf8bc",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
 bazel_dep(name = "rules_sass")
 git_override(
     module_name = "rules_sass",
-    commit = "d3806bb8c4e2faa96bb212795e3b0c8f56a19afc",
+    commit = "8ae8c820345a93c29e4f220b4d6f459f30243683",
     remote = "https://github.com/angular/rules_sass.git",
 )
 
 bazel_dep(name = "rules_browsers")
 git_override(
     module_name = "rules_browsers",
-    commit = "5836240755b286b6224ecccb7045c318b1279def",
+    commit = "c6cb5590120af8ae8125343f9fc522b7b66eb0e8",
     remote = "https://github.com/angular/rules_browsers.git",
 )
 
@@ -71,8 +71,8 @@ use_repo(node, "nodejs_windows_amd64")
 pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
 pnpm.pnpm(
     name = "pnpm",
-    pnpm_version = "11.21.0",
-    pnpm_version_integrity = "sha512-UhcFvOaJkk6scvWjWHEi82JonvZXHlW6gAdv1jfBETLs/62ib61Op5xIW/3b/T1aKlsFgFp36JPeceyKbMo7sQ==",
+    pnpm_version = "11.24.0",
+    pnpm_version_integrity = "sha512-vSfjRel23LC+C3oSKCF7BJqBfiGx81XJDb59xGZxiVqLwebQbCRVRQXqk+oLRfSJon7Bv7yN5qlln8oPFvoAAA==",
 )
 use_repo(pnpm, "pnpm")
 
