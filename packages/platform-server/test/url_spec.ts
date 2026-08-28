@@ -84,6 +84,46 @@ describe('resolveUrl', () => {
         expect(urlWithoutProtocolRelative.pathname).toContain('//attacker.example/collect');
       }
     });
+
+    it('should resolve scheme URLs without authority against origin of the same scheme', () => {
+      const urlA = resolveUrl('http:/attacker.example/steal', 'http://test.com');
+      expect(urlA.origin).toBe('http://test.com');
+      expect(urlA.pathname).toBe('/attacker.example/steal');
+
+      const urlB = resolveUrl('http:attacker.example/steal', 'http://test.com');
+      expect(urlB.origin).toBe('http://test.com');
+      expect(urlB.pathname).toBe('/attacker.example/steal');
+
+      const urlHttpsA = resolveUrl('https:/attacker.example/steal', 'https://test.com');
+      expect(urlHttpsA.origin).toBe('https://test.com');
+      expect(urlHttpsA.pathname).toBe('/attacker.example/steal');
+
+      const urlHttpsB = resolveUrl('https:attacker.example/steal', 'https://test.com');
+      expect(urlHttpsB.origin).toBe('https://test.com');
+      expect(urlHttpsB.pathname).toBe('/attacker.example/steal');
+
+      const urlBackslash = resolveUrl('http:\\attacker.example/steal', 'http://test.com');
+      expect(urlBackslash.origin).toBe('http://test.com');
+      expect(urlBackslash.pathname).toBe('/attacker.example/steal');
+    });
+
+    it('should throw on scheme URLs without authority when origin scheme differs', () => {
+      expect(() => resolveUrl('http:/attacker.example/steal', 'https://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('http:attacker.example/steal', 'https://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('https:/attacker.example/steal', 'http://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('https:attacker.example/steal', 'http://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('http:\\attacker.example/steal', 'https://test.com')).toThrowError(
+        /NG05703/,
+      );
+    });
   });
 
   describe('without origin', () => {
