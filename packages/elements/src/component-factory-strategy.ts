@@ -198,13 +198,17 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * sets up its initial inputs, listens for outputs changes, and runs an initial change detection.
    */
   protected initializeComponent(element: HTMLElement) {
+    const environmentInjector =
+      this.injector instanceof EnvironmentInjector
+        ? this.injector
+        : this.injector.get(EnvironmentInjector);
     const childInjector = Injector.create({providers: [], parent: this.injector});
     const projectableNodes = extractProjectableNodes(
       element,
       reflectComponentType(this.component)!.ngContentSelectors as string[],
     );
     this.componentRef = createComponent(this.component, {
-      environmentInjector: this.injector as EnvironmentInjector,
+      environmentInjector,
       elementInjector: childInjector,
       hostElement: element,
       projectableNodes,
