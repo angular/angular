@@ -1978,7 +1978,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content');
           expect(content.innerHTML).toBe(
-            'Start  Inner Start  Hello <span>World</span>!<!--ICU 28:0--> Inner End  Middle <span>Span</span> End',
+            'Start  Inner Start  Hello <span>World</span>!<!--ICU 29:0--> Inner End  Middle <span>Span</span> End',
           );
         });
 
@@ -2030,7 +2030,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content-outer');
           expect(content.innerHTML).toBe(
-            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>!<!--ICU 28:0--> Outer End  Middle  End</app-content-inner>',
+            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>!<!--ICU 29:0--> Outer End  Middle  End</app-content-inner>',
           );
         });
 
@@ -2267,7 +2267,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const div = clientRootNode.querySelector('div');
-          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 28:0--> content/);
+          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 29:0--> content/);
         });
 
         it('should support translations that remove elements', async () => {
@@ -8036,6 +8036,150 @@ describe('platform-server full application hydration integration', () => {
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Main:  Slot: 2');
+      });
+    });
+
+    describe('@boundary', () => {
+      it('should hydrate successfully when no error occurs', async () => {
+        const doc = TestBed.inject(DOCUMENT);
+        @Component({
+          selector: 'app',
+          template: `
+            @boundary {
+              Hello, {{ name }}
+            } @error {
+              Error occurred!
+            }
+          `,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class SimpleComponent {
+          name = 'Frodo';
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('Hello, Frodo');
+        expect(ssrContents).not.toContain('Error occurred!');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('Hello, Frodo');
+
+        compRef.instance.name = 'Bilbo';
+        compRef.changeDetectorRef.detectChanges();
+        expect(clientRootNode.textContent).toContain('Hello, Bilbo');
+      });
+
+      it('should render fallback during SSR and recover to primary during client hydration if error is resolved', async () => {
+        const doc = TestBed.inject(DOCUMENT);
+        @Component({
+          selector: 'child',
+          template: 'Child rendering...',
+        })
+        class ChildComponent {
+          @Input() fail = false;
+          ngOnInit() {
+            if (this.fail) {
+              throw new Error('Server error');
+            }
+          }
+        }
+
+        @Component({
+          selector: 'app',
+          imports: [ChildComponent],
+          template: `
+            @boundary {
+              <child [fail]="fail" />
+            } @error {
+              Error occurred on server!
+            }
+          `,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class SimpleComponent {
+          fail = isPlatformServer(inject(PLATFORM_ID));
+        }
+
+        // 1. SSR where an error occurs
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        // Ensure server rendered the fallback
+        expect(ssrContents).toContain('Error occurred on server!');
+        expect(ssrContents).not.toContain('Child rendering...');
+
+        resetTViewsFor(SimpleComponent, ChildComponent);
+
+        // 2. Hydration where error does NOT occur (fail is false on client)
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        // Since the server rendered fallback but client successfully rendered primary,
+        // it shouldn't crash, and the fallback should be replaced with primary.
+        expect(clientRootNode.textContent).toContain('Child rendering...');
+        expect(clientRootNode.textContent).not.toContain('Error occurred on server!');
+      });
+
+      it('should render fallback during SSR and remain in error state during client hydration if error persists', async () => {
+        const doc = TestBed.inject(DOCUMENT);
+        @Component({
+          selector: 'child',
+          template: 'Child rendering...',
+        })
+        class ChildComponent {
+          @Input() fail = false;
+          ngOnInit() {
+            if (this.fail) {
+              throw new Error('Persistent error');
+            }
+          }
+        }
+
+        @Component({
+          selector: 'app',
+          imports: [ChildComponent],
+          template: `
+            @boundary {
+              <child [fail]="true" />
+            } @error {
+              Error occurred on server and client!
+            }
+          `,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class SimpleComponent {}
+
+        // 1. SSR where an error occurs
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Error occurred on server and client!');
+
+        resetTViewsFor(SimpleComponent, ChildComponent);
+
+        // 2. Hydration where error DOES occur again
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        // The fallback should still be rendered (either hydrated or re-created)
+        expect(clientRootNode.textContent).toContain('Error occurred on server and client!');
       });
     });
 

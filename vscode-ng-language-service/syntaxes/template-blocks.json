@@ -12,7 +12,7 @@
       "name": "keyword.control.block.transition.ng"
     },
     "block": {
-      "begin": "(@)(if|else if|else|defer|placeholder|loading|error|boundary|switch|for|empty)(?:\\s*)",
+      "begin": "(@)(if|else if|else|defer|placeholder|loading|error|switch|for|empty)(?:\\s*)",
       "beginCaptures": {
         "1": {
           "patterns": [
@@ -109,9 +109,6 @@
           "include": "#blockExpressionTrackClause"
         },
         {
-          "include": "#blockExpressionWhenClause"
-        },
-        {
           "include": "expression.ng"
         }
       ],
@@ -121,20 +118,6 @@
           "name": "meta.brace.round.ts"
         }
       }
-    },
-    "blockExpressionWhenClause": {
-      "begin": "\\bwhen\\b",
-      "beginCaptures": {
-        "0": {
-          "name": "keyword.control.when.ng"
-        }
-      },
-      "end": "(?=[$)])|(?<=;)",
-      "patterns": [
-        {
-          "include": "expression.ng"
-        }
-      ]
     },
     "blockExpressionOfClause": {
       "begin": "([_$[:alpha:]][_$[:alnum:]]*)\\s+(of)\\b",
