@@ -659,8 +659,7 @@ export interface Component extends Directive {
    * Note: this is an internal-only field, use regular `@Component.imports` field instead.
    * @internal // 3p-only
    */
-  deferredImports?:
-    (Type<any> | ReadonlyArray<any>)[] | {[blockName: string]: (Type<any> | ReadonlyArray<any>)[]};
+  deferredImports?: {[blockName: string]: (Type<any> | ReadonlyArray<any>)[]};
 
   /**
    * The set of schemas that declare elements to be allowed in a standalone component. Elements and
