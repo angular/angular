@@ -7,6 +7,7 @@
  */
 
 import {Template, Variable} from '../../render3/r3_ast';
+import {isUnsafeObjectKey} from '../../render3/util';
 import {TcbOp} from './base';
 import type {Context} from './context';
 import type {Scope} from './scope';
@@ -67,7 +68,15 @@ export class TcbTemplateVariableOp extends TcbOp {
     // Allocate an identifier for the Variable, and initialize it to a read of the variable
     // on the template context.
     const id = new TcbExpr(this.tcb.allocateId());
-    const initializer = new TcbExpr(`${ctx.print()}.${this.variable.value || '$implicit'}`);
+    // The value is used verbatim as the name of the context property, but it isn't guaranteed to be
+    // a valid identifier. Fall back to an element access in that case so that the check matches the
+    // code that the compiler will actually generate.
+    const value = this.variable.value || '$implicit';
+    const initializer = new TcbExpr(
+      isUnsafeObjectKey(value)
+        ? `${ctx.print()}[${TcbExpr.quoteAndEscape(value)}]`
+        : `${ctx.print()}.${value}`,
+    );
     id.addParseSpanInfo(this.variable.keySpan);
 
     // Declare the variable, and return its identifier.

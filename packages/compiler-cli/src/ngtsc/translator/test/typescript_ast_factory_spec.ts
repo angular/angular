@@ -373,6 +373,18 @@ describe('TypeScriptAstFactory', () => {
       ]);
       expect(generate(obj)).toEqual('{ prop1: 42, "prop2": "moo", ...foo }');
     });
+
+    it('should quote property names that are not valid identifiers, even if they are not marked as quoted', () => {
+      const {
+        items: [prop1, prop2],
+        generate,
+      } = setupExpressions('42', '"moo"');
+      const obj = factory.createObjectLiteral([
+        {propertyName: 'a: 0, evil: 1, b', value: prop1, kind: 'property', quoted: false},
+        {propertyName: 'ɵcmp', value: prop2, kind: 'property', quoted: false},
+      ]);
+      expect(generate(obj)).toEqual('{ "a: 0, evil: 1, b": 42, ɵcmp: "moo" }');
+    });
   });
 
   describe('createParenthesizedExpression()', () => {
@@ -394,6 +406,35 @@ describe('TypeScriptAstFactory', () => {
       } = setupExpressions(`obj`);
       const access = factory.createPropertyAccess(expr, 'moo');
       expect(generate(access)).toEqual('obj.moo');
+    });
+
+    it('should create an element access expression node if the property name is not a valid identifier', () => {
+      const {
+        items: [expr],
+        generate,
+      } = setupExpressions(`obj`);
+      const access = factory.createPropertyAccess(expr, 'a, evil(), b');
+      expect(generate(access)).toEqual('obj["a, evil(), b"]');
+    });
+  });
+
+  describe('createPropertyAccessChain()', () => {
+    it('should create an optional property access expression node', () => {
+      const {
+        items: [expr],
+        generate,
+      } = setupExpressions(`obj`);
+      const access = factory.createPropertyAccessChain(expr, 'moo', true);
+      expect(generate(access)).toEqual('obj?.moo');
+    });
+
+    it('should create an optional element access expression node if the property name is not a valid identifier', () => {
+      const {
+        items: [expr],
+        generate,
+      } = setupExpressions(`obj`);
+      const access = factory.createPropertyAccessChain(expr, 'a, evil(), b', true);
+      expect(generate(access)).toEqual('obj?.["a, evil(), b"]');
     });
   });
 

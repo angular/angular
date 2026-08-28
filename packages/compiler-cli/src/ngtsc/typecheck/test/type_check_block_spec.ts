@@ -199,6 +199,11 @@ describe('type check blocks', () => {
     expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');
   });
 
+  it('should use an element access for template variables that are not valid identifiers', () => {
+    const TEMPLATE = `<ng-template let-a="a, evil(), b"></ng-template>`;
+    expect(tcb(TEMPLATE)).toContain('var _t2 = (_t1["a, evil(), b"]);');
+  });
+
   it('should handle method calls of template variables', () => {
     const TEMPLATE = `<ng-template let-a>{{a(1)}}</ng-template>`;
     expect(tcb(TEMPLATE)).toContain('var _t2 = _t1.$implicit;');

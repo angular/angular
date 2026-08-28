@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {escapeIdentifier} from '../output/abstract_emitter';
+import {escapeIdentifier, isIdentifierName} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 
 import {Identifiers} from './r3_identifiers';
-
-/** Regex that includes unsafe characters in an object literal property name. */
-const UNSAFE_OBJECT_KEY_NAME_REGEXP = /[-.]/;
 
 /** Pattern used to validate a JavaScript identifier. */
 export const IDENTIFIER_PATTERN = /^[$A-Z_][0-9A-Z_$]*$/i;
@@ -89,8 +86,16 @@ export function tsIgnoreComment(): o.LeadingComment {
   return o.leadingComment('@ts-ignore', true, true);
 }
 
+/**
+ * Checks whether a name has to be quoted when it is used as an object literal key, or accessed
+ * with an element access rather than a property access. Names can come from user code (e.g. a
+ * class member declared with a string literal), so they aren't guaranteed to be valid identifiers.
+ *
+ * Note that we don't quote all keys, because doing so can prevent a minifier from mangling them.
+ * Anything that isn't an identifier can't be mangled anyway, so quoting it costs nothing.
+ */
 export function isUnsafeObjectKey(key: string): boolean {
-  return UNSAFE_OBJECT_KEY_NAME_REGEXP.test(key);
+  return !isIdentifierName(key);
 }
 
 /**

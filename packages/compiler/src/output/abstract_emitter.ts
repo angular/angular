@@ -12,8 +12,22 @@ import * as o from './output_ast';
 import {SourceMapGenerator} from './source_map';
 
 const SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r/g;
+/**
+ * Names that `escapeIdentifier` may leave unquoted. This is deliberately stricter than
+ * `IDENTIFIER_NAME_REGEXP` below: quoting a name that didn't need it is harmless, so the ASCII-only
+ * subset is safe to keep for the callers that already rely on it.
+ */
 const LEGAL_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
+const IDENTIFIER_NAME_REGEXP = /^[$_\p{ID_Start}][$\u200c\u200d\p{ID_Continue}]*$/u;
 const INDENT_WITH = '  ';
+
+/**
+ * Checks whether a name matches the `IdentifierName` production of the ECMAScript grammar.
+ * Reserved words match, because they are valid object literal keys and property names.
+ */
+export function isIdentifierName(name: string): boolean {
+  return IDENTIFIER_NAME_REGEXP.test(name);
+}
 
 class EmittedLine {
   partsLength = 0;

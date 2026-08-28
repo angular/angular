@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {isUnsafeObjectKey} from '@angular/compiler';
 import {types as t} from '@babel/core';
 
 import {assert} from '../../../../linker';
@@ -219,9 +220,10 @@ export class BabelAstFactory implements AstFactory<
           return t.spreadElement(prop.expression);
         }
 
-        const key = prop.quoted
-          ? t.stringLiteral(prop.propertyName)
-          : t.identifier(prop.propertyName);
+        const key =
+          prop.quoted || isUnsafeObjectKey(prop.propertyName)
+            ? t.stringLiteral(prop.propertyName)
+            : t.identifier(prop.propertyName);
         return t.objectProperty(key, prop.value);
       }),
     );
@@ -230,7 +232,9 @@ export class BabelAstFactory implements AstFactory<
   createParenthesizedExpression = t.parenthesizedExpression;
 
   createPropertyAccess(expression: t.Expression, propertyName: string): t.Expression {
-    return t.memberExpression(expression, t.identifier(propertyName), /* computed */ false);
+    return isUnsafeObjectKey(propertyName)
+      ? t.memberExpression(expression, t.stringLiteral(propertyName), /* computed */ true)
+      : t.memberExpression(expression, t.identifier(propertyName), /* computed */ false);
   }
 
   createPropertyAccessChain(
@@ -238,12 +242,19 @@ export class BabelAstFactory implements AstFactory<
     propertyName: string,
     isOptional: boolean,
   ): t.Expression {
-    return t.optionalMemberExpression(
-      expression,
-      t.identifier(propertyName),
-      /* computed */ false,
-      /* optional */ isOptional,
-    );
+    return isUnsafeObjectKey(propertyName)
+      ? t.optionalMemberExpression(
+          expression,
+          t.stringLiteral(propertyName),
+          /* computed */ true,
+          /* optional */ isOptional,
+        )
+      : t.optionalMemberExpression(
+          expression,
+          t.identifier(propertyName),
+          /* computed */ false,
+          /* optional */ isOptional,
+        );
   }
 
   createReturnStatement(expression: t.Expression | null): t.Statement {

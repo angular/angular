@@ -327,6 +327,18 @@ describe('BabelAstFactory', () => {
         ['{', '  prop1: 42,', '  "prop2": "moo",', '  ...foo', '}'].join('\n'),
       );
     });
+
+    it('should quote property names that are not valid identifiers, even if they are not marked as quoted', () => {
+      const prop1 = expression.ast`42`;
+      const prop2 = expression.ast`"moo"`;
+      const obj = factory.createObjectLiteral([
+        {propertyName: 'a: 0, evil: 1, b', value: prop1, kind: 'property', quoted: false},
+        {propertyName: 'ɵcmp', value: prop2, kind: 'property', quoted: false},
+      ]);
+      expect(generate(obj).code).toEqual(
+        ['{', '  "a: 0, evil: 1, b": 42,', '  ɵcmp: "moo"', '}'].join('\n'),
+      );
+    });
   });
 
   describe('createParenthesizedExpression()', () => {
@@ -342,6 +354,26 @@ describe('BabelAstFactory', () => {
       const expr = expression.ast`obj`;
       const access = factory.createPropertyAccess(expr, 'moo');
       expect(generate(access).code).toEqual('obj.moo');
+    });
+
+    it('should create an element access expression node if the property name is not a valid identifier', () => {
+      const expr = expression.ast`obj`;
+      const access = factory.createPropertyAccess(expr, 'a, evil(), b');
+      expect(generate(access).code).toEqual('obj["a, evil(), b"]');
+    });
+  });
+
+  describe('createPropertyAccessChain()', () => {
+    it('should create an optional property access expression node', () => {
+      const expr = expression.ast`obj`;
+      const access = factory.createPropertyAccessChain(expr, 'moo', true);
+      expect(generate(access).code).toEqual('obj?.moo');
+    });
+
+    it('should create an optional element access expression node if the property name is not a valid identifier', () => {
+      const expr = expression.ast`obj`;
+      const access = factory.createPropertyAccessChain(expr, 'a, evil(), b', true);
+      expect(generate(access).code).toEqual('obj?.["a, evil(), b"]');
     });
   });
 

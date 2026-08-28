@@ -7479,6 +7479,89 @@ runInEachFileSystem((os: string) => {
       expect(trim(jsContents)).toContain(trim(inputsAndOutputs));
     });
 
+    it('should quote "inputs" and "outputs" keys that are not valid identifiers', () => {
+      env.write(
+        `test.ts`,
+        `
+      import {Directive, Input, Output, EventEmitter} from '@angular/core';
+
+      @Directive({selector: '[somedir]'})
+      export class SomeDir {
+        @Input() 'a: 0, evil: 1, b' = 1;
+        @Output() 'c: 0, evil: 2, d' = new EventEmitter<void>();
+      }
+    `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const inputsAndOutputs = `
+      inputs: { "a: 0, evil: 1, b": "a: 0, evil: 1, b" },
+      outputs: { "c: 0, evil: 2, d": "c: 0, evil: 2, d" }
+    `;
+      expect(trim(jsContents)).toContain(trim(inputsAndOutputs));
+    });
+
+    it('should use an element access to assign to a query field that is not a valid identifier', () => {
+      env.write(
+        `test.ts`,
+        `
+      import {Component, ContentChild, ViewChild, ElementRef} from '@angular/core';
+
+      @Component({selector: 'test-cmp', template: '<div #ref></div>'})
+      export class TestCmp {
+        @ViewChild('ref') 'a, evil(), b': ElementRef;
+        @ContentChild('ref') 'c, evil(), d': ElementRef;
+      }
+    `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('ctx["a, evil(), b"] = _t.first');
+      expect(jsContents).toContain('ctx["c, evil(), d"] = _t.first');
+    });
+
+    it('should use an element access for a template context alias that is not a valid identifier', () => {
+      env.write(
+        `test.ts`,
+        `
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'test-cmp',
+        template: '<ng-template let-value="a, evil(), b">{{value}}</ng-template>',
+      })
+      export class TestCmp {}
+    `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('const value_r1 = ctx["a, evil(), b"];');
+    });
+
+    it('should quote unsafe keys when compiling a declaration partially', () => {
+      env.tsconfig({compilationMode: 'partial'});
+      env.write(
+        `test.ts`,
+        `
+      import {Directive, Input, Output, EventEmitter} from '@angular/core';
+
+      @Directive({selector: '[somedir]'})
+      export class SomeDir {
+        @Input() 'a: 0, evil: 1, b' = 1;
+        @Output() 'c: 0, evil: 2, d' = new EventEmitter<void>();
+      }
+    `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('inputs: { "a: 0, evil: 1, b": "a: 0, evil: 1, b" }');
+      expect(jsContents).toContain('outputs: { "c: 0, evil: 2, d": "c: 0, evil: 2, d" }');
+    });
+
     it('should generate the correct declaration for class members decorated with @Input', () => {
       env.write(
         'test.ts',

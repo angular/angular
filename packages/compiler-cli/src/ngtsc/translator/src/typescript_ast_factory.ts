@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {isUnsafeObjectKey} from '@angular/compiler';
 import ts from 'typescript';
 
 import {
@@ -302,7 +303,7 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
         }
 
         return ts.factory.createPropertyAssignment(
-          prop.quoted
+          prop.quoted || isUnsafeObjectKey(prop.propertyName)
             ? ts.factory.createStringLiteral(prop.propertyName)
             : ts.factory.createIdentifier(prop.propertyName),
           prop.value,
@@ -313,18 +314,31 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createParenthesizedExpression = ts.factory.createParenthesizedExpression;
 
-  createPropertyAccess = ts.factory.createPropertyAccessExpression;
+  createPropertyAccess(expression: ts.Expression, propertyName: string): ts.Expression {
+    return isUnsafeObjectKey(propertyName)
+      ? ts.factory.createElementAccessExpression(
+          expression,
+          ts.factory.createStringLiteral(propertyName),
+        )
+      : ts.factory.createPropertyAccessExpression(expression, propertyName);
+  }
 
   createPropertyAccessChain(
     expression: ts.Expression,
     propertyName: string,
     isOptional: boolean,
   ): ts.Expression {
-    return ts.factory.createPropertyAccessChain(
-      expression,
-      isOptional ? ts.factory.createToken(ts.SyntaxKind.QuestionDotToken) : undefined,
-      propertyName,
-    );
+    const questionDotToken = isOptional
+      ? ts.factory.createToken(ts.SyntaxKind.QuestionDotToken)
+      : undefined;
+
+    return isUnsafeObjectKey(propertyName)
+      ? ts.factory.createElementAccessChain(
+          expression,
+          questionDotToken,
+          ts.factory.createStringLiteral(propertyName),
+        )
+      : ts.factory.createPropertyAccessChain(expression, questionDotToken, propertyName);
   }
 
   createSpreadElement = ts.factory.createSpreadElement;

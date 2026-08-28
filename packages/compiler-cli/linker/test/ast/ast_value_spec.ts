@@ -208,10 +208,7 @@ describe('AstValue', () => {
     });
 
     it('should return the name of a property access', () => {
-      const propertyAccess = factory.createPropertyAccess(
-        factory.createIdentifier('Foo'),
-        factory.createIdentifier('Bar'),
-      );
+      const propertyAccess = factory.createPropertyAccess(factory.createIdentifier('Foo'), 'Bar');
       expect(createAstValue(propertyAccess).getSymbolName()).toEqual('Bar');
     });
 

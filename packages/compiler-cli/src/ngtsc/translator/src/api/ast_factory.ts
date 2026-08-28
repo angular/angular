@@ -213,7 +213,8 @@ export interface AstFactory<TStatement, TExpression, TType> {
   createParenthesizedExpression(expression: TExpression): TExpression;
 
   /**
-   * Create a property access (e.g. `obj.prop`).
+   * Create a property access (e.g. `obj.prop`). Implementations use an element access instead if
+   * `propertyName` is not a valid identifier.
    *
    * @param expression an expression that evaluates to the object to be accessed.
    * @param propertyName the name of the property to access.
@@ -221,7 +222,8 @@ export interface AstFactory<TStatement, TExpression, TType> {
   createPropertyAccess(expression: TExpression, propertyName: string): TExpression;
 
   /**
-   * Create a property access chain expression (e.g. `obj?.prop`).
+   * Create a property access chain expression (e.g. `obj?.prop`). Implementations use an element
+   * access chain instead if `propertyName` is not a valid identifier.
    */
   createPropertyAccessChain(
     expression: TExpression,
@@ -375,13 +377,7 @@ export type UnaryOperator = '+' | '-' | '!';
 
 /** Supported built-in types. */
 export type BuiltInType =
-  | 'any'
-  | 'boolean'
-  | 'number'
-  | 'string'
-  | 'function'
-  | 'never'
-  | 'unknown';
+  'any' | 'boolean' | 'number' | 'string' | 'function' | 'never' | 'unknown';
 
 export interface Parameter<TType> {
   name: string;
@@ -464,7 +460,9 @@ export interface ObjectLiteralAssignment<TExpression> {
   propertyName: string;
   value: TExpression;
   /**
-   * Whether the `propertyName` should be enclosed in quotes.
+   * Whether the `propertyName` should be enclosed in quotes. Note that implementations quote the
+   * name regardless of this flag if it isn't a valid identifier, since it couldn't be emitted
+   * as-is.
    */
   quoted: boolean;
 }
@@ -479,8 +477,7 @@ export interface ObjectLiteralSpread<TExpression> {
 
 /** Possible properties in an object literal. */
 export type ObjectLiteralProperty<TExpression> =
-  | ObjectLiteralAssignment<TExpression>
-  | ObjectLiteralSpread<TExpression>;
+  ObjectLiteralAssignment<TExpression> | ObjectLiteralSpread<TExpression>;
 
 /**
  * Information used by the `AstFactory` to create a template literal string (i.e. a back-ticked
