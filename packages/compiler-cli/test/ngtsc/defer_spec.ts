@@ -987,15 +987,15 @@ runInEachFileSystem(() => {
           import {PipeA} from './pipe-a';
           @Component({
             // @ts-ignore
-            deferredImports: [DeferredCmpA, DeferredCmpB, PipeA],
+            deferredImports: { block1: [DeferredCmpA, PipeA], block2: [DeferredCmpB] },
             template: \`
               @for (item of items; track item) {
                 @if (true) {
-                  @defer {
+                  @defer (name block1) {
                     {{ 'Hi!' | pipea }}
                     <deferred-cmp-a />
                   }
-                  @defer {
+                  @defer (name block2) {
                     <deferred-cmp-b />
                   }
                 }
@@ -1097,13 +1097,13 @@ runInEachFileSystem(() => {
             @Component({
               imports: [EagerCmpA],
               // @ts-ignore
-              deferredImports: [DeferredCmpA, DeferredCmpB],
+              deferredImports: { block1: [DeferredCmpA], block2: [DeferredCmpB] },
               template: \`
-                @defer {
+                @defer (name block1) {
                   <eager-cmp-a />
                   <deferred-cmp-a />
                 }
-                @defer {
+                @defer (name block2) {
                   <eager-cmp-a />
                   <deferred-cmp-b />
                 }
@@ -1121,11 +1121,11 @@ runInEachFileSystem(() => {
         // Other imported symbols remain eager.
         expect(cleanNewLines(jsContents)).toContain(
           'const AppCmp_Defer_1_DepsFn = () => [/* @ts-ignore */ ' +
-            'import("./deferred-a").then(m => m.DeferredCmpA), EagerCmpA];',
+            'import("./deferred-a").then(m => m.DeferredCmpA)];',
         );
         expect(cleanNewLines(jsContents)).toContain(
           'const AppCmp_Defer_4_DepsFn = () => [/* @ts-ignore */ ' +
-            'import("./deferred-b").then(m => m.DeferredCmpB), EagerCmpA];',
+            'import("./deferred-b").then(m => m.DeferredCmpB)];',
         );
 
         // Make sure there are no eager imports present in the output.
@@ -1158,7 +1158,7 @@ runInEachFileSystem(() => {
               class MyInjectable {}
               @Component({
                 // @ts-ignore
-                deferredImports: [MyInjectable],
+                deferredImports: { block1: [MyInjectable] },
                 template: '',
               })
               export class AppCmp {
@@ -1180,7 +1180,7 @@ runInEachFileSystem(() => {
               class MyModule {}
               @Component({
                 // @ts-ignore
-                deferredImports: [MyModule],
+                deferredImports: { block1: [MyModule] },
                 template: '',
               })
               export class AppCmp {
@@ -1230,10 +1230,10 @@ runInEachFileSystem(() => {
               import {DeferredCmpB} from './deferred-b';
               @Component({
                 // @ts-ignore
-                deferredImports: [DeferredCmpA, DeferredCmpB],
+                deferredImports: { block1: [DeferredCmpA, DeferredCmpB] },
                 template: \`
                   <deferred-cmp-a />
-                  @defer {
+                  @defer (name block1) {
                     <deferred-cmp-b />
                   }
                 \`,
@@ -1275,10 +1275,10 @@ runInEachFileSystem(() => {
 
               @Component({
                 // @ts-ignore
-                deferredImports: [DeferredCmpA],
+                deferredImports: { block1: [DeferredCmpA] },
                 imports: [DeferredCmpA],
                 template: \`
-                  @defer {
+                  @defer (name block1) {
                     <deferred-cmp-a />
                   }
                 \`,
@@ -1323,10 +1323,10 @@ runInEachFileSystem(() => {
               import {DeferredPipeB} from './deferred-pipe-b';
               @Component({
                 // @ts-ignore
-                deferredImports: [DeferredPipeA, DeferredPipeB],
+                deferredImports: { block1: [DeferredPipeA, DeferredPipeB] },
                 template: \`
                   {{ 'Eager' | deferredPipeA }}
-                  @defer {
+                  @defer (name block1) {
                     {{ 'Deferred' | deferredPipeB }}
                   }
                 \`,
@@ -1361,12 +1361,12 @@ runInEachFileSystem(() => {
             import {DeferredCmpA} from './deferred-a';
             @Component({
               // @ts-ignore
-              deferredImports: [DeferredCmpA],
+              deferredImports: { block1: [DeferredCmpA] },
               template: \`
                 @if (true) {
                   @if (true) {
                   @if (true) {
-                    @defer {
+                    @defer (name block1) {
                       <deferred-cmp-a />
                     }
                   }
@@ -1405,9 +1405,9 @@ runInEachFileSystem(() => {
               import {DeferredCmpA} from './deferred-a';
               @Component({
                 // @ts-ignore
-                deferredImports: [DeferredCmpA],
+                deferredImports: { block1: [DeferredCmpA] },
                 template: \`
-                  @defer {
+                  @defer (name block1) {
                     @if (true) {
                       @if (true) {
                         @if (true) {
@@ -1830,45 +1830,6 @@ runInEachFileSystem(() => {
           );
         });
 
-        it('should report error when name parameter is used but deferredImports is an array', () => {
-          env.write(
-            'deferred-a.ts',
-            `
-            import {Component} from '@angular/core';
-            @Component({
-              selector: 'deferred-cmp-a',
-              template: 'DeferredCmpA contents',
-            })
-            export class DeferredCmpA {}
-          `,
-          );
-
-          env.write(
-            'test.ts',
-            `
-            import {Component} from '@angular/core';
-            import {DeferredCmpA} from './deferred-a';
-            @Component({
-              // @ts-ignore
-              deferredImports: [DeferredCmpA],
-              template: \`
-                @defer (name blockA) {
-                  <deferred-cmp-a />
-                }
-              \`,
-            })
-            export class AppCmp {}
-          `,
-          );
-
-          const diags = env.driveDiagnostics();
-          expect(diags.length).toBe(1);
-          expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_BLOCK_INVALID_NAME_PARAMETER));
-          expect(diags[0].messageText).toContain(
-            `The 'name' parameter can only be used when '@Component.deferredImports' is defined as an object.`,
-          );
-        });
-
         it('should report error when name parameter is used but component has no deferredImports in standard compilation', () => {
           env.write(
             'deferred-a.ts',
@@ -1903,7 +1864,7 @@ runInEachFileSystem(() => {
           expect(diags.length).toBe(1);
           expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_BLOCK_INVALID_NAME_PARAMETER));
           expect(diags[0].messageText).toContain(
-            `The 'name' parameter can only be used when '@Component.deferredImports' is defined as an object.`,
+            `The 'name' parameter can only be used when '@Component.deferredImports' is defined.`,
           );
         });
 
@@ -1946,7 +1907,7 @@ runInEachFileSystem(() => {
           expect(diags.length).toBe(1);
           expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFER_BLOCK_INVALID_NAME_PARAMETER));
           expect(diags[0].messageText).toContain(
-            `The 'name' parameter can only be used when '@Component.deferredImports' is defined as an object.`,
+            `The 'name' parameter can only be used when '@Component.deferredImports' is defined.`,
           );
         });
 

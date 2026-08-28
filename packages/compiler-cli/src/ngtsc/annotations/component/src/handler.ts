@@ -984,9 +984,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     let explicitlyDeferredTypes: R3DeferPerComponentDependency[] | null = null;
     let explicitlyDeferredTypesByBlock: Map<string, R3DeferPerComponentDependency[]> | null = null;
     if (metadata.isStandalone && rawDeferredImports !== null) {
-      if (ts.isArrayLiteralExpression(rawDeferredImports)) {
-        explicitlyDeferredTypes = this.collectExplicitlyDeferredSymbols(node, rawDeferredImports);
-      } else if (ts.isObjectLiteralExpression(rawDeferredImports)) {
+      if (ts.isObjectLiteralExpression(rawDeferredImports)) {
         explicitlyDeferredTypesByBlock = new Map();
         for (const property of rawDeferredImports.properties) {
           if (!ts.isPropertyAssignment(property)) {
@@ -1351,7 +1349,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
               makeDiagnostic(
                 ErrorCode.DEFER_BLOCK_MISSING_NAME_PARAMETER,
                 analysis.rawDeferredImports!,
-                `@defer block must specify a 'name' parameter (e.g. '@defer (name blockName)') when 'deferredImports' is defined as an object.`,
+                `@defer block must specify a 'name' parameter (e.g. '@defer (name blockName)') when 'deferredImports' is defined.`,
               ),
             );
             continue;
@@ -1388,7 +1386,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
               makeDiagnostic(
                 ErrorCode.DEFER_BLOCK_INVALID_NAME_PARAMETER,
                 analysis.rawDeferredImports ?? node,
-                `The 'name' parameter can only be used when '@Component.deferredImports' is defined as an object.`,
+                `The 'name' parameter can only be used when '@Component.deferredImports' is defined.`,
               ),
             );
           }
@@ -2496,7 +2494,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             makeDiagnostic(
               ErrorCode.DEFER_BLOCK_MISSING_NAME_PARAMETER,
               analysisData.rawDeferredImports!,
-              `@defer block must specify a 'name' parameter (e.g. '@defer (name blockName)') when 'deferredImports' is defined as an object.`,
+              `@defer block must specify a 'name' parameter (e.g. '@defer (name blockName)') when 'deferredImports' is defined.`,
             ),
           );
           continue;
@@ -2549,7 +2547,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             makeDiagnostic(
               ErrorCode.DEFER_BLOCK_INVALID_NAME_PARAMETER,
               analysisData.rawDeferredImports ?? componentClassDecl,
-              `The 'name' parameter can only be used when '@Component.deferredImports' is defined as an object.`,
+              `The 'name' parameter can only be used when '@Component.deferredImports' is defined.`,
             ),
           );
           continue;
