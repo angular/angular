@@ -54,6 +54,44 @@ describe('Output JIT', () => {
     }).toThrowError();
   });
 
+  describe('visitReadPropExpr', () => {
+    function emit(expr: o.Expression): string {
+      const converter = new JitEmitterVisitor(new R3JitReflector({}));
+      const ctx = EmitterVisitorContext.createRoot();
+      converter.visitAllStatements([expr.toStmt()], ctx);
+      return ctx
+        .toSource()
+        .replace(/^'use strict';\s*/, '')
+        .trim();
+    }
+
+    it('should emit a property access for valid identifiers', () => {
+      expect(emit(o.variable('ctx').prop('foo'))).toBe('ctx.foo;');
+      // Reserved words and non-ASCII identifiers are valid property names.
+      expect(emit(o.variable('ctx').prop('class'))).toBe('ctx.class;');
+      expect(emit(o.variable('ctx').prop('\u0275cmp'))).toBe('ctx.\u0275cmp;');
+    });
+
+    it('should emit an element access for names that are not valid identifiers', () => {
+      expect(emit(o.variable('ctx').prop('a-b'))).toBe(`ctx['a-b'];`);
+      expect(emit(o.variable('ctx').prop(`a; evil(); b`))).toBe(`ctx['a; evil(); b'];`);
+      // The name has to be escaped so that it cannot terminate the string literal either.
+      expect(emit(o.variable('ctx').prop(`a'; evil(); '`))).toBe(`ctx['a\\'; evil(); \\''];`);
+    });
+
+    it('should emit an optional element access for an optional read', () => {
+      const optional = new o.ReadPropExpr(
+        o.variable('ctx'),
+        'a; evil(); b',
+        null,
+        null,
+        undefined,
+        true,
+      );
+      expect(emit(optional)).toBe(`ctx?.['a; evil(); b'];`);
+    });
+  });
+
   it('should not add more than one strict mode statement if there is already one present', () => {
     const converter = new JitEmitterVisitor(new R3JitReflector({}));
     const ctx = EmitterVisitorContext.createRoot();
