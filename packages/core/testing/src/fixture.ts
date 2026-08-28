@@ -39,39 +39,24 @@ interface TestAppRef {
   autoDetectTestViews: Set<ViewRef>;
 }
 
-/**
- * Fixture for debugging and testing a component.
- *
- * @publicApi
- */
-export class ComponentFixture<T> {
+export abstract class AbstractFixture<E> {
   /**
    * The DebugElement associated with the root element of this component.
    */
   debugElement: DebugElement;
 
   /**
-   * The instance of the root component class.
-   */
-  componentInstance: T;
-
-  /**
    * The native element at the root of the component.
    */
-  nativeElement: any;
+  nativeElement: E;
 
   /**
    * The ElementRef for the element at the root of the component.
    */
-  elementRef: ElementRef;
-
-  /**
-   * The ChangeDetectorRef for the component
-   */
-  changeDetectorRef: ChangeDetectorRef;
+  elementRef: ElementRef<E>;
 
   private _renderer: RendererFactory2 | null | undefined;
-  private _isDestroyed: boolean = false;
+  private _isDestroyed = false;
   /** @internal */
   protected readonly _noZoneOptionIsSet = inject(ComponentFixtureNoNgZone, {optional: true});
   /** @internal */
@@ -95,28 +80,27 @@ export class ComponentFixture<T> {
     inject(ComponentFixtureAutoDetect, {optional: true}) ?? this.autoDetectDefault;
 
   private subscriptions = new Subscription();
+  private readonly hostView: ViewRef;
 
-  // TODO(atscott): Remove this from public API
-  ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
+  readonly changeDetectorRef: ChangeDetectorRef;
 
   /** @docs-private */
-  constructor(public componentRef: ComponentRef<T>) {
-    this.changeDetectorRef = componentRef.changeDetectorRef;
-    this.elementRef = componentRef.location;
-    this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
-    this.componentInstance = componentRef.instance;
-    this.nativeElement = this.elementRef.nativeElement;
-    this.componentRef = componentRef;
+  constructor(private readonly hostRef: ComponentRef<unknown>) {
+    this.changeDetectorRef = hostRef.changeDetectorRef;
+    this.debugElement = getDebugNode(hostRef.location.nativeElement) as DebugElement;
+    this.nativeElement = hostRef.location.nativeElement;
+    this.elementRef = hostRef.location;
+    this.hostView = hostRef.hostView;
+    this._testAppRef.allTestViews.add(this.hostView);
 
-    this._testAppRef.allTestViews.add(this.componentRef.hostView);
     if (this.autoDetect) {
-      this._testAppRef.autoDetectTestViews.add(this.componentRef.hostView);
+      this._testAppRef.autoDetectTestViews.add(this.hostView);
       this.scheduler?.notify(ɵNotificationSource.ViewAttached);
       this.scheduler?.notify(ɵNotificationSource.MarkAncestorsForTraversal);
     }
-    this.componentRef.hostView.onDestroy(() => {
-      this._testAppRef.allTestViews.delete(this.componentRef.hostView);
-      this._testAppRef.autoDetectTestViews.delete(this.componentRef.hostView);
+    this.hostView.onDestroy(() => {
+      this._testAppRef.allTestViews.delete(this.hostView);
+      this._testAppRef.autoDetectTestViews.delete(this.hostView);
     });
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
@@ -146,11 +130,11 @@ export class ComponentFixture<T> {
    * Trigger a change detection cycle for the component.
    */
   detectChanges(checkNoChanges = true): void {
-    const originalCheckNoChanges = (this.componentRef.changeDetectorRef as InternalViewRef<unknown>)
+    const originalCheckNoChanges = (this.changeDetectorRef as InternalViewRef<unknown>)
       .checkNoChanges;
     try {
       if (!checkNoChanges) {
-        (this.componentRef.changeDetectorRef as InternalViewRef<unknown>).checkNoChanges = () => {};
+        (this.changeDetectorRef as InternalViewRef<unknown>).checkNoChanges = () => {};
       }
 
       if (this.zonelessEnabled) {
@@ -171,8 +155,7 @@ export class ComponentFixture<T> {
         });
       }
     } finally {
-      (this.componentRef.changeDetectorRef as InternalViewRef<unknown>).checkNoChanges =
-        originalCheckNoChanges;
+      (this.changeDetectorRef as InternalViewRef<unknown>).checkNoChanges = originalCheckNoChanges;
     }
   }
 
@@ -193,6 +176,7 @@ export class ComponentFixture<T> {
    * We have not seen a use-case for `autoDetect: false` but `changeDetectorRef.detach()` is a close equivalent.
    */
   autoDetectChanges(autoDetect: boolean): void;
+
   /**
    * Enables automatically synchronizing the view, as it would in an application.
    *
@@ -208,9 +192,9 @@ export class ComponentFixture<T> {
     }
 
     if (autoDetect) {
-      this._testAppRef.autoDetectTestViews.add(this.componentRef.hostView);
+      this._testAppRef.autoDetectTestViews.add(this.hostView);
     } else {
-      this._testAppRef.autoDetectTestViews.delete(this.componentRef.hostView);
+      this._testAppRef.autoDetectTestViews.delete(this.hostView);
     }
 
     this.autoDetect = autoDetect;
@@ -245,25 +229,9 @@ export class ComponentFixture<T> {
     });
   }
 
-  /**
-   * Retrieves all defer block fixtures in the component fixture.
-   */
-  getDeferBlocks(): Promise<DeferBlockFixture[]> {
-    const deferBlocks: DeferBlockDetails[] = [];
-    const lView = (this.componentRef.hostView as any)['_lView'];
-    getDeferBlocks(lView, deferBlocks);
-
-    const deferBlockFixtures = [];
-    for (const block of deferBlocks) {
-      deferBlockFixtures.push(new DeferBlockFixture(block, this));
-    }
-
-    return Promise.resolve(deferBlockFixtures);
-  }
-
   private _getRenderer() {
     if (this._renderer === undefined) {
-      this._renderer = this.componentRef.injector.get(RendererFactory2, null);
+      this._renderer = this.hostRef.injector.get(RendererFactory2, null);
     }
     return this._renderer as RendererFactory2 | null;
   }
@@ -284,11 +252,66 @@ export class ComponentFixture<T> {
    */
   destroy(): void {
     this.subscriptions.unsubscribe();
-    this._testAppRef.autoDetectTestViews.delete(this.componentRef.hostView);
-    this._testAppRef.allTestViews.delete(this.componentRef.hostView);
+    this._testAppRef.autoDetectTestViews.delete(this.hostView);
+    this._testAppRef.allTestViews.delete(this.hostView);
+
     if (!this._isDestroyed) {
-      this.componentRef.destroy();
+      this.hostRef.destroy();
       this._isDestroyed = true;
     }
+  }
+}
+
+/**
+ * Fixture for debugging and testing a component.
+ *
+ * @publicApi
+ */
+export class ComponentFixture<T> extends AbstractFixture<any> {
+  /**
+   * The instance of the root component class.
+   */
+  componentInstance: T;
+
+  // TODO(atscott): Remove this from public API
+  ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
+
+  /** @docs-private */
+  constructor(public componentRef: ComponentRef<T>) {
+    super(componentRef);
+    this.componentInstance = componentRef.instance;
+  }
+
+  /**
+   * Retrieves all defer block fixtures in the component fixture.
+   */
+  getDeferBlocks(): Promise<DeferBlockFixture[]> {
+    const deferBlocks: DeferBlockDetails[] = [];
+    const lView = (this.componentRef.hostView as any)['_lView'];
+    const deferBlockFixtures = [];
+    getDeferBlocks(lView, deferBlocks);
+
+    for (const block of deferBlocks) {
+      deferBlockFixtures.push(new DeferBlockFixture(block, this));
+    }
+
+    return Promise.resolve(deferBlockFixtures);
+  }
+}
+
+/**
+ * Fixture for debugging and testing a directive.
+ *
+ * @publicApi
+ */
+export class DirectiveFixture<T> extends AbstractFixture<Element> {
+  /**
+   * The instance of the directive class.
+   */
+  readonly directiveInstance: T;
+
+  constructor(hostRef: ComponentRef<unknown>, directiveInstance: T) {
+    super(hostRef);
+    this.directiveInstance = directiveInstance;
   }
 }
