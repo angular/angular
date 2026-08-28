@@ -1593,6 +1593,20 @@ class HiddenModule {}
           });
         });
 
+        it('should resolve scheme URLs without authority as relative paths on the same origin', async () => {
+          ref.injector.get(NgZone).run(() => {
+            http.get('http:/localhost:9999/steal-a').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/localhost:9999/steal-a').flush('success!');
+
+            http.get('http:localhost:9999/steal-b').subscribe((body) => {
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost:4000/localhost:9999/steal-b').flush('success!');
+          });
+        });
+
         it('should reject backslash bypass SSRF attempts in relative requests and throw a suspicious origin error', async () => {
           const badUrls = [
             '/\\attacker.com',

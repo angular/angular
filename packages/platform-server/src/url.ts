@@ -13,7 +13,14 @@ import {RuntimeErrorCode} from './errors';
 /**
  * Matches http: or https:
  */
-const HTTP_OR_HTTPS_PROTOCOL_REGEX = /^https?:/i;
+const HTTP_OR_HTTPS_PROTOCOL_REGEXP = /^https?:/i;
+
+/**
+ * Matches an HTTP or HTTPS URL that does not have an authority (i.e. missing `//` or `\\`).
+ * In the WHATWG standard, when resolved against a base of the same scheme, these URLs are relative.
+ * @internal
+ */
+export const HTTP_OR_HTTPS_NO_AUTHORITY_REGEXP = /^https?:(?![/\\]{2})/i;
 
 /**
  * Options for {@link resolveUrl}.
@@ -58,10 +65,13 @@ export function resolveUrl(
   }
 
   // Fast-path: if the URL is a valid, standard absolute URL, parse and return it immediately.
+  // URLs with no authority (e.g. `http:/path` or `http:path`) must be resolved against the origin when one is provided.
   let resolved: URL | undefined;
-  try {
-    resolved = new URL(urlStr);
-  } catch {}
+  if (!originUrl || !HTTP_OR_HTTPS_NO_AUTHORITY_REGEXP.test(urlStr)) {
+    try {
+      resolved = new URL(urlStr);
+    } catch {}
+  }
   const {allowProtocolRelative = false, allowOriginChange = true} = options;
 
   if (resolved) {
@@ -147,5 +157,7 @@ function isSafeOriginChange(
     return false;
   }
 
-  return HTTP_OR_HTTPS_PROTOCOL_REGEX.test(urlStr);
+  return (
+    HTTP_OR_HTTPS_PROTOCOL_REGEXP.test(urlStr) && !HTTP_OR_HTTPS_NO_AUTHORITY_REGEXP.test(urlStr)
+  );
 }
