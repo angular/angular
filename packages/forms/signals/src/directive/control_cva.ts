@@ -99,7 +99,12 @@ export function cvaControlCreate(
     for (const name of CONTROL_BINDING_NAMES) {
       const value = readFieldStateBindingValue(fieldState, name);
       if (bindingUpdated(bindings, name, value)) {
-        const propertyWasSet = host.setInputOnDirectives(name, value);
+        const propertyWasSet = host.setInputOnDirectives(
+          name,
+          value,
+          name === 'name' ? isDefinedPredicate : undefined,
+        );
+
         if (name === 'disabled' && parent.controlValueAccessor!.setDisabledState) {
           untracked(() => parent.controlValueAccessor!.setDisabledState!(value as boolean));
         } else if (!propertyWasSet && parent.elementAcceptsNativeProperty(name)) {
@@ -114,4 +119,8 @@ export function cvaControlCreate(
       }
     }
   };
+}
+
+function isDefinedPredicate(value: unknown): boolean {
+  return value == null;
 }

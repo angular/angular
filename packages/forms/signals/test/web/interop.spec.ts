@@ -13,6 +13,7 @@ import {
   Directive,
   forwardRef,
   inject,
+  Input,
   input,
   model,
   provideZonelessChangeDetection,
@@ -25,7 +26,6 @@ import {TestBed} from '@angular/core/testing';
 import {
   AbstractControl,
   ControlValueAccessor,
-  DefaultValueAccessor,
   FormControl,
   FormsModule,
   NG_VALIDATORS,
@@ -668,6 +668,60 @@ describe('ControlValueAccessor', () => {
     expect(cvaInstance.value).toBe('updated');
     expect(fixture.componentInstance.f().value()).toBe('initial');
     expect(writeValues).toEqual([]);
+  });
+
+  it('should be able to set the `name` non-signal input on a custom CVA', () => {
+    @Component({
+      selector: 'custom-control-with-name',
+      template: '',
+      providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CustomControlWithName, multi: true}],
+    })
+    class CustomControlWithName extends CustomControl {
+      @Input() name = '';
+    }
+
+    @Component({
+      imports: [CustomControlWithName, FormField],
+      template: `<custom-control-with-name [formField]="f" [name]="nameOverride()" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal('test'));
+      readonly control = viewChild.required(CustomControlWithName);
+      readonly nameOverride = signal('override');
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    expect(fixture.componentInstance.control().name).toBe('override');
+
+    act(() => fixture.componentInstance.nameOverride.set('override-changed'));
+    expect(fixture.componentInstance.control().name).toBe('override-changed');
+  });
+
+  it('should be able to set the `name` signal input on a custom CVA', () => {
+    @Component({
+      selector: 'custom-control-with-name',
+      template: '',
+      providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CustomControlWithName, multi: true}],
+    })
+    class CustomControlWithName extends CustomControl {
+      readonly name = input.required<string>();
+    }
+
+    @Component({
+      imports: [CustomControlWithName, FormField],
+      template: `<custom-control-with-name [formField]="f" [name]="nameOverride()" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal('test'));
+      readonly control = viewChild.required(CustomControlWithName);
+      readonly nameOverride = signal('override');
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    expect(fixture.componentInstance.control().name()).toBe('override');
+
+    act(() => fixture.componentInstance.nameOverride.set('override-changed'));
+    expect(fixture.componentInstance.control().name()).toBe('override-changed');
   });
 
   describe('properties', () => {
