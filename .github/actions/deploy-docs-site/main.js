@@ -38096,6 +38096,8 @@ import { styleText as styleText4 } from "node:util";
 import { styleText as styleText5 } from "node:util";
 import { styleText as styleText6 } from "node:util";
 import { styleText as styleText7 } from "node:util";
+import { styleText as styleText8 } from "node:util";
+import { styleText as styleText9 } from "node:util";
 var require4 = __cjsCompatRequire_ngDev3(import.meta.url);
 var require_constants6 = __commonJS2({
   ""(exports, module) {
@@ -64307,23 +64309,44 @@ var dist_default5 = createPrompt((config, done) => {
   }
   return [[prefix, message, helpTip].filter(Boolean).join(" "), error2];
 });
-function getBooleanValue(value, defaultValue) {
-  let answer = defaultValue !== false;
-  if (/^(y|yes)/i.test(value))
-    answer = true;
-  else if (/^(n|no)/i.test(value))
-    answer = false;
-  return answer;
-}
-function boolToString(value) {
-  return value ? "Yes" : "No";
-}
+var confirmTheme = {
+  keywords: {
+    yes: "Yes",
+    no: "No"
+  },
+  style: {
+    confirmDefault: (text) => {
+      const first = text[0] ?? "";
+      if (first.toLowerCase() === first.toUpperCase()) {
+        return styleText4("cyan", text);
+      }
+      return first.toUpperCase() + text.slice(1);
+    }
+  }
+};
 var dist_default6 = createPrompt((config, done) => {
-  const { transformer = boolToString } = config;
   const [status, setStatus] = useState("idle");
   const [value, setValue] = useState("");
-  const theme = makeTheme(config.theme);
+  const theme = makeTheme(confirmTheme, config.theme);
   const prefix = usePrefix({ status, theme });
+  const { yes, no } = theme.keywords;
+  const yesHint = (yes[0] ?? "").toLowerCase();
+  const noHint = (no[0] ?? "").toLowerCase();
+  const hint = config.default === false ? `${yesHint}/${theme.style.confirmDefault(noHint)}` : `${theme.style.confirmDefault(yesHint)}/${noHint}`;
+  function boolToString(value2) {
+    return value2 ? yes : no;
+  }
+  const { transformer = boolToString } = config;
+  function getBooleanValue(value2, defaultValue2) {
+    const v = value2.toLowerCase();
+    if (v === "")
+      return defaultValue2 !== false;
+    if (yes.toLowerCase().startsWith(v))
+      return true;
+    if (no.toLowerCase().startsWith(v))
+      return false;
+    return defaultValue2 !== false;
+  }
   useKeypress((key, rl) => {
     if (status !== "idle")
       return;
@@ -64346,7 +64369,7 @@ var dist_default6 = createPrompt((config, done) => {
   if (status === "done") {
     formattedValue = theme.style.answer(value);
   } else {
-    defaultValue = ` ${theme.style.defaultAnswer(config.default === false ? "y/N" : "Y/n")}`;
+    defaultValue = ` ${theme.style.defaultAnswer(hint)}`;
   }
   const message = theme.style.message(config.message, status);
   return `${prefix} ${message}${defaultValue} ${formattedValue}`;
@@ -64572,7 +64595,7 @@ var expand22 = createPrompt((config, done) => {
         } else if (value === "") {
           setError("Please input a value");
         } else {
-          setError(`"${styleText4("red", value)}" isn't an available option`);
+          setError(`"${styleText5("red", value)}" isn't an available option`);
         }
       }
     } else {
@@ -64612,7 +64635,7 @@ var expand22 = createPrompt((config, done) => {
   let helpTip = "";
   const currentOption = choices.find((choice) => !Separator.isSeparator(choice) && choice.key === value.toLowerCase());
   if (currentOption) {
-    helpTip = `${styleText4("cyan", ">>")} ${currentOption.name}`;
+    helpTip = `${styleText5("cyan", ">>")} ${currentOption.name}`;
   }
   let error2 = "";
   if (errorMsg) {
@@ -64626,7 +64649,7 @@ var expand22 = createPrompt((config, done) => {
 var numberRegex = /\d+/;
 var rawlistTheme = {
   style: {
-    description: (text) => styleText5("cyan", text)
+    description: (text) => styleText6("cyan", text)
   }
 };
 function isSelectableChoice(choice) {
@@ -64697,7 +64720,7 @@ var dist_default9 = createPrompt((config, done) => {
       } else if (value === "") {
         setError("Please input a value");
       } else {
-        setError(`"${styleText5("red", value)}" isn't an available option`);
+        setError(`"${styleText6("red", value)}" isn't an available option`);
       }
     } else if (isUpKey(key, keybindings2) || isDownKey(key, keybindings2)) {
       rl.clearLine(0);
@@ -64750,15 +64773,17 @@ var dist_default9 = createPrompt((config, done) => {
 });
 var passwordTheme = {
   style: {
-    maskedText: "[input is masked]"
+    maskedText: "[input is masked]",
+    keysHelpTip: (keys) => keys.map(([key, action]) => `${styleText7("bold", key)} ${styleText7("dim", action)}`).join(styleText7("dim", " \u2022 "))
   }
 };
 var dist_default10 = createPrompt((config, done) => {
-  const { validate: validate2 = () => true } = config;
+  const { toggleMask = true, validate: validate2 = () => true } = config;
   const theme = makeTheme(passwordTheme, config.theme);
   const [status, setStatus] = useState("idle");
   const [errorMsg, setError] = useState();
   const [value, setValue] = useState("");
+  const [revealed, setRevealed] = useState(false);
   const prefix = usePrefix({ status, theme });
   useKeypress(async (key, rl) => {
     if (status !== "idle") {
@@ -64777,36 +64802,43 @@ var dist_default10 = createPrompt((config, done) => {
         setError(isValid || "You must provide a valid value");
         setStatus("idle");
       }
+    } else if (toggleMask && key.ctrl && key.name === "t") {
+      setRevealed((prev) => !prev);
     } else {
       setValue(rl.line);
       setError(void 0);
     }
   });
   const message = theme.style.message(config.message, status);
+  const showPlaintext = toggleMask && revealed && status === "idle";
   let formattedValue = "";
-  let helpTip;
-  if (config.mask) {
+  if (showPlaintext) {
+    formattedValue = value;
+  } else if (config.mask) {
     const maskChar = typeof config.mask === "string" ? config.mask : "*";
     formattedValue = maskChar.repeat(value.length);
   } else if (status !== "done") {
-    helpTip = `${theme.style.help(theme.style.maskedText)}${cursorHide}`;
+    formattedValue = theme.style.help(theme.style.maskedText);
   }
   if (status === "done") {
     formattedValue = theme.style.answer(formattedValue);
+  } else if (!config.mask) {
+    formattedValue += cursorHide;
   }
-  let error2 = "";
-  if (errorMsg) {
-    error2 = theme.style.error(errorMsg);
-  }
-  return [[prefix, message, config.mask ? formattedValue : helpTip].join(" "), error2];
+  const content = [prefix, message, formattedValue].filter(Boolean).join(" ");
+  const bottomContent = [
+    errorMsg ? theme.style.error(errorMsg) : "",
+    toggleMask && status === "idle" ? theme.style.keysHelpTip([["ctrl+t", "toggle visibility"]]) : ""
+  ].filter(Boolean).join("\n");
+  return [content, bottomContent];
 });
 var searchTheme = {
   icon: { cursor: dist_default.pointer },
   style: {
-    disabled: (text) => styleText6("dim", `- ${text}`),
-    searchTerm: (text) => styleText6("cyan", text),
-    description: (text) => styleText6("cyan", text),
-    keysHelpTip: (keys) => keys.map(([key, action]) => `${styleText6("bold", key)} ${styleText6("dim", action)}`).join(styleText6("dim", " \u2022 "))
+    disabled: (text) => styleText8("dim", `- ${text}`),
+    searchTerm: (text) => styleText8("cyan", text),
+    description: (text) => styleText8("cyan", text),
+    keysHelpTip: (keys) => keys.map(([key, action]) => `${styleText8("bold", key)} ${styleText8("dim", action)}`).join(styleText8("dim", " \u2022 "))
   }
 };
 function isSelectable2(item) {
@@ -64976,9 +65008,9 @@ var dist_default11 = createPrompt((config, done) => {
 var selectTheme = {
   icon: { cursor: dist_default.pointer },
   style: {
-    disabled: (text) => styleText7("dim", text),
-    description: (text) => styleText7("cyan", text),
-    keysHelpTip: (keys) => keys.map(([key, action]) => `${styleText7("bold", key)} ${styleText7("dim", action)}`).join(styleText7("dim", " \u2022 "))
+    disabled: (text) => styleText9("dim", text),
+    description: (text) => styleText9("cyan", text),
+    keysHelpTip: (keys) => keys.map(([key, action]) => `${styleText9("bold", key)} ${styleText9("dim", action)}`).join(styleText9("dim", " \u2022 "))
   },
   i18n: { disabledError: "This option is disabled and cannot be selected." },
   indexMode: "hidden"
@@ -65378,7 +65410,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-Z3X5GOBV.mjs:
+@angular/ng-dev/bundles/chunk-ZBP47RX4.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
