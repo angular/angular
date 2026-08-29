@@ -41,6 +41,12 @@ export abstract class ViewportScroller {
   abstract setOffset(offset: [number, number] | (() => [number, number])): void;
 
   /**
+   * Retrieves the current scroll offset.
+   * @returns A position in screen coordinates (a tuple with x and y values).
+   */
+  abstract getOffset(): [number, number];
+
+  /**
    * Retrieves the current scroll position.
    * @returns A position in screen coordinates (a tuple with x and y values).
    */
@@ -98,6 +104,14 @@ export class BrowserViewportScroller implements ViewportScroller {
    */
   getScrollPosition(): [number, number] {
     return [this.window.scrollX, this.window.scrollY];
+  }
+
+  /**
+   * Retrieves the current scroll offset.
+   * @returns The position in screen coordinates.
+   */
+  getOffset(): [number, number] {
+    return this.offset();
   }
 
   /**
@@ -222,6 +236,13 @@ export class NullViewportScroller implements ViewportScroller {
    * Empty implementation
    */
   setOffset(offset: [number, number] | (() => [number, number])): void {}
+
+  /**
+   * Empty implementation
+   */
+  getOffset(): [number, number] {
+    return [0, 0];
+  }
 
   /**
    * Empty implementation

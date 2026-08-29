@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
+import {
+  BrowserViewportScroller,
+  NullViewportScroller,
+  ViewportScroller,
+} from '../src/viewport_scroller';
 import {isNode, waitFor} from '@angular/private/testing';
 
 describe('BrowserViewportScroller', () => {
@@ -194,5 +198,34 @@ describe('BrowserViewportScroller', () => {
       anchorNode.href = '#';
       return anchorNode;
     }
+  });
+
+  describe('getOffset', () => {
+    it('should return default offset [0, 0]', () => {
+      const scroller = new BrowserViewportScroller(document, window);
+      expect(scroller.getOffset()).toEqual([0, 0]);
+    });
+
+    it('should return offset when set as a tuple', () => {
+      const scroller = new BrowserViewportScroller(document, window);
+      scroller.setOffset([10, 50]);
+      expect(scroller.getOffset()).toEqual([10, 50]);
+    });
+
+    it('should return offset when set as a function', () => {
+      const scroller = new BrowserViewportScroller(document, window);
+      let y = 100;
+      scroller.setOffset(() => [0, y]);
+      expect(scroller.getOffset()).toEqual([0, 100]);
+      y = 200;
+      expect(scroller.getOffset()).toEqual([0, 200]);
+    });
+
+    it('should return [0, 0] for NullViewportScroller', () => {
+      const scroller = new NullViewportScroller();
+      expect(scroller.getOffset()).toEqual([0, 0]);
+      scroller.setOffset([10, 20]);
+      expect(scroller.getOffset()).toEqual([0, 0]);
+    });
   });
 });
