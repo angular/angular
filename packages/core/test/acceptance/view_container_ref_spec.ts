@@ -373,6 +373,41 @@ describe('ViewContainerRef', () => {
           'http://www.w3.org/1999/xhtml',
         );
       });
+
+      it('should use the HTML namespace inside a block that follows an SVG element', () => {
+        @Component({
+          selector: 'div[dynamic-html]',
+          template: 'HTML content',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class HtmlComp {}
+
+        @Component({
+          template: `
+            <svg></svg>
+            @if (true) {
+              <div #container></div>
+            }
+          `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({imports: [TestComp, HtmlComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.container.createComponent(HtmlComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe(
+          'http://www.w3.org/1999/xhtml',
+        );
+      });
     });
 
     it('should apply attributes and classes to host element based on selector', () => {

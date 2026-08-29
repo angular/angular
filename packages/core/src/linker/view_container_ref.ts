@@ -58,7 +58,12 @@ import {
   getParentInjectorView,
   hasParentInjector,
 } from '../render3/util/injector_utils';
-import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3/util/view_utils';
+import {
+  getLViewParent,
+  getNativeByTNode,
+  unwrapRNode,
+  viewAttachedToContainer,
+} from '../render3/util/view_utils';
 import {shouldAddViewToDom} from '../render3/view_manipulation';
 import {ViewRef as R3ViewRef} from '../render3/view_ref';
 import {addToArray, removeFromArray} from '../util/array_utils';
@@ -520,24 +525,29 @@ class R3ViewContainerRef extends ViewContainerRef {
 
   /** Returns the namespace used by nodes inserted at this container's render location. */
   private _getHostElementNamespace(): string | null {
-    if (this._hostTNode.type & TNodeType.Element) {
-      const parentTNode = this._hostTNode.parent ?? this._hostLView[T_HOST];
+    let lView: LView | null = this._hostLView;
+    let tNode: TNode | null = this._hostTNode.parent;
 
-      // SVG foreignObject elements are namespace integration points: the foreignObject itself is
-      // SVG, but its children are HTML.
-      if (
-        parentTNode !== null &&
-        parentTNode.type & TNodeType.Element &&
-        typeof parentTNode.value === 'string' &&
-        parentTNode.value.toLowerCase() === 'foreignobject'
-      ) {
-        return null;
+    while (lView !== null) {
+      // Only elements are rendered into, so anything else has to be skipped. Their `namespace` is
+      // whichever one happened to be active while they were created, not the one they render in.
+      while (tNode !== null && !(tNode.type & TNodeType.Element)) {
+        tNode = tNode.parent;
       }
 
-      return parentTNode?.namespace ?? null;
+      if (tNode !== null) {
+        // SVG foreignObject elements are namespace integration points: the foreignObject itself is
+        // SVG, but its children are HTML.
+        return typeof tNode.value === 'string' && tNode.value.toLowerCase() === 'foreignobject'
+          ? null
+          : tNode.namespace;
+      }
+
+      tNode = lView[T_HOST];
+      lView = getLViewParent(lView);
     }
 
-    return this._hostTNode.namespace;
+    return null;
   }
 
   override insert(viewRef: ViewRef, index?: number): ViewRef {
