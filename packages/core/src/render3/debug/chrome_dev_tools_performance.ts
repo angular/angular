@@ -7,7 +7,6 @@
  */
 
 import {isTypeProvider} from '../../di/provider_collection';
-import {assertDefined} from '../../util/assert';
 import {performanceMarkFeature} from '../../util/performance';
 import {VERSION} from '../../version';
 import {setProfiler} from '../profiler';
@@ -203,25 +202,42 @@ function measureEnd(
   detail?: {url?: string; description?: string},
 ) {
   let top: stackEntry | undefined;
-  // The stack may be asymmetric when an end event for a prior start event is missing (e.g. when an exception
-  // has occurred), unroll the stack until a matching item has been found in that case.
+  // The stack may be asymmetric when an end event for a prior start event is missing (e.g. when
+  // an exception has occurred), unroll the stack until a matching item has been found.
   do {
     top = eventsStack.pop();
-    assertDefined(top, 'Profiling error: could not find start event entry ' + startEvent);
+    if (top === undefined) {
+      // Stack underflow — no matching start event. This can occur when an exception interrupts
+      // the normal start/end flow. Bail out rather than emitting a timeStamp that references
+      // a non-existent start mark, which can trigger errors in Chrome's performance
+      // entry processing (see #70464).
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        console.warn('Angular profiling: could not find matching start event for ' + startEvent);
+      }
+      return;
+    }
   } while (top[0] !== startEvent);
 
   const docUrl = getProfilerEventDocUrl(startEvent, entryName);
   const resolvedDetail = resolveTimestampDetail(detail, docUrl);
 
-  console.timeStamp(
-    entryName,
-    'Event_' + top[0] + '_' + top[1],
-    undefined,
-    '\u{1F170}\uFE0F Angular',
-    undefined,
-    color,
-    resolvedDetail,
-  );
+  try {
+    console.timeStamp(
+      entryName,
+      'Event_' + top[0] + '_' + top[1],
+      undefined,
+      '\u{1F170}\uFE0F Angular',
+      undefined,
+      color,
+      resolvedDetail,
+    );
+  } catch (e) {
+    // The extended `console.timeStamp` API may throw if the referenced start mark cannot be
+    // resolved (e.g. cleared during navigation). Swallow to avoid breaking the application.
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.warn('Angular profiling: console.timeStamp failed for "' + entryName + '"', e);
+    }
+  }
 }
 
 const chromeDevToolsInjectorProfiler: InjectorProfiler = (event: InjectorProfilerEvent) => {

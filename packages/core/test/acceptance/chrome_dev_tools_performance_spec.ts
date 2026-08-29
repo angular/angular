@@ -118,6 +118,61 @@ describe('Chrome DevTools Performance integration', () => {
         stop();
       }
     });
+
+    it('should not crash when end event has no matching start event', () => {
+      const {spy, stop} = setupProfiling();
+      const warnSpy = spyOn(console, 'warn');
+
+      try {
+        // Emit an end event without a corresponding start event.
+        // This simulates stack underflow that can happen when an exception
+        // interrupts the normal start/end profiler flow (see #70464).
+        expect(() => {
+          profiler(ProfilerEvent.ChangeDetectionEnd);
+        }).not.toThrow();
+
+        // No end-mark timeStamp should have been emitted since there was no start.
+        const calls = spy.calls.all();
+        const endCalls = calls.filter(
+          (c) => typeof c.args[0] === 'string' && c.args[0].startsWith('Change detection'),
+        );
+        expect(endCalls.length).toBe(0);
+
+        // A dev-mode warning should have been logged.
+        expect(warnSpy).toHaveBeenCalledWith(
+          jasmine.stringContaining('could not find matching start event'),
+        );
+      } finally {
+        stop();
+      }
+    });
+
+    it('should not crash when console.timeStamp throws internally', () => {
+      const {spy, stop} = setupProfiling();
+      const warnSpy = spyOn(console, 'warn');
+
+      try {
+        profiler(ProfilerEvent.ChangeDetectionStart);
+
+        // Make the next console.timeStamp call throw, simulating a scenario
+        // where the extended API fails to resolve the referenced start mark.
+        spy.and.callFake((..._args: any[]) => {
+          throw new TypeError("Cannot read properties of undefined (reading 'startTime')");
+        });
+
+        expect(() => {
+          profiler(ProfilerEvent.ChangeDetectionEnd);
+        }).not.toThrow();
+
+        // A dev-mode warning should have been logged with the error.
+        expect(warnSpy).toHaveBeenCalledWith(
+          jasmine.stringContaining('console.timeStamp failed'),
+          jasmine.any(TypeError),
+        );
+      } finally {
+        stop();
+      }
+    });
   });
 
   describe('deep link properties', () => {
