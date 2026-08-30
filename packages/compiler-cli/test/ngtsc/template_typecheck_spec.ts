@@ -8749,6 +8749,35 @@ suppress
         expect(diags.length).toBe(0);
       });
 
+      it('should not report a directive used on an ng-template inside an SVG as unused', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({selector: '[ngTemplateOutlet]'})
+          export class NgTemplateOutlet {
+            @Input() ngTemplateOutlet: unknown;
+          }
+
+          @Component({
+            template: \`
+              <ng-template #foo>foo</ng-template>
+
+              <svg>
+                <ng-template [ngTemplateOutlet]="foo"></ng-template>
+              </svg>
+            \`,
+            imports: [NgTemplateOutlet]
+          })
+          export class MyComp {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
       it('should report when all imports in an import array are not used', () => {
         env.write(
           'test.ts',
