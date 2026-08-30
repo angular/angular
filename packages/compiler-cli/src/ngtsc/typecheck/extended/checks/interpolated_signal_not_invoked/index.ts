@@ -12,6 +12,7 @@ import {
   BindingType,
   Conditional,
   Interpolation,
+  isNgTemplate,
   NonNullAssert,
   ParenthesizedExpression,
   PrefixNot,
@@ -29,10 +30,10 @@ import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics
 import {NgTemplateDiagnostic, SymbolKind, TypeCheckableDirectiveMeta} from '../../../api';
 import {isSignalReference} from '../../../src/symbol_util';
 import {
+  formatExtendedError,
   TemplateCheckFactory,
   TemplateCheckWithVisitor,
   TemplateContext,
-  formatExtendedError,
 } from '../../api';
 
 /** Names of known signal instance properties. */
@@ -72,7 +73,7 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
       return node.inputs.flatMap((input) =>
         checkBoundAttribute(ctx, component, directivesOfElement, input),
       );
-    } else if (node instanceof TmplAstTemplate && node.tagName === 'ng-template') {
+    } else if (node instanceof TmplAstTemplate && node.tagName && isNgTemplate(node.tagName)) {
       const directivesOfElement = ctx.templateTypeChecker.getDirectivesOfNode(component, node);
       const inputDiagnostics = node.inputs.flatMap((input) => {
         return checkBoundAttribute(ctx, component, directivesOfElement, input);
