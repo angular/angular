@@ -514,8 +514,9 @@ class TemplateSymbolVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitDeferredBlockError(block: TmplAstDeferredBlockError): void {
+    // Include the retry parameter if present
     const symbol: TemplateDocumentSymbol = {
-      text: '@error',
+      text: block.retryCount !== null ? `@error (retry ${block.retryCount})` : '@error',
       kind: ts.ScriptElementKind.functionElement,
       lspKind: AngularSymbolKind.Event, // @error → Event ⚡
       spans: [toTextSpan(block.sourceSpan)],

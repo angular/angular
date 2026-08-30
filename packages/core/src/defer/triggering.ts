@@ -44,6 +44,7 @@ import {
   DeferBlockState,
   DeferBlockTrigger,
   DeferDependenciesLoadingState,
+  DeferDependencyLoadResult,
   DehydratedDeferBlock,
   HydrateTriggerDetails,
   LDeferBlockDetails,
@@ -204,7 +205,8 @@ export function triggerResourceLoading(
   }
 
   // Indicate that an application is not stable and has a pending task.
-  const removeTask = injector.get(PendingTasks).add();
+  const pendingTasks = injector.get(PendingTasks);
+  let removeTask = pendingTasks.add();
 
   // The `dependenciesFn` might be `null` when all dependencies within
   // a given defer block were eagerly referenced elsewhere in a file,
@@ -218,8 +220,21 @@ export function triggerResourceLoading(
     return tDetails.loadingPromise;
   }
 
+  // Retry handlers run only in the browser. A handler may wait indefinitely,
+  // so running it on the server could delay serialization.
+  const retryLoadingFn =
+    typeof ngServerMode !== 'undefined' && ngServerMode ? null : tDetails.retryLoadingFn;
+
   // Start downloading of defer block dependencies.
-  tDetails.loadingPromise = Promise.allSettled(dependenciesFn()).then((results) => {
+  const loading: Promise<DeferDependencyLoadResult[]> =
+    retryLoadingFn !== null && tDetails.maxRetryCount !== null
+      ? retryLoadingFn(dependenciesFn, injector, tDetails.maxRetryCount, () => {
+          // The application can become stable while the retry handler waits.
+          removeTask();
+          return () => (removeTask = pendingTasks.add());
+        })
+      : Promise.allSettled(dependenciesFn());
+  tDetails.loadingPromise = loading.then((results) => {
     let failed = false;
     let failedReason: Error | null = null;
     const directiveDefs: DirectiveDefList = [];
@@ -315,7 +330,7 @@ export function triggerResourceLoading(
 /**
  * Attempts to trigger loading of defer block dependencies.
  * If the block is already in a loading, completed or an error state -
- * no additional actions are taken.
+ * no additional actions are taken. With retry enabled, a failed block loads again.
  */
 export function triggerDeferBlock(triggerType: TriggerType, lView: LView, tNode: TNode) {
   const tView = lView[TVIEW];
@@ -329,6 +344,14 @@ export function triggerDeferBlock(triggerType: TriggerType, lView: LView, tNode:
 
   // Defer block is triggered, cleanup all registered trigger functions.
   invokeAllTriggerCleanupFns(lDetails);
+
+  // With retry enabled, triggering the block after a failed load starts loading again.
+  if (
+    tDetails.loadingState === DeferDependenciesLoadingState.FAILED &&
+    tDetails.maxRetryCount !== null
+  ) {
+    tDetails.loadingState = DeferDependenciesLoadingState.NOT_STARTED;
+  }
 
   switch (tDetails.loadingState) {
     case DeferDependenciesLoadingState.NOT_STARTED:

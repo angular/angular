@@ -21,6 +21,7 @@ import {
   PendingTasks,
   PLATFORM_ID,
   Provider,
+  provideDeferBlockRetryHandler,
   QueryList,
   ɵresetIncrementalHydrationRuntimeForTests as resetIncrementalHydrationRuntimeForTests,
   ɵresetIncrementalHydrationEnabledWarnedForTests as resetIncrementalHydrationEnabledWarnedForTests,
@@ -2567,6 +2568,146 @@ describe('platform-server partial hydration integration', () => {
 
       expect(appHostNode.outerHTML).not.toContain('Rendering primary block');
       expect(appHostNode.outerHTML).toContain('Rendering error block');
+    });
+
+    it('should retry loading via `@error (retry N)` during incremental hydration', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'app',
+        imports: [NestedCmp],
+        template: `
+          <main>
+            @defer (on interaction; hydrate on interaction) {
+              <article id="item">
+                <nested-cmp [block]="'primary'" />
+              </article>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            } @error (retry 1) {
+              <p>Failed!</p>
+              <nested-cmp [block]="'error'" />
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {}
+
+      let attempts = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => [
+            attempts++ === 0
+              ? failedDynamicImport().then(() => NestedCmp)
+              : dynamicImportOf(NestedCmp),
+          ];
+        },
+      };
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers});
+      const ssrContents = getAppContents(html);
+
+      expect(ssrContents).toContain('<article id="item" jsaction="click:;keydown:;"');
+      expect(ssrContents).toContain('Rendering primary block');
+
+      resetTViewsFor(SimpleComponent);
+
+      const doc = getDocument();
+      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [
+          ...providers,
+          {provide: PLATFORM_ID, useValue: 'browser'},
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+      });
+      const compRef = getComponentRef<SimpleComponent>(appRef);
+      appRef.tick();
+      await appRef.whenStable();
+
+      const appHostNode = compRef.location.nativeElement;
+      expect(appHostNode.outerHTML).toContain('Rendering primary block');
+
+      const article = doc.getElementById('item')!;
+      article.dispatchEvent(new CustomEvent('click', {bubbles: true}));
+      // Drain the failed attempt and the successful retry.
+      await allPendingDynamicImports();
+      await allPendingDynamicImports();
+
+      appRef.tick();
+
+      expect(attempts).toBe(2);
+      // The retry hydrated the primary content without rendering `@error`.
+      expect(appHostNode.outerHTML).toContain('Rendering primary block');
+      expect(appHostNode.outerHTML).not.toContain('Rendering error block');
+      expect(appHostNode.outerHTML).not.toContain('Failed!');
+    });
+
+    it('should load dependencies at most once on the server and never invoke the retry handler', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'app',
+        imports: [NestedCmp],
+        template: `
+          <main>
+            @defer (on interaction; hydrate on interaction) {
+              <article id="item">
+                <nested-cmp [block]="'primary'" />
+              </article>
+            } @placeholder {
+              <span>Outer block placeholder</span>
+            } @error (retry 3) {
+              <p>Failed!</p>
+              <nested-cmp [block]="'error'" />
+            }
+          </main>
+        `,
+      })
+      class SimpleComponent {}
+
+      let loadCount = 0;
+      const handlerAttempts: number[] = [];
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadCount++;
+            return [failedDynamicImport().then(() => NestedCmp)];
+          };
+        },
+      };
+
+      const appId = 'custom-app-id';
+      const providers = [
+        {provide: APP_ID, useValue: appId},
+        {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        provideDeferBlockRetryHandler((context) => {
+          handlerAttempts.push(context.attempt);
+          context.retry();
+        }),
+      ];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers});
+      const ssrContents = getAppContents(html);
+
+      // Retry is disabled on the server so it cannot delay serialization.
+      expect(ssrContents).toContain('Rendering error block');
+      expect(loadCount).toBe(1);
+      expect(handlerAttempts).toEqual([]);
     });
   });
 

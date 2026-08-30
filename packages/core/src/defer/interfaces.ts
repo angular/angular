@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {Injector} from '../di/injector';
 import type {Provider} from '../di/interface/provider';
 import type {LContainer} from '../render3/interfaces/container';
 import type {DependencyType} from '../render3/interfaces/definition';
@@ -27,6 +28,26 @@ export interface DehydratedDeferBlock {
  * to download dependencies that can be defer-loaded.
  */
 export type DependencyResolverFn = () => Array<Promise<DependencyType> | DependencyType>;
+
+/**
+ * Result of loading a dependency. It matches `PromiseSettledResult`, which needs the ES2020 lib.
+ */
+export type DeferDependencyLoadResult =
+  {status: 'fulfilled'; value: DependencyType} | {status: 'rejected'; reason: unknown};
+
+/**
+ * Loads deferred dependencies with retry support. Keeping this implementation
+ * optional allows applications without retry blocks to tree-shake it.
+ *
+ * `pauseTask` removes the pending task while the retry handler waits, and returns a
+ * function that adds it back.
+ */
+export type DeferDependencyRetryLoadingFn = (
+  dependenciesFn: DependencyResolverFn,
+  injector: Injector,
+  maxRetryCount: number,
+  pauseTask: () => VoidFunction,
+) => Promise<DeferDependencyLoadResult[]>;
 
 /**
  * Defines types of defer block triggers.
@@ -146,6 +167,18 @@ export interface TDeferBlockDetails {
    * placed into the `TDeferDetails` at runtime).
    */
   flags: TDeferDetailsFlags;
+
+  /**
+   * Number of additional loading attempts configured by `@error (retry N)`, or
+   * `null` when retry is disabled.
+   */
+  maxRetryCount: number | null;
+
+  /**
+   * Retry-aware loader installed by `ɵɵdeferEnableRetry`, or `null` when retry
+   * is disabled.
+   */
+  retryLoadingFn: DeferDependencyRetryLoadingFn | null;
 
   /**
    * Tracks debugging information about the deferred block.
