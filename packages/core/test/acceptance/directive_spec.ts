@@ -157,6 +157,16 @@ describe('directives', () => {
       expect(nodesWithDirective.length).toBe(1);
     });
 
+    it('should match directives on ng-template inside of SVG elements', () => {
+      TestBed.configureTestingModule({declarations: [TestComponent, TestDirective]});
+      TestBed.overrideTemplate(TestComponent, `<svg><ng-template test></ng-template></svg>`);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const nodesWithDirective = fixture.debugElement.queryAllNodes(By.directive(TestDirective));
+
+      expect(nodesWithDirective.length).toBe(1);
+    });
+
     it('should match directives on <ng-container>', () => {
       @Directive({
         selector: 'ng-container[directiveA]',

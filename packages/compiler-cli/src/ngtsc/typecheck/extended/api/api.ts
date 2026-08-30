@@ -10,15 +10,16 @@ import {
   AbsoluteSourceSpan,
   AST,
   CombinedRecursiveAstVisitor,
+  isNgTemplate,
+  KeyedRead,
+  NonNullAssert,
+  ParenthesizedExpression,
   ParseSourceSpan,
+  SafeCall,
+  SafeKeyedRead,
+  SafePropertyRead,
   TmplAstNode,
   TmplAstTemplate,
-  KeyedRead,
-  SafePropertyRead,
-  SafeKeyedRead,
-  SafeCall,
-  ParenthesizedExpression,
-  NonNullAssert,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -140,7 +141,7 @@ class TemplateVisitor<Code extends ErrorCode> extends CombinedRecursiveAstVisito
   }
 
   override visitTemplate(template: TmplAstTemplate) {
-    const isInlineTemplate = template.tagName === 'ng-template';
+    const isInlineTemplate = template.tagName && isNgTemplate(template.tagName);
     this.visitAllTemplateNodes(template.attributes);
 
     if (isInlineTemplate) {
