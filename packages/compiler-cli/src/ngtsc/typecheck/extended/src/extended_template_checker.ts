@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ParseSourceSpan} from '@angular/compiler';
+import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import ts from 'typescript';
 
 import {DiagnosticCategoryLabel, NgCompilerOptions} from '../../../core/api';
@@ -79,7 +79,7 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
         // Wrap `templateTypeChecker.makeTemplateDiagnostic()` to implicitly provide all the known
         // options.
         makeTemplateDiagnostic: (
-          span: ParseSourceSpan,
+          span: ParseSourceSpan | AbsoluteSourceSpan,
           message: string,
           relatedInformation?: {
             text: string;

@@ -7,6 +7,7 @@
  */
 
 import {
+  AbsoluteSourceSpan,
   AST,
   CombinedRecursiveAstVisitor,
   ParseSourceSpan,
@@ -57,7 +58,7 @@ export interface TemplateContext<Code extends ErrorCode> {
    *   - Specify `sourceFile` only when referencing a separate file (e.g. directive class declaration).
    */
   makeTemplateDiagnostic(
-    sourceSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan | AbsoluteSourceSpan,
     message: string,
     relatedInformation?: {
       text: string;
