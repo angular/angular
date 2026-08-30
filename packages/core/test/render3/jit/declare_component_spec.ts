@@ -329,6 +329,21 @@ describe('component declaration jit compilation', () => {
     });
   });
 
+  it('should not namespace CSS variables in partial component styles', () => {
+    const def = ɵɵngDeclareComponent({
+      version: '22.1.0',
+      type: TestClass,
+      template: '<div></div>',
+      styles: [':host { color: var(--brand); --global--accent: red; }'],
+      changeDetection: ChangeDetectionStrategy.Eager,
+    }) as ComponentDef<TestClass>;
+
+    expectComponentDef(def, {
+      styles: ['[_nghost-%COMP%] { color: var(--brand); --accent: red; }'],
+      encapsulation: ViewEncapsulation.Emulated,
+    });
+  });
+
   it('should compile components with view encapsulation', () => {
     const def = ɵɵngDeclareComponent({
       version: '18.0.0',

@@ -1054,15 +1054,17 @@ const _cssRbraceInPlaceholderReGlobal = new RegExp(RBRACE_IN_PLACEHOLDER, 'g');
 const _cssVariableRe = /(var\(\s*)?(--(?:[a-zA-Z0-9_-]|[^\x00-\x7F])+)(\s*:)?/g;
 
 /**
- * Transforms CSS variables within a stylesheet to include a namespace placeholder.
+ * Transforms CSS variables within a stylesheet, optionally adding a namespace placeholder.
  *
  * E.g. `--foo: bar;` becomes `--%NS%foo: bar;`
  * E.g. `color: var(--foo);` becomes `color: var(--%NS%foo);`
  *
  * If a variable is prefixed with `--global--`, it is NOT namespaced and the prefix is removed.
  * E.g. `--global--mycolor: red;` becomes `--mycolor: red;`
+ *
+ * @param shouldNamespace Whether to add the namespace placeholder to non-global variables.
  */
-export function namespaceCssVariables(cssText: string): string {
+export function namespaceCssVariables(cssText: string, shouldNamespace = true): string {
   return cssText.replace(_cssVariableRe, (match, leadingVar, varName, trailingColon) => {
     // Check for a leading `var(` or trailing `:` to approximate whether we're operating on a
     // real CSS variable, not another piece of syntax that resembles it. For example, this
@@ -1076,7 +1078,9 @@ export function namespaceCssVariables(cssText: string): string {
     if (!leadingVar && !trailingColon) {
       return match;
     }
-    return (leadingVar ?? '') + namespaceCssVariable(varName) + (trailingColon ?? '');
+    return (
+      (leadingVar ?? '') + namespaceCssVariable(varName, shouldNamespace) + (trailingColon ?? '')
+    );
   });
 }
 

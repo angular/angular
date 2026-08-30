@@ -380,17 +380,20 @@ export class CompilerFacadeImpl implements CompilerFacade {
       sourceMapUrl,
     );
     const meta = convertDeclareComponentFacadeToMetadata(declaration, typeSourceSpan, sourceMapUrl);
-    return this.compileComponentFromMeta(angularCoreEnv, sourceMapUrl, meta);
+    return this.compileComponentFromMeta(angularCoreEnv, sourceMapUrl, meta, {
+      namespaceCssVariables: false,
+    });
   }
 
   private compileComponentFromMeta(
     angularCoreEnv: CoreEnvironment,
     sourceMapUrl: string,
     meta: R3ComponentMetadata<R3TemplateDependency>,
+    options: {namespaceCssVariables?: boolean} = {},
   ): any {
     const constantPool = new ConstantPool();
     const bindingParser = makeBindingParser();
-    const res = compileComponentFromMetadata(meta, constantPool, bindingParser);
+    const res = compileComponentFromMetadata(meta, constantPool, bindingParser, options);
     return this.jitExpression(
       res.expression,
       angularCoreEnv,

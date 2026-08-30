@@ -84,7 +84,9 @@ export class PartialComponentLinkerVersion1<
     version: string,
   ): LinkedDefinition {
     const meta = this.toR3ComponentMeta(metaObj, version);
-    return compileComponentFromMetadata(meta, constantPool, makeBindingParser());
+    return compileComponentFromMetadata(meta, constantPool, makeBindingParser(), {
+      namespaceCssVariables: false,
+    });
   }
 
   /**
