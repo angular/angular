@@ -53,6 +53,67 @@ runInEachFileSystem(() => {
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
+
+    it('should produce a warning when a signal is not invoked in an @let declaration', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `@let x = mySignal;`,
+          },
+          source: `
+          import {signal} from '@angular/core';
+
+          export class TestCmp {
+            mySignal = signal<number>(0);
+          }`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+        /* options */
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe(`mySignal`);
+    });
+
+    it('should not produce a warning when a signal is invoked in an @let declaration', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `@let x = mySignal();`,
+          },
+          source: `
+          import {signal} from '@angular/core';
+
+          export class TestCmp {
+            mySignal = signal<number>(0);
+          }`,
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [interpolatedSignalFactory],
+        {},
+        /* options */
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
   });
 
   it('should produce a warning when a signal is not invoked', () => {

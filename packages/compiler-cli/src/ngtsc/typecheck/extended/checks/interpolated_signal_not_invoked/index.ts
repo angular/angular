@@ -19,6 +19,7 @@ import {
   TmplAstBoundAttribute,
   TmplAstElement,
   TmplAstIfBlock,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstSwitchBlock,
   TmplAstTemplate,
@@ -106,6 +107,12 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
       if (expression instanceof PropertyRead) {
         return buildDiagnosticForSignal(ctx, expression, component);
       }
+    }
+    // @let declarations like `@let x = mySignal;`
+    else if (node instanceof TmplAstLetDeclaration) {
+      const ast = node.value instanceof ASTWithSource ? node.value.ast : node.value;
+      const propertyReads = getPropertyReads(ast);
+      return propertyReads.flatMap((item) => buildDiagnosticForSignal(ctx, item, component));
     }
 
     return [];
