@@ -17,6 +17,16 @@ To use these skills in your own environment you may follow the instructions for 
 npx skills add https://github.com/angular/skills
 ```
 
+### Modern Web Platform Guidance
+
+Angular Skills can be paired with [Modern Web Guidance](https://github.com/GoogleChrome/modern-web-guidance) for current HTML, CSS, browser API, and compatibility recommendations:
+
+```bash
+npx skills add GoogleChrome/modern-web-guidance
+```
+
+Modern Web Guidance is framework-agnostic. The `angular-developer` skill describes how to adapt its recommendations without replacing Angular application patterns. Installation, updates, and runtime behavior remain owned by the Modern Web Guidance project.
+
 ## Contributions
 
 We welcome contributions to the Angular agent skills. If you would like to contribute to the skills, please make the updates directly in `angular/angular` repository, and to that repository will be output here as a part of our infrastructure setup.

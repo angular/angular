@@ -15,6 +15,10 @@ metadata:
 
 3. Once you finish generating code, run `ng build` to ensure there are no build errors. If there are errors, analyze the error messages and fix them before proceeding. Do not skip this step, as it is critical for ensuring the generated code is correct and functional.
 
+## Modern Web Platform Guidance
+
+When the `modern-web-guidance` skill is available and a task involves browser APIs, HTML, or CSS, use it for current web platform guidance. Read [modern-web-guidance.md](references/modern-web-guidance.md) before adapting its framework-agnostic recommendations to Angular.
+
 ## Creating New Projects
 
 If no guidelines are provided by the user, here are some default rules to follow when creating a new Angular project:
