@@ -33,4 +33,19 @@ describe('markdown to html', () => {
   it('passes the header text to the content', () => {
     expect(markdownDocument.querySelector('p')?.textContent?.trim()).toBe('This is header text');
   });
+
+  for (const gradientBackground of [false, true]) {
+    it(`links to the source file on GitHub (gradientBackground=${gradientBackground})`, () => {
+      const markdownDocument = JSDOM.fragment(
+        parseMarkdown(
+          `<docs-decorative-header title="Custom Title" gradientBackground="${gradientBackground}"></docs-decorative-header>`,
+          {...rendererContext, markdownFilePath: 'adev/src/content/overview.md'},
+        ),
+      );
+
+      expect(markdownDocument.querySelector('.docs-github-links')?.getAttribute('href')).toBe(
+        'https://github.com/angular/angular/edit/main/adev/src/content/overview.md',
+      );
+    });
+  }
 });
