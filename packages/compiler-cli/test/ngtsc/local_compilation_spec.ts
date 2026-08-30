@@ -2240,6 +2240,48 @@ runInEachFileSystem(() => {
         );
       });
 
+      it('should emit retryable loaders in per-component mode', () => {
+        tsconfig({onlyExplicitDeferDependencyImports: true});
+        env.write(
+          'deferred.ts',
+          `
+            import {Component} from '@angular/core';
+            @Component({selector: 'deferred-cmp', template: 'Deferred'})
+            export class DeferredCmp {}
+          `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import {DeferredCmp} from './deferred';
+
+            @Component({
+              deferredImports: [DeferredCmp],
+              template: \`
+                @defer {
+                  <deferred-cmp />
+                } @error (retry 1) {
+                  Failed!
+                }
+              \`,
+            })
+            export class AppCmp {}
+          `,
+        );
+
+        env.driveMain();
+        const jsContents = cleanNewLines(env.getContents('test.js'));
+
+        expect(jsContents).toContain(
+          'const AppCmp_DeferFn = () => [i0.ɵɵdeferDependency(() => /* @ts-ignore */ import("./deferred"), m => m.DeferredCmp)]',
+        );
+        expect(jsContents).toContain(
+          'ɵsetClassMetadataAsync(AppCmp, () => [/* @ts-ignore */ import("./deferred").then(m => m.DeferredCmp)]',
+        );
+      });
+
       it('should handle `@Component.imports` field', () => {
         env.write(
           'deferred-a.ts',

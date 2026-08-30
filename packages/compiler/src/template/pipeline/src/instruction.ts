@@ -311,7 +311,10 @@ export function defer(
   enableTimerScheduling: boolean,
   sourceSpan: ParseSourceSpan | null,
   flags: ir.TDeferDetailsFlags | null,
+  errorRetryCount: number | null,
 ): ir.CreateOp {
+  const runtimeRetryCount =
+    errorRetryCount !== null && errorRetryCount > 0 ? errorRetryCount : null;
   const args: Array<o.Expression> = [
     o.literal(selfSlot),
     o.literal(primarySlot),
@@ -323,6 +326,8 @@ export function defer(
     placeholderConfig ?? o.literal(null),
     enableTimerScheduling ? o.importExpr(Identifiers.deferEnableTimerScheduling) : o.literal(null),
     o.literal(flags),
+    o.literal(runtimeRetryCount),
+    runtimeRetryCount !== null ? o.importExpr(Identifiers.deferEnableRetry) : o.literal(null),
   ];
 
   let expr: o.Expression;

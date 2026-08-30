@@ -50,3 +50,25 @@ describe('RecursiveVisitor', () => {
     expect(branch.children).not.toContain(alias);
   });
 });
+
+describe('DeferredBlockError', () => {
+  it('should preserve the legacy constructor signature', () => {
+    const result = parse('@defer {} @error {Failed}');
+    const parsed = (result.nodes[0] as t.DeferredBlock).error!;
+    const block = new t.DeferredBlockError(
+      parsed.children,
+      parsed.nameSpan,
+      parsed.sourceSpan,
+      parsed.startSourceSpan,
+      parsed.endSourceSpan,
+      parsed.i18n,
+    );
+
+    expect(block.nameSpan).toBe(parsed.nameSpan);
+    expect(block.sourceSpan).toBe(parsed.sourceSpan);
+    expect(block.startSourceSpan).toBe(parsed.startSourceSpan);
+    expect(block.endSourceSpan).toBe(parsed.endSourceSpan);
+    expect(block.i18n).toBe(parsed.i18n);
+    expect(block.retryCount).toBeNull();
+  });
+});
