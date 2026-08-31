@@ -11,13 +11,17 @@ import {TestBed} from '@angular/core/testing';
 import {DATE_PIPE_DEFAULT_OPTIONS, DatePipe} from '../../index';
 import localeEn from '../../locales/en';
 import localeEnExtra from '../../locales/extra/en';
+import localeFr from '../../locales/fr';
 
 describe('DatePipe', () => {
   const isoStringWithoutTime = '2015-01-01';
   let pipe: DatePipe;
   let date: Date;
 
-  beforeAll(() => ɵregisterLocaleData(localeEn, localeEnExtra));
+  beforeAll(() => {
+    ɵregisterLocaleData(localeEn, localeEnExtra);
+    ɵregisterLocaleData(localeFr);
+  });
   afterAll(() => ɵunregisterLocaleData());
 
   beforeEach(() => {
@@ -208,6 +212,69 @@ describe('DatePipe', () => {
 
       const content = fixture.nativeElement.textContent;
       expect(content).toBe('Jan 10, 2017');
+    });
+
+    it('should use default locale provided in DATE_PIPE_DEFAULT_OPTIONS when no locale is passed explicitly', async () => {
+      @Component({
+        selector: 'test-component',
+        imports: [DatePipe],
+        template: "{{ value | date:'fullDate' }}",
+      })
+      class TestComponent {
+        value = '2017-01-11T10:14:39+0000';
+      }
+
+      TestBed.configureTestingModule({
+        imports: [TestComponent],
+        providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {locale: 'fr'}}],
+      });
+      const fixture = TestBed.createComponent(TestComponent);
+      await fixture.whenStable();
+
+      const content = fixture.nativeElement.textContent;
+      expect(content).toBe('mercredi 11 janvier 2017');
+    });
+
+    it('should override default locale when locale is passed explicitly', async () => {
+      @Component({
+        selector: 'test-component',
+        imports: [DatePipe],
+        template: "{{ value | date:'fullDate':'':'en-US' }}",
+      })
+      class TestComponent {
+        value = '2017-01-11T10:14:39+0000';
+      }
+
+      TestBed.configureTestingModule({
+        imports: [TestComponent],
+        providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {locale: 'fr'}}],
+      });
+      const fixture = TestBed.createComponent(TestComponent);
+      await fixture.whenStable();
+
+      const content = fixture.nativeElement.textContent;
+      expect(content).toBe('Wednesday, January 11, 2017');
+    });
+
+    it('should fallback to global LOCALE_ID when no default locale is configured', async () => {
+      @Component({
+        selector: 'test-component',
+        imports: [DatePipe],
+        template: "{{ value | date:'fullDate' }}",
+      })
+      class TestComponent {
+        value = '2017-01-11T10:14:39+0000';
+      }
+
+      TestBed.configureTestingModule({
+        imports: [TestComponent],
+        providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {dateFormat: 'fullDate'}}],
+      });
+      const fixture = TestBed.createComponent(TestComponent);
+      await fixture.whenStable();
+
+      const content = fixture.nativeElement.textContent;
+      expect(content).toBe('Wednesday, January 11, 2017');
     });
   });
 

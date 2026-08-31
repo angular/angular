@@ -30,6 +30,8 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>(
  * will use the 'mediumDate' as a value.
  * - `timezone`: configures the default timezone. If not provided, the `DatePipe` will
  * use the end-user's local system timezone.
+ * - `locale`: configures the default locale. If not provided, the `DatePipe` will
+ * use the value of `LOCALE_ID` (which is `en-US` by default).
  *
  * @see {@link DatePipeConfig}
  *
@@ -51,6 +53,13 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>(
  * ```ts
  * providers: [
  *   {provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone: '-1200'}}
+ * ]
+ * ```
+ *
+ * Override the default locale by providing a value using the token:
+ * ```ts
+ * providers: [
+ *   {provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {locale: 'fr'}}
  * ]
  * ```
  */
@@ -240,7 +249,9 @@ export class DatePipe implements PipeTransform {
    * the `timezone` property). If the token is not configured, the end-user's local system
    * timezone is used as a value.
    * @param locale A locale code for the locale format rules to use.
-   * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
+   * When not supplied, the `DatePipe` looks for the value using the
+   * `DATE_PIPE_DEFAULT_OPTIONS` injection token (and reads the `locale` property).
+   * If the token is not configured, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n/locale-id).
    *
    * @see {@link DATE_PIPE_DEFAULT_OPTIONS}
@@ -272,7 +283,8 @@ export class DatePipe implements PipeTransform {
       const _format = format ?? this.defaultOptions?.dateFormat ?? DEFAULT_DATE_FORMAT;
       const _timezone =
         timezone ?? this.defaultOptions?.timezone ?? this.defaultTimezone ?? undefined;
-      return formatDate(value, _format, locale || this.locale, _timezone);
+      const _locale = locale || this.defaultOptions?.locale || this.locale;
+      return formatDate(value, _format, _locale, _timezone);
     } catch (error) {
       throw invalidPipeArgumentError(DatePipe, (error as Error).message);
     }

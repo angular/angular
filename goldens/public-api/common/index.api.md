@@ -156,6 +156,8 @@ export interface DatePipeConfig {
     // (undocumented)
     dateFormat?: string;
     // (undocumented)
+    locale?: string;
+    // (undocumented)
     timezone?: string;
 }
 

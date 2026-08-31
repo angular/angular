@@ -17,6 +17,7 @@
 export interface DatePipeConfig {
   dateFormat?: string;
   timezone?: string;
+  locale?: string;
 }
 
 /**
