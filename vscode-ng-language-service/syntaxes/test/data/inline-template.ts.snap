@@ -118,3 +118,68 @@
 >export class TMComponent{}
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-template.ng
 >
+>/* Escaped delimiter tests */
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-template.ng
+>@Component({
+#^^^^^^^^^^^^^ inline-template.ng
+>  //// Escaped backtick test
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-template.ng
+>  template: `<button title="\`code\`">Hello</button>`,
+#^^ inline-template.ng
+#  ^^^^^^^^ inline-template.ng meta.object-literal.key.ts
+#          ^ inline-template.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#           ^ inline-template.ng
+#            ^ inline-template.ng string
+#             ^^^^^^^^^^^^^^^ inline-template.ng text.html.derivative
+#                            ^^ inline-template.ng text.html.derivative constant.character.escape.ts
+#                              ^^^^ inline-template.ng text.html.derivative
+#                                  ^^ inline-template.ng text.html.derivative constant.character.escape.ts
+#                                    ^^^^^^^^^^^^^^^^ inline-template.ng text.html.derivative
+#                                                    ^ inline-template.ng string
+#                                                     ^^ inline-template.ng
+>
+>  //// Escaped quote tests
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-template.ng
+>  template: '<div title="it\'s">Hello</div>',
+#^^ inline-template.ng
+#  ^^^^^^^^ inline-template.ng meta.object-literal.key.ts
+#          ^ inline-template.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#           ^ inline-template.ng
+#            ^ inline-template.ng string
+#             ^^^^^^^^^^^^^^ inline-template.ng text.html.derivative
+#                           ^^ inline-template.ng text.html.derivative constant.character.escape.ts
+#                             ^^^^^^^^^^^^^^ inline-template.ng text.html.derivative
+#                                           ^ inline-template.ng string
+#                                            ^^ inline-template.ng
+>  template: "<div title=\"quoted\">Hello</div>",
+#^^ inline-template.ng
+#  ^^^^^^^^ inline-template.ng meta.object-literal.key.ts
+#          ^ inline-template.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#           ^ inline-template.ng
+#            ^ inline-template.ng string
+#             ^^^^^^^^^^^ inline-template.ng text.html.derivative
+#                        ^^ inline-template.ng text.html.derivative constant.character.escape.ts
+#                          ^^^^^^ inline-template.ng text.html.derivative
+#                                ^^ inline-template.ng text.html.derivative constant.character.escape.ts
+#                                  ^^^^^^^^^^^^ inline-template.ng text.html.derivative
+#                                              ^ inline-template.ng string
+#                                               ^^ inline-template.ng
+>
+>  //// Escaped backslash before the closing delimiter
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-template.ng
+>  template: `<div>backslash \\</div>`,
+#^^ inline-template.ng
+#  ^^^^^^^^ inline-template.ng meta.object-literal.key.ts
+#          ^ inline-template.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#           ^ inline-template.ng
+#            ^ inline-template.ng string
+#             ^^^^^^^^^^^^^^^ inline-template.ng text.html.derivative
+#                            ^^ inline-template.ng text.html.derivative constant.character.escape.ts
+#                              ^^^^^^ inline-template.ng text.html.derivative
+#                                    ^ inline-template.ng string
+#                                     ^^ inline-template.ng
+>})
+#^^^ inline-template.ng
+>export class TMComponent{}
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^ inline-template.ng
+>
