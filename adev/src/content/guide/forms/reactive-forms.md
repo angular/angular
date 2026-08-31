@@ -170,6 +170,8 @@ To display the `ProfileEditor` component that contains the form, add it to a com
 <docs-code header="app.component.html (profile editor)" path="adev/src/content/examples/reactive-forms/src/app/app.component.1.html" region="app-profile-editor"/>
 
 `ProfileEditor` lets you manage the form control instances for the `firstName` and `lastName` controls within the form group instance.
+</docs-step>
+</docs-workflow>
 
 ### Creating nested form groups
 
