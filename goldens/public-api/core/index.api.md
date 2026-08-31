@@ -1410,6 +1410,12 @@ export interface OutputRefSubscription {
 }
 
 // @public
+export function passiveRead<T>(signal: () => T): PassiveReadResult<T>;
+
+// @public
+export type PassiveReadResult<T> = PassiveReadResult_2<T>;
+
+// @public
 export class PendingTasks {
     add(): () => void;
     run(fn: () => Promise<unknown>): void;

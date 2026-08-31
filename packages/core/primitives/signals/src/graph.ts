@@ -82,6 +82,7 @@ export const REACTIVE_NODE: ReactiveNode = {
 interface ReactiveLink {
   producer: ReactiveNode;
   consumer: ReactiveNode;
+  isPassive: boolean;
 
   /**
    * Stores the epoch that holds when this link was observed, allowing subsequent observations of the same producer to
@@ -210,6 +211,19 @@ export interface ReactiveNode {
  * Called by implementations when a producer's signal is read.
  */
 export function producerAccessed(node: ReactiveNode): void {
+  producerAccessedWithOptions(node, false);
+}
+
+/**
+ * Called when a producer's signal is passively read by a consumer.
+ *
+ * Passive dependencies receive change notifications but do not cause the producer to be polled.
+ */
+export function producerAccessedPassively(node: ReactiveNode): void {
+  producerAccessedWithOptions(node, true);
+}
+
+function producerAccessedWithOptions(node: ReactiveNode, isPassive: boolean): void {
   if (inNotificationPhase) {
     throw new Error(
       typeof ngDevMode !== 'undefined' && ngDevMode
@@ -230,6 +244,7 @@ export function producerAccessed(node: ReactiveNode): void {
   // If the last producer we accessed is the same as the current one, we can skip adding a new
   // link
   if (prevProducerLink !== undefined && prevProducerLink.producer === node) {
+    updateProducerLinkType(prevProducerLink, node, activeConsumer, isPassive);
     return;
   }
 
@@ -249,6 +264,7 @@ export function producerAccessed(node: ReactiveNode): void {
       activeConsumer.producersTail = nextProducerLink;
       nextProducerLink.lastReadVersion = node.version;
       nextProducerLink.knownValidAtEpoch = epoch;
+      updateProducerLinkType(nextProducerLink, node, activeConsumer, isPassive);
       return;
     }
   }
@@ -266,7 +282,9 @@ export function producerAccessed(node: ReactiveNode): void {
   }
 
   // If we got here, it means that we need to create a new link between the producer and the consumer.
-  const isLive = consumerIsLive(activeConsumer);
+  // Passive dependencies must be live so their consumers are notified when the producer becomes
+  // dirty, even when the consumer would otherwise rely on polling.
+  const isLive = isPassive || consumerIsLive(activeConsumer);
   const newLink: ReactiveLink = {
     producer: node,
     consumer: activeConsumer,
@@ -280,6 +298,7 @@ export function producerAccessed(node: ReactiveNode): void {
     prevConsumer: undefined,
     knownValidAtEpoch: epoch,
     lastReadVersion: node.version,
+    isPassive,
     nextConsumer: undefined,
   };
   activeConsumer.producersTail = newLink;
@@ -292,6 +311,35 @@ export function producerAccessed(node: ReactiveNode): void {
   if (isLive) {
     producerAddLiveConsumer(node, newLink);
   }
+}
+
+/**
+ * Update a reused dependency link when the consumer changes between an active and passive read.
+ *
+ * Passive links must remain in the producer's live-consumer list even when their consumer is not
+ * otherwise live, so that invalidation is propagated without polling the producer.
+ */
+function updateProducerLinkType(
+  link: ReactiveLink,
+  producer: ReactiveNode,
+  consumer: ReactiveNode,
+  isPassive: boolean,
+): void {
+  if (link.isPassive === isPassive) {
+    return;
+  }
+
+  if (!consumerIsLive(consumer)) {
+    if (isPassive) {
+      // The link became passive, so it now needs invalidation notifications.
+      producerAddLiveConsumer(producer, link);
+    } else {
+      // The link became active again and no longer keeps this consumer live by itself.
+      producerRemoveLiveConsumerLink(link);
+    }
+  }
+
+  link.isPassive = isPassive;
 }
 
 /**
@@ -454,6 +502,16 @@ export function finalizeConsumerAfterComputation(node: ReactiveNode): void {
       do {
         toRemove = producerRemoveLiveConsumerLink(toRemove);
       } while (toRemove !== undefined);
+    } else {
+      for (
+        let link: ReactiveLink | undefined = toRemove;
+        link !== undefined;
+        link = link.nextProducer
+      ) {
+        if (link.isPassive) {
+          producerRemoveLiveConsumerLink(link);
+        }
+      }
     }
 
     // Now, we can truncate the producers list to remove all stale links.
@@ -472,6 +530,13 @@ export function finalizeConsumerAfterComputation(node: ReactiveNode): void {
 export function consumerPollProducersForChange(node: ReactiveNode): boolean {
   // Poll producers for change.
   for (let link = node.producers; link !== undefined; link = link.nextProducer) {
+    if (link.isPassive) {
+      if (link.producer.dirty || link.lastReadVersion !== link.producer.version) {
+        return true;
+      }
+      continue;
+    }
+
     const producer = link.producer;
     const seenVersion = link.lastReadVersion;
 
@@ -504,6 +569,12 @@ export function consumerDestroy(node: ReactiveNode): void {
     let link = node.producers;
     while (link !== undefined) {
       link = producerRemoveLiveConsumerLink(link);
+    }
+  } else {
+    for (let link = node.producers; link !== undefined; link = link.nextProducer) {
+      if (link.isPassive) {
+        producerRemoveLiveConsumerLink(link);
+      }
     }
   }
 

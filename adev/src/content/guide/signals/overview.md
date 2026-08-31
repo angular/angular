@@ -55,9 +55,7 @@ export class CounterState {
   }
 }
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class AwesomeCounter {
   state = inject(CounterState);
 
@@ -185,6 +183,30 @@ effect(() => {
   });
 });
 ```
+
+### Reading without triggering recomputation
+
+`untracked` still forces a signal to compute its value if it's currently dirty; it only stops the read from being tracked as a dependency. Sometimes you want the opposite: keep the dependency, but avoid forcing an expensive `computed` to recompute just to check whether it currently has a value.
+
+`passiveRead` reads a signal's current value if one has already been computed, without forcing recomputation. It still registers the caller as a dependent, so the reactive context re-runs when the signal's value later changes.
+
+```ts
+effect(() => {
+  const result = passiveRead(myResource.value);
+  if (!result.hasValue) {
+    // No value has been computed yet, so no recomputation was forced.
+    return;
+  }
+
+  // `hasValue` is only `true` if some non-passive read has already computed this signal.
+  console.log('Passive update:', result.value);
+});
+```
+
+`passiveRead` returns a `PassiveReadResult`, since the signal may not have a value available yet:
+
+- `hasValue: true` - the signal already has a computed value, available as `value`.
+- `hasValue: false` - the signal hasn't been computed yet (or is currently computing), so no value is available.
 
 ### Reactive context and async operations
 

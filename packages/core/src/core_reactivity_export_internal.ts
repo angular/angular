@@ -17,6 +17,7 @@ export {
   ɵunwrapWritableSignal,
 } from './render3/reactivity/signal';
 export {linkedSignal} from './render3/reactivity/linked_signal';
+export {passiveRead, PassiveReadResult} from './render3/reactivity/passive_read';
 export {untracked} from './render3/reactivity/untracked';
 export {
   CreateEffectOptions,

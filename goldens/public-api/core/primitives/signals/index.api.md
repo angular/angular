@@ -102,6 +102,18 @@ export function linkedSignalSetFn<S, D>(node: LinkedSignalNode<S, D>, newValue: 
 export function linkedSignalUpdateFn<S, D>(node: LinkedSignalNode<S, D>, updater: (value: D) => D): void;
 
 // @public (undocumented)
+export function passiveRead<T>(signal: () => T): PassiveReadResult<T>;
+
+// @public
+export type PassiveReadResult<T> = {
+    hasValue: true;
+    value: T;
+} | {
+    hasValue: false;
+    value: undefined;
+};
+
+// @public (undocumented)
 export type PreviousValue<S, D> = {
     source: S;
     value: D;
@@ -109,6 +121,9 @@ export type PreviousValue<S, D> = {
 
 // @public
 export function producerAccessed(node: ReactiveNode): void;
+
+// @public
+export function producerAccessedPassively(node: ReactiveNode): void;
 
 // @public
 export function producerIncrementEpoch(): void;
@@ -179,7 +194,7 @@ export function runPostSignalSetFn<T>(node: SignalNode<T>): void;
 // @public (undocumented)
 export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null;
 
-// @public
+// @public (undocumented)
 export function setAlternateWeakRefImpl(impl: unknown): void;
 
 // @public (undocumented)

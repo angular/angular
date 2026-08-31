@@ -9,6 +9,7 @@
 import {installDevToolsSignalFormatter} from './src/formatter';
 
 export {ComputedNode, createComputed, ERRORED} from './src/computed';
+export {passiveRead, PassiveReadResult} from './src/passive_read';
 export {
   ComputationFn,
   LinkedSignalNode,
@@ -37,6 +38,7 @@ export {
   isInNotificationPhase,
   isReactive,
   producerAccessed,
+  producerAccessedPassively,
   producerIncrementEpoch,
   producerMarkClean,
   producerNotifyConsumers,
