@@ -210,5 +210,14 @@ export function checkSecurityContext(
     }
   }
 
+  // An SVG animation element declared outside of an `<svg>` has no explicit namespace at compile
+  // time, but can still animate once it is projected into an SVG subtree.
+  if (context === undefined && (!namespace || namespace === NO_NAMESPACE)) {
+    const svgSchema = attrSchema[SVG_NAMESPACE];
+    if (svgSchema) {
+      context = svgSchema[tagLower];
+    }
+  }
+
   return context ?? SecurityContext.NONE;
 }
