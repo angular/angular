@@ -1129,4 +1129,26 @@ describe('Dispatcher', () => {
       expect(eventInfoWrapper.getAction()).toBeUndefined();
     });
   });
+
+  it('action map does not resolve Object.prototype properties as actions', () => {
+    const actionElement = getRequiredElementById('click-action-element');
+    const targetElement = getRequiredElementById('click-target-element');
+    const container = getRequiredElementById('click-container');
+
+    actionElement.setAttribute('jsaction', 'click:handleClick');
+    cache.clear(actionElement);
+
+    const actionResolver = new ActionResolver();
+    const eventInfo = createEventInfo({
+      eventType: 'toString',
+      event: new Event('toString'),
+      targetElement,
+      container,
+      timestamp: 0,
+    });
+
+    actionResolver.resolveAction(eventInfo);
+
+    expect(new EventInfoWrapper(eventInfo).getAction()).toBeUndefined();
+  });
 });
