@@ -172,6 +172,33 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
       SecurityContext.ATTRIBUTE_NO_BINDING,
     );
 
+    // SVG animation elements are sensitive when their namespace is omitted at compile time.
+    expect(registry.securityContext('set', 'to', true)).toBe(SecurityContext.ATTRIBUTE_NO_BINDING);
+    expect(registry.securityContext('set', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'to', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'from', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'values', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animate', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animateMotion', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+    expect(registry.securityContext('animateTransform', 'attributeName', true)).toBe(
+      SecurityContext.ATTRIBUTE_NO_BINDING,
+    );
+
+    // The defensive SVG lookup must not apply to elements in an explicit foreign namespace.
+    expect(registry.securityContext(':math:set', 'to', true)).toBe(SecurityContext.NONE);
+
     // SVG link attributes
     expect(registry.securityContext(':svg:a', 'href', false)).toBe(SecurityContext.URL);
     expect(registry.securityContext(':svg:a', 'xlink:href', false)).toBe(SecurityContext.URL);
