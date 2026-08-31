@@ -30,3 +30,17 @@ export class TMComponent{}
   template: '{{property}}',
 })
 export class TMComponent{}
+
+/* Escaped delimiter tests */
+@Component({
+  //// Escaped backtick test
+  template: `<button title="\`code\`">Hello</button>`,
+
+  //// Escaped quote tests
+  template: '<div title="it\'s">Hello</div>',
+  template: "<div title=\"quoted\">Hello</div>",
+
+  //// Escaped backslash before the closing delimiter
+  template: `<div>backslash \\</div>`,
+})
+export class TMComponent{}
