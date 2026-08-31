@@ -264,6 +264,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/templates/defer',
           },
           {
+            label: 'Error boundaries with @boundary',
+            path: 'guide/templates/error-boundaries',
+            contentPath: 'guide/templates/error-boundaries',
+            status: 'new',
+          },
+          {
             label: 'Expression syntax',
             path: 'guide/templates/expression-syntax',
             contentPath: 'guide/templates/expression-syntax',
