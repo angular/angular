@@ -38,6 +38,7 @@ src
 └── main.server.ts # main server application bootstrapping
 ```
 
+</docs-step>
 <docs-step title="Verify the application is built with the shell content">
 
 ```shell
