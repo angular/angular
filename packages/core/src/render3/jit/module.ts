@@ -306,17 +306,32 @@ function verifySemanticsOfNgModuleDef(
     }
   }
 
+  /**
+   * Checks that a directive declared in the module actually has a selector.
+   *
+   * This does the following:
+   * 1. Reads the directive definition off the type. This also finds a definition that the type
+   *    inherited from a base class.
+   * 2. Skips the check if the type is really a component or a pipe. Components don't need a
+   *    selector, and a pipe can inherit a directive definition from an abstract base class (for
+   *    example a base class that only adds a lifecycle hook) - that inherited definition belongs
+   *    to the base class, not to the pipe.
+   * 3. Otherwise, if the directive has a definition but no selectors, adds an error telling the
+   *    user to add one.
+   */
   function verifyDirectivesHaveSelector(type: Type<any>): void {
     type = resolveForwardRef(type);
     const def = getDirectiveDef(type);
-    if (!getComponentDef(type) && def && def.selectors.length == 0) {
+    if (!getComponentDef(type) && !getPipeDef(type) && def && def.selectors.length == 0) {
       errors.push(`Directive ${stringifyForError(type)} has no selector, please add it!`);
     }
   }
 
   function verifyNotStandalone(type: Type<any>, moduleType: NgModuleType): void {
     type = resolveForwardRef(type);
-    const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
+    // Check the pipe def first: a pipe that extends an abstract directive base class also has
+    // an (inherited) directive def, and we want the pipe's own `standalone` flag here.
+    const def = getPipeDef(type) || getComponentDef(type) || getDirectiveDef(type);
     if (def?.standalone) {
       const location = `"${stringifyForError(moduleType)}" NgModule`;
       errors.push(generateStandaloneInDeclarationsError(type, location));
