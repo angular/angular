@@ -49,6 +49,7 @@ import {
   RENDERER,
   T_HOST,
   TVIEW,
+  TViewType,
 } from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
 import {destroyLView} from '../render3/node_manipulation';
@@ -541,6 +542,12 @@ class R3ViewContainerRef extends ViewContainerRef {
         return typeof tNode.value === 'string' && tNode.value.toLowerCase() === 'foreignobject'
           ? null
           : tNode.namespace;
+      }
+
+      // A component's template always starts out in the HTML namespace, so the namespace of its
+      // host element must not leak into it.
+      if (lView[TVIEW].type === TViewType.Component) {
+        return null;
       }
 
       tNode = lView[T_HOST];
