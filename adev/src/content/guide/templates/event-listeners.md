@@ -106,9 +106,9 @@ Global target names can be used to prefix an event. The 3 supported global targe
 @Component({
   /* ... */
   host: {
-    'window:click': 'onWindowClick()',
-    'document:click': 'onDocumentClick()',
-    'body:click': 'onBodyClick()',
+    '(window:click)': 'onWindowClick()',
+    '(document:click)': 'onDocumentClick()',
+    '(body:click)': 'onBodyClick()',
   },
 })
 export class MyView {}
