@@ -67,6 +67,7 @@ import {
   type ValidationError,
   type WithOptionalFieldTree,
 } from '../../public_api';
+import {act} from '@angular/private/testing';
 import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
 import {TestInputValidityMonitor} from './test_input_validity_monitor';
 
@@ -6540,12 +6541,4 @@ function setupRadioWithBindingsGroup() {
   const cmp = fix.componentInstance as TestCmp;
 
   return {cmp, inputA, inputB, inputC, ABC};
-}
-
-function act<T>(fn: () => T): T {
-  try {
-    return fn();
-  } finally {
-    TestBed.tick();
-  }
 }

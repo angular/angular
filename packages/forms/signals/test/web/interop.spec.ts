@@ -7,7 +7,6 @@
  */
 
 import {
-  ApplicationRef,
   ChangeDetectionStrategy,
   Component,
   Directive,
@@ -56,6 +55,7 @@ import {
   WithOptionalFieldTree,
   transformedValue,
 } from '@angular/forms/signals';
+import {act, actAsync} from '@angular/private/testing';
 
 describe('ControlValueAccessor', () => {
   beforeEach(() => {
@@ -1558,19 +1558,3 @@ describe('ControlValueAccessor', () => {
     });
   });
 });
-
-function act<T>(fn: () => T): T {
-  try {
-    return fn();
-  } finally {
-    TestBed.tick();
-  }
-}
-
-async function actAsync<T>(fn: () => T): Promise<T> {
-  try {
-    return fn();
-  } finally {
-    await TestBed.inject(ApplicationRef).whenStable();
-  }
-}
