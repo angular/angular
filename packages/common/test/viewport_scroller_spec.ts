@@ -128,6 +128,37 @@ describe('BrowserViewportScroller', () => {
       cleanup();
     });
 
+    it('should honor the element `scroll-margin-top`', () => {
+      // https://github.com/angular/angular/issues/55383
+      const {anchorNode, cleanup} = createTallElement();
+      anchorNode.id = anchor;
+      anchorNode.style.scrollMarginTop = '40px';
+      document.body.style.paddingBottom = '5000px';
+
+      scroller.scrollToAnchor(anchor);
+
+      // The element ends up 40px below the viewport top, matching native fragment scrolling.
+      expect(Math.round(anchorNode.getBoundingClientRect().top)).toBe(40);
+
+      document.body.style.paddingBottom = '';
+      cleanup();
+    });
+
+    it('should combine `scroll-margin-top` with the configured offset', () => {
+      const {anchorNode, cleanup} = createTallElement();
+      anchorNode.id = anchor;
+      anchorNode.style.scrollMarginTop = '40px';
+      document.body.style.paddingBottom = '5000px';
+      scroller.setOffset([0, 80]);
+
+      scroller.scrollToAnchor(anchor);
+
+      expect(Math.round(anchorNode.getBoundingClientRect().top)).toBe(120);
+
+      document.body.style.paddingBottom = '';
+      cleanup();
+    });
+
     it('should honor the scroll offset when smooth scrolling', async () => {
       // Ensure the scroll behavior is smooth for this test, as the bug only occurred with smooth scrolling.
       document.documentElement.style.scrollBehavior = 'smooth';

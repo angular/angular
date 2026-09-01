@@ -168,10 +168,15 @@ export class BrowserViewportScroller implements ViewportScroller {
     const left = rect.left + this.window.pageXOffset;
     const top = rect.top + this.window.pageYOffset;
     const offset = this.offset();
+    // Also honor the element's CSS `scroll-margin`, the way the browser does when scrolling to a
+    // native fragment target. `scroll-padding` on the scroll container is not accounted for.
+    const style = this.window.getComputedStyle(el);
+    const scrollMarginTop = parseFloat(style.scrollMarginTop) || 0;
+    const scrollMarginLeft = parseFloat(style.scrollMarginLeft) || 0;
     this.window.scrollTo({
       ...options,
-      left: left - offset[0],
-      top: top - offset[1],
+      left: left - offset[0] - scrollMarginLeft,
+      top: top - offset[1] - scrollMarginTop,
     });
   }
 }
