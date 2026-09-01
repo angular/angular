@@ -2585,6 +2585,22 @@ describe('Image directive', () => {
         const img = nativeElement.querySelector('img')!;
         expect(img.getAttribute('srcset')).toBeNull();
       });
+
+      it('should pass a `[srcset]` binding through to the DOM when "disableOptimizedSrcset" is set', async () => {
+        // https://github.com/angular/angular/issues/49335
+        setupTestingModule({imageLoader});
+
+        const template = `
+      <img ngSrc="img" width="100" height="50" disableOptimizedSrcset
+           [srcset]="'https://example.com/a.png 1x, https://example.com/b.png 2x'">
+    `;
+        const fixture = createTestComponent(template);
+        await fixture.whenStable();
+        const img = (fixture.nativeElement as HTMLElement).querySelector('img')!;
+        expect(img.getAttribute('srcset')).toBe(
+          'https://example.com/a.png 1x, https://example.com/b.png 2x',
+        );
+      });
     });
   });
 });
