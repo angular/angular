@@ -22,7 +22,7 @@ import type {
 /**
  * The client context of a given WebMCP tool execution.
  *
- * @experimental
+ * @experimental 22.0
  */
 export interface Client {
   // Mostly empty for now until we have more clarity of what this will contain.
@@ -43,7 +43,7 @@ export interface Client {
  * @param client The client context invoking the tool.
  * @returns The result of executing the tool which will be serialized and provided back
  *     to the connected agent. This is typically just a raw `string`.
- * @experimental
+ * @experimental 22.0
  */
 export type Execute<InputSchema extends JsonSchemaForInference> = (
   args: InferArgsFromInputSchema<InputSchema>,
@@ -57,9 +57,30 @@ export interface ToolRegistrationOptions {
 }
 
 /**
+ * Annotations for a WebMCP tool which describe its behavior.
+ *
+ * @experimental 22.2
+ */
+export interface Annotations {
+  /**
+   * A hint that the tool will not modify user-visible state (e.g. it will not trigger
+   * a navigation, mutate the DOM, or alter data stored on a backend). Agents may be
+   * more likely to use tools which are explicitly declared read-only as they are
+   * safer against potential misuse.
+   */
+  readOnlyHint?: boolean;
+
+  /**
+   * A hint that the tool will return untrusted content from the perspective of the
+   * author of the tool.
+   */
+  untrustedContentHint?: boolean;
+}
+
+/**
  * Describes and implements a specific WebMCP tool for an agent to invoke.
  *
- * @experimental
+ * @experimental 22.0
  */
 export interface ToolDescriptor<InputSchema extends JsonSchemaForInference> {
   /** The unique name of this tool. */
@@ -76,6 +97,9 @@ export interface ToolDescriptor<InputSchema extends JsonSchemaForInference> {
 
   /** The callback function which implements this tool. */
   execute: Execute<InputSchema>;
+
+  /** Optional annotations describing the tool's behavior and safety properties. */
+  annotations?: Annotations;
 }
 
 /** The `window.document.modelContext` object for imperatively registering WebMCP tools. */
