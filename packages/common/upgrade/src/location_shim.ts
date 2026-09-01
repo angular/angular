@@ -421,10 +421,18 @@ export class $locationShim {
     let pathUrl: string | undefined;
     if (url.startsWith('/')) {
       pathUrl = url;
+    } else if (url.startsWith('#')) {
+      // Hash strategy: the app URL comes in `#`-prefixed, e.g. `#/user/123`
+      pathUrl = url.substring(1);
     } else {
       // Remove protocol & hostname if URL starts with it
       pathUrl = this.stripBaseUrl(this.getServerBase(), url);
+      // Hash strategy leaves a `#` right after the server base, e.g. `http://host.com/#/user/123`
+      if (pathUrl?.startsWith('#')) {
+        pathUrl = pathUrl.substring(1);
+      }
     }
+
     if (typeof pathUrl === 'undefined') {
       throw new Error(`Invalid url "${url}", missing path prefix "${this.getServerBase()}".`);
     }

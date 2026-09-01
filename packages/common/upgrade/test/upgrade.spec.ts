@@ -8,7 +8,7 @@
 
 import {inject, TestBed} from '@angular/core/testing';
 import {UpgradeModule} from '@angular/upgrade/static';
-import {CommonModule} from '../../index';
+import {CommonModule, Location} from '../../index';
 
 import {$locationShim} from '../src/location_shim';
 
@@ -743,6 +743,67 @@ describe('$location.onChange()', () => {
     $location.url('/newUrl');
     mock$rootScope.runWatchers();
     expect(error.message).toBe('Handle error');
+  });
+});
+
+describe('$location with HashLocationStrategy (useHash: true)', () => {
+  let $location: $locationShim;
+  let location: Location;
+  let upgradeModule: UpgradeModule;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        CommonModule,
+        LocationUpgradeTestModule.config({useHash: true, startUrl: 'http://host.com/'}),
+      ],
+      providers: [UpgradeModule],
+    });
+
+    upgradeModule = TestBed.inject(UpgradeModule);
+    upgradeModule.$injector = {get: injectorFactory()};
+  });
+
+  beforeEach(inject([$locationShim, Location], (loc: $locationShim, ngLocation: Location) => {
+    $location = loc;
+    location = ngLocation;
+  }));
+
+  it('should parse a bare hash-prefixed URL', () => {
+    $location.$$parse('#/foo');
+
+    expect($location.path()).toBe('/foo');
+    expect($location.absUrl()).toBe('http://host.com/foo');
+  });
+
+  it('should keep the search params and fragment of a hash-prefixed URL', () => {
+    $location.$$parse('#/foo?a=b&c=d#section');
+
+    expect($location.path()).toBe('/foo');
+    expect($location.search()).toEqual({a: 'b', c: 'd'});
+    expect($location.hash()).toBe('section');
+  });
+
+  it('should parse a hash-prefixed URL that still has the server base', () => {
+    // The shape of `PlatformLocation.href` when the app boots on a deep link.
+    $location.$$parse('http://host.com/#/user/123');
+
+    expect($location.path()).toBe('/user/123');
+  });
+
+  it('should still reject a URL pointing at a different server', () => {
+    expect(() => $location.$$parse('http://other.server.org/#/path')).toThrowError(
+      'Invalid url "http://other.server.org/#/path", missing path prefix "http://host.com/".',
+    );
+  });
+
+  it('should follow a navigation made through the Angular Location service', () => {
+    // `Location.go()` (what the Router calls) hands the shim a `#`-prefixed URL via
+    // `onUrlChange`. This used to throw `Invalid url "#/foo", missing path prefix`.
+    expect(() => location.go('/foo')).not.toThrow();
+
+    expect($location.path()).toBe('/foo');
+    expect($location.absUrl()).toBe('http://host.com/foo');
   });
 });
 
