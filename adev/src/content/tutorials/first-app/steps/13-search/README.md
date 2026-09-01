@@ -46,7 +46,7 @@ The `Home` already contains an input field that you will use to capture input fr
 
 1. The last template update is to the `@for` directive. Update the `@for` to iterate over values from the `filteredLocationList` array.
 
-   <docs-code header="Update the @for template directive in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[17,19]" language="html"/>
+   <docs-code language="angular-ts" header="Update the @for template directive in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[17,19]"/>
 
 </docs-step>
 
