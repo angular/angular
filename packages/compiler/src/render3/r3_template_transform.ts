@@ -15,6 +15,7 @@ import {
 } from '../expression_parser/ast';
 import * as i18n from '../i18n/i18n_ast';
 import * as html from '../ml_parser/ast';
+import {NGSP_UNICODE} from '../ml_parser/entities';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
 import {isNgTemplate} from '../ml_parser/tags';
 import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
@@ -568,7 +569,11 @@ class HtmlAstToIvyAst implements html.Visitor {
       }
 
       // Ignore empty text nodes between blocks.
-      if (node instanceof html.Text && node.value.trim().length === 0) {
+      if (
+        node instanceof html.Text &&
+        node.value.trim().length === 0 &&
+        !hasExplicitPreservedSpace(node)
+      ) {
         // Add the text node to the processed nodes since we don't want
         // it to be generated between the connected nodes.
         this.processedNodes.add(node);
@@ -1291,4 +1296,22 @@ function textContents(node: html.Element): string | null {
   } else {
     return (node.children[0] as html.Text).value;
   }
+}
+
+function hasExplicitPreservedSpace(node: html.Text): boolean {
+  if (node.value.includes('\u00a0') || node.value.includes(NGSP_UNICODE)) {
+    return true;
+  }
+  if (node.sourceSpan !== undefined) {
+    const raw = node.sourceSpan.toString();
+    if (
+      raw.includes(NGSP_UNICODE) ||
+      raw.includes('&ngsp;') ||
+      raw.includes('&nbsp;') ||
+      raw.includes('\u00a0')
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
