@@ -39,6 +39,7 @@ export function nativeControlCreate(
     Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
   >,
   validityMonitor: InputValidityMonitor,
+  document: Document,
 ): () => void {
   let updateMode = false;
   const input = parent.nativeFormElement;
@@ -123,7 +124,7 @@ export function nativeControlCreate(
       input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
 
     if (controlValueChanged || radioValueChanged) {
-      const isFocused = typeof document !== 'undefined' && document.activeElement === input;
+      const isFocused = document.activeElement === input;
       if (!(isFocused && isIntermediate(input.value, controlValue))) {
         setNativeControlValue(input, controlValue);
       }
