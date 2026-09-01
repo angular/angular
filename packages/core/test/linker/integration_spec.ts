@@ -1384,6 +1384,41 @@ describe('integration tests', function () {
       expect(() => TestBed.createComponent(MyComp)).not.toThrowError();
     });
 
+    it('should not throw when a declared pipe extends an abstract directive base class', () => {
+      // https://github.com/angular/angular/issues/36427
+      // An abstract base class with a lifecycle hook is compiled as a selector-less
+      // directive. A pipe that extends it inherits that directive def, which used to trip
+      // the "has no selector" (and later the "is standalone") NgModule checks.
+      @Directive({standalone: false})
+      abstract class NonStandaloneBase implements OnDestroy {
+        ngOnDestroy() {}
+      }
+
+      @Pipe({name: 'nonStandalonePipe', standalone: false})
+      class NonStandalonePipe extends NonStandaloneBase implements PipeTransform {
+        transform(value: unknown): unknown {
+          return value;
+        }
+      }
+
+      @Directive()
+      abstract class StandaloneBase implements OnDestroy {
+        ngOnDestroy() {}
+      }
+
+      @Pipe({name: 'standaloneDefaultPipe', standalone: false})
+      class StandaloneDefaultPipe extends StandaloneBase implements PipeTransform {
+        transform(value: unknown): unknown {
+          return value;
+        }
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [MyComp, NonStandalonePipe, StandaloneDefaultPipe],
+      });
+      expect(() => TestBed.createComponent(MyComp)).not.toThrowError();
+    });
+
     it('should throw when using directives with empty string selector', () => {
       @Directive({
         selector: '',
