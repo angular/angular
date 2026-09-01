@@ -9,6 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {applyWhenValue, debounce, form} from '@angular/forms/signals';
+import {timeout} from '@angular/private/testing';
 
 describe('debounce', () => {
   describe('by duration', () => {
@@ -508,11 +509,6 @@ describe('debounce', () => {
 /** Options for testing. */
 function options() {
   return {injector: TestBed.inject(Injector)};
-}
-
-/** Returns a promise that will resolve after {@link durationInMilliseconds}.  */
-function timeout(durationInMilliseconds: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, durationInMilliseconds));
 }
 
 /** Returns a promise that will never resolve. */
