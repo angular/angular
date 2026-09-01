@@ -154,6 +154,18 @@ export default class UpdateComponent {
     }
   }
 
+  protected toggleRecommendation(event: MouseEvent, checkbox: MatCheckbox): void {
+    const target = event.target as Element | null;
+
+    // Keep links in the recommendation independently operable.
+    if (target?.closest('a')) {
+      return;
+    }
+
+    checkbox.toggle();
+    checkbox.focus();
+  }
+
   async showUpdatePath() {
     this.beforeRecommendations = [];
     this.duringRecommendations = [];
