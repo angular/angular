@@ -147,8 +147,12 @@
       <h3>Before you update</h3>
       @for (r of beforeRecommendations; track $index) {
         <div class="adev-recommendation-item">
-          <mat-checkbox />
-          <div class="adev-recommendation-content">
+          <mat-checkbox #checkbox [aria-labelledby]="'adev-before-recommendation-' + $index" />
+          <div
+            class="adev-recommendation-content"
+            [id]="'adev-before-recommendation-' + $index"
+            (click)="toggleRecommendation($event, checkbox)"
+          >
             <div [innerHTML]="r.renderedStep"></div>
             <span class="adev-complexity-badge" [class]="'adev-complexity-' + r.level">
               {{ getComplexityLevelName(r.level) }}
@@ -171,8 +175,12 @@
 
       @for (r of duringRecommendations; track $index) {
         <div class="adev-recommendation-item">
-          <mat-checkbox />
-          <div class="adev-recommendation-content">
+          <mat-checkbox #checkbox [aria-labelledby]="'adev-during-recommendation-' + $index" />
+          <div
+            class="adev-recommendation-content"
+            [id]="'adev-during-recommendation-' + $index"
+            (click)="toggleRecommendation($event, checkbox)"
+          >
             <div [innerHTML]="r.renderedStep"></div>
             <span class="adev-complexity-badge" [class]="'adev-complexity-' + r.level">
               {{ getComplexityLevelName(r.level) }}
@@ -189,8 +197,12 @@
       <h3>After you update</h3>
       @for (r of afterRecommendations; track $index) {
         <div class="adev-recommendation-item">
-          <mat-checkbox />
-          <div class="adev-recommendation-content">
+          <mat-checkbox #checkbox [aria-labelledby]="'adev-after-recommendation-' + $index" />
+          <div
+            class="adev-recommendation-content"
+            [id]="'adev-after-recommendation-' + $index"
+            (click)="toggleRecommendation($event, checkbox)"
+          >
             <div [innerHTML]="r.renderedStep"></div>
             <span class="adev-complexity-badge" [class]="'adev-complexity-' + r.level">
               {{ getComplexityLevelName(r.level) }}
