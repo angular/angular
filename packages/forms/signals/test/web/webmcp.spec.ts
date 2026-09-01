@@ -40,6 +40,9 @@ describe('Signal Forms WebMCP Integration', () => {
         },
       });
 
+      const modelContext = (globalThis.document as any).modelContext;
+      const registerSpy = spyOn(modelContext, 'registerTool').and.callThrough();
+
       TestBed.runInInjectionContext(() => {
         form(model, {
           experimentalWebMcpTool: {
@@ -49,6 +52,16 @@ describe('Signal Forms WebMCP Integration', () => {
         });
       });
       await TestBed.inject(ApplicationRef).whenStable();
+
+      expect(registerSpy).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          annotations: {
+            readOnlyHint: false,
+            untrustedContentHint: false,
+          },
+        }),
+        jasmine.anything(),
+      );
 
       const registeredTools = globalThis.navigator.modelContextTesting!.listTools();
       expect(registeredTools[0].name).toBe('testFormTool');

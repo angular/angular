@@ -55,6 +55,15 @@ async function initWebMcpForm(
       name: options.name,
       description: options.description,
       inputSchema,
+      annotations: {
+        // Forms are assumed to implicitly mutate the DOM (otherwise how would a user interact with them?)
+        // and therefore are _never_ read-only.
+        readOnlyHint: false,
+
+        // Response text is currently hard-coded by the framework and trusted or derived from application
+        // errors which are considered trusted.
+        untrustedContentHint: false,
+      },
       execute: async (args: Record<string, unknown>) => {
         // Populate the form with changes from the agent.
         node.value.set(args);
