@@ -21,7 +21,7 @@
         [class.docs-example-code-toggle__show]="!showCode()"
         [attr.aria-checked]="showCode()"
         [attr.aria-label]="showCode() ? 'Hide code' : 'Show code'"
-        (click)="showCode.set(!showCode())"
+        (click)="toggleCodeVisibility()"
         [matTooltip]="showCode() ? 'Hide code' : 'Show code'"
         matTooltipPosition="above"
       >

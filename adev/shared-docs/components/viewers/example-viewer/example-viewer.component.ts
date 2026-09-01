@@ -116,6 +116,15 @@ export class ExampleViewer {
     this.setCodeLinesVisibility();
   }
 
+  toggleCodeVisibility(): void {
+    const showCode = !this.showCode();
+    this.showCode.set(showCode);
+
+    if (showCode) {
+      afterNextRender(() => this.setCodeLinesVisibility(), {injector: this.injector});
+    }
+  }
+
   copyLink(): void {
     // Reconstruct the URL using `origin + pathname` so we drop any pre-existing hash.
     const fullUrl =
