@@ -73,8 +73,7 @@ function relativeUrlsTransformerInterceptorFn(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
-  const trimmedUrl = request.url.trim();
-  if (URL_SCHEMA_REGEXP.test(trimmedUrl)) {
+  if (URL_SCHEMA_REGEXP.test(request.url)) {
     // URLs with a schema should be left unchanged.
     return next(request);
   }

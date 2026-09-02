@@ -1589,6 +1589,26 @@ class HiddenModule {}
           });
         });
 
+        it('should resolve unicode whitespace prefixed scheme URLs as relative paths on the same origin', async () => {
+          const urls = [
+            ['\u00A0http://attacker.example/collect', '%C2%A0'],
+            ['\uFEFFhttp://attacker.example/collect', '%EF%BB%BF'],
+          ];
+
+          ref.injector.get(NgZone).run(() => {
+            for (const [url, encodedWhitespace] of urls) {
+              http.get(url).subscribe((body) => {
+                expect(body).toEqual('success!');
+              });
+              mock
+                .expectOne(
+                  `http://localhost:4000/${encodedWhitespace}http://attacker.example/collect`,
+                )
+                .flush('success!');
+            }
+          });
+        });
+
         it('should reject backslash bypass SSRF attempts in relative requests and throw a suspicious origin error', async () => {
           const badUrls = [
             '/\\attacker.com',
