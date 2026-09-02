@@ -1,3 +1,15 @@
+## <small>0.16.3 (2026-09-02)</small>
+
+* docs(zone.js): point the Bluebird link at the project repo ([731c838](https://github.com/angular/angular/commit/731c838))
+* fix(zone.js): preserve accessor and non-enumerable event listener options ([4c4a705](https://github.com/angular/angular/commit/4c4a705)), closes [#54142](https://github.com/angular/angular/issues/54142) [#54142](https://github.com/angular/angular/issues/54142) [#70431](https://github.com/angular/angular/issues/70431)
+* ci: add Alan as a zone.js reviewer ([5553699](https://github.com/angular/angular/commit/5553699))
+* fix(zone.js): guard against null handle when detecting refreshable timers ([36c2197](https://github.com/angular/angular/commit/36c2197)), closes [#70044](https://github.com/angular/angular/issues/70044)
+* fix(zone.js): vitest patching of describe/it curried calls ([e23541b](https://github.com/angular/angular/commit/e23541b)), closes [#69748](https://github.com/angular/angular/issues/69748)
+* fix(zone.js): harden zoneSymbolEventNames and patches against __proto__ key ([2d33fd5](https://github.com/angular/angular/commit/2d33fd5))
+* fix(zone.js): harden zoneSymbolEventNames against __proto__ key (defense-in-depth) ([fd7c2da](https://github.com/angular/angular/commit/fd7c2da))
+* fix(zone.js): avoid type error on custom object rejection with rejection property ([fa75800](https://github.com/angular/angular/commit/fa75800))
+* fix(zone.js): validate __Zone_symbol_prefix to prevent DOM clobbering attacks ([e50f504](https://github.com/angular/angular/commit/e50f504))
+
 ## <small>0.16.2 (2026-05-06)</small>
 
 * feat(zone.js): support vitest patching in zone.js/testing (#68395) ([62c6e3b](https://github.com/angular/angular/commit/62c6e3b)), closes [#68395](https://github.com/angular/angular/issues/68395) [#68395](https://github.com/angular/angular/issues/68395)
