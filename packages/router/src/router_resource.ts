@@ -49,21 +49,35 @@ export function hasValueOrResolved(res: Resource<unknown>): boolean {
 }
 
 /**
+ * Options for configuring non-blocking router resources.
+ * @developerPreview
+ */
+export interface NonBlockingOptions {
+  /**
+   * A `Promise` that holds navigation until it settles, after which the navigation
+   * completes and the resource continues loading in the background.
+   */
+  waitFor?: Promise<unknown>;
+}
+
+export type BlockingConfig = boolean | NonBlockingOptions;
+
+/**
  * @internal
  */
 export interface InternalRouterResource<T = unknown> extends Resource<T> {
   [SOURCE_RESOURCE_SYMBOL]: Resource<T>;
-  [BLOCKING_SYMBOL]?: boolean;
+  [BLOCKING_SYMBOL]?: BlockingConfig;
   reload(): boolean;
 }
 
 /**
  * Marks a resource as non-blocking. The Router will NOT wait for this resource to resolve
- * before completing the navigation.
- * @experimental
+ * before completing the navigation, unless a `waitFor` promise is specified.
+ * @developerPreview
  */
-export function nonBlocking<T, R extends Resource<T>>(res: R): R {
-  (res as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] = false;
+export function nonBlocking<T, R extends Resource<T>>(res: R, options?: NonBlockingOptions): R {
+  (res as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] = options ?? false;
   return res;
 }
 
@@ -85,8 +99,8 @@ export function routerResource<T>(source: Resource<T>): Resource<T> & {reload():
   const res = resourceFromSnapshots(snapshotSignal) as unknown as InternalRouterResource<T>;
 
   res[SOURCE_RESOURCE_SYMBOL] = source;
-  res[BLOCKING_SYMBOL] =
-    (source as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] !== false;
+  const sourceBlocking = (source as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL];
+  res[BLOCKING_SYMBOL] = sourceBlocking !== undefined ? sourceBlocking : true;
 
   if (typeof (source as any).reload === 'function') {
     res.reload = function (): boolean {
@@ -208,7 +222,7 @@ export function createResourceOutletBindingEffects(
 
   for (const {templateName} of mirror.inputs) {
     const resource = route.resources?.[templateName];
-    if (!resource || !(resource as InternalRouterResource)[BLOCKING_SYMBOL]) {
+    if (!resource || (resource as InternalRouterResource)[BLOCKING_SYMBOL] !== true) {
       continue;
     }
 

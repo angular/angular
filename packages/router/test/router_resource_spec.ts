@@ -10,6 +10,8 @@ import {
   Component,
   computed,
   EnvironmentProviders,
+  Input,
+  input,
   resource,
   Resource,
   ResourceStatus,
@@ -23,6 +25,7 @@ import {
   Router,
   NavigationError,
   withNavigationErrorHandler,
+  withComponentInputBinding,
   RedirectCommand,
   ɵwithRouterResources as withRouterResources,
   ɵnonBlocking as nonBlocking,
@@ -535,6 +538,223 @@ describe('Router resources integration', () => {
         ?.resources?.['data'] as any;
       expect(resourceRef.status()).toBe('idle');
       expect(resourceRef.value()).toBeUndefined();
+    });
+  });
+
+  describe('nonBlocking with waitFor', () => {
+    it('should complete navigation immediately when resource resolves before waitFor resolves', async () => {
+      const deferredResource = promiseWithResolvers<string>();
+      const deferredWait = promiseWithResolvers<void>();
+
+      const {harness, router} = await setupRouter([
+        {
+          path: 'test',
+          component: TargetCmp,
+          resources: () => ({
+            data: nonBlocking(
+              resource({
+                loader: async () => deferredResource.promise,
+              }),
+              {waitFor: deferredWait.promise},
+            ),
+          }),
+        },
+      ]);
+
+      let completed = false;
+      const navPromise = harness.navigateByUrl('/test').then(() => {
+        completed = true;
+      });
+
+      await timeout(10);
+      expect(completed).toBe(false);
+      expect(router.url).toBe('/');
+
+      // Resolve resource before waitFor
+      deferredResource.resolve('early loaded');
+      await navPromise;
+
+      expect(completed).toBe(true);
+      expect(router.url).toBe('/test');
+      const route = router.routerState.root.firstChild as ActivatedRouteInternal;
+      const resourceRef = route?.resources?.['data'] as any;
+      expect(resourceRef.value()).toBe('early loaded');
+      expect(resourceRef.isLoading()).toBe(false);
+    });
+
+    it('should complete navigation when waitFor resolves before resource finishes', async () => {
+      const deferredResource = promiseWithResolvers<string>();
+      const deferredWait = promiseWithResolvers<void>();
+
+      const {harness, router} = await setupRouter([
+        {
+          path: 'test',
+          component: TargetCmp,
+          resources: () => ({
+            data: nonBlocking(
+              resource({
+                loader: async () => deferredResource.promise,
+              }),
+              {waitFor: deferredWait.promise},
+            ),
+          }),
+        },
+      ]);
+
+      let completed = false;
+      const navPromise = router.navigateByUrl('/test').then(() => {
+        completed = true;
+      });
+
+      await timeout(10);
+      expect(completed).toBe(false);
+      expect(router.url).toBe('/');
+
+      // Resolve waitFor while resource is still pending
+      deferredWait.resolve();
+      await navPromise;
+
+      expect(completed).toBe(true);
+      expect(router.url).toBe('/test');
+
+      const route = router.routerState.root.firstChild as ActivatedRouteInternal;
+      const resourceRef = route?.resources?.['data'] as any;
+      expect(resourceRef.isLoading()).toBe(true);
+      expect(resourceRef.value()).toBeUndefined();
+
+      // Resource resolves later in the background
+      deferredResource.resolve('late loaded');
+      await harness.fixture.whenStable();
+
+      expect(resourceRef.isLoading()).toBe(false);
+      expect(resourceRef.value()).toBe('late loaded');
+    });
+
+    it('should complete navigation when waitFor rejects and resource is still loading', async () => {
+      const deferredResource = promiseWithResolvers<string>();
+      const deferredWait = promiseWithResolvers<void>();
+      deferredWait.promise.catch(() => {});
+
+      const {harness, router} = await setupRouter([
+        {
+          path: 'test',
+          component: TargetCmp,
+          resources: () => ({
+            data: nonBlocking(
+              resource({
+                loader: async () => deferredResource.promise,
+              }),
+              {waitFor: deferredWait.promise},
+            ),
+          }),
+        },
+      ]);
+
+      const navPromise = router.navigateByUrl('/test');
+
+      // Reject waitFor
+      deferredWait.reject(new Error('wait error'));
+      await navPromise;
+
+      expect(router.url).toBe('/test');
+      const route = router.routerState.root.firstChild as ActivatedRouteInternal;
+      const resourceRef = route?.resources?.['data'] as any;
+      expect(resourceRef.isLoading()).toBe(true);
+
+      deferredResource.resolve('data');
+      await harness.fixture.whenStable();
+      expect(resourceRef.value()).toBe('data');
+    });
+
+    it('should complete navigation and expose error when resource throws before waitFor', async () => {
+      const deferredWait = promiseWithResolvers<void>();
+
+      const {harness, router} = await setupRouter([
+        {
+          path: 'test',
+          component: TargetCmp,
+          resources: () => ({
+            data: nonBlocking(
+              resource({
+                loader: async () => {
+                  throw new Error('Load failed');
+                },
+              }),
+              {waitFor: deferredWait.promise},
+            ),
+          }),
+        },
+      ]);
+
+      await harness.navigateByUrl('/test');
+
+      expect(router.url).toBe('/test');
+      const route = router.routerState.root.firstChild as ActivatedRouteInternal;
+      const resourceRef = route?.resources?.['data'] as any;
+      expect(resourceRef.error()?.message).toBe('Load failed');
+      expect(resourceRef.isLoading()).toBe(false);
+    });
+
+    it('should redirect when resource throws RedirectCommand before waitFor resolves', async () => {
+      const deferredWait = promiseWithResolvers<void>();
+
+      const {harness, router} = await setupRouter([
+        {
+          path: 'test',
+          component: TargetCmp,
+          resources: () => ({
+            data: nonBlocking(
+              resource({
+                loader: async () => {
+                  throw new RedirectCommand(TestBed.inject(Router).parseUrl('/redirected'));
+                },
+              }),
+              {waitFor: deferredWait.promise},
+            ),
+          }),
+        },
+        {
+          path: 'redirected',
+          component: TargetCmp,
+        },
+      ]);
+
+      await harness.navigateByUrl('/test');
+
+      expect(router.url).toBe('/redirected');
+    });
+
+    it('should bind the Resource instance to component inputs when nonBlocking with waitFor is used', async () => {
+      @Component({
+        template: '',
+        standalone: false,
+      })
+      class InputTargetCmp {
+        @Input() result?: Resource<string>;
+      }
+
+      const {harness, router} = await setupRouter(
+        [
+          {
+            path: 'test',
+            component: InputTargetCmp,
+            resources: () => ({
+              result: nonBlocking(
+                resource({
+                  loader: async () => 'bound resource value',
+                }),
+                {waitFor: timeout(100)},
+              ),
+            }),
+          },
+        ],
+        withComponentInputBinding(),
+      );
+
+      const activatedCmp = await harness.navigateByUrl('/test', InputTargetCmp);
+
+      expect(typeof activatedCmp.result).toBe('object');
+      expect(activatedCmp.result?.value()).toBe('bound resource value');
     });
   });
 

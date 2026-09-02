@@ -13,7 +13,7 @@ import {
   DestroyRef,
 } from '@angular/core';
 import {OperatorFunction, pipe} from 'rxjs';
-import {ResourceContext, ResourceResult} from '../models';
+import {RedirectCommand, ResourceContext, ResourceResult} from '../models';
 import {NavigationTransition} from '../navigation_transition';
 import {ActivatedRoute, ActivatedRouteSnapshot, initializeActivatedRoute} from '../router_state';
 import {TreeNode} from '../utils/tree';
@@ -21,6 +21,7 @@ import {
   BLOCKING_SYMBOL,
   hasValueOrResolved,
   InternalRouterResource,
+  NonBlockingOptions,
   routerResource,
   SOURCE_RESOURCE_SYMBOL,
 } from '../router_resource';
@@ -183,9 +184,13 @@ function setupBlocking(
 
   for (const r of Object.values(resourceResult)) {
     const res = r as InternalRouterResource;
-    if (res[BLOCKING_SYMBOL] === false) {
+    const blockingConfig = res[BLOCKING_SYMBOL];
+    if (blockingConfig === false) {
       continue;
     }
+
+    const waitForPromise = (blockingConfig as NonBlockingOptions)?.waitFor;
+
     const promise = new Promise<void>((resolve, reject) => {
       const underlyingRes = res[SOURCE_RESOURCE_SYMBOL];
       let isDestroyed = false;
@@ -205,6 +210,14 @@ function setupBlocking(
 
       abortSignal.addEventListener('abort', onAbort, {once: true});
 
+      if (waitForPromise) {
+        const done = () => {
+          cleanup();
+          resolve();
+        };
+        waitForPromise.then(done, done);
+      }
+
       const blockingEffect = effect(
         () => {
           if (isDestroyed) {
@@ -213,7 +226,12 @@ function setupBlocking(
           const status = underlyingRes.status();
           if (status === 'error') {
             cleanup();
-            reject(underlyingRes.error());
+            const error = underlyingRes.error();
+            if (waitForPromise && !(error instanceof RedirectCommand)) {
+              resolve();
+            } else {
+              reject(error);
+            }
           } else if (hasValueOrResolved(underlyingRes)) {
             cleanup();
             resolve();
