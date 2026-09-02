@@ -55,7 +55,7 @@ Avoid toolbar when:
 
 Angular's toolbar provides a fully accessible toolbar implementation with:
 
-- **Keyboard Navigation** - Navigate widgets with arrow keys, activate with Enter or Space
+- **Keyboard Navigation** - Navigate widgets with arrow keys, Home, and End using roving tabindex, while controls retain native activation
 - **Screen Reader Support** - Built-in ARIA attributes for assistive technologies
 - **Widget Groups** - Organize related widgets like radio button groups or toggle button groups
 - **Flexible Orientation** - Horizontal or vertical layouts with automatic keyboard navigation
@@ -127,25 +127,55 @@ Vertical toolbars stack controls top to bottom, useful for side panels or vertic
 
 ### Widget groups
 
-Widget groups contain related controls that work together, like text alignment options or list formatting choices. Groups maintain their own internal state while participating in toolbar navigation.
+Widget groups organize related controls that work together, such as text alignment options or formatting toggles. Groups maintain roving tabindex navigation while presenting the appropriate semantic structure to assistive technologies.
 
-In the examples above, the alignment buttons are wrapped in `ngToolbarWidgetGroup` with `role="radiogroup"` to create a mutually exclusive selection group.
+In the examples above, the alignment buttons are wrapped in `ngToolbarWidgetGroup` with `role="radiogroup"`. Selection is decoupled from the toolbar container, allowing you to manage state using Angular signals or custom directives:
 
-The `multi` input controls whether multiple widgets within a group can be selected simultaneously:
-
-```html {highlight: [15]}
-<!-- Single selection (radio group) -->
+```angular-html
+<!-- Mutually exclusive radio group -->
 <div ngToolbarWidgetGroup role="radiogroup" aria-label="Alignment">
-  <button ngToolbarWidget value="left">Left</button>
-  <button ngToolbarWidget value="center">Center</button>
-  <button ngToolbarWidget value="right">Right</button>
+  <button
+    ngToolbarWidget
+    role="radio"
+    type="button"
+    [attr.aria-checked]="alignment() === 'left'"
+    (click)="alignment.set('left')"
+  >
+    Left
+  </button>
+  <button
+    ngToolbarWidget
+    role="radio"
+    type="button"
+    [attr.aria-checked]="alignment() === 'center'"
+    (click)="alignment.set('center')"
+  >
+    Center
+  </button>
+  <button
+    ngToolbarWidget
+    role="radio"
+    type="button"
+    [attr.aria-checked]="alignment() === 'right'"
+    (click)="alignment.set('right')"
+  >
+    Right
+  </button>
 </div>
 
-<!-- Multiple selection (toggle group) -->
-<div ngToolbarWidgetGroup [multi]="true" aria-label="Formatting">
-  <button ngToolbarWidget value="bold">Bold</button>
-  <button ngToolbarWidget value="italic">Italic</button>
-  <button ngToolbarWidget value="underline">Underline</button>
+<!-- Toggle button group -->
+<div class="group" role="group" aria-label="Text styling">
+  <button ngToolbarWidget type="button" [attr.aria-pressed]="bold()" (click)="bold.set(!bold())">
+    Bold
+  </button>
+  <button
+    ngToolbarWidget
+    type="button"
+    [attr.aria-pressed]="italic()"
+    (click)="italic.set(!italic())"
+  >
+    Italic
+  </button>
 </div>
 ```
 
@@ -240,7 +270,7 @@ describe('MyToolbarComponent', () => {
     loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
-  it('should have widgets and allow selection', async () => {
+  it('should have widgets and update toggle state on click', async () => {
     // Load the toolbar harness
     const toolbar = await loader.getHarness(ToolbarHarness);
 
@@ -251,7 +281,7 @@ describe('MyToolbarComponent', () => {
     // Click the first widget
     await widgets[0].click();
 
-    // Verify selection state
+    // Verify pressed state updated via click handler
     expect(await widgets[0].isSelected()).toBe(true);
   });
 });
