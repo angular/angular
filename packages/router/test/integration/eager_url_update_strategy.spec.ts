@@ -31,10 +31,11 @@ import {
   AbsoluteSimpleLinkCmp,
   createRoot,
   advance,
+  provideTestRouter,
 } from './integration_helpers';
 import {timeout} from '@angular/private/testing';
 
-export function eagerUrlUpdateStrategyIntegrationSuite() {
+export function eagerUrlUpdateStrategyIntegrationSuite(browserAPI: 'history' | 'navigation') {
   describe('"eager" urlUpdateStrategy', () => {
     @Injectable()
     class AuthGuard {
@@ -60,7 +61,7 @@ export function eagerUrlUpdateStrategyIntegrationSuite() {
         providers: [
           AuthGuard,
           DelayedGuard,
-          provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'})),
+          provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy: 'eager'})),
         ],
       });
     });

@@ -9,6 +9,7 @@
 import {TestBed} from '@angular/core/testing';
 import {
   NavigationStart,
+  providePlatformNavigationRouter,
   provideRouter,
   Event,
   Router,
@@ -17,7 +18,7 @@ import {
   UrlTree,
   Params,
 } from '../src';
-import {withExperimentalPlatformNavigation, withRouterConfig} from '../src/provide_router';
+import {withRouterConfig} from '../src/provide_router';
 import {withBody, useAutoTick, timeout} from '@angular/private/testing';
 import {
   PlatformLocation,
@@ -44,10 +45,10 @@ function isFirefox() {
   return false;
 }
 
-describe('withPlatformNavigation feature', () => {
+describe('providePlatformNavigationRouter', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideRouter([], withExperimentalPlatformNavigation())],
+      providers: [providePlatformNavigationRouter([])],
     });
   });
 
@@ -243,9 +244,8 @@ describe('withPlatformNavigation feature', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
-          provideRouter(
+          providePlatformNavigationRouter(
             [{path: '**', children: []}],
-            withExperimentalPlatformNavigation(),
             withRouterConfig({urlUpdateStrategy: 'eager'}),
           ),
         ],
@@ -321,13 +321,10 @@ describe('withPlatformNavigation feature', () => {
         providers: [
           {provide: UrlSerializer, useClass: TrailingSlashNormalizingUrlSerializer},
           {provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: false},
-          provideRouter(
-            [
-              {path: 'foo', children: []},
-              {path: 'bar', children: []},
-            ],
-            withExperimentalPlatformNavigation(),
-          ),
+          providePlatformNavigationRouter([
+            {path: 'foo', children: []},
+            {path: 'bar', children: []},
+          ]),
         ],
       });
       navigation = TestBed.inject(PlatformNavigation);
@@ -355,13 +352,10 @@ describe('withPlatformNavigation feature', () => {
         providers: [
           {provide: UrlSerializer, useClass: QueryParamSortingUrlSerializer},
           {provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: false},
-          provideRouter(
-            [
-              {path: 'foo', children: []},
-              {path: 'bar', children: []},
-            ],
-            withExperimentalPlatformNavigation(),
-          ),
+          providePlatformNavigationRouter([
+            {path: 'foo', children: []},
+            {path: 'bar', children: []},
+          ]),
         ],
       });
       navigation = TestBed.inject(PlatformNavigation);
@@ -394,7 +388,7 @@ describe('withPlatformNavigation feature', () => {
               appBaseHref: '/my-app/',
             },
           },
-          provideRouter([{path: '**', children: []}], withExperimentalPlatformNavigation()),
+          providePlatformNavigationRouter([{path: '**', children: []}]),
         ],
       });
       navigation = TestBed.inject(PlatformNavigation);
@@ -424,7 +418,7 @@ describe('withPlatformNavigation feature', () => {
 describe('configuration error', () => {
   it('throws an error mentioning SpyLocation and the location mocks', () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter([], withExperimentalPlatformNavigation()), provideLocationMocks()],
+      providers: [providePlatformNavigationRouter([]), provideLocationMocks()],
     });
     expect(() => TestBed.inject(Location)).toThrowError(/SpyLocation.*provideLocationMocks/);
   });
@@ -436,7 +430,7 @@ if (typeof window !== 'undefined' && 'navigation' in window && !isFirefox()) {
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
-          provideRouter([{path: '**', children: []}], withExperimentalPlatformNavigation()),
+          providePlatformNavigationRouter([{path: '**', children: []}]),
           {provide: PlatformLocation, useClass: BrowserPlatformLocation},
           {provide: PlatformNavigation, useFactory: () => navigation},
         ],

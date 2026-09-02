@@ -618,6 +618,8 @@ describe('RouterPreloader', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
+          provideLocationMocks(),
+          provideRouter([]),
           {
             provide: ROUTES,
             multi: true,
