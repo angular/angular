@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, NgForOf} from '@angular/common';
-import {Component, inject, Input, Type, NgModule, signal, resource} from '@angular/core';
+import {Component, inject, Input, input, output, Type, NgModule, signal, resource} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   provideRouter as internalProvideRouter,
@@ -15,7 +15,9 @@ import {
   RouterModule,
   RouterOutlet,
   withComponentInputBinding,
+  withErrorBoundaries,
   ROUTER_OUTLET_DATA,
+  RedirectCommand,
   withRouterResources,
   nonBlocking,
   Route,
@@ -837,6 +839,793 @@ describe('router outlet data', () => {
 
     await harness.navigateByUrl('/child/grandchild');
     expect(harness.routeNativeElement?.innerText).toContain('parent|not provided');
+  });
+});
+
+describe('Error boundaries and errorComponent integration', () => {
+  useAutoTick();
+
+  it('renders route errorComponent when component throws in ngOnInit and sets error input', async () => {
+    @Component({
+      template: 'Normal Component Content',
+    })
+    class ThrowingComponent {
+      ngOnInit() {
+        throw new Error('Component Rendering Failed');
+      }
+    }
+
+    @Component({
+      template: 'Error caught: {{ error()?.message }}',
+    })
+    class ErrorFallbackComponent {
+      readonly error = input<Error>();
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'test',
+            component: ThrowingComponent,
+            errorComponent: ErrorFallbackComponent,
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/test');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain(
+      'Error caught: Component Rendering Failed',
+    );
+  });
+
+  it('renders route errorComponent when blocking router resource throws during input binding', async () => {
+    @Component({
+      template: 'User: {{ user }}',
+    })
+    class ProfileComponent {
+      @Input() user?: string;
+    }
+
+    @Component({
+      template: 'Resource Error: {{ error()?.message }}',
+    })
+    class ProfileErrorComponent {
+      readonly error = input<Error>();
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'profile',
+              component: ProfileComponent,
+              errorComponent: ProfileErrorComponent,
+              resources: () => ({
+                user: resource({
+                  loader: async () => {
+                    throw new Error('Network Timeout');
+                  },
+                }),
+              }),
+            },
+          ],
+          withComponentInputBinding(),
+          withRouterResources(),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/profile');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain('Resource Error:');
+    expect(harness.routeNativeElement?.innerText).toContain('Network Timeout');
+  });
+
+  it('catches creation pass (constructor) errors and renders errorComponent', async () => {
+    @Component({
+      template: 'Content',
+    })
+    class ConstructorErrorComponent {
+      constructor() {
+        throw new Error('Constructor Creation Failure');
+      }
+    }
+
+    @Component({
+      template: 'Caught Constructor Error: {{ error()?.message }}',
+    })
+    class ErrorFallbackComponent {
+      readonly error = input<Error>();
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'test-constructor-error',
+            component: ConstructorErrorComponent,
+            errorComponent: ErrorFallbackComponent,
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/test-constructor-error');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain(
+      'Caught Constructor Error: Constructor Creation Failure',
+    );
+  });
+
+  it('supports retry() input to re-activate the route component', async () => {
+    let shouldFail = true;
+
+    @Component({
+      template: 'Primary Loaded Successfully',
+    })
+    class FlakyComponent {
+      ngOnInit() {
+        if (shouldFail) {
+          throw new Error('Transient Error');
+        }
+      }
+    }
+
+    @Component({
+      template: `
+        <span>Failed: {{ error()?.message }}</span>
+        <button (click)="outlet.retry()">Retry</button>
+      `,
+    })
+    class ErrorFallbackComponent {
+      readonly error = input<Error>();
+      readonly outlet = inject(RouterOutlet);
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'flaky',
+            component: FlakyComponent,
+            errorComponent: ErrorFallbackComponent,
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/flaky');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain('Failed: Transient Error');
+
+    // Fix the error condition and invoke retry
+    shouldFail = false;
+    const retryBtn = harness.routeNativeElement?.querySelector('button') as HTMLButtonElement;
+    retryBtn.click();
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain('Primary Loaded Successfully');
+  });
+
+  it('catches RedirectCommand thrown in route component and triggers navigation', async () => {
+    @Component({
+      template: 'Redirecting...',
+    })
+    class RedirectSourceComponent {
+      private router = inject(Router);
+      ngOnInit() {
+        throw new RedirectCommand(this.router.parseUrl('/target-destination'));
+      }
+    }
+
+    @Component({
+      template: 'Target Destination Reached',
+    })
+    class TargetDestinationComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'redirect-source',
+            component: RedirectSourceComponent,
+          },
+          {
+            path: 'target-destination',
+            component: TargetDestinationComponent,
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/redirect-source');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain('Target Destination Reached');
+  });
+
+  it('catches RedirectCommand thrown in route resource and triggers navigation', async () => {
+    @Component({
+      template: 'Source with resource',
+    })
+    class ResourceRedirectComponent {
+      @Input() data?: string;
+    }
+
+    @Component({
+      template: 'Login Page Content',
+    })
+    class LoginComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'auth-required',
+              component: ResourceRedirectComponent,
+              resources: () => {
+                const router = inject(Router);
+                return {
+                  data: resource({
+                    loader: async () => {
+                      throw new RedirectCommand(router.parseUrl('/login'));
+                    },
+                  }),
+                };
+              },
+            },
+            {
+              path: 'login',
+              component: LoginComponent,
+            },
+          ],
+          withComponentInputBinding(),
+          withRouterResources(),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/auth-required');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain('Login Page Content');
+  });
+
+  it('dispatches RedirectCommand only once when bubbling through multiple boundaries', async () => {
+    let navigateByUrlCalls = 0;
+
+    @Component({
+      template: 'Throwing Child',
+    })
+    class ThrowingChild {
+      private router = inject(Router);
+      ngOnInit() {
+        throw new RedirectCommand(this.router.parseUrl('/destination'));
+      }
+    }
+
+    @Component({
+      imports: [RouterOutlet],
+      template: '<router-outlet />',
+    })
+    class ParentLayout {}
+
+    @Component({
+      template: 'Destination Reached',
+    })
+    class DestinationComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'parent',
+            component: ParentLayout,
+            children: [
+              {
+                path: 'child',
+                component: ThrowingChild,
+              },
+            ],
+          },
+          {
+            path: 'destination',
+            component: DestinationComponent,
+          },
+        ]),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    const origNavigateByUrl = router.navigateByUrl.bind(router);
+    spyOn(router, 'navigateByUrl').and.callFake((...args) => {
+      navigateByUrlCalls++;
+      return origNavigateByUrl(...args);
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/parent/child');
+    await harness.fixture.whenStable();
+
+    expect(navigateByUrlCalls).toBe(1);
+    expect(harness.routeNativeElement?.innerText).toContain('Destination Reached');
+  });
+
+  it('bubbles error up when route does not define an errorComponent', async () => {
+    @Component({
+      template: 'Throwing Component Content',
+    })
+    class ThrowingComponent {
+      ngOnInit() {
+        throw new Error('Uncaught Route Error');
+      }
+    }
+
+    @Component({
+      imports: [RouterOutlet],
+      template: `
+        @boundary {
+          <router-outlet />
+        } @error (let err) {
+          <div class="boundary-catch">Caught by template boundary: {{ err.message }}</div>
+        }
+      `,
+    })
+    class RootBoundaryComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'unhandled-error',
+            component: ThrowingComponent,
+          },
+        ]),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    const fixture = await createRoot(router, RootBoundaryComponent);
+    await router.navigateByUrl('/unhandled-error');
+    await advance(fixture);
+
+    expect(fixture.nativeElement.innerHTML).toContain(
+      'Caught by template boundary: Uncaught Route Error',
+    );
+  });
+
+  it('renders defaultErrorComponent configured via withErrorBoundaries when route lacks errorComponent', async () => {
+    @Component({
+      template: 'Content',
+    })
+    class ThrowingComponent {
+      ngOnInit() {
+        throw new Error('Unhandled in Route');
+      }
+    }
+
+    @Component({
+      template: 'Global Error Fallback: {{ error()?.message }}',
+    })
+    class GlobalErrorComponent {
+      readonly error = input<Error>();
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'default-fallback',
+              component: ThrowingComponent,
+            },
+          ],
+          withErrorBoundaries({
+            defaultErrorComponent: GlobalErrorComponent,
+          }),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/default-fallback');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain(
+      'Global Error Fallback: Unhandled in Route',
+    );
+  });
+
+  it('invokes onError hook in withErrorBoundaries when error occurs', async () => {
+    let telemetryError: Error | null = null;
+
+    @Component({
+      template: '',
+    })
+    class ThrowingComponent {
+      ngOnInit() {
+        throw new Error('Telemetry Error');
+      }
+    }
+
+    @Component({
+      template: 'Error View',
+    })
+    class ErrorViewComponent {
+      readonly error = input<Error>();
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'telemetry',
+              component: ThrowingComponent,
+              errorComponent: ErrorViewComponent,
+            },
+          ],
+          withErrorBoundaries({
+            onError: (err) => {
+              telemetryError = err;
+            },
+          }),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/telemetry');
+    await harness.fixture.whenStable();
+
+    expect(telemetryError).not.toBeNull();
+    expect((telemetryError as any)?.message).toBe('Telemetry Error');
+  });
+
+  it('catches RedirectCommand thrown in component constructor and triggers navigation', async () => {
+    @Component({
+      template: '',
+    })
+    class ConstructorRedirectComponent {
+      private router = inject(Router);
+      constructor() {
+        throw new RedirectCommand(this.router.parseUrl('/constructor-destination'));
+      }
+    }
+
+    @Component({
+      template: 'Constructor Destination Reached',
+    })
+    class DestinationComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'constructor-redirect',
+            component: ConstructorRedirectComponent,
+          },
+          {
+            path: 'constructor-destination',
+            component: DestinationComponent,
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/constructor-redirect');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain('Constructor Destination Reached');
+  });
+
+  it('renders static errorComponent without error or retry inputs', async () => {
+    @Component({
+      template: '',
+    })
+    class ThrowingComponent {
+      ngOnInit() {
+        throw new Error('Static Error Test');
+      }
+    }
+
+    @Component({
+      template: 'Static Fallback Message (No Inputs)',
+    })
+    class StaticErrorComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'static-error',
+            component: ThrowingComponent,
+            errorComponent: StaticErrorComponent,
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/static-error');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain('Static Fallback Message (No Inputs)');
+  });
+
+  it('bubbles child route error up to parent route errorComponent when child has none', async () => {
+    @Component({
+      template: '',
+    })
+    class ThrowingChildComponent {
+      ngOnInit() {
+        throw new Error('Child Failed');
+      }
+    }
+
+    @Component({
+      imports: [RouterOutlet],
+      template: '<router-outlet />',
+    })
+    class ParentLayoutComponent {}
+
+    @Component({
+      template: 'Parent Caught Error: {{ error()?.message }}',
+    })
+    class ParentErrorComponent {
+      readonly error = input<Error>();
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'parent',
+            component: ParentLayoutComponent,
+            errorComponent: ParentErrorComponent,
+            children: [
+              {
+                path: 'child',
+                component: ThrowingChildComponent,
+              },
+            ],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/parent/child');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain('Parent Caught Error: Child Failed');
+  });
+
+  it('binds route params and data to errorComponent when withComponentInputBinding is enabled', async () => {
+    @Component({
+      template: '',
+    })
+    class ThrowingProductComponent {
+      ngOnInit() {
+        throw new Error('Product not found in DB');
+      }
+    }
+
+    @Component({
+      template: 'Error loading product #{{ id() }}: {{ error()?.message }}',
+    })
+    class ProductErrorComponent {
+      readonly id = input<string>();
+      readonly error = input<Error>();
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'products/:id',
+              component: ThrowingProductComponent,
+              errorComponent: ProductErrorComponent,
+            },
+          ],
+          withComponentInputBinding(),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/products/12345');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain(
+      'Error loading product #12345: Product not found in DB',
+    );
+  });
+
+  it('supports injecting RouterOutlet in errorComponent to call retry()', async () => {
+    let shouldFail = true;
+
+    @Component({
+      template: 'Success View',
+    })
+    class FlakyComponent {
+      ngOnInit() {
+        if (shouldFail) {
+          throw new Error('Initial Failure');
+        }
+      }
+    }
+
+    @Component({
+      template: `
+        <span>Failed: {{ error()?.message }}</span>
+        <button (click)="outlet.retry()">Retry Via DI</button>
+      `,
+    })
+    class ErrorFallbackComponent {
+      readonly error = input<Error>();
+      readonly outlet = inject(RouterOutlet);
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'flaky-di',
+            component: FlakyComponent,
+            errorComponent: ErrorFallbackComponent,
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/flaky-di');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain('Failed: Initial Failure');
+
+    shouldFail = false;
+    const button = harness.routeNativeElement?.querySelector('button') as HTMLButtonElement;
+    button.click();
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerText).toContain('Success View');
+  });
+
+  it('bubbles error up to parent template boundary when errorComponent itself fails', async () => {
+    @Component({
+      template: '',
+    })
+    class PrimaryFailingComponent {
+      ngOnInit() {
+        throw new Error('Primary Failed');
+      }
+    }
+
+    @Component({
+      template: '',
+    })
+    class BuggyErrorComponent {
+      constructor() {
+        throw new Error('ErrorComponent Construction Crash');
+      }
+    }
+
+    @Component({
+      imports: [RouterOutlet],
+      template: `
+        @boundary {
+          <router-outlet />
+        } @error (let err) {
+          <div class="outer-catch">Caught Outer: {{ err.message }}</div>
+        }
+      `,
+    })
+    class RootBoundaryComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: 'nested-error-crash',
+            component: PrimaryFailingComponent,
+            errorComponent: BuggyErrorComponent,
+          },
+        ]),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    const fixture = await createRoot(router, RootBoundaryComponent);
+    await router.navigateByUrl('/nested-error-crash');
+    await advance(fixture);
+
+    expect(fixture.nativeElement.innerHTML).toContain(
+      'Caught Outer: ErrorComponent Construction Crash',
+    );
+  });
+
+  it('ensures caught error takes precedence over route params, data, and resolvers named error', async () => {
+    @Component({
+      template: '',
+    })
+    class FailingComponentWithData {
+      ngOnInit() {
+        throw new Error('Real Caught Exception');
+      }
+    }
+
+    @Component({
+      template: `
+        <span class="error-msg">{{ (error() && error().message) || error() }}</span>
+        <span class="id-val">{{ id() }}</span>
+        <span class="title-val">{{ title() }}</span>
+      `,
+    })
+    class DataCollidingErrorComponent {
+      readonly error = input<any>();
+      readonly id = input<string>();
+      readonly title = input<string>();
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'items/:id/:error',
+              component: FailingComponentWithData,
+              errorComponent: DataCollidingErrorComponent,
+              data: {
+                error: 'Static Data Error String',
+                title: 'My Item Title',
+              },
+              resolve: {
+                error: () => 'Resolver Error String',
+              },
+            },
+          ],
+          withComponentInputBinding(),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/items/999/param-error-value?error=query-error-value');
+    await harness.fixture.whenStable();
+
+    // Verify error input received the actual caught Error object
+    const errorEl = harness.routeNativeElement?.querySelector('.error-msg');
+    expect(errorEl?.textContent).toContain('Real Caught Exception');
+    expect(errorEl?.textContent).not.toContain('Static Data Error String');
+    expect(errorEl?.textContent).not.toContain('Resolver Error String');
+    expect(errorEl?.textContent).not.toContain('param-error-value');
+    expect(errorEl?.textContent).not.toContain('query-error-value');
+
+    // Verify other params and data are still bound properly
+    const idEl = harness.routeNativeElement?.querySelector('.id-val');
+    expect(idEl?.textContent).toContain('999');
+
+    const titleEl = harness.routeNativeElement?.querySelector('.title-val');
+    expect(titleEl?.textContent).toContain('My Item Title');
   });
 });
 

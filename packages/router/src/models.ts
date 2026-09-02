@@ -656,6 +656,11 @@ export interface Route {
   component?: Type<any>;
 
   /**
+   * The component to instantiate when an error occurs in this route.
+   */
+  errorComponent?: Type<any>;
+
+  /**
    * An object specifying a lazy-loaded component.
    *
    * @see [Injection context lazy loading](guide/routing/loading-strategies)

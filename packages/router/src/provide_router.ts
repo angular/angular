@@ -32,6 +32,7 @@ import {
   runInInjectionContext,
   Type,
   ɵpublishNonCoreGlobalUtil,
+  ErrorDetails,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -936,6 +937,72 @@ export function withRouterResources(): RouterResourcesFeature {
 }
 
 /**
+ * Options to configure router error boundary behavior when using `withErrorBoundaries`.
+ *
+ * @publicApi
+ */
+export interface ErrorBoundaryOptions {
+  /**
+   * Default component to render when an error occurs in a route that does not specify its own `errorComponent`.
+   */
+  defaultErrorComponent?: Type<any>;
+
+  /**
+   * Optional global callback invoked when any route-level error is caught by the router error boundaries.
+   */
+  onError?: (error: Error, details: ErrorDetails) => void;
+}
+
+export const ROUTER_ERROR_BOUNDARY_OPTIONS = new InjectionToken<ErrorBoundaryOptions>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'Router Error Boundary Options' : '',
+);
+
+/**
+ * A type alias for providers returned by `withErrorBoundaries` for use with `provideRouter`.
+ *
+ * @see {@link withErrorBoundaries}
+ * @see {@link provideRouter}
+ *
+ * @publicApi
+ */
+export type ErrorBoundariesFeature = RouterFeature<RouterFeatureKind.ErrorBoundariesFeature>;
+
+/**
+ * Enables error boundary support in the Router.
+ *
+ * When enabled, errors thrown within routed components (lifecycle hooks, template bindings,
+ * resource loaders, and event handlers) are caught by the `RouterOutlet`. If the route or
+ * feature defines an `errorComponent`, it is rendered in place of the failed component,
+ * receiving `error` and `retry` inputs.
+ *
+ * @usageNotes
+ *
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [
+ *     provideRouter(
+ *       appRoutes,
+ *       withErrorBoundaries({
+ *         defaultErrorComponent: GlobalErrorComponent,
+ *       }),
+ *     ),
+ *   ],
+ * });
+ * ```
+ *
+ * @publicApi
+ */
+export function withErrorBoundaries(options: ErrorBoundaryOptions = {}): ErrorBoundariesFeature {
+  const providers = [
+    {
+      provide: ROUTER_ERROR_BOUNDARY_OPTIONS,
+      useValue: options,
+    },
+  ];
+  return routerFeature(RouterFeatureKind.ErrorBoundariesFeature, providers);
+}
+
+/**
  * A type alias that represents all Router features available for use with `provideRouter`.
  * Features can be enabled by adding special functions to the `provideRouter` call.
  * See documentation for each symbol to find corresponding function name. See also `provideRouter`
@@ -957,7 +1024,8 @@ export type RouterFeatures =
   | ExperimentalAutoCleanupInjectorsFeature
   | RouterHashLocationFeature
   | ExperimentalPlatformNavigationFeature
-  | RouterResourcesFeature;
+  | RouterResourcesFeature
+  | ErrorBoundariesFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -976,4 +1044,6 @@ export const enum RouterFeatureKind {
   ExperimentalAutoCleanupInjectorsFeature,
   ExperimentalPlatformNavigationFeature,
   RouterResourcesFeature,
+  ErrorBoundariesFeature,
 }
+

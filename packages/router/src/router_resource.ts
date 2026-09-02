@@ -216,7 +216,7 @@ export function createResourceOutletBindingEffects(
       () => {
         componentRef.setInput(templateName, resource.value());
       },
-      {injector},
+      {injector: componentRef.injector || injector},
     );
     createdEffects.push(effectRef);
     handledKeys.push(templateName);
