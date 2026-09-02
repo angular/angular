@@ -5,6 +5,7 @@
         #codeTabs
         animationDuration="0ms"
         mat-stretch-tabs="false"
+        [selectedIndex]="selectedTabIndex()"
         (selectedTabChange)="onTabIndexChange($event.index)"
       >
         @for (tab of tabs(); track tab) {
