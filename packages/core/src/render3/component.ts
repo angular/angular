@@ -77,6 +77,8 @@ import {ViewRef as R3ViewRef} from './view_ref';
  * and `element3` into a separate `<ng-content>`.
  *  * `directives` (optional): Directives that should be applied to the component.
  *  * `bindings` (optional): Bindings to apply to the root component.
+ *  * `onError` (optional): A callback that will be invoked when an error occurs during the component's change detection or lifecycle hooks.
+ *                        Note that this will not catch errors thrown during the component's construction.
  * @returns ComponentRef instance that represents a given Component.
  *
  * @see [Host view using `ViewContainerRef.createComponent`](guide/components/programmatic-rendering#host-view-using-viewcontainerrefcreatecomponent)

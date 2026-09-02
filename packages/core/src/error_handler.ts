@@ -20,18 +20,29 @@ import {NgZone} from './zone/ng_zone';
 import {Type} from './interface/type';
 
 /**
- * Error details caught be the error boundary
+ * Error details caught by the error boundary
  *
  * @publicApi 22.2
  */
 export interface ErrorDetails {
-  readonly declarationType: Type<any>;
+  /**
+   * The class of the component or directive where the error occurred.
+   */
+  readonly declarationType: Type<unknown>;
+  /**
+   * The instance of the component or directive where the error occurred.
+   */
   readonly declarationInstance: unknown;
-  readonly caught: boolean;
+  /**
+   * Information about the error boundary that caught the error.
+   */
   readonly boundary?: {
     readonly type: Type<any>;
     readonly reset: () => void;
   };
+  /**
+   * The function that intercepted the error, if any.
+   */
   readonly caughtBy?: Function;
 }
 
@@ -79,7 +90,13 @@ export class ErrorHandler {
     this._console.error('ERROR', error);
   }
 
-  onViewError?(error: any, details: ErrorDetails): void;
+  /**
+   * Callback to handle errors happening during the rendering of a component/directive view.
+   *
+   * @param error The error that was thrown.
+   * @param details Additional information about the error.
+   */
+  onViewError?(error: Error, details: ErrorDetails): void;
 }
 
 export function encapsulateBoundaryError(error: unknown): Error {

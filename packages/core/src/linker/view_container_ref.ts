@@ -183,6 +183,8 @@ export abstract class ViewContainerRef {
    *  * index: The 0-based index at which to insert the new view into this container.
    *           If not specified, appends the new view as the last entry.
    *  * injector: Injector to be used within the embedded view.
+   *  * onError: A callback that will be invoked when an error occurs during the view's change detection or lifecycle hooks.
+   *             Note that this will not catch errors thrown during the view's creation.
    *
    * @returns The `ViewRef` instance for the newly created view.
    */
@@ -192,7 +194,7 @@ export abstract class ViewContainerRef {
     options?: {
       index?: number;
       injector?: Injector;
-      onError?: (error: Error, context: ErrorDetails) => void;
+      onError?: (error: Error, details: ErrorDetails) => void;
     },
   ): EmbeddedViewRef<C>;
 
@@ -232,6 +234,8 @@ export abstract class ViewContainerRef {
    *                      [`<ng-content>`](api/core/ng-content) of the new component instance.
    *  * directives: Directives that should be applied to the component.
    *  * bindings: Bindings that should be applied to the component.
+   *  * onError: A callback that will be invoked when an error occurs during the component's change detection or lifecycle hooks.
+   *             Note that this will not catch errors thrown during the component's construction.
    *
    * @returns The new `ComponentRef` which contains the component instance and the host view.
    */
