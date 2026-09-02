@@ -63,17 +63,27 @@ export interface ViewTransitionInfo {
 
 /**
  * A helper function for using browser view transitions. This function skips the call to
- * `startViewTransition` if the browser does not support it.
+ * `startViewTransition` if the browser does not support it or has already provided a transition.
  *
- * @returns A Promise that resolves when the view transition callback begins.
+ * @returns A Promise that resolves when the view transition callback begins, or `undefined` when
+ * the user agent has already provided a transition and the navigation should continue immediately.
  */
 export function createViewTransition(
   injector: Injector,
   from: ActivatedRouteSnapshot,
   to: ActivatedRouteSnapshot,
-): Promise<void> {
+  hasUAVisualTransition?: boolean,
+): Promise<void> | undefined {
   const transitionOptions = injector.get(VIEW_TRANSITION_OPTIONS);
   const document = injector.get(DOCUMENT);
+
+  if (hasUAVisualTransition) {
+    transitionOptions.skipNextTransition = false;
+    // The browser has already started presenting the navigation. Continuing synchronously gives it
+    // the earliest opportunity to display the post-navigation DOM.
+    return;
+  }
+
   if (!document.startViewTransition || transitionOptions.skipNextTransition) {
     transitionOptions.skipNextTransition = false;
     // The timing of `startViewTransition` is closer to a macrotask. It won't be called

@@ -18,6 +18,8 @@ export interface PopStateEvent {
   state?: any;
   type?: string;
   url?: string;
+  /** Whether the user agent performed a visual transition for this navigation. */
+  hasUAVisualTransition?: boolean;
 }
 
 /**
@@ -75,12 +77,16 @@ export class Location implements OnDestroy {
     // https://developer.mozilla.org/en-US/docs/Web/API/URL/URL#parameters
     this._basePath = _stripOrigin(stripTrailingSlash(_stripIndexHtml(baseHref)));
     this._locationStrategy.onPopState((ev) => {
-      this._subject.next({
+      const popStateEvent: PopStateEvent = {
         'url': this.path(true),
         'pop': true,
         'state': ev.state,
         'type': ev.type,
-      });
+      };
+      if (ev.hasUAVisualTransition) {
+        popStateEvent.hasUAVisualTransition = true;
+      }
+      this._subject.next(popStateEvent);
     });
   }
 
