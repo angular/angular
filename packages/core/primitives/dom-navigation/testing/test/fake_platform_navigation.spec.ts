@@ -7,7 +7,10 @@
  */
 
 import {
-  ExperimentalNavigationInterceptOptions,
+  NavigationInterceptOptions,
+  NavigationPrecommitController,
+} from '../../src/navigation_types';
+import {
   FakeNavigateEvent,
   FakeNavigation,
   FakeNavigationCurrentEntryChangeEvent,
@@ -21,7 +24,7 @@ interface Locals {
   navigateEvents: FakeNavigateEvent[];
   navigationCurrentEntryChangeEvents: FakeNavigationCurrentEntryChangeEvent[];
   popStateEvents: PopStateEvent[];
-  pendingInterceptOptions: ExperimentalNavigationInterceptOptions[];
+  pendingInterceptOptions: NavigationInterceptOptions[];
   nextNavigateEvent: () => Promise<FakeNavigateEvent>;
   setExtraNavigateCallback: (callback: (event: FakeNavigateEvent) => void) => void;
 }
@@ -53,7 +56,7 @@ describe('navigation', () => {
     });
     const navigationCurrentEntryChangeEvents: FakeNavigationCurrentEntryChangeEvent[] = [];
     const popStateEvents: PopStateEvent[] = [];
-    const pendingInterceptOptions: ExperimentalNavigationInterceptOptions[] = [];
+    const pendingInterceptOptions: NavigationInterceptOptions[] = [];
     let extraNavigateCallback: ((event: FakeNavigateEvent) => void) | undefined = undefined;
 
     navigation.addEventListener('navigate', (event: Event) => {
@@ -2184,6 +2187,235 @@ describe('navigation', () => {
       await locals.navigation.back().finished;
       // Check that a navigate event occurred (it should, even if redirect fails)
       expect(locals.navigateEvents.length).toBe(1);
+    });
+  });
+
+  describe('addHandler', () => {
+    it('executes post-commit handlers registered during precommit', async () => {
+      const order: string[] = [];
+      locals.pendingInterceptOptions.push({
+        precommitHandler: (controller) => {
+          order.push('precommit');
+          controller.addHandler(() => {
+            order.push('postcommit-from-precommit');
+          });
+        },
+        handler: () => {
+          order.push('postcommit');
+        },
+      });
+
+      await locals.navigation.navigate('/test').finished;
+      expect(order).toEqual(['precommit', 'postcommit', 'postcommit-from-precommit']);
+    });
+
+    it('waits for async handlers added via addHandler before finished resolves', async () => {
+      let resolveHandler!: () => void;
+      const handlerPromise = new Promise<void>((resolve) => {
+        resolveHandler = resolve;
+      });
+      locals.pendingInterceptOptions.push({
+        precommitHandler: (controller) => {
+          controller.addHandler(() => handlerPromise);
+        },
+      });
+
+      const {finished} = locals.navigation.navigate('/test');
+      await expectAsync(finished).toBePending();
+      resolveHandler();
+      await expectAsync(finished).toBeResolved();
+    });
+
+    it('throws InvalidStateError when addHandler is called outside intercepted state', async () => {
+      let controller!: NavigationPrecommitController;
+      locals.pendingInterceptOptions.push({
+        precommitHandler: (c) => {
+          controller = c;
+        },
+      });
+
+      await locals.navigation.navigate('/test').finished;
+      expect(() => controller.addHandler(() => {})).toThrowMatching(
+        (e: any) => e.name === 'InvalidStateError',
+      );
+    });
+  });
+
+  describe('updateCurrentEntry', () => {
+    it('updates currentEntry state and dispatches currententrychange with null navigationType', () => {
+      const initialEntry = locals.navigation.currentEntry;
+      expect(initialEntry.getState()).toBeUndefined();
+
+      locals.navigation.updateCurrentEntry({state: {updated: 123}});
+
+      expect(locals.navigation.currentEntry).toBe(initialEntry);
+      expect(locals.navigation.currentEntry.getState()).toEqual({updated: 123});
+      expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
+      expect(locals.navigationCurrentEntryChangeEvents[0].from).toBe(initialEntry);
+      expect(locals.navigationCurrentEntryChangeEvents[0].navigationType).toBeNull();
+    });
+
+    it('clones state so modifications do not affect entry state', () => {
+      const state = {count: 1};
+      locals.navigation.updateCurrentEntry({state});
+      state.count = 2;
+      expect(locals.navigation.currentEntry.getState()).toEqual({count: 1});
+
+      const returnedState = locals.navigation.currentEntry.getState() as {count: number};
+      returnedState.count = 3;
+      expect(locals.navigation.currentEntry.getState()).toEqual({count: 1});
+    });
+  });
+
+  describe('reload', () => {
+    it('reloads the current URL and dispatches navigate event with reload type', async () => {
+      const initialEntry = locals.navigation.currentEntry;
+      const result = locals.navigation.reload({info: 'reloadInfo'});
+
+      expect(locals.navigateEvents.length).toBe(1);
+      expect(locals.navigateEvents[0].navigationType).toBe('reload');
+      expect(locals.navigateEvents[0].info).toBe('reloadInfo');
+      expect(locals.navigateEvents[0].destination.url).toBe(initialEntry.url!);
+
+      const reloadedEntry = await result.finished;
+      expect(reloadedEntry.url).toBe(initialEntry.url!);
+      expect(reloadedEntry.key).toBe(initialEntry.key);
+      expect(reloadedEntry.id).not.toBe(initialEntry.id);
+    });
+
+    it('allows intercepting reload', async () => {
+      let intercepted = false;
+      locals.pendingInterceptOptions.push({
+        handler: () => {
+          intercepted = true;
+        },
+      });
+
+      await locals.navigation.reload().finished;
+      expect(intercepted).toBeTrue();
+      expect(locals.navigateEvents[0].navigationType).toBe('reload');
+    });
+
+    it('reloads with custom state when provided', async () => {
+      const result = locals.navigation.reload({state: {reloaded: true}});
+      const entry = await result.finished;
+      expect(entry.getState()).toEqual({reloaded: true});
+    });
+
+    it('preserves existing state when state option is omitted', async () => {
+      locals.navigation.updateCurrentEntry({state: {preserved: 'yes'}});
+      const result = locals.navigation.reload();
+      const entry = await result.finished;
+      expect(entry.getState()).toEqual({preserved: 'yes'});
+    });
+
+    it('disposes the previous entry on reload', async () => {
+      const initialEntry = locals.navigation.currentEntry;
+      let disposed = false;
+      initialEntry.ondispose = () => {
+        disposed = true;
+      };
+
+      await locals.navigation.reload().finished;
+      expect(disposed).toBeTrue();
+    });
+  });
+
+  describe('NavigateEvent properties', () => {
+    it('has default hasUAVisualTransition and sourceElement values', async () => {
+      await locals.navigation.navigate('/page').finished;
+      const event = locals.navigateEvents[0];
+      expect(event.hasUAVisualTransition).toBeFalsy();
+      expect(event.sourceElement).toBeNull();
+    });
+  });
+
+  describe('NavigationHistoryEntry dispose event', () => {
+    it('fires "dispose" event and triggers ondispose when entry is replaced', async () => {
+      const firstEntry = locals.navigation.currentEntry;
+      let disposeEventFired = false;
+      let ondisposeFired = false;
+
+      firstEntry.addEventListener('dispose', () => {
+        disposeEventFired = true;
+      });
+      firstEntry.ondispose = () => {
+        ondisposeFired = true;
+      };
+
+      await locals.navigation.navigate('/replaced', {history: 'replace'}).finished;
+
+      expect(disposeEventFired).toBeTrue();
+      expect(ondisposeFired).toBeTrue();
+    });
+
+    it('allows removing ondispose handler by setting it to null', async () => {
+      const firstEntry = locals.navigation.currentEntry;
+      let ondisposeFired = false;
+      firstEntry.ondispose = () => {
+        ondisposeFired = true;
+      };
+      firstEntry.ondispose = null;
+
+      await locals.navigation.navigate('/replaced', {history: 'replace'}).finished;
+      expect(ondisposeFired).toBeFalse();
+    });
+  });
+
+  describe('Navigation event handlers (on*)', () => {
+    it('handles onnavigate, onnavigatesuccess, and oncurrententrychange properties', async () => {
+      let onNavigateCalled = false;
+      let onNavigateSuccessCalled = false;
+      let onCurrentEntryChangeCalled = false;
+
+      locals.navigation.onnavigate = () => {
+        onNavigateCalled = true;
+      };
+      locals.navigation.onnavigatesuccess = () => {
+        onNavigateSuccessCalled = true;
+      };
+      locals.navigation.oncurrententrychange = () => {
+        onCurrentEntryChangeCalled = true;
+      };
+
+      await locals.navigation.navigate('/test').finished;
+
+      expect(onNavigateCalled).toBeTrue();
+      expect(onNavigateSuccessCalled).toBeTrue();
+      expect(onCurrentEntryChangeCalled).toBeTrue();
+    });
+
+    it('handles onnavigateerror property when navigation fails', async () => {
+      let errorEvent: ErrorEvent | undefined;
+      const expectedError = new Error('handler failure');
+
+      locals.navigation.onnavigate = (event) => {
+        event.intercept({
+          handler: () => {
+            throw expectedError;
+          },
+        });
+      };
+      locals.navigation.onnavigateerror = (event) => {
+        errorEvent = event;
+      };
+
+      await expectAsync(locals.navigation.navigate('/test').finished).toBeRejectedWith(
+        expectedError,
+      );
+      expect(errorEvent).toBeDefined();
+      expect(errorEvent?.error).toBe(expectedError);
+    });
+
+    it('removes event listener when handler property is set to null', async () => {
+      let onNavigateCalled = false;
+      locals.navigation.onnavigate = () => {
+        onNavigateCalled = true;
+      };
+      locals.navigation.onnavigate = null;
+
+      await locals.navigation.navigate('/test').finished;
+      expect(onNavigateCalled).toBeFalse();
     });
   });
 });
