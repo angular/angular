@@ -16,9 +16,12 @@ copy_to_bin(
             "i18n/**",  # @angular/localize/init not available in docs app
             "elements/**",  # @angular/elements not available in docs app
             "service-worker-getting-started/**",  # @angular/service-worker not available in docs app
-            # TODO: The following examples have broken code that does not compile, fix them and remove them from this list.
-            "reactive-forms/**",
-            "form-validation/**",
+            # Partial snapshots quoted by the guides. Each shares the final template of
+            # the component it precedes, which references members it does not have yet.
+            "form-validation/src/app/reactive/actor-form-reactive.component.1.ts",
+            "form-validation/src/app/reactive/actor-form-reactive.component.2.ts",
+            "reactive-forms/src/app/profile-editor/profile-editor.component.1.ts",
+            "reactive-forms/src/app/profile-editor/profile-editor.component.2.ts",
         ],
     ),
     visibility = ["//visibility:public"],
