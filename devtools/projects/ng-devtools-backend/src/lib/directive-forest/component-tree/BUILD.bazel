@@ -35,6 +35,7 @@ ts_test_library(
         ":get-roots",
         "//:node_modules/@angular/core",
         "//:node_modules/jasmine",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:core-enums",
     ],
 )
 
