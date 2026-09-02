@@ -65,7 +65,7 @@ Traditional data resolvers execute sequentially from parent routes to child rout
 
 In contrast, all route resources across the entire matched route hierarchy execute concurrently during navigation. In the same scenario, navigation completes in 300ms (the time of the slowest resource), eliminating network waterfalls.
 
-TIP: If a resource depends on data from another resource, you can compose the requests within a single resource's loader function, or reactively derive the dependent resource's `params` from the other resource's signal.
+TIP: If a resource depends on data from another resource, you can compose the requests within a single resource's loader function, or chain dependent resources using [`chain()`](/guide/signals/resource#chaining-resources).
 
 ### ResourceContext
 

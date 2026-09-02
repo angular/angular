@@ -862,8 +862,10 @@ describe('Router resources integration', () => {
 
     describe('dependent resources', () => {
       it('should support resources depending on each other on the same route', async () => {
-        const {promise: userPromise, resolve: resolveUser} = promiseWithResolvers<any>();
-        const {promise: teamPromise, resolve: resolveTeam} = promiseWithResolvers<any>();
+        const {promise: userPromise, resolve: resolveUser} = promiseWithResolvers<{
+          id: string;
+          teamId: string;
+        }>();
 
         const {harness, router} = await setupRouter([
           {
@@ -874,13 +876,8 @@ describe('Router resources integration', () => {
                 loader: () => userPromise,
               });
               const team = resource({
-                params: () => user.value()?.teamId,
-                loader: async ({params: teamId}) => {
-                  if (!teamId) {
-                    return new Promise(() => {});
-                  }
-                  return teamPromise;
-                },
+                params: ({chain}) => chain(user)?.teamId,
+                loader: async ({params: teamId}) => ({id: teamId, name: 'Angular Team'}),
               });
               return {user, team};
             },
@@ -890,18 +887,11 @@ describe('Router resources integration', () => {
         const nav = harness.navigateByUrl('/user-team');
         await timeout();
 
-        // Navigation is blocked because both user and team are loading
+        // Navigation is blocked because user is loading and team depends on user
         expect(router.url).not.toBe('/user-team');
 
-        // Resolve user first
+        // Resolve user
         resolveUser({id: 'u1', teamId: 't42'});
-        await timeout();
-
-        // Navigation should still be blocked waiting for team
-        expect(router.url).not.toBe('/user-team');
-
-        // Resolve team
-        resolveTeam({id: 't42', name: 'Angular Team'});
         await nav;
         await harness.fixture.whenStable();
 
