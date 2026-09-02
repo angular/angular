@@ -124,6 +124,7 @@ export class ErrorBoundaryWrappedError extends Error {
         : String(error),
       {cause: error},
     );
+    this.name = 'ErrorBoundaryWrappedError';
   }
 }
 
