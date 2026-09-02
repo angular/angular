@@ -154,7 +154,9 @@ describe('withPlatformNavigation feature', () => {
         {once: true},
       );
 
-      navigation.navigate('/blocked');
+      const navRes = navigation.navigate('/blocked');
+      navRes.committed.catch(() => {});
+      navRes.finished.catch(() => {});
       await timeout();
       expect(navigation.transition).not.toBeNull();
       expect(router.currentNavigation()).not.toBeNull();
@@ -197,6 +199,40 @@ describe('withPlatformNavigation feature', () => {
       }
       await navPromise;
       expect(navigateEvents.length).toBe(1);
+    });
+
+    it('handles redirects during traversal navigations by committing and replacing', async () => {
+      router.resetConfig([
+        {path: 'first', children: []},
+        {path: 'second', children: []},
+        {path: 'redirected', children: []},
+        {path: '**', children: []},
+      ]);
+
+      await router.navigateByUrl('/first');
+      await timeout();
+      await router.navigateByUrl('/second');
+      await timeout();
+
+      expect(navigation.entries().length).toBe(3);
+      expect(navigation.currentEntry!.url).toContain('/second');
+
+      router.resetConfig([
+        {path: 'first', canActivate: [() => inject(Router).parseUrl('/redirected')], children: []},
+        {path: 'second', children: []},
+        {path: 'redirected', children: []},
+        {path: '**', children: []},
+      ]);
+
+      const backRes = navigation.back();
+      backRes.committed.catch(() => {});
+      backRes.finished.catch(() => {});
+      await timeout();
+      await navigation.transition?.finished;
+
+      expect(router.url).toBe('/redirected');
+      expect(navigation.currentEntry!.url).toContain('/redirected');
+      expect(navigation.currentEntry!.index).toBe(1);
     });
   });
 
