@@ -20,9 +20,10 @@ import {
   TeamCmp,
   advance,
   createRoot,
+  provideTestRouter,
 } from './integration_helpers';
 
-export async function routerLinkActiveIntegrationSuite() {
+export function routerLinkActiveIntegrationSuite(browserAPI: 'history' | 'navigation') {
   describe('routerLinkActive', () => {
     it('should set the class when the link is active (a tag)', async () => {
       const router: Router = TestBed.inject(Router);
@@ -209,7 +210,7 @@ export async function routerLinkActiveIntegrationSuite() {
       class SimpleComponent {}
 
       TestBed.configureTestingModule({
-        providers: [provideRouter([{path: '', component: SimpleComponent}])],
+        providers: [provideTestRouter(browserAPI, [{path: '', component: SimpleComponent}])],
       });
 
       const fixture = await createRoot(TestBed.inject(Router), LinkComponent);

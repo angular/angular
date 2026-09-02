@@ -28,7 +28,8 @@ import {
 } from '../../index';
 
 import {useAutoTick} from '@angular/private/testing';
-import {provideRouter, withExperimentalPlatformNavigation} from '../../src/provide_router';
+import {providePlatformNavigationRouter} from '../../src/provide_platform_navigation_router';
+import {provideRouter} from '../../src/provide_router';
 import {RouterTestingHarness} from '../../testing';
 import {duplicateInFlightNavigationsIntegrationSuite} from './duplicate_in_flight_navigations.spec';
 import {eagerUrlUpdateStrategyIntegrationSuite} from './eager_url_update_strategy.spec';
@@ -77,12 +78,9 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         imports: [...ROUTER_DIRECTIVES, TestModule],
         providers: [
           {provide: Console, useValue: noopConsole},
-          provideRouter(
-            [{path: 'simple', component: SimpleCmp}],
-            browserAPI === 'navigation'
-              ? withExperimentalPlatformNavigation()
-              : (makeEnvironmentProviders([]) as any),
-          ),
+          browserAPI === 'navigation'
+            ? providePlatformNavigationRouter([{path: 'simple', component: SimpleCmp}])
+            : provideRouter([{path: 'simple', component: SimpleCmp}]),
         ],
       });
     });
@@ -934,16 +932,16 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     });
 
     navigationErrorsIntegrationSuite(browserAPI);
-    eagerUrlUpdateStrategyIntegrationSuite();
+    eagerUrlUpdateStrategyIntegrationSuite(browserAPI);
     duplicateInFlightNavigationsIntegrationSuite(browserAPI);
     navigationIntegrationTestSuite(browserAPI);
     routeDataIntegrationSuite();
     routerLinkIntegrationSpec();
     redirectsIntegrationSuite(browserAPI);
-    guardsIntegrationSuite();
+    guardsIntegrationSuite(browserAPI);
     routerEventsIntegrationSuite();
-    routerLinkActiveIntegrationSuite();
+    routerLinkActiveIntegrationSuite(browserAPI);
     lazyLoadingIntegrationSuite(browserAPI);
-    routeReuseIntegrationSuite();
+    routeReuseIntegrationSuite(browserAPI);
   });
 }

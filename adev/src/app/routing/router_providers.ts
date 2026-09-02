@@ -9,6 +9,7 @@
 import {inject, provideEnvironmentInitializer} from '@angular/core';
 import {
   provideRouter,
+  providePlatformNavigationRouter,
   withInMemoryScrolling,
   Router,
   withViewTransitions,
@@ -19,7 +20,6 @@ import {
   RedirectCommand,
   withNavigationErrorHandler,
   withRouterConfig,
-  withExperimentalPlatformNavigation,
   isActive,
 } from '@angular/router';
 import {routes} from './routes';
@@ -40,7 +40,7 @@ const isPlatformNavigationSupported =
   typeof window !== 'undefined' && (window as {navigation?: unknown}).navigation !== undefined;
 
 export const routerProviders = [
-  provideRouter(
+  (isPlatformNavigationSupported ? providePlatformNavigationRouter : provideRouter)(
     routes,
     withInMemoryScrolling(),
     withRouterConfig({canceledNavigationResolution: 'computed'}),
@@ -69,7 +69,6 @@ export const routerProviders = [
       },
     }),
     withComponentInputBinding(),
-    ...(isPlatformNavigationSupported ? [withExperimentalPlatformNavigation()] : []),
   ),
   {
     provide: RouteReuseStrategy,

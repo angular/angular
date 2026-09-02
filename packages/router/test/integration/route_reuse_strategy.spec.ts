@@ -30,9 +30,10 @@ import {
   ROUTER_DIRECTIVES,
   createRoot,
   advance,
+  provideTestRouter,
 } from './integration_helpers';
 
-export async function routeReuseIntegrationSuite() {
+export function routeReuseIntegrationSuite(browserAPI: 'history' | 'navigation') {
   describe('Custom Route Reuse Strategy', () => {
     class AttachDetachReuseStrategy implements RouteReuseStrategy {
       stored: {[k: string]: DetachedRouteHandle} = {};
@@ -90,7 +91,7 @@ export async function routeReuseIntegrationSuite() {
       TestBed.configureTestingModule({
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
-          provideRouter([]),
+          provideTestRouter(browserAPI, []),
         ],
       });
 
@@ -262,7 +263,7 @@ export async function routeReuseIntegrationSuite() {
 
       TestBed.configureTestingModule({
         providers: [
-          provideRouter([
+          provideTestRouter(browserAPI, [
             {path: 'a', outlet: 'toolpanel', component: Tool1Component},
             {path: 'b', outlet: 'toolpanel', component: Tool2Component},
           ]),
@@ -312,7 +313,7 @@ export async function routeReuseIntegrationSuite() {
       TestBed.configureTestingModule({
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
-          provideRouter([
+          provideTestRouter(browserAPI, [
             {path: 'a', component: SimpleCmp},
             {path: 'b', component: BlankCmp},
           ]),
@@ -380,7 +381,7 @@ export async function routeReuseIntegrationSuite() {
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
           {provide: CREATED_COMPS, useValue: []},
-          provideRouter([
+          provideTestRouter(browserAPI, [
             {path: 'a', component: Parent, children: [{path: 'b', component: Child}]},
             {path: 'c', component: SimpleCmp},
           ]),
@@ -636,7 +637,7 @@ export async function routeReuseIntegrationSuite() {
       TestBed.configureTestingModule({
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
-          provideRouter([
+          provideTestRouter(browserAPI, [
             {path: 'a', loadChildren: () => LoadedModule},
             {path: 'b', component: ComponentB},
           ]),

@@ -10,10 +10,16 @@ import {Location, PlatformNavigation} from '@angular/common';
 import {Component, Injectable, makeEnvironmentProviders, NgModule, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
-import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '../index';
 import {EMPTY, of} from 'rxjs';
-
-import {provideRouter, withExperimentalPlatformNavigation} from '../src/provide_router';
+import {
+  providePlatformNavigationRouter,
+  provideRouter,
+  Router,
+  RouterModule,
+  RouterOutlet,
+  UrlTree,
+  withRouterConfig,
+} from '../index';
 import {isUrlTree} from '../src/url_tree';
 import {useAutoTick, timeout} from '@angular/private/testing';
 import {afterNextNavigation} from '../src/utils/navigations';
@@ -82,55 +88,53 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     let fixture: ComponentFixture<unknown>;
 
     async function createNavigationHistory(urlUpdateStrategy: 'eager' | 'deferred' = 'deferred') {
+      const routes = [
+        {
+          path: 'first',
+          component: SimpleCmp,
+          canDeactivate: [MyCanDeactivateGuard],
+          canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
+          resolve: {x: MyResolve},
+        },
+        {
+          path: 'second',
+          component: SimpleCmp,
+          canDeactivate: [MyCanDeactivateGuard],
+          canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
+          resolve: {x: MyResolve},
+        },
+        {
+          path: 'third',
+          component: SimpleCmp,
+          canDeactivate: [MyCanDeactivateGuard],
+          canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
+          resolve: {x: MyResolve},
+        },
+        {
+          path: 'unguarded',
+          component: SimpleCmp,
+        },
+        {
+          path: 'throwing',
+          component: ThrowingCmp,
+        },
+        {
+          path: 'loaded',
+          loadChildren: () => of(ModuleWithSimpleCmpAsRoute),
+          canLoad: [() => false],
+        },
+      ];
+      const routerConfig = withRouterConfig({
+        urlUpdateStrategy,
+        canceledNavigationResolution: 'computed',
+        resolveNavigationPromiseOnError: true,
+      });
+      const routerProviders =
+        browserAPI === 'navigation'
+          ? providePlatformNavigationRouter(routes, routerConfig)
+          : provideRouter(routes, routerConfig);
       TestBed.configureTestingModule({
-        providers: [
-          provideRouter(
-            [
-              {
-                path: 'first',
-                component: SimpleCmp,
-                canDeactivate: [MyCanDeactivateGuard],
-                canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
-                resolve: {x: MyResolve},
-              },
-              {
-                path: 'second',
-                component: SimpleCmp,
-                canDeactivate: [MyCanDeactivateGuard],
-                canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
-                resolve: {x: MyResolve},
-              },
-              {
-                path: 'third',
-                component: SimpleCmp,
-                canDeactivate: [MyCanDeactivateGuard],
-                canActivate: [MyCanActivateGuard, ThrowingCanActivateGuard],
-                resolve: {x: MyResolve},
-              },
-              {
-                path: 'unguarded',
-                component: SimpleCmp,
-              },
-              {
-                path: 'throwing',
-                component: ThrowingCmp,
-              },
-              {
-                path: 'loaded',
-                loadChildren: () => of(ModuleWithSimpleCmpAsRoute),
-                canLoad: [() => false],
-              },
-            ],
-            withRouterConfig({
-              urlUpdateStrategy,
-              canceledNavigationResolution: 'computed',
-              resolveNavigationPromiseOnError: true,
-            }),
-            browserAPI === 'navigation'
-              ? withExperimentalPlatformNavigation()
-              : (makeEnvironmentProviders([]) as any),
-          ),
-        ],
+        providers: [routerProviders],
       });
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
