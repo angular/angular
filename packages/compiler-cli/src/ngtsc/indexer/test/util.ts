@@ -63,6 +63,10 @@ export function getBoundTemplate(
     inputs?: Record<string, string>;
     outputs?: Record<string, string>;
   }> = [],
+  pipes: Array<{
+    name: string;
+    declaration: ClassDeclaration;
+  }> = [],
 ): AbstractBoundTemplate<DeclarationNode> {
   const componentsMeta = components.map(({selector, declaration, inputs = {}, outputs = {}}) => ({
     ref: new Reference(declaration),
@@ -129,6 +133,10 @@ export function getBoundTemplate(
     },
     getTemplateAst() {
       return boundTemplate.target.template;
+    },
+    getPipe(name) {
+      const pipe = pipes.find((p) => p.name === name);
+      return pipe ? {ref: {node: pipe.declaration}} : null;
     },
   };
   return abstractBoundTemplate;
