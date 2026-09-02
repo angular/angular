@@ -100,11 +100,74 @@ runInEachFileSystem(() => {
       `,
       );
 
-      // Wait, instanceof uses component scope resolution or typescript scope?
-      // In @error context, instanceof check condition inside of `if` clause uses standard TS AST!
-      // So condition `err instanceof CustomError` IS evaluated in the TCB!
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
+    });
+
+    it('should report an error if there are multiple unconditional @error blocks', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: \`
+            @boundary {
+              <div>Normal</div>
+            } @error {
+              <div>Fallback 1</div>
+            } @error {
+              <div>Fallback 2</div>
+            }
+          \`,
+        })
+        export class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      // It will report two errors: one because the first block isn't the last, and one for the duplicate
+      expect(diags.length).toBe(2);
+      expect(diags[0].messageText).toContain(
+        'Unconditional @error block must be the last @error block in the boundary chain',
+      );
+      expect(diags[1].messageText).toContain(
+        '@boundary block can only have one unconditional @error block',
+      );
+    });
+
+    it('should report an error if an unconditional @error block is not the last block', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        class CustomError extends Error {}
+
+        @Component({
+          selector: 'test-cmp',
+          template: \`
+            @boundary {
+              <div>Normal</div>
+            } @error {
+              <div>Fallback</div>
+            } @error (let err; when err instanceof CustomError) {
+              <div>Custom Error</div>
+            }
+          \`,
+        })
+        export class TestCmp {
+          CustomError = CustomError;
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(
+        'Unconditional @error block must be the last @error block in the boundary chain',
+      );
     });
 
     it('should error when accessing error alias outside of error block', () => {

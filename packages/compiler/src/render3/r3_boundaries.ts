@@ -35,98 +35,78 @@ export function createBoundaryBlock(
   const errors: ParseError[] = [];
   const errorBlocks: t.BoundaryErrorBlock[] = [];
 
+  if (ast.parameters.length > 0) {
+    errors.push(new ParseError(ast.sourceSpan, '@boundary block cannot have parameters'));
+  }
+
   for (let blockIndex = 0; blockIndex < connectedBlocks.length; blockIndex++) {
     const block = connectedBlocks[blockIndex];
-    if (block.name === 'error') {
-      const emptySpan = new ParseSourceSpan(block.startSourceSpan.end, block.startSourceSpan.end);
-      const contextVariables: t.Variable[] = [
-        new t.Variable('$error', '$error', emptySpan, emptySpan, emptySpan),
-        new t.Variable('$retry', '$retry', emptySpan, emptySpan, emptySpan),
-      ];
-      let expression: AST | null = null;
+    if (block.name !== 'error') {
+      errors.push(
+        new ParseError(block.sourceSpan, `Unrecognized @boundary connected block @${block.name}`),
+      );
+      continue;
+    }
+    const emptySpan = new ParseSourceSpan(block.startSourceSpan.end, block.startSourceSpan.end);
+    const contextVariables: t.Variable[] = [
+      new t.Variable('$error', '$error', emptySpan, emptySpan, emptySpan),
+      new t.Variable('$retry', '$retry', emptySpan, emptySpan, emptySpan),
+    ];
+    let expression: AST | null = null;
 
-      for (const param of block.parameters) {
-        const letMatch = param.expression.match(LET_PATTERN);
-        if (letMatch) {
-          const variablesExpression = letMatch[2];
-          const parts = variablesExpression.split(',');
-          let currentOffset = 0;
+    for (const param of block.parameters) {
+      const letMatch = param.expression.match(LET_PATTERN);
+      if (letMatch) {
+        const variablesExpression = letMatch[2];
+        const parts = variablesExpression.split(',');
+        let currentOffset = 0;
 
-          for (const part of parts) {
-            const partIndex = variablesExpression.indexOf(part, currentOffset);
-            const partAbsoluteOffset = letMatch[1].length + partIndex;
+        for (const part of parts) {
+          const partIndex = variablesExpression.indexOf(part, currentOffset);
+          const partAbsoluteOffset = letMatch[1].length + partIndex;
 
-            const expressionParts = part.split('=');
-            const nameRaw = expressionParts[0];
-            const name = nameRaw.trim();
-            const nameIndex = nameRaw.indexOf(name);
-            const nameAbsoluteOffset = partAbsoluteOffset + nameIndex;
+          const expressionParts = part.split('=');
+          const nameRaw = expressionParts[0];
+          const name = nameRaw.trim();
+          const nameIndex = nameRaw.indexOf(name);
+          const nameAbsoluteOffset = partAbsoluteOffset + nameIndex;
 
-            const keySpan = new ParseSourceSpan(
-              param.sourceSpan.start.moveBy(nameAbsoluteOffset),
-              param.sourceSpan.start.moveBy(nameAbsoluteOffset + name.length),
+          const keySpan = new ParseSourceSpan(
+            param.sourceSpan.start.moveBy(nameAbsoluteOffset),
+            param.sourceSpan.start.moveBy(nameAbsoluteOffset + name.length),
+          );
+
+          let valueSpan: ParseSourceSpan | undefined = undefined;
+          const variableName = expressionParts.length === 2 ? expressionParts[1].trim() : '$error';
+
+          if (expressionParts.length === 2) {
+            const valueRaw = expressionParts[1];
+            const valueIndex = valueRaw.indexOf(variableName);
+            const valueAbsoluteOffset =
+              partAbsoluteOffset + expressionParts[0].length + 1 + valueIndex;
+            valueSpan = new ParseSourceSpan(
+              param.sourceSpan.start.moveBy(valueAbsoluteOffset),
+              param.sourceSpan.start.moveBy(valueAbsoluteOffset + variableName.length),
             );
-
-            let valueSpan: ParseSourceSpan | undefined = undefined;
-            const variableName =
-              expressionParts.length === 2 ? expressionParts[1].trim() : '$error';
-
-            if (expressionParts.length === 2) {
-              const valueRaw = expressionParts[1];
-              const valueIndex = valueRaw.indexOf(variableName);
-              const valueAbsoluteOffset =
-                partAbsoluteOffset + expressionParts[0].length + 1 + valueIndex;
-              valueSpan = new ParseSourceSpan(
-                param.sourceSpan.start.moveBy(valueAbsoluteOffset),
-                param.sourceSpan.start.moveBy(valueAbsoluteOffset + variableName.length),
-              );
-            }
-
-            const sourceSpan = new ParseSourceSpan(keySpan.start, valueSpan?.end ?? keySpan.end);
-
-            if (name.length === 0) {
-              errors.push(
-                new ParseError(
-                  param.sourceSpan,
-                  `Invalid @error block "let" parameter. Variable name cannot be empty`,
-                ),
-              );
-            } else if (!IDENTIFIER_PATTERN.test(name)) {
-              errors.push(
-                new ParseError(
-                  param.sourceSpan,
-                  `"let" parameter must be a valid JavaScript identifier`,
-                ),
-              );
-            } else if (variableName !== '$error' && variableName !== '$retry') {
-              errors.push(
-                new ParseError(
-                  param.sourceSpan,
-                  `Unknown context variable "${variableName}". Only "$error" and "$retry" are allowed`,
-                ),
-              );
-            } else if (contextVariables.some((v) => v.name === name)) {
-              errors.push(
-                new ParseError(param.sourceSpan, `Duplicate "let" parameter variable "${name}"`),
-              );
-            } else {
-              contextVariables.push(
-                new t.Variable(name, variableName, sourceSpan, keySpan, valueSpan),
-              );
-            }
-            currentOffset = partIndex + part.length + 1;
           }
-          continue;
-        }
 
-        const aliasMatch = param.expression.match(
-          /^([$A-Z_][0-9A-Z_$]*)\s*=\s*([$A-Z_][0-9A-Z_$]*)$/i,
-        );
-        if (aliasMatch) {
-          const name = aliasMatch[1];
-          const variableName = aliasMatch[2];
+          const sourceSpan = new ParseSourceSpan(keySpan.start, valueSpan?.end ?? keySpan.end);
 
-          if (variableName !== '$error' && variableName !== '$retry') {
+          if (name.length === 0) {
+            errors.push(
+              new ParseError(
+                param.sourceSpan,
+                `Invalid @error block "let" parameter. Variable name cannot be empty`,
+              ),
+            );
+          } else if (!IDENTIFIER_PATTERN.test(name)) {
+            errors.push(
+              new ParseError(
+                param.sourceSpan,
+                `"let" parameter must be a valid JavaScript identifier`,
+              ),
+            );
+          } else if (variableName !== '$error' && variableName !== '$retry') {
             errors.push(
               new ParseError(
                 param.sourceSpan,
@@ -134,71 +114,115 @@ export function createBoundaryBlock(
               ),
             );
           } else if (contextVariables.some((v) => v.name === name)) {
-            errors.push(new ParseError(param.sourceSpan, `Duplicate parameter variable "${name}"`));
+            errors.push(
+              new ParseError(param.sourceSpan, `Duplicate "let" parameter variable "${name}"`),
+            );
           } else {
-            const nameIndex = param.expression.indexOf(name);
-            const keySpan = new ParseSourceSpan(
-              param.sourceSpan.start.moveBy(nameIndex),
-              param.sourceSpan.start.moveBy(nameIndex + name.length),
-            );
-            const equalsIndex = param.expression.indexOf('=');
-            const valueIndex = param.expression.indexOf(variableName, equalsIndex + 1);
-            const valueSpan = new ParseSourceSpan(
-              param.sourceSpan.start.moveBy(valueIndex),
-              param.sourceSpan.start.moveBy(valueIndex + variableName.length),
-            );
-            const sourceSpan = new ParseSourceSpan(keySpan.start, valueSpan.end);
             contextVariables.push(
               new t.Variable(name, variableName, sourceSpan, keySpan, valueSpan),
             );
           }
-          continue;
+          currentOffset = partIndex + part.length + 1;
         }
+        continue;
+      }
 
-        const whenMatch = param.expression.match(WHEN_PATTERN);
-        if (whenMatch) {
-          if (expression !== null) {
-            errors.push(
-              new ParseError(param.sourceSpan, '@error block can only have one "when" expression'),
-            );
-          } else {
-            const start = param.expression.indexOf(whenMatch[2]);
-            const end = start + whenMatch[2].length;
-            const expressionAST = bindingParser.parseBinding(
-              param.expression.slice(start, end),
-              false,
+      const aliasMatch = param.expression.match(
+        /^([$A-Z_][0-9A-Z_$]*)\s*=\s*([$A-Z_][0-9A-Z_$]*)$/i,
+      );
+      if (aliasMatch) {
+        const name = aliasMatch[1];
+        const variableName = aliasMatch[2];
+
+        if (variableName !== '$error' && variableName !== '$retry') {
+          errors.push(
+            new ParseError(
               param.sourceSpan,
-              param.sourceSpan.start.offset + start,
-            );
-            expression = expressionAST.ast;
-          }
-          continue;
+              `Unknown context variable "${variableName}". Only "$error" and "$retry" are allowed`,
+            ),
+          );
+        } else if (contextVariables.some((v) => v.name === name)) {
+          errors.push(new ParseError(param.sourceSpan, `Duplicate parameter variable "${name}"`));
+        } else {
+          const nameIndex = param.expression.indexOf(name);
+          const keySpan = new ParseSourceSpan(
+            param.sourceSpan.start.moveBy(nameIndex),
+            param.sourceSpan.start.moveBy(nameIndex + name.length),
+          );
+          const equalsIndex = param.expression.indexOf('=');
+          const valueIndex = param.expression.indexOf(variableName, equalsIndex + 1);
+          const valueSpan = new ParseSourceSpan(
+            param.sourceSpan.start.moveBy(valueIndex),
+            param.sourceSpan.start.moveBy(valueIndex + variableName.length),
+          );
+          const sourceSpan = new ParseSourceSpan(keySpan.start, valueSpan.end);
+          contextVariables.push(new t.Variable(name, variableName, sourceSpan, keySpan, valueSpan));
         }
+        continue;
+      }
 
+      const whenMatch = param.expression.match(WHEN_PATTERN);
+      if (whenMatch) {
+        if (expression !== null) {
+          errors.push(
+            new ParseError(param.sourceSpan, '@error block can only have one "when" expression'),
+          );
+        } else {
+          const start = param.expression.indexOf(whenMatch[2]);
+          const end = start + whenMatch[2].length;
+          const expressionAST = bindingParser.parseBinding(
+            param.expression.slice(start, end),
+            false,
+            param.sourceSpan,
+            param.sourceSpan.start.offset + start,
+          );
+          expression = expressionAST.ast;
+        }
+        continue;
+      }
+
+      errors.push(
+        new ParseError(
+          param.sourceSpan,
+          `Unrecognized @error block parameter "${param.expression}"`,
+        ),
+      );
+    }
+
+    errorBlocks.push(
+      new t.BoundaryErrorBlock(
+        html.visitAll(visitor, block.children, block.children),
+        contextVariables,
+        expression,
+        block.nameSpan,
+        block.sourceSpan,
+        block.startSourceSpan,
+        block.endSourceSpan,
+        block.i18n,
+      ),
+    );
+  }
+
+  let hasUnconditionalErrorBlock = false;
+  for (let i = 0; i < errorBlocks.length; i++) {
+    const errorBlock = errorBlocks[i];
+    if (errorBlock.expression === null) {
+      if (hasUnconditionalErrorBlock) {
         errors.push(
           new ParseError(
-            param.sourceSpan,
-            `Unrecognized @error block parameter "${param.expression}"`,
+            errorBlock.sourceSpan,
+            '@boundary block can only have one unconditional @error block',
+          ),
+        );
+      } else if (i !== errorBlocks.length - 1) {
+        errors.push(
+          new ParseError(
+            errorBlock.sourceSpan,
+            'Unconditional @error block must be the last @error block in the boundary chain',
           ),
         );
       }
-
-      errorBlocks.push(
-        new t.BoundaryErrorBlock(
-          html.visitAll(visitor, block.children, block.children),
-          contextVariables,
-          expression,
-          block.nameSpan,
-          block.sourceSpan,
-          block.startSourceSpan,
-          block.endSourceSpan,
-          block.i18n,
-        ),
-      );
-    } else {
-      errors.push(
-        new ParseError(block.sourceSpan, `Unrecognized @boundary connected block @${block.name}`),
-      );
+      hasUnconditionalErrorBlock = true;
     }
   }
 

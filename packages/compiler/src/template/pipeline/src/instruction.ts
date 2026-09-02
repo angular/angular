@@ -523,13 +523,9 @@ export function boundary(
   slot: o.Expression,
   processedExpr: o.Expression,
   primarySlot: o.Expression,
-  contextValue: o.Expression | null,
   sourceSpan: ParseSourceSpan | null,
 ): ir.UpdateOp {
   const args = [slot, processedExpr, primarySlot];
-  if (contextValue !== null) {
-    args.push(contextValue);
-  }
   return call(Identifiers.boundaryUpdate, args, sourceSpan);
 }
 export function repeaterCreate(

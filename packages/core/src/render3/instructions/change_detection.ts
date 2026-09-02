@@ -374,12 +374,10 @@ export function refreshView<T>(
       if (onError) {
         // We found an error boundary / explicit error handler in the LView chain.
         try {
-          const declarationComponentView = lView[DECLARATION_COMPONENT_VIEW];
-          const declarationInstance = declarationComponentView[CONTEXT] as any;
-          const declarationType: Type<unknown> = declarationInstance?.constructor;
+          const declarationInstance = lView[DECLARATION_COMPONENT_VIEW][CONTEXT] as any;
+          const declarationType: Type<unknown> = declarationInstance.constructor;
 
           const details: ErrorDetails = {
-            caught: true,
             declarationInstance,
             declarationType,
             caughtBy: onError,

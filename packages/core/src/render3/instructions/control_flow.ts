@@ -31,7 +31,6 @@ import {
   ID,
   INJECTOR,
   LView,
-  ON_ERROR,
   TVIEW,
   TView,
 } from '../interfaces/view';
@@ -39,10 +38,12 @@ import {LiveCollection, reconcile} from '../list_reconciliation';
 import {destroyLView} from '../node_manipulation';
 import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
-import {getConstant, getTNode, markViewForRefresh} from '../util/view_utils';
+import {getConstant, getTNode} from '../util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
 import {AnimationLViewData} from '../../animation/interfaces';
+import {allLeavingAnimations} from '../../animation/longest_animation';
+import {removeFromAnimationQueue} from '../../animation/queue';
 import {removeDehydratedViews} from '../../hydration/cleanup';
 import {
   addLViewToLContainer,
@@ -51,8 +52,6 @@ import {
   removeLViewFromLContainer,
 } from '../view/container';
 import {declareNoDirectiveHostTemplate} from './template';
-import {removeFromAnimationQueue} from '../../animation/queue';
-import {allLeavingAnimations} from '../../animation/longest_animation';
 
 /**
  * Creates an LContainer for an ng-template representing a root node

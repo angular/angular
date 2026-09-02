@@ -752,11 +752,6 @@ export interface BoundaryOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait, C
    */
   processed: o.Expression | null;
 
-  /**
-   * Variables or context passed to the error or standard branches.
-   */
-  contextValue: o.Expression | null;
-
   sourceSpan: ParseSourceSpan;
 }
 
@@ -778,7 +773,6 @@ export function createBoundaryOp(
     conditions,
     processed: null,
     sourceSpan,
-    contextValue: null,
     ...NEW_OP,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,

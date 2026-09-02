@@ -375,11 +375,6 @@ export class BoundaryBlock extends BlockNode implements Node {
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitBoundaryBlock(this);
   }
-
-  visitAll(visitor: Visitor<unknown>): void {
-    visitAll(visitor, this.children);
-    visitAll(visitor, this.errorBlocks);
-  }
 }
 
 export class BoundaryErrorBlock extends BlockNode implements Node {
@@ -889,7 +884,8 @@ export class RecursiveVisitor implements Visitor<void> {
     block.expressionAlias?.visit(this);
   }
   visitBoundaryBlock(block: BoundaryBlock): void {
-    block.visitAll(this);
+    visitAll(this, block.children);
+    visitAll(this, block.errorBlocks);
   }
   visitBoundaryErrorBlock(block: BoundaryErrorBlock): void {
     const blockItems = [...block.contextVariables, ...block.children];

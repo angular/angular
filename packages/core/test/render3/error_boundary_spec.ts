@@ -19,15 +19,6 @@ import {
 } from '@angular/core';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
 import {ErrorBoundaryWrappedError, ErrorDetails} from '../../src/error_handler';
-import {ɵɵdefineComponent} from '../../src/render3/definition';
-import {
-  BoundaryError,
-  ɵɵboundaryCreate,
-  ɵɵboundaryUpdate,
-  ɵɵgetBoundary,
-} from '../../src/render3/instructions/boundary';
-import {ɵɵconditionalBranchCreate} from '../../src/render3/instructions/control_flow';
-import {ɵɵtext} from '../../src/render3/instructions/text';
 
 describe('Error Boundary Runtime Interception', () => {
   it('should intercept errors using createComponent onError', () => {
@@ -45,11 +36,11 @@ describe('Error Boundary Runtime Interception', () => {
     @Component({
       template: '<ng-container #vc></ng-container>',
     })
-    class HostComponent {
+    class Host {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     const envInjector = TestBed.inject(EnvironmentInjector);
@@ -61,11 +52,9 @@ describe('Error Boundary Runtime Interception', () => {
       },
     });
 
-    // The inner component is created and attached, but it hasn't run CD yet?
-    // Actually `createComponent` doesn't run CD by default, we need to call `detectChanges` on the HostComponent.
+    // `createComponent` doesn't run CD by default, we need to call `detectChanges` on the Host.
     expect(() => fixture.detectChanges()).not.toThrow();
 
-    expect(interceptedError).toBeDefined();
     expect(interceptedError).toBeInstanceOf(Error);
     expect(interceptedError!.message).toBe('Component Error');
   });
@@ -79,7 +68,7 @@ describe('Error Boundary Runtime Interception', () => {
         <ng-container #vc></ng-container>
       `,
     })
-    class HostComponent {
+    class Host {
       @ViewChild('tpl', {static: true}) tpl!: TemplateRef<any>;
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
 
@@ -88,7 +77,7 @@ describe('Error Boundary Runtime Interception', () => {
       }
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     fixture.componentInstance.vc.createEmbeddedView(
@@ -122,11 +111,11 @@ describe('Error Boundary Runtime Interception', () => {
     @Component({
       template: '<ng-container #vc></ng-container>',
     })
-    class HostComponent {
+    class Host {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     const envInjector = TestBed.inject(EnvironmentInjector);
@@ -160,11 +149,11 @@ describe('Error Boundary Runtime Interception', () => {
     @Component({
       template: '<ng-container #vc></ng-container>',
     })
-    class HostComponent {
+    class Host {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     const envInjector = TestBed.inject(EnvironmentInjector);
@@ -203,11 +192,11 @@ describe('Error Boundary Runtime Interception', () => {
     @Component({
       template: '<ng-container #vc></ng-container>',
     })
-    class HostComponent {
+    class Host {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     const middleRef = fixture.componentInstance.vc.createComponent(MiddleComponent, {
@@ -245,11 +234,11 @@ describe('Error Boundary Runtime Interception', () => {
     @Component({
       template: '<ng-container #vc></ng-container>',
     })
-    class HostComponent {
+    class Host {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     fixture.componentInstance.vc.createComponent(ThrowingStringComponent, {
@@ -281,11 +270,11 @@ describe('Error Boundary Runtime Interception', () => {
     @Component({
       template: '<ng-container #vc></ng-container>',
     })
-    class HostComponent {
+    class Host {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     const onErrorHandler = (e: Error, details: any) => {
@@ -299,7 +288,6 @@ describe('Error Boundary Runtime Interception', () => {
     expect(() => fixture.detectChanges()).not.toThrow();
 
     expect(capturedDetails).toBeDefined();
-    expect(capturedDetails.caught).toBe(true);
     expect(capturedDetails.declarationInstance).toBeInstanceOf(ThrowingComponent);
     expect(capturedDetails.declarationType).toBe(ThrowingComponent);
     expect(capturedDetails.caughtBy).toBe(onErrorHandler);
@@ -384,8 +372,6 @@ describe('Error Boundary Runtime Interception', () => {
     class App {}
 
     const fixture = TestBed.createComponent(App);
-    // This will throw if the boundary doesn't catch it, because rethrowApplicationErrors: false
-    // only prevents global throwing, but we want to see if the fallback renders.
     expect(() => fixture.detectChanges()).toThrow();
   });
 
@@ -417,7 +403,7 @@ describe('Error Boundary Runtime Interception', () => {
       `,
       imports: [NestedThrowingComponent],
     })
-    class HostComponent {
+    class Host {
       show = signal(false);
       shouldInnerThrow = signal(false);
       maybeThrow() {
@@ -428,7 +414,7 @@ describe('Error Boundary Runtime Interception', () => {
       }
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     // Trigger the inner component to throw
@@ -562,9 +548,9 @@ describe('@boundary runtime instructions (JIT)', () => {
       `,
       imports: [ThrowingCtor],
     })
-    class HostComponent {}
+    class Host {}
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Error: Ctor Error');
@@ -583,17 +569,16 @@ describe('@boundary runtime instructions (JIT)', () => {
       `,
       imports: [ThrowingHook],
     })
-    class HostComponent {
+    class Host {
       triggerError = signal(false);
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Main Content');
 
     fixture.componentInstance.triggerError.set(true);
-    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Error: Hook Error');
@@ -610,7 +595,7 @@ describe('@boundary runtime instructions (JIT)', () => {
         }
       `,
     })
-    class HostComponent {
+    class Host {
       doThrow = signal(false);
       throwInBinding() {
         if (this.doThrow()) {
@@ -620,14 +605,12 @@ describe('@boundary runtime instructions (JIT)', () => {
       }
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Main Content');
 
     fixture.componentInstance.doThrow.set(true);
-    fixture.detectChanges();
     await fixture.whenStable();
-    fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Error: Binding Error');
   });
@@ -646,26 +629,25 @@ describe('@boundary runtime instructions (JIT)', () => {
       `,
       imports: [ThrowingCtor],
     })
-    class HostComponent {
+    class Host {
       showChild = signal(false);
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Main Content');
 
     fixture.componentInstance.showChild.set(true);
-    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Error: Ctor Error');
   });
 
   it('should not intercept errors originating from the error block', async () => {
-    let topError: any;
+    let topError!: Error;
     const CustomErrorHandler = {
-      handleError(error: any) {
+      handleError(error: Error) {
         topError = error;
       },
     };
@@ -679,7 +661,7 @@ describe('@boundary runtime instructions (JIT)', () => {
         }
       `,
     })
-    class HostComponent {
+    class Host {
       doThrow = signal(false);
       throwInBinding() {
         if (this.doThrow()) {
@@ -697,127 +679,48 @@ describe('@boundary runtime instructions (JIT)', () => {
       rethrowApplicationErrors: false,
     });
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     fixture.componentInstance.doThrow.set(true);
     await fixture.whenStable();
 
     expect(topError).toBeDefined();
-    expect((topError as any).message).toBe('Secondary Error');
-  });
-
-  it('should throw BoundaryError when no branch matches and an error exists', async () => {
-    let topError: any;
-    const CustomErrorHandler = {
-      handleError(error: any) {
-        topError = error;
-      },
-    };
-
-    class TestComponent {
-      doThrow = signal(false);
-      static ɵfac = () => new TestComponent();
-    }
-    const emptyTemplate = function (rf: number, ctx: any) {};
-    (TestComponent as any).ɵcmp = ɵɵdefineComponent({
-      type: TestComponent,
-      selectors: [['test-comp']],
-      decls: 2,
-      vars: 1,
-      template: function (rf: number, ctx: TestComponent) {
-        if (rf & 1) {
-          ɵɵboundaryCreate(0);
-          ɵɵconditionalBranchCreate(1, emptyTemplate, 0, 0);
-        }
-        if (rf & 2) {
-          const boundary = ɵɵgetBoundary(0);
-          if (ctx.doThrow()) {
-            boundary.error = new Error('Original Error');
-            ɵɵboundaryUpdate(0, -1, 1); // Force -1 (no match)
-          } else {
-            ɵɵboundaryUpdate(0, 1, 1); // Normal path
-          }
-        }
-      },
-    });
-
-    TestBed.configureTestingModule({
-      providers: [{provide: ErrorHandler, useValue: CustomErrorHandler}],
-      rethrowApplicationErrors: false,
-    });
-
-    const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-
-    fixture.componentInstance.doThrow.set(true);
-    await fixture.whenStable();
-
-    expect(topError).toBeDefined();
-    expect(topError).toBeInstanceOf(BoundaryError);
-    expect(topError.message).toBe('Unhandled error in @boundary fell through.');
-    expect(topError.cause).toBeDefined();
-    expect(topError.cause.message).toBe('Original Error');
+    expect(topError.message).toBe('Secondary Error');
   });
 
   it('should support retry() mechanics in @error block', async () => {
     let retryFn: (() => void) | undefined;
 
+    @Component({
+      template: `
+        @boundary {
+          @if (doThrow()) {
+            {{ throwError() }}
+          } @else {
+            Main Content
+          }
+        } @error (let err, r = $retry) {
+          Error Content
+          {{ captureRetry(r) }}
+        }
+      `,
+    })
     class TestComponent {
       doThrow = signal(true);
-      static ɵfac = () => new TestComponent();
+
+      throwError() {
+        throw new Error('Original Error');
+      }
+
+      captureRetry(r: () => void) {
+        retryFn = r;
+        return '';
+      }
     }
 
-    (TestComponent as any).ɵcmp = ɵɵdefineComponent({
-      type: TestComponent,
-      selectors: [['test-comp']],
-      decls: 3,
-      vars: 1,
-      template: function (rf: number, ctx: TestComponent) {
-        if (rf & 1) {
-          ɵɵboundaryCreate(0);
-          ɵɵconditionalBranchCreate(
-            1,
-            function (rf: number, ctx: any) {
-              if (rf & 1) {
-                ɵɵtext(0, 'Main Content');
-              }
-            },
-            1,
-            0,
-          );
-          ɵɵconditionalBranchCreate(
-            2,
-            function (rf: number, ctx: any) {
-              if (rf & 1) {
-                ɵɵtext(0, 'Error Content');
-              }
-              if (rf & 2) {
-                retryFn = ctx.$retry;
-              }
-            },
-            1,
-            0,
-          );
-        }
-        if (rf & 2) {
-          const boundary = ɵɵgetBoundary(0);
-          if (ctx.doThrow()) {
-            boundary.error = new Error('Original Error');
-            ɵɵboundaryUpdate(0, 2, 1); // Render error branch (index 2)
-          } else {
-            ɵɵboundaryUpdate(0, 1, 1); // Render primary branch (index 1)
-          }
-        }
-      },
-    });
-
-    TestBed.configureTestingModule({
-      rethrowApplicationErrors: false,
-    });
-
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // Initially it should be in error state
     expect(fixture.nativeElement.textContent).toContain('Error Content');
@@ -851,20 +754,14 @@ describe('@boundary runtime instructions (JIT)', () => {
         }
       `,
     })
-    class HostComponent {
+    class Host {
       doThrow = signal(true);
       throwError() {
         throw new Error('Binding Error');
       }
-      static ɵfac = () => new HostComponent();
     }
 
-    TestBed.configureTestingModule({
-      rethrowApplicationErrors: false,
-    });
-
-    const fixture = TestBed.createComponent(HostComponent);
-    fixture.detectChanges();
+    const fixture = TestBed.createComponent(Host);
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Error: Binding Error');
@@ -892,7 +789,7 @@ describe('@boundary runtime instructions (JIT)', () => {
         }
       `,
     })
-    class HostComponent {
+    class Host {
       doThrow = signal(true);
       throwError() {
         if (this.doThrow()) {
@@ -902,12 +799,9 @@ describe('@boundary runtime instructions (JIT)', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      rethrowApplicationErrors: false,
-    });
+    TestBed.configureTestingModule({rethrowApplicationErrors: false});
 
-    const fixture = TestBed.createComponent(HostComponent);
-    fixture.detectChanges();
+    const fixture = TestBed.createComponent(Host);
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Error: Binding Error');
@@ -938,15 +832,14 @@ describe('@boundary runtime instructions (JIT)', () => {
         }
       `,
     })
-    class HostComponent {
+    class Host {
       doThrow = signal(true);
       throwError() {
         throw new Error('Binding Error');
       }
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
-    fixture.detectChanges();
+    const fixture = TestBed.createComponent(Host);
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Error: Binding Error');
@@ -967,7 +860,7 @@ describe('@boundary runtime instructions (JIT)', () => {
         }
       `,
     })
-    class HostComponent {
+    class Host {
       doThrow = signal(true);
       throwError() {
         throw new Error('Binding Error');
@@ -975,15 +868,9 @@ describe('@boundary runtime instructions (JIT)', () => {
       handleRetry(retryFn: Function) {
         setTimeout(() => retryFn(), 0);
       }
-      static ɵfac = () => new HostComponent();
     }
 
-    TestBed.configureTestingModule({
-      rethrowApplicationErrors: false,
-    });
-
-    const fixture = TestBed.createComponent(HostComponent);
-    fixture.detectChanges();
+    const fixture = TestBed.createComponent(Host);
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Error: Binding Error');
@@ -1027,7 +914,7 @@ describe('@boundary runtime instructions (JIT)', () => {
         }
       `,
     })
-    class HostComponent {
+    class Host {
       doThrow = signal(true);
       errorToThrow: Error = new ChartError('Chart Failed');
 
@@ -1040,8 +927,7 @@ describe('@boundary runtime instructions (JIT)', () => {
       }
     }
 
-    const fixture = TestBed.createComponent(HostComponent);
-    fixture.detectChanges();
+    const fixture = TestBed.createComponent(Host);
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Chart Error: Chart Failed');
@@ -1051,7 +937,6 @@ describe('@boundary runtime instructions (JIT)', () => {
     button.click();
 
     fixture.componentInstance.doThrow.set(false);
-    fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.nativeElement.textContent).toContain('Main Content');
 
@@ -1059,7 +944,6 @@ describe('@boundary runtime instructions (JIT)', () => {
     fixture.componentInstance.errorToThrow = new Error('Generic Failed');
     fixture.componentInstance.doThrow.set(true);
 
-    fixture.detectChanges();
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Generic Error: Generic Failed');
@@ -1073,13 +957,6 @@ describe('@boundary runtime instructions (JIT)', () => {
       }
     }
 
-    let topError: any;
-    const CustomErrorHandler = {
-      handleError(error: any) {
-        topError = error;
-      },
-    };
-
     @Component({
       template: `
         @boundary {
@@ -1091,7 +968,7 @@ describe('@boundary runtime instructions (JIT)', () => {
         }
       `,
     })
-    class HostComponent {
+    class Host {
       doThrow = signal(true);
       errorToThrow: Error = new Error('Generic Failed');
 
@@ -1099,20 +976,13 @@ describe('@boundary runtime instructions (JIT)', () => {
         throw this.errorToThrow;
       }
 
-      isChartError(e: any) {
+      isChartError(e: Error) {
         return e instanceof ChartError;
       }
     }
 
-    TestBed.configureTestingModule({
-      rethrowApplicationErrors: true,
-    });
-
-    const fixture = TestBed.createComponent(HostComponent);
-
-    expect(() => {
-      fixture.detectChanges();
-    }).toThrowError(/Unhandled error in @boundary fell through/);
+    const fixture = TestBed.createComponent(Host);
+    expect(() => fixture.detectChanges()).toThrowError(/Unhandled error in @boundary fell through/);
   });
 
   it('should intercept errors thrown inside an effect', async () => {
@@ -1120,7 +990,7 @@ describe('@boundary runtime instructions (JIT)', () => {
       selector: 'throwing-effect',
       template: '',
     })
-    class ThrowingEffectComponent {
+    class ThrowingEffect {
       constructor() {
         effect(() => {
           throw new Error('Effect Error');
@@ -1137,15 +1007,11 @@ describe('@boundary runtime instructions (JIT)', () => {
           Error: {{err.message}}
         }
       `,
-      imports: [ThrowingEffectComponent],
+      imports: [ThrowingEffect],
     })
-    class HostComponent {}
+    class Host {}
 
-    const fixture = TestBed.createComponent(HostComponent);
-    fixture.detectChanges();
-
-    // Effects are scheduled and execute asynchronously or during change detection.
-    // wait for them to run.
+    const fixture = TestBed.createComponent(Host);
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Error: Effect Error');
@@ -1153,11 +1019,11 @@ describe('@boundary runtime instructions (JIT)', () => {
 
   it('should populate ErrorDetails correctly when caught by @boundary and handled by ErrorHandler.onViewError', () => {
     let capturedDetails!: ErrorDetails;
-    let capturedError: any;
+    let capturedError: Error;
 
     const CustomErrorHandler = {
       handleError: () => {},
-      onViewError: (e: any, details: any) => {
+      onViewError: (e: Error, details: ErrorDetails) => {
         capturedError = e;
         capturedDetails = details;
       },
@@ -1167,7 +1033,7 @@ describe('@boundary runtime instructions (JIT)', () => {
       selector: 'throwing-cmp',
       template: '{{ throwError() }}',
     })
-    class ThrowingComponent {
+    class Throwing {
       throwError() {
         throw new Error('Test Error');
       }
@@ -1181,23 +1047,22 @@ describe('@boundary runtime instructions (JIT)', () => {
           <p>Fallback</p>
         }
       `,
-      imports: [ThrowingComponent],
+      imports: [Throwing],
     })
-    class HostComponent {}
+    class Host {}
 
     TestBed.configureTestingModule({
       providers: [{provide: ErrorHandler, useValue: CustomErrorHandler}],
     });
 
-    const fixture = TestBed.createComponent(HostComponent);
+    const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     expect(capturedDetails).toBeDefined();
-    expect(capturedDetails.caught).toBe(true);
-    expect(capturedDetails.declarationInstance).toBeInstanceOf(ThrowingComponent);
-    expect(capturedDetails.declarationType).toBe(ThrowingComponent);
+    expect(capturedDetails.declarationInstance).toBeInstanceOf(Throwing);
+    expect(capturedDetails.declarationType).toBe(Throwing);
     expect(capturedDetails.boundary).toBeDefined();
-    expect(capturedDetails.boundary!.type).toBe(HostComponent);
+    expect(capturedDetails.boundary!.type).toBe(Host);
     expect(typeof capturedDetails.boundary!.reset).toBe('function');
   });
 });

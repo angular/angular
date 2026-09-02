@@ -7,7 +7,8 @@
  */
 
 import {setActiveConsumer} from '../../../primitives/signals';
-import {ErrorHandler, encapsulateBoundaryError} from '../../error_handler';
+import {Type} from '../../core';
+import {ErrorDetails, ErrorHandler, encapsulateBoundaryError} from '../../error_handler';
 import {findAndReconcileMatchingDehydratedViews} from '../../hydration/views';
 import {performanceMarkFeature} from '../../util/performance';
 import {bindingUpdated} from '../bindings';
@@ -20,7 +21,6 @@ import {
   ON_ERROR,
   TVIEW,
 } from '../interfaces/view';
-import {destroyLView} from '../node_manipulation';
 import {getLView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {markViewForRefresh} from '../util/view_utils';
@@ -56,12 +56,11 @@ export class LBoundary {
   }
 }
 
-// BoundaryErrorContext was removed and replaced by a plain object at runtime.
 /**
  * Creates an LBoundary state object in the current LView.
  */
 export function ɵɵboundaryCreate(index: number) {
-  performanceMarkFeature('NgControlFlow');
+  performanceMarkFeature('NgBoundary');
   const lView = getLView();
   lView[HEADER_OFFSET + index] = new LBoundary(lView);
 }
@@ -86,10 +85,7 @@ export function ɵɵboundaryUpdate(
   slotIndex: number,
   matchingTemplateIndex: number,
   primaryTemplateIndex: number,
-  contextValue?: any,
 ) {
-  performanceMarkFeature('NgControlFlow');
-
   const hostLView = getLView();
   const bindingIndex = nextBindingIndex();
   const prevMatchingTemplateIndex: number =
@@ -123,7 +119,7 @@ export function ɵɵboundaryUpdate(
           const boundary = hostLView[HEADER_OFFSET + slotIndex] as LBoundary;
           const context =
             matchingTemplateIndex === primaryTemplateIndex
-              ? contextValue
+              ? undefined
               : {$error: boundary.error, $retry: () => boundary.reset()};
           embeddedLView = createAndRenderEmbeddedLView(hostLView, templateTNode, context, {
             dehydratedView,
@@ -136,8 +132,8 @@ export function ɵɵboundaryUpdate(
 
               const errorHandler = hostLView[INJECTOR]?.get(ErrorHandler, null);
               if (errorHandler) {
-                const boundaryComponentView = hostLView[DECLARATION_COMPONENT_VIEW];
-                const boundaryType = (boundaryComponentView[CONTEXT] as any)?.constructor;
+                const boundaryComponentView = hostLView[DECLARATION_COMPONENT_VIEW][CONTEXT] as any;
+                const boundaryType: Type<unknown> = boundaryComponentView.constructor;
                 details.boundary = {
                   type: boundaryType,
                   reset: () => boundary.reset(),
@@ -152,7 +148,6 @@ export function ɵɵboundaryUpdate(
 
               // Immediately destroy the primary view
               removeLViewFromLContainer(nextContainer, viewInContainerIdx);
-              destroyLView(embeddedLView![TVIEW], embeddedLView!);
 
               // Trigger a targeted change detection pass on the host to run the @error block
               markViewForRefresh(hostLView);
@@ -166,11 +161,9 @@ export function ɵɵboundaryUpdate(
             const errorHandler = hostLView[INJECTOR]?.get(ErrorHandler, null);
             if (errorHandler) {
               const boundaryError = encapsulateBoundaryError(e);
-              const boundaryComponentView = hostLView[DECLARATION_COMPONENT_VIEW];
-              const declarationInstance = boundaryComponentView[CONTEXT];
-              const declarationType = (declarationInstance as any)?.constructor;
-              const details = {
-                caught: true,
+              const declarationInstance = hostLView[DECLARATION_COMPONENT_VIEW][CONTEXT];
+              const declarationType = (declarationInstance as any).constructor;
+              const details: ErrorDetails = {
                 declarationInstance,
                 declarationType,
                 boundary: {
@@ -212,12 +205,6 @@ export function ɵɵboundaryUpdate(
       }
     } finally {
       setActiveConsumer(prevConsumer);
-    }
-  } else if (prevContainer !== undefined) {
-    const lView = getLViewFromLContainer<any>(prevContainer, viewInContainerIdx);
-    if (lView !== undefined) {
-      lView[CONTEXT] = contextValue;
-      markViewForRefresh(lView);
     }
   }
 }

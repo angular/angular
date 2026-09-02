@@ -7,9 +7,9 @@
  */
 
 import * as o from '../../../../output/output_ast';
-import {CONTEXT_NAME} from '../../../../render3/view/util';
-import {isUnsafeObjectKey} from '../../../../render3/util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
+import {isUnsafeObjectKey} from '../../../../render3/util';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as ir from '../../ir';
 import {
   TemplateCompilationMode,
@@ -103,10 +103,6 @@ function reifyCreateOperations(
   slotMap: Map<ir.XrefId, number>,
 ): void {
   for (const op of ops) {
-    if (ir.isElementOrContainerOp(op) && op.handle.slot !== null) {
-      slotMap.set(op.xref, op.handle.slot);
-    }
-
     ir.transformExpressionsInOp(
       op,
       (expr) => reifyIrExpression(unit, expr, slotMap),
@@ -269,7 +265,7 @@ function reifyCreateOperations(
                 childView.vars!,
                 op.tag,
                 op.attributes,
-                typeof op.localRefs === 'number' ? op.localRefs : null,
+                op.localRefs,
                 op.startSourceSpan,
               )
             : ng.template(
@@ -279,7 +275,7 @@ function reifyCreateOperations(
                 childView.vars!,
                 op.tag,
                 op.attributes,
-                typeof op.localRefs === 'number' ? op.localRefs : null,
+                op.localRefs,
                 op.startSourceSpan,
               ),
         );
@@ -802,13 +798,7 @@ function reifyUpdateOperations(
         }
         ir.OpList.replace(
           op,
-          ng.boundary(
-            o.literal(boundarySlot),
-            op.processed,
-            o.literal(primarySlot),
-            op.contextValue,
-            op.sourceSpan,
-          ),
+          ng.boundary(o.literal(boundarySlot), op.processed, o.literal(primarySlot), op.sourceSpan),
         );
         break;
       case ir.OpKind.Repeater:

@@ -1287,9 +1287,7 @@ export function transformExpressionsInOp(
       if (op.processed !== null) {
         op.processed = transformExpressionsInExpression(op.processed, transform, flags);
       }
-      if (op.contextValue !== null) {
-        op.contextValue = transformExpressionsInExpression(op.contextValue, transform, flags);
-      }
+
       break;
     case OpKind.Animation:
     case OpKind.AnimationListener:

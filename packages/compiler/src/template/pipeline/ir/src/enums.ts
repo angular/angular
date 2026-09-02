@@ -391,7 +391,10 @@ export enum ExpressionKind {
   ContextLetReference,
 
   /**
-   * Reference to a boundary state.
+   * An expression that evaluates to the runtime state object (`LBoundary`) of an error boundary.
+   * This allows the generated code to access the boundary's caught error when evaluating
+   * `@error` block conditions.
+   * During the `resolve_boundaries` phase, this is replaced by a variable read of the stored boundary state.
    */
   BoundaryState,
 
@@ -531,7 +534,8 @@ export enum SemanticVariableKind {
   Alias,
 
   /**
-   * A variable that holds the state of a boundary.
+   * A variable that holds the runtime state (`LBoundary`) of an error boundary.
+   * It is typically populated by calling `ɵɵgetBoundary()` during the update phase.
    */
   BoundaryState,
 }
