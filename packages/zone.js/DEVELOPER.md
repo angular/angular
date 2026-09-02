@@ -34,8 +34,7 @@ Run all checks (lint/format/browser test/test-node):
 
 Please make sure you pass all following checks before commit
 
-- pnpm gulp lint (tslint)
-- pnpm gulp format (prettier)
+- pnpm lint (tslint and format)
 - pnpm promisetest (promise a+ test)
 - pnpm bazel test //packages/zone.js/... (all tests)
 
@@ -53,14 +52,7 @@ pnpm webdriver-test
 
 ## Releasing
 
-Releasing `zone.js` is a two step process.
-
-1. Create a PR which updates the changelog, and get it merged using normal merge process.
-2. Once the PR is merged check out the merge SHA of the PR and release `zone.js` from that SHA and tag it.
-
-### Automated Release
-
-You can use the automated release script which handles both steps (run from the root of the repo):
+Releasing `zone.js` is handled via the release script (run from the root of the repo):
 
 ```bash
 pnpm zonejs:release
@@ -68,55 +60,7 @@ pnpm zonejs:release
 
 Follow the interactive prompts to either create a PR or cut a release.
 
----
+Releasing is a two step process:
 
-### Manual Release (Legacy)
-
-#### 1. Creating a PR for release
-
-```
-rm -rf node_modules && pnpm install
-export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-0.15.*' | tail -n1`
-export VERSION=`(cd packages/zone.js; npm version patch --no-git-tag-version)`
-export VERSION=${VERSION#v}
-export TAG="zone.js-${VERSION}"
-echo "Releasing zone.js version ${TAG}. Last release was ${PREVIOUS_ZONE_TAG}."
-pnpm gulp changelog:zonejs
-```
-
-Inspect the `packages/zone.js/CHANGELOG.md` for any issues and than commit it with this command.
-
-Create a dry run build to make sure everything is ready.
-
-```
-pnpm bazel build //packages/zone.js:npm_package --workspace_status_command="echo STABLE_PROJECT_VERSION $VERSION"
-```
-
-If everything looks good, commit the changes and push them to your origin to create a PR.
-
-```
-git checkout -b "release_${TAG}"
-git add packages/zone.js/CHANGELOG.md packages/zone.js/package.json
-git commit -m "release: cut the ${TAG} release"
-git push origin "release_${TAG}"
-```
-
-#### 2. Cutting a release
-
-Check out the SHA on main which has the changelog commit of the zone.js
-
-```
-git fetch upstream
-git checkout upstream/main
-rm -rf node_modules && pnpm install
-export VERSION=`(node -e "console.log(require('./packages/zone.js/package.json').version)")`
-export TAG="zone.js-${VERSION}"
-export SHA=`git log upstream/main --oneline -n 1000 | grep "release: cut the ${TAG} release" | cut -f 1 -d " "`
-echo "Releasing '$VERSION' which will be tagged as '$TAG' from SHA '$SHA'."
-git checkout ${SHA}
-npm login --registry https://wombat-dressing-room.appspot.com
-pnpm bazel build //packages/zone.js:npm_package --config=release --workspace_status_command="echo STABLE_PROJECT_VERSION $VERSION"
-npm publish dist/bin/packages/zone.js/npm_package --access public --tag latest
-git tag ${TAG} ${SHA}
-git push upstream ${TAG}
-```
+1. **Create a PR for release**: updates the version in `packages/zone.js/package.json`, generates the `packages/zone.js/CHANGELOG.md` with all changes since the last zone.js release, runs a dry-run build, creates and pushes the release branch, and provides a PR link.
+2. **Cut a release (publish)**: once the PR is merged, check out the merged release commit, build the package with release config, publish to npm, and tag and push the `zone.js-<version>` release tag.
