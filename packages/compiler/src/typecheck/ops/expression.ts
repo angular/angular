@@ -135,6 +135,15 @@ export class TcbExpressionTranslator {
           return new TcbExpr(`${targetExpression.print()} as any`);
         }
       }
+
+      if (targetExpression === null) {
+        const fallback = this.scope.resolveByName(ast.name);
+        if (fallback !== null) {
+          fallback.addParseSpanInfo(ast.sourceSpan);
+          return fallback;
+        }
+      }
+
       return targetExpression;
     } else if (
       ast instanceof Binary &&

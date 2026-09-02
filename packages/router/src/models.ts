@@ -21,12 +21,12 @@ import {Observable} from 'rxjs';
 export {DefaultExport} from '@angular/core';
 
 import type {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
-import {ParamMap, Params} from './shared';
+import {Params} from './shared';
 import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 
 /**
  * The expected return type of a `resources` function.
- * @experimental
+ * @developerPreview 22.2
  */
 export type ResourceResult = Record<string, Resource<unknown>>;
 
@@ -35,37 +35,37 @@ export type ResourceResult = Record<string, Resource<unknown>>;
 // Same applies to data and queryparams.
 /**
  * The contextual information provided to a `resources` function.
- * @experimental
+ * @developerPreview 22.2
  */
 export interface ResourceContext {
   /**
    * The matrix parameters of the route.
    *
-   * @experimental
+   * @developerPreview 22.2
    */
   params: Signal<Params>;
   /**
    * The query parameters of the route.
    *
-   * @experimental
+   * @developerPreview 22.2
    */
   queryParams: Signal<Params>;
   /**
    * The URL fragment.
-   * @experimental
+   * @developerPreview 22.2
    */
   fragment: Signal<string | null>;
   /**
    * Data provided in the route configuration.
    *
-   * @experimental
+   * @developerPreview 22.2
    */
   data: Signal<Record<string, any>>;
   /**
    * The static activated route snapshot for this navigation.
    * Useful for reading initial static configuration statically without
    * reacting to future parameter changes on reused routes.
-   * @experimental
+   * @developerPreview 22.2
    */
   snapshot: ActivatedRouteSnapshot;
 }
@@ -656,6 +656,11 @@ export interface Route {
   component?: Type<any>;
 
   /**
+   * The component to instantiate when an error occurs in this route.
+   */
+  errorComponent?: Type<any>;
+
+  /**
    * An object specifying a lazy-loaded component.
    *
    * @see [Injection context lazy loading](guide/routing/loading-strategies)
@@ -765,8 +770,7 @@ export interface Route {
   /**
    * A function that returns a record of resources.
    * This function is executed during the Main Loading Phase of a navigation.
-   * @experimental
-   * @internal
+   * @developerPreview 22.2
    */
   resources?: (ctx: ResourceContext) => ResourceResult | Promise<ResourceResult>;
 

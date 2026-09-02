@@ -13,6 +13,7 @@ import {
   effect,
   EffectRef,
   EnvironmentInjector,
+  ErrorDetails,
   EventEmitter,
   inject,
   Injectable,
@@ -28,13 +29,16 @@ import {
   Signal,
   SimpleChanges,
   ViewContainerRef,
+  Type,
 } from '@angular/core';
 import {combineLatest, of, Subscription} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from '../errors';
 import type {RouterResourcesFeatureImplementation} from '../router_resource_feature';
-import {Data} from '../models';
+import {ROUTER_ERROR_BOUNDARY_OPTIONS} from '../provide_router';
+import {Data, RedirectCommand} from '../models';
+import {Router} from '../router';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
@@ -64,6 +68,28 @@ import {ComponentInputBindingOptions} from '../router_config';
 export const ROUTER_OUTLET_DATA = new InjectionToken<Signal<unknown | undefined>>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'RouterOutlet data' : '',
 );
+
+export const REDIRECT_DISPATCHED: unique symbol = Symbol(
+  typeof ngDevMode === 'undefined' || ngDevMode ? '__redirectDispatched' : '',
+);
+
+export function unwrapRedirectCommand(error: unknown): RedirectCommand | null {
+  if (error instanceof RedirectCommand) {
+    return error;
+  }
+  if (error && typeof error === 'object' && 'cause' in error) {
+    return unwrapRedirectCommand((error as {cause: unknown}).cause);
+  }
+  return null;
+}
+
+export function triggerRedirectIfCommand(error: unknown, router: Router | null | undefined): void {
+  const redirect = unwrapRedirectCommand(error);
+  if (redirect && !(redirect as any)[REDIRECT_DISPATCHED] && router) {
+    (redirect as any)[REDIRECT_DISPATCHED] = true;
+    router.navigateByUrl(redirect.redirectTo, redirect.navigationBehaviorOptions);
+  }
+}
 
 /**
  * An interface that defines the contract for developing a component outlet for the `Router`.
@@ -156,6 +182,11 @@ export interface RouterOutletContract {
    * is used in the application.
    */
   readonly supportsBindingToComponentInputs?: true;
+
+  /**
+   * Re-attempts activation of the current route.
+   */
+  retry?(): void;
 }
 
 /**
@@ -219,6 +250,12 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     return this.activated;
   }
   private _activatedRoute: ActivatedRoute | null = null;
+  private _environmentInjector: EnvironmentInjector | null = null;
+  private isErrorComponentActive = false;
+  /** @internal */
+  get isErrorActive(): boolean {
+    return this.isErrorComponentActive;
+  }
   /**
    * The name of the outlet
    *
@@ -249,6 +286,8 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private location = inject(ViewContainerRef);
   private changeDetector = inject(ChangeDetectorRef);
   private inputBinder = inject(INPUT_BINDER, {optional: true});
+  private router = inject(Router, {optional: true});
+  private errorBoundaryOptions = inject(ROUTER_ERROR_BOUNDARY_OPTIONS, {optional: true});
   /** @docs-private */
   readonly supportsBindingToComponentInputs = true;
 
@@ -352,6 +391,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
         RuntimeErrorCode.OUTLET_NOT_ACTIVATED,
         (typeof ngDevMode === 'undefined' || ngDevMode) && 'Outlet is not activated',
       );
+    this.isErrorComponentActive = false;
     this.location.detach();
     const cmp = this.activated;
     this.activated = null;
@@ -366,6 +406,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void {
     this.activated = ref;
     this._activatedRoute = activatedRoute;
+    this.isErrorComponentActive = false;
     this.location.insert(ref.hostView);
     this.inputBinder?.bindActivatedRouteToOutletComponent(this, this.location.injector);
     this.attachEvents.emit(ref.instance);
@@ -377,7 +418,22 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       this.activated.destroy();
       this.activated = null;
       this._activatedRoute = null;
+      this._environmentInjector = null;
+      this.isErrorComponentActive = false;
       this.deactivateEvents.emit(c);
+    }
+  }
+
+  /**
+   * Re-attempts activation of the current route by tearing down any existing view
+   * (such as an error component) and activating the route again.
+   */
+  retry(): void {
+    if (this._activatedRoute && this._environmentInjector) {
+      const route = this._activatedRoute;
+      const envInjector = this._environmentInjector;
+      this.deactivate();
+      this.activateWith(route, envInjector);
     }
   }
 
@@ -390,6 +446,8 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       );
     }
     this._activatedRoute = activatedRoute;
+    this._environmentInjector = environmentInjector;
+    this.isErrorComponentActive = false;
     const location = this.location;
     const snapshot = activatedRoute.snapshot;
     const component = snapshot.component!;
@@ -399,18 +457,99 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       childContexts,
       location.injector,
       this.routerOutletData,
+      this,
     );
 
-    this.activated = location.createComponent(component, {
-      index: location.length,
-      injector,
-      environmentInjector: environmentInjector,
-    });
+    const onErrorHandler = (error: Error, details?: ErrorDetails) => {
+      triggerRedirectIfCommand(error, this.router);
+
+      if (this.errorBoundaryOptions?.onError && details) {
+        this.errorBoundaryOptions.onError(error, details);
+      }
+
+      const routeErrorComponent =
+        activatedRoute.snapshot.routeConfig?.errorComponent ??
+        this.errorBoundaryOptions?.defaultErrorComponent;
+      if (routeErrorComponent) {
+        this.activateErrorComponent(
+          routeErrorComponent,
+          error,
+          activatedRoute,
+          environmentInjector,
+          childContexts,
+        );
+      } else {
+        throw error;
+      }
+    };
+
+    try {
+      this.activated = location.createComponent(component, {
+        index: location.length,
+        injector,
+        environmentInjector: environmentInjector,
+        onError: onErrorHandler,
+      });
+    } catch (error: any) {
+      onErrorHandler(error);
+      return;
+    }
+
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
     this.inputBinder?.bindActivatedRouteToOutletComponent(this, this.location.injector);
     this.activateEvents.emit(this.activated.instance);
+  }
+
+  private activateErrorComponent(
+    errorComponent: Type<any>,
+    error: Error,
+    activatedRoute: ActivatedRoute,
+    environmentInjector: EnvironmentInjector,
+    childContexts: ChildrenOutletContexts,
+  ): void {
+    if (this.activated) {
+      const c = this.component;
+      this.inputBinder?.unsubscribeFromRouteData(this);
+      this.activated.destroy();
+      this.activated = null;
+      this.deactivateEvents.emit(c);
+    }
+    this.isErrorComponentActive = true;
+
+    const errorInjector = new OutletInjector(
+      activatedRoute,
+      childContexts,
+      this.location.injector,
+      this.routerOutletData,
+      this,
+    );
+
+    try {
+      this.activated = this.location.createComponent(errorComponent, {
+        index: this.location.length,
+        injector: errorInjector,
+        environmentInjector,
+        onError: (err: Error) => {
+          throw err;
+        },
+      });
+    } catch (err: any) {
+      throw err;
+    }
+
+    const mirror = reflectComponentType(errorComponent);
+    if (mirror) {
+      for (const {templateName} of mirror.inputs) {
+        if (templateName === 'error') {
+          this.activated.setInput('error', error);
+        }
+      }
+    }
+
+    this.changeDetector.markForCheck();
+    this.inputBinder?.bindActivatedRouteToOutletComponent(this, this.location.injector);
   }
 }
 
@@ -420,6 +559,7 @@ class OutletInjector implements Injector {
     private childContexts: ChildrenOutletContexts,
     private parent: Injector,
     private outletData: Signal<unknown>,
+    private outlet?: RouterOutlet,
   ) {}
 
   get(token: any, notFoundValue?: any): any {
@@ -433,6 +573,10 @@ class OutletInjector implements Injector {
 
     if (token === ROUTER_OUTLET_DATA) {
       return this.outletData;
+    }
+
+    if (token === RouterOutlet) {
+      return this.outlet;
     }
 
     return this.parent.get(token, notFoundValue);
@@ -536,14 +680,14 @@ export class RoutedComponentInputBinder {
         if (
           !outlet.isActivated ||
           !outlet.activatedComponentRef ||
-          outlet.activatedRoute !== activatedRoute ||
-          activatedRoute.component === null
+          outlet.activatedRoute !== activatedRoute
         ) {
           this.unsubscribeFromRouteData(outlet);
           return;
         }
 
-        const currentMirror = reflectComponentType(activatedRoute.component);
+        const componentType = outlet.activatedComponentRef.componentType;
+        const currentMirror = reflectComponentType(componentType);
         if (!currentMirror) {
           this.unsubscribeFromRouteData(outlet);
           return;
@@ -563,6 +707,9 @@ export class RoutedComponentInputBinder {
 
         for (const {templateName} of currentMirror.inputs) {
           if (keysBoundToBlockingResources.includes(templateName)) {
+            continue;
+          }
+          if (outlet.isErrorActive && templateName === 'error') {
             continue;
           }
           const value = data[templateName];

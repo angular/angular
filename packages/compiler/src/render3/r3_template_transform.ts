@@ -25,6 +25,7 @@ import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
+import {createBoundaryBlock, isConnectedBoundaryErrorBlock} from './r3_boundaries';
 import {createContentBlock} from './r3_content_blocks';
 import {
   createForLoop,
@@ -525,6 +526,15 @@ class HtmlAstToIvyAst implements html.Visitor {
         );
         break;
 
+      case 'boundary':
+        result = createBoundaryBlock(
+          block,
+          this.findConnectedBlocks(index, context, isConnectedBoundaryErrorBlock),
+          this,
+          this.bindingParser,
+        );
+        break;
+
       default:
         let errorMessage: string;
 
@@ -536,6 +546,9 @@ class HtmlAstToIvyAst implements html.Visitor {
           this.processedNodes.add(block);
         } else if (isConnectedIfLoopBlock(block.name)) {
           errorMessage = `@${block.name} block can only be used after an @if or @else if block.`;
+          this.processedNodes.add(block);
+        } else if (isConnectedBoundaryErrorBlock(block.name)) {
+          errorMessage = `@${block.name} block can only be used after an @defer or @boundary block.`;
           this.processedNodes.add(block);
         } else {
           errorMessage = `Unrecognized block @${block.name}.`;
