@@ -320,9 +320,12 @@ In this code sample, the home and about page are configured with specific `analy
 
 You can read this static data by injecting the `ActivatedRoute`. See [Reading route state](/guide/routing/read-route-state) for details.
 
-### Dynamic data with data resolvers
+### Dynamic data with resources and resolvers
 
-When you need to provide dynamic data to a route, check out the [guide on route data resolvers](/guide/routing/data-resolvers).
+When you need to fetch data for a route, Angular Router supports reactive route resources as well as data resolvers:
+
+- [Data fetching with resources](/guide/routing/data-fetching-with-resources): Fetch data reactively using Angular Signals `Resource` APIs.
+- [Route data resolvers](/guide/routing/data-resolvers): Fetch data before route activation using resolver functions.
 
 ## Nested Routes
 

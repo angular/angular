@@ -60,7 +60,7 @@ export interface InternalRouterResource<T = unknown> extends Resource<T> {
 /**
  * Marks a resource as non-blocking. The Router will NOT wait for this resource to resolve
  * before completing the navigation.
- * @experimental
+ * @developerPreview 22.2
  */
 export function nonBlocking<T, R extends Resource<T>>(res: R): R {
   (res as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] = false;

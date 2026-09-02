@@ -17,6 +17,24 @@ import {RuntimeError, RuntimeErrorCode} from './errors';
 import {DestroyRef} from './linker/destroy_ref';
 import {NgZone} from './zone/ng_zone';
 
+import {Type} from './interface/type';
+
+/**
+ * Error details caught be the error boundary
+ *
+ * @publicApi 22.2
+ */
+export interface ErrorDetails {
+  declarationType: Type<any>;
+  declarationInstance: unknown;
+  caught: boolean;
+  boundary?: {
+    type: Type<any>;
+    reset: () => void;
+  };
+  caughtBy?: Function;
+}
+
 /**
  * Provides a hook for centralized exception handling.
  *
@@ -59,6 +77,36 @@ export class ErrorHandler {
 
   handleError(error: any): void {
     this._console.error('ERROR', error);
+  }
+
+  onViewError?(error: any, details: ErrorDetails): void;
+}
+
+export function encapsulateBoundaryError(error: unknown): Error {
+  if (isErrorLike(error)) {
+    return error;
+  }
+  return new ErrorBoundaryWrappedError(error);
+}
+
+export function isErrorLike(error: unknown): error is Error {
+  return (
+    error instanceof Error ||
+    (typeof error === 'object' &&
+      error !== null &&
+      typeof (error as Error).name === 'string' &&
+      typeof (error as Error).message === 'string')
+  );
+}
+
+export class ErrorBoundaryWrappedError extends Error {
+  constructor(error: unknown) {
+    super(
+      typeof ngDevMode !== 'undefined' && ngDevMode
+        ? `Error boundary caught an error that's not an Error instance: ${String(error)}. Check this error's .cause for the actual error.`
+        : String(error),
+      {cause: error},
+    );
   }
 }
 

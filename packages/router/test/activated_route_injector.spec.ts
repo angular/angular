@@ -18,22 +18,9 @@ import {
   Router,
   destroyDetachedRouteHandle,
   provideRouter,
-  ɵwithRouterResources,
-  ɵResourceContext as ResourceContext,
-  ɵResourceResult as ResourceResult,
+  withRouterResources,
 } from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
-
-// TODO: Use the public @angular/router API once exposed
-type InternalRoute = Route & {
-  /**
-   * A function that returns a map of resources.
-   * This function is executed during the Main Loading Phase of a navigation.
-   * @experimental
-   * @internal
-   */
-  resources?: (ctx: ResourceContext) => ResourceResult | Promise<ResourceResult>;
-};
 
 describe('ActivatedRoute local injector', () => {
   @Component({
@@ -76,10 +63,10 @@ describe('ActivatedRoute local injector', () => {
   let router: Router;
   let strategy: CustomReuseStrategy;
 
-  async function setUpRouter(routes: InternalRoute[]): Promise<RouterTestingHarness> {
+  async function setUpRouter(routes: Route[]): Promise<RouterTestingHarness> {
     TestBed.configureTestingModule({
       providers: [
-        provideRouter(routes, ɵwithRouterResources()),
+        provideRouter(routes, withRouterResources()),
         {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
       ],
     });
