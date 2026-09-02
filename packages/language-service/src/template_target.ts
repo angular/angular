@@ -18,6 +18,8 @@ import {
   RecursiveAstVisitor,
   SafeCall,
   ThisReceiver,
+  TmplAstBoundaryBlock,
+  TmplAstBoundaryErrorBlock,
   TmplAstBoundAttribute,
   TmplAstBoundDeferredTrigger,
   TmplAstBoundEvent,
@@ -51,12 +53,9 @@ import {
   TmplAstUnknownBlock,
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
-  TmplAstBoundaryBlock,
-  TmplAstBoundaryErrorBlock,
   tmplAstVisitAll,
   TmplAstVisitor,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli';
 import {findFirstMatchingNode} from '@angular/compiler-cli/private/hybrid_analysis';
 import tss from 'typescript';
 
@@ -65,7 +64,6 @@ import {
   isTemplateNodeWithKeyAndValue,
   isWithin,
   isWithinKeyValue,
-  TypeCheckInfo,
 } from './utils';
 
 /**
@@ -711,8 +709,8 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   }
 
   visitBoundaryErrorBlock(block: TmplAstBoundaryErrorBlock) {
-    block.expression && this.visitBinding(block.expression);
     this.visitAll(block.contextVariables);
+    block.expression && this.visitBinding(block.expression);
     this.visitAll(block.children);
   }
 
