@@ -712,27 +712,20 @@ export type EnvironmentProviders = {
 
 // @public
 export interface ErrorDetails {
-    // (undocumented)
     readonly boundary?: {
         readonly type: Type<any>;
         readonly reset: () => void;
     };
-    // (undocumented)
-    readonly caught: boolean;
-    // (undocumented)
     readonly caughtBy?: Function;
-    // (undocumented)
     readonly declarationInstance: unknown;
-    // (undocumented)
-    readonly declarationType: Type<any>;
+    readonly declarationType: Type<unknown>;
 }
 
 // @public
 export class ErrorHandler {
     // (undocumented)
     handleError(error: any): void;
-    // (undocumented)
-    onViewError?(error: any, details: ErrorDetails): void;
+    onViewError?(error: Error, details: ErrorDetails): void;
 }
 
 // @public
@@ -2123,7 +2116,7 @@ export abstract class ViewContainerRef {
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, options?: {
         index?: number;
         injector?: Injector;
-        onError?: (error: Error, context: ErrorDetails) => void;
+        onError?: (error: Error, details: ErrorDetails) => void;
     }): EmbeddedViewRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
     abstract detach(index?: number): ViewRef | null;
