@@ -8119,8 +8119,6 @@ describe('platform-server full application hydration integration', () => {
         expect(ssrContents).toContain('Error occurred on server!');
         expect(ssrContents).not.toContain('Child rendering...');
 
-        resetTViewsFor(SimpleComponent, ChildComponent);
-
         // 2. Hydration where error does NOT occur (fail is false on client)
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
         const compRef = getComponentRef<SimpleComponent>(appRef);
@@ -8168,8 +8166,6 @@ describe('platform-server full application hydration integration', () => {
         const ssrContents = getAppContents(html);
 
         expect(ssrContents).toContain('Error occurred on server and client!');
-
-        resetTViewsFor(SimpleComponent, ChildComponent);
 
         // 2. Hydration where error DOES occur again
         const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
