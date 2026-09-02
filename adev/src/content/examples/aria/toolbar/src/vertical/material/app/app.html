@@ -36,9 +36,9 @@
       value="bold"
       type="button"
       aria-label="bold"
-      #bold="ngToolbarWidget"
       class="material-symbols-outlined"
-      [aria-pressed]="bold.selected()"
+      [attr.aria-pressed]="bold()"
+      (click)="bold.set(!bold())"
       translate="no"
     >
       format_bold
@@ -49,9 +49,9 @@
       value="italic"
       type="button"
       aria-label="italic"
-      #italic="ngToolbarWidget"
       class="material-symbols-outlined"
-      [aria-pressed]="italic.selected()"
+      [attr.aria-pressed]="italic()"
+      (click)="italic.set(!italic())"
       translate="no"
     >
       format_italic
@@ -62,9 +62,9 @@
       value="underlined"
       type="button"
       aria-label="underlined"
-      #underlined="ngToolbarWidget"
       class="material-symbols-outlined"
-      [aria-pressed]="underlined.selected()"
+      [attr.aria-pressed]="underlined()"
+      (click)="underlined.set(!underlined())"
       translate="no"
     >
       format_underlined

@@ -1,5 +1,5 @@
 import {Dir} from '@angular/cdk/bidi';
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {Toolbar, ToolbarWidget, ToolbarWidgetGroup} from '@angular/aria/toolbar';
 
 @Component({
@@ -8,4 +8,9 @@ import {Toolbar, ToolbarWidget, ToolbarWidgetGroup} from '@angular/aria/toolbar'
   styleUrl: 'app.css',
   imports: [Dir, Toolbar, ToolbarWidget, ToolbarWidgetGroup],
 })
-export class App {}
+export class App {
+  readonly bold = signal(false);
+  readonly italic = signal(false);
+  readonly underlined = signal(false);
+  readonly alignment = signal<'left' | 'center' | 'right'>('left');
+}
