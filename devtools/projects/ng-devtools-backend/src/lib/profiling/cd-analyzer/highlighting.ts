@@ -11,6 +11,7 @@
  * change detection component highlighting feature.
  */
 
+import {getConfig} from '../../config/config';
 import {getDirectiveName} from '../../directive-forest/component-tree/component-tree';
 import {highlightElement, removeHighlightsByType} from '../../shared/highlighter';
 import {
@@ -21,26 +22,21 @@ import {
 import {ngDebugClient} from '../../shared/ng-debug-api/ng-debug-api';
 import {CdAnalyzer, getCdAnalyzer} from './analyzer';
 
-// State of change detection highlighting
-let isCdHighlightingEnabled = false;
-
 let cdAnalyzerUnsubscriber: (() => void) | undefined;
 let cdAnalyzerDispose: (() => void) | undefined;
 
-export function enableCdHighlighting() {
-  if (!isCdHighlightingEnabled) {
-    const {analyzer, disposeFn} = getCdAnalyzer();
-    cdAnalyzerDispose = disposeFn;
-    initCdHighlighting(analyzer);
-  }
-  isCdHighlightingEnabled = true;
-}
-
-export function disableCdHighlighting() {
-  cdAnalyzerUnsubscriber?.();
-  cdAnalyzerDispose?.();
-  removeHighlightsByType(HighlightType.ChangeDetection);
-  isCdHighlightingEnabled = false;
+export function loadCdHighlighting() {
+  getConfig().onChange('cdHighlighting', (enabled) => {
+    if (enabled) {
+      const {analyzer, disposeFn} = getCdAnalyzer();
+      cdAnalyzerDispose = disposeFn;
+      initCdHighlighting(analyzer);
+    } else {
+      cdAnalyzerUnsubscriber?.();
+      cdAnalyzerDispose?.();
+      removeHighlightsByType(HighlightType.ChangeDetection);
+    }
+  });
 }
 
 function initCdHighlighting(cdAnalyzer: CdAnalyzer) {
