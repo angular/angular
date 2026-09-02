@@ -1160,6 +1160,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     if (analysis.isPoisoned && !this.usePoisonedData) {
       return null;
     }
+    const typeCheckScope = this.typeCheckScopeRegistry.getTypeCheckScope(new Reference(node));
     const scope = this.scopeReader.getScopeForComponent(node);
     const selector = analysis.meta.selector;
     let matcher: DirectiveMatcher<DirectiveMeta> | null = null;
@@ -1209,6 +1210,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       },
       getTemplateAst() {
         return boundTemplate.target.template;
+      },
+      getPipe(name) {
+        const pipe = typeCheckScope.pipes.get(name);
+        return pipe ? {ref: {node: pipe.ref.node}} : null;
       },
     };
 

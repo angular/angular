@@ -1326,5 +1326,49 @@ runInEachFileSystem(() => {
       );
       expect(inputOrOutputRefs).toEqual([]);
     });
+
+    it('should discover pipes in template expressions', () => {
+      const pipe = `
+        export class MyPipe {
+          transform(v: any) { return v; }
+        }
+      `;
+      const pipeDecl = util.getComponentDeclaration(pipe, 'MyPipe');
+      const template = '{{ foo | myPipe }}';
+      const boundTemplate = util.getBoundTemplate(
+        template,
+        {},
+        [],
+        [
+          {
+            name: 'myPipe',
+            declaration: pipeDecl,
+          },
+        ],
+      );
+      const refs = Array.from(getTemplateIdentifiers(boundTemplate));
+
+      expect(refs).toContain({
+        name: 'myPipe',
+        kind: IdentifierKind.Pipe,
+        span: new AbsoluteSourceSpan(9, 15),
+        target: {
+          node: pipeDecl,
+        },
+      });
+    });
+
+    it('should handle unresolvable pipes gracefully', () => {
+      const template = '{{ foo | unknownPipe }}';
+      const boundTemplate = util.getBoundTemplate(template);
+      const refs = Array.from(getTemplateIdentifiers(boundTemplate));
+
+      expect(refs).toContain({
+        name: 'unknownPipe',
+        kind: IdentifierKind.Pipe,
+        span: new AbsoluteSourceSpan(9, 20),
+        target: null,
+      });
+    });
   });
 });

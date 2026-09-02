@@ -38,6 +38,7 @@ export enum IdentifierKind {
   Directive,
   Input,
   Output,
+  Pipe,
 }
 
 /**
@@ -156,6 +157,14 @@ export interface BoundAttributeIdentifier<T = DeclarationNode> extends TemplateI
   } | null;
 }
 
+/** Describes a pipe used in a template expression. */
+export interface PipeIdentifier<T = DeclarationNode> extends TemplateIdentifier {
+  kind: IdentifierKind.Pipe;
+  target: {
+    node: T;
+  } | null;
+}
+
 /**
  * Identifiers recorded at the top level of the template, without any context about the HTML nodes
  * they were discovered in.
@@ -170,7 +179,8 @@ export type TopLevelIdentifier<T = DeclarationNode> =
   | LetDeclarationIdentifier
   | ComponentNodeIdentifier<T>
   | DirectiveNodeIdentifier<T>
-  | BoundAttributeIdentifier<T>;
+  | BoundAttributeIdentifier<T>
+  | PipeIdentifier<T>;
 
 /** Identifiers that can bring in directives to the template. */
 export type DirectiveHostIdentifier<T = DeclarationNode> =
@@ -227,6 +237,7 @@ export interface AbstractBoundTemplate<T> {
   getExpressionTarget(ast: AST): TmplAstReference | TmplAstVariable | TmplAstLetDeclaration | null;
   getUsedDirectives(): Array<{ref: {node: T}; isComponent: boolean}>;
   getTemplateAst(): TmplAstNode[] | undefined;
+  getPipe(name: string): {ref: {node: T}} | null;
 }
 
 /**

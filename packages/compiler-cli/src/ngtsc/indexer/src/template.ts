@@ -8,6 +8,7 @@
 import {
   AST,
   ASTWithSource,
+  BindingPipe,
   CombinedRecursiveAstVisitor,
   ImplicitReceiver,
   ParseSourceSpan,
@@ -41,6 +42,7 @@ import {
   IdentifierKind,
   LetDeclarationIdentifier,
   MethodIdentifier,
+  PipeIdentifier,
   PropertyIdentifier,
   ReferenceIdentifier,
   TemplateNodeIdentifier,
@@ -146,6 +148,41 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
   override visitPropertyRead(ast: PropertyRead) {
     this.visitIdentifier(ast, IdentifierKind.Property);
     super.visitPropertyRead(ast, null);
+  }
+
+  override visitPipe(ast: BindingPipe): void {
+    this.visitPipeIdentifier(ast);
+    super.visitPipe(ast, null);
+  }
+
+  private visitPipeIdentifier(ast: BindingPipe): void {
+    if (this.currentAstWithSource === null || this.currentAstWithSource.source === null) {
+      return;
+    }
+
+    const {absoluteOffset, source: expressionStr} = this.currentAstWithSource;
+    const identifierStart = ast.nameSpan.start - absoluteOffset;
+
+    if (!expressionStr.startsWith(ast.name, identifierStart)) {
+      this.errors.push(
+        new Error(
+          `Impossible state: "${ast.name}" not found in "${expressionStr}" at location ${identifierStart}`,
+        ),
+      );
+      return;
+    }
+
+    const absoluteStart = absoluteOffset + identifierStart;
+    const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
+    const target = this.boundTemplate.getPipe(ast.name);
+    const identifier: PipeIdentifier<T> = {
+      name: ast.name,
+      span,
+      kind: IdentifierKind.Pipe,
+      target: target ? {node: target.ref.node} : null,
+    };
+
+    this.identifiers.add(identifier);
   }
 
   override visitBoundAttribute(attribute: TmplAstBoundAttribute): void {
