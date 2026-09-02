@@ -7,9 +7,9 @@
  */
 
 import {setActiveConsumer} from '../../../primitives/signals';
-import {Type} from '../../core';
 import {ErrorDetails, ErrorHandler, encapsulateBoundaryError} from '../../error_handler';
 import {findAndReconcileMatchingDehydratedViews} from '../../hydration/views';
+import {Type} from '../../interface/type';
 import {performanceMarkFeature} from '../../util/performance';
 import {bindingUpdated} from '../bindings';
 import {
@@ -24,11 +24,7 @@ import {
 import {getLView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {markViewForRefresh} from '../util/view_utils';
-import {
-  addLViewToLContainer,
-  getLViewFromLContainer,
-  removeLViewFromLContainer,
-} from '../view/container';
+import {addLViewToLContainer, removeLViewFromLContainer} from '../view/container';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 import {getExistingTNode, getLContainer} from './control_flow';
 
