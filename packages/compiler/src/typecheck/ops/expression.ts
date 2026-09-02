@@ -137,6 +137,8 @@ export class TcbExpressionTranslator {
       }
 
       if (targetExpression === null) {
+        // As a fallback, check the lexical block scope (e.g. for variables like `@error (let err)`).
+        // If not found, it will eventually fall through to the component context.
         const fallback = this.scope.resolveByName(ast.name);
         if (fallback !== null) {
           fallback.addParseSpanInfo(ast.sourceSpan);
