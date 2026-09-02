@@ -69,6 +69,7 @@ export class ExampleViewer {
   readonly expandable = signal<boolean>(false);
   readonly expanded = signal<boolean>(false);
   readonly snippetCode = signal<Snippet | undefined>(undefined);
+  readonly selectedTabIndex = signal<number>(0);
   readonly showCode = signal<boolean>(true);
   readonly tabs = computed(() =>
     this.exampleMetadata()?.files.map((file) => ({
@@ -101,10 +102,7 @@ export class ExampleViewer {
           `example-${this.exampleMetadata()?.id.toString()!}`,
         );
 
-        const lines = this.getHiddenCodeLines();
-        const lineNumbers = this.getHiddenCodeLineNumbers();
-
-        this.expandable.set(lines.length > 0 || lineNumbers.length > 0);
+        this.updateExpandable();
       },
       {injector: this.injector},
     );
@@ -137,8 +135,25 @@ export class ExampleViewer {
   }
 
   protected onTabIndexChange(index: number): void {
+    this.selectedTabIndex.set(index);
     this.snippetCode.set(this.exampleMetadata()?.files[index]);
-    this.setCodeLinesVisibility();
+
+    afterNextRender(
+      () => {
+        this.setCodeLinesVisibility();
+        this.updateExpandable();
+      },
+      {injector: this.injector},
+    );
+  }
+
+  // A file is expandable when its range hides lines. While the block is expanded nothing is
+  // hidden, so trust the presence of a range instead of the rendered state.
+  private updateExpandable(): void {
+    this.expandable.set(
+      !!this.snippetCode()?.visibleLinesRange &&
+        (this.expanded() || this.getHiddenCodeLines().length > 0),
+    );
   }
 
   private getFileExtension(name: string): string {
@@ -197,13 +212,13 @@ export class ExampleViewer {
     for (const [index, line] of lines.entries()) {
       if (!linesToDisplay.includes(index + 1)) {
         line.classList.add(HIDDEN_CLASS_NAME);
-      } else if (!linesToDisplay.includes(index - 1)) {
+      } else if (!linesToDisplay.includes(index)) {
         appendGapBefore.push(line);
       }
     }
 
     for (const [index, lineNumber] of lineNumbers.entries()) {
-      if (!linesToDisplay.includes(index)) {
+      if (!linesToDisplay.includes(index + 1)) {
         lineNumber.classList.add(HIDDEN_CLASS_NAME);
       }
     }
