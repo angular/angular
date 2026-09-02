@@ -101,6 +101,7 @@ export class NavigationStateManager extends StateManager {
   private nonRouterCurrentEntryChangeSubject = new Subject<{
     path: string;
     state: RestoredState | null | undefined;
+    hasUAVisualTransition?: boolean;
   }>();
 
   nonRouterEntryChangeListener?: SubscriptionLike;
@@ -130,16 +131,18 @@ export class NavigationStateManager extends StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike {
     this.activeHistoryEntry = this.navigation.currentEntry!;
     this.nonRouterEntryChangeListener = this.nonRouterCurrentEntryChangeSubject.subscribe(
-      ({path, state}) => {
+      ({path, state, hasUAVisualTransition}) => {
         listener(
           path,
           state,
           'popstate',
           !this.precommitHandlerSupported ? {replaceUrl: true} : {},
+          hasUAVisualTransition,
         );
       },
     );
@@ -538,7 +541,11 @@ export class NavigationStateManager extends StateManager {
     // The url will always start with the appRootUrl because of the boundary check in handleNavigate.
     const path = event.destination.url.substring(this.appRootUrl.href.length - 1);
     const state = event.destination.getState() as RestoredState | null | undefined;
-    this.nonRouterCurrentEntryChangeSubject.next({path, state});
+    this.nonRouterCurrentEntryChangeSubject.next({
+      path,
+      state,
+      hasUAVisualTransition: event.hasUAVisualTransition,
+    });
   }
 
   private eventAndRouterDestinationsMatch(

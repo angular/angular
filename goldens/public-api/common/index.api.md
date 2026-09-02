@@ -429,6 +429,7 @@ export const LOCATION_INITIALIZED: InjectionToken<Promise<any>>;
 
 // @public
 export interface LocationChangeEvent {
+    hasUAVisualTransition?: boolean;
     // (undocumented)
     state: any;
     // (undocumented)
@@ -929,6 +930,7 @@ export enum Plural {
 
 // @public (undocumented)
 interface PopStateEvent_2 {
+    hasUAVisualTransition?: boolean;
     // (undocumented)
     pop?: boolean;
     // (undocumented)

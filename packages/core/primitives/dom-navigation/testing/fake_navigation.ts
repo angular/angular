@@ -540,6 +540,7 @@ export class FakeNavigation implements Navigation {
     // Happens as part of "updating the document" steps https://whatpr.org/html/10919/browsing-the-web.html#updating-the-document
     const popStateEvent = createPopStateEvent({
       state: navigateEvent.destination.getHistoryState(),
+      hasUAVisualTransition: navigateEvent.hasUAVisualTransition,
     });
     this._window.dispatchEvent(popStateEvent);
     if (navigateEvent.hashChange) {
@@ -810,6 +811,7 @@ function dispatchNavigateEvent({
   canIntercept,
   userInitiated,
   hashChange,
+  hasUAVisualTransition,
   navigationType,
   destination,
   info,
@@ -820,6 +822,7 @@ function dispatchNavigateEvent({
   canIntercept: boolean;
   userInitiated: boolean;
   hashChange: boolean;
+  hasUAVisualTransition?: boolean;
   navigationType: NavigationType;
   destination: FakeNavigationDestination;
   info: unknown;
@@ -838,6 +841,9 @@ function dispatchNavigateEvent({
   event.canIntercept = canIntercept;
   event.userInitiated = userInitiated;
   event.hashChange = hashChange;
+  if (hasUAVisualTransition) {
+    event.hasUAVisualTransition = true;
+  }
   event.signal = eventAbortController.signal;
   event.abortController = eventAbortController;
   event.info = info;
@@ -1162,12 +1168,21 @@ function createFakeNavigationCurrentEntryChangeEvent({
  * Create a fake equivalent of `PopStateEvent`. This does not use a class
  * because ES5 transpiled JavaScript cannot extend native Event.
  */
-function createPopStateEvent({state}: {state: unknown}) {
+function createPopStateEvent({
+  state,
+  hasUAVisualTransition,
+}: {
+  state: unknown;
+  hasUAVisualTransition?: boolean;
+}) {
   const event = new Event('popstate', {
     bubbles: false,
     cancelable: false,
   }) as {-readonly [P in keyof PopStateEvent]: PopStateEvent[P]};
   event.state = state;
+  if (hasUAVisualTransition) {
+    event.hasUAVisualTransition = true;
+  }
   return event as PopStateEvent;
 }
 
