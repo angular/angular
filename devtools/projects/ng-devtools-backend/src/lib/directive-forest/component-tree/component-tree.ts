@@ -228,9 +228,9 @@ const enum DirectiveMetadataKey {
 // Gets directive metadata. For newer versions of Angular (v12+) it uses
 // the global `getDirectiveMetadata`. For prior versions of the framework
 // the method directly interacts with the directive/component definition.
-const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
-  const getMetadata = ngDebugClient().getDirectiveMetadata!;
-  const metadata = getMetadata?.(dir);
+function getDirectiveMetadata(dir: any): DirectiveMetadata {
+  const getMetadata = ngDebugClient().getDirectiveMetadata;
+  const metadata = dir ? getMetadata?.(dir) : null;
   if (metadata) {
     const {framework} = metadata;
     switch (framework) {
@@ -287,9 +287,9 @@ const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
     encapsulation: safelyGrabMetadata(DirectiveMetadataKey.ENCAPSULATION),
     changeDetection: safelyGrabMetadata(DirectiveMetadataKey.CHANGE_DETECTION),
   };
-};
+}
 
-export function getDirectiveCdStrategy(dir: any): ChangeDetection | undefined {
+export function getDirectiveCdStrategy(dir: ComponentInstanceType): ChangeDetection | undefined {
   const metadata = getDirectiveMetadata(dir.instance);
 
   switch (metadata.framework) {

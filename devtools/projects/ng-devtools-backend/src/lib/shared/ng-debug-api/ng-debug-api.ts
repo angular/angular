@@ -58,7 +58,7 @@ export function ngDebugProfilerApiIsSupported(): boolean {
   // Temporary solution. Convert to an eligible API when available.
   // https://github.com/angular/angular/pull/60585#discussion_r2017047132
   // If there is a Wiz application, make Profiler API unavailable.
-  const roots = getAppRoots();
+  const roots = getAppRoots().filter((el) => ng.getComponent?.(el));
   return (
     !!roots.length &&
     !roots.some((el) => {
@@ -98,7 +98,7 @@ export function ngDebugSignalPropertiesInspectionApiIsSupported(): boolean {
   const ng = ngDebugClient();
 
   // If all apps are Angular, make the API available.
-  const roots = getAppRoots();
+  const roots = getAppRoots().filter((el) => ng.getComponent?.(el));
   return (
     !!roots.length &&
     roots.every((el) => {
