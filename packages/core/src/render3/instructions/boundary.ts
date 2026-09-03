@@ -9,7 +9,7 @@
 import {setActiveConsumer} from '../../../primitives/signals';
 import {ErrorDetails, ErrorHandler, encapsulateBoundaryError} from '../../error_handler';
 import {findAndReconcileMatchingDehydratedViews} from '../../hydration/views';
-import {Type} from '../../interface/type';
+import {Type, Writable} from '../../interface/type';
 import {performanceMarkFeature} from '../../util/performance';
 import {bindingUpdated} from '../bindings';
 import {
@@ -122,7 +122,7 @@ export function ɵɵboundaryUpdate(
           });
 
           if (matchingTemplateIndex === primaryTemplateIndex) {
-            embeddedLView[ON_ERROR] = (error: Error, details: any) => {
+            embeddedLView[ON_ERROR] = (error: Error, details: ErrorDetails) => {
               const boundary = hostLView[HEADER_OFFSET + slotIndex] as LBoundary;
               boundary.error = error;
 
@@ -130,9 +130,9 @@ export function ɵɵboundaryUpdate(
               if (errorHandler) {
                 const boundaryComponentView = hostLView[DECLARATION_COMPONENT_VIEW][CONTEXT] as any;
                 const boundaryType: Type<unknown> = boundaryComponentView.constructor;
-                details.boundary = {
+                (details as Writable<ErrorDetails>).boundary = {
                   type: boundaryType,
-                  reset: () => boundary.reset(),
+                  retry: () => boundary.reset(),
                 };
 
                 if (errorHandler.onViewError) {
