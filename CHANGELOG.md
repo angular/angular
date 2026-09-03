@@ -1,3 +1,38 @@
+<a name="22.2.0-next.5"></a>
+# 22.2.0-next.5 (2026-09-02)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [faafd18a4c](https://github.com/angular/angular/commit/faafd18a4c0c5db161e5d7056e9abfb8675904cb) | fix | check uninvoked signal aliases in extended diagnostic |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [05c4d5a835](https://github.com/angular/angular/commit/05c4d5a8354228100b51176f295ed5dee4f3febc) | feat | add utility for testing directives |
+| [91a2bf8425](https://github.com/angular/angular/commit/91a2bf84250f9b0a28a8a68e1eded6e9506bc5e9) | feat | support annotations in WebMCP tool declarations |
+| [0904f90b13](https://github.com/angular/angular/commit/0904f90b13ac2a1bad22a2b43fb232957dba44c3) | fix | cancel stale debounce timers to prevent timer leaks |
+| [58d536bc83](https://github.com/angular/angular/commit/58d536bc8362f3942c929e58be551d871b00cea7) | fix | don&apos;t fail NgModule checks for a pipe that extends a base class |
+| [7168bed663](https://github.com/angular/angular/commit/7168bed663ba2a53f087a68a251e8ccfd938eb97) | fix | validate SVG animation attributes outside the SVG namespace |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6e299da8cf](https://github.com/angular/angular/commit/6e299da8cfc7df49029d5d8bb7d5739560e1aaa4) | feat | hard-code `readOnlyHint` and `untrustedContentHint` for WebMCP implicit signal forms |
+| [38861ac41b](https://github.com/angular/angular/commit/38861ac41bb373870e961f41626de6b6b31120f1) | fix | avoid writing to `name` input on ControlValueAccessor |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f72600eadd](https://github.com/angular/angular/commit/f72600eaddfa6a299526e922eb9ad5356be821a6) | fix | skip tsconfig files of non-Angular projects |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b3bb36ad87](https://github.com/angular/angular/commit/b3bb36ad87334f7a86908c1b2b4353c1cc514c2e) | fix | resolve HTTP(S) URLs without authority as relative during SSR |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7137a41223](https://github.com/angular/angular/commit/7137a41223079b4b172aeccb5031347fcc947b79) | feat | stabilize auto cleanup injectors feature |
+| [af26a8c521](https://github.com/angular/angular/commit/af26a8c52178a0e972c2841051db44f9d04ac371) | fix | avoid view transitions when the user agent provides one |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.1.5"></a>
 # 22.1.5 (2026-09-02)
 ### compiler-cli
