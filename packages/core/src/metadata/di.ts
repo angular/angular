@@ -146,7 +146,7 @@ export interface ContentChildrenDecorator {
    *   * Any provider defined on the injector of the component that is matched by the `selector` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
-   *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
+   *   * `TemplateRef`, `ElementRef`, `ViewContainerRef`, and `Injector`
    *
    * @usageNotes
    *
@@ -249,7 +249,7 @@ export interface ContentChildDecorator {
    *   * Any provider defined on the injector of the component that is matched by the `selector` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
-   *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
+   *   * `TemplateRef`, `ElementRef`, `ViewContainerRef`, and `Injector`
    *
    * Difference between dynamic and static queries:
    *
@@ -357,7 +357,7 @@ export interface ViewChildrenDecorator {
    *   * Any provider defined on the injector of the component that is matched by the `selector` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
-   *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
+   *   * `TemplateRef`, `ElementRef`, `ViewContainerRef`, and `Injector`
    *
    * @usageNotes
    *
@@ -444,7 +444,7 @@ export interface ViewChildDecorator {
    *   * Any provider defined on the injector of the component that is matched by the `selector` of
    * this query
    *   * Any provider defined through a string token (e.g. `{provide: 'token', useValue: 'val'}`)
-   *   * `TemplateRef`, `ElementRef`, and `ViewContainerRef`
+   *   * `TemplateRef`, `ElementRef`, `ViewContainerRef`, and `Injector`
    *
    * Difference between dynamic and static queries:
    *   * Dynamic queries \(`static: false`\) - The query resolves before the `ngAfterViewInit()`
