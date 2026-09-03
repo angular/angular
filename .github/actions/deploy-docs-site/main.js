@@ -58303,7 +58303,7 @@ var RequestError2 = class extends Error {
     this.request = requestCopy;
   }
 };
-var VERSION22 = "10.0.15";
+var VERSION22 = "10.0.16";
 var defaults_default2 = {
   headers: {
     "user-agent": `octokit-request.js/${VERSION22} ${getUserAgent2()}`
@@ -58638,7 +58638,7 @@ var createTokenAuth3 = function createTokenAuth22(token) {
     hook: hook2.bind(null, token)
   });
 };
-var VERSION42 = "7.0.7";
+var VERSION42 = "7.0.8";
 var noop22 = () => {
 };
 var consoleWarn2 = console.warn.bind(console);
@@ -65410,7 +65410,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-ZBP47RX4.mjs:
+@angular/ng-dev/bundles/chunk-SA5OQN4K.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
