@@ -7,7 +7,7 @@ ts_project(
     srcs = [
         "index.ts",
     ],
-    visibility = ["//adev/shared-docs:__subpackages__"],
+    visibility = ["//adev:__subpackages__"],
     deps = [
         ":lib",
     ],
