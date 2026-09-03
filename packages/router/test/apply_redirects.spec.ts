@@ -9,6 +9,7 @@
 import {EnvironmentInjector, inject, Injectable, Type} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
+import {provideRouter} from '../src/provide_router';
 import {Route, Routes} from '../src/models';
 import {recognize} from '../src/recognize';
 import {Router} from '../src/router';
@@ -1547,6 +1548,12 @@ describe('redirects', () => {
   });
 
   describe('can use redirectTo as a function', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideRouter([])],
+      });
+    });
+
     it('with a simple function returning a string', async () => {
       await checkRedirect(
         [

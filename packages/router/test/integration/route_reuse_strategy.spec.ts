@@ -30,9 +30,10 @@ import {
   ROUTER_DIRECTIVES,
   createRoot,
   advance,
+  provideTestRouter,
 } from './integration_helpers';
 
-export function routeReuseIntegrationSuite() {
+export function routeReuseIntegrationSuite(browserAPI: 'history' | 'navigation') {
   describe('Custom Route Reuse Strategy', () => {
     class AttachDetachReuseStrategy implements RouteReuseStrategy {
       stored: {[k: string]: DetachedRouteHandle} = {};
@@ -90,7 +91,7 @@ export function routeReuseIntegrationSuite() {
       TestBed.configureTestingModule({
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
-          provideRouter([]),
+          provideTestRouter(browserAPI, []),
         ],
       });
 
@@ -271,7 +272,7 @@ export function routeReuseIntegrationSuite() {
         declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
         imports: [CommonModule, ...ROUTER_DIRECTIVES],
         providers: [
-          provideRouter([
+          provideTestRouter(browserAPI, [
             {path: 'a', outlet: 'toolpanel', component: Tool1Component},
             {path: 'b', outlet: 'toolpanel', component: Tool2Component},
           ]),
@@ -327,7 +328,7 @@ export function routeReuseIntegrationSuite() {
         imports: [CommonModule, ...ROUTER_DIRECTIVES],
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
-          provideRouter([
+          provideTestRouter(browserAPI, [
             {path: 'a', component: SimpleCmp},
             {path: 'b', component: BlankCmp},
           ]),
@@ -403,7 +404,7 @@ export function routeReuseIntegrationSuite() {
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
           {provide: CREATED_COMPS, useValue: []},
-          provideRouter([
+          provideTestRouter(browserAPI, [
             {path: 'a', component: Parent, children: [{path: 'b', component: Child}]},
             {path: 'c', component: SimpleCmp},
           ]),
@@ -466,7 +467,7 @@ export function routeReuseIntegrationSuite() {
         imports: [ROUTER_DIRECTIVES],
         providers: [
           {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
-          provideRouter([
+          provideTestRouter(browserAPI, [
             {path: 'a', loadChildren: () => LoadedModule},
             {path: 'b', component: ComponentB},
           ]),

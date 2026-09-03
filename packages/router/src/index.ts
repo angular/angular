@@ -71,6 +71,7 @@ export {ViewTransitionInfo, ViewTransitionsFeatureOptions} from './utils/view_tr
 export * from './models_deprecated';
 export {Navigation, NavigationExtras, UrlCreationOptions} from './navigation_transition';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
+export {providePlatformNavigationRouter} from './provide_platform_navigation_router';
 export {
   AutoCleanupInjectorsFeature,
   ComponentInputBindingFeature,
@@ -91,9 +92,8 @@ export {
   withDebugTracing,
   withDisabledInitialNavigation,
   withEnabledBlockingInitialNavigation,
-  withExperimentalAutoCleanupInjectors,
   withAutoCleanupInjectors,
-  withExperimentalPlatformNavigation,
+  withExperimentalAutoCleanupInjectors,
   withHashLocation,
   withInMemoryScrolling,
   withNavigationErrorHandler,

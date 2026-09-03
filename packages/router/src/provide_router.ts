@@ -56,7 +56,7 @@ import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 
 import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtools';
 import {ActivatedRoute} from './router_state';
-import {NavigationStateManager} from './statemanager/navigation_state_manager';
+import {HistoryStateManager} from './statemanager/history_state_manager';
 import {StateManager} from './statemanager/state_manager';
 import {afterNextNavigation} from './utils/navigations';
 import {
@@ -105,6 +105,23 @@ import {ROUTER_RESOURCES_FEATURE} from './router_resource_feature';
  * @returns A set of providers to setup a Router.
  */
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
+  return provideRouterInternal(
+    [{provide: StateManager, useExisting: HistoryStateManager}],
+    routes,
+    features,
+  );
+}
+
+/**
+ * Sets up the core providers necessary to enable `Router` functionality for the application.
+ *
+ * @internal
+ */
+export function provideRouterInternal(
+  stateManagerProviders: Array<Provider | EnvironmentProviders>,
+  routes: Routes,
+  features: RouterFeatures[],
+): EnvironmentProviders {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     // Publish this util when the router is provided so that the devtools can use it.
     ɵpublishNonCoreGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);
@@ -116,6 +133,7 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
     {provide: ROUTES, multi: true, useValue: routes},
     {provide: ActivatedRoute, useFactory: rootRoute},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
+    stateManagerProviders,
     features.map((feature) => feature.ɵproviders),
   ]);
 }
@@ -189,86 +207,6 @@ export function withInMemoryScrolling(
     },
   ];
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
-}
-
-/**
- * A type alias for providers returned by `withExperimentalPlatformNavigation` for use with `provideRouter`.
- *
- * @see {@link withExperimentalPlatformNavigation}
- * @see {@link provideRouter}
- *
- * @experimental 21.1
- */
-export type ExperimentalPlatformNavigationFeature =
-  RouterFeature<RouterFeatureKind.ExperimentalPlatformNavigationFeature>;
-
-/**
- * Enables interop with the browser's `Navigation` API for router navigations.
- *
- * @description
- * 
- * CRITICAL: This feature is _highly_ experimental and should not be used in production. Browser support
- * is limited and in active development. Use only for experimentation and feedback purposes.
- * 
- * This function provides a `Location` strategy that uses the browser's `Navigation` API.
- * By using the platform's Navigation APIs, the Router is able to provide native
- * browser navigation capabilities. Some advantages include:
- * 
- * - The ability to intercept navigations triggered outside the Router. This allows plain anchor
- * elements _without_ `RouterLink` directives to be intercepted by the Router and converted to SPA navigations.
- * - Native scroll and focus restoration support by the browser, without the need for custom implementations.
- * - Communication of ongoing navigations to the browser, enabling built-in features like 
- * accessibility announcements, loading indicators, stop buttons, and performance measurement APIs.
-
- * NOTE: Deferred entry updates are not part of the interop 2025 Navigation API commitments so the "ongoing navigation"
- * communication support is limited.
- *
- * @usageNotes
- *
- * ```typescript
- * const appRoutes: Routes = [
- *   { path: 'page', component: PageComponent },
- * ];
- *
- * bootstrapApplication(AppComponent, {
- *   providers: [
- *     provideRouter(appRoutes, withExperimentalPlatformNavigation())
- *   ]
- * });
- * ```
- * 
- * @see [Navigation API on WICG](https://github.com/WICG/navigation-api?tab=readme-ov-file#problem-statement)
- * @see [Navigation API on Chrome from developers](https://developer.chrome.com/docs/web-platform/navigation-api/)
- * @see [Navigation API on MDN](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API)
- *
- * @experimental 21.1 
- * @returns A `RouterFeature` that enables the platform navigation.
- */
-export function withExperimentalPlatformNavigation(): ExperimentalPlatformNavigationFeature {
-  const devModeLocationCheck =
-    typeof ngDevMode === 'undefined' || ngDevMode
-      ? [
-          provideEnvironmentInitializer(() => {
-            const locationInstance = inject(Location);
-            if (!(locationInstance instanceof ɵNavigationAdapterForLocation)) {
-              const locationConstructorName = (locationInstance as any).constructor.name;
-              let message =
-                `'withExperimentalPlatformNavigation' provides a 'Location' implementation that ensures navigation APIs are consistently used.` +
-                ` An instance of ${locationConstructorName} was found instead.`;
-              if (locationConstructorName === 'SpyLocation') {
-                message += ` One of 'RouterTestingModule' or 'provideLocationMocks' was likely used. 'withExperimentalPlatformNavigation' does not work with these because they override the Location implementation.`;
-              }
-              throw new Error(message);
-            }
-          }),
-        ]
-      : [];
-  const providers = [
-    {provide: StateManager, useExisting: NavigationStateManager},
-    {provide: Location, useClass: ɵNavigationAdapterForLocation},
-    devModeLocationCheck,
-  ];
-  return routerFeature(RouterFeatureKind.ExperimentalPlatformNavigationFeature, providers);
 }
 
 export function getBootstrapListener() {
@@ -966,8 +904,7 @@ export type RouterFeatures =
   | ComponentInputBindingFeature
   | ViewTransitionsFeature
   | AutoCleanupInjectorsFeature
-  | RouterHashLocationFeature
-  | ExperimentalPlatformNavigationFeature;
+  | RouterHashLocationFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -984,5 +921,4 @@ export const enum RouterFeatureKind {
   ComponentInputBindingFeature,
   ViewTransitionsFeature,
   AutoCleanupInjectorsFeature,
-  ExperimentalPlatformNavigationFeature,
 }
