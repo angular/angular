@@ -37,7 +37,7 @@ export interface ErrorDetails {
    * Information about the error boundary that caught the error.
    */
   readonly boundary?: {
-    readonly type: Type<any>;
+    readonly type: Type<unknown>;
     readonly reset: () => void;
   };
   /**

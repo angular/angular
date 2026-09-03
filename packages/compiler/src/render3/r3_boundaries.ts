@@ -12,15 +12,10 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
 
 import * as t from './r3_ast';
-
-/** Pattern used to identify a boundary `let` parameter. */
-const LET_PATTERN = /^(let\s+)(.*)/;
+import {IDENTIFIER_PATTERN, LET_PATTERN, parseLetParameters} from './util';
 
 /** Pattern used to identify a boundary `when` expression. */
 const WHEN_PATTERN = /^(when\s+)(.*)/;
-
-/** Pattern used to validate a JavaScript identifier. */
-const IDENTIFIER_PATTERN = /^[$A-Z_][0-9A-Z_$]*$/i;
 
 export function isConnectedBoundaryErrorBlock(name: string): boolean {
   return name === 'error';
@@ -56,74 +51,37 @@ export function createBoundaryBlock(
 
     for (const param of block.parameters) {
       const letMatch = param.expression.match(LET_PATTERN);
-      if (letMatch) {
-        const variablesExpression = letMatch[2];
-        const parts = variablesExpression.split(',');
-        let currentOffset = 0;
-
-        for (const part of parts) {
-          const partIndex = variablesExpression.indexOf(part, currentOffset);
-          const partAbsoluteOffset = letMatch[1].length + partIndex;
-
-          const expressionParts = part.split('=');
-          const nameRaw = expressionParts[0];
-          const name = nameRaw.trim();
-          const nameIndex = nameRaw.indexOf(name);
-          const nameAbsoluteOffset = partAbsoluteOffset + nameIndex;
-
-          const keySpan = new ParseSourceSpan(
-            param.sourceSpan.start.moveBy(nameAbsoluteOffset),
-            param.sourceSpan.start.moveBy(nameAbsoluteOffset + name.length),
-          );
-
-          let valueSpan: ParseSourceSpan | undefined = undefined;
-          const variableName = expressionParts.length === 2 ? expressionParts[1].trim() : '$error';
-
-          if (expressionParts.length === 2) {
-            const valueRaw = expressionParts[1];
-            const valueIndex = valueRaw.indexOf(variableName);
-            const valueAbsoluteOffset =
-              partAbsoluteOffset + expressionParts[0].length + 1 + valueIndex;
-            valueSpan = new ParseSourceSpan(
-              param.sourceSpan.start.moveBy(valueAbsoluteOffset),
-              param.sourceSpan.start.moveBy(valueAbsoluteOffset + variableName.length),
-            );
-          }
-
-          const sourceSpan = new ParseSourceSpan(keySpan.start, valueSpan?.end ?? keySpan.end);
-
-          if (name.length === 0) {
-            errors.push(
-              new ParseError(
-                param.sourceSpan,
-                `Invalid @error block "let" parameter. Variable name cannot be empty`,
-              ),
-            );
-          } else if (!IDENTIFIER_PATTERN.test(name)) {
-            errors.push(
-              new ParseError(
-                param.sourceSpan,
-                `"let" parameter must be a valid JavaScript identifier`,
-              ),
-            );
-          } else if (variableName !== '$error' && variableName !== '$retry') {
-            errors.push(
-              new ParseError(
-                param.sourceSpan,
-                `Unknown context variable "${variableName}". Only "$error" and "$retry" are allowed`,
-              ),
-            );
-          } else if (contextVariables.some((v) => v.name === name)) {
-            errors.push(
-              new ParseError(param.sourceSpan, `Duplicate "let" parameter variable "${name}"`),
-            );
-          } else {
-            contextVariables.push(
-              new t.Variable(name, variableName, sourceSpan, keySpan, valueSpan),
-            );
-          }
-          currentOffset = partIndex + part.length + 1;
-        }
+      if (letMatch !== null) {
+        const variablesSpan = new ParseSourceSpan(
+          param.sourceSpan.start.moveBy(letMatch[0].length - letMatch[1].length),
+          param.sourceSpan.end,
+        );
+        parseLetParameters(
+          param.sourceSpan,
+          letMatch[1],
+          variablesSpan,
+          contextVariables,
+          errors,
+          (name, variableName, sourceSpan) => {
+            if (!IDENTIFIER_PATTERN.test(name)) {
+              errors.push(
+                new ParseError(sourceSpan, `"let" parameter must be a valid JavaScript identifier`),
+              );
+            } else if (variableName !== '$error' && variableName !== '$retry') {
+              errors.push(
+                new ParseError(
+                  sourceSpan,
+                  `Unknown context variable "${variableName}". Only "$error" and "$retry" are allowed`,
+                ),
+              );
+            } else if (contextVariables.some((v) => v.name === name)) {
+              errors.push(
+                new ParseError(sourceSpan, `Duplicate "let" parameter variable "${name}"`),
+              );
+            }
+          },
+          '$error',
+        );
         continue;
       }
 
