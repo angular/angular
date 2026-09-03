@@ -16,7 +16,9 @@ import {
   ElementRef,
   EventEmitter,
   forwardRef,
+  inject,
   InjectionToken,
+  Injector,
   Input,
   provideZoneChangeDetection,
   QueryList,
@@ -1773,6 +1775,55 @@ describe('query logic', () => {
       const qList = fixture.componentInstance.query!;
       expect(qList.length).toBe(1);
       expect(qList.first).toBeInstanceOf(ViewContainerRef);
+    });
+
+    it('should read Injector from element nodes when explicitly asked for', () => {
+      @Component({
+        template: `<div #foo></div>`,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class TestCmp {
+        @ViewChild('foo', {read: Injector}) query?: Injector;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const injector = fixture.componentInstance.query!;
+      expect(injector).toBeDefined();
+      // The returned value behaves like an injector rooted at the queried node.
+      expect(injector.get(ElementRef).nativeElement).toBe(
+        fixture.debugElement.children[0].nativeElement,
+      );
+    });
+
+    it('should read the node injector of the queried element', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Directive({
+        selector: '[provider]',
+        providers: [{provide: TOKEN, useValue: 'from directive'}],
+      })
+      class ProviderDir {}
+
+      @Component({
+        imports: [ProviderDir],
+        template: `<div #foo provider></div>`,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class TestCmp {
+        @ViewChild('foo', {read: Injector}) injector?: Injector;
+        ownInjector = inject(Injector);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const queried = fixture.componentInstance.injector!;
+      // The queried injector sees the provider declared on the element's directive...
+      expect(queried.get(TOKEN)).toBe('from directive');
+      // ...which is not visible from the component's own injector.
+      expect(fixture.componentInstance.ownInjector.get(TOKEN, null)).toBeNull();
     });
 
     it('should not throw when hydration metadata has no serialized container data', () => {

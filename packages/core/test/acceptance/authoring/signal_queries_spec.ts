@@ -16,6 +16,9 @@ import {
   Directive,
   ElementRef,
   EnvironmentInjector,
+  inject,
+  InjectionToken,
+  Injector,
   QueryList,
   ViewChild,
   viewChild,
@@ -269,6 +272,32 @@ describe('queries as signals', () => {
       const fixture = TestBed.createComponent(AppComponent);
       const node = fixture.componentInstance.viewChildQuery![SIGNAL] as {debugName: string};
       expect(node.debugName).toBe('viewChildQuery');
+    });
+
+    it('should read the node injector of the queried element with `read: Injector`', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Directive({
+        selector: '[provider]',
+        providers: [{provide: TOKEN, useValue: 'from directive'}],
+      })
+      class ProviderDir {}
+
+      @Component({
+        imports: [ProviderDir],
+        template: `<div #el provider></div>`,
+      })
+      class AppComponent {
+        elInjector = viewChild('el', {read: Injector});
+        ownInjector = inject(Injector);
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+
+      const queried = fixture.componentInstance.elInjector()!;
+      expect(queried.get(TOKEN)).toBe('from directive');
+      expect(fixture.componentInstance.ownInjector.get(TOKEN, null)).toBeNull();
     });
   });
 
