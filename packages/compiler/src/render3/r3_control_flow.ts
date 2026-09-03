@@ -453,6 +453,7 @@ function parseForLoopParameters(
             );
           }
         },
+        '@for loop',
       );
       continue;
     }

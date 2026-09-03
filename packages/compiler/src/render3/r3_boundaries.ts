@@ -80,6 +80,7 @@ export function createBoundaryBlock(
               );
             }
           },
+          '@error block',
           '$error',
         );
         continue;

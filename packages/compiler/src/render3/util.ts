@@ -37,7 +37,7 @@ export const LET_PATTERN = /^let\s+([\S\s]*)/;
  * @param span The source span of the expression string.
  * @param context The variable context to append parsed variables to.
  * @param errors The array of parsing errors to append to.
- * @param validateLet A validation function to check if the variable declaration is valid.
+ * @param messagePrefix The prefix to use in error messages (e.g. '@for loop').
  * @param defaultImplicitVariableName An optional default variable name to use if no value is provided.
  */
 export function parseLetParameters(
@@ -47,6 +47,7 @@ export function parseLetParameters(
   context: t.Variable[],
   errors: ParseError[],
   validateLet: (name: string, variableName: string, sourceSpan: ParseSourceSpan) => void,
+  messagePrefix: string,
   defaultImplicitVariableName?: string,
 ): void {
   const parts = expression.split(',');
@@ -63,7 +64,7 @@ export function parseLetParameters(
       errors.push(
         new ParseError(
           sourceSpan,
-          `Invalid "let" parameter. Parameter should match the pattern "<name> = <variable name>"`,
+          `Invalid ${messagePrefix} "let" parameter. Parameter should match the pattern "<name> = <variable name>"`,
         ),
       );
     } else {
