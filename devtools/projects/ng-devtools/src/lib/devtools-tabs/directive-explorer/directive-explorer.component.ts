@@ -8,8 +8,6 @@
 
 import {
   Component,
-  afterRenderEffect,
-  ElementRef,
   inject,
   input,
   output,
@@ -114,14 +112,9 @@ export class DirectiveExplorerComponent {
   readonly toggleInspector = output<void>();
 
   readonly directiveForest = viewChild.required(DirectiveForestComponent);
-  readonly splitElementRef = viewChild.required(SplitComponent, {read: ElementRef});
-  readonly directiveForestSplitArea = viewChild.required('directiveForestSplitArea', {
-    read: ElementRef,
-  });
 
   readonly currentSelectedElement = signal<IndexedNode | null>(null);
   readonly forest = signal<DevToolsNode[]>([]);
-  readonly splitDirection = signal<'horizontal' | 'vertical'>('horizontal');
   readonly parents = signal<FlatNode[] | null>(null);
 
   readonly signalsOpen = signal(false);
@@ -141,9 +134,17 @@ export class DirectiveExplorerComponent {
 
   protected readonly externallySelectedSignalNodeId = signal<{id: string} | null>(null);
 
-  protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
+  // Responsible for spliting behavior of the explorer and the props pane.
+  protected readonly tabSplitConfig: ResponsiveSplitConfig = {
+    defaultDirection: 'horizontal',
+    widthBreakpoint: '<500px',
+    breakpointDirection: 'vertical',
+  };
+
+  // Responsive for spliting behavior of the forest and the signal graph pane.
+  protected readonly forestSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
-    aspectRatioBreakpoint: 1.5,
+    aspectRatioBreakpoint: '>=1.5',
     breakpointDirection: 'horizontal',
   };
 
@@ -165,27 +166,6 @@ export class DirectiveExplorerComponent {
   private readonly currentElementPos = computed(() => this.currentSelectedElement()?.position);
 
   constructor() {
-    afterRenderEffect((cleanup) => {
-      const splitElement = this.splitElementRef().nativeElement;
-      const directiveForestSplitArea = this.directiveForestSplitArea().nativeElement;
-      const resizeObserver = new ResizeObserver((entries) => {
-        this.refreshHydrationNodeHighlightsIfNeeded();
-
-        const resizedEntry = entries[0];
-        if (resizedEntry.target === splitElement) {
-          this.splitDirection.set(
-            resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal',
-          );
-        }
-      });
-
-      resizeObserver.observe(splitElement);
-      resizeObserver.observe(directiveForestSplitArea);
-      cleanup(() => {
-        resizeObserver.disconnect();
-      });
-    });
-
     this.subscribeToBackendEvents();
     this.refresh();
     this.signalGraph.listen(this.currentElementPos);
