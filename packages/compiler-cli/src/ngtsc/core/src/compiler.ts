@@ -1107,6 +1107,11 @@ export class NgCompiler {
         // - error TS2531: Object is possibly 'null'.
         // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
         checkTypeOfDomEvents: strictTemplates,
+        // TODO: temporarily enabled by default to evaluate the check against real-world code
+        // (TGP). Before landing, this must be flipped back to `false`: the check is heuristic
+        // (it can't account for custom events bubbling up from descendants), so it should
+        // require an explicit opt-in and not be part of `strictTemplates`.
+        checkUnclaimedEventNames: strictTemplates,
         checkTypeOfDomReferences: strictTemplates,
         // Non-DOM references have the correct type in View Engine so there is no strictness flag.
         checkTypeOfNonDomReferences: true,
@@ -1141,6 +1146,7 @@ export class NgCompiler {
         checkTypeOfOutputEvents: false,
         checkTypeOfAnimationEvents: false,
         checkTypeOfDomEvents: false,
+        checkUnclaimedEventNames: false,
         checkTypeOfDomReferences: false,
         checkTypeOfNonDomReferences: false,
         checkTypeOfPipes: false,
@@ -1177,6 +1183,9 @@ export class NgCompiler {
     }
     if (this.options.strictDomEventTypes !== undefined) {
       typeCheckingConfig.checkTypeOfDomEvents = this.options.strictDomEventTypes;
+    }
+    if (this.options.strictUnclaimedEventNames !== undefined) {
+      typeCheckingConfig.checkUnclaimedEventNames = this.options.strictUnclaimedEventNames;
     }
     if (this.options.strictSafeNavigationTypes !== undefined) {
       typeCheckingConfig.strictSafeNavigationTypes = this.options.strictSafeNavigationTypes;

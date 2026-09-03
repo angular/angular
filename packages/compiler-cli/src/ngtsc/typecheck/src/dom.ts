@@ -7,8 +7,10 @@
  */
 
 import {
+  CUSTOM_ELEMENTS_SCHEMA,
   DomElementSchemaRegistry,
   DomSchemaChecker,
+  NO_ERRORS_SCHEMA,
   ParseSourceSpan,
   SchemaMetadata,
   TmplAstHostElement,
@@ -24,6 +26,13 @@ import {TypeCheckSourceResolver} from './tcb_util';
 
 export const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
+
+/**
+ * Shape of event names that are candidates for the unclaimed event name check: a single
+ * identifier. Names with `.`, `-` or other separators (key pseudo-events like `keydown.enter`,
+ * custom events like `my-event`) never match.
+ */
+const UNCLAIMED_EVENT_CANDIDATE_REGEX = /^[a-zA-Z][a-zA-Z0-9$_]*$/;
 
 /**
  * Checks non-Angular elements and properties against the `DomElementSchemaRegistry`, a schema
@@ -134,6 +143,54 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker<TemplateDiagno
       );
       this._diagnostics.push(diag);
     }
+  }
+
+  checkTemplateElementEvent(
+    id: TypeCheckId,
+    tagName: string,
+    eventName: string,
+    span: ParseSourceSpan,
+    schemas: SchemaMetadata[],
+  ): void {
+    // Native DOM events are all-lowercase and custom events conventionally use dash-separated
+    // names, so only names that look like misspelled directive outputs (single camelCase
+    // identifiers) are candidates for this check.
+    if (!UNCLAIMED_EVENT_CANDIDATE_REGEX.test(eventName) || !/[A-Z]/.test(eventName)) {
+      return;
+    }
+
+    // Events bubble, so a native event of any element may legitimately be observed on this
+    // element, regardless of its tag.
+    if (REGISTRY.isKnownEventOfAnyElement(eventName)) {
+      return;
+    }
+
+    if (
+      schemas.some(
+        (schema) =>
+          schema.name === NO_ERRORS_SCHEMA.name ||
+          (schema.name === CUSTOM_ELEMENTS_SCHEMA.name && tagName.indexOf('-') > -1),
+      )
+    ) {
+      return;
+    }
+
+    const errorMsg =
+      `Event '${eventName}' is not emitted by any directive applied to '${tagName}' and it isn't a known native DOM event.` +
+      `\n1. If '${eventName}' is an output of a directive, make sure the directive is applied to the element and check the output's name for typos.` +
+      `\n2. If you're listening to a custom event dispatched by a descendant element, dash-separated event names (e.g. 'my-event') are exempt from this check.` +
+      `\n3. To disable this check entirely, remove 'strictUnclaimedEventNames' from the compiler options.`;
+
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    const diag = makeTemplateDiagnostic(
+      id,
+      mapping,
+      span,
+      ts.DiagnosticCategory.Error,
+      ngErrorCode(ErrorCode.UNCLAIMED_EVENT_BINDING),
+      errorMsg,
+    );
+    this._diagnostics.push(diag);
   }
 
   checkHostElementProperty(
