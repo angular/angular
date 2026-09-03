@@ -1,4 +1,4 @@
-load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -12,7 +12,7 @@ ts_project(
             "**/*.spec.ts",
         ],
     ),
-    visibility = ["//adev/shared-docs:__subpackages__"],
+    visibility = ["//adev:__subpackages__"],
     deps = [
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/router",
@@ -20,4 +20,21 @@ ts_project(
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/providers",
     ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.spec.ts"],
+    ),
+    deps = [
+        ":utils",
+        "//adev/shared-docs/interfaces",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [":test_lib"],
 )
