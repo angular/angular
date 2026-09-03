@@ -37,8 +37,15 @@ export interface ErrorDetails {
    * Information about the error boundary that caught the error.
    */
   readonly boundary?: {
+    /**
+     * The component where the error boundary that caught the rendering error was located
+     */
     readonly type: Type<unknown>;
-    readonly reset: () => void;
+
+    /**
+     * Call this method to retry rendering the error boundary.
+     */
+    readonly retry: () => void;
   };
   /**
    * The function that intercepted the error, if any.

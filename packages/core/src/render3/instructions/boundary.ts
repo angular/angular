@@ -164,7 +164,7 @@ export function ɵɵboundaryUpdate(
                 declarationType,
                 boundary: {
                   type: declarationType,
-                  reset: () => boundary.reset(),
+                  retry: () => boundary.reset(),
                 },
               };
               if (errorHandler.onViewError) {

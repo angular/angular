@@ -1063,6 +1063,6 @@ describe('@boundary runtime instructions (JIT)', () => {
     expect(capturedDetails.declarationType).toBe(Throwing);
     expect(capturedDetails.boundary).toBeDefined();
     expect(capturedDetails.boundary!.type).toBe(Host);
-    expect(typeof capturedDetails.boundary!.reset).toBe('function');
+    expect(typeof capturedDetails.boundary!.retry).toBe('function');
   });
 });
