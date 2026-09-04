@@ -125,6 +125,7 @@ export class PristineChangeEvent extends ControlEvent {
   constructor(
     public readonly pristine: boolean,
     public readonly source: AbstractControl,
+    public readonly all: boolean = false,
   ) {
     super();
   }
@@ -141,6 +142,7 @@ export class TouchedChangeEvent extends ControlEvent {
   constructor(
     public readonly touched: boolean,
     public readonly source: AbstractControl,
+    public readonly all: boolean = false,
   ) {
     super();
   }
@@ -995,9 +997,15 @@ export abstract class AbstractControl<
     onlySelf?: boolean;
     emitEvent?: boolean;
     sourceControl?: AbstractControl;
+    all?: boolean;
   }): void;
   markAsTouched(
-    opts: {onlySelf?: boolean; emitEvent?: boolean; sourceControl?: AbstractControl} = {},
+    opts: {
+      onlySelf?: boolean;
+      emitEvent?: boolean;
+      sourceControl?: AbstractControl;
+      all?: boolean;
+    } = {},
   ): void {
     const changed = this.touched === false;
     this.touched = true;
@@ -1008,7 +1016,7 @@ export abstract class AbstractControl<
     }
 
     if (changed && opts.emitEvent !== false) {
-      this._events.next(new TouchedChangeEvent(true, sourceControl));
+      this._events.next(new TouchedChangeEvent(true, sourceControl, opts.all ?? false));
     }
   }
 
@@ -1026,7 +1034,7 @@ export abstract class AbstractControl<
    *
    */
   markAllAsDirty(opts: {emitEvent?: boolean} = {}): void {
-    this.markAsDirty({onlySelf: true, emitEvent: opts.emitEvent, sourceControl: this});
+    this.markAsDirty({onlySelf: true, emitEvent: opts.emitEvent, sourceControl: this, all: true});
 
     this._forEachChild((control: AbstractControl) => control.markAllAsDirty(opts));
   }
@@ -1045,7 +1053,7 @@ export abstract class AbstractControl<
    *
    */
   markAllAsTouched(opts: {emitEvent?: boolean} = {}): void {
-    this.markAsTouched({onlySelf: true, emitEvent: opts.emitEvent, sourceControl: this});
+    this.markAsTouched({onlySelf: true, emitEvent: opts.emitEvent, sourceControl: this, all: true});
 
     this._forEachChild((control: AbstractControl) => control.markAllAsTouched(opts));
   }
@@ -1080,9 +1088,15 @@ export abstract class AbstractControl<
     onlySelf?: boolean;
     emitEvent?: boolean;
     sourceControl?: AbstractControl;
+    all?: boolean;
   }): void;
   markAsUntouched(
-    opts: {onlySelf?: boolean; emitEvent?: boolean; sourceControl?: AbstractControl} = {},
+    opts: {
+      onlySelf?: boolean;
+      emitEvent?: boolean;
+      sourceControl?: AbstractControl;
+      all?: boolean;
+    } = {},
   ): void {
     const changed = this.touched === true;
     this.touched = false;
@@ -1098,7 +1112,7 @@ export abstract class AbstractControl<
     }
 
     if (changed && opts.emitEvent !== false) {
-      this._events.next(new TouchedChangeEvent(false, sourceControl));
+      this._events.next(new TouchedChangeEvent(false, sourceControl, opts.all ?? false));
     }
   }
 
@@ -1129,9 +1143,15 @@ export abstract class AbstractControl<
     onlySelf?: boolean;
     emitEvent?: boolean;
     sourceControl?: AbstractControl;
+    all?: boolean;
   }): void;
   markAsDirty(
-    opts: {onlySelf?: boolean; emitEvent?: boolean; sourceControl?: AbstractControl} = {},
+    opts: {
+      onlySelf?: boolean;
+      emitEvent?: boolean;
+      sourceControl?: AbstractControl;
+      all?: boolean;
+    } = {},
   ): void {
     const changed = this.pristine === true;
     this.pristine = false;
@@ -1142,7 +1162,7 @@ export abstract class AbstractControl<
     }
 
     if (changed && opts.emitEvent !== false) {
-      this._events.next(new PristineChangeEvent(false, sourceControl));
+      this._events.next(new PristineChangeEvent(false, sourceControl, opts.all ?? false));
     }
   }
 
