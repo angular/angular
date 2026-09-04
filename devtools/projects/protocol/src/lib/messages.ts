@@ -434,8 +434,8 @@ export interface Events {
   createHighlightOverlay: (position: ElementPosition) => void;
   removeHighlightOverlay: () => void;
 
-  createHydrationOverlay: () => void;
-  removeHydrationOverlay: () => void;
+  enableHydrationOverlays: () => void;
+  disableHydrationOverlays: () => void;
 
   highlightComponent: (id: number) => void;
   selectComponent: (id: number) => void;

@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {debounceTime, Subscription} from 'rxjs';
 import {HydrationStatus} from '../../../../protocol';
 import {getDirectiveForestManager} from '../directive-forest/manager';
+import {getProfiler} from '../profiling/profiler';
 import {highlightElement, removeHighlightsByType} from '../shared/highlighter';
 import {
   HighlightTemplate,
@@ -18,8 +20,35 @@ import {
 } from '../shared/highlighter/highlights';
 import {ComponentTreeNode} from '../shared/interfaces';
 import {AngularDevtoolsError} from '../shared/utils/error';
+import {runOutsideAngular} from '../shared/utils/general';
 
-export function highlightHydrationNodes(): void {
+let hydrationOverlaysEnabled = false;
+let profilerSubs: Subscription | undefined;
+
+export function enableHydrationOverlays() {
+  if (hydrationOverlaysEnabled) {
+    return;
+  }
+
+  hydrationOverlaysEnabled = true;
+  highlightHydrationNodes();
+
+  runOutsideAngular(() => {
+    // We are throttling CD events due to the
+    // possiblity of scroll-induced event flood.
+    profilerSubs = getProfiler()
+      .changeDetection$.pipe(debounceTime(250))
+      .subscribe(() => refresh());
+  });
+}
+
+export function disableHydrationOverlays() {
+  removeHydrationHighlights();
+  profilerSubs?.unsubscribe();
+  hydrationOverlaysEnabled = false;
+}
+
+function highlightHydrationNodes(): void {
   const forest: ComponentTreeNode[] = getDirectiveForestManager().getDirectiveForest();
 
   // drop the root nodes, we don't want to highlight it
@@ -39,10 +68,15 @@ export function highlightHydrationNodes(): void {
   }
 }
 
-export function removeHydrationHighlights() {
+function removeHydrationHighlights() {
   removeHighlightsByType(HighlightType.HydrationCompleted);
   removeHighlightsByType(HighlightType.HydrationMismatched);
   removeHighlightsByType(HighlightType.HydrationSkipped);
+}
+
+function refresh() {
+  removeHydrationHighlights();
+  highlightHydrationNodes();
 }
 
 function highlightHydrationElement(node: Element, {status}: HydrationStatus) {

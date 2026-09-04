@@ -3,13 +3,16 @@ load("//devtools/tools:defaults.bzl", "ts_project")
 package(default_visibility = ["//devtools:__subpackages__"])
 
 ts_project(
-    name = "hydration-highlighting",
-    srcs = ["hydration-highlighting.ts"],
+    name = "hydration-overlays",
+    srcs = ["hydration-overlays.ts"],
     deps = [
+        "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
+        "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
         "//devtools/projects/protocol",
     ],
 )

@@ -127,9 +127,9 @@ export class DevToolsComponent implements OnDestroy {
     // Keep BE in sync with hydration visualization.
     effect(() => {
       if (this.settings.showHydrationOverlays()) {
-        this.messageBus.emit('createHydrationOverlay');
+        this.messageBus.emit('enableHydrationOverlays');
       } else {
-        this.messageBus.emit('removeHydrationOverlay');
+        this.messageBus.emit('disableHydrationOverlays');
       }
     });
 
