@@ -1173,6 +1173,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
 
   override visitBoundaryErrorBlock(block: BoundaryErrorBlock) {
     this.ingestScopedNode(block);
+    block.expression?.visit(this);
   }
 
   override visitSwitchBlockCase(block: SwitchBlockCase) {
