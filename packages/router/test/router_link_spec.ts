@@ -13,7 +13,7 @@ import {Router, RouterLink, RouterModule, provideRouter} from '../index';
 import {RouterTestingHarness} from '../testing';
 
 describe('RouterLink', () => {
-  it('does not modify tabindex if already set on non-anchor element', async () => {
+  it('does not touch a tabindex set in the template on a non-anchor element', async () => {
     @Component({
       template: `<div [routerLink]="link" tabindex="1"></div>`,
       standalone: false,
@@ -73,19 +73,21 @@ describe('RouterLink', () => {
       (router.navigateByUrl as jasmine.Spy).calls.reset();
     });
 
-    it('null, removes tabIndex and does not navigate', async () => {
+    it('does not add a tabindex attribute', () => {
+      expect(link.hasAttribute('tabindex')).toBeFalse();
+    });
+
+    it('null, does not navigate', async () => {
       fixture.componentInstance.link.set(null);
       await fixture.whenStable();
-      expect(link.tabIndex).toEqual(-1);
 
       link.click();
       expect(router.navigateByUrl).not.toHaveBeenCalled();
     });
 
-    it('undefined, removes tabIndex and does not navigate', async () => {
+    it('undefined, does not navigate', async () => {
       fixture.componentInstance.link.set(undefined);
       await fixture.whenStable();
-      expect(link.tabIndex).toEqual(-1);
 
       link.click();
       expect(router.navigateByUrl).not.toHaveBeenCalled();

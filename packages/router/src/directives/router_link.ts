@@ -8,7 +8,6 @@
 
 import {LocationStrategy} from '@angular/common';
 import {
-  Attribute,
   booleanAttribute,
   computed,
   Directive,
@@ -22,7 +21,6 @@ import {
   linkedSignal,
   OnChanges,
   OnDestroy,
-  Renderer2,
   ɵRuntimeError as RuntimeError,
   Service,
   signal,
@@ -376,8 +374,6 @@ export class RouterLink implements OnChanges, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    @Attribute('tabindex') private readonly tabIndexAttribute: string | null | undefined,
-    private readonly renderer: Renderer2,
     private readonly el: ElementRef,
     private locationStrategy?: LocationStrategy,
   ) {
@@ -388,15 +384,13 @@ export class RouterLink implements OnChanges, OnDestroy {
       !!(
         // Avoid breaking in an SSR context where customElements might not
         // be defined.
+        typeof customElements === 'object' &&
+        // observedAttributes is an optional static property/getter on a
+        // custom element. The spec states that this must be an array of
+        // strings.
         (
-          typeof customElements === 'object' &&
-          // observedAttributes is an optional static property/getter on a
-          // custom element. The spec states that this must be an array of
-          // strings.
-          (
-            customElements.get(tagName) as {observedAttributes?: string[]} | undefined
-          )?.observedAttributes?.includes?.('href')
-        )
+          customElements.get(tagName) as {observedAttributes?: string[]} | undefined
+        )?.observedAttributes?.includes?.('href')
       );
 
     if (typeof ngDevMode !== 'undefined' && ngDevMode) {
@@ -416,17 +410,6 @@ export class RouterLink implements OnChanges, OnDestroy {
         }
       });
     }
-  }
-
-  /**
-   * Modifies the tab index if there was not a tabindex attribute on the element
-   * during instantiation.
-   */
-  private setTabIndexIfNotOnNativeEl(newTabIndex: string | null) {
-    if (this.tabIndexAttribute != null /* both `null` and `undefined` */ || this.isAnchorElement) {
-      return;
-    }
-    this.applyAttributeValue('tabindex', newTabIndex);
   }
 
   /** @docs-private */
@@ -455,16 +438,12 @@ export class RouterLink implements OnChanges, OnDestroy {
   set routerLink(commandsOrUrlTree: readonly any[] | string | UrlTree | null | undefined) {
     if (commandsOrUrlTree == null) {
       this.routerLinkInput.set(null);
-      this.setTabIndexIfNotOnNativeEl(null);
+    } else if (isUrlTree(commandsOrUrlTree)) {
+      this.routerLinkInput.set(commandsOrUrlTree);
     } else {
-      if (isUrlTree(commandsOrUrlTree)) {
-        this.routerLinkInput.set(commandsOrUrlTree);
-      } else {
-        this.routerLinkInput.set(
-          Array.isArray(commandsOrUrlTree) ? commandsOrUrlTree : [commandsOrUrlTree],
-        );
-      }
-      this.setTabIndexIfNotOnNativeEl('0');
+      this.routerLinkInput.set(
+        Array.isArray(commandsOrUrlTree) ? commandsOrUrlTree : [commandsOrUrlTree],
+      );
     }
   }
 
@@ -523,16 +502,6 @@ export class RouterLink implements OnChanges, OnDestroy {
 
   /** @docs-private */
   ngOnDestroy(): any {}
-
-  private applyAttributeValue(attrName: string, attrValue: string | null) {
-    const renderer = this.renderer;
-    const nativeElement = this.el.nativeElement;
-    if (attrValue !== null) {
-      renderer.setAttribute(nativeElement, attrName, attrValue);
-    } else {
-      renderer.removeAttribute(nativeElement, attrName);
-    }
-  }
 
   /** @internal */
   _urlTree = computed(

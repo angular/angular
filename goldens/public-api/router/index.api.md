@@ -825,7 +825,7 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
 
 // @public
 class RouterLink implements OnChanges, OnDestroy {
-    constructor(router: Router, route: ActivatedRoute, tabIndexAttribute: string | null | undefined, renderer: Renderer2, el: ElementRef, locationStrategy?: LocationStrategy | undefined);
+    constructor(router: Router, route: ActivatedRoute, el: ElementRef, locationStrategy?: LocationStrategy | undefined);
     browserUrl: i0.InputSignal<string | UrlTree | undefined>;
     set fragment(value: string | undefined);
     // (undocumented)
@@ -879,7 +879,7 @@ class RouterLink implements OnChanges, OnDestroy {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLink, "[routerLink]", never, { "target": { "alias": "target"; "required": false; }; "queryParams": { "alias": "queryParams"; "required": false; }; "fragment": { "alias": "fragment"; "required": false; }; "queryParamsHandling": { "alias": "queryParamsHandling"; "required": false; }; "state": { "alias": "state"; "required": false; }; "info": { "alias": "info"; "required": false; }; "relativeTo": { "alias": "relativeTo"; "required": false; }; "preserveFragment": { "alias": "preserveFragment"; "required": false; }; "skipLocationChange": { "alias": "skipLocationChange"; "required": false; }; "replaceUrl": { "alias": "replaceUrl"; "required": false; }; "browserUrl": { "alias": "browserUrl"; "required": false; "isSignal": true; }; "routerLink": { "alias": "routerLink"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<RouterLink, [null, null, { attribute: "tabindex"; }, null, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<RouterLink, never>;
 }
 export { RouterLink }
 export { RouterLink as RouterLinkWithHref }
