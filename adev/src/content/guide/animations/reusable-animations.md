@@ -18,7 +18,7 @@ HELPFUL: The `height`, `opacity`, `backgroundColor`, and `time` inputs are repla
 You can also export a part of an animation.
 For example, the following snippet exports the animation `trigger`.
 
-<docs-code header="animations.1.ts" path="adev/src/content/examples/animations/src/app/animations.1.ts" region="trigger-const"/>
+<docs-code header="animations.ts" path="adev/src/content/examples/animations/src/app/animations.1.ts" region="trigger-const"/>
 
 From this point, you can import reusable animation variables into your component class.
 For example, the following code snippet imports the `transitionAnimation` variable and uses it via the `useAnimation()` function.
