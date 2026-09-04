@@ -136,7 +136,7 @@
   "devDependencies": {
     "@actions/core": "^3.0.0",
     "@actions/github": "^9.0.0",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#151e36ffa910f4a01aafe1c482ed8294e2050566",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#dd47442d110ac5cbafc687a19696693fe5ddf370",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^8.0.0",
     "@bazel/ibazel": "0.28.0",
