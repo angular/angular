@@ -1389,6 +1389,59 @@ runInEachFileSystem(() => {
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
       });
+
+      it('should infer $event as KeyboardEvent for "keydown.enter" style bindings', () => {
+        // https://github.com/angular/angular/issues/40778
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div (keydown.enter)="update($event)"></div>',
+            standalone: false,
+          })
+          class TestCmp {
+            update(data: string) {}
+          }
+
+          @NgModule({declarations: [TestCmp]})
+          class Module {}
+        `,
+        );
+        env.tsconfig({strictTemplates: true});
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toEqual(
+          `Argument of type 'KeyboardEvent' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should not error when a "keyup.Enter" handler expects a KeyboardEvent', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '<div (keyup.Enter)="update($event)"></div>',
+            standalone: false,
+          })
+          class TestCmp {
+            update(event: KeyboardEvent) {}
+          }
+
+          @NgModule({declarations: [TestCmp]})
+          class Module {}
+        `,
+        );
+        env.tsconfig({strictTemplates: true});
+
+        expect(env.driveDiagnostics().length).toBe(0);
+      });
     });
 
     it('should check basic usage of NgIf', () => {

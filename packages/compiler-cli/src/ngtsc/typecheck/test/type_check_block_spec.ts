@@ -1353,6 +1353,16 @@ describe('type check blocks', () => {
         );
         expect(block).toContain('($event: any): any => { (this).foo($event); }');
       });
+
+      it('should register "keydown.enter" style bindings with the underlying DOM event name', () => {
+        const block = tcb(`<div (keydown.enter)="foo($event)" (keyup.Enter)="foo($event)"></div>`);
+        expect(block).toContain(
+          '.addEventListener("keydown", ($event): any => { (this).foo($event); })',
+        );
+        expect(block).toContain(
+          '.addEventListener("keyup", ($event): any => { (this).foo($event); })',
+        );
+      });
     });
 
     describe('config.checkTypeOfDomReferences', () => {
