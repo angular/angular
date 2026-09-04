@@ -1344,7 +1344,7 @@ describe('Component host element validation', () => {
   });
 });
 
-describe('SVG <script> bindings', () => {
+describe('<script> elements in templates', () => {
   it(`should remove svg <script> element`, () => {
     @Component({
       template: `<svg><script src="https://bad.com/script.js"></script></svg>`,
@@ -1355,6 +1355,46 @@ describe('SVG <script> bindings', () => {
     const fixture = TestBed.createComponent(TestCmp);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('script')).toBeFalsy();
+  });
+
+  it('should remove <script> elements inherited into the XHTML namespace', async () => {
+    @Component({
+      template: `
+        <xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml">
+          <script [textContent]="evil"></script>
+          <span>safe</span>
+        </xhtml:div>
+      `,
+    })
+    class TestCmp {
+      evil = 'evil';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('script')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('span').textContent).toBe('safe');
+  });
+
+  it('should remove <script> elements inherited into arbitrary custom namespaces', async () => {
+    @Component({
+      template: `
+        <foo:div xmlns:foo="urn:example">
+          <script [textContent]="evil"></script>
+          <span>custom safe</span>
+        </foo:div>
+      `,
+    })
+    class TestCmp {
+      evil = 'evil';
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('script')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('span').textContent).toBe('custom safe');
   });
 });
 
