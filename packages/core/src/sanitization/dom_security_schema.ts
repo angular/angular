@@ -83,8 +83,8 @@ export function SECURITY_SCHEMA(): SecuritySchema {
   // NB: no SCRIPT contexts here, they are never allowed due to the parser stripping them.
   registerContext(SecurityContext.URL, /** Namespace */ undefined, [
     ['*', ['formAction']],
-    ['area', ['href']],
-    ['a', ['href', 'xlink:href']],
+    ['area', ['href', 'protocol']],
+    ['a', ['href', 'xlink:href', 'protocol']],
     ['form', ['action']],
 
     // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
