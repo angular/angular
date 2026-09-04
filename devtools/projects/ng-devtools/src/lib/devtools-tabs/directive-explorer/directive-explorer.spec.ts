@@ -252,16 +252,6 @@ describe('DirectiveExplorerComponent', () => {
     });
   });
 
-  describe('hydration', () => {
-    it('should highlight hydration nodes', () => {
-      comp.createHydrationOverlays();
-      expect(messageBusMock.emit).toHaveBeenCalledWith('createHydrationOverlay');
-
-      comp.removeHydrationOverlays();
-      expect(messageBusMock.emit).toHaveBeenCalledWith('removeHydrationOverlay');
-    });
-  });
-
   describe('highlight', () => {
     it('should create a highlight overlay for directive-only nodes', () => {
       comp.highlight({
