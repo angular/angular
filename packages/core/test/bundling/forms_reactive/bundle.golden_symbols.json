@@ -653,6 +653,7 @@
       "getSelectedIndex",
       "getSelectedTNode",
       "getSimpleChangesStore",
+      "getStyleDeclaration",
       "getStyleHost",
       "getSuperType",
       "getSymbolIterator",
