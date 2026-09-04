@@ -3210,6 +3210,43 @@ runInEachFileSystem((os: string) => {
         );
       });
 
+      [
+        {
+          description: 'class field',
+          hostPropertyName: 'attr.onclick',
+          member: `handler = '';`,
+        },
+        {
+          description: 'getter with a mixed-case name',
+          hostPropertyName: 'attr.OnError',
+          member: `get handler() { return ''; }`,
+        },
+      ].forEach(({description, hostPropertyName, member}) => {
+        it(`should disallow event attributes in @HostBinding on a ${description}`, () => {
+          env.tsconfig({});
+          env.write(
+            'test.ts',
+            `
+            import {Directive, HostBinding} from '@angular/core';
+
+            @Directive({selector: '[test-dir]'})
+            export class TestDir {
+              @HostBinding('title') title = '';
+              @HostBinding('${hostPropertyName}') ${member}
+            }
+          `,
+          );
+
+          const errors = env.driveDiagnostics();
+          expect(errors.length).toBe(1);
+          expect(errors[0].code).toBe(ngErrorCode(ErrorCode.HOST_BINDING_PARSE_ERROR));
+          expect(ts.flattenDiagnosticMessageText(errors[0].messageText, '\n')).toContain(
+            `Binding to event attribute '${hostPropertyName.slice(5)}' is disallowed for security reasons`,
+          );
+          expect(getDiagnosticSourceCode(errors[0])).toBe(`'${hostPropertyName}'`);
+        });
+      });
+
       it('should throw error if @Directive.host field has wrong type', () => {
         env.tsconfig({});
         env.write(
