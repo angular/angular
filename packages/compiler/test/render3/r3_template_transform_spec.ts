@@ -1384,10 +1384,14 @@ describe('R3 template transform', () => {
 
     it('should parse a viewport trigger with an options parameter', () => {
       expectFromHtml(
-        '@defer (on viewport({trigger: foo, rootMargin: "123px", threshold: [1, 2, 3]})){hello}',
+        '@defer (on viewport({trigger: foo, rootMargin: "123px", scrollMargin: "456px", threshold: [1, 2, 3]})){hello}',
       ).toEqual([
         ['DeferredBlock'],
-        ['ViewportDeferredTrigger', 'foo', '{rootMargin: "123px", threshold: [1, 2, 3]}'],
+        [
+          'ViewportDeferredTrigger',
+          'foo',
+          '{rootMargin: "123px", scrollMargin: "456px", threshold: [1, 2, 3]}',
+        ],
         ['Text', 'hello'],
       ]);
     });
