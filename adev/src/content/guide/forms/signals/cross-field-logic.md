@@ -32,9 +32,7 @@ Here is an example of using `value` and `valueOf()` to validate that the current
 import {Component, signal} from '@angular/core';
 import {form, validate} from '@angular/forms/signals';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class EventForm {
   eventModel = signal({
     startDate: new Date('2026-06-01'),
@@ -68,9 +66,7 @@ However, that single validator only places the error on the end date field. If y
 import {Component, signal} from '@angular/core';
 import {form, validate} from '@angular/forms/signals';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class EventForm {
   eventModel = signal({
     startDate: new Date('2026-06-01'),
@@ -113,9 +109,7 @@ In some forms, certain fields are only required under certain conditions. For ex
 import {Component, signal} from '@angular/core';
 import {form, required} from '@angular/forms/signals';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class RegistrationForm {
   registrationModel = signal({
     accountType: 'personal' as 'personal' | 'business',
@@ -145,9 +139,7 @@ For example, a confirm-password field should only check for a match once the use
 import {Component, signal} from '@angular/core';
 import {form, validate} from '@angular/forms/signals';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class PasswordForm {
   passwordModel = signal({
     password: '',
@@ -173,7 +165,7 @@ export class PasswordForm {
 
 The `stateOf()` call returns the other field's [field state](api/forms/signals/FieldState), giving you access to signals like `invalid()`, `touched()`, and `dirty()`. Because these are signals, the rule re-evaluates whenever the password field's validity changes.
 
-WARNING: Be careful not to read state which depends on your field's validation, as that creates a circular loop. For example, a validator which checks whether the parent field is valid will create an infinite loop because the parent's validity depends on its children's validity (which includes your validator).
+CRITICAL: Be careful not to read state which depends on your field's validation, as that creates a circular loop. For example, a validator which checks whether the parent field is valid will create an infinite loop because the parent's validity depends on its children's validity (which includes your validator).
 
 ## Using validateTree
 
@@ -185,9 +177,7 @@ For example, in a Sudoku puzzle, each row must contain unique numbers. This is a
 import {Component, signal} from '@angular/core';
 import {form, validateTree} from '@angular/forms/signals';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class SudokuRow {
   rowModel = signal({
     cell1: 1,
