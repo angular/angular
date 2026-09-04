@@ -71,6 +71,12 @@ export class ReactiveRouterState {
   }
 }
 
+// Whether `RouterLink` adds a `tabindex="0"` to non-anchor host elements. This was removed for the
+// public API (see #28345) because the element is put in the tab order without being made
+// keyboard-operable. It is retained inside Google via the marker below while callers migrate.
+// g3-only const ADD_TABINDEX_TO_NON_ANCHOR_ELEMENTS: boolean = true;
+const ADD_TABINDEX_TO_NON_ANCHOR_ELEMENTS: boolean = false; // 3p-only
+
 /**
  * @description
  *
@@ -423,7 +429,11 @@ export class RouterLink implements OnChanges, OnDestroy {
    * during instantiation.
    */
   private setTabIndexIfNotOnNativeEl(newTabIndex: string | null) {
-    if (this.tabIndexAttribute != null /* both `null` and `undefined` */ || this.isAnchorElement) {
+    if (
+      !ADD_TABINDEX_TO_NON_ANCHOR_ELEMENTS ||
+      this.tabIndexAttribute != null /* both `null` and `undefined` */ ||
+      this.isAnchorElement
+    ) {
       return;
     }
     this.applyAttributeValue('tabindex', newTabIndex);
