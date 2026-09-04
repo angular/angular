@@ -33,10 +33,7 @@ export function generateConditionalExpressions(job: ComponentCompilationJob): vo
       }
 
       // Switch expressions assign their main test to a temporary, to avoid re-executing it.
-      let tmp =
-        op.kind === ir.OpKind.Conditional && op.test != null
-          ? new ir.AssignTemporaryExpr(op.test, job.allocateXrefId())
-          : null;
+      let tmp = op.test != null ? new ir.AssignTemporaryExpr(op.test, job.allocateXrefId()) : null;
       let caseExpressionTemporaryXref: ir.XrefId | null = null;
 
       // For each remaining condition, test whether the temporary satifies the check. (If no temp is

@@ -45,7 +45,7 @@ export function createBoundaryBlock(
     const emptySpan = new ParseSourceSpan(block.startSourceSpan.end, block.startSourceSpan.end);
     const contextVariables: t.Variable[] = [
       new t.Variable('$error', '$error', emptySpan, emptySpan, emptySpan),
-      new t.Variable('$retry', '$retry', emptySpan, emptySpan, emptySpan),
+      new t.Variable('$reset', '$reset', emptySpan, emptySpan, emptySpan),
     ];
     let expression: AST | null = null;
 
@@ -63,15 +63,11 @@ export function createBoundaryBlock(
           contextVariables,
           errors,
           (name, variableName, sourceSpan) => {
-            if (!IDENTIFIER_PATTERN.test(name)) {
-              errors.push(
-                new ParseError(sourceSpan, `"let" parameter must be a valid JavaScript identifier`),
-              );
-            } else if (variableName !== '$error' && variableName !== '$retry') {
+            if (variableName !== '$error' && variableName !== '$reset') {
               errors.push(
                 new ParseError(
                   sourceSpan,
-                  `Unknown context variable "${variableName}". Only "$error" and "$retry" are allowed`,
+                  `Unknown context variable "${variableName}". Only "$error" and "$reset" are allowed`,
                 ),
               );
             } else if (contextVariables.some((v) => v.name === name)) {
@@ -93,11 +89,11 @@ export function createBoundaryBlock(
         const name = aliasMatch[1];
         const variableName = aliasMatch[2];
 
-        if (variableName !== '$error' && variableName !== '$retry') {
+        if (variableName !== '$error' && variableName !== '$reset') {
           errors.push(
             new ParseError(
               param.sourceSpan,
-              `Unknown context variable "${variableName}". Only "$error" and "$retry" are allowed`,
+              `Unknown context variable "${variableName}". Only "$error" and "$reset" are allowed`,
             ),
           );
         } else if (contextVariables.some((v) => v.name === name)) {

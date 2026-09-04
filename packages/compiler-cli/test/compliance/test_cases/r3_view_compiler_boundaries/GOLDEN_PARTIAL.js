@@ -82,7 +82,7 @@ export class TestComponent {
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestComponent, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     @boundary {
       Main Content
-    } @error (let err, retry = $retry) {
+    } @error (let err, retry = $reset) {
       <button (click)="retry()">Retry</button>
     }
   `, isInline: true });
@@ -93,7 +93,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     @boundary {
       Main Content
-    } @error (let err, retry = $retry) {
+    } @error (let err, retry = $reset) {
       <button (click)="retry()">Retry</button>
     }
   `
@@ -120,7 +120,7 @@ export class TestComponent {
     @boundary {
       Main Content
     } @error {
-      <button (click)="$retry()">Retry</button>
+      <button (click)="$reset()">Retry</button>
     }
   `, isInline: true });
 }
@@ -131,7 +131,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     @boundary {
       Main Content
     } @error {
-      <button (click)="$retry()">Retry</button>
+      <button (click)="$reset()">Retry</button>
     }
   `
                 }]

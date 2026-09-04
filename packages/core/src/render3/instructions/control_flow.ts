@@ -130,6 +130,32 @@ export function ɵɵconditionalBranchCreate(
   localRefExtractor?: LocalRefExtractor,
 ): typeof ɵɵconditionalBranchCreate {
   performanceMarkFeature('NgControlFlow');
+  createControlFlowBranch(
+    index,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    attrsIndex,
+    localRefsIndex,
+    localRefExtractor,
+  );
+  return ɵɵconditionalBranchCreate;
+}
+
+/**
+ * Shared internal function to create a control flow branch (e.g. for @case, @else, @error).
+ */
+export function createControlFlowBranch(
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+) {
   const lView = getLView();
   const tView = getTView();
   const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
@@ -147,7 +173,6 @@ export function ɵɵconditionalBranchCreate(
     localRefsIndex,
     localRefExtractor,
   );
-  return ɵɵconditionalBranchCreate;
 }
 
 /**

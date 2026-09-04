@@ -67,6 +67,10 @@ export function parseLetParameters(
           `Invalid ${messagePrefix} "let" parameter. Parameter should match the pattern "<name> = <variable name>"`,
         ),
       );
+    } else if (!IDENTIFIER_PATTERN.test(name)) {
+      errors.push(
+        new ParseError(sourceSpan, `"let" parameter must be a valid JavaScript identifier`),
+      );
     } else {
       validateLet(name, variableName, sourceSpan);
 

@@ -9,7 +9,7 @@ function TestComponent_Error_2_Template(rf, ctx) {
     $r3$.ɵɵdomElementStart(0, "button", 0);
     $r3$.ɵɵdomListener("click", function TestComponent_Error_2_Template_button_click_0_listener() {
       const $ctx_r1$ = $r3$.ɵɵrestoreView($r1$);
-      return $r3$.ɵɵresetView($ctx_r1$.$retry());
+      return $r3$.ɵɵresetView($ctx_r1$.$reset());
     });
     $r3$.ɵɵtext(1, "Retry");
     $r3$.ɵɵdomElementEnd();

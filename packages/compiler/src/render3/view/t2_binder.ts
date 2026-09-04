@@ -15,11 +15,11 @@ import {
   SafePropertyRead,
 } from '../../expression_parser/ast';
 import {
+  BoundaryBlock,
+  BoundaryErrorBlock,
   BoundAttribute,
   BoundEvent,
   BoundText,
-  BoundaryBlock,
-  BoundaryErrorBlock,
   Comment,
   Component,
   Content,
@@ -56,6 +56,7 @@ import {
 } from '../r3_ast';
 
 import {CombinedRecursiveAstVisitor} from '../../combined_visitor';
+import {ClassPropertyMapping, ClassPropertyName, InputOrOutput} from '../../property_mapping';
 import {
   BoundTarget,
   ConflictingHostDirectiveBinding,
@@ -71,7 +72,6 @@ import {
 } from './t2_api';
 import {parseTemplate} from './template';
 import {createCssSelectorFromNode} from './util';
-import {ClassPropertyMapping, ClassPropertyName, InputOrOutput} from '../../property_mapping';
 
 /**
  * Computes a difference between full list (first argument) and
@@ -1093,6 +1093,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (nodeOrNodes instanceof BoundaryErrorBlock) {
       nodeOrNodes.contextVariables.forEach((v) => this.visitNode(v));
+      nodeOrNodes.expression?.visit(this);
       nodeOrNodes.children.forEach((node) => node.visit(this));
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (
@@ -1171,7 +1172,6 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
   }
 
   override visitBoundaryErrorBlock(block: BoundaryErrorBlock) {
-    block.expression?.visit(this);
     this.ingestScopedNode(block);
   }
 

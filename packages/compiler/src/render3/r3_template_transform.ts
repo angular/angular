@@ -538,7 +538,10 @@ class HtmlAstToIvyAst implements html.Visitor {
       default:
         let errorMessage: string;
 
-        if (isConnectedDeferLoopBlock(block.name)) {
+        if (isConnectedBoundaryErrorBlock(block.name)) {
+          errorMessage = `@${block.name} block can only be used after an @defer or @boundary block.`;
+          this.processedNodes.add(block);
+        } else if (isConnectedDeferLoopBlock(block.name)) {
           errorMessage = `@${block.name} block can only be used after an @defer block.`;
           this.processedNodes.add(block);
         } else if (isConnectedForLoopBlock(block.name)) {
@@ -546,9 +549,6 @@ class HtmlAstToIvyAst implements html.Visitor {
           this.processedNodes.add(block);
         } else if (isConnectedIfLoopBlock(block.name)) {
           errorMessage = `@${block.name} block can only be used after an @if or @else if block.`;
-          this.processedNodes.add(block);
-        } else if (isConnectedBoundaryErrorBlock(block.name)) {
-          errorMessage = `@${block.name} block can only be used after an @defer or @boundary block.`;
           this.processedNodes.add(block);
         } else {
           errorMessage = `Unrecognized block @${block.name}.`;

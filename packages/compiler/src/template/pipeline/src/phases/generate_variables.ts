@@ -240,22 +240,6 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
           },
         });
         break;
-
-      case ir.OpKind.BoundaryErrorCreate:
-        const boundaryStateExpr = new ir.BoundaryStateExpr(op.boundaryXref);
-        const errorProp = new o.ReadPropExpr(boundaryStateExpr, 'error');
-
-        for (const variable of op.contextVariables) {
-          if (variable.value === '$error') {
-            view.aliases.add({
-              kind: ir.SemanticVariableKind.Alias,
-              name: null,
-              identifier: variable.name,
-              expression: errorProp,
-            });
-          }
-        }
-        break;
     }
   }
 

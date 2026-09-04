@@ -43,8 +43,30 @@ export function generateBoundaryConditions(job: ComponentCompilationJob): void {
 
           let conditionExpr = branch.expr!;
 
-          // The alias variable for the condition is generated in generate_variables.ts
-          // and resolved by resolve_names.
+          // Find the corresponding BoundaryErrorCreateOp to check for context variables
+          const errorCreateOp = Array.from(unit.create).find(
+            (o): o is ir.BoundaryErrorCreateOp =>
+              o.kind === ir.OpKind.BoundaryErrorCreate && o.xref === branch.target,
+          );
+
+          if (errorCreateOp !== undefined) {
+            const errorVarNames = errorCreateOp.contextVariables
+              .filter((v: any) => v.value === '$error')
+              .map((v: any) => v.name);
+
+            if (errorVarNames.length > 0) {
+              conditionExpr = ir.transformExpressionsInExpression(
+                conditionExpr,
+                (expr) => {
+                  if (expr instanceof ir.LexicalReadExpr && errorVarNames.includes(expr.name)) {
+                    return errorProp;
+                  }
+                  return expr;
+                },
+                ir.VisitorContextFlag.None,
+              );
+            }
+          }
 
           errorResultExpr = new o.ConditionalExpr(
             conditionExpr,

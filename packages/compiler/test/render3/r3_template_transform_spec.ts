@@ -1470,7 +1470,7 @@ describe('R3 template transform', () => {
           /@loading block can only be used after an @defer block/,
         );
         expect(() => parse('@error {error}')).toThrowError(
-          /@error block can only be used after an @defer block/,
+          /@error block can only be used after an @defer or @boundary block/,
         );
       });
 
