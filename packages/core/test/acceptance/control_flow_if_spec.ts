@@ -33,6 +33,64 @@ class MultiplyPipe implements PipeTransform {
 }
 
 describe('control flow - if', () => {
+  it(
+    'rebuilds an @if branch whose first creation pass was interrupted, without leaving ' +
+      'orphaned content behind (non-hydration case)',
+    () => {
+      // Regression coverage for the incompleteFirstPass rebuild in view_manipulation.ts.
+      // Cheaper and faster than the full SSR/hydration reproduction in
+      // full_app_hydration_spec.ts: a directive whose constructor throws once reproduces the
+      // same "interrupted first pass" mechanism directly, without needing hydration at all.
+      let shouldThrow = true;
+
+      @Directive({selector: '[boom]'})
+      class BoomDirective {
+        constructor() {
+          if (shouldThrow) {
+            shouldThrow = false;
+            throw new Error('boom');
+          }
+        }
+      }
+
+      @Component({
+        imports: [BoomDirective],
+        template: `
+          @if (show()) {
+            <span boom>first</span>
+            <span>second</span>
+          }
+        `,
+      })
+      class TestComponent {
+        show = signal(false);
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      // First attempt: the directive throws partway through the branch's first creation pass,
+      // after the first <span> was already created but before the second one was.
+      fixture.componentInstance.show.set(true);
+      expect(() => fixture.detectChanges()).toThrowError('boom');
+
+      // Unlike the hydration case, nothing from the failed attempt is visible: the branch's
+      // embedded view is only spliced into the DOM *after* it finishes creating successfully
+      // (see ɵɵconditional in control_flow.ts), so an interrupted attempt never gets attached
+      // in the first place — there's nothing to leak into view.
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // Re-enter the same branch. With the rebuild fix, this succeeds cleanly.
+      fixture.componentInstance.show.set(false);
+      fixture.detectChanges();
+      fixture.componentInstance.show.set(true);
+      expect(() => fixture.detectChanges()).not.toThrow();
+
+      // Correct, non-duplicated content — no leftover from the failed first attempt.
+      expect(fixture.nativeElement.textContent).toBe('firstsecond');
+    },
+  );
+
   it('should add and remove views based on conditions change', async () => {
     @Component({template: '@if (show()) {Something} @else {Nothing}'})
     class TestComponent {

@@ -16,8 +16,15 @@ import {assertDefined} from '../util/assert';
 import {assertLContainer, assertTNodeForLView} from './assert';
 import {renderView} from './instructions/render';
 import {TNode} from './interfaces/node';
-import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, QUERIES} from './interfaces/view';
-import {createLView} from './view/construction';
+import {
+  DECLARATION_LCONTAINER,
+  FLAGS,
+  HEADER_OFFSET,
+  LView,
+  LViewFlags,
+  QUERIES,
+} from './interfaces/view';
+import {createLView, createTView} from './view/construction';
 
 export function createAndRenderEmbeddedLView<T>(
   declarationLView: LView<unknown>,
@@ -31,8 +38,26 @@ export function createAndRenderEmbeddedLView<T>(
 ): LView<T> {
   const prevConsumer = setActiveConsumer(null);
   try {
-    const embeddedTView = templateTNode.tView!;
+    // If a previous attempt to create this embedded view threw partway through, rebuild its
+    // TView instead of reusing the corrupted one — mirrors what getOrCreateComponentTView()
+    // already does for component TViews.
+    let embeddedTView = templateTNode.tView!;
     ngDevMode && assertDefined(embeddedTView, 'TView must be defined for a template node.');
+    if (embeddedTView.incompleteFirstPass) {
+      embeddedTView = templateTNode.tView = createTView(
+        embeddedTView.type,
+        embeddedTView.declTNode,
+        embeddedTView.template,
+        embeddedTView.bindingStartIndex - HEADER_OFFSET,
+        embeddedTView.expandoStartIndex - embeddedTView.bindingStartIndex,
+        embeddedTView.directiveRegistry,
+        embeddedTView.pipeRegistry,
+        embeddedTView.viewQuery,
+        embeddedTView.schemas,
+        embeddedTView.consts,
+        embeddedTView.ssrId,
+      );
+    }
     ngDevMode && assertTNodeForLView(templateTNode, declarationLView);
 
     // Embedded views follow the change detection strategy of the view they're declared in.

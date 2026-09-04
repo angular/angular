@@ -30,6 +30,60 @@ describe('control flow - for', () => {
       providers: [provideZoneChangeDetection()],
     });
   });
+
+  it(
+    'rebuilds a @for item template whose first creation pass was interrupted, without ' +
+      'poisoning later items that share the same template',
+    () => {
+      // Regression coverage for the incompleteFirstPass rebuild in view_manipulation.ts. @for's
+      // item template has exactly one TView shared by every item
+      // (LiveCollectionLContainerImpl.create() calls the same createAndRenderEmbeddedLView()
+      // that @if/@switch branches use), so an interrupted first pass on one item is expected to
+      // corrupt every *other* item created from that same template too — not just retries of
+      // the same item, unlike @if.
+      let shouldThrow = true;
+
+      @Directive({selector: '[boom]'})
+      class BoomDirective {
+        constructor() {
+          if (shouldThrow) {
+            shouldThrow = false;
+            throw new Error('boom');
+          }
+        }
+      }
+
+      @Component({
+        imports: [BoomDirective],
+        template: `
+          @for (item of items(); track item) {
+            <span boom>{{ item }}-first</span>
+            <span>{{ item }}-second</span>
+          }
+        `,
+      })
+      class TestComponent {
+        items = signal([1]);
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+
+      // First item's creation is interrupted partway through — its own view never gets
+      // attached to the DOM (same as the @if case: LiveCollectionLContainerImpl.attach() only
+      // runs after create() returns successfully).
+      expect(() => fixture.detectChanges()).toThrowError('boom');
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // Add a second item. Without the rebuild fix, this item's creation would hit the same
+      // corrupted shared TView and throw NG0510 even though its own directive doesn't throw.
+      fixture.componentInstance.items.set([1, 2]);
+      expect(() => fixture.detectChanges()).not.toThrow();
+
+      // Both items render correctly — the shared TView was rebuilt, not left corrupted.
+      expect(fixture.nativeElement.textContent).toBe('1-first1-second2-first2-second');
+    },
+  );
+
   it('should create, remove and move views corresponding to items in a collection', () => {
     @Component({
       template: '@for ((item of items); track item; let idx = $index) {{{item}}({{idx}})|}',
