@@ -714,7 +714,7 @@ export type EnvironmentProviders = {
 export interface ErrorDetails {
     readonly boundary?: {
         readonly type: Type<unknown>;
-        readonly retry: () => void;
+        readonly reset: () => void;
     };
     readonly caughtBy?: Function;
     readonly declarationInstance: unknown;
