@@ -49,6 +49,7 @@ import {
   RENDERER,
   T_HOST,
   TVIEW,
+  TViewType,
 } from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
 import {destroyLView} from '../render3/node_manipulation';
@@ -58,7 +59,12 @@ import {
   getParentInjectorView,
   hasParentInjector,
 } from '../render3/util/injector_utils';
-import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3/util/view_utils';
+import {
+  getLViewParent,
+  getNativeByTNode,
+  unwrapRNode,
+  viewAttachedToContainer,
+} from '../render3/util/view_utils';
 import {shouldAddViewToDom} from '../render3/view_manipulation';
 import {ViewRef as R3ViewRef} from '../render3/view_ref';
 import {addToArray, removeFromArray} from '../util/array_utils';
@@ -520,24 +526,35 @@ class R3ViewContainerRef extends ViewContainerRef {
 
   /** Returns the namespace used by nodes inserted at this container's render location. */
   private _getHostElementNamespace(): string | null {
-    if (this._hostTNode.type & TNodeType.Element) {
-      const parentTNode = this._hostTNode.parent ?? this._hostLView[T_HOST];
+    let lView: LView | null = this._hostLView;
+    let tNode: TNode | null = this._hostTNode.parent;
 
-      // SVG foreignObject elements are namespace integration points: the foreignObject itself is
-      // SVG, but its children are HTML.
-      if (
-        parentTNode !== null &&
-        parentTNode.type & TNodeType.Element &&
-        typeof parentTNode.value === 'string' &&
-        parentTNode.value.toLowerCase() === 'foreignobject'
-      ) {
+    while (lView !== null) {
+      // Only elements are rendered into, so anything else has to be skipped. Their `namespace` is
+      // whichever one happened to be active while they were created, not the one they render in.
+      while (tNode !== null && !(tNode.type & TNodeType.Element)) {
+        tNode = tNode.parent;
+      }
+
+      if (tNode !== null) {
+        // SVG foreignObject elements are namespace integration points: the foreignObject itself is
+        // SVG, but its children are HTML.
+        return typeof tNode.value === 'string' && tNode.value.toLowerCase() === 'foreignobject'
+          ? null
+          : tNode.namespace;
+      }
+
+      // A component's template always starts out in the HTML namespace, so the namespace of its
+      // host element must not leak into it.
+      if (lView[TVIEW].type === TViewType.Component) {
         return null;
       }
 
-      return parentTNode?.namespace ?? null;
+      tNode = lView[T_HOST];
+      lView = getLViewParent(lView);
     }
 
-    return this._hostTNode.namespace;
+    return null;
   }
 
   override insert(viewRef: ViewRef, index?: number): ViewRef {

@@ -373,6 +373,122 @@ describe('ViewContainerRef', () => {
           'http://www.w3.org/1999/xhtml',
         );
       });
+
+      it('should use the HTML namespace inside a block that follows an SVG element', () => {
+        @Component({
+          selector: 'div[dynamic-html]',
+          template: 'HTML content',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class HtmlComp {}
+
+        @Component({
+          template: `
+            <svg></svg>
+            @if (true) {
+              <div #container></div>
+            }
+          `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({imports: [TestComp, HtmlComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.container.createComponent(HtmlComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe(
+          'http://www.w3.org/1999/xhtml',
+        );
+      });
+
+      it('should use the HTML namespace inside a component rendered in an SVG element', () => {
+        @Component({
+          selector: 'div[dynamic-html]',
+          template: 'HTML content',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class HtmlComp {}
+
+        @Component({
+          selector: 'g[inner]',
+          template: `
+            @if (true) {
+              <ng-container #container></ng-container>
+            }
+          `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class InnerComp {
+          @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
+        }
+
+        @Component({
+          template: '<svg><g inner></g></svg>',
+          imports: [InnerComp],
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class TestComp {
+          @ViewChild(InnerComp) inner!: InnerComp;
+        }
+
+        TestBed.configureTestingModule({imports: [TestComp, InnerComp, HtmlComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.inner.container.createComponent(HtmlComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe(
+          'http://www.w3.org/1999/xhtml',
+        );
+      });
+
+      it('should inherit the namespace of an element anchor across a view boundary', () => {
+        @Component({
+          selector: 'g[dynamic-group]',
+          template: '<svg:text>SVG content</svg:text>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class SvgGroupComp {}
+
+        @Component({
+          template: `
+            <svg><g #anchor></g></svg>
+            <ng-template #tpl><ng-container #inner></ng-container></ng-template>
+          `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class TestComp {
+          @ViewChild('anchor', {read: ViewContainerRef}) anchor!: ViewContainerRef;
+          @ViewChild('tpl', {read: TemplateRef}) tpl!: TemplateRef<unknown>;
+          @ViewChild('inner', {read: ViewContainerRef}) inner!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({imports: [TestComp, SvgGroupComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        fixture.componentInstance.anchor.createEmbeddedView(fixture.componentInstance.tpl);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.inner.createComponent(SvgGroupComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe('http://www.w3.org/2000/svg');
+      });
     });
 
     it('should apply attributes and classes to host element based on selector', () => {
