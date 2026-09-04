@@ -8,6 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
+import * as ng from '../instruction';
 
 import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
@@ -44,6 +45,7 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | 
     switch (op.kind) {
       case ir.OpKind.ConditionalCreate:
       case ir.OpKind.ConditionalBranchCreate:
+      case ir.OpKind.BoundaryErrorCreate:
       case ir.OpKind.Template:
         // Descend into child embedded views.
         recursivelyProcessView(view.job.views.get(op.xref)!, scope);
@@ -97,6 +99,8 @@ interface Scope {
   contextVariables: Map<string, ir.SemanticVariable>;
 
   aliases: Set<ir.AliasVariable>;
+
+  boundaryVariables: Map<ir.XrefId, {variable: ir.SemanticVariable; handle: ir.SlotHandle}>;
 
   /**
    * Local references collected from elements within the view.
@@ -173,6 +177,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
     aliases: view.aliases,
     references: [],
     letDeclarations: [],
+    boundaryVariables: new Map<ir.XrefId, {variable: ir.SemanticVariable; handle: ir.SlotHandle}>(),
     parent,
   };
 
@@ -210,6 +215,17 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
             },
           });
         }
+        break;
+
+      case ir.OpKind.BoundaryCreate:
+        scope.boundaryVariables.set(op.xref, {
+          variable: {
+            kind: ir.SemanticVariableKind.BoundaryState,
+            name: null,
+            boundaryXref: op.xref,
+          },
+          handle: op.handle,
+        });
         break;
 
       case ir.OpKind.DeclareLet:
@@ -288,6 +304,18 @@ function generateVariablesInScopeForView<OpT extends ir.Op<OpT>>(
         alias,
         alias.expression.clone(),
         ir.VariableFlags.AlwaysInline,
+      ),
+    );
+  }
+
+  // Add variables for all boundaries declared in this scope.
+  for (const [xref, {variable, handle}] of scope.boundaryVariables) {
+    newOps.push(
+      ir.createVariableOp(
+        view.job.allocateXrefId(),
+        variable,
+        ng.getBoundary(new ir.SlotLiteralExpr(handle)),
+        ir.VariableFlags.None,
       ),
     );
   }

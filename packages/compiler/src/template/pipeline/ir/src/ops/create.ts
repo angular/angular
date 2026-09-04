@@ -10,6 +10,7 @@ import {SecurityContext} from '../../../../../core';
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
+import * as t from '../../../../../render3/r3_ast';
 import {
   AnimationKind,
   BindingKind,
@@ -81,7 +82,9 @@ export type CreateOp =
   | AnimationStringOp
   | AnimationOp
   | SourceLocationOp
-  | ControlCreateOp;
+  | ControlCreateOp
+  | BoundaryCreateOp
+  | BoundaryErrorCreateOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -94,7 +97,8 @@ export type ElementOrContainerOps =
   | TemplateOp
   | RepeaterCreateOp
   | ConditionalCreateOp
-  | ConditionalBranchCreateOp;
+  | ConditionalBranchCreateOp
+  | BoundaryCreateOp;
 
 /**
  * The set of OpKinds that represent the creation of an element or container
@@ -108,6 +112,7 @@ const elementContainerOpKinds = new Set([
   OpKind.RepeaterCreate,
   OpKind.ConditionalCreate,
   OpKind.ConditionalBranchCreate,
+  OpKind.BoundaryCreate,
 ]);
 
 /**
@@ -186,7 +191,8 @@ export interface ElementOpBase extends ElementOrContainerOpBase {
     | OpKind.Template
     | OpKind.RepeaterCreate
     | OpKind.ConditionalCreate
-    | OpKind.ConditionalBranchCreate;
+    | OpKind.ConditionalBranchCreate
+    | OpKind.BoundaryCreate;
 
   /**
    * The HTML tag name for this element.
@@ -526,6 +532,129 @@ export function createConditionalBranchCreateOp(
     i18nPlaceholder,
     startSourceSpan,
     wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a boundary block.
+ */
+export interface BoundaryCreateOp extends ElementOpBase {
+  kind: OpKind.BoundaryCreate;
+
+  templateKind: TemplateKind;
+
+  /**
+   * The number of declaration slots used by this template, or `null` if slots have not yet been
+   * assigned.
+   */
+  decls: number | null;
+
+  /**
+   * The number of binding variable slots used by this template, or `null` if binding variables have
+   * not yet been counted.
+   */
+  vars: number | null;
+
+  /**
+   * Suffix to add to the name of the generated template function.
+   */
+  functionNameSuffix: string;
+
+  /**
+   * The i18n placeholder data associated with this template.
+   */
+  i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+}
+
+export function createBoundaryCreateOp(
+  xref: XrefId,
+  templateKind: TemplateKind,
+  tag: string | null,
+  functionNameSuffix: string,
+  namespace: Namespace,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  startSourceSpan: ParseSourceSpan,
+  wholeSourceSpan: ParseSourceSpan,
+): BoundaryCreateOp {
+  return {
+    kind: OpKind.BoundaryCreate,
+    xref,
+    templateKind,
+    attributes: null,
+    tag,
+    handle: new SlotHandle(),
+    functionNameSuffix,
+    decls: null,
+    vars: null,
+    localRefs: [],
+    nonBindable: false,
+    namespace,
+    i18nPlaceholder,
+    startSourceSpan,
+    wholeSourceSpan,
+    ...TRAIT_CONSUMES_SLOT,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * An op that creates a boundary error block.
+ */
+export interface BoundaryErrorCreateOp extends Op<CreateOp>, ConsumesSlotOpTrait {
+  kind: OpKind.BoundaryErrorCreate;
+
+  templateKind: TemplateKind;
+
+  decls: number | null;
+
+  vars: number | null;
+
+  functionNameSuffix: string;
+
+  i18nPlaceholder?: i18n.TagPlaceholder | i18n.BlockPlaceholder;
+
+  /**
+   * The Xref of the BoundaryCreate op that this error branch belongs to.
+   */
+  boundaryXref: XrefId;
+
+  contextVariables: t.Variable[];
+
+  /**
+   * The handle to the slot allocated for this element.
+   */
+  handle: SlotHandle;
+
+  startSourceSpan: ParseSourceSpan;
+
+  wholeSourceSpan: ParseSourceSpan;
+}
+
+export function createBoundaryErrorCreateOp(
+  xref: XrefId,
+  templateKind: TemplateKind,
+  functionNameSuffix: string,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  startSourceSpan: ParseSourceSpan,
+  wholeSourceSpan: ParseSourceSpan,
+  boundaryXref: XrefId,
+  contextVariables: t.Variable[],
+): BoundaryErrorCreateOp {
+  return {
+    kind: OpKind.BoundaryErrorCreate,
+    xref,
+    templateKind,
+    handle: new SlotHandle(),
+    functionNameSuffix,
+    decls: null,
+    vars: null,
+    i18nPlaceholder,
+    startSourceSpan,
+    wholeSourceSpan,
+    boundaryXref,
+    contextVariables,
     ...TRAIT_CONSUMES_SLOT,
     ...NEW_OP,
   };

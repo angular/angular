@@ -306,6 +306,8 @@ function ingestNodes(unit: ViewCompilationUnit, template: t.Node[]): void {
       ingestForBlock(unit, node);
     } else if (node instanceof t.LetDeclaration) {
       ingestLetDeclaration(unit, node);
+    } else if (node instanceof t.BoundaryBlock) {
+      ingestBoundaryBlock(unit, node);
     } else if (node instanceof t.Component) {
       // TODO(crisbeto): account for selectorless nodes.
     } else {
@@ -668,6 +670,105 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
     ingestNodes(cView, ifCase.children);
   }
   unit.update.push(ir.createConditionalOp(firstXref!, null, conditions, ifBlock.sourceSpan));
+}
+
+/**
+ * Ingest an `@boundary` block into the given `ViewCompilation`.
+ */
+function ingestBoundaryBlock(unit: ViewCompilationUnit, boundaryBlock: t.BoundaryBlock): void {
+  // 1. Process primary block first to get its view xref for BoundaryCreateOp
+  const primaryView = unit.job.allocateView(unit.xref);
+  const primaryTagName = ingestControlFlowInsertionPoint(unit, primaryView.xref, boundaryBlock);
+
+  // Create BoundaryCreateOp for the container itself, using the primary view xref!
+  const createOp = ir.createBoundaryCreateOp(
+    unit.job.allocateXrefId(),
+    ir.TemplateKind.Block,
+    primaryTagName,
+    'Boundary',
+    ir.Namespace.HTML,
+    undefined,
+    boundaryBlock.startSourceSpan,
+    boundaryBlock.sourceSpan,
+  );
+  unit.create.push(createOp);
+  const primaryCreateOp = ir.createConditionalBranchCreateOp(
+    primaryView.xref,
+    ir.TemplateKind.Block,
+    primaryTagName,
+    'Primary',
+    ir.Namespace.HTML,
+    undefined,
+    boundaryBlock.startSourceSpan,
+    boundaryBlock.sourceSpan,
+  );
+  unit.create.push(primaryCreateOp);
+
+  let conditions: Array<ir.ConditionalCaseExpr> = [];
+
+  // 2. Process @error blocks (fallbacks)
+  for (const errorBlock of boundaryBlock.errorBlocks) {
+    const errorView = unit.job.allocateView(unit.xref);
+    const tagName = ingestControlFlowInsertionPoint(unit, errorView.xref, errorBlock);
+
+    // Create branch creation operation
+    const branchCreateOp = ir.createBoundaryErrorCreateOp(
+      errorView.xref,
+      ir.TemplateKind.Block,
+      'Error',
+      undefined,
+      errorBlock.startSourceSpan,
+      errorBlock.sourceSpan,
+      createOp.xref,
+      errorBlock.contextVariables,
+    );
+    unit.create.push(branchCreateOp);
+
+    // Expression case
+    const caseExpr = errorBlock.expression
+      ? convertAst(errorBlock.expression, unit.job, null)
+      : null;
+
+    const errorVar = errorBlock.contextVariables.find((v) => v.value === '$error');
+
+    const conditionalCaseExpr = new ir.ConditionalCaseExpr(
+      caseExpr,
+      branchCreateOp.xref,
+      branchCreateOp.handle,
+      errorVar || null,
+    );
+    conditions.push(conditionalCaseExpr);
+
+    for (const variable of errorBlock.contextVariables) {
+      errorView.aliases.add({
+        kind: ir.SemanticVariableKind.Alias,
+        name: null,
+        identifier: variable.name,
+        expression: new o.ReadPropExpr(new ir.ContextExpr(errorView.xref), variable.value),
+      });
+    }
+    ingestNodes(errorView, errorBlock.children);
+  }
+
+  const primaryCaseExpr = new ir.ConditionalCaseExpr(
+    null,
+    primaryCreateOp.xref,
+    primaryCreateOp.handle,
+    null,
+  );
+
+  ingestNodes(primaryView, boundaryBlock.children);
+
+  unit.update.push(
+    ir.createBoundaryOp(
+      createOp.xref,
+      createOp.handle,
+      primaryCreateOp.xref,
+      primaryCaseExpr,
+      conditions,
+      boundaryBlock.sourceSpan,
+    ),
+  );
 }
 
 /**

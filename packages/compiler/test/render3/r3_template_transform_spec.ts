@@ -153,6 +153,20 @@ class R3AstHumanizer implements t.Visitor<void> {
     this.visitAll(toVisit);
   }
 
+  visitBoundaryBlock(block: t.BoundaryBlock): void {
+    this.result.push(['BoundaryBlock']);
+    this.visitAll([block.children, block.errorBlocks]);
+  }
+
+  visitBoundaryErrorBlock(block: t.BoundaryErrorBlock): void {
+    this.result.push([
+      'BoundaryErrorBlock',
+      block.errorAlias ? block.errorAlias.name : null,
+      block.expression ? unparse(block.expression) : null,
+    ]);
+    this.visitAll([block.children]);
+  }
+
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     if (trigger instanceof t.BoundDeferredTrigger) {
       this.result.push(['BoundDeferredTrigger', unparse(trigger.value)]);
@@ -264,6 +278,30 @@ describe('R3 template transform', () => {
   describe('ParseSpan on nodes toString', () => {
     it('should create valid text span on Element with adjacent start and end tags', () => {
       expectSpanFromHtml('<div></div>').toBe('<div></div>');
+    });
+  });
+
+  describe('Boundary blocks', () => {
+    it('should parse @boundary blocks with multiple @error blocks', () => {
+      expectFromHtml(`
+        @boundary {
+          <div>Content</div>
+        } @error (when err instanceof SpecificError) {
+          <div>Specific Error</div>
+        } @error (let err) {
+          <div>General Error {{ err }}</div>
+        }
+      `).toEqual([
+        ['BoundaryBlock'],
+        ['Element', 'div'],
+        ['Text', 'Content'],
+        ['BoundaryErrorBlock', '$error', 'err instanceof SpecificError'],
+        ['Element', 'div'],
+        ['Text', 'Specific Error'],
+        ['BoundaryErrorBlock', '$error', null],
+        ['Element', 'div'],
+        ['BoundText', 'General Error {{ err }}'],
+      ]);
     });
   });
 
@@ -1432,7 +1470,7 @@ describe('R3 template transform', () => {
           /@loading block can only be used after an @defer block/,
         );
         expect(() => parse('@error {error}')).toThrowError(
-          /@error block can only be used after an @defer block/,
+          /@error block can only be used after an @defer or @boundary block/,
         );
       });
 

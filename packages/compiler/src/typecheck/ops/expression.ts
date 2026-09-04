@@ -135,6 +135,7 @@ export class TcbExpressionTranslator {
           return new TcbExpr(`${targetExpression.print()} as any`);
         }
       }
+
       return targetExpression;
     } else if (
       ast instanceof Binary &&

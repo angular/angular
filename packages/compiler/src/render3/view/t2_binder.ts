@@ -15,6 +15,8 @@ import {
   SafePropertyRead,
 } from '../../expression_parser/ast';
 import {
+  BoundaryBlock,
+  BoundaryErrorBlock,
   BoundAttribute,
   BoundEvent,
   BoundText,
@@ -54,6 +56,7 @@ import {
 } from '../r3_ast';
 
 import {CombinedRecursiveAstVisitor} from '../../combined_visitor';
+import {ClassPropertyMapping, ClassPropertyName, InputOrOutput} from '../../property_mapping';
 import {
   BoundTarget,
   ConflictingHostDirectiveBinding,
@@ -69,7 +72,6 @@ import {
 } from './t2_api';
 import {parseTemplate} from './template';
 import {createCssSelectorFromNode} from './util';
-import {ClassPropertyMapping, ClassPropertyName, InputOrOutput} from '../../property_mapping';
 
 /**
  * Computes a difference between full list (first argument) and
@@ -350,6 +352,9 @@ class Scope implements Visitor {
       this.visitVariable(nodeOrNodes.item);
       nodeOrNodes.contextVariables.forEach((v) => this.visitVariable(v));
       nodeOrNodes.children.forEach((node) => node.visit(this));
+    } else if (nodeOrNodes instanceof BoundaryErrorBlock) {
+      nodeOrNodes.contextVariables.forEach((v) => this.visitVariable(v));
+      nodeOrNodes.children.forEach((node) => node.visit(this));
     } else if (
       nodeOrNodes instanceof SwitchBlockCaseGroup ||
       nodeOrNodes instanceof ForLoopBlockEmpty ||
@@ -358,6 +363,7 @@ class Scope implements Visitor {
       nodeOrNodes instanceof DeferredBlockPlaceholder ||
       nodeOrNodes instanceof DeferredBlockLoading ||
       nodeOrNodes instanceof ContentBlock ||
+      nodeOrNodes instanceof BoundaryBlock ||
       nodeOrNodes instanceof Content
     ) {
       nodeOrNodes.children.forEach((node) => node.visit(this));
@@ -409,6 +415,15 @@ class Scope implements Visitor {
   }
 
   visitDeferredBlockLoading(block: DeferredBlockLoading) {
+    this.ingestScopedNode(block);
+  }
+
+  visitBoundaryBlock(block: BoundaryBlock) {
+    this.ingestScopedNode(block);
+    block.errorBlocks.forEach((node) => node.visit(this));
+  }
+
+  visitBoundaryErrorBlock(block: BoundaryErrorBlock) {
     this.ingestScopedNode(block);
   }
 
@@ -636,6 +651,15 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitDeferredBlockLoading(block: DeferredBlockLoading): void {
+    block.children.forEach((child) => child.visit(this));
+  }
+
+  visitBoundaryBlock(block: BoundaryBlock): void {
+    block.children.forEach((child) => child.visit(this));
+    block.errorBlocks.forEach((node) => node.visit(this));
+  }
+
+  visitBoundaryErrorBlock(block: BoundaryErrorBlock): void {
     block.children.forEach((child) => child.visit(this));
   }
 
@@ -1067,6 +1091,11 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       this.deferBlocks.push([nodeOrNodes, this.scope]);
       nodeOrNodes.children.forEach((node) => node.visit(this));
       this.nestingLevel.set(nodeOrNodes, this.level);
+    } else if (nodeOrNodes instanceof BoundaryErrorBlock) {
+      nodeOrNodes.contextVariables.forEach((v) => this.visitNode(v));
+      nodeOrNodes.expression?.visit(this);
+      nodeOrNodes.children.forEach((node) => node.visit(this));
+      this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (
       nodeOrNodes instanceof SwitchBlockCaseGroup ||
       nodeOrNodes instanceof ForLoopBlockEmpty ||
@@ -1074,6 +1103,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       nodeOrNodes instanceof DeferredBlockPlaceholder ||
       nodeOrNodes instanceof DeferredBlockLoading ||
       nodeOrNodes instanceof ContentBlock ||
+      nodeOrNodes instanceof BoundaryBlock ||
       nodeOrNodes instanceof Content
     ) {
       nodeOrNodes.children.forEach((node) => node.visit(this));
@@ -1134,6 +1164,16 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
 
   override visitDeferredBlockLoading(block: DeferredBlockLoading) {
     this.ingestScopedNode(block);
+  }
+
+  override visitBoundaryBlock(block: BoundaryBlock) {
+    this.ingestScopedNode(block);
+    block.errorBlocks.forEach((node) => node.visit(this));
+  }
+
+  override visitBoundaryErrorBlock(block: BoundaryErrorBlock) {
+    this.ingestScopedNode(block);
+    block.expression?.visit(this);
   }
 
   override visitSwitchBlockCase(block: SwitchBlockCase) {

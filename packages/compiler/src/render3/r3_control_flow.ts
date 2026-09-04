@@ -12,7 +12,7 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
 
 import * as t from './r3_ast';
-import {IDENTIFIER_PATTERN, LET_PATTERN} from './util';
+import {IDENTIFIER_PATTERN, LET_PATTERN, parseLetParameters} from './util';
 
 /** Pattern for the expression in a for loop block. */
 const FOR_LOOP_EXPRESSION_PATTERN = /^\s*([0-9A-Za-z_$]*)\s+of\s+([\S\s]*)/;
@@ -22,12 +22,6 @@ const FOR_LOOP_TRACK_PATTERN = /^track\s+([\S\s]*)/;
 
 /** Pattern for the `as` expression in a conditional block. */
 const CONDITIONAL_ALIAS_PATTERN = /^(as\s+)(.*)/;
-
-/**
- * Pattern to group a string into leading whitespace, non whitespace, and trailing whitespace.
- * Useful for getting the variable name span when a span can contain leading and trailing space.
- */
-const CHARACTERS_IN_SURROUNDING_WHITESPACE_PATTERN = /(\s*)(\S+)(\s*)/;
 
 /** Names of variables that are allowed to be used in the `let` expression of a `for` loop. */
 const ALLOWED_FOR_LOOP_LET_VARIABLES = new Set([
@@ -430,13 +424,36 @@ function parseForLoopParameters(
         param.sourceSpan.start.moveBy(letMatch[0].length - letMatch[1].length),
         param.sourceSpan.end,
       );
-      parseLetParameter(
+      parseLetParameters(
         param.sourceSpan,
         letMatch[1],
         variablesSpan,
-        itemName,
         result.context,
         errors,
+        (name, variableName, sourceSpan) => {
+          if (!ALLOWED_FOR_LOOP_LET_VARIABLES.has(variableName)) {
+            errors.push(
+              new ParseError(
+                sourceSpan,
+                `Unknown "let" parameter variable "${variableName}". The allowed variables are: ${Array.from(
+                  ALLOWED_FOR_LOOP_LET_VARIABLES,
+                ).join(', ')}`,
+              ),
+            );
+          } else if (name === itemName) {
+            errors.push(
+              new ParseError(
+                sourceSpan,
+                `Invalid @for loop "let" parameter. Variable cannot be called "${itemName}"`,
+              ),
+            );
+          } else if (result.context.some((v) => v.name === name)) {
+            errors.push(
+              new ParseError(sourceSpan, `Duplicate "let" parameter variable "${variableName}"`),
+            );
+          }
+        },
+        '@for loop',
       );
       continue;
     }
@@ -481,83 +498,6 @@ function validateTrackByExpression(
   expression.ast.visit(visitor);
   if (visitor.hasPipe) {
     errors.push(new ParseError(parseSourceSpan, 'Cannot use pipes in track expressions'));
-  }
-}
-
-/** Parses the `let` parameter of a `for` loop block. */
-function parseLetParameter(
-  sourceSpan: ParseSourceSpan,
-  expression: string,
-  span: ParseSourceSpan,
-  loopItemName: string,
-  context: t.Variable[],
-  errors: ParseError[],
-): void {
-  const parts = expression.split(',');
-  let startSpan = span.start;
-  for (const part of parts) {
-    const expressionParts = part.split('=');
-    const name = expressionParts.length === 2 ? expressionParts[0].trim() : '';
-    const variableName = expressionParts.length === 2 ? expressionParts[1].trim() : '';
-
-    if (name.length === 0 || variableName.length === 0) {
-      errors.push(
-        new ParseError(
-          sourceSpan,
-          `Invalid @for loop "let" parameter. Parameter should match the pattern "<name> = <variable name>"`,
-        ),
-      );
-    } else if (!ALLOWED_FOR_LOOP_LET_VARIABLES.has(variableName)) {
-      errors.push(
-        new ParseError(
-          sourceSpan,
-          `Unknown "let" parameter variable "${variableName}". The allowed variables are: ${Array.from(
-            ALLOWED_FOR_LOOP_LET_VARIABLES,
-          ).join(', ')}`,
-        ),
-      );
-    } else if (name === loopItemName) {
-      errors.push(
-        new ParseError(
-          sourceSpan,
-          `Invalid @for loop "let" parameter. Variable cannot be called "${loopItemName}"`,
-        ),
-      );
-    } else if (context.some((v) => v.name === name)) {
-      errors.push(
-        new ParseError(sourceSpan, `Duplicate "let" parameter variable "${variableName}"`),
-      );
-    } else {
-      const [, keyLeadingWhitespace, keyName] =
-        expressionParts[0].match(CHARACTERS_IN_SURROUNDING_WHITESPACE_PATTERN) ?? [];
-      const keySpan =
-        keyLeadingWhitespace !== undefined && expressionParts.length === 2
-          ? new ParseSourceSpan(
-              /* strip leading spaces */
-              startSpan.moveBy(keyLeadingWhitespace.length),
-              /* advance to end of the variable name */
-              startSpan.moveBy(keyLeadingWhitespace.length + keyName.length),
-            )
-          : span;
-
-      let valueSpan: ParseSourceSpan | undefined = undefined;
-      if (expressionParts.length === 2) {
-        const [, valueLeadingWhitespace, implicit] =
-          expressionParts[1].match(CHARACTERS_IN_SURROUNDING_WHITESPACE_PATTERN) ?? [];
-        valueSpan =
-          valueLeadingWhitespace !== undefined
-            ? new ParseSourceSpan(
-                startSpan.moveBy(expressionParts[0].length + 1 + valueLeadingWhitespace.length),
-                startSpan.moveBy(
-                  expressionParts[0].length + 1 + valueLeadingWhitespace.length + implicit.length,
-                ),
-              )
-            : undefined;
-      }
-      const sourceSpan = new ParseSourceSpan(keySpan.start, valueSpan?.end ?? keySpan.end);
-      context.push(new t.Variable(name, variableName, sourceSpan, keySpan, valueSpan));
-    }
-    startSpan = startSpan.moveBy(part.length + 1 /* add 1 to move past the comma */);
   }
 }
 

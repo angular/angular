@@ -435,6 +435,7 @@ export function createComponent<C>(component: Type<C>, options: {
     projectableNodes?: Node[][];
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
     bindings?: Binding[];
+    onError?: (error: Error, details: ErrorDetails) => void;
 }): ComponentRef<C>;
 
 // @public
@@ -710,9 +711,21 @@ export type EnvironmentProviders = {
 };
 
 // @public
+export interface ErrorDetails {
+    readonly boundary?: {
+        readonly type: Type<unknown>;
+        readonly reset: () => void;
+    };
+    readonly caughtBy?: Function;
+    readonly declarationInstance: unknown;
+    readonly declarationType: Type<unknown>;
+}
+
+// @public
 export class ErrorHandler {
     // (undocumented)
     handleError(error: any): void;
+    onViewError?(error: Error, details: ErrorDetails): void;
 }
 
 // @public
@@ -2098,10 +2111,12 @@ export abstract class ViewContainerRef {
         projectableNodes?: Node[][];
         directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
         bindings?: Binding[];
+        onError?: (error: Error, context: ErrorDetails) => void;
     }): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, options?: {
         index?: number;
         injector?: Injector;
+        onError?: (error: Error, details: ErrorDetails) => void;
     }): EmbeddedViewRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
     abstract detach(index?: number): ViewRef | null;

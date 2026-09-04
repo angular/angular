@@ -152,6 +152,7 @@ const SUPPORTED_BLOCKS = [
   '@defer',
   '@placeholder',
   '@loading',
+  '@boundary',
   '@error',
   '@content',
 ] as const;
