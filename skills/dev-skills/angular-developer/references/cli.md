@@ -43,21 +43,9 @@ ng serve
 
 ### Backend API Proxying
 
-To proxy API requests during development (e.g., rerouting `/api` to a local Node server):
+To proxy API requests during development and avoid CORS issues, you can configure a proxy file (`proxy.conf.json` or `proxy.conf.js`) in your `angular.json` serve target.
 
-1. Create `src/proxy.conf.json`:
-   ```json
-   {
-     "/api/**": {"target": "http://localhost:3000", "secure": false}
-   }
-   ```
-2. Update `angular.json` under the `serve` target:
-   ```json
-   "serve": {
-     "builder": "@angular/build:dev-server",
-     "options": { "proxyConfig": "src/proxy.conf.json" }
-   }
-   ```
+For a comprehensive guide on basic routing, path rewriting, WebSockets, and dynamic bypasses, read the dedicated [Proxy Configuration Reference](proxy-configuration.md).
 
 ## 4. Building the Application
 
