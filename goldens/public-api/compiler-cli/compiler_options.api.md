@@ -81,6 +81,7 @@ export interface TypeCheckingOptions {
     strictOutputEventTypes?: boolean;
     strictSafeNavigationTypes?: boolean;
     strictTemplates?: boolean;
+    strictUnclaimedEventNames?: boolean;
     typeCheckHostBindings?: boolean;
 }
 

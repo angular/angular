@@ -187,6 +187,24 @@ export interface TypeCheckingOptions {
   strictDomEventTypes?: boolean;
 
   /**
+   * Whether to report event bindings whose name matches neither an output of a directive applied
+   * to the element nor a known native DOM event.
+   *
+   * If this is `true`, an event binding such as `(outputTypo)="handle()"` on an element with
+   * matched directives will produce an error when no directive emits an `outputTypo` output and
+   * `outputTypo` isn't a native DOM event. To avoid false positives, only single-identifier
+   * camelCase names are checked: dash-separated names (e.g. `my-event`), which custom events
+   * dispatched by descendant elements conventionally use, are exempt.
+   *
+   * Note that this check is a heuristic: the compiler cannot know the set of custom events that
+   * may bubble up from descendant elements. Projects listening to camelCase custom events on
+   * elements with matched directives should not enable this option.
+   *
+   * Defaults to `false`.
+   */
+  strictUnclaimedEventNames?: boolean;
+
+  /**
    * Whether to include the generic type of components when type-checking the template.
    *
    * If no component has generic type parameters, this setting has no effect.

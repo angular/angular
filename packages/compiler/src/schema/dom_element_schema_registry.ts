@@ -346,6 +346,9 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   // We don't allow binding to events for security reasons. Allowing event bindings would almost
   // certainly introduce bad XSS vulnerabilities. Instead, we store events in a separate schema.
   private _eventSchema = new Map<string, Set<string>>();
+  // Union of all events in `_eventSchema`, built lazily by `isKnownEventOfAnyElement`. Since
+  // events bubble, any known event can be observed on any element, regardless of its tag.
+  private _allKnownEvents: Set<string> | null = null;
 
   constructor() {
     super();
@@ -503,6 +506,18 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   allKnownEventsOfElement(tagName: string): string[] {
     const normalizedTag = normalizeTagName(tagName);
     return Array.from(this._eventSchema.get(normalizedTag) ?? []);
+  }
+
+  isKnownEventOfAnyElement(eventName: string): boolean {
+    if (this._allKnownEvents === null) {
+      this._allKnownEvents = new Set();
+      for (const events of this._eventSchema.values()) {
+        for (const event of events) {
+          this._allKnownEvents.add(event);
+        }
+      }
+    }
+    return this._allKnownEvents.has(eventName);
   }
 
   override normalizeAnimationStyleProperty(propName: string): string {

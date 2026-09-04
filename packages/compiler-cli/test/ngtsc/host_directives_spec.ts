@@ -592,9 +592,9 @@ runInEachFileSystem(() => {
 
         // First diagnostic checks that the output is available under the original name.
         // Second diagnostic checks that an output that would otherwise be hidden by a host directive is available.
-        // Third diagnostic checks that the host directive alias does not apply.
+        // Third and fourth diagnostics check that the host directive alias does not apply.
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(3);
+        expect(diags.length).toBe(4);
         expect(diags[0].messageText).toBe(
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
@@ -603,6 +603,9 @@ runInEachFileSystem(() => {
         );
         expect(diags[2].messageText).toBe(
           `Argument of type 'Event' is not assignable to parameter of type 'string'.`,
+        );
+        expect(diags[3].messageText).toContain(
+          `Event 'oneAlias' is not emitted by any directive applied to 'div'`,
         );
       });
 

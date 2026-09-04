@@ -1182,6 +1182,7 @@ describe('type check blocks', () => {
       checkTypeOfOutputEvents: true,
       checkTypeOfAnimationEvents: true,
       checkTypeOfDomEvents: true,
+      checkUnclaimedEventNames: false,
       checkTypeOfDomReferences: true,
       checkTypeOfNonDomReferences: true,
       checkTypeOfPipes: true,

@@ -281,6 +281,8 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   checkTypeOfOutputEvents: true,
   checkTypeOfAnimationEvents: true,
   checkTypeOfDomEvents: true,
+  // Requires an explicit opt-in in production as well, since the check is heuristic.
+  checkUnclaimedEventNames: false,
   checkTypeOfDomReferences: true,
   checkTypeOfNonDomReferences: true,
   checkTypeOfPipes: true,
@@ -434,6 +436,7 @@ export function tcb(
     checkTypeOfOutputEvents: true,
     checkTypeOfAnimationEvents: true,
     checkTypeOfDomEvents: true,
+    checkUnclaimedEventNames: false,
     checkTypeOfDomReferences: true,
     checkTypeOfNonDomReferences: true,
     checkTypeOfPipes: true,
@@ -1072,6 +1075,7 @@ export class NoopSchemaChecker implements DomSchemaChecker<TemplateDiagnostic> {
 
   checkElement(): void {}
   checkTemplateElementProperty(): void {}
+  checkTemplateElementEvent(): void {}
   checkHostElementProperty(): void {}
 }
 

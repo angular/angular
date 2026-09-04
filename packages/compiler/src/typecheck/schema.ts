@@ -66,6 +66,25 @@ export interface DomSchemaChecker<T> {
   ): void;
 
   /**
+   * Check an event binding on an element that wasn't claimed by any directive's output and record
+   * any diagnostics about it.
+   *
+   * @param id the type check ID, suitable for resolution with a `TcbSourceResolver`.
+   * @param tagName tag name of the element.
+   * @param eventName the name of the event being checked.
+   * @param span the source span of the event binding's key.
+   * @param schemas any active schemas for the template, which might affect the validity of the
+   * event.
+   */
+  checkTemplateElementEvent(
+    id: TypeCheckId,
+    tagName: string,
+    eventName: string,
+    span: ParseSourceSpan,
+    schemas: SchemaMetadata[],
+  ): void;
+
+  /**
    * Check a property binding on a host element and record any diagnostics about it.
    * @param id the type check ID, suitable for resolution with a `TcbSourceResolver`.
    * @param element the element node in question.
