@@ -61,6 +61,7 @@ const fakeNgGlobal = (framework: Framework): Partial<Ng> => {
 describe('ng-debug-api', () => {
   afterEach(() => {
     delete (globalThis as any).ng;
+    document.body.replaceChildren();
   });
 
   describe('ngDebugDependencyInjectionApiIsSupported', () => {
