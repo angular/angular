@@ -2,6 +2,24 @@
   "moduleName": "@angular/core",
   "entries": [
     {
+      "name": "Component",
+      "decoratorType": "class",
+      "entryType": "decorator",
+      "members": [
+        {
+          "name": "selector",
+          "type": "string | undefined",
+          "memberType": "property",
+          "memberTags": ["optional"],
+          "description": "The CSS selector that identifies this component in a template.",
+          "jsdocTags": []
+        }
+      ],
+      "description": "Decorator that marks a class as an Angular component.",
+      "jsdocTags": [],
+      "rawComment": ""
+    },
+    {
       "name": "NgTemplateOutlet",
       "isAbstract": false,
       "entryType": "directive",
