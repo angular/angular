@@ -858,7 +858,7 @@ describe('quick info', () => {
 
       it('boundary error block retry context variable', () => {
         expectQuickInfo({
-          templateOverride: `@boundary { } @error (let err, rt¦ry = $retry) { }`,
+          templateOverride: `@boundary { } @error (let err, rt¦ry = $reset) { }`,
           expectedSpanText: 'rtry',
           expectedDisplayString: '(variable) rtry: () => void',
         });
