@@ -299,6 +299,11 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/directives/directive-composition-api',
           },
           {
+            label: 'Styling directives',
+            path: 'guide/directives/styling',
+            contentPath: 'guide/directives/styling',
+          },
+          {
             label: 'Optimizing images with NgOptimizedImage',
             path: 'guide/image-optimization',
             contentPath: 'guide/image-optimization',
