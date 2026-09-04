@@ -60,7 +60,7 @@ export interface InternalRouterResource<T = unknown> extends Resource<T> {
 /**
  * Marks a resource as non-blocking. The Router will NOT wait for this resource to resolve
  * before completing the navigation.
- * @experimental
+ * @developerPreview 22.2
  */
 export function nonBlocking<T, R extends Resource<T>>(res: R): R {
   (res as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] = false;
@@ -197,7 +197,6 @@ function createTransactionalSnapshot<T>(
 export function createResourceOutletBindingEffects(
   componentRef: ComponentRef<unknown>,
   route: ActivatedRoute,
-  injector: Injector,
 ): {createdEffects: EffectRef[]; handledKeys: string[]} {
   const createdEffects: EffectRef[] = [];
   const handledKeys: string[] = [];
@@ -216,7 +215,7 @@ export function createResourceOutletBindingEffects(
       () => {
         componentRef.setInput(templateName, resource.value());
       },
-      {injector},
+      {injector: componentRef.injector},
     );
     createdEffects.push(effectRef);
     handledKeys.push(templateName);

@@ -909,9 +909,9 @@ export function withViewTransitions(
  * @see {@link withRouterResources}
  * @see {@link provideRouter}
  *
- * @experimental
+ * @developerPreview 22.2
  */
-export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.ViewTransitionsFeature>;
+export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.RouterResourcesFeature>;
 
 /**
  * Enables `resources` capabilities for Route definitions.
@@ -930,7 +930,7 @@ export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * );
  * ```
  *
- * @experimental
+ * @developerPreview 22.2
  * @returns A set of providers for use with `provideRouter`.
  */
 export function withRouterResources(): RouterResourcesFeature {
@@ -943,7 +943,7 @@ export function withRouterResources(): RouterResourcesFeature {
       },
     },
   ];
-  return routerFeature(RouterFeatureKind.ViewTransitionsFeature, providers);
+  return routerFeature(RouterFeatureKind.RouterResourcesFeature, providers);
 }
 
 /**
@@ -967,7 +967,8 @@ export type RouterFeatures =
   | ViewTransitionsFeature
   | AutoCleanupInjectorsFeature
   | RouterHashLocationFeature
-  | ExperimentalPlatformNavigationFeature;
+  | ExperimentalPlatformNavigationFeature
+  | RouterResourcesFeature;
 
 /**
  * The list of features as an enum to uniquely type each feature.
@@ -985,4 +986,5 @@ export const enum RouterFeatureKind {
   ViewTransitionsFeature,
   AutoCleanupInjectorsFeature,
   ExperimentalPlatformNavigationFeature,
+  RouterResourcesFeature,
 }

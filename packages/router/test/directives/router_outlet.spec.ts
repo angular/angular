@@ -16,30 +16,17 @@ import {
   RouterOutlet,
   withComponentInputBinding,
   ROUTER_OUTLET_DATA,
-  ɵwithRouterResources as withRouterResources,
-  ɵnonBlocking as nonBlocking,
+  withRouterResources,
+  nonBlocking,
   Route,
   RouterFeatures,
 } from '../../index';
 import {RouterTestingHarness} from '../../testing';
 import {EnvironmentProviders, InjectionToken} from '../../../core/src/di';
 import {useAutoTick, timeout} from '@angular/private/testing';
-import {ResourceContext, ResourceResult} from '../../src/models';
-
-// TODO: Use the public @angular/router API once exposed
-type InternalRoute = Route & {
-  /**
-   * A function that returns a map of resources.
-   * This function is executed during the Main Loading Phase of a navigation.
-   * @experimental
-   * @internal
-   */
-  resources?: (ctx: ResourceContext) => ResourceResult | Promise<ResourceResult>;
-  children?: InternalRoute[];
-};
 
 export function provideRouter(
-  routes: InternalRoute[],
+  routes: Route[],
   ...features: RouterFeatures[]
 ): EnvironmentProviders {
   return internalProvideRouter(routes, ...features);

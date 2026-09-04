@@ -2,6 +2,15 @@
 
 The Angular Router integrates with Angular Signals through the `resources` route configuration. This allows you to fetch data reactively using `Resource` APIs.
 
+## Why use route resources?
+
+Route resources offer several advantages over traditional [data resolvers](/guide/routing/data-resolvers):
+
+- **Parallel execution**: Route resources run concurrently across all matched routes, eliminating the sequential waterfall delays of resolvers.
+- **Non-blocking data loading**: Use `nonBlocking()` to activate the route immediately and render loading skeletons or UI states while data loads in the background.
+- **Reload without renavigation**: Call `.reload()` on individual resources or update signal parameters to refresh data without triggering a full route navigation, rerun guards, or re-match routes.
+- **Reactive data fetching**: Resources integrate directly with Angular Signals, automatically re-evaluating when signal dependencies change and exposing reactive status signals like `isLoading()` and `error()`.
+
 ## Setup
 
 To enable this feature, provide `withRouterResources()` to your router configuration:
@@ -50,11 +59,17 @@ export class UserProfile {
 
 TIP: Notice we map the exact primitive ID we need in `params: () => ctx.params()['id']`. Passing the entire parameters object (e.g. `params: () => ctx.params()`) can cause unnecessary resource reloads during navigations. Because the router generates a new object identity for the parameters on navigation, the resource will trigger a refetch even if the specific `id` value you care about hasn't changed.
 
+### Parallel execution (avoiding waterfalls)
+
+Traditional data resolvers execute sequentially from parent routes to child routes. If a parent route resolver takes 200ms and a child route resolver takes 300ms, the navigation is blocked for 500ms total.
+
+In contrast, all route resources across the entire matched route hierarchy execute concurrently during navigation. In the same scenario, navigation completes in 300ms (the time of the slowest resource), eliminating network waterfalls.
+
+TIP: If a resource depends on data from another resource, you can compose the requests within a single resource's loader function, or chain dependent resources using [`chain()`](/guide/signals/resource#chaining-resources).
+
 ### ResourceContext
 
 The `resources` function receives a `ResourceContext` providing access to route signals (such as `params`, `queryParams`, and `data`) as well as the static `snapshot`.
-
-NOTE: Route resources execute in parallel and cannot access or depend on other resources defined on the route. If you need dependent data fetching, manage that sequence within a single resource's loader.
 
 ### Resource implementations and async configuration
 
@@ -94,9 +109,16 @@ resources: async (ctx) => {
 },
 ```
 
-## Accessing resources via ActivatedRoute
+## Reloading resources without renavigation
 
-When using `withComponentInputBinding()`, blocking resources bind only their unwrapped value directly to component inputs. If you need to interact with the underlying `Resource` instance (for example, to trigger a manual `.reload()` or inspect status signals), you can access it through `ActivatedRoute` or `ActivatedRouteSnapshot`.
+With traditional data resolvers, refetching data requires triggering a route navigation (such as navigating with `onSameUrlNavigation: 'reload'`), which re-evaluates all route guards, resolvers, and route matching logic.
+
+With route resources, you can reload data without renavigating:
+
+1. **Programmatic reload**: Call `.reload()` directly on the `Resource` instance.
+2. **Reactive reload**: If a resource's `params` computation reads signals (such as an application filter or state signal), updating those signals automatically re-triggers the resource loader.
+
+When using `withComponentInputBinding()`, blocking resources bind only their unwrapped value directly to component inputs. If you need to interact with the underlying `Resource` instance (for example, to trigger a manual `.reload()` or inspect status signals), access it through `ActivatedRoute` or `ActivatedRouteSnapshot`:
 
 ```angular-ts
 import {Component, inject, input} from '@angular/core';
@@ -105,14 +127,15 @@ import {ActivatedRoute} from '@angular/router';
 @Component({
   template: `
     <p>User: {{ user().name }}</p>
-    <button (click)="reload()">Refresh</button>
+    <button (click)="refreshUser()">Refresh</button>
   `,
 })
 export class UserProfile {
   user = input.required<User>();
   private userResource = inject(ActivatedRoute).resources?.['user'];
 
-  reload() {
+  refreshUser() {
+    // Reloads only this specific resource without renavigating the route
     this.userResource?.reload();
   }
 }

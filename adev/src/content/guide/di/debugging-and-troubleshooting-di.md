@@ -907,6 +907,7 @@ Other injection contexts that `inject()` also works in include:
 - [provideEnvironmentInitializer](api/core/provideEnvironmentInitializer)
 - Functional [route guards](guide/routing/route-guards)
 - Functional [data resolvers](guide/routing/data-resolvers)
+- Route [resources](guide/routing/data-fetching-with-resources)
 
 #### When this error occurs
 

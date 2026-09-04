@@ -174,8 +174,7 @@ export class ActivatedRoute {
   /**
    * A map of resources for this route.
    *
-   * @experimental
-   * @internal don't expose while experimental
+   * @developerPreview 22.2
    */
   resources?: ResourceResult;
   /** @internal */
@@ -400,8 +399,7 @@ export class ActivatedRouteSnapshot {
   readonly _environmentInjector: EnvironmentInjector;
   /**
    * The result of running the route's resources function.
-   * @experimental
-   * @internal
+   * @developerPreview 22.2
    */
   resources?: ResourceResult;
 
