@@ -284,8 +284,8 @@ importers:
         specifier: ^8.0.0
         version: 8.1.3
       cypress:
-        specifier: 15.21.1
-        version: 15.21.1(bufferutil@4.1.0)
+        specifier: 16.0.0
+        version: 16.0.0(bufferutil@4.1.0)
       firebase-tools:
         specifier: ^15.0.0
         version: 15.28.2(@types/node@20.19.43)(bufferutil@4.1.0)(encoding@0.1.13)(supports-color@11.0.0)
@@ -6035,9 +6035,9 @@ packages:
   custom-event@1.0.1:
     resolution: {integrity: sha512-GAj5FOq0Hd+RsCGVJxZuKaIDXDf3h6GQoNEjFgbLLI/trgtavwUbSnZ5pVfg27DVCaWjIohryS0JFwIJyT2cMg==}
 
-  cypress@15.21.1:
-    resolution: {integrity: sha512-ogHpHMj0XNlZA5MGzjg8SWHf0eMw9lTwVQRKjpcT1GzNTxNUjwnHA8YCG6nOJ8ThU+XZaUxJgpMYZnJ//8aDaw==}
-    engines: {node: ^20.1.0 || ^22.0.0 || >=24.0.0}
+  cypress@16.0.0:
+    resolution: {integrity: sha512-/H3zsayGwIGboFIiLWaXxy6ADmCdWy5QjjDBZgslCvjIgYAf1DkZerwAM7wXMPSpfpQ4w+lGjFlmwneRBpg27g==}
+    engines: {node: ^22.0.0 || ^24.0.0 || >=26.0.0}
     hasBin: true
 
   cytoscape-cose-bilkent@4.1.0:
@@ -16486,7 +16486,7 @@ snapshots:
 
   custom-event@1.0.1: {}
 
-  cypress@15.21.1(bufferutil@4.1.0):
+  cypress@16.0.0(bufferutil@4.1.0):
     dependencies:
       '@cypress/request': 4.0.1
       '@cypress/xvfb': 1.2.4(supports-color@8.1.1)
