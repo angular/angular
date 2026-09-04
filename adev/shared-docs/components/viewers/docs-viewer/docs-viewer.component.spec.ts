@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
 import {ExampleViewerContentLoader} from '../../../interfaces';
@@ -116,6 +116,44 @@ describe('DocViewer', () => {
     await fixture.whenStable();
 
     expect(fixture.nativeElement.innerHTML).toBe('hello world');
+  });
+
+  it('should preserve existing doc content on initial load', async () => {
+    const fixture = TestBed.createComponent(DocViewer);
+    const renderComponentSpy = spyOn(fixture.componentInstance, 'renderComponent' as any);
+    fixture.nativeElement.innerHTML = '<docs-icon>check</docs-icon><p id="ssr">SSR content</p>';
+
+    fixture.componentRef.setInput('docContent', '<p id="client">Client content</p>');
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('#ssr')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('#client')).toBeNull();
+    expect(fixture.nativeElement.classList).not.toContain('docs-animate-content');
+    expect(renderComponentSpy.calls.allArgs().some(([type]) => type === IconComponent)).toBeTrue();
+  });
+
+  it('should replace content when existing content only contains whitespace', async () => {
+    const fixture = TestBed.createComponent(DocViewer);
+    fixture.nativeElement.innerHTML = '   ';
+
+    fixture.componentRef.setInput('docContent', '<p id="client">Client content</p>');
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('#client')).not.toBeNull();
+  });
+
+  it('should replace content after preserving initial content', async () => {
+    const fixture = TestBed.createComponent(DocViewer);
+    fixture.nativeElement.innerHTML = '<p id="ssr">SSR content</p>';
+
+    fixture.componentRef.setInput('docContent', '<p id="client">Client content</p>');
+    await fixture.whenStable();
+    fixture.componentRef.setInput('docContent', '<p id="next">Next content</p>');
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('#ssr')).toBeNull();
+    expect(fixture.nativeElement.querySelector('#client')).toBeNull();
+    expect(fixture.nativeElement.querySelector('#next')).not.toBeNull();
   });
 
   it('should instantiate example viewer with only a single file', async () => {
