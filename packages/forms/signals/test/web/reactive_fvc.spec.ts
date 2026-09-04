@@ -553,6 +553,33 @@ describe('FormControlName with FVC', () => {
     expect(fixture.componentInstance.form.controls.name.value).toBe('from-fvc');
   });
 
+  it('should report the form as dirty inside valueChanges when the FVC writes a value', () => {
+    @Component({
+      template: `
+        <form [formGroup]="form">
+          <my-fvc-input formControlName="name" />
+        </form>
+      `,
+      imports: [MyFvcInput, ReactiveFormsModule],
+    })
+    class TestCmp {
+      form = new FormGroup({
+        name: new FormControl('initial'),
+      });
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const form = fixture.componentInstance.form;
+
+    const dirtyDuringValueChanges: boolean[] = [];
+    form.valueChanges.subscribe(() => dirtyDuringValueChanges.push(form.dirty));
+
+    const fvc = fixture.debugElement.query(By.directive(MyFvcInput)).componentInstance;
+    act(() => fvc.value.set('from-fvc'));
+
+    expect(dirtyDuringValueChanges).toEqual([true]);
+  });
+
   it('should fall back to CVA when no FVC pattern is present', () => {
     @Component({
       template: `
