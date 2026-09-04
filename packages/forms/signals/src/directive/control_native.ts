@@ -26,6 +26,7 @@ import {
   getNativeControlValue,
   inputRequiresValidityTracking,
   isInput,
+  parseDecimalNumber,
   setNativeControlValue,
   setNativeDomProperty,
 } from './native';
@@ -38,6 +39,7 @@ export function nativeControlCreate(
     Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
   >,
   validityMonitor: InputValidityMonitor,
+  document: Document,
 ): () => void {
   let updateMode = false;
   const input = parent.nativeFormElement;
@@ -122,9 +124,24 @@ export function nativeControlCreate(
       input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
 
     if (controlValueChanged || radioValueChanged) {
-      setNativeControlValue(input, controlValue);
+      const isFocused = document.activeElement === input;
+      if (!(isFocused && isIntermediate(input.value, controlValue))) {
+        setNativeControlValue(input, controlValue);
+      }
     }
 
     updateMode = true;
   };
+}
+
+function isIntermediate(inputValue: string, controlValue: unknown): boolean {
+  if (inputValue === '-' || inputValue === '.' || inputValue === '-.') return true;
+  if (inputValue.endsWith('.')) return true;
+  if (typeof controlValue === 'number' && !Number.isNaN(controlValue)) {
+    const parsed = parseDecimalNumber(inputValue);
+    if (parsed !== undefined && parsed === controlValue && inputValue !== String(controlValue)) {
+      return true;
+    }
+  }
+  return false;
 }
