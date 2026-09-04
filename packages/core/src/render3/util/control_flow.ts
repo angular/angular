@@ -30,7 +30,7 @@ import {assertLView} from '../assert';
 import {collectNativeNodes} from '../collect_native_nodes';
 import {getLContext} from '../context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../interfaces/container';
-import {HOST, INJECTOR, LView, TVIEW, HEADER_OFFSET} from '../interfaces/view';
+import {HOST, INJECTOR, LView, TVIEW, HEADER_OFFSET, TView} from '../interfaces/view';
 import {getNativeByTNode} from './view_utils';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 
@@ -41,9 +41,12 @@ import {
   ControlFlowBlockType,
   DeferBlockData,
   ForLoopBlockData,
+  IfBlockData,
   RepeaterMetadataShape,
+  SwitchBlockData,
 } from './control_flow_types';
-import {TNode} from '../interfaces/node';
+import {TNode, TNodeFlags} from '../interfaces/node';
+import {getConditionalBlockMetadata} from './control_flow_metadata';
 
 /**
  * Gets all of the control flow blocks that are present inside the specified DOM node.
@@ -185,18 +188,10 @@ const forLoopFinder: ControlFlowBlockViewFinder = ({
 
   const containerIndex = slotIdx + 1;
   const lContainer = lView[containerIndex];
-  const rootNodes: Node[] = [];
+  let rootNodes: Node[] = [];
 
   if (isLContainer(lContainer)) {
-    // Collect root nodes from each view in the container
-    for (let viewIdx = CONTAINER_HEADER_OFFSET; viewIdx < lContainer.length; viewIdx++) {
-      const viewAtIdx = lContainer[viewIdx];
-      if (isLView(viewAtIdx)) {
-        const viewTView = viewAtIdx[TVIEW];
-        const viewNodes = collectNativeNodes(viewTView, viewAtIdx, viewTView.firstChild, []);
-        rootNodes.push(...viewNodes);
-      }
-    }
+    rootNodes = collectLContainerRootNodes(lContainer);
   }
 
   return {
@@ -209,8 +204,80 @@ const forLoopFinder: ControlFlowBlockViewFinder = ({
   } satisfies ForLoopBlockData;
 };
 
+/**
+ * Finds and returns all `@if` and `@switch` blocks in a LView.
+ *
+ * @param config Finder configuration object.
+ * @returns
+ */
+const conditionalBlockFinder: ControlFlowBlockViewFinder = ({
+  node,
+  lView,
+  tView,
+  slotIdx,
+}: ControlFlowBlockViewFinderConfig) => {
+  const slot = lView[slotIdx];
+  if (!isLContainer(slot)) {
+    return null;
+  }
+
+  const tNode = tView.data[slotIdx] as TNode;
+  const metadata = getConditionalBlockMetadata(tNode);
+  if (!metadata) {
+    return null;
+  }
+
+  const hostNode = slot[HOST] as Node;
+  if (!node.contains(hostNode)) {
+    return null;
+  }
+
+  const branchSlotIdxs = findConditionalBranchSlotIdxs(lView, tView, slotIdx, metadata.branchCount);
+  if (branchSlotIdxs.length !== metadata.branchCount) {
+    return null;
+  }
+
+  const activeBranchIndex = findActiveConditionalBranchIndex(lView, branchSlotIdxs);
+  const rootNodes =
+    activeBranchIndex === null
+      ? []
+      : collectLContainerRootNodes(lView[branchSlotIdxs[activeBranchIndex]] as LContainer);
+
+  const base = {
+    branchCount: metadata.branchCount,
+    activeBranchIndex,
+    defaultBranchIndex: metadata.defaultBranchIndex,
+    rootNodes,
+    hostNode,
+  };
+
+  if (metadata.kind === 'if') {
+    return {
+      type: ControlFlowBlockType.If,
+      ...base,
+      conditionExpressions: metadata.branchExpressions.map((expression) =>
+        typeof expression === 'string' ? expression : null,
+      ),
+    } satisfies IfBlockData;
+  }
+
+  return {
+    type: ControlFlowBlockType.Switch,
+    ...base,
+    expression: metadata.expression,
+    caseExpressions: metadata.branchExpressions.map((expression) =>
+      Array.isArray(expression) ? expression : expression === null ? [] : [expression],
+    ),
+    hasExhaustiveCheck: metadata.hasExhaustiveCheck,
+  } satisfies SwitchBlockData;
+};
+
 // Represents all supported control flow block finders.
-const CONTROL_FLOW_BLOCK_FINDERS: ControlFlowBlockViewFinder[] = [deferBlockFinder, forLoopFinder];
+const CONTROL_FLOW_BLOCK_FINDERS: ControlFlowBlockViewFinder[] = [
+  deferBlockFinder,
+  forLoopFinder,
+  conditionalBlockFinder,
+];
 
 /**
  * Finds all the control flow blocks inside a specific node and view.
@@ -318,6 +385,61 @@ function getRendererLView(lContainer: LContainer): LView | null {
   const lView = lContainer[CONTAINER_HEADER_OFFSET];
   ngDevMode && assertLView(lView);
   return lView;
+}
+
+function collectLContainerRootNodes(lContainer: LContainer): Node[] {
+  const rootNodes: Node[] = [];
+
+  for (let viewIdx = CONTAINER_HEADER_OFFSET; viewIdx < lContainer.length; viewIdx++) {
+    const viewAtIdx = lContainer[viewIdx];
+    if (isLView(viewAtIdx)) {
+      const viewTView = viewAtIdx[TVIEW];
+      const viewNodes = collectNativeNodes(viewTView, viewAtIdx, viewTView.firstChild, []);
+      rootNodes.push(...viewNodes);
+    }
+  }
+
+  return rootNodes;
+}
+
+function findConditionalBranchSlotIdxs(
+  lView: LView,
+  tView: TView,
+  firstBranchSlotIdx: number,
+  branchCount: number,
+): number[] {
+  const branchSlotIdxs: number[] = [];
+
+  for (
+    let i = firstBranchSlotIdx;
+    i < tView.bindingStartIndex && branchSlotIdxs.length < branchCount;
+    i++
+  ) {
+    const lContainer = lView[i];
+    if (!isLContainer(lContainer)) {
+      continue;
+    }
+
+    const tNode = tView.data[i] as TNode;
+    const isConditionalBranch =
+      (tNode.flags & (TNodeFlags.isControlFlowStart | TNodeFlags.isInControlFlow)) !== 0;
+    if (isConditionalBranch) {
+      branchSlotIdxs.push(i);
+    }
+  }
+
+  return branchSlotIdxs;
+}
+
+function findActiveConditionalBranchIndex(lView: LView, branchSlotIdxs: number[]): number | null {
+  for (let i = 0; i < branchSlotIdxs.length; i++) {
+    const lContainer = lView[branchSlotIdxs[i]];
+    if (isLContainer(lContainer) && lContainer.length > CONTAINER_HEADER_OFFSET) {
+      return i;
+    }
+  }
+
+  return null;
 }
 
 /**

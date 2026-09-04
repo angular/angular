@@ -201,6 +201,10 @@ export class Identifiers {
     name: 'ɵɵconditionalBranchCreate',
     moduleName: CORE,
   };
+  static conditionalMetadata: o.ExternalReference = {
+    name: 'ɵɵconditionalMetadata',
+    moduleName: CORE,
+  };
   static conditional: o.ExternalReference = {name: 'ɵɵconditional', moduleName: CORE};
   static repeater: o.ExternalReference = {name: 'ɵɵrepeater', moduleName: CORE};
   static repeaterCreate: o.ExternalReference = {name: 'ɵɵrepeaterCreate', moduleName: CORE};

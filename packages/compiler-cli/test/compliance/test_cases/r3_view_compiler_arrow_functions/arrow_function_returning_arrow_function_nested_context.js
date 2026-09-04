@@ -20,6 +20,7 @@ function TestComp_Conditional_1_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵdeclareLet(0);
     $r3$.ɵɵconditionalCreate(1, TestComp_Conditional_1_Conditional_1_Template, 1, 2);
+    (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(1, "if", 1, null, "true", ["true"]);
   }
   if (rf & 2) {
     $r3$.ɵɵstoreLet(2);
@@ -36,6 +37,7 @@ $r3$.ɵɵdefineComponent({
     if (rf & 1) {
       $r3$.ɵɵdeclareLet(0);
       $r3$.ɵɵconditionalCreate(1, TestComp_Conditional_1_Template, 2, 2);
+      (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(1, "if", 1, null, "true", ["true"]);
     }
     if (rf & 2) {
       $r3$.ɵɵstoreLet(1);
