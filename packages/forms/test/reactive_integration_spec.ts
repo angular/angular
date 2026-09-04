@@ -15,6 +15,7 @@ import {
   forwardRef,
   Input,
   OnDestroy,
+  OnInit,
   Type,
   ViewChild,
 } from '@angular/core';
@@ -4219,6 +4220,84 @@ describe('reactive forms integration tests', () => {
       await expectAsync(fixture.whenStable()).toBeRejectedWithError(
         new RegExp(`formGroup expects a FormGroup instance`),
       );
+    });
+
+    it("should throw a coded error, instead of crashing, if a form isn't passed into formGroup in production mode", async () => {
+      // The missing-`form` check in `onChanges` is intentionally not gated behind `ngDevMode`, so
+      // a missing `form` surfaces as a coded error rather than an opaque `TypeError` from a later
+      // `this.form` dereference. This is what a real production app hits when `[formGroup]` is
+      // bound before the form input is wired up (e.g. an async-loaded form that hasn't arrived
+      // yet): `FormGroupDirective.ngOnChanges` runs with a null/undefined `form`.
+      const _global: {ngDevMode: any} = global as any;
+      const originalNgDevMode = _global.ngDevMode;
+      try {
+        _global.ngDevMode = false;
+        const fixture = initTest(FormGroupComp);
+        const error = await getRenderError(fixture);
+        // `FORM_GROUP_MISSING_INSTANCE`
+        expect((error as any).code).toBe(1052);
+      } finally {
+        _global.ngDevMode = originalNgDevMode;
+      }
+    });
+
+    it('reports a coded error (not an opaque TypeError) when an async-loaded form has not arrived yet in a production build', async () => {
+      // NOTE: `AsyncFormApp` below is deliberately *wrong* app code - binding `[formGroup]="form"`
+      // while `form` may still be `undefined` should be guarded with `@if (form)` (or the form
+      // built synchronously). It's written this way only to demonstrate the failure mode: we want
+      // to prove that when an app does hit this, production no longer throws a raw `TypeError`.
+      //
+      // Real-app shape of the bug: the template binds `[formGroup]="form"` with no `@if (form)`
+      // guard, and `form` is only assigned once an async load resolves. Until then the first
+      // change detection runs `FormGroupDirective.ngOnChanges` with `form` still `undefined`.
+      //
+      // With `ngDevMode` off (production), the old `_checkFormPresent` gate was compiled away, so
+      // execution fell through to `_updateValidators()` -> `setUpValidators(undefined, ...)` and
+      // died with a bare `Cannot read properties of undefined (reading 'validator')` TypeError.
+      // The ungated check turns that into a diagnosable Angular error.
+      @Component({
+        selector: 'async-form-app',
+        standalone: true,
+        imports: [ReactiveFormsModule],
+        template: `
+          <form [formGroup]="form">
+            <input formControlName="login" />
+          </form>
+        `,
+      })
+      class AsyncFormApp implements OnInit {
+        // Intentionally left unset for the first render - a correct app would guard the binding
+        // with `@if (form)`. Do not copy this pattern.
+        form!: FormGroup;
+
+        ngOnInit(): void {
+          // The form "arrives" from a service a microtask later - too late for the first render.
+          Promise.resolve().then(() => {
+            this.form = new FormGroup({login: new FormControl('')});
+          });
+        }
+      }
+
+      const _global: {ngDevMode: any} = global as any;
+      const originalNgDevMode = _global.ngDevMode;
+      try {
+        _global.ngDevMode = false;
+
+        TestBed.configureTestingModule({imports: [AsyncFormApp]});
+        const fixture = TestBed.createComponent(AsyncFormApp);
+
+        const error = await getRenderError(fixture);
+
+        // A real Angular runtime error, coded `NG01052` (`FORM_GROUP_MISSING_INSTANCE`)...
+        expect((error as any).code).toBe(1052);
+        expect(error.message).toContain('NG01052');
+        // ...not the opaque native `TypeError` the missing guard used to let through.
+        expect(error.message).not.toContain('validator');
+        // ...and with no dev-only guidance string shipped into the production bundle.
+        expect(error.message).not.toContain('formGroup expects a FormGroup instance');
+      } finally {
+        _global.ngDevMode = originalNgDevMode;
+      }
     });
 
     it('should throw if formControlName is used without a control container', async () => {
