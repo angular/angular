@@ -405,6 +405,11 @@ describe('discovery utils', () => {
       expect(metadata!.inputs).toEqual({a: 'b'});
       expect(metadata!.outputs).toEqual({c: 'd'});
     });
+
+    it('should return null when passed null or undefined', () => {
+      expect(getDirectiveMetadata(null)).toBeNull();
+      expect(getDirectiveMetadata(undefined)).toBeNull();
+    });
   });
 });
 
