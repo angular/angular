@@ -180,6 +180,22 @@ export default class Tutorial {
     this.answerRevealed.set(false);
   }
 
+  async handleBackToMyCode() {
+    if (!this.canRevealAnswer()) return;
+
+    this.embeddedTutorialManager.restoreWorkInProgress();
+
+    const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
+
+    await Promise.all(
+      Object.entries(this.embeddedTutorialManager.tutorialFiles()).map(([path, contents]) =>
+        nodeRuntimeSandbox.writeFile(path, contents as string | Uint8Array),
+      ),
+    );
+
+    this.answerRevealed.set(false);
+  }
+
   /**
    * Set tutorial data based on current tutorial
    */
