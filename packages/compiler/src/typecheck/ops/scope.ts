@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveOwner} from '../../render3/view/t2_api';
 import {
+  BoundaryBlock,
+  BoundaryErrorBlock,
   BoundAttribute,
   BoundEvent,
   BoundText,
   Component,
   Content,
-  BoundaryBlock,
-  BoundaryErrorBlock,
   DeferredBlock,
   DeferredBlockTriggers,
   Directive,
@@ -35,24 +34,31 @@ import {
   Variable,
   ViewportDeferredTrigger,
 } from '../../render3/r3_ast';
-import {TcbOp} from './base';
-import {TcbExpr} from './codegen';
+import {DirectiveOwner} from '../../render3/view/t2_api';
 import {TcbDirectiveMetadata} from '../api';
-import {Context} from './context';
-import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
-import {TcbElementOp} from './element';
-import {tcbExpression, TcbConditionOp, TcbExpressionOp} from './expression';
-import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
-import {TcbComponentContextCompletionOp} from './completions';
-import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
-import {TcbIfBlockOp} from './if_block';
+import {TcbOp} from './base';
 import {TcbBoundaryOp} from './boundary';
-import {TcbSwitchOp} from './switch_block';
-import {TcbForOfOp} from './for_block';
-import {TcbLetDeclarationOp} from './let';
-import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
-import {TcbDomSchemaCheckerOp} from './schema';
+import {TcbExpr} from './codegen';
+import {TcbComponentContextCompletionOp} from './completions';
+import {TcbControlFlowContentProjectionOp} from './content_projection';
+import {Context} from './context';
+import {TcbDirectiveCtorOp} from './directive_constructor';
+import {
+  TcbGenericDirectiveTypeWithAnyParamsOp,
+  TcbNonGenericDirectiveTypeOp,
+} from './directive_type';
+import {TcbElementOp} from './element';
 import {TcbDirectiveOutputsOp, TcbUnclaimedOutputsOp} from './events';
+import {TcbConditionOp, tcbExpression, TcbExpressionOp} from './expression';
+import {TcbForOfOp} from './for_block';
+import {TcbHostElementOp} from './host';
+import {TcbIfBlockOp} from './if_block';
+import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
+import {TcbIntersectionObserverOp} from './intersection_observer';
+import {TcbLetDeclarationOp} from './let';
+import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
+import {TcbDomSchemaCheckerOp} from './schema';
+import {TcbComponentNodeOp} from './selectorless';
 import {
   CustomFormControlType,
   getCustomFieldDirectiveType,
@@ -61,15 +67,9 @@ import {
   TcbNativeFieldOp,
   TcbNativeRadioButtonFieldOp,
 } from './signal_forms';
-import {
-  TcbGenericDirectiveTypeWithAnyParamsOp,
-  TcbNonGenericDirectiveTypeOp,
-} from './directive_type';
-import {TcbDirectiveCtorOp} from './directive_constructor';
-import {TcbControlFlowContentProjectionOp} from './content_projection';
-import {TcbComponentNodeOp} from './selectorless';
-import {TcbIntersectionObserverOp} from './intersection_observer';
-import {TcbHostElementOp} from './host';
+import {TcbSwitchOp} from './switch_block';
+import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
+import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
 
 /**
  * Local scope within the type check block for a particular template.
@@ -233,7 +233,7 @@ export class Scope {
         let typeExpr: TcbExpr;
         if (variable.value === '$error') {
           typeExpr = new TcbExpr(`(err as Error)`);
-        } else if (variable.value === '$retry') {
+        } else if (variable.value === '$reset') {
           typeExpr = new TcbExpr(`(() => {})`);
         } else {
           throw new Error(`Unrecognized context variable ${variable.value}`);
@@ -309,17 +309,6 @@ export class Scope {
    * @param directive if present, a directive type on a `Element` or `Template` to
    * look up instead of the default for an element or template node.
    */
-  resolveByName(name: string): TcbExpr | null {
-    for (const [v] of this.varMap.entries()) {
-      if (v.name === name) {
-        return this.resolve(v);
-      }
-    }
-    if (this.parent !== null) {
-      return this.parent.resolveByName(name);
-    }
-    return null;
-  }
 
   resolve(node: LocalSymbol, directive?: TcbDirectiveMetadata): TcbExpr {
     // Attempt to resolve the operation locally.
