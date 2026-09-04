@@ -45,7 +45,7 @@ export interface ErrorDetails {
     /**
      * Call this method to retry rendering the error boundary.
      */
-    readonly retry: () => void;
+    readonly reset: () => void;
   };
   /**
    * The function that intercepted the error, if any.
@@ -123,6 +123,11 @@ export function isErrorLike(error: unknown): error is Error {
   );
 }
 
+/**
+ * Error thrown when an error boundary catches an error that is not an `Error` instance.
+ *
+ * @publicApi 22.2
+ */
 export class ErrorBoundaryWrappedError extends Error {
   constructor(error: unknown) {
     super(

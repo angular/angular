@@ -689,8 +689,8 @@ describe('@boundary runtime instructions (JIT)', () => {
     expect(topError.message).toBe('Secondary Error');
   });
 
-  it('should support retry() mechanics in @error block', async () => {
-    let retryFn: (() => void) | undefined;
+  it('should support reset() mechanics in @error block', async () => {
+    let resetFn: (() => void) | undefined;
 
     @Component({
       template: `
@@ -700,9 +700,9 @@ describe('@boundary runtime instructions (JIT)', () => {
           } @else {
             Main Content
           }
-        } @error (let err, r = $retry) {
+        } @error (let err, r = $reset) {
           Error Content
-          {{ captureRetry(r) }}
+          {{ captureReset(r) }}
         }
       `,
     })
@@ -713,8 +713,8 @@ describe('@boundary runtime instructions (JIT)', () => {
         throw new Error('Original Error');
       }
 
-      captureRetry(r: () => void) {
-        retryFn = r;
+      captureReset(r: () => void) {
+        resetFn = r;
         return '';
       }
     }
@@ -724,13 +724,13 @@ describe('@boundary runtime instructions (JIT)', () => {
 
     // Initially it should be in error state
     expect(fixture.nativeElement.textContent).toContain('Error Content');
-    expect(retryFn).toBeDefined();
+    expect(resetFn).toBeDefined();
 
     // Now we "fix" the state that caused the error
     fixture.componentInstance.doThrow.set(false);
 
-    // And call retry (which is tearable)
-    retryFn!();
+    // And call reset (which is tearable)
+    resetFn!();
 
     // Wait for change detection triggered by markViewForRefresh
     await fixture.whenStable();
@@ -748,9 +748,9 @@ describe('@boundary runtime instructions (JIT)', () => {
           } @else {
             Main Content
           }
-        } @error (let err, r = $retry) {
+        } @error (let err, r = $reset) {
           Error: {{err.message}}
-          <button (click)="r()">Retry</button>
+          <button (click)="r()">Reset</button>
         }
       `,
     })
@@ -769,7 +769,7 @@ describe('@boundary runtime instructions (JIT)', () => {
     // Fix state
     fixture.componentInstance.doThrow.set(false);
 
-    // Click retry button
+    // Click reset button
     const button = fixture.nativeElement.querySelector('button');
     button.click();
 
@@ -778,14 +778,14 @@ describe('@boundary runtime instructions (JIT)', () => {
     expect(fixture.nativeElement.textContent).toContain('Main Content');
   });
 
-  it('should support calling referencing $retry', async () => {
+  it('should support calling referencing $reset', async () => {
     @Component({
       template: `
         @boundary {
           {{ throwError() }}
         } @error (let err) {
           Error: {{err.message}}
-          <button (click)="$retry()">Retry</button>
+          <button (click)="$reset()">Reset</button>
         }
       `,
     })
@@ -809,7 +809,7 @@ describe('@boundary runtime instructions (JIT)', () => {
     // Fix state
     fixture.componentInstance.doThrow.set(false);
 
-    // Click retry button
+    // Click reset button
     const button = fixture.nativeElement.querySelector('button');
     button.click();
 
@@ -845,7 +845,7 @@ describe('@boundary runtime instructions (JIT)', () => {
     expect(fixture.nativeElement.textContent).toContain('Error: Binding Error');
   });
 
-  it('should support tearing $retry and calling it asynchronously', async () => {
+  it('should support tearing $reset and calling it asynchronously', async () => {
     @Component({
       template: `
         @boundary {
@@ -854,9 +854,9 @@ describe('@boundary runtime instructions (JIT)', () => {
           } @else {
             Main Content
           }
-        } @error (let err, r = $retry) {
+        } @error (let err, r = $reset) {
           Error: {{err.message}}
-          <button (click)="handleRetry(r)">Retry Later</button>
+          <button (click)="handleReset(r)">Reset Later</button>
         }
       `,
     })
@@ -865,8 +865,8 @@ describe('@boundary runtime instructions (JIT)', () => {
       throwError() {
         throw new Error('Binding Error');
       }
-      handleRetry(retryFn: Function) {
-        setTimeout(() => retryFn(), 0);
+      handleReset(resetFn: Function) {
+        setTimeout(() => resetFn(), 0);
       }
     }
 
@@ -878,7 +878,7 @@ describe('@boundary runtime instructions (JIT)', () => {
     // Fix state
     fixture.componentInstance.doThrow.set(false);
 
-    // Click retry button
+    // Click reset button
     const button = fixture.nativeElement.querySelector('button');
     button.click();
 
@@ -905,12 +905,12 @@ describe('@boundary runtime instructions (JIT)', () => {
           } @else {
             Main Content
           }
-        } @error (let err; r = $retry; when isChartError(err)) {
+        } @error (let err; r = $reset; when isChartError(err)) {
           Chart Error: {{err.message}}
-          <button id="retry-chart" (click)="r()">Retry</button>
-        } @error (let error; r = $retry) {
+          <button id="reset-chart" (click)="r()">Reset</button>
+        } @error (let error; r = $reset) {
           Generic Error: {{error.message}}
-          <button id="retry-generic" (click)="r()">Retry</button>
+          <button id="reset-generic" (click)="r()">Reset</button>
         }
       `,
     })
@@ -932,8 +932,8 @@ describe('@boundary runtime instructions (JIT)', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Chart Error: Chart Failed');
 
-    // Click retry button to clear error and reset state to allow throwing again
-    const button = fixture.nativeElement.querySelector('#retry-chart');
+    // Click reset button to clear error and reset state to allow throwing again
+    const button = fixture.nativeElement.querySelector('#reset-chart');
     button.click();
 
     fixture.componentInstance.doThrow.set(false);
@@ -1063,6 +1063,6 @@ describe('@boundary runtime instructions (JIT)', () => {
     expect(capturedDetails.declarationType).toBe(Throwing);
     expect(capturedDetails.boundary).toBeDefined();
     expect(capturedDetails.boundary!.type).toBe(Host);
-    expect(typeof capturedDetails.boundary!.retry).toBe('function');
+    expect(typeof capturedDetails.boundary!.reset).toBe('function');
   });
 });
