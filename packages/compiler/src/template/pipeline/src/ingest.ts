@@ -762,6 +762,7 @@ function ingestBoundaryBlock(unit: ViewCompilationUnit, boundaryBlock: t.Boundar
   unit.update.push(
     ir.createBoundaryOp(
       createOp.xref,
+      createOp.handle,
       primaryCreateOp.xref,
       primaryCaseExpr,
       conditions,

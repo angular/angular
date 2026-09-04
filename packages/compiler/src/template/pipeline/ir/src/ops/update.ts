@@ -732,6 +732,11 @@ export interface BoundaryOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait, C
   target: XrefId;
 
   /**
+   * The slot handle of the boundary block.
+   */
+  targetSlot: SlotHandle;
+
+  /**
    * The Xref of the primary branch view.
    */
   primaryTarget: XrefId;
@@ -760,6 +765,7 @@ export interface BoundaryOp extends Op<UpdateOp>, DependsOnSlotContextOpTrait, C
  */
 export function createBoundaryOp(
   target: XrefId,
+  targetSlot: SlotHandle,
   primaryTarget: XrefId,
   guarded: ConditionalCaseExpr,
   conditions: Array<ConditionalCaseExpr>,
@@ -768,6 +774,7 @@ export function createBoundaryOp(
   return {
     kind: OpKind.Boundary,
     target,
+    targetSlot,
     primaryTarget,
     guarded,
     conditions,
