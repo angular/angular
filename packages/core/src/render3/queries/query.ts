@@ -9,6 +9,7 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 
+import {Injector} from '../../di/injector';
 import {ProviderToken} from '../../di/provider_token';
 import {createElementRef, ElementRef as ViewEngine_ElementRef} from '../../linker/element_ref';
 import {QueryList} from '../../linker/query_list';
@@ -18,7 +19,7 @@ import {assertDefined, assertIndexInRange, assertNumber, throwError} from '../..
 import {stringify} from '../../util/stringify';
 
 import {assertFirstCreatePass, assertLContainer} from '../assert';
-import {getNodeInjectable, locateDirectiveOrProvider} from '../di';
+import {getNodeInjectable, locateDirectiveOrProvider, NodeInjector} from '../di';
 import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {
   TContainerNode,
@@ -287,6 +288,7 @@ class TQuery_ implements TQuery {
         if (
           read === ViewEngine_ElementRef ||
           read === ViewContainerRef ||
+          read === Injector ||
           (read === ViewEngine_TemplateRef && tNode.type & TNodeType.Container)
         ) {
           this.addMatch(tNode.index, -2);
@@ -370,10 +372,12 @@ function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
       tNode as TElementNode | TContainerNode | TElementContainerNode,
       lView,
     );
+  } else if (read === Injector) {
+    return new NodeInjector(tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
   } else {
     ngDevMode &&
       throwError(
-        `Special token to read should be one of ElementRef, TemplateRef or ViewContainerRef but got ${stringify(
+        `Special token to read should be one of ElementRef, TemplateRef, ViewContainerRef or Injector but got ${stringify(
           read,
         )}.`,
       );
