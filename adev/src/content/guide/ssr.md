@@ -502,6 +502,8 @@ withHttpTransferCacheOptions({
 });
 ```
 
+Angular includes `ArrayBuffer` bytes in the cache key. Requests with `Blob` or `FormData` bodies are not cached because Angular cannot derive a complete cache key for them synchronously. Caching them without their contents could cause different request bodies to share the same cached response.
+
 Use this only when `POST` requests are **idempotent** and safe to reuse between server and client renders.
 
 ### `includeRequestsWithAuthHeaders`
