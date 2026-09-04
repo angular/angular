@@ -48,7 +48,7 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/console:set-console-reference",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
-        "//devtools/projects/ng-devtools-backend/src/lib/hydration:hydration-highlighting",
+        "//devtools/projects/ng-devtools-backend/src/lib/hydration:hydration-overlays",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/cd-analyzer",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",

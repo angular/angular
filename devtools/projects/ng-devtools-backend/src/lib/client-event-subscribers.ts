@@ -52,10 +52,7 @@ import {
   updateState,
 } from './directive-forest/component-tree/component-tree';
 import {getDirectiveForestManager} from './directive-forest/manager';
-import {
-  highlightHydrationNodes,
-  removeHydrationHighlights,
-} from './hydration/hydration-highlighting';
+import {enableHydrationOverlays, disableHydrationOverlays} from './hydration/hydration-overlays';
 import {start as startProfiling, stop as stopProfiling} from './profiling/capture';
 import {
   disableCdDataStream,
@@ -410,8 +407,8 @@ const setupInspector = (messageBus: MessageBus<Events>): ComponentInspector => {
   });
   messageBus.on('removeHighlightOverlay', () => inspector.unhighlight());
 
-  messageBus.on('createHydrationOverlay', highlightHydrationNodes);
-  messageBus.on('removeHydrationOverlay', removeHydrationHighlights);
+  messageBus.on('enableHydrationOverlays', enableHydrationOverlays);
+  messageBus.on('disableHydrationOverlays', disableHydrationOverlays);
 
   return inspector;
 };

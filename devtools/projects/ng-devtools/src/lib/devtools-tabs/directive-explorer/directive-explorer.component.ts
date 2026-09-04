@@ -169,8 +169,6 @@ export class DirectiveExplorerComponent {
       const splitElement = this.splitElementRef().nativeElement;
       const directiveForestSplitArea = this.directiveForestSplitArea().nativeElement;
       const resizeObserver = new ResizeObserver((entries) => {
-        this.refreshHydrationNodeHighlightsIfNeeded();
-
         const resizedEntry = entries[0];
         if (resizedEntry.target === splitElement) {
           this.splitDirection.set(
@@ -247,7 +245,6 @@ export class DirectiveExplorerComponent {
     if (!this._refreshRetryTimeout) {
       this._refreshRetryTimeout = setTimeout(() => this.refresh(), 500);
     }
-    this.refreshHydrationNodeHighlightsIfNeeded();
   }
 
   viewSource(directiveName: string): void {
@@ -378,21 +375,6 @@ export class DirectiveExplorerComponent {
       this._messageBus.emit('log', [{level: 'warn', message: error}]);
     } else {
       this._appOperations.inspect(directivePosition, objectPath, selectedFrame!);
-    }
-  }
-
-  createHydrationOverlays() {
-    this._messageBus.emit('createHydrationOverlay');
-  }
-
-  removeHydrationOverlays() {
-    this._messageBus.emit('removeHydrationOverlay');
-  }
-
-  private refreshHydrationNodeHighlightsIfNeeded() {
-    if (untracked(this.settings.showHydrationOverlays)) {
-      this.removeHydrationOverlays();
-      this.createHydrationOverlays();
     }
   }
 
