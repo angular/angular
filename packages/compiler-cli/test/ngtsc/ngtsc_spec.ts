@@ -2521,7 +2521,7 @@ runInEachFileSystem((os: string) => {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain(
-        'return new (__ngFactoryType__ || TestPipe)(i0.ɵɵdirectiveInject(Dep, 16));',
+        'return new (__ngFactoryType__ || TestPipe)(i0.ɵɵinject(Dep, 16));',
       );
     });
 
