@@ -42,6 +42,9 @@ describe('Runtime i18n', () => {
       message = `Hello �#2��0��/#2�!`;
       expect(getTranslationForTemplate(message, -1)).toEqual(message);
 
+      message = `�0�*2:1�1�`;
+      expect(getTranslationForTemplate(message, -1)).toEqual(message);
+
       // Embedded sub-templates
       message = `�0� is rendered as: �*2:1�before�*1:2�middle�/*1:2�after�/*2:1�!`;
       expect(getTranslationForTemplate(message, -1)).toEqual('�0� is rendered as: �*2:1��/*2:1�!');
@@ -57,18 +60,29 @@ describe('Runtime i18n', () => {
       expect(getTranslationForTemplate(message, 2)).toEqual('middle');
       expect(getTranslationForTemplate(message, 3)).toEqual('before�*1:4��/*1:4�after');
       expect(getTranslationForTemplate(message, 4)).toEqual('middle');
+
+      // The compiled source contains sub-template 5, but the translation omits its marker pair.
+      expect(getTranslationForTemplate(message, 5)).toEqual('');
     });
 
     it('should throw if the template is malformed', () => {
       const message = `�*2:1�message!`;
-      expect(() => getTranslationForTemplate(message, -1)).toThrowError(/Tag mismatch/);
+      expect(() => getTranslationForTemplate(message, -1)).toThrowError(/NG0700/);
+      expect(() => getTranslationForTemplate(message, 1)).toThrowError(/NG0700/);
+      expect(() => getTranslationForTemplate(`message!�/*2:1�`, 1)).toThrowError(/NG0700/);
+    });
+
+    it('should reject malformed reserved markers', () => {
+      expect(() => getTranslationForTemplate('before � after', -1)).toThrowError(/NG0700/);
+      expect(() => getTranslationForTemplate('before �unknown� after', -1)).toThrowError(/NG0700/);
+      expect(() => getTranslationForTemplate('before �*0� after �/*0�', -1)).toThrowError(/NG0700/);
     });
   });
 
   let tView: TView;
 
   function getOpCodes(
-    messageOrAtrs: string | string[],
+    messageOrAtrs: string | Array<string | number>,
     createTemplate: () => void,
     decls: number,
     index: number,
@@ -196,6 +210,77 @@ describe('Runtime i18n', () => {
         ast: [{kind: 0, index: HEADER_OFFSET + 2}],
         parentTNodeIndex: HEADER_OFFSET,
       });
+    });
+
+    it('should not reuse binding delimiters as structural marker delimiters', () => {
+      const message = `�0�#0�1�`;
+      const index = 1;
+      const opCodes = getOpCodes(
+        message,
+        () => {
+          ɵɵelementStart(0, 'div');
+          ɵɵi18nStart(index, 0);
+          ɵɵelementEnd();
+        },
+        2,
+        HEADER_OFFSET + index,
+      );
+
+      expect(opCodes).toEqual({
+        create: matchDebug([
+          `lView[${HEADER_OFFSET + 2}] = document.createText("");`,
+          `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
+        ]),
+        update: matchDebug([
+          `if (mask & 0b11) { (lView[${
+            HEADER_OFFSET + 2
+          }] as Text).textContent = \`\${lView[i-1]}#0\${lView[i-2]}\`; }`,
+        ]),
+        ast: [{kind: 0, index: HEADER_OFFSET + 2}],
+        parentTNodeIndex: HEADER_OFFSET,
+      });
+    });
+
+    it('should reject an occupied source slot in production mode', () => {
+      const globalRef = globalThis as typeof globalThis & {ngDevMode: unknown};
+      const previousDevMode = globalRef.ngDevMode;
+      const fixture = new ViewFixture({decls: 2, consts: [`�#0�forged�/#0�`]});
+      fixture.enterView();
+      try {
+        globalRef.ngDevMode = false;
+        ɵɵelementStart(0, 'iframe');
+        expect(() => ɵɵi18nStart(1, 0)).toThrowError('NG0700');
+        expect(fixture.tView.data[HEADER_OFFSET]).toEqual(
+          matchTNode({type: TNodeType.Element, value: 'iframe'}),
+        );
+      } finally {
+        globalRef.ngDevMode = previousDevMode;
+        ViewFixture.cleanUp();
+      }
+    });
+
+    it('should reject mismatched structural placeholders before creating nodes', () => {
+      const fixture = new ViewFixture({decls: 3, consts: [`�#2�forged�/*2�`]});
+      fixture.enterView();
+      try {
+        ɵɵelementStart(0, 'div');
+        expect(() => ɵɵi18nStart(1, 0)).toThrowError(/NG0700/);
+        expect(fixture.tView.data[HEADER_OFFSET + 2]).toBeNull();
+      } finally {
+        ViewFixture.cleanUp();
+      }
+    });
+
+    it('should reject repeated structural placeholders before creating nodes', () => {
+      const fixture = new ViewFixture({decls: 3, consts: [`�#2�one�/#2��#2�two�/#2�`]});
+      fixture.enterView();
+      try {
+        ɵɵelementStart(0, 'div');
+        expect(() => ɵɵi18nStart(1, 0)).toThrowError(/NG0700/);
+        expect(fixture.tView.data[HEADER_OFFSET + 2]).toBeNull();
+      } finally {
+        ViewFixture.cleanUp();
+      }
     });
 
     it('for multiple bindings', () => {
@@ -610,7 +695,7 @@ describe('Runtime i18n', () => {
   describe(`i18nAttribute`, () => {
     it('for simple bindings', () => {
       const message = `Hello �0�!`;
-      const attrs = ['title', message];
+      const attrs = ['title', message, 1];
       const nbConsts = 2;
       const index = 1;
       const opCodes = getOpCodes(
@@ -635,7 +720,7 @@ describe('Runtime i18n', () => {
 
     it('for multiple bindings', () => {
       const message = `Hello �0� and �1�, again �0�!`;
-      const attrs = ['title', message];
+      const attrs = ['title', message, 2];
       const nbConsts = 2;
       const index = 1;
       const opCodes = getOpCodes(
@@ -661,7 +746,7 @@ describe('Runtime i18n', () => {
     it('for multiple attributes', () => {
       const message1 = `Hello �0� - �1�!`;
       const message2 = `Bye �0� - �1�!`;
-      const attrs = ['title', message1, 'aria-label', message2];
+      const attrs = ['title', message1, 2, 'aria-label', message2, 2];
       const nbConsts = 4;
       const index = 1;
       const opCodes = getOpCodes(
@@ -683,6 +768,75 @@ describe('Runtime i18n', () => {
             "setAttribute('aria-label', `Bye ${lView[i-3]} - ${lView[i-4]}!`); }",
         ]),
       );
+    });
+
+    it('should preserve source binding offsets when a translation omits a binding', () => {
+      const attrs = ['title', '', 1, 'aria-label', 'Bye �0�!', 1];
+      const opCodes = getOpCodes(
+        attrs,
+        () => {
+          ɵɵelementStart(0, 'div');
+          ɵɵi18nAttributes(1, 0);
+          ɵɵelementEnd();
+        },
+        2,
+        HEADER_OFFSET + 1,
+      );
+
+      expect(opCodes).toEqual(
+        matchDebug([
+          `if (mask & 0b10) { (lView[${
+            HEADER_OFFSET + 0
+          }] as Element).setAttribute('aria-label', \`Bye \${lView[i-2]}!\`); }`,
+        ]),
+      );
+    });
+
+    it('should preserve source binding offsets when a translation repeats a binding', () => {
+      const attrs = ['title', '�0�/�0�', 1, 'aria-label', '�0�', 1];
+      const opCodes = getOpCodes(
+        attrs,
+        () => {
+          ɵɵelementStart(0, 'div');
+          ɵɵi18nAttributes(1, 0);
+          ɵɵelementEnd();
+        },
+        2,
+        HEADER_OFFSET + 1,
+      );
+
+      expect(opCodes).toEqual(
+        matchDebug([
+          `if (mask & 0b1) { (lView[${
+            HEADER_OFFSET + 0
+          }] as Element).setAttribute('title', \`\${lView[i-1]}/\${lView[i-1]}\`); }`,
+          `if (mask & 0b10) { (lView[${
+            HEADER_OFFSET + 0
+          }] as Element).setAttribute('aria-label', \`\${lView[i-2]}\`); }`,
+        ]),
+      );
+    });
+
+    it('should reject bindings outside an i18n attribute source range', () => {
+      const fixture = new ViewFixture({decls: 2, consts: [['title', '�1�', 1]]});
+      fixture.enterView();
+      try {
+        ɵɵelementStart(0, 'div');
+        expect(() => ɵɵi18nAttributes(1, 0)).toThrowError(/NG0700/);
+      } finally {
+        ViewFixture.cleanUp();
+      }
+    });
+
+    it('should reject attribute configurations without source binding counts', () => {
+      const fixture = new ViewFixture({decls: 2, consts: [['title', '�0�']]});
+      fixture.enterView();
+      try {
+        ɵɵelementStart(0, 'div');
+        expect(() => ɵɵi18nAttributes(1, 0)).toThrowError(/NG0700/);
+      } finally {
+        ViewFixture.cleanUp();
+      }
     });
   });
 
