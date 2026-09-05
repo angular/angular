@@ -36,10 +36,8 @@ const canActivateTeam: CanActivateFn = (
 If you need to run a function within an injection context without already being in one, you can use `runInInjectionContext`.
 This requires access to an injector, such as the `EnvironmentInjector`:
 
-```ts {highlight: [9], header:"hero.service.ts"}
-@Injectable({
-  providedIn: 'root',
-})
+```ts {highlight: [7], header:"hero.service.ts"}
+@Service()
 export class HeroService {
   private environmentInjector = inject(EnvironmentInjector);
 
@@ -72,9 +70,7 @@ You can then call this helper **from an injection context** (constructor, field 
 import {Component, inject} from '@angular/core';
 import {injectNativeElement} from './dom-helpers';
 
-@Component({
-  /* … */
-})
+@Component({/* … */})
 export class PreviewCard {
   readonly hostEl = injectNativeElement<HTMLElement>(); // Field initializer runs in an injection context.
 
