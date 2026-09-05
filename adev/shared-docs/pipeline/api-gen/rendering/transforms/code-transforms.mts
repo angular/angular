@@ -53,6 +53,8 @@ const INDENT = '  ';
 const SPACE = ' ';
 const LN_BREAK = '\n';
 const INDENTED_NEW_LINE = `${LN_BREAK}${INDENT}`;
+/** Name given to constructor entries by the docs extraction. */
+const CONSTRUCTOR_NAME = 'constructor';
 
 // Allows to generate links for code lines.
 interface CodeTableOfContentsData {
@@ -340,14 +342,15 @@ function getCodeTocData(members: MemberEntry[], isDeprecated: boolean): CodeTabl
     };
 
     if (isClassMethodEntry(curr)) {
+      const isConstructor = curr.name === CONSTRUCTOR_NAME;
       // class methods
       if (curr.signatures.length > 0) {
         curr.signatures.forEach((signature) => {
-          setTocData(signature, getMethodCodeLine(signature, curr.memberTags));
+          setTocData(signature, getMethodCodeLine(signature, curr.memberTags, isConstructor));
         });
       } else {
         // Constructors, methods on interfaces, Decorators
-        setTocData(curr, getMethodCodeLine(curr.implementation, curr.memberTags));
+        setTocData(curr, getMethodCodeLine(curr.implementation, curr.memberTags, isConstructor));
       }
     } else {
       // class props
@@ -375,12 +378,19 @@ function getPropertyCodeLine(member: PropertyEntry): string {
 }
 
 /** Map method entry to text */
-function getMethodCodeLine(member: FunctionSignatureMetadata, memberTags: MemberTags[]): string {
+function getMethodCodeLine(
+  member: FunctionSignatureMetadata,
+  memberTags: MemberTags[],
+  isConstructor = false,
+): string {
   const generics = makeGenericsText(member.generics);
+  // Constructors don't have a return type in TypeScript, so we omit it to keep the
+  // generated signature valid.
+  const returnType = isConstructor ? '' : `: ${member.returnType}`;
   return (
     `${memberTags.join(SPACE)}${memberTags.length ? ' ' : ''}${member.name}${generics}(` +
     `${member.params.map((param) => mapParamEntry(param)).join(`, `)}` +
-    `): ${member.returnType};`
+    `)${returnType};`
   );
 }
 

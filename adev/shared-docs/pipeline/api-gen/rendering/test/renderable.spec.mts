@@ -79,4 +79,22 @@ describe('renderable', () => {
       expect(anchor.getAttribute('href')).toBe(`#${id}`);
     }
   });
+
+  it('should not render a return type on constructor signatures', () => {
+    const httpRequest = entries.get('HttpRequest')!;
+    expect(httpRequest).toBeDefined();
+
+    const html = renderEntry(httpRequest);
+    const fragment = JSDOM.fragment(html);
+
+    const constructorLines = Array.from(fragment.querySelectorAll('.docs-code .line'))
+      .map((line) => line.textContent!.trim())
+      .filter((line) => line.startsWith('constructor('));
+
+    expect(constructorLines.length).toBeGreaterThan(0);
+    for (const line of constructorLines) {
+      // Constructors have no return type, the signature ends with the parameter list.
+      expect(line).toMatch(/\);$/);
+    }
+  });
 });
