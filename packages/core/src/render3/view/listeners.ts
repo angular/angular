@@ -50,7 +50,7 @@ export function wrapListener(
 ): WrappedEventCallback {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
-  return function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
+  function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
     // When a native element is stored on this function (set by listenToDomEvent for
     // non-global-target listeners), mark the (event, element) pair as handled so that
     // jsaction does not replay an event already dispatched by the real DOM listener.
@@ -76,10 +76,32 @@ export function wrapListener(
     }
 
     return result;
-  } as WrappedEventCallback;
+  }
+
+  // Keep the original listener so tooling (e.g. custom `EventManager` plugins) can
+  // retrieve it. Set it unconditionally so every wrapper has the same shape.
+  const wrapped = wrapListenerIn_markDirtyAndPreventDefault as WrappedEventCallback;
+  wrapped.__ngOriginalListener__ = listenerFn;
+  return wrapped;
 }
 
-function executeListenerWithErrorHandling(
+/**
+ * Returns the original listener produced by `wrapListener`.
+ * Returns the listener unchanged if it isn't wrapped.
+ *
+ * Used by custom `EventManager` plugins that need the original handler.
+ *
+ * Note:
+ * - Only the first listener is returned. Listeners coalesced into it (same event on the
+ *   same element) are not included.
+ * - Plugins receive the listener wrapped by the platform renderer. Peel that layer first by
+ *   calling it with the `'__ngUnwrap__'` token.
+ */
+export function unwrapListener(listener: EventCallback): EventCallback {
+  return (listener as Partial<WrappedEventCallback>).__ngOriginalListener__ ?? listener;
+}
+
+export function executeListenerWithErrorHandling(
   lView: LView,
   context: unknown,
   listenerFn: EventCallback,
@@ -168,8 +190,11 @@ export function listenToDomEvent(
   } else {
     const native = getNativeByTNode(tNode, lView) as RElement;
     const target = eventTargetResolver ? eventTargetResolver(native) : native;
+    // For `.silent` we keep the full name (e.g. `click.silent`) for coalescing, so it's not
+    // merged with a regular `click`, but we listen to the native `click`
+    const nativeEventName = wrappedListener.__ngNativeEventName__ ?? eventName;
 
-    stashEventListenerImpl(lView, target, eventName, wrappedListener);
+    stashEventListenerImpl(lView, target, nativeEventName, wrappedListener);
 
     // For element-local listeners (not global targets like document/window), store the
     // native element on the wrapped listener so that when it fires it can mark the
@@ -178,7 +203,7 @@ export function listenToDomEvent(
     if (!eventTargetResolver) {
       (wrappedListener as any).__ngNativeEl__ = native as unknown as Element;
     }
-    const cleanupFn = renderer.listen(target as RElement, eventName, wrappedListener);
+    const cleanupFn = renderer.listen(target as RElement, nativeEventName, wrappedListener);
 
     // We skip cleaning up animation event types to ensure leaving animation events can be used.
     // These events should be automatically garbage collected anyway after the element is
