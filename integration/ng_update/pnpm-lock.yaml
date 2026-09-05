@@ -45,8 +45,8 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
       zone.js:
-        specifier: 0.16.2
-        version: 0.16.2
+        specifier: 0.16.3
+        version: 0.16.3
 
 packages:
 
@@ -61,8 +61,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  zone.js@0.16.2:
-    resolution: {integrity: sha512-Eky7p2Z1Ig3NnbfodSPoARCjKBSTFMnE/ACsP1L/XJEfY4SdOFce19BsUCWVwL6K5ABZFy5J3bjcMWffX+YM3Q==}
+  zone.js@0.16.3:
+    resolution: {integrity: sha512-ihXL9+vhYyEhXz4TDNpHeAOZN9FVrbog0Il64OIEI28UP/n5AaI6gsccRuOHBfx+206agzyoK527bYIO0Foy6A==}
 
 snapshots:
 
@@ -74,4 +74,4 @@ snapshots:
 
   typescript@6.0.3: {}
 
-  zone.js@0.16.2: {}
+  zone.js@0.16.3: {}

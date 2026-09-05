@@ -20,7 +20,7 @@
     "@angular/router": "link:./in-existing-linked-by-bazel",
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0",
-    "zone.js": "0.16.2"
+    "zone.js": "0.16.3"
   },
   "devDependencies": {
     "@angular/build": "22.2.0-next.6",
@@ -29,5 +29,5 @@
     "ts-node": "10.9.2",
     "typescript": "6.0.3"
   },
-  "packageManager": "pnpm@11.24.0"
+  "packageManager": "pnpm@11.25.0"
 }
