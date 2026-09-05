@@ -6,21 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, provideZonelessChangeDetection} from '@angular/core';
+import {Component} from '@angular/core';
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '../public_api';
 import {TestBed} from '@angular/core/testing';
 
 describe('status host binding classes', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
-  });
-
   it('work in OnPush components', async () => {
     @Component({
       selector: 'test-cmp',
       template: `<input type="text" [formControl]="control" />`,
       imports: [FormsModule, ReactiveFormsModule],
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class App {
       control = new FormControl('old value', [Validators.required]);
