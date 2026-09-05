@@ -14,6 +14,7 @@ import {
   ChangeDetectorRef,
   ClassProvider,
   Component,
+  createComponent,
   DestroyRef,
   Directive,
   ElementRef,
@@ -1482,5 +1483,41 @@ describe('getInjectorResolutionPath', () => {
 
       expect(path[6]).toBeInstanceOf(NullInjector);
     }
+  });
+
+  it('should not infinite loop when resolving resolution path of a component created with a parent NodeInjector cast as EnvironmentInjector', () => {
+    @Component({
+      selector: 'child-cmp',
+      template: 'child',
+    })
+    class ChildCmp {
+      nodeInjector = inject(Injector);
+    }
+
+    @Component({
+      selector: 'parent-cmp',
+      template: 'parent',
+    })
+    class ParentCmp {
+      nodeInjector = inject(Injector);
+    }
+
+    const parentFixture = TestBed.createComponent(ParentCmp);
+    const parentNodeInjector = parentFixture.componentInstance.nodeInjector;
+
+    // Simulate the custom element creation where NodeInjector is cast to EnvironmentInjector
+    const childInjector = Injector.create({providers: [], parent: parentNodeInjector});
+    const childRef = createComponent(ChildCmp, {
+      environmentInjector: parentNodeInjector as any,
+      elementInjector: childInjector,
+    });
+
+    const childNodeInjector = childRef.instance.nodeInjector;
+    expect(() => {
+      const path = getInjectorResolutionPath(childNodeInjector);
+      expect(path.length).toBeGreaterThan(0);
+    }).not.toThrow();
+
+    childRef.destroy();
   });
 });
