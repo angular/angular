@@ -50,7 +50,7 @@ export function wrapListener(
 ): WrappedEventCallback {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
-  return function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
+  function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
     // When a native element is stored on this function (set by listenToDomEvent for
     // non-global-target listeners), mark the (event, element) pair as handled so that
     // jsaction does not replay an event already dispatched by the real DOM listener.
@@ -76,7 +76,23 @@ export function wrapListener(
     }
 
     return result;
-  } as WrappedEventCallback;
+  }
+
+  // Keep the original listener so tooling (e.g. custom `EventManager` plugins) can
+  // retrieve it. Set it unconditionally so every wrapper has the same shape.
+  const wrapped = wrapListenerIn_markDirtyAndPreventDefault as WrappedEventCallback;
+  wrapped.__ngOriginalListener__ = listenerFn;
+  return wrapped;
+}
+
+/**
+ * Returns the original listener produced by `wrapListener`.
+ * Returns the listener unchanged if it isn't wrapped.
+ *
+ * Used by custom `EventManager` plugins that need the original handler.
+ */
+export function unwrapListener(listener: EventCallback): EventCallback {
+  return (listener as Partial<WrappedEventCallback>).__ngOriginalListener__ ?? listener;
 }
 
 function executeListenerWithErrorHandling(

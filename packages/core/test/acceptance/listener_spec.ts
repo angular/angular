@@ -6,26 +6,29 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, DOCUMENT} from '@angular/common';
 import {
   Component,
   Directive,
   ErrorHandler,
   EventEmitter,
   HostListener,
+  inject,
   Input,
   OnInit,
   Output,
   provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   QueryList,
   TemplateRef,
   ViewChild,
   ViewChildren,
   ViewContainerRef,
   ChangeDetectionStrategy,
+  ɵunwrapListener,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
+import {By, EventManagerPlugin, EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 
 describe('event listeners', () => {
   beforeEach(() => {
@@ -975,6 +978,69 @@ describe('event listeners', () => {
       button.click();
       fixture.detectChanges();
       expect(clicks).toBe(1);
+    });
+  });
+
+  describe('custom EventManager plugin', () => {
+    // Regression coverage for #61839: a plugin that unwraps the authored listener via
+    // `ɵunwrapListener` and registers it directly, so the event does not schedule change detection.
+    class SilentEventPlugin extends EventManagerPlugin {
+      constructor() {
+        super(inject(DOCUMENT));
+      }
+
+      override supports(eventName: string): boolean {
+        return eventName.endsWith('.silent');
+      }
+
+      override addEventListener(
+        element: HTMLElement,
+        eventName: string,
+        handler: Function,
+      ): Function {
+        const name = eventName.slice(0, -'.silent'.length);
+        // `handler` is the `decoratePreventDefault`-wrapped listener. Peel that layer with the
+        // `__ngUnwrap__` token, then get the handler as authored with `ɵunwrapListener`.
+        const preventDefaultWrapped = handler as (token: string) => (event?: any) => any;
+        const original = ɵunwrapListener(preventDefaultWrapped('__ngUnwrap__'));
+        element.addEventListener(name, original as EventListener);
+        return () => element.removeEventListener(name, original as EventListener);
+      }
+    }
+
+    it('runs the authored handler without scheduling change detection', async () => {
+      let handlerCalls = 0;
+
+      @Component({template: `<button (click.silent)="onClick()">{{ label }}</button>`})
+      class App {
+        label = 'initial';
+        onClick() {
+          handlerCalls++;
+          this.label = 'updated';
+        }
+      }
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          provideZonelessChangeDetection(),
+          {provide: EVENT_MANAGER_PLUGINS, useClass: SilentEventPlugin, multi: true},
+        ],
+      });
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+      const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+      expect(button.textContent).toBe('initial');
+
+      button.click();
+      await fixture.whenStable();
+
+      // The authored handler ran and mutated the component...
+      expect(handlerCalls).toBe(1);
+      expect(fixture.componentInstance.label).toBe('updated');
+      // ...but no change detection was scheduled, so the DOM was not refreshed.
+      expect(button.textContent).toBe('initial');
     });
   });
 });
