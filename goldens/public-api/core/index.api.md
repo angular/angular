@@ -1872,6 +1872,9 @@ export interface SkipSelfDecorator {
 }
 
 // @public
+export function splitTracking<T, Ret, Args extends any[]>(track: () => T, execute: (tracked: T, ...args: Args) => Ret): (...args: Args) => Ret;
+
+// @public
 export type StateKey<T> = string & {
     __not_a_string: never;
     __value_type?: T;
