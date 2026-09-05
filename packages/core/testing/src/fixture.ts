@@ -85,12 +85,12 @@ export abstract class AbstractFixture<E> {
   readonly changeDetectorRef: ChangeDetectorRef;
 
   /** @docs-private */
-  constructor(private readonly hostRef: ComponentRef<unknown>) {
-    this.changeDetectorRef = hostRef.changeDetectorRef;
-    this.debugElement = getDebugNode(hostRef.location.nativeElement) as DebugElement;
-    this.nativeElement = hostRef.location.nativeElement;
-    this.elementRef = hostRef.location;
-    this.hostView = hostRef.hostView;
+  constructor(private readonly ref: ComponentRef<unknown>) {
+    this.changeDetectorRef = ref.changeDetectorRef;
+    this.debugElement = getDebugNode(ref.location.nativeElement) as DebugElement;
+    this.nativeElement = ref.location.nativeElement;
+    this.elementRef = ref.location;
+    this.hostView = ref.hostView;
     this._testAppRef.allTestViews.add(this.hostView);
 
     if (this.autoDetect) {
@@ -231,7 +231,7 @@ export abstract class AbstractFixture<E> {
 
   private _getRenderer() {
     if (this._renderer === undefined) {
-      this._renderer = this.hostRef.injector.get(RendererFactory2, null);
+      this._renderer = this.ref.injector.get(RendererFactory2, null);
     }
     return this._renderer as RendererFactory2 | null;
   }
@@ -256,7 +256,7 @@ export abstract class AbstractFixture<E> {
     this._testAppRef.allTestViews.delete(this.hostView);
 
     if (!this._isDestroyed) {
-      this.hostRef.destroy();
+      this.ref.destroy();
       this._isDestroyed = true;
     }
   }
@@ -310,7 +310,10 @@ export class DirectiveFixture<T> extends AbstractFixture<Element> {
    */
   readonly directiveInstance: T;
 
-  constructor(hostRef: ComponentRef<unknown>, directiveInstance: T) {
+  constructor(
+    readonly hostRef: ComponentRef<unknown>,
+    directiveInstance: T,
+  ) {
     super(hostRef);
     this.directiveInstance = directiveInstance;
   }
