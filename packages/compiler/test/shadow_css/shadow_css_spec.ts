@@ -429,6 +429,13 @@ describe('ShadowCss', () => {
       expect(namespaceCssVariables(input)).toEqualCss(expected);
     });
 
+    it('should preserve variable names while removing `--global--` when namespacing is disabled', () => {
+      const input = '.foo { --my-color: red; color: var(--global--my-color); }';
+      const expected = '.foo { --my-color: red; color: var(--my-color); }';
+
+      expect(namespaceCssVariables(input, false)).toEqualCss(expected);
+    });
+
     it('should handle multiple variables with mixed namespacing', () => {
       const input = `
 .foo {

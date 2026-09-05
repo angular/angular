@@ -154,10 +154,11 @@ export function getJitStandaloneDefaultForVersion(version: string): boolean {
  * Namespaces a CSS variable name and validates its syntax.
  *
  * @param varName The CSS variable name starting with `--`.
+ * @param shouldNamespace Whether to add the namespace placeholder to the variable.
  * @throws An Error if the CSS variable is invalid (e.g. has a single hyphen after "--global").
  * @returns The namespaced CSS variable name.
  */
-export function namespaceCssVariable(varName: string): string {
+export function namespaceCssVariable(varName: string, shouldNamespace = true): string {
   // TODO: Enforce this in v23. This is a breaking change.
   //       Enable tests under platform-browser and compiler matching "has a single hyphen".
   // g3-only-start
@@ -171,7 +172,9 @@ export function namespaceCssVariable(varName: string): string {
 
   if (varName.startsWith('--global--')) {
     return '--' + varName.substring('--global--'.length);
-  } else {
+  } else if (shouldNamespace) {
     return '--%NS%' + varName.substring('--'.length);
+  } else {
+    return varName;
   }
 }
