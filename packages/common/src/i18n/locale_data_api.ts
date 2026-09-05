@@ -26,7 +26,8 @@ import {RuntimeErrorCode} from '../errors';
  *
  * @publicApi
  *
- * @deprecated `getLocaleNumberFormat` is deprecated
+ * @deprecated 18.0
+ * `getLocaleNumberFormat` is deprecated
  */
 export enum NumberFormatStyle {
   Decimal,
@@ -44,7 +45,8 @@ export enum NumberFormatStyle {
  *
  * @publicApi
  *
- * @deprecated `getLocalePluralCase` is deprecated
+ * @deprecated 18.0
+ * `getLocalePluralCase` is deprecated
  */
 export enum Plural {
   Zero = 0,
@@ -64,7 +66,8 @@ export enum Plural {
  *
  * @publicApi
  *
- * @deprecated locale data getters are deprecated
+ * @deprecated 18.0
+ * locale data getters are deprecated
  */
 export enum FormStyle {
   Format,
@@ -78,7 +81,8 @@ export enum FormStyle {
  *
  * @publicApi
  *
- * @deprecated locale data getters are deprecated
+ * @deprecated 18.0
+ * locale data getters are deprecated
  */
 export enum TranslationWidth {
   /** 1 character for `en-US`. For example: 'S' */
@@ -139,7 +143,8 @@ export enum FormatWidth {
  *
  * @publicApi
  *
- * @deprecated `getLocaleNumberSymbol` is deprecated
+ * @deprecated 18.0
+ * `getLocaleNumberSymbol` is deprecated
  *
  * @object-literal-as-enum
  */
@@ -225,7 +230,8 @@ export type NumberSymbol = (typeof NumberSymbol)[keyof typeof NumberSymbol];
  *
  * @publicApi
  *
- * @deprecated Week locale getters are deprecated
+ * @deprecated 18.0
+ * Week locale getters are deprecated
  */
 export enum WeekDay {
   Sunday = 0,
@@ -246,7 +252,8 @@ export enum WeekDay {
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * This function serves no purpose when relying on the `Intl` API.
  */
 export function getLocaleId(locale: string): string {
@@ -264,7 +271,8 @@ export function getLocaleId(locale: string): string {
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Use `Intl.DateTimeFormat` for date formating instead.
  */
 export function getLocaleDayPeriods(
@@ -293,7 +301,8 @@ export function getLocaleDayPeriods(
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Use `Intl.DateTimeFormat` for date formating instead.
  */
 export function getLocaleDayNames(
@@ -322,7 +331,8 @@ export function getLocaleDayNames(
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Use `Intl.DateTimeFormat` for date formating instead.
  */
 export function getLocaleMonthNames(
@@ -350,7 +360,8 @@ export function getLocaleMonthNames(
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Use `Intl.DateTimeFormat` for date formating instead.
  */
 export function getLocaleEraNames(
@@ -373,7 +384,8 @@ export function getLocaleEraNames(
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Intl's [`getWeekInfo`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/getWeekInfo) has partial support (Chromium M99 & Safari 17).
  * You may want to rely on the following alternatives:
  * - Libraries like [`Luxon`](https://moment.github.io/luxon/#/) rely on `Intl` but fallback on the ISO 8601 definition (monday) if `getWeekInfo` is not supported.
@@ -393,7 +405,8 @@ export function getLocaleFirstDayOfWeek(locale: string): WeekDay {
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Intl's [`getWeekInfo`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/getWeekInfo) has partial support (Chromium M99 & Safari 17).
  * Libraries like [`Luxon`](https://moment.github.io/luxon/#/) rely on `Intl` but fallback on the ISO 8601 definition (Saturday+Sunday) if `getWeekInfo` is not supported .
  */
@@ -413,7 +426,8 @@ export function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay] {
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Use `Intl.DateTimeFormat` for date formating instead.
  */
 export function getLocaleDateFormat(locale: string, width: FormatWidth): string {
@@ -431,7 +445,8 @@ export function getLocaleDateFormat(locale: string, width: FormatWidth): string 
  * @see [Internationalization (i18n) Guide](guide/i18n)
 
  * @publicApi
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Use `Intl.DateTimeFormat` for date formating instead.
  */
 export function getLocaleTimeFormat(locale: string, width: FormatWidth): string {
@@ -450,7 +465,8 @@ export function getLocaleTimeFormat(locale: string, width: FormatWidth): string 
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Use `Intl.DateTimeFormat` for date formating instead.
  */
 export function getLocaleDateTimeFormat(locale: string, width: FormatWidth): string {
@@ -469,7 +485,8 @@ export function getLocaleDateTimeFormat(locale: string, width: FormatWidth): str
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Use `Intl.NumberFormat` to format numbers instead.
  */
 export function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): string {
@@ -520,7 +537,8 @@ export function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): str
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Let `Intl.NumberFormat` determine the number format instead
  */
 export function getLocaleNumberFormat(locale: string, type: NumberFormatStyle): string {
@@ -539,7 +557,8 @@ export function getLocaleNumberFormat(locale: string, type: NumberFormatStyle): 
  *
  * @publicApi
  *
- * @deprecated Use the `Intl` API to format a currency with from currency code
+ * @deprecated 18.0
+ * Use the `Intl` API to format a currency with from currency code
  */
 export function getLocaleCurrencySymbol(locale: string): string | null {
   const data = ɵfindLocaleData(locale);
@@ -556,7 +575,8 @@ export function getLocaleCurrencySymbol(locale: string): string | null {
  *
  * @publicApi
  *
- * @deprecated Use the `Intl` API to format a currency with from currency code
+ * @deprecated 18.0
+ * Use the `Intl` API to format a currency with from currency code
  */
 export function getLocaleCurrencyName(locale: string): string | null {
   const data = ɵfindLocaleData(locale);
@@ -573,7 +593,8 @@ export function getLocaleCurrencyName(locale: string): string | null {
  *
  * @publicApi
  *
- * @deprecated We recommend you create a map of locale to ISO 4217 currency codes.
+ * @deprecated 18.0
+ * We recommend you create a map of locale to ISO 4217 currency codes.
  * Time relative currency data is provided by the CLDR project. See https://www.unicode.org/cldr/charts/44/supplemental/detailed_territory_currency_information.html
  */
 export function getLocaleCurrencyCode(locale: string): string | null {
@@ -594,7 +615,8 @@ function getLocaleCurrencies(locale: string): {[code: string]: CurrenciesSymbols
 /**
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Use `Intl.PluralRules` instead
  */
 export const getLocalePluralCase: (locale: string) => (value: number) => Plural =
@@ -634,7 +656,8 @@ function checkFullData(data: any) {
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * Let `Intl.DateTimeFormat` determine the day period instead.
  */
 export function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Time])[] {
@@ -666,7 +689,8 @@ export function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Tim
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * To extract a day period use `Intl.DateTimeFormat` with the `dayPeriod` option instead.
  */
 export function getLocaleExtraDayPeriods(
@@ -691,7 +715,8 @@ export function getLocaleExtraDayPeriods(
  * @returns 'rtl' or 'ltr'
  * @see [Internationalization (i18n) Guide](guide/i18n)
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * For dates and numbers, let `Intl.DateTimeFormat()` and `Intl.NumberFormat()` determine the writing direction.
  * The `Intl` alternative [`getTextInfo`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/getTextInfo).
  * has only partial support (Chromium M99 & Safari 17).
@@ -731,7 +756,8 @@ function getLastDefinedValue<T>(data: T[], index: number): T {
  *
  * @publicApi
  *
- * @deprecated Locale date getters are deprecated
+ * @deprecated 18.0
+ * Locale date getters are deprecated
  */
 export type Time = {
   hours: number;
@@ -761,7 +787,8 @@ function extractTime(time: string): Time {
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * You can use `Intl.NumberFormat().formatToParts()` to extract the currency symbol.
  * For example: `Intl.NumberFormat('en', {style:'currency', currency: 'USD'}).formatToParts().find(part => part.type === 'currency').value`
  * returns `$` for USD currency code in the `en` locale.
@@ -791,7 +818,8 @@ const DEFAULT_NB_OF_CURRENCY_DIGITS = 2;
  *
  * @publicApi
  *
- * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ * @deprecated 18.0
+ * Angular recommends relying on the `Intl` API for i18n.
  * This function should not be used anymore. Let `Intl.NumberFormat` determine the number of digits to display for the currency
  */
 export function getNumberOfCurrencyDigits(code: string): number {
