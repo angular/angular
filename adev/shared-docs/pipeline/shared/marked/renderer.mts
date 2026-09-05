@@ -75,10 +75,6 @@ export class AdevDocsRenderer extends Renderer {
       route.startsWith('#') || // Anchor link within the same page
       route.startsWith('mailto:') || // Should we have a regex to exclude any protocol?
       route.startsWith('playground') ||
-      // TODO: Extract routes from the CDK as well
-      route.startsWith('api/cdk') ||
-      // TODO: Extract routes from Aria as well
-      route.startsWith('api/aria') ||
       route.startsWith('tutorials') ||
       route.startsWith('extended-diagnostics')
     ) {
