@@ -1123,6 +1123,8 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
+        checkTypeOfNgTemplateBindings: false, // 3p-only
+        // g3-only checkTypeOfNgTemplateBindings: true,
       };
     } else {
       typeCheckingConfig = {
@@ -1155,6 +1157,8 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
+        checkTypeOfNgTemplateBindings: false, // 3p-only
+        // g3-only checkTypeOfNgTemplateBindings: true,
       };
     }
 
@@ -1192,6 +1196,9 @@ export class NgCompiler {
     }
     if (this.options.strictLiteralTypes !== undefined) {
       typeCheckingConfig.strictLiteralTypes = this.options.strictLiteralTypes;
+    }
+    if (this.options.strictNgTemplateTypes !== undefined) {
+      typeCheckingConfig.checkTypeOfNgTemplateBindings = this.options.strictNgTemplateTypes;
     }
     if (
       this.options.extendedDiagnostics?.checks?.controlFlowPreventingContentProjection !== undefined
