@@ -2283,6 +2283,458 @@ describe('completions', () => {
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
     });
   });
+
+  describe('custom elements manifest completions', () => {
+    function setupWithManifest(
+      template: string,
+      withAngularComponent = false,
+      strictAttributeTypes?: boolean,
+      directive = '',
+    ): OpenBuffer {
+      const manifest = {
+        schemaVersion: '1.0.0',
+        modules: [
+          {
+            kind: 'javascript-module',
+            path: 'my-button.js',
+            declarations: [
+              {
+                kind: 'class',
+                name: 'MyButton',
+                customElement: true,
+                tagName: 'my-button',
+                description: 'A themed button.',
+                members: [
+                  {
+                    kind: 'field',
+                    name: 'label',
+                    type: {text: 'string'},
+                    description: 'The button label.',
+                  },
+                  {
+                    kind: 'field',
+                    name: 'disabled',
+                    type: {text: 'boolean'},
+                    description: 'Whether the button is disabled.',
+                    deprecated: 'Use aria-disabled instead.',
+                  },
+                  {
+                    kind: 'field',
+                    name: 'readonly',
+                    attribute: 'readonly',
+                    type: {text: 'boolean'},
+                  },
+                  {
+                    kind: 'field',
+                    name: 'variant',
+                    attribute: 'variant',
+                    type: {text: "'primary' | 'secondary'"},
+                    description: 'The button variant.',
+                    default: 'primary',
+                  },
+                ],
+                attributes: [
+                  {
+                    name: 'button-label',
+                    fieldName: 'label',
+                    description: 'The label attribute.',
+                  },
+                  {name: 'label', description: 'The same-named label attribute.'},
+                  {name: 'data-mode', description: 'Attribute only.'},
+                  {name: 'title', description: 'The title attribute.'},
+                  {name: 'readonly', fieldName: 'readonly'},
+                  {
+                    name: 'variant',
+                    fieldName: 'variant',
+                    type: {text: "'primary' | 'secondary'"},
+                    description: 'The variant attribute.',
+                    default: 'primary',
+                  },
+                ],
+                events: [
+                  {name: 'itemselect', type: {text: 'UnresolvedItemSelectEvent'}, deprecated: true},
+                  {
+                    name: 'click',
+                    type: {
+                      text: 'CustomEvent<{value: string}>',
+                      references: [{name: 'CustomEvent', package: 'global:', start: 0, end: 11}],
+                    },
+                    description: 'Fired when the custom button activates.',
+                  },
+                  {name: 'labelChange', type: {text: 'unknown'}},
+                  {name: 'label', type: {text: 'unknown'}, description: 'The label event.'},
+                ],
+              },
+            ],
+            exports: [
+              {
+                kind: 'custom-element-definition',
+                name: 'my-button',
+                declaration: {name: 'MyButton'},
+              },
+            ],
+          },
+        ],
+      };
+      const env = getSharedEnv();
+      const project = env.addProject(
+        'test-cem',
+        {
+          'custom-elements.json': JSON.stringify(manifest),
+          'test.ts': `
+            import {Component, Directive, Input, NgModule} from '@angular/core';
+
+            @Component({
+              templateUrl: './test.html',
+              selector: 'app-cmp',
+              standalone: false,
+            })
+            export class AppCmp {}
+
+            ${
+              withAngularComponent
+                ? `@Component({selector: 'my-button', template: '', standalone: false})
+                   export class AngularButton {
+                     @Input('variant') angularVariant: 'angular-only' = 'angular-only';
+                   }`
+                : ''
+            }
+
+            ${directive}
+
+            @NgModule({
+              declarations: [AppCmp${withAngularComponent ? ', AngularButton' : ''}${directive ? ', Wrapper' : ''}],
+            })
+            export class AppModule {}
+          `,
+          'test.html': template,
+        },
+        {
+          customElementsManifests: ['./custom-elements.json'],
+          ...(strictAttributeTypes === undefined ? {} : {strictAttributeTypes}),
+        },
+      );
+      return project.openFile('test.html');
+    }
+
+    it('should return tag completions for manifest-declared elements but not DOM elements', () => {
+      const templateFile = setupWithManifest(`<my-b`);
+      templateFile.moveCursorToText('<my-b¦');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+        completions,
+        unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ELEMENT),
+        ['my-button'],
+      );
+      expectDoesNotContain(
+        completions,
+        unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ELEMENT),
+        ['div', 'span'],
+      );
+    });
+
+    it('should prefer an Angular component over a manifest entry with the same tag', () => {
+      const templateFile = setupWithManifest(`<my-b`, true);
+      templateFile.moveCursorToText('<my-b¦');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+        completions,
+        unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.COMPONENT),
+        ['my-button'],
+      );
+    });
+
+    it('should return property completions for manifest-declared members', () => {
+      const templateFile = setupWithManifest(`<my-button ></my-button>`);
+      templateFile.moveCursorToText('<my-button ¦>');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+        completions,
+        unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+        ['[label]', '[disabled]', '[readonly]'],
+      );
+      expectDoesNotContain(
+        completions,
+        unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+        ['[readOnly]', '[(label)]', '[(disabled)]'],
+      );
+    });
+
+    it('should distinguish manifest attributes from property bindings in completions', () => {
+      const templateFile = setupWithManifest(`<my-button ></my-button>`);
+      templateFile.moveCursorToText('<my-button ¦>');
+      const completions = templateFile.getCompletionsAtPosition()!;
+      const names = completions.entries.map((entry) => entry.name);
+      expect(names).toContain('button-label');
+      expect(names).toContain('data-mode');
+      expect(names).toContain('[attr.button-label]');
+      expect(names).toContain('[attr.data-mode]');
+      expect(names).toContain('[label]');
+      expect(names).not.toContain('[button-label]');
+      expect(names).not.toContain('[data-mode]');
+    });
+
+    it('should return event completions for manifest-declared and inherited events', () => {
+      const templateFile = setupWithManifest(`<my-button ></my-button>`);
+      templateFile.moveCursorToText('<my-button ¦>');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, DisplayInfoKind.EVENT, ['(itemselect)', '(click)']);
+    });
+
+    it('should preserve property and event completions with the same name and their documentation', () => {
+      const templateFile = setupWithManifest(`<my-button ></my-button>`);
+      templateFile.moveCursorToText('<my-button ¦>');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, DisplayInfoKind.PROPERTY, ['[label]']);
+      expectContain(completions, DisplayInfoKind.EVENT, ['(label)']);
+      expect(toText(templateFile.getCompletionEntryDetails('[label]')!.documentation)).toBe(
+        'The button label.',
+      );
+      expect(toText(templateFile.getCompletionEntryDetails('(label)')!.documentation)).toBe(
+        'The label event.',
+      );
+    });
+
+    it('should preserve inherited properties when the manifest adds attribute metadata', () => {
+      const templateFile = setupWithManifest(`<my-button ></my-button>`);
+      templateFile.moveCursorToText('<my-button ¦>');
+      const names = templateFile.getCompletionsAtPosition()!.entries.map((entry) => entry.name);
+      expect(names).toContain('title');
+      expect(names).toContain('[attr.title]');
+      expect(names).toContain('[title]');
+      expect(toText(templateFile.getCompletionEntryDetails('title')!.documentation)).toBe(
+        'The title attribute.',
+      );
+    });
+
+    it('should retain same-named event completions while editing an event binding', () => {
+      const templateFile = setupWithManifest(`<my-button (label)=""></my-button>`);
+      templateFile.moveCursorToText('(lab¦el)');
+      const completions = templateFile.getCompletionsAtPosition()!;
+      expectContain(completions, DisplayInfoKind.EVENT, ['(label)']);
+      expect(toText(templateFile.getCompletionEntryDetails('(label)')!.documentation)).toBe(
+        'The label event.',
+      );
+    });
+
+    it('should mark deprecated manifest properties and events in completions', () => {
+      const templateFile = setupWithManifest(`<my-button ></my-button>`);
+      templateFile.moveCursorToText('<my-button ¦>');
+      const completions = templateFile.getCompletionsAtPosition()!;
+      const entryByName = new Map(completions.entries.map((entry) => [entry.name, entry]));
+      expect(entryByName.get('[disabled]')!.kindModifiers).toBe(
+        ts.ScriptElementKindModifier.deprecatedModifier,
+      );
+      expect(entryByName.get('(itemselect)')!.kindModifiers).toBe(
+        ts.ScriptElementKindModifier.deprecatedModifier,
+      );
+      // Entries without manifest deprecation are unmarked.
+      expect(entryByName.get('[label]')!.kindModifiers).toBeUndefined();
+      expect(entryByName.get('(click)')!.kindModifiers).toBeUndefined();
+    });
+
+    it('should include manifest documentation in completion details', () => {
+      const templateFile = setupWithManifest(`<my-button ></my-button>`);
+      templateFile.moveCursorToText('<my-button ¦>');
+      templateFile.getCompletionsAtPosition();
+
+      const labelDetails = templateFile.getCompletionEntryDetails('[label]')!;
+      expect(labelDetails).toBeDefined();
+      expect(ts.displayPartsToString(labelDetails.documentation!)).toEqual('The button label.');
+
+      const labelAttributeDetails = templateFile.getCompletionEntryDetails('label')!;
+      expect(labelAttributeDetails).toBeDefined();
+      expect(ts.displayPartsToString(labelAttributeDetails.documentation!)).toEqual(
+        'The same-named label attribute.',
+      );
+
+      const disabledDetails = templateFile.getCompletionEntryDetails('[disabled]')!;
+      expect(disabledDetails.kindModifiers).toBe(ts.ScriptElementKindModifier.deprecatedModifier);
+      expect(disabledDetails.tags).toEqual([
+        jasmine.objectContaining({
+          name: 'deprecated',
+          text: [{kind: 'text', text: 'Use aria-disabled instead.'}],
+        }),
+      ]);
+
+      const variantDetails = templateFile.getCompletionEntryDetails('[variant]')!;
+      expect(ts.displayPartsToString(variantDetails.displayParts)).toEqual(
+        `[variant]: 'primary' | 'secondary'`,
+      );
+      expect(ts.displayPartsToString(variantDetails.documentation!)).toContain('Default: primary');
+
+      // Display the manifest type text even when it cannot be used for checking.
+      // Diagnostics use only validated check types.
+      const eventDetails = templateFile.getCompletionEntryDetails('(itemselect)')!;
+      expect(ts.displayPartsToString(eventDetails.displayParts)).toEqual(
+        `(itemselect): UnresolvedItemSelectEvent`,
+      );
+
+      const clickDetails = templateFile.getCompletionEntryDetails('(click)')!;
+      expect(ts.displayPartsToString(clickDetails.displayParts)).toEqual(
+        `(click): CustomEvent<{value: string}>`,
+      );
+      expect(ts.displayPartsToString(clickDetails.documentation!)).toBe(
+        'Fired when the custom button activates.',
+      );
+    });
+
+    it('should complete literal union values for static manifest attributes', () => {
+      const templateFile = setupWithManifest(`<my-button variant=""></my-button>`);
+      templateFile.moveCursorToText('variant="¦"');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['primary', 'secondary']);
+    });
+
+    it('should complete static literal unions when strict attribute checking is disabled', () => {
+      const templateFile = setupWithManifest(`<my-button variant=""></my-button>`, false, false);
+      templateFile.moveCursorToText('variant="¦"');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['primary', 'secondary']);
+    });
+
+    for (const strictAttributeTypes of [true, false]) {
+      it(`should replace a partial manifest literal with strictAttributeTypes=${strictAttributeTypes}`, () => {
+        const template = `<my-button variant="pri"></my-button>`;
+        const templateFile = setupWithManifest(template, false, strictAttributeTypes);
+        templateFile.moveCursorToText('variant="pri¦"');
+        const completions = templateFile.getCompletionsAtPosition()!;
+        expectContain(completions, ts.ScriptElementKind.string, ['primary', 'secondary']);
+        expectReplacementText(completions, template, 'pri');
+        const entry = completions.entries.find((entry) => entry.name === 'primary')!;
+        const {start, length} = entry.replacementSpan!;
+        expect(template.slice(0, start) + entry.name + template.slice(start + length)).toBe(
+          `<my-button variant="primary"></my-button>`,
+        );
+      });
+
+      for (const owner of ['component', 'directive']) {
+        it(`should exclude manifest literals owned by an aliased ${owner} input with strictAttributeTypes=${strictAttributeTypes}`, () => {
+          const templateFile = setupWithManifest(
+            `<my-button wrapper variant=""></my-button>`,
+            owner === 'component',
+            strictAttributeTypes,
+            owner === 'directive'
+              ? `
+              @Directive({selector: '[wrapper]', standalone: false})
+              export class Wrapper {
+                @Input('variant') angularVariant: 'angular-only' = 'angular-only';
+              }
+            `
+              : '',
+          );
+          templateFile.moveCursorToText('variant="¦"');
+          const completions = templateFile.getCompletionsAtPosition();
+          const names = completions?.entries.map((entry) => entry.name) ?? [];
+          expect(names).not.toContain('primary');
+          expect(names).not.toContain('secondary');
+          if (strictAttributeTypes) {
+            expect(names).toContain('angular-only');
+          }
+        });
+      }
+    }
+
+    it('should retain manifest literals when a matching directive does not own the input', () => {
+      const templateFile = setupWithManifest(
+        `<my-button wrapper variant=""></my-button>`,
+        false,
+        false,
+        `@Directive({selector: '[wrapper]', standalone: false}) export class Wrapper { @Input() other = ''; }`,
+      );
+      templateFile.moveCursorToText('variant="¦"');
+      expectContain(templateFile.getCompletionsAtPosition(), ts.ScriptElementKind.string, [
+        'primary',
+        'secondary',
+      ]);
+    });
+
+    it('should complete static literal unions resolved through manifest type references', () => {
+      const manifest = {
+        schemaVersion: '1.0.0',
+        modules: [
+          {
+            kind: 'javascript-module',
+            path: 'button.js',
+            declarations: [
+              {
+                kind: 'class',
+                name: 'Button',
+                customElement: true,
+                tagName: 'button-box',
+                members: [
+                  {
+                    kind: 'field',
+                    name: 'variant',
+                    attribute: 'variant',
+                    type: {
+                      text: 'ButtonVariant',
+                      references: [{name: 'ButtonVariant', module: 'button.js', start: 0, end: 13}],
+                    },
+                  },
+                ],
+                attributes: [{name: 'variant', fieldName: 'variant'}],
+              },
+            ],
+            exports: [
+              {kind: 'js', name: 'Button', declaration: {name: 'Button'}},
+              {
+                kind: 'custom-element-definition',
+                name: 'button-box',
+                declaration: {name: 'Button'},
+              },
+            ],
+          },
+        ],
+      };
+      const project = getSharedEnv().addProject(
+        'test-cem-reference-completion',
+        {
+          'node_modules/@test/elements/package.json': JSON.stringify({
+            name: '@test/elements',
+            customElements: './custom-elements.json',
+            exports: {
+              './package.json': './package.json',
+              './button.js': {
+                types: './button/index.d.ts',
+                default: './button.js',
+              },
+            },
+          }),
+          'node_modules/@test/elements/custom-elements.json': JSON.stringify(manifest),
+          'node_modules/@test/elements/button/index.d.ts': `export * from './button';`,
+          'node_modules/@test/elements/button/button.d.ts': `
+            export type ButtonVariant = 'primary' | 'secondary';
+            export declare class Button extends HTMLElement {
+              variant?: ButtonVariant;
+            }
+          `,
+          'test.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({templateUrl: './test.html'})
+            export class AppCmp {}
+          `,
+          'test.html': `<button-box variant=""></button-box>`,
+        },
+        {customElementsManifests: ['@test/elements']},
+      );
+      const templateFile = project.openFile('test.html');
+      templateFile.moveCursorToText('variant="¦"');
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['primary', 'secondary']);
+    });
+
+    it('should include manifest documentation in tag completion details', () => {
+      const templateFile = setupWithManifest(`<my-b`);
+      templateFile.moveCursorToText('<my-b¦');
+      templateFile.getCompletionsAtPosition();
+      const details = templateFile.getCompletionEntryDetails('my-button')!;
+      expect(details).toBeDefined();
+      expect(ts.displayPartsToString(details.documentation!)).toEqual('A themed button.');
+    });
+  });
 });
 
 function expectContainInsertText(

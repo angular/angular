@@ -6,15 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AST, BindingType} from '../../expression_parser/ast';
+import {AST, ASTWithSource, BindingType, Interpolation} from '../../expression_parser/ast';
 import {BindingPropertyName, ClassPropertyName} from '../../property_mapping';
 import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
+import {ParseSourceSpan} from '../../parse_util';
 import {BoundAttribute, Component, Directive, Element, Template} from '../../render3/r3_ast';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbDirectiveMetadata} from '../api';
 import {TcbOp} from './base';
 import {declareVariable, TcbExpr} from './codegen';
+import {CustomElementsManifestIndex} from '../../schema/custom_elements_manifest_schema';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 const REGISTRY = new DomElementSchemaRegistry();
 import {tcbExpression, unwrapWritableSignal} from './expression';
@@ -258,6 +260,31 @@ export class TcbUnclaimedInputsOp extends TcbOp {
     // `this.inputs` contains only those bindings not matched by any directive. These bindings go to
     // the element itself.
     let elId: TcbExpr | null = null;
+    const manifest = this.getManifestElement();
+
+    if (manifest !== null && this.tcb.env.config.checkTypeOfAttributes) {
+      // Check static attributes against string literal unions. Other CEM types have no general
+      // attribute conversion rule.
+      for (const attribute of manifest.element.attributes) {
+        if (this.claimedInputs?.has(attribute.name)) {
+          continue;
+        }
+        const checkType = manifest.index.getAttributeCheckType(
+          manifest.element.name,
+          attribute.name,
+        );
+        if (checkType !== null) {
+          this.emitCheckedAssignment(
+            checkType,
+            attribute.keySpan ?? attribute.sourceSpan,
+            translateInput(attribute.value, this.tcb, this.scope)
+              .wrapForTypeChecker()
+              .addParseSpanInfo(attribute.sourceSpan),
+            attribute.sourceSpan,
+          );
+        }
+      }
+    }
 
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.inputs) {
@@ -275,13 +302,44 @@ export class TcbUnclaimedInputsOp extends TcbOp {
         binding.value,
       );
 
+      // Assign the value to a variable of the validated manifest type. Skip the assignment when
+      // input checking is disabled so manifest type references cannot add diagnostics in that mode.
+      const checkType =
+        manifest !== null &&
+        isPropertyBinding &&
+        binding.name !== 'style' &&
+        binding.name !== 'class' &&
+        this.tcb.env.config.checkTypeOfInputBindings
+          ? manifest.index.getPropertyCheckType(manifest.element.name, binding.name)
+          : null;
+      if (checkType !== null) {
+        let checkedExpression = expr.wrapForTypeChecker();
+        if (isInterpolation(binding.value)) {
+          // Give interpolation an explicit string type before assignment. Otherwise TypeScript
+          // could infer a literal union from the target for an expression such as "" + ctx.variant.
+          checkedExpression = new TcbExpr(
+            `(${checkedExpression.print()}) as string`,
+          ).addParseSpanInfo(binding.value.sourceSpan);
+        }
+        this.emitCheckedAssignment(
+          checkType,
+          binding.keySpan ?? binding.sourceSpan,
+          checkedExpression,
+          binding.sourceSpan,
+        );
+        continue;
+      }
+
       if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           if (elId === null) {
             elId = this.scope.resolve(this.target);
           }
-          // A direct binding to a property.
-          const propertyName = REGISTRY.getMappedPropName(binding.name);
+          // Manifest property bindings use exact JavaScript names without HTML name mapping.
+          const propertyName =
+            manifest !== null && manifest.index.hasProperty(manifest.element.name, binding.name)
+              ? binding.name
+              : REGISTRY.getMappedPropName(binding.name);
           const stmt = new TcbExpr(
             `${elId.print()}[${TcbExpr.quoteAndEscape(propertyName)}] = ${expr.wrapForTypeChecker().print()}`,
           ).addParseSpanInfo(binding.sourceSpan);
@@ -299,4 +357,40 @@ export class TcbUnclaimedInputsOp extends TcbOp {
 
     return null;
   }
+
+  /** The target element and the manifest index, when a configured manifest declares the element. */
+  private getManifestElement(): {index: CustomElementsManifestIndex; element: Element} | null {
+    const index = this.tcb.env.config.customElementsManifestIndex;
+    return index !== null &&
+      this.target instanceof Element &&
+      index.getSchema(this.target.name) !== null
+      ? {index, element: this.target}
+      : null;
+  }
+
+  /**
+   * Assigns `value` to a variable of the validated manifest `checkType`. The type's source span
+   * maps import resolution errors back to the template binding.
+   */
+  private emitCheckedAssignment(
+    checkType: string,
+    keySpan: ParseSourceSpan,
+    value: TcbExpr,
+    sourceSpan: ParseSourceSpan,
+  ): void {
+    const id = new TcbExpr(this.tcb.allocateId());
+    const type = new TcbExpr(`(${checkType})`).addParseSpanInfo(keySpan);
+    this.scope.addStatement(declareVariable(id, type));
+    id.addParseSpanInfo(keySpan);
+    this.scope.addStatement(
+      new TcbExpr(`${id.print()} = ${value.print()}`).addParseSpanInfo(sourceSpan),
+    );
+  }
+}
+
+function isInterpolation(value: AST): boolean {
+  return (
+    value instanceof Interpolation ||
+    (value instanceof ASTWithSource && value.ast instanceof Interpolation)
+  );
 }

@@ -43,6 +43,8 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
     const element = this.element;
     const isTemplateElement = element instanceof Element || element instanceof Component;
     const bindings = isTemplateElement ? element.inputs : element.bindings;
+    const tagName = isTemplateElement ? this.getTagName(element) : null;
+    const manifestIndex = this.tcb.env.config.customElementsManifestIndex;
 
     if (this.checkElement && isTemplateElement) {
       this.tcb.domSchemaChecker.checkElement(
@@ -65,13 +67,16 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
       }
 
       if (isPropertyBinding && binding.name !== 'style' && binding.name !== 'class') {
-        // A direct binding to a property.
-        const propertyName = REGISTRY.getMappedPropName(binding.name);
+        // Manifest property bindings use exact JavaScript names without HTML name mapping.
+        const propertyName =
+          tagName !== null && manifestIndex?.hasProperty(tagName, binding.name)
+            ? binding.name
+            : REGISTRY.getMappedPropName(binding.name);
 
         if (isTemplateElement) {
           this.tcb.domSchemaChecker.checkTemplateElementProperty(
             this.tcb.id,
-            this.getTagName(element),
+            tagName!,
             propertyName,
             binding.sourceSpan,
             this.tcb.schemas,

@@ -11,6 +11,7 @@ export {
   FatalDiagnosticError,
   isFatalDiagnosticError,
   isLocalCompilationDiagnostics,
+  makeConfigDiagnostic,
   makeDiagnostic,
   makeDiagnosticChain,
   makeRelatedInformation,

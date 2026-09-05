@@ -255,7 +255,14 @@ export {CombinedRecursiveAstVisitor} from './combined_visitor';
 // be constructed through `makeBindingParser`, rather than its constructor.
 export {type BindingParser} from './template_parser/binding_parser';
 export {createCssSelectorFromNode} from './render3/view/util';
+export {getCustomElementsManifestExactPropertyNames as ɵgetCustomElementsManifestExactPropertyNames} from './render3/view/custom_elements_manifest_properties';
 export * from './resource_loader';
+export {
+  type CustomElementsManifestAttribute as ɵCustomElementsManifestAttribute,
+  CustomElementsManifestIndex as ɵCustomElementsManifestIndex,
+  type CustomElementsManifestProperty as ɵCustomElementsManifestProperty,
+  type CustomElementsManifestSchema as ɵCustomElementsManifestSchema,
+} from './schema/custom_elements_manifest_schema';
 export * from './schema/dom_element_schema_registry';
 export * from './schema/element_schema_registry';
 export * from './directive_matching';

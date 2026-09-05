@@ -45,7 +45,7 @@ export {
   incrementalFromCompilerTicket,
   resourceChangeTicket,
 } from './src/ngtsc/core';
-export {type NgCompilerAdapter} from './src/ngtsc/core/api';
+export {type CustomElementsManifestCache, type NgCompilerAdapter} from './src/ngtsc/core/api';
 export {Reference} from './src/ngtsc/imports';
 export {
   type DirectiveMeta,

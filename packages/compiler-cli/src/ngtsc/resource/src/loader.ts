@@ -11,12 +11,15 @@ import ts from 'typescript';
 import {ResourceLoader, ResourceLoaderContext} from '../../annotations';
 import {NgCompilerAdapter, ResourceHostContext} from '../../core/api';
 import {AbsoluteFsPath, join, PathSegment} from '../../file_system';
-import {RequiredDelegations} from '../../util/src/typescript';
+import {
+  createLookupResolutionHost,
+  getFailedModuleLookupLocations,
+  RequiredDelegations,
+} from '../../util/src/typescript';
 
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.sass|\.less|\.styl)$/;
 
 const RESOURCE_MARKER = '.$ngresource$';
-const RESOURCE_MARKER_TS = RESOURCE_MARKER + '.ts';
 
 /**
  * `ResourceLoader` which delegates to an `NgCompilerAdapter`'s resource loading methods.
@@ -33,7 +36,7 @@ export class AdapterResourceLoader implements ResourceLoader {
     private adapter: NgCompilerAdapter,
     private options: ts.CompilerOptions,
   ) {
-    this.lookupResolutionHost = createLookupResolutionHost(this.adapter);
+    this.lookupResolutionHost = createLookupResolutionHost(this.adapter, RESOURCE_MARKER);
     this.canPreload = !!this.adapter.readResource;
     this.canPreprocess = !!this.adapter.transformResource;
   }
@@ -228,66 +231,18 @@ export class AdapterResourceLoader implements ResourceLoader {
    * for the file by setting up a module resolution for it that will fail.
    */
   private getResolvedCandidateLocations(url: string, fromFile: string): string[] {
-    // `failedLookupLocations` is in the name of the type ts.ResolvedModuleWithFailedLookupLocations
-    // but is marked @internal in TypeScript. See
-    // https://github.com/Microsoft/TypeScript/issues/28770.
-    type ResolvedModuleWithFailedLookupLocations = ts.ResolvedModuleWithFailedLookupLocations & {
-      failedLookupLocations: ReadonlyArray<string>;
-    };
-
-    const failedLookup = ts.resolveModuleName(
-      url + RESOURCE_MARKER,
+    const candidates = getFailedModuleLookupLocations(
+      url,
       fromFile,
       this.options,
       this.lookupResolutionHost,
-    ) as ResolvedModuleWithFailedLookupLocations;
-
-    if (failedLookup.failedLookupLocations === undefined) {
+      RESOURCE_MARKER,
+    );
+    if (candidates === undefined) {
       throw new Error(
         `Internal error: expected to find failedLookupLocations during resolution of resource '${url}' in context of ${fromFile}`,
       );
     }
-
-    return failedLookup.failedLookupLocations
-      .filter((candidate) => candidate.endsWith(RESOURCE_MARKER_TS))
-      .map((candidate) => candidate.slice(0, -RESOURCE_MARKER_TS.length));
+    return candidates;
   }
-}
-
-/**
- * Derives a `ts.ModuleResolutionHost` from a compiler adapter that recognizes the special resource
- * marker and does not go to the filesystem for these requests, as they are known not to exist.
- */
-function createLookupResolutionHost(
-  adapter: NgCompilerAdapter,
-): RequiredDelegations<ts.ModuleResolutionHost> {
-  return {
-    directoryExists(directoryName: string): boolean {
-      if (directoryName.includes(RESOURCE_MARKER)) {
-        return false;
-      } else if (adapter.directoryExists !== undefined) {
-        return adapter.directoryExists(directoryName);
-      } else {
-        // TypeScript's module resolution logic assumes that the directory exists when no host
-        // implementation is available.
-        return true;
-      }
-    },
-    fileExists(fileName: string): boolean {
-      if (fileName.includes(RESOURCE_MARKER)) {
-        return false;
-      } else {
-        return adapter.fileExists(fileName);
-      }
-    },
-    readFile: adapter.readFile.bind(adapter),
-    getCurrentDirectory: adapter.getCurrentDirectory.bind(adapter),
-    getDirectories: adapter.getDirectories?.bind(adapter),
-    realpath: adapter.realpath?.bind(adapter),
-    trace: adapter.trace?.bind(adapter),
-    useCaseSensitiveFileNames:
-      typeof adapter.useCaseSensitiveFileNames === 'function'
-        ? adapter.useCaseSensitiveFileNames.bind(adapter)
-        : adapter.useCaseSensitiveFileNames,
-  };
 }

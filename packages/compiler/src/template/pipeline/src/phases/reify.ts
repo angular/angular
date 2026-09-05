@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import {CONTEXT_NAME} from '../../../../render3/view/util';
-import {isUnsafeObjectKey} from '../../../../render3/util';
+import {DOM_PROPERTY_REMAPPING, isUnsafeObjectKey} from '../../../../render3/util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {
@@ -27,19 +27,6 @@ const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>([
   ['window', Identifiers.resolveWindow],
   ['document', Identifiers.resolveDocument],
   ['body', Identifiers.resolveBody],
-]);
-
-/**
- * DOM properties that need to be remapped on the compiler side.
- * Note: this mapping has to be kept in sync with the equally named mapping in the runtime.
- */
-const DOM_PROPERTY_REMAPPING = new Map([
-  ['class', 'className'],
-  ['for', 'htmlFor'],
-  ['formaction', 'formAction'],
-  ['innerHtml', 'innerHTML'],
-  ['readonly', 'readOnly'],
-  ['tabindex', 'tabIndex'],
 ]);
 
 /**
@@ -668,7 +655,13 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(
           op,
-          ng.twoWayProperty(op.name, op.expression, op.sanitizer, op.sourceSpan),
+          ng.twoWayProperty(
+            op.name,
+            op.expression,
+            op.sanitizer,
+            op.sourceSpan,
+            op.exactDomPropertyName,
+          ),
         );
         break;
       case ir.OpKind.StyleProp:
@@ -766,8 +759,9 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
  * @returns A statement to update the property at runtime.
  */
 function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
+  const exactDomPropertyName = op.kind === ir.OpKind.Property && op.exactDomPropertyName;
   return ng.domProperty(
-    DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
+    exactDomPropertyName ? op.name : (DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name),
     op.expression,
     op.sanitizer,
     op.sourceSpan,
@@ -786,7 +780,7 @@ function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
 function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
   return isAriaAttribute(op.name)
     ? ng.ariaProperty(op.name, op.expression, op.sourceSpan)
-    : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan);
+    : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan, op.exactDomPropertyName);
 }
 
 function reifyControl(op: ir.ControlOp): ir.UpdateOp {
