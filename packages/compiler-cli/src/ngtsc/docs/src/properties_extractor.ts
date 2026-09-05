@@ -185,11 +185,22 @@ export abstract class PropertiesExtractor {
       tags.push(MemberTags.Optional);
     }
 
-    if (member.parent !== this.declaration) {
+    if (this.getDeclaringNode(member) !== this.declaration) {
       tags.push(MemberTags.Inherited);
     }
 
     return tags;
+  }
+
+  /**
+   * Gets the node a member is declared on. This is the member's parent, except for constructor
+   * parameter properties (e.g. `constructor(readonly foo: string) {}`) whose parent is the
+   * constructor rather than the class declaring it.
+   */
+  private getDeclaringNode(member: ts.Node): ts.Node | undefined {
+    return ts.isParameterPropertyDeclaration(member, member.parent)
+      ? member.parent.parent
+      : member.parent;
   }
 
   /** Computes all signature declarations of the class/interface. */
