@@ -96,6 +96,11 @@ export function processForApiLinks(fragment: Element, apiEntries: ApiEntries): v
   });
 }
 
+/** Escapes text that is interpolated into an HTML string. */
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 /** Build the header element if a header is provided in the token. */
 function buildHeaderElement(token: CodeToken) {
   let header = '';
@@ -104,7 +109,7 @@ function buildHeaderElement(token: CodeToken) {
   }
 
   if (token.header) {
-    header += `<h3>${token.header}</h3>`;
+    header += `<h3>${escapeHtml(token.header)}</h3>`;
   }
 
   if (!header) return '';
