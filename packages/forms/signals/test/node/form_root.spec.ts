@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, provideZonelessChangeDetection, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
@@ -33,12 +33,6 @@ class TestCmp {
 }
 
 describe('FormRoot', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-  });
-
   it('should set novalidate on the form element', () => {
     const fixture = act(() => TestBed.createComponent(TestCmp));
     const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;

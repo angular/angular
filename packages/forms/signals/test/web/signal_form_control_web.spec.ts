@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Injector, inject, provideZonelessChangeDetection, signal} from '@angular/core';
+import {Component, Injector, inject, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {disabled, FormField} from '@angular/forms/signals';
@@ -15,13 +15,6 @@ import {SignalFormControl} from '../../compat';
 import {act} from '@angular/private/testing';
 
 describe('SignalFormControl (web)', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-      imports: [ReactiveFormsModule, FormField],
-    });
-  });
-
   it('binds to formField directive', () => {
     @Component({
       imports: [ReactiveFormsModule, FormField],
