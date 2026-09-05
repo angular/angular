@@ -1,13 +1,20 @@
 import {setTimeout} from 'node:timers/promises';
 import * as vscode from 'vscode';
 
-import {APP_COMPONENT, FOO_TEMPLATE} from '../test_constants';
+import {
+  APP_COMPONENT,
+  FOO_TEMPLATE,
+  INLAY_HINTS_COMPONENT,
+  INLAY_HINTS_EXTERNAL_TEMPLATE,
+} from '../test_constants';
 
 export const COMPLETION_COMMAND = 'vscode.executeCompletionItemProvider';
 export const HOVER_COMMAND = 'vscode.executeHoverProvider';
 export const DEFINITION_COMMAND = 'vscode.executeDefinitionProvider';
 export const APP_COMPONENT_URI = vscode.Uri.file(APP_COMPONENT);
 export const FOO_TEMPLATE_URI = vscode.Uri.file(FOO_TEMPLATE);
+export const INLAY_HINTS_COMPONENT_URI = vscode.Uri.file(INLAY_HINTS_COMPONENT);
+export const INLAY_HINTS_EXTERNAL_TEMPLATE_URI = vscode.Uri.file(INLAY_HINTS_EXTERNAL_TEMPLATE);
 
 export async function activate(uri: vscode.Uri): Promise<void> {
   await vscode.window.showTextDocument(uri);
