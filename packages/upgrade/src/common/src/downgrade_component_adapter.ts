@@ -28,9 +28,11 @@ import {
 } from '@angular/core';
 
 import {
+  element as angularElement,
   IAttributes,
   IAugmentedJQuery,
   ICompileService,
+  ILinkFn,
   INgModelController,
   IParseService,
   IScope,
@@ -48,6 +50,7 @@ export class DowngradeComponentAdapter {
   private inputChangeCount: number = 0;
   private inputChanges: SimpleChanges = {};
   private componentScope: IScope;
+  private projectableNodesLinkFns: ILinkFn[] = [];
 
   constructor(
     private element: IAugmentedJQuery,
@@ -66,20 +69,15 @@ export class DowngradeComponentAdapter {
   }
 
   compileContents(): Node[][] {
-    const compiledProjectableNodes: Node[][] = [];
-    const projectableNodes: Node[][] = this.groupProjectableNodes();
-    const linkFns = projectableNodes.map((nodes) => this.$compile(nodes));
+    // `$compile()` may replace root nodes (e.g. `ng-if` replaces its element with a comment).
+    // Wrapping each group ensures that these replacements are reflected in the nodes passed to
+    // Angular for projection.
+    const projectableNodes = this.groupProjectableNodes().map((nodes) => angularElement(nodes));
+    this.projectableNodesLinkFns = projectableNodes.map((nodes) => this.$compile(nodes));
 
     this.element.empty!();
 
-    linkFns.forEach((linkFn) => {
-      linkFn(this.scope, (clone: Node[]) => {
-        compiledProjectableNodes.push(clone);
-        this.element.append!(clone);
-      });
-    });
-
-    return compiledProjectableNodes;
+    return projectableNodes;
   }
 
   createComponentAndSetup(
@@ -183,7 +181,10 @@ export class DowngradeComponentAdapter {
     }
 
     // Invoke `ngOnChanges()` and Change Detection (when necessary)
-    const detectChanges = () => changeDetector.detectChanges();
+    const detectChanges = () => {
+      changeDetector.detectChanges();
+      this.linkProjectableNodes();
+    };
     const prototype = this.component.prototype;
     this.implementsOnChanges = !!(prototype && (<OnChanges>prototype).ngOnChanges);
 
@@ -221,6 +222,17 @@ export class DowngradeComponentAdapter {
         const appRef = this.parentInjector.get<ApplicationRef>(ApplicationRef);
         appRef.attachView(componentRef.hostView);
       });
+    }
+  }
+
+  private linkProjectableNodes(): void {
+    // AngularJS structural directives need their root markers to have a parent before linking.
+    // Angular creates embedded views containing projection slots during change detection, so link
+    // the projected nodes only after the component has completed its first change detection.
+    const linkFns = this.projectableNodesLinkFns;
+    this.projectableNodesLinkFns = [];
+    for (const linkFn of linkFns) {
+      linkFn(this.scope);
     }
   }
 

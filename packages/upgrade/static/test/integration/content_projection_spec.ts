@@ -27,7 +27,7 @@ import {
   withEachNg1Version,
 } from '../../../src/common/test/helpers/common_test_helpers';
 
-import {bootstrap} from './static_test_helpers';
+import {$apply, bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {
   describe('content projection', () => {
@@ -109,6 +109,42 @@ withEachNg1Version(() => {
 
       bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
         expect(multiTrim(document.body.textContent)).toBe('ng2-a( 123 )ng2-b( 456 )ng2-c( 789 )');
+      });
+    }));
+
+    it('should project root AngularJS structural directives into an Angular embedded view', waitForAsync(() => {
+      @Component({
+        selector: 'ng2',
+        template: '<div *ngIf="true"><ng-content></ng-content></div>',
+        standalone: false,
+      })
+      class Ng2Component {}
+
+      @NgModule({
+        imports: [BrowserModule, UpgradeModule],
+        declarations: [Ng2Component],
+      })
+      class Ng2Module {
+        ngDoBootstrap() {}
+      }
+
+      const ng1Module = angular
+        .module_('ng1', [])
+        .directive('ng2', downgradeComponent({component: Ng2Component}))
+        .run(($rootScope: angular.IRootScopeService) => {
+          $rootScope['show'] = true;
+        });
+
+      const element = html('<ng2><div ng-if="show">projected content</div></ng2>');
+
+      bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+        expect(element.textContent).toBe('projected content');
+
+        $apply(upgrade, 'show = false');
+        expect(element.textContent).toBe('');
+
+        $apply(upgrade, 'show = true');
+        expect(element.textContent).toBe('projected content');
       });
     }));
 
