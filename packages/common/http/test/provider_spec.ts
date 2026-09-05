@@ -39,7 +39,11 @@ import {TestBed} from '@angular/core/testing';
 import {EMPTY, Observable, from} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {HTTP_ROOT_INTERCEPTOR_FNS, HttpInterceptorFn} from '../src/interceptor';
+import {
+  HTTP_CONFIGURED_INTERCEPTOR_FNS,
+  HTTP_ROOT_INTERCEPTOR_FNS,
+  HttpInterceptorFn,
+} from '../src/interceptor';
 import {
   HttpFeature,
   HttpFeatureKind,
@@ -945,5 +949,110 @@ describe('HttpInterceptor signal tracking', () => {
 
     expect(effectRunCount).toBe(1);
     controller.verify();
+  });
+
+  describe('HTTP_CONFIGURED_INTERCEPTOR_FNS', () => {
+    it('should include interceptors provided via withInterceptors', () => {
+      const interceptor1: HttpInterceptorFn = (req, next) => next(req);
+      const interceptor2: HttpInterceptorFn = (req, next) => next(req);
+      const unprovided: HttpInterceptorFn = (req, next) => next(req);
+
+      TestBed.configureTestingModule({
+        providers: [provideHttpClient(withInterceptors([interceptor1, interceptor2]))],
+      });
+
+      const configuredInterceptors = TestBed.inject(HTTP_CONFIGURED_INTERCEPTOR_FNS);
+      expect(configuredInterceptors.has(interceptor1)).toBeTrue();
+      expect(configuredInterceptors.has(interceptor2)).toBeTrue();
+      expect(configuredInterceptors.has(unprovided)).toBeFalse();
+    });
+
+    it('should recursively include parent interceptors when withRequestsMadeViaParent is used', () => {
+      const parentInterceptor: HttpInterceptorFn = (req, next) => next(req);
+      const childInterceptor: HttpInterceptorFn = (req, next) => next(req);
+
+      const parentInjector = Injector.create({
+        providers: [provideHttpClient(withInterceptors([parentInterceptor]))],
+      });
+
+      const childInjector = Injector.create({
+        parent: parentInjector,
+        providers: [
+          provideHttpClient(withInterceptors([childInterceptor]), withRequestsMadeViaParent()),
+        ],
+      });
+
+      const parentSet = parentInjector.get(HTTP_CONFIGURED_INTERCEPTOR_FNS);
+      expect(parentSet.has(parentInterceptor)).toBeTrue();
+      expect(parentSet.has(childInterceptor)).toBeFalse();
+
+      const childSet = childInjector.get(HTTP_CONFIGURED_INTERCEPTOR_FNS);
+      expect(childSet.has(parentInterceptor)).toBeTrue();
+      expect(childSet.has(childInterceptor)).toBeTrue();
+    });
+
+    it('should not include parent interceptors when child does not use withRequestsMadeViaParent', () => {
+      const parentInterceptor: HttpInterceptorFn = (req, next) => next(req);
+      const childInterceptor: HttpInterceptorFn = (req, next) => next(req);
+
+      const parentInjector = Injector.create({
+        providers: [provideHttpClient(withInterceptors([parentInterceptor]))],
+      });
+
+      const childInjector = Injector.create({
+        parent: parentInjector,
+        providers: [provideHttpClient(withInterceptors([childInterceptor]))],
+      });
+
+      const childSet = childInjector.get(HTTP_CONFIGURED_INTERCEPTOR_FNS);
+      expect(childSet.has(childInterceptor)).toBeTrue();
+      expect(childSet.has(parentInterceptor)).toBeFalse();
+    });
+
+    it('should support multi-level hierarchy with withRequestsMadeViaParent', () => {
+      const grandparentFn: HttpInterceptorFn = (req, next) => next(req);
+      const parentFn: HttpInterceptorFn = (req, next) => next(req);
+      const childFn: HttpInterceptorFn = (req, next) => next(req);
+
+      const grandparent = Injector.create({
+        providers: [provideHttpClient(withInterceptors([grandparentFn]))],
+      });
+      const parent = Injector.create({
+        parent: grandparent,
+        providers: [provideHttpClient(withInterceptors([parentFn]), withRequestsMadeViaParent())],
+      });
+      const child = Injector.create({
+        parent,
+        providers: [provideHttpClient(withInterceptors([childFn]), withRequestsMadeViaParent())],
+      });
+
+      const childSet = child.get(HTTP_CONFIGURED_INTERCEPTOR_FNS);
+      expect(childSet.has(grandparentFn)).toBeTrue();
+      expect(childSet.has(parentFn)).toBeTrue();
+      expect(childSet.has(childFn)).toBeTrue();
+    });
+
+    it('should include root interceptor functions provided via HTTP_ROOT_INTERCEPTOR_FNS', () => {
+      const rootFn: HttpInterceptorFn = (req, next) => next(req);
+
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          {provide: HTTP_ROOT_INTERCEPTOR_FNS, useValue: rootFn, multi: true},
+        ],
+      });
+
+      const set = TestBed.inject(HTTP_CONFIGURED_INTERCEPTOR_FNS);
+      expect(set.has(rootFn)).toBeTrue();
+    });
+
+    it('should return a set without error when no interceptors are provided', () => {
+      TestBed.configureTestingModule({
+        providers: [provideHttpClient()],
+      });
+
+      const set = TestBed.inject(HTTP_CONFIGURED_INTERCEPTOR_FNS);
+      expect(set).toBeInstanceOf(Set);
+    });
   });
 });
