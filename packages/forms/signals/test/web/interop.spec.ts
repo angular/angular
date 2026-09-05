@@ -15,7 +15,6 @@ import {
   Input,
   input,
   model,
-  provideZonelessChangeDetection,
   resource,
   signal,
   viewChild,
@@ -58,12 +57,6 @@ import {
 import {act, actAsync} from '@angular/private/testing';
 
 describe('ControlValueAccessor', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-  });
-
   @Component({
     selector: 'custom-control',
     template: `

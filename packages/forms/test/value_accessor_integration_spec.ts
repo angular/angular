@@ -1653,7 +1653,6 @@ describe('value accessors', () => {
         @Component({
           selector: 'parent',
           template: '<child [ngModel]="value"></child>',
-          changeDetection: ChangeDetectionStrategy.OnPush,
           standalone: false,
         })
         class Parent {
