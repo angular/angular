@@ -463,7 +463,6 @@ describe('@defer', () => {
       @Component({
         selector: 'simple-app',
         imports: [MyLazyCmp],
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: `
           @defer (on immediate) {
             <my-lazy-cmp />
@@ -485,7 +484,6 @@ describe('@defer', () => {
     it('should render when @defer-loaded component uses OnPush', async () => {
       @Component({
         selector: 'my-lazy-cmp',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: '{{ foo }}',
       })
       class MyLazyCmp {
@@ -518,7 +516,6 @@ describe('@defer', () => {
     it('should render when both @defer-loaded and host component use OnPush', async () => {
       @Component({
         selector: 'my-lazy-cmp',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: '{{ foo }}',
       })
       class MyLazyCmp {
@@ -528,7 +525,6 @@ describe('@defer', () => {
       @Component({
         selector: 'simple-app',
         imports: [MyLazyCmp],
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: `
           @defer (on immediate) {
             <my-lazy-cmp />
@@ -550,7 +546,6 @@ describe('@defer', () => {
     it('should render when both OnPush components used in other blocks (e.g. @placeholder)', async () => {
       @Component({
         selector: 'my-lazy-cmp',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: '{{ foo }}',
       })
       class MyLazyCmp {
@@ -559,7 +554,6 @@ describe('@defer', () => {
 
       @Component({
         selector: 'another-lazy-cmp',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: '{{ foo }}',
       })
       class AnotherLazyCmp {
@@ -569,7 +563,6 @@ describe('@defer', () => {
       @Component({
         selector: 'simple-app',
         imports: [MyLazyCmp, AnotherLazyCmp],
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: `
           @defer (when isVisible) {
             <my-lazy-cmp />

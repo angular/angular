@@ -674,7 +674,6 @@ describe('pipe', () => {
       let pipeChangeDetectorRef: ChangeDetectorRef | undefined;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         selector: 'some-comp',
         template: 'Inner value: "{{displayValue}}"',
         standalone: false,
@@ -685,7 +684,6 @@ describe('pipe', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: `
           <some-comp [value]="pipeValue | testPipe"></some-comp>
           Outer value: "{{ displayValue }}"
@@ -730,7 +728,6 @@ describe('pipe', () => {
       let pipeChangeDetectorRef: ChangeDetectorRef | undefined;
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         selector: 'some-comp',
         template: 'Inner value: "{{displayValue}}" <ng-content></ng-content>',
         standalone: false,
@@ -741,7 +738,6 @@ describe('pipe', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: `
           <some-comp [value]="pipeValue | testPipe">
             <div>Hello</div>

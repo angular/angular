@@ -306,7 +306,6 @@ describe('component declaration jit compilation', () => {
       version: '18.0.0',
       type: TestClass,
       template: '<div></div>',
-      changeDetection: ChangeDetectionStrategy.OnPush,
     }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {

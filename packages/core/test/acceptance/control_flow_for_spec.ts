@@ -1297,7 +1297,6 @@ describe('control flow - for', () => {
       // prettier-ignore
       @Component({
         template: `@for (item of items; track item) {{{item}}|}`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class TestComponent {
         items = new Proxy([1, 2, 3, 4, 5], {
@@ -1324,7 +1323,6 @@ describe('control flow - for', () => {
     // prettier-ignore
     @Component({
       template: `@for (item of items; track $index) {{{item}}|}`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class TestComponent {
       items = new Proxy(

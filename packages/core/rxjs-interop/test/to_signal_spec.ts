@@ -305,7 +305,6 @@ describe('toSignal()', () => {
     it('should support `toSignal` as a class member initializer', () => {
       @Component({
         template: '{{counter()}}',
-        changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
       class TestCmp {
