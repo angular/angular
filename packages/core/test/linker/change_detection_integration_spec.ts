@@ -1902,7 +1902,6 @@ class WrapCompWithRef {
   selector: 'push-cmp',
   template: '<div (event)="noop()" emitterDirective></div>{{value}}{{renderIncrement}}',
   host: {'(event)': 'noop()'},
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
 class PushComp {

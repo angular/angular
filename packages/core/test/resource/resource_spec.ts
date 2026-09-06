@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {timeout} from '@angular/private/testing';
 import {
   ApplicationRef,
   ɵCACHE_ACTIVE as CACHE_ACTIVE,
@@ -52,7 +53,7 @@ abstract class MockBackend<T, R> {
       entry.reject(reason);
     }
 
-    return flushMicrotasks();
+    return timeout();
   }
 
   async flush(): Promise<void> {
@@ -64,7 +65,7 @@ abstract class MockBackend<T, R> {
     this.pending.clear();
 
     await Promise.all(allPending);
-    await flushMicrotasks();
+    await timeout();
   }
 
   protected abstract prepareResponse(request: T): R;
@@ -132,7 +133,7 @@ describe('resource', () => {
     });
 
     TestBed.tick();
-    await flushMicrotasks();
+    await timeout();
 
     expect(prevStatus).toBe('idle');
   });
@@ -361,7 +362,7 @@ describe('resource', () => {
 
     // Resolve the first load.
     resolve[0]();
-    await flushMicrotasks();
+    await timeout();
 
     // The resource should still be loading. Ticking (triggering the 2nd effect)
     // should not change the loading status.
@@ -372,7 +373,7 @@ describe('resource', () => {
 
     // Resolve the second load.
     resolve[1]?.();
-    await flushMicrotasks();
+    await timeout();
 
     // We should see the resolved value.
     expect(res.status()).toBe('resolved');
@@ -1108,10 +1109,6 @@ describe('resource', () => {
   });
 });
 
-function flushMicrotasks(): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, 0));
-}
-
 function extractError(fn: () => unknown): Error | undefined {
   try {
     fn();
@@ -1146,7 +1143,7 @@ describe('with TransferState', () => {
     expect(testResource.value()).toBe(123);
 
     // Should prevent loader from running
-    await flushMicrotasks();
+    await timeout();
     expect(testResource.value()).toBe(123);
   });
 
@@ -1162,7 +1159,7 @@ describe('with TransferState', () => {
 
     expect(testResource.status()).toBe('loading');
 
-    await flushMicrotasks();
+    await timeout();
 
     expect(testResource.status()).toBe('resolved');
     expect(testResource.value()).toBe(789);
@@ -1179,7 +1176,7 @@ describe('with TransferState', () => {
       injector: TestBed.inject(Injector),
     });
 
-    await flushMicrotasks();
+    await timeout();
 
     expect(testResource.status()).toBe('resolved');
     expect(testResource.value()).toBe(101112);

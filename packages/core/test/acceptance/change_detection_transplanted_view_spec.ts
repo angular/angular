@@ -44,7 +44,6 @@ describe('change detection for transplanted views', () => {
   describe('when declaration appears before insertion', () => {
     @Component({
       selector: 'onpush-insert-comp',
-      changeDetection: ChangeDetectionStrategy.OnPush,
       template: `
         OnPushInsertComp({{ greeting }})
         <div *ngIf="true">
@@ -119,7 +118,6 @@ describe('change detection for transplanted views', () => {
       selector: `onpush-declare-comp`,
       template: ` OnPushDeclareComp({{ name }})
         <ng-template #myTmpl let-greeting> {{ greeting }} {{ logName() }}! </ng-template>`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       standalone: false,
     })
     class OnPushDeclareComp extends DeclareComp {
@@ -137,7 +135,6 @@ describe('change detection for transplanted views', () => {
           {{ greeting }} {{ surname() }}{{ logExecutionContext() }}!
         </ng-template>
       `,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       standalone: false,
     })
     class SignalOnPushDeclareComp {
@@ -475,7 +472,6 @@ describe('change detection for transplanted views', () => {
       template: ` <div>Insertion({{ name }})</div>
         <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{$implicit: name}">
         </ng-container>`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       standalone: false,
     })
     class Insertion {
@@ -494,7 +490,6 @@ describe('change detection for transplanted views', () => {
           <div>TemplateContext({{ contextName }})</div>
         </ng-template>
       `,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       standalone: false,
     })
     class Declaration {
@@ -617,7 +612,6 @@ describe('change detection for transplanted views', () => {
     @Component({
       selector: 'on-push-insertion-host',
       template: `<check-always-insertion [template]="template"></check-always-insertion>`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       standalone: false,
     })
     class OnPushInsertionHost {
@@ -629,7 +623,6 @@ describe('change detection for transplanted views', () => {
         <ng-template #template>{{ value }}</ng-template>
         <on-push-insertion-host [template]="template"></on-push-insertion-host>
       `,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       standalone: false,
     })
     class OnPushDeclaration {
@@ -731,7 +724,6 @@ describe('change detection for transplanted views', () => {
     @Component({
       selector: 'triple',
       template: '<div *ngFor="let unused of [1,2,3]; template: template"></div>',
-      changeDetection: ChangeDetectionStrategy.OnPush,
       standalone: false,
     })
     class TripleTemplate {
@@ -883,7 +875,6 @@ describe('change detection for transplanted views', () => {
     @Component({
       selector: 'on-push-component',
       template: ` <ng-container #vc></ng-container> `,
-      changeDetection: ChangeDetectionStrategy.OnPush,
       standalone: false,
     })
     class OnPushComponent {
@@ -1036,7 +1027,6 @@ describe('change detection for transplanted views', () => {
       @Component({
         selector: 'insertion',
         template: `<ng-container #vc></ng-container>`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class Insertion {
         @ViewChild('vc', {read: ViewContainerRef, static: true}) viewContainer!: ViewContainerRef;
@@ -1160,7 +1150,6 @@ describe('change detection for transplanted views', () => {
     @Component({
       selector: 'insertion',
       template: `<ng-container #vc></ng-container>`,
-      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class Insertion {
       @ViewChild('vc', {read: ViewContainerRef, static: true}) viewContainer!: ViewContainerRef;

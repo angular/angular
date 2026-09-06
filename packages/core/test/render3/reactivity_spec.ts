@@ -349,7 +349,6 @@ describe('reactivity', () => {
 
       const source = signal('');
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: '{{ data }}',
       })
       class TestCmp {
@@ -392,7 +391,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         providers: [Service],
         template: '{{ service.data }}',
       })
@@ -439,7 +437,6 @@ describe('reactivity', () => {
       @Component({
         imports: [Dir],
         template: `<ng-template dir let-data>{{ data }}</ng-template>`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class TestCmp {}
 

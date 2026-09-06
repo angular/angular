@@ -1778,7 +1778,6 @@ describe('query logic', () => {
     it('should not throw when hydration metadata has no serialized container data', () => {
       @Component({
         template: `<div #foo></div>`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class TestCmp {}
 

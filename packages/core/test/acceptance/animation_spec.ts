@@ -2309,20 +2309,6 @@ describe('Animation', () => {
 
   describe('animation queue timing', () => {
     it('should run animations with a fresh componentRef after destroy', fakeAsync(() => {
-      const animateStyles = `
-        .fade {
-          animation: fade-out 500ms;
-        }
-        @keyframes fade-out {
-          from {
-            opacity: 1;
-          }
-          to {
-            opacity: 0;
-          }
-        }
-      `;
-
       @Component({
         selector: 'app-control-panel',
         template: `
@@ -2333,7 +2319,6 @@ describe('Animation', () => {
             <p class="all-there-is">THIS SHOULD BE ALL THERE IS</p>
           }
         `,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class StepperComponent {
         readonly step = signal(0);
@@ -2342,7 +2327,6 @@ describe('Animation', () => {
       @Component({
         selector: 'app-dynamic',
         template: `<ng-container #dynamicComponent></ng-container>`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class DynamicComponent implements AfterViewInit, OnDestroy {
         @ViewChild('dynamicComponent', {read: ViewContainerRef})
@@ -2579,7 +2563,6 @@ describe('Animation', () => {
             </div>
           </ng-template>
         `,
-        changeDetection: ChangeDetectionStrategy.OnPush,
         encapsulation: ViewEncapsulation.None,
       })
       class MenuComponent {
