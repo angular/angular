@@ -7,9 +7,9 @@
  */
 
 import {computeMsgId} from '@angular/compiler';
-import {TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
+import {EVENT_MANAGER_PLUGINS, REMOVE_STYLES_ON_COMPONENT_DESTROY} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
 import {
   ChangeDetectionStrategy,
@@ -2372,6 +2372,54 @@ describe('hot module replacement', () => {
     // After HMR, dehydrated DOM nodes should have been cleaned up — no duplication.
     expect(childEl.innerHTML).not.toContain('SSR ghost');
     expectHTML(fixture.nativeElement, '<child-cmp><div>Replaced</div></child-cmp>');
+  });
+
+  it('should remove styles from a replaced component when style removal on destroy is disabled', () => {
+    const initialMetadata: Component = {
+      selector: 'child-cmp',
+      template: 'Initial',
+      styles: '.hmr-old-style { color: red; }',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {}
+
+    @Component({
+      imports: [ChildCmp],
+      template: '<child-cmp/>',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class RootCmp {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: REMOVE_STYLES_ON_COMPONENT_DESTROY,
+          useValue: false,
+        },
+      ],
+    });
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+
+    const getStyleCount = (fixture: ComponentFixture<unknown>, cssContentMatcher: string) => {
+      return Array.from(
+        fixture.nativeElement.parentNode.parentNode.querySelectorAll('style'),
+      ).filter((style) => (style as HTMLStyleElement).innerText.includes(cssContentMatcher)).length;
+    };
+
+    expect(getStyleCount(fixture, '.hmr-old-style')).toBe(1);
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      styles: '.hmr-new-style { color: blue; }',
+    });
+    fixture.detectChanges();
+
+    expect(getStyleCount(fixture, '.hmr-old-style')).toBe(0);
+    expect(getStyleCount(fixture, '.hmr-new-style')).toBe(1);
   });
 
   // Testing utilities
