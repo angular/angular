@@ -466,10 +466,7 @@ describe('bootstrap', () => {
     }));
 
     it('should wait for asynchronous app initializers', waitForAsync(async () => {
-      let resolve: (result: any) => void;
-      const promise: Promise<any> = new Promise((res) => {
-        resolve = res;
-      });
+      const {promise, resolve} = Promise.withResolvers<any>();
       let initializerDone = false;
       setTimeout(() => {
         resolve(true);
@@ -643,10 +640,7 @@ describe('bootstrap', () => {
       defaultPlatform = _platform;
     }));
     it('should wait for asynchronous app initializers', waitForAsync(async () => {
-      let resolve: (result: any) => void;
-      const promise: Promise<any> = new Promise((res) => {
-        resolve = res;
-      });
+      const {promise, resolve} = Promise.withResolvers<any>();
       let initializerDone = false;
       setTimeout(() => {
         resolve(true);
