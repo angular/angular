@@ -108,6 +108,32 @@ describe('TitleCasePipe', () => {
     expect(pipe.transform('éric')).toEqual('Éric');
   });
 
+  it('should titlecase words that start with a supplementary-plane letter', () => {
+    // Deseret small long I (U+10428) -> Deseret capital long I (U+10400), tail lowered.
+    expect(pipe.transform('\u{10428}word')).toEqual('\u{10400}word');
+    // Already a Deseret capital: first char kept, rest lowered.
+    expect(pipe.transform('\u{10400}WORD')).toEqual('\u{10400}word');
+    // Mixed: a lowercase astral start is cased up, an already-capital one is kept.
+    expect(pipe.transform('\u{10428}ello \u{10412}ye')).toEqual('\u{10400}ello \u{10412}ye');
+    // Adlam small alif (U+1E922) -> Adlam capital alif (U+1E900).
+    expect(pipe.transform('\u{1E922}nnabujel')).toEqual('\u{1E900}nnabujel');
+  });
+
+  it('should leave a caseless supplementary-plane first letter unchanged', () => {
+    // Mathematical bold small a (U+1D41A) has no case mapping.
+    expect(pipe.transform('\u{1D41A}bc')).toEqual('\u{1D41A}bc');
+  });
+
+  it('should keep the existing behavior for length-changing case mappings', () => {
+    expect(pipe.transform('ﬁ')).toEqual('FI'); // ﬁ ligature
+    expect(pipe.transform('ß')).toEqual('SS'); // ß
+  });
+
+  it('should split words on a no-break space but not on a zero-width space', () => {
+    expect(pipe.transform('one\u00a0two')).toEqual('One\u00a0Two');
+    expect(pipe.transform('one\u200btwo')).toEqual('One\u200btwo');
+  });
+
   it('should handle numbers at the beginning of words', () => {
     expect(pipe.transform('frodo was 1st and bilbo was 2nd')).toEqual(
       'Frodo Was 1st And Bilbo Was 2nd',

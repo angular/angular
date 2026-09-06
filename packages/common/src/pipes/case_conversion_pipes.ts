@@ -89,10 +89,26 @@ export class TitleCasePipe implements PipeTransform {
     if (value == null) return null;
     assertPipeArgument(TitleCasePipe, value);
 
-    return value.replace(
-      unicodeWordMatch,
-      (txt) => txt[0].toUpperCase() + txt.slice(1).toLowerCase(),
-    );
+    return value.replace(unicodeWordMatch, (txt) => {
+      // `txt` is a single matched word, e.g. "hello". The goal: upper-case its first
+      // letter and lower-case the rest -> "Hello".
+      //
+      // Why not just `txt[0]`? A JavaScript string is a list of 16-bit units. Most
+      // characters are one unit, but characters outside the common range - some
+      // scripts such as Deseret or Adlam, and emoji - are stored as two units (a
+      // "surrogate pair"). `txt[0]` would hand back only the first half of such a
+      // character, which is meaningless on its own.
+      //
+      // `codePointAt(0)` returns the whole first character, whether it's one unit or
+      // two (it can't be undefined here - the regex only matches when there's at
+      // least one character). A value above 0xFFFF means that character used two
+      // units, so we skip 2 units rather than 1 to get the rest of the word.
+      const firstCodePoint = txt.codePointAt(0)!;
+      const headLength = firstCodePoint > 0xffff ? 2 : 1;
+      return (
+        String.fromCodePoint(firstCodePoint).toUpperCase() + txt.slice(headLength).toLowerCase()
+      );
+    });
   }
 }
 
