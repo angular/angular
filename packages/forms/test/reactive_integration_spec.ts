@@ -6300,10 +6300,7 @@ function asyncValidator(
   },
 ) {
   return (c: AbstractControl) => {
-    let resolve: (result: any) => void;
-    const promise = new Promise<any>((res) => {
-      resolve = res;
-    });
+    const {promise, resolve} = Promise.withResolvers<any>();
     const res = checker(c) ? null : error;
     setTimeout(() => resolve(res), timeout);
     return promise;

@@ -2422,13 +2422,11 @@ class PushCmpWithHostEvent {
 })
 class PushCmpWithAsyncPipe {
   numberOfChecks: number = 0;
-  resolve!: (result: any) => void;
+  resolve: (result: any) => void;
   promise: Promise<any>;
 
   constructor() {
-    this.promise = new Promise((resolve) => {
-      this.resolve = resolve;
-    });
+    ({promise: this.promise, resolve: this.resolve} = Promise.withResolvers<any>());
   }
 
   get field() {

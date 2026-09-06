@@ -142,11 +142,12 @@ describe('debounced', () => {
 
     const res = debounced(
       source,
-      () =>
-        new Promise<void>((resolve) => {
-          calls++;
-          release = resolve;
-        }),
+      () => {
+        calls++;
+        const {promise, resolve} = Promise.withResolvers<void>();
+        release = resolve;
+        return promise;
+      },
       {injector},
     );
 
@@ -198,12 +199,13 @@ describe('debounced', () => {
 
     const res = debounced(
       source,
-      (val: string) =>
-        new Promise<void>((resolve) => {
-          if (val === 'initial') releaseInitial = resolve;
-          if (val === 'update1') release1 = resolve;
-          if (val === 'update2') release2 = resolve;
-        }),
+      (val: string) => {
+        const {promise, resolve} = Promise.withResolvers<void>();
+        if (val === 'initial') releaseInitial = resolve;
+        if (val === 'update1') release1 = resolve;
+        if (val === 'update2') release2 = resolve;
+        return promise;
+      },
       {injector},
     );
 

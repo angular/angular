@@ -90,10 +90,7 @@ describe('NgZone', () => {
 
     it('should produce long stack traces', (done) => {
       macroTask(() => {
-        let resolve: (result: any) => void;
-        const promise: Promise<any> = new Promise((res) => {
-          resolve = res;
-        });
+        const {promise, resolve} = Promise.withResolvers<any>();
 
         _zone.run(() => {
           setTimeout(() => {
@@ -114,10 +111,7 @@ describe('NgZone', () => {
 
     it('should produce long stack traces (when using microtasks)', (done) => {
       macroTask(() => {
-        let resolve: (result: any) => void;
-        const promise: Promise<any> = new Promise((res) => {
-          resolve = res;
-        });
+        const {promise, resolve} = Promise.withResolvers<any>();
 
         _zone.run(() => {
           queueMicrotask(() => {
@@ -150,10 +144,7 @@ describe('NgZone', () => {
 
     it('should disable long stack traces', (done) => {
       macroTask(() => {
-        let resolve: (result: any) => void;
-        const promise: Promise<any> = new Promise((res) => {
-          resolve = res;
-        });
+        const {promise, resolve} = Promise.withResolvers<any>();
 
         _zone.run(() => {
           setTimeout(() => {
@@ -524,12 +515,8 @@ function commonTests() {
 
       runNgZoneNoLog(() => {
         macroTask(() => {
-          aPromise = new Promise((res) => {
-            aResolve = res;
-          });
-          bPromise = new Promise((res) => {
-            bResolve = res;
-          });
+          ({promise: aPromise, resolve: aResolve} = Promise.withResolvers<string>());
+          ({promise: bPromise, resolve: bResolve} = Promise.withResolvers<string>());
 
           _log.add('run start');
           aPromise.then(_log.fn('a then'));
@@ -569,9 +556,7 @@ function commonTests() {
 
       macroTask(() => {
         NgZone.assertNotInAngularZone();
-        promise = new Promise<string | null>((res) => {
-          resolve = res;
-        });
+        ({promise, resolve} = Promise.withResolvers<string | null>());
       });
 
       runNgZoneNoLog(() => {
@@ -748,12 +733,8 @@ function commonTests() {
 
       runNgZoneNoLog(() => {
         macroTask(() => {
-          aPromise = new Promise<string | null>((res) => {
-            aResolve = res;
-          });
-          bPromise = new Promise<string | null>((res) => {
-            bResolve = res;
-          });
+          ({promise: aPromise, resolve: aResolve} = Promise.withResolvers<string | null>());
+          ({promise: bPromise, resolve: bResolve} = Promise.withResolvers<string | null>());
           aPromise.then(_log.fn('a then'));
           bPromise.then(_log.fn('b then'));
           _log.add('run start');

@@ -90,7 +90,7 @@ describe('bootstrap', () => {
     doc.body.appendChild(el1);
     doc.body.appendChild(el2);
 
-    const {promise, resolveFn} = createPromise();
+    const {promise, resolve: resolveFn} = Promise.withResolvers<void>();
     navigationEndPromise = promise;
     log = [];
     testProviders = [
@@ -455,7 +455,7 @@ describe('bootstrap', () => {
         spyOn(router as any, 'resetRootComponentType').and.callThrough();
 
         const appRef: ApplicationRef = res.injector.get(ApplicationRef);
-        const {promise, resolveFn} = createPromise();
+        const {promise, resolve: resolveFn} = Promise.withResolvers<void>();
         appRef.components[0].onDestroy(() => {
           appRef.bootstrap(SecondRootCmp);
           expect((router as any).resetRootComponentType).toHaveBeenCalled();
@@ -628,12 +628,4 @@ function provideNavigationEndAction(fn: Function) {
       onNavigationEnd(inject(Router), fn);
     },
   };
-}
-
-function createPromise() {
-  let resolveFn: () => void;
-  const promise = new Promise<void>((r) => {
-    resolveFn = r;
-  });
-  return {resolveFn: () => resolveFn(), promise};
 }

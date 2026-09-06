@@ -94,9 +94,9 @@ describe('routerResource behavior tests', () => {
           resolveImmediately = false;
           return Promise.resolve('initial');
         }
-        return new Promise<string>((resolve) => {
-          resolveLoader = resolve;
-        });
+        const {promise, resolve} = Promise.withResolvers<string>();
+        resolveLoader = resolve;
+        return promise;
       },
     });
   }
