@@ -34,7 +34,7 @@ export class CodeBlock {
       .codeToHtml(this.code(), {
         cssVariablePrefix: '--shiki-',
         lang: this.language(),
-        theme: this.theme.theme() === 'light' ? 'github-light' : 'github-dark',
+        theme: this.theme.resolvedTheme() === 'dark' ? 'github-dark' : 'github-light',
       })
       .then((hightlightedHtml) => {
         return this.sanitizer.bypassSecurityTrustHtml(hightlightedHtml);
