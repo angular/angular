@@ -6,11 +6,11 @@
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
-  "packageManager": "pnpm@11.24.0",
+  "packageManager": "pnpm@12.3.4",
   "engines": {
     "npm": "Please use pnpm instead of NPM to install dependencies",
     "yarn": "Please use pnpm instead of Yarn to install dependencies",
-    "pnpm": "11.24.0"
+    "pnpm": "12.3.4"
   },
   "repository": {
     "type": "git",
