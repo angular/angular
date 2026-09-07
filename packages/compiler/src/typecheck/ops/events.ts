@@ -177,6 +177,32 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, eventType.print());
         this.scope.addStatement(handler);
       } else if (this.tcb.env.config.checkTypeOfDomEvents) {
+        // Give $event its validated manifest type. addEventListener would infer the base Event type.
+        const manifestCheckType =
+          output.target === null && this.target instanceof Element
+            ? (this.tcb.env.config.customElementsManifestIndex?.getEventCheckType(
+                this.target.name,
+                output.name,
+              ) ?? null)
+            : null;
+        if (manifestCheckType !== null) {
+          // TemplateSymbolBuilder needs a source-mapped addEventListener access for event symbols.
+          // Emit the access without calling it. Use document so an invalid manifest class cannot
+          // cause a property-access error.
+          const eventSymbolAccess = new TcbExpr('document.addEventListener').addParseSpanInfo(
+            output.keySpan,
+          );
+          this.scope.addStatement(eventSymbolAccess);
+          // The span on the type maps resolution failures of `import()` type queries in the
+          // check type back to the event binding in the template.
+          const eventType = new TcbExpr(`(${manifestCheckType})`).addParseSpanInfo(
+            output.keySpan ?? output.sourceSpan,
+          );
+          const handler = tcbCreateEventHandler(output, this.tcb, this.scope, eventType.print());
+          this.scope.addStatement(handler);
+          continue;
+        }
+
         // If strict checking of DOM events is enabled, generate a call to `addEventListener` on
         // the element instance so that TypeScript's type inference for
         // `HTMLElement.addEventListener` using `HTMLElementEventMap` to infer an accurate type for

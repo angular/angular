@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
+import {ErrorCode, makeConfigDiagnostic} from '../../diagnostics';
 import {findFlatIndexEntryPoint, FlatIndexGenerator} from '../../entry_point';
 import {AbsoluteFsPath, resolve} from '../../file_system';
 import {isShim, ShimAdapter, ShimReferenceTagger} from '../../shims';
@@ -138,6 +138,7 @@ export class NgCompilerHost
   extends DelegatingCompilerHost
   implements RequiredDelegations<ExtendedTsCompilerHost>, ExtendedTsCompilerHost, NgCompilerAdapter
 {
+  readonly resourceResolutionHost: ExtendedTsCompilerHost;
   readonly entryPoint: AbsoluteFsPath | null = null;
   readonly constructionDiagnostics: ts.Diagnostic[];
 
@@ -155,6 +156,7 @@ export class NgCompilerHost
   ) {
     super(delegate);
 
+    this.resourceResolutionHost = delegate;
     this.entryPoint = entryPoint;
     this.constructionDiagnostics = diagnostics;
     this.inputFiles = [...inputFiles, ...shimAdapter.extraInputFiles];
@@ -231,15 +233,12 @@ export class NgCompilerHost
         //
         // The user is not informed about the "index.ts" option as this behavior is deprecated -
         // an explicit entrypoint should always be specified.
-        diagnostics.push({
-          category: ts.DiagnosticCategory.Error,
-          code: ngErrorCode(ErrorCode.CONFIG_FLAT_MODULE_NO_INDEX),
-          file: undefined,
-          start: undefined,
-          length: undefined,
-          messageText:
+        diagnostics.push(
+          makeConfigDiagnostic(
+            ErrorCode.CONFIG_FLAT_MODULE_NO_INDEX,
             'Angular compiler option "flatModuleOutFile" requires one and only one .ts file in the "files" field.',
-        });
+          ),
+        );
       } else {
         const flatModuleId = options.flatModuleId || null;
         const flatModuleOutFile = normalizeSeparators(options.flatModuleOutFile);

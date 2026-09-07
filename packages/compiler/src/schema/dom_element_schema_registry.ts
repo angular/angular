@@ -10,6 +10,10 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata, SecurityContex
 import {isNgContainer, isNgContent, splitNsName} from '../ml_parser/tags';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from '../template/pipeline/src/namespaces';
 import {dashCaseToCamelCase} from '../util';
+import {
+  CustomElementsManifestIndex,
+  normalizeCustomElementTagName,
+} from './custom_elements_manifest_schema';
 import {checkSecurityContext} from './dom_security_schema';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
@@ -19,7 +23,7 @@ const STRING = 'string';
 const OBJECT = 'object';
 
 function normalizeTagName(tagName: string): string {
-  const tagNameLower = tagName.toLowerCase();
+  const tagNameLower = normalizeCustomElementTagName(tagName);
   const [ns, name] = splitNsName(tagNameLower, false);
 
   return ns === SVG_NAMESPACE || ns === MATH_ML_NAMESPACE ? `:${ns}:${name}` : name;
@@ -347,7 +351,13 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   // certainly introduce bad XSS vulnerabilities. Instead, we store events in a separate schema.
   private _eventSchema = new Map<string, Set<string>>();
 
-  constructor() {
+  /**
+   * @param customElementsManifestIndex custom elements declared by the configured Custom Elements
+   *     Manifests, registered alongside the built-in DOM schema.
+   */
+  constructor(
+    private readonly customElementsManifestIndex: CustomElementsManifestIndex | null = null,
+  ) {
     super();
     SCHEMA.forEach((encodedType) => {
       const type = new Map<string, string>();
@@ -389,6 +399,32 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
         }
       });
     });
+
+    for (const customElement of customElementsManifestIndex?.schemas ?? []) {
+      // Include inherited HTMLElement properties and events that manifests may omit.
+      // The loader rejects invalid custom element names before they reach this registry.
+      const type = new Map<string, string>(this._schema.get('[htmlelement]')!);
+      const events = new Set<string>(this._eventSchema.get('[htmlelement]')!);
+      for (const property of customElement.properties) {
+        // Schema checks use the property names, not the stored values.
+        type.set(property.name, OBJECT);
+      }
+      for (const event of customElement.events) {
+        events.add(event.name);
+      }
+      this._schema.set(normalizeTagName(customElement.tagName), type);
+      this._eventSchema.set(normalizeTagName(customElement.tagName), events);
+    }
+  }
+
+  /** Whether this registry contains any schemas loaded from Custom Elements Manifests. */
+  hasCustomElementsManifestSchemas(): boolean {
+    return (this.customElementsManifestIndex?.tagNames.size ?? 0) > 0;
+  }
+
+  /** Whether `tagName` was declared by a configured Custom Elements Manifest. */
+  isCustomElementFromManifest(tagName: string): boolean {
+    return this.customElementsManifestIndex?.getSchema(tagName) != null;
   }
 
   override hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
@@ -397,6 +433,10 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     }
 
     const normalizedTag = normalizeTagName(tagName);
+    // Check declared members on manifest tags even when CUSTOM_ELEMENTS_SCHEMA allows other tags.
+    if (this.isCustomElementFromManifest(normalizedTag)) {
+      return this._schema.get(normalizedTag)!.has(propName);
+    }
     if (normalizedTag.includes('-')) {
       if (isNgContainer(normalizedTag) || isNgContent(normalizedTag)) {
         return false;
@@ -465,6 +505,8 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     return 'ng-component';
   }
 
+  // This check rejects on-prefixed properties before consulting manifest schemas.
+  // It also applies to declared custom element properties, such as onDark.
   override validateProperty(name: string): {error: boolean; msg?: string} {
     if (name.toLowerCase().startsWith('on')) {
       const msg =
@@ -496,8 +538,12 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   allKnownAttributesOfElement(tagName: string): string[] {
     const normalizedTag = normalizeTagName(tagName);
     const elementProperties = this._schema.get(normalizedTag) || this._schema.get('unknown')!;
-    // Convert properties to attributes.
-    return Array.from(elementProperties.keys()).map((prop) => _PROP_TO_ATTR.get(prop) ?? prop);
+    // Preserve manifest property names when converting DOM properties to attribute names.
+    return Array.from(elementProperties.keys()).map((prop) =>
+      this.customElementsManifestIndex?.hasProperty(normalizedTag, prop)
+        ? prop
+        : (_PROP_TO_ATTR.get(prop) ?? prop),
+    );
   }
 
   allKnownEventsOfElement(tagName: string): string[] {

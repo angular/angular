@@ -7,6 +7,7 @@
  */
 
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
+import {absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 
 import ts from 'typescript';
 
@@ -101,6 +102,444 @@ describe('getSemanticDiagnostics', () => {
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const diags = project.getDiagnosticsForFile('app.html');
     expect(diags).toEqual([]);
+  });
+
+  it('should report invalid interpolated custom-element manifest properties', () => {
+    const manifest = {
+      schemaVersion: '1.0.0',
+      modules: [
+        {
+          kind: 'javascript-module',
+          path: 'my-meter.js',
+          declarations: [
+            {
+              kind: 'class',
+              name: 'MyMeter',
+              customElement: true,
+              tagName: 'my-meter',
+              members: [{kind: 'field', name: 'value', type: {text: 'number'}}],
+            },
+          ],
+          exports: [
+            {
+              kind: 'custom-element-definition',
+              name: 'my-meter',
+              declaration: {name: 'MyMeter'},
+            },
+          ],
+        },
+      ],
+    };
+    const project = env.addProject(
+      'test-cem-interpolation',
+      {
+        'custom-elements.json': JSON.stringify(manifest),
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './app.html'})
+          export class AppComponent { value = 1; }
+        `,
+        'app.html': `<my-meter value="{{ value }}"></my-meter>`,
+      },
+      {strictTemplates: true, customElementsManifests: ['./custom-elements.json']},
+    );
+
+    const diags = project.getDiagnosticsForFile('app.html');
+    expect(diags.length).toBe(1);
+    expect(diags[0].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
+  });
+
+  it('should update custom-element manifest diagnostics after an editor resource change', () => {
+    const manifest = (type: string) => ({
+      schemaVersion: '1.0.0',
+      modules: [
+        {
+          kind: 'javascript-module',
+          path: 'my-meter.js',
+          declarations: [
+            {
+              kind: 'class',
+              name: 'MyMeter',
+              customElement: true,
+              tagName: 'my-meter',
+              members: [{kind: 'field', name: 'value', type: {text: type}}],
+            },
+          ],
+          exports: [
+            {
+              kind: 'custom-element-definition',
+              name: 'my-meter',
+              declaration: {name: 'MyMeter'},
+            },
+          ],
+        },
+      ],
+    });
+    const project = env.addProject(
+      'test-cem-resource-change',
+      {
+        'custom-elements.json': JSON.stringify(manifest('number')),
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './app.html'})
+          export class AppComponent {}
+        `,
+        'app.html': `<my-meter [value]="'text'"></my-meter>`,
+      },
+      {strictTemplates: true, customElementsManifests: ['./custom-elements.json']},
+    );
+
+    expect(
+      project.getDiagnosticsForFile('app.html').map((diagnostic) => diagnostic.messageText),
+    ).toEqual([`Type 'string' is not assignable to type 'number'.`]);
+
+    // Editing the registered manifest must invalidate Angular's checks without a TypeScript change.
+    project.openFile('custom-elements.json').contents = JSON.stringify(manifest('string'));
+
+    expect(project.getDiagnosticsForFile('app.html')).toEqual([]);
+  });
+
+  it('should load a configured relative manifest created after it was initially missing', () => {
+    const manifest = {
+      schemaVersion: '1.0.0',
+      modules: [
+        {
+          kind: 'javascript-module',
+          path: 'late-meter.js',
+          declarations: [
+            {
+              kind: 'class',
+              name: 'LateMeter',
+              customElement: true,
+              tagName: 'late-meter',
+              members: [{kind: 'field', name: 'value', type: {text: 'number'}}],
+            },
+          ],
+          exports: [
+            {
+              kind: 'custom-element-definition',
+              name: 'late-meter',
+              declaration: {name: 'LateMeter'},
+            },
+          ],
+        },
+      ],
+    };
+    const project = env.addProject(
+      'test-cem-created-after-missing',
+      {
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './app.html'})
+          export class AppComponent {}
+        `,
+        'app.html': `<late-meter [value]="'text'"></late-meter><late-meter ></late-meter>`,
+      },
+      {strictTemplates: true, customElementsManifests: ['./custom-elements.json']},
+    );
+
+    expect(
+      project.ngLS
+        .getCompilerOptionsDiagnostics()
+        .some(
+          (diagnostic) =>
+            diagnostic.code === ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_NOT_FOUND),
+        ),
+    ).toBe(true);
+    expect(
+      project
+        .getDiagnosticsForFile('app.html')
+        .some((diagnostic) => diagnostic.code === ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT)),
+    ).toBe(true);
+
+    const fs = getFileSystem();
+    const manifestPath = absoluteFrom(project.getAbsFileName('custom-elements.json'));
+    fs.writeFile(manifestPath, JSON.stringify(manifest));
+    env.notifyFileChange(manifestPath, ts.FileWatcherEventKind.Created);
+
+    expect(project.ngLS.getCompilerOptionsDiagnostics()).toEqual([]);
+    expect(
+      project.getDiagnosticsForFile('app.html').map((diagnostic) => diagnostic.messageText),
+    ).toEqual([`Type 'string' is not assignable to type 'number'.`]);
+
+    const template = project.openFile('app.html');
+    template.moveCursorToText('<late-meter ¦>');
+    expect(
+      template.getCompletionsAtPosition()?.entries.some((entry) => entry.name === '[value]'),
+    ).toBe(true);
+  });
+
+  for (const useExports of [false, true]) {
+    it(`should load a missing package manifest after creation with exports=${useExports}`, () => {
+      const packageDirectory = 'node_modules/@test/elements';
+      const manifestFile = `${packageDirectory}/${useExports ? 'exported' : 'custom-elements'}.json`;
+      const project = env.addProject(
+        'test-cem-package-created',
+        {
+          'app.ts': `
+          import {Component} from '@angular/core';
+          @Component({templateUrl: './app.html'}) export class AppComponent {}
+        `,
+          'app.html': '<late-element></late-element>',
+          [`${packageDirectory}/package.json`]: JSON.stringify({
+            name: '@test/elements',
+            ...(useExports ? {exports: {'./custom-elements.json': './exported.json'}} : {}),
+          }),
+        },
+        {
+          strictTemplates: true,
+          customElementsManifests: ['@test/elements/custom-elements.json'],
+        },
+      );
+      expect(
+        project
+          .getDiagnosticsForFile('app.html')
+          .some((diagnostic) => diagnostic.code === ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT)),
+      ).toBe(true);
+      const manifestPath = absoluteFrom(project.getAbsFileName(manifestFile));
+      getFileSystem().writeFile(
+        manifestPath,
+        JSON.stringify({
+          schemaVersion: '1.0.0',
+          modules: [
+            {
+              kind: 'javascript-module',
+              path: 'element.js',
+              exports: [
+                {
+                  kind: 'custom-element-definition',
+                  name: 'late-element',
+                  declaration: {name: 'Element'},
+                },
+              ],
+            },
+          ],
+        }),
+      );
+      env.notifyFileChange(manifestPath, ts.FileWatcherEventKind.Created);
+      expect(
+        project.ngLS
+          .getCompilerOptionsDiagnostics()
+          .some(
+            (diagnostic) =>
+              diagnostic.code === ngErrorCode(ErrorCode.CONFIG_CUSTOM_ELEMENTS_MANIFEST_NOT_FOUND),
+          ),
+      ).toBe(false);
+      expect(project.getDiagnosticsForFile('app.html')).toEqual([]);
+    });
+  }
+
+  it('should refresh definition-only manifests when a package export changes', () => {
+    const manifest = (tag: string) =>
+      JSON.stringify({
+        schemaVersion: '1.0.0',
+        modules: [
+          {
+            kind: 'javascript-module',
+            path: 'element.js',
+            exports: [
+              {kind: 'custom-element-definition', name: tag, declaration: {name: 'Element'}},
+            ],
+          },
+        ],
+      });
+    const packageJson = (file: string) =>
+      JSON.stringify({
+        name: '@test/elements',
+        exports: {'./custom-elements.json': `./${file}.json`},
+      });
+    const project = env.addProject(
+      'test-cem-package-exports',
+      {
+        'app.ts': `
+        import {Component} from '@angular/core';
+        @Component({templateUrl: './app.html'}) export class AppComponent {}
+      `,
+        'app.html': '<first-element></first-element><second-element></second-element>',
+        'node_modules/@test/elements/package.json': packageJson('first'),
+        'node_modules/@test/elements/first.json': manifest('first-element'),
+        'node_modules/@test/elements/second.json': manifest('second-element'),
+      },
+      {
+        strictTemplates: true,
+        customElementsManifests: ['@test/elements/custom-elements.json'],
+      },
+    );
+    const initial = project.getDiagnosticsForFile('app.html');
+    expect(initial.length).toBe(1);
+    expect(initial[0].messageText).toContain("'second-element' is not a known element");
+    const packagePath = absoluteFrom(
+      project.getAbsFileName('node_modules/@test/elements/package.json'),
+    );
+    getFileSystem().writeFile(packagePath, packageJson('second'));
+    env.notifyFileChange(packagePath, ts.FileWatcherEventKind.Changed);
+    const updated = project.getDiagnosticsForFile('app.html');
+    expect(updated.length).toBe(1);
+    expect(updated[0].messageText).toContain("'first-element' is not a known element");
+  });
+
+  it('should load a custom-element manifest larger than the TypeScript server file limit', () => {
+    const manifest = (type: string) => ({
+      schemaVersion: '1.0.0',
+      modules: [
+        {
+          kind: 'javascript-module',
+          path: 'large-meter.js',
+          declarations: [
+            {
+              kind: 'class',
+              name: 'LargeMeter',
+              customElement: true,
+              tagName: 'large-meter',
+              members: [
+                {
+                  kind: 'field',
+                  name: 'value',
+                  description: 'The current meter value.',
+                  type: {text: type},
+                },
+              ],
+            },
+          ],
+          exports: [
+            {
+              kind: 'custom-element-definition',
+              name: 'large-meter',
+              declaration: {name: 'LargeMeter'},
+            },
+          ],
+        },
+      ],
+      // TypeScript uses an empty ScriptInfo snapshot for non-TypeScript files over 4 MB.
+      ignoredPadding: 'x'.repeat(4 * 1024 * 1024),
+    });
+    const project = env.addProject(
+      'test-large-cem',
+      {
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './app.html'})
+          export class AppComponent { value = 1; }
+        `,
+        'app.html': `<large-meter [value]="value"></large-meter><large-meter ></large-meter>`,
+      },
+      {strictTemplates: true, customElementsManifests: ['./custom-elements.json']},
+    );
+
+    // Add the manifest after initialization to test loading a closed resource from a dependency.
+    const fs = getFileSystem();
+    const manifestPath = absoluteFrom(project.getAbsFileName('custom-elements.json'));
+    fs.writeFile(manifestPath, JSON.stringify(manifest('number')));
+
+    expect(project.getDiagnosticsForFile('app.html')).toEqual([]);
+
+    const template = project.openFile('app.html');
+    template.moveCursorToText('<large-meter ¦>');
+    expect(
+      template.getCompletionsAtPosition()?.entries.some((entry) => entry.name === '[value]'),
+    ).toBe(true);
+    template.moveCursorToText('[val¦ue]');
+    const quickInfo = template.getQuickInfoAtPosition();
+    expect(ts.displayPartsToString(quickInfo?.displayParts)).toBe('(property) value: number');
+    expect(ts.displayPartsToString(quickInfo?.documentation)).toBe('The current meter value.');
+
+    // number and string have equal length. The edit must invalidate the manifest despite its
+    // unchanged size and empty TypeScript snapshot.
+    fs.writeFile(manifestPath, JSON.stringify(manifest('string')));
+
+    expect(
+      project.getDiagnosticsForFile('app.html').map((diagnostic) => diagnostic.messageText),
+    ).toEqual([`Type 'number' is not assignable to type 'string'.`]);
+
+    fs.removeFile(manifestPath);
+    env.notifyFileChange(manifestPath, ts.FileWatcherEventKind.Deleted);
+    expect(
+      project
+        .getDiagnosticsForFile('app.html')
+        .some((diagnostic) => diagnostic.code === ngErrorCode(ErrorCode.SCHEMA_INVALID_ELEMENT)),
+    ).toBe(true);
+
+    fs.writeFile(manifestPath, JSON.stringify(manifest('number')));
+    env.notifyFileChange(manifestPath, ts.FileWatcherEventKind.Created);
+    expect(project.getDiagnosticsForFile('app.html')).toEqual([]);
+  });
+
+  it('should resolve manifest type references through declarations outside the app program', () => {
+    const manifest = {
+      schemaVersion: '1.0.0',
+      modules: [
+        {
+          kind: 'javascript-module',
+          path: 'button.js',
+          declarations: [
+            {
+              kind: 'class',
+              name: 'Button',
+              customElement: true,
+              tagName: 'button-box',
+              members: [
+                {
+                  kind: 'field',
+                  name: 'variant',
+                  attribute: 'variant',
+                  type: {
+                    text: 'ButtonVariant',
+                    references: [{name: 'ButtonVariant', module: 'button.js', start: 0, end: 13}],
+                  },
+                },
+              ],
+              attributes: [{name: 'variant', fieldName: 'variant'}],
+            },
+          ],
+          exports: [
+            {kind: 'js', name: 'Button', declaration: {name: 'Button'}},
+            {kind: 'custom-element-definition', name: 'button-box', declaration: {name: 'Button'}},
+          ],
+        },
+      ],
+    };
+    const project = env.addProject(
+      'test-cem-transitive-types',
+      {
+        'node_modules/@test/elements/package.json': JSON.stringify({
+          name: '@test/elements',
+          customElements: './custom-elements.json',
+          exports: {
+            './package.json': './package.json',
+            './button.js': {
+              types: './button/index.d.ts',
+              default: './button.js',
+            },
+          },
+        }),
+        'node_modules/@test/elements/custom-elements.json': JSON.stringify(manifest),
+        'node_modules/@test/elements/button/index.d.ts': `export * from './button';`,
+        'node_modules/@test/elements/button/button.d.ts': `
+          export type ButtonVariant = 'primary' | 'secondary';
+          export declare class Button extends HTMLElement {
+            variant?: ButtonVariant;
+          }
+        `,
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './app.html'})
+          export class AppComponent {}
+        `,
+        'app.html': `<button-box variant="invalid"></button-box>`,
+      },
+      {strictTemplates: true, customElementsManifests: ['@test/elements']},
+    );
+
+    // Validate the manifest's transitive type exports without a component import of the package.
+    expect(project.ngLS.getCompilerOptionsDiagnostics()).toEqual([]);
+    expect(
+      project.getDiagnosticsForFile('app.html').map((diagnostic) => diagnostic.messageText),
+    ).toEqual([`Type '"invalid"' is not assignable to type 'ButtonVariant'.`]);
   });
 
   it('should not report external template diagnostics on the TS file', () => {

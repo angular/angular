@@ -16,6 +16,8 @@ import {
   compileDeferResolverFunction,
   compileHmrInitializer,
   ConstantPool,
+  ɵCustomElementsManifestIndex as CustomElementsManifestIndex,
+  ɵgetCustomElementsManifestExactPropertyNames as getCustomElementsManifestExactPropertyNames,
   createHostElement,
   CssSelector,
   DeclarationListEmitMode,
@@ -291,6 +293,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     private readonly emitDeclarationOnly: boolean,
     private readonly legacyOptionalChaining: boolean,
     private readonly enableTemplateSourceLocations: boolean,
+    private readonly getCustomElementsManifestIndex: () => CustomElementsManifestIndex | null = () =>
+      null,
   ) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
@@ -1603,6 +1607,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...resolution,
       defer,
       foreignImports,
+      customElementPropertyNames: getCustomElementsManifestExactPropertyNames(
+        analysis.template.nodes,
+        this.getCustomElementsManifestIndex(),
+      ),
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
 
@@ -1676,6 +1684,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...analysis.meta,
       ...resolution,
       defer,
+      customElementPropertyNames: getCustomElementsManifestExactPropertyNames(
+        analysis.template.nodes,
+        this.getCustomElementsManifestIndex(),
+      ),
     };
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
@@ -1735,6 +1747,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...resolution,
       defer,
       foreignImports,
+      customElementPropertyNames: getCustomElementsManifestExactPropertyNames(
+        analysis.template.nodes,
+        this.getCustomElementsManifestIndex(),
+      ),
     } as R3ComponentMetadata<R3TemplateDependency>;
 
     if (deferrableTypes !== null) {
@@ -1800,6 +1816,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       ...resolution,
       defer,
       foreignImports,
+      customElementPropertyNames: getCustomElementsManifestExactPropertyNames(
+        analysis.template.nodes,
+        this.getCustomElementsManifestIndex(),
+      ),
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, this.getNewBindingParser());

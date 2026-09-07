@@ -205,6 +205,76 @@ export type RequiredDelegations<T> = {
 };
 
 /**
+ * Wraps a compiler host to report paths containing `marker` as missing without filesystem reads.
+ * Used by `getFailedModuleLookupLocations` to collect candidate paths.
+ */
+export function createLookupResolutionHost(
+  host: ts.ModuleResolutionHost & Pick<ts.CompilerHost, 'getCurrentDirectory'>,
+  marker: string,
+): RequiredDelegations<ts.ModuleResolutionHost> {
+  return {
+    directoryExists(directoryName: string): boolean {
+      if (directoryName.includes(marker)) {
+        return false;
+      } else if (host.directoryExists !== undefined) {
+        return host.directoryExists(directoryName);
+      } else {
+        // TypeScript's module resolution logic assumes that the directory exists when no host
+        // implementation is available.
+        return true;
+      }
+    },
+    fileExists(fileName: string): boolean {
+      if (fileName.includes(marker)) {
+        return false;
+      } else {
+        return host.fileExists(fileName);
+      }
+    },
+    readFile: host.readFile.bind(host),
+    getCurrentDirectory: host.getCurrentDirectory.bind(host),
+    getDirectories: host.getDirectories?.bind(host),
+    realpath: host.realpath?.bind(host),
+    trace: host.trace?.bind(host),
+    useCaseSensitiveFileNames:
+      typeof host.useCaseSensitiveFileNames === 'function'
+        ? host.useCaseSensitiveFileNames.bind(host)
+        : host.useCaseSensitiveFileNames,
+  };
+}
+
+/**
+ * Collects candidate paths for a module specifier relative to `containingFile`.
+ * Appends `marker` to force resolution to fail, then removes it from the failed lookup paths.
+ * This locates resources outside the TypeScript program. `lookupHost` must come from
+ * `createLookupResolutionHost` with the same marker. Returns `undefined` when there are no paths.
+ */
+export function getFailedModuleLookupLocations(
+  specifier: string,
+  containingFile: string,
+  options: ts.CompilerOptions,
+  lookupHost: ts.ModuleResolutionHost,
+  marker: string,
+): string[] | undefined {
+  // `failedLookupLocations` is in the name of the type ts.ResolvedModuleWithFailedLookupLocations
+  // but is marked @internal in TypeScript. See
+  // https://github.com/Microsoft/TypeScript/issues/28770.
+  type ResolvedModuleWithFailedLookupLocations = ts.ResolvedModuleWithFailedLookupLocations & {
+    failedLookupLocations?: ReadonlyArray<string>;
+  };
+  const markerTs = marker + '.ts';
+  const failedLookup = ts.resolveModuleName(
+    specifier + marker,
+    containingFile,
+    options,
+    lookupHost,
+  ) as ResolvedModuleWithFailedLookupLocations;
+  return failedLookup.failedLookupLocations
+    ?.filter((candidate) => candidate.endsWith(markerTs))
+    .map((candidate) => candidate.slice(0, -markerTs.length));
+}
+
+/**
  * Source files may become redirects to other source files when their package name and version are
  * identical. TypeScript creates a proxy source file for such source files which has an internal
  * `redirectInfo` property that refers to the original source file.

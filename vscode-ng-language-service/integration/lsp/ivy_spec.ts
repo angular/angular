@@ -1439,6 +1439,83 @@ export class InputComponent {
   });
 
   describe('compiler options', () => {
+    it('should publish manifest warnings and errors on the config and clear them after edits', async () => {
+      const projectRoot = join(makeTempDir(), basename(PROJECT_PATH));
+      await cp(PROJECT_PATH, projectRoot, {
+        recursive: true,
+        mode: fs.constants.COPYFILE_FICLONE,
+        filter: (src) => src !== TSCONFIG,
+      });
+      const configPath = join(projectRoot, 'tsconfig.json');
+      const manifestPath = join(projectRoot, 'custom-elements.json');
+      const config = JSON.parse(await readFile(TSCONFIG, 'utf8'));
+      config.angularCompilerOptions.customElementsManifests = ['./custom-elements.json'];
+      await writeFile(configPath, JSON.stringify(config));
+      const manifest = {
+        schemaVersion: '1.0.0',
+        modules: [
+          {
+            kind: 'javascript-module',
+            path: 'element.js',
+            declarations: [
+              {
+                kind: 'class',
+                name: 'ExampleElement',
+                customElement: true,
+                tagName: 'example-element',
+                members: [{kind: 'field', name: 'value', type: {text: 'MissingType'}}],
+              },
+            ],
+            exports: [
+              {
+                kind: 'custom-element-definition',
+                name: 'example-element',
+                declaration: {name: 'ExampleElement'},
+              },
+            ],
+          },
+        ],
+      };
+      await writeFile(manifestPath, JSON.stringify(manifest));
+
+      const initial = getDiagnosticsForFile(client, configPath);
+      openTextDocument(client, join(projectRoot, 'app/app.component.ts'));
+      const warnings = await initial;
+      expect(warnings).toHaveSize(1);
+      expect(warnings[0].code).toBe(-994013);
+      expect(warnings[0].severity).toBe(lsp.DiagnosticSeverity.Warning);
+      expect(warnings[0].message).toContain('MissingType');
+
+      manifest.modules[0].declarations[0].members[0].type.text = 'string';
+      const validText = JSON.stringify(manifest);
+      const fixed = getDiagnosticsForFile(client, configPath);
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: pathToFileURL(manifestPath).href,
+          languageId: 'json',
+          version: 1,
+          text: validText,
+        },
+      });
+      expect(await fixed).toEqual([]);
+
+      for (const [index, text] of ['{', validText].entries()) {
+        const changed = getDiagnosticsForFile(client, configPath);
+        client.sendNotification(lsp.DidChangeTextDocumentNotification.type, {
+          textDocument: {uri: pathToFileURL(manifestPath).href, version: index + 2},
+          contentChanges: [{text}],
+        });
+        const diagnostics = await changed;
+        if (text === '{') {
+          expect(diagnostics).toHaveSize(1);
+          expect(diagnostics[0].code).toBe(-994008);
+          expect(diagnostics[0].severity).toBe(lsp.DiagnosticSeverity.Error);
+        } else {
+          expect(diagnostics).toEqual([]);
+        }
+      }
+    });
+
     describe('strictTemplates: false', () => {
       let newProjectRoot: string;
       let TSCONFIG_PATH_TMP: string;
