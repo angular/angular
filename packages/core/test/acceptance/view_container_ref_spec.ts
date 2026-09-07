@@ -378,8 +378,6 @@ describe('ViewContainerRef', () => {
         @Component({
           selector: 'div[dynamic-html]',
           template: 'HTML content',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HtmlComp {}
 
@@ -390,8 +388,6 @@ describe('ViewContainerRef', () => {
               <div #container></div>
             }
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComp {
           @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
@@ -413,8 +409,6 @@ describe('ViewContainerRef', () => {
         @Component({
           selector: 'div[dynamic-html]',
           template: 'HTML content',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HtmlComp {}
 
@@ -425,8 +419,6 @@ describe('ViewContainerRef', () => {
               <ng-container #container></ng-container>
             }
           `,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class InnerComp {
           @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
@@ -435,8 +427,6 @@ describe('ViewContainerRef', () => {
         @Component({
           template: '<svg><g inner></g></svg>',
           imports: [InnerComp],
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComp {
           @ViewChild(InnerComp) inner!: InnerComp;
@@ -458,8 +448,6 @@ describe('ViewContainerRef', () => {
         @Component({
           selector: 'g[dynamic-group]',
           template: '<svg:text>SVG content</svg:text>',
-
-          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SvgGroupComp {}
 
@@ -468,7 +456,8 @@ describe('ViewContainerRef', () => {
             <svg><g #anchor></g></svg>
             <ng-template #tpl><ng-container #inner></ng-container></ng-template>
           `,
-
+          // Eager, because the `inner` query only resolves once the host view is refreshed
+          // again after the embedded view is created.
           changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComp {
