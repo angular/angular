@@ -778,8 +778,16 @@ export class Scope {
   ): void {
     const nodeIsFormControl = isFormControl(allDirectiveMatches);
     const customFormControlType = nodeIsFormControl ? getCustomFieldDirectiveType(dir) : null;
-
-    const directiveOp = this.getDirectiveOp(dir, node, customFormControlType, directiveIndex);
+    const usesCustomControlConstraintInputs =
+      nodeIsFormControl &&
+      allDirectiveMatches.some((match) => getCustomFieldDirectiveType(match) !== null);
+    const directiveOp = this.getDirectiveOp(
+      dir,
+      node,
+      customFormControlType,
+      usesCustomControlConstraintInputs,
+      directiveIndex,
+    );
     const dirIndex = this.opQueue.push(directiveOp) - 1;
     dirMap.set(dir, dirIndex);
 
@@ -796,7 +804,15 @@ export class Scope {
     }
 
     this.opQueue.push(
-      new TcbDirectiveInputsOp(this.tcb, this, node, dir, nodeIsFormControl, customFormControlType),
+      new TcbDirectiveInputsOp(
+        this.tcb,
+        this,
+        node,
+        dir,
+        nodeIsFormControl,
+        customFormControlType,
+        usesCustomControlConstraintInputs,
+      ),
     );
   }
 
@@ -804,6 +820,7 @@ export class Scope {
     dir: TcbDirectiveMetadata,
     node: DirectiveOwner,
     customFieldType: CustomFormControlType | null,
+    usesCustomControlConstraintInputs: boolean,
     directiveIndex?: number,
   ): TcbOp {
     if (!dir.isGeneric) {
@@ -814,7 +831,15 @@ export class Scope {
       // For generic directives, we use a type constructor to infer types. If a directive requires
       // an inline type constructor, then inlining must be available to use the
       // `TcbDirectiveCtorOp`. If not we, we fallback to using `any` – see below.
-      return new TcbDirectiveCtorOp(this.tcb, this, node, dir, customFieldType, directiveIndex);
+      return new TcbDirectiveCtorOp(
+        this.tcb,
+        this,
+        node,
+        dir,
+        customFieldType,
+        usesCustomControlConstraintInputs,
+        directiveIndex,
+      );
     }
 
     // If inlining is not available, then we give up on inferring the generic params, and use
@@ -1002,7 +1027,7 @@ export class Scope {
       const directiveOpMap = new Map<TcbDirectiveMetadata, number>();
 
       for (const directive of directives) {
-        const directiveOp = this.getDirectiveOp(directive, node, null);
+        const directiveOp = this.getDirectiveOp(directive, node, null, false);
         directiveOpMap.set(directive, this.opQueue.push(directiveOp) - 1);
       }
 

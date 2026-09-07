@@ -29,8 +29,8 @@ import type {Scope} from './scope';
 /** Possible types of custom form control directives. */
 export type CustomFormControlType = 'value' | 'checkbox';
 
-/** Names of the input fields on custom controls. */
-const formControlInputFields = [
+/** Names shared by the field state and custom control inputs. */
+const commonFormControlInputFields = [
   // Should be kept in sync with the `FormUiControl` bindings,
   // defined in `packages/forms/signals/src/api/control.ts`.
   'errors',
@@ -43,17 +43,25 @@ const formControlInputFields = [
   'pending',
   'readonly',
   'touched',
-  'max',
-  'maxLength',
-  'min',
-  'minLength',
   'pattern',
   'required',
 ];
 
+/** Native constraint properties controlled by the field directive. */
+const nativeFormControlConstraintFields = ['max', 'maxLength', 'min', 'minLength'];
+
+/** Explicit custom control inputs which opt into receiving native-like constraints. */
+const customFormControlConstraintInputs = [
+  {inputName: 'formFieldMax', fieldPropertyName: 'max'},
+  {inputName: 'formFieldMaxLength', fieldPropertyName: 'maxLength'},
+  {inputName: 'formFieldMin', fieldPropertyName: 'min'},
+  {inputName: 'formFieldMinLength', fieldPropertyName: 'minLength'},
+];
+
 /** Names of input fields to which users aren't allowed to bind when using a `field` directive. */
 export const customFormControlBannedInputFields = new Set([
-  ...formControlInputFields,
+  ...commonFormControlInputFields,
+  ...customFormControlConstraintInputs.map(({inputName}) => inputName),
   'value',
   'checked',
 ]);
@@ -74,7 +82,8 @@ const formControlOptionalFields = new Set([
 export class TcbNativeFieldOp extends TcbOp {
   /** Bindings that aren't supported on signal form fields. */
   protected readonly unsupportedBindingFields = new Set([
-    ...formControlInputFields,
+    ...commonFormControlInputFields,
+    ...nativeFormControlConstraintFields,
     'value',
     'checked',
     'maxlength',
@@ -250,6 +259,7 @@ export function expandBoundAttributesForField(
   directive: TcbDirectiveMetadata,
   node: Template | Element | Component | Directive,
   customFormControlType: CustomFormControlType | null,
+  usesCustomControlConstraintInputs: boolean,
 ): TcbBoundAttribute[] | null {
   const fieldBinding = node.inputs.find(
     (input) => input.type === BindingType.Property && input.name === 'formField',
@@ -287,7 +297,7 @@ export function expandBoundAttributesForField(
     boundInputs.push(primaryInput);
   }
 
-  for (const name of formControlInputFields) {
+  for (const name of commonFormControlInputFields) {
     const input = getSyntheticFieldBoundInput(
       directive,
       name,
@@ -299,6 +309,38 @@ export function expandBoundAttributesForField(
     if (input !== null) {
       boundInputs ??= [];
       boundInputs.push(input);
+    }
+  }
+
+  if (usesCustomControlConstraintInputs) {
+    for (const {inputName, fieldPropertyName} of customFormControlConstraintInputs) {
+      const input = getSyntheticFieldBoundInput(
+        directive,
+        inputName,
+        fieldPropertyName,
+        fieldBinding,
+        customFormControlType,
+      );
+
+      if (input !== null) {
+        boundInputs ??= [];
+        boundInputs.push(input);
+      }
+    }
+  } else {
+    for (const name of nativeFormControlConstraintFields) {
+      const input = getSyntheticFieldBoundInput(
+        directive,
+        name,
+        name,
+        fieldBinding,
+        customFormControlType,
+      );
+
+      if (input !== null) {
+        boundInputs ??= [];
+        boundInputs.push(input);
+      }
     }
   }
 

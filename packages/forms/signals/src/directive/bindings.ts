@@ -13,59 +13,71 @@ import type {ReadonlyFieldState} from '../api/types';
  */
 export type ControlBindingKey = string & {__brand: 'ControlBindingKey'};
 
+export interface ControlBinding {
+  fieldStateKey: BoundFieldStateKey;
+  customControlInput: ControlBindingKey;
+  nativeProperty: ControlBindingKey;
+}
+
 /**
- * A map of field state properties to control binding name.
+ * A map of field state properties to their custom control and native binding names.
  *
  * This excludes `controlValue` whose corresponding control binding name differs between control
  * types.
  *
- * The control binding name can be used for inputs or attributes (since DOM attributes are case
- * insensitive).
+ * The custom control and native names differ for constraint bindings so that custom controls must
+ * explicitly opt into receiving them without reserving common component input names.
  */
 const FIELD_STATE_KEY_TO_CONTROL_BINDING = {
-  disabled: 'disabled' as ControlBindingKey,
-  disabledReasons: 'disabledReasons' as ControlBindingKey,
-  dirty: 'dirty' as ControlBindingKey,
-  errors: 'errors' as ControlBindingKey,
-  hidden: 'hidden' as ControlBindingKey,
-  invalid: 'invalid' as ControlBindingKey,
-  max: 'max' as ControlBindingKey,
-  maxLength: 'maxLength' as ControlBindingKey,
-  min: 'min' as ControlBindingKey,
-  minLength: 'minLength' as ControlBindingKey,
-  name: 'name' as ControlBindingKey,
-  pattern: 'pattern' as ControlBindingKey,
-  pending: 'pending' as ControlBindingKey,
-  readonly: 'readonly' as ControlBindingKey,
-  required: 'required' as ControlBindingKey,
-  touched: 'touched' as ControlBindingKey,
-} as const satisfies {[K in keyof ReadonlyFieldState<unknown>]?: ControlBindingKey};
+  disabled: binding('disabled'),
+  disabledReasons: binding('disabledReasons'),
+  dirty: binding('dirty'),
+  errors: binding('errors'),
+  hidden: binding('hidden'),
+  invalid: binding('invalid'),
+  max: binding('formFieldMax', 'max'),
+  maxLength: binding('formFieldMaxLength', 'maxLength'),
+  min: binding('formFieldMin', 'min'),
+  minLength: binding('formFieldMinLength', 'minLength'),
+  name: binding('name'),
+  pattern: binding('pattern'),
+  pending: binding('pending'),
+  readonly: binding('readonly'),
+  required: binding('required'),
+  touched: binding('touched'),
+} as const satisfies {
+  [K in keyof ReadonlyFieldState<unknown>]?: Omit<ControlBinding, 'fieldStateKey'>;
+};
 
-/**
- * Inverts `FIELD_STATE_KEY_TO_CONTROL_BINDING` to look up the minified name of the corresponding
- * field state property from its control binding name.
- */
-const CONTROL_BINDING_TO_FIELD_STATE_KEY = /* @__PURE__ */ (() => {
-  const map = {} as Record<ControlBindingKey, keyof typeof FIELD_STATE_KEY_TO_CONTROL_BINDING>;
-  for (const key of Object.keys(FIELD_STATE_KEY_TO_CONTROL_BINDING) as Array<
-    keyof typeof FIELD_STATE_KEY_TO_CONTROL_BINDING
-  >) {
-    map[FIELD_STATE_KEY_TO_CONTROL_BINDING[key]] = key;
-  }
-  return map;
-})();
+type BoundFieldStateKey = keyof typeof FIELD_STATE_KEY_TO_CONTROL_BINDING;
+
+function binding(
+  customControlInput: string,
+  nativeProperty = customControlInput,
+): Omit<ControlBinding, 'fieldStateKey'> {
+  return {
+    customControlInput: customControlInput as ControlBindingKey,
+    nativeProperty: nativeProperty as ControlBindingKey,
+  };
+}
 
 export function readFieldStateBindingValue(
   fieldState: ReadonlyFieldState<unknown>,
-  key: ControlBindingKey,
+  binding: ControlBinding,
 ): unknown {
-  const property = CONTROL_BINDING_TO_FIELD_STATE_KEY[key];
-  return fieldState[property]?.();
+  return fieldState[binding.fieldStateKey]?.();
 }
 
-/** The keys of {@link FIELD_STATE_KEY_TO_CONTROL_BINDING} */
-export const CONTROL_BINDING_NAMES = /* @__PURE__ */ (() =>
-  Object.values(FIELD_STATE_KEY_TO_CONTROL_BINDING))() as Array<ControlBindingKey>;
+/** The bindings represented by {@link FIELD_STATE_KEY_TO_CONTROL_BINDING}. */
+export const CONTROL_BINDINGS = /* @__PURE__ */ (() =>
+  (
+    Object.keys(FIELD_STATE_KEY_TO_CONTROL_BINDING) as Array<
+      keyof typeof FIELD_STATE_KEY_TO_CONTROL_BINDING
+    >
+  ).map((fieldStateKey) => ({
+    fieldStateKey,
+    ...FIELD_STATE_KEY_TO_CONTROL_BINDING[fieldStateKey],
+  })))() as ControlBinding[];
 
 export function createBindings<TKey extends string>(): {[K in TKey]?: unknown} {
   return {};

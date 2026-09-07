@@ -39,6 +39,7 @@ export class TcbDirectiveCtorOp extends TcbOp {
     private node: DirectiveOwner,
     private dir: TcbDirectiveMetadata,
     private customFormControlType: CustomFormControlType | null,
+    private usesCustomControlConstraintInputs: boolean,
     private directiveIndex?: number,
   ) {
     super();
@@ -64,11 +65,12 @@ export class TcbDirectiveCtorOp extends TcbOp {
       span = this.node.startSourceSpan || this.node.sourceSpan;
       boundAttrs = getBoundAttributes(this.dir, this.node);
 
-      if (this.customFormControlType !== null) {
+      if (this.customFormControlType !== null || this.usesCustomControlConstraintInputs) {
         const additionalBindings = expandBoundAttributesForField(
           this.dir,
           this.node,
           this.customFormControlType,
+          this.usesCustomControlConstraintInputs,
         );
 
         if (additionalBindings !== null) {

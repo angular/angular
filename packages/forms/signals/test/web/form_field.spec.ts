@@ -2463,7 +2463,7 @@ describe('field directive', () => {
         })
         class CustomControl implements FormValueControl<Date> {
           readonly value = model.required<Date>();
-          readonly max = input<Date>();
+          readonly formFieldMax = input<Date>();
         }
 
         @Component({
@@ -2480,7 +2480,47 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().max()).toEqual(new Date('2026-12-31'));
+        expect(component.customControl().formFieldMax()).toEqual(new Date('2026-12-31'));
+      });
+
+      it('should not bind max to a custom control without explicit opt-in', () => {
+        @Component({selector: 'custom-control', template: ''})
+        class CustomControl implements FormValueControl<number> {
+          readonly value = model(0);
+          readonly unrelatedMax = input(100, {alias: 'max'});
+        }
+
+        @Component({
+          imports: [FormField, CustomControl],
+          template: `<custom-control [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(5), (p) => max(p, 10));
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        expect(fixture.componentInstance.customControl().unrelatedMax()).toBe(100);
+      });
+
+      it('should bind max to a custom control with explicit opt-in', () => {
+        @Component({selector: 'custom-control', template: ''})
+        class CustomControl implements FormValueControl<number> {
+          readonly value = model(0);
+          readonly formFieldMax = input<number | undefined>();
+        }
+
+        @Component({
+          imports: [FormField, CustomControl],
+          template: `<custom-control [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(5), (p) => max(p, 10));
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        expect(fixture.componentInstance.customControl().formFieldMax()).toBe(10);
       });
 
       it('should validate max on native text input', async () => {
@@ -2566,14 +2606,18 @@ describe('field directive', () => {
         @Directive()
         class CustomControlDir implements FormValueControl<number> {
           readonly value = model(0);
-          readonly max = input<number>();
+          readonly formFieldMax = input<number>();
         }
 
         @Component({
           selector: 'custom-control',
           template: '',
           hostDirectives: [
-            {directive: CustomControlDir, inputs: ['max', 'value'], outputs: ['valueChange']},
+            {
+              directive: CustomControlDir,
+              inputs: ['formFieldMax', 'value'],
+              outputs: ['valueChange'],
+            },
           ],
         })
         class CustomControl {}
@@ -2592,10 +2636,10 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().max()).toBe(10);
+        expect(component.customControl().formFieldMax()).toBe(10);
 
         act(() => component.max.set(5));
-        expect(component.customControl().max()).toBe(5);
+        expect(component.customControl().formFieldMax()).toBe(5);
       });
 
       it('should bind to a custom control when composed as a host directive', () => {
@@ -2606,7 +2650,7 @@ describe('field directive', () => {
         })
         class CustomControl implements FormValueControl<number> {
           readonly value = model(0);
-          readonly max = input<number>();
+          readonly formFieldMax = input<number>();
         }
 
         @Component({
@@ -2623,17 +2667,17 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().max()).toBe(10);
+        expect(component.customControl().formFieldMax()).toBe(10);
 
         act(() => component.max.set(5));
-        expect(component.customControl().max()).toBe(5);
+        expect(component.customControl().formFieldMax()).toBe(5);
       });
 
       it('should bind to custom control', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<number> {
           readonly value = model(0);
-          readonly max = input<number>();
+          readonly formFieldMax = input<number>();
         }
 
         @Component({
@@ -2650,10 +2694,10 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().max()).toBe(10);
+        expect(component.customControl().formFieldMax()).toBe(10);
 
         act(() => component.max.set(5));
-        expect(component.customControl().max()).toBe(5);
+        expect(component.customControl().formFieldMax()).toBe(5);
       });
 
       it('should bind to native control host of custom control without input', () => {
@@ -2707,7 +2751,7 @@ describe('field directive', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<number> {
           readonly value = model(0);
-          readonly max = input<number | undefined>();
+          readonly formFieldMax = input<number | undefined>();
         }
 
         @Component({
@@ -2724,16 +2768,16 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().max()).toBe(10);
+        expect(component.customControl().formFieldMax()).toBe(10);
 
         act(() => component.field.set(component.f.y));
-        expect(component.customControl().max()).toBeUndefined();
+        expect(component.customControl().formFieldMax()).toBeUndefined();
       });
 
       it('should bind to directive input on native control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly max = input.required<number | undefined>();
+          readonly max = input<number | undefined>();
         }
 
         @Component({
@@ -2760,7 +2804,7 @@ describe('field directive', () => {
       it('should bind to directive input on custom control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly max = input.required<number | undefined>();
+          readonly formFieldMax = input<number | undefined>();
         }
 
         @Component({selector: 'input[custom]', template: ``})
@@ -2784,11 +2828,11 @@ describe('field directive', () => {
         const dir = fixture.componentInstance.dir();
         const element = fixture.nativeElement.querySelector('input') as HTMLInputElement;
 
-        expect(dir.max()).toBe(10);
+        expect(dir.formFieldMax()).toBe(10);
         expect(element.max).toBe('10');
 
         act(() => fixture.componentInstance.max.set(5));
-        expect(dir.max()).toBe(5);
+        expect(dir.formFieldMax()).toBe(5);
         expect(element.max).toBe('5');
       });
     });
@@ -2910,7 +2954,7 @@ describe('field directive', () => {
         })
         class CustomControl implements FormValueControl<Date> {
           readonly value = model.required<Date>();
-          readonly min = input<Date>();
+          readonly formFieldMin = input<Date>();
         }
 
         @Component({
@@ -2927,7 +2971,7 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().min()).toEqual(new Date('2026-01-01'));
+        expect(component.customControl().formFieldMin()).toEqual(new Date('2026-01-01'));
       });
 
       it('should validate min on native text input', async () => {
@@ -3013,14 +3057,18 @@ describe('field directive', () => {
         @Directive()
         class CustomControlDir implements FormValueControl<number> {
           readonly value = model(0);
-          readonly min = input<number>();
+          readonly formFieldMin = input<number>();
         }
 
         @Component({
           selector: 'custom-control',
           template: '',
           hostDirectives: [
-            {directive: CustomControlDir, inputs: ['min', 'value'], outputs: ['valueChange']},
+            {
+              directive: CustomControlDir,
+              inputs: ['formFieldMin', 'value'],
+              outputs: ['valueChange'],
+            },
           ],
         })
         class CustomControl {}
@@ -3039,10 +3087,10 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().min()).toBe(10);
+        expect(component.customControl().formFieldMin()).toBe(10);
 
         act(() => component.min.set(5));
-        expect(component.customControl().min()).toBe(5);
+        expect(component.customControl().formFieldMin()).toBe(5);
       });
 
       it('should bind to a custom control when composed as a host directive', () => {
@@ -3053,7 +3101,7 @@ describe('field directive', () => {
         })
         class CustomControl implements FormValueControl<number> {
           readonly value = model(0);
-          readonly min = input<number>();
+          readonly formFieldMin = input<number>();
         }
 
         @Component({
@@ -3070,17 +3118,17 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().min()).toBe(10);
+        expect(component.customControl().formFieldMin()).toBe(10);
 
         act(() => component.min.set(5));
-        expect(component.customControl().min()).toBe(5);
+        expect(component.customControl().formFieldMin()).toBe(5);
       });
 
       it('should bind to custom control', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<number> {
           readonly value = model(0);
-          readonly min = input<number>();
+          readonly formFieldMin = input<number>();
         }
 
         @Component({
@@ -3097,10 +3145,10 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().min()).toBe(10);
+        expect(component.customControl().formFieldMin()).toBe(10);
 
         act(() => component.min.set(5));
-        expect(component.customControl().min()).toBe(5);
+        expect(component.customControl().formFieldMin()).toBe(5);
       });
 
       it('should bind to native control host of custom control without input', () => {
@@ -3154,7 +3202,7 @@ describe('field directive', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<number> {
           readonly value = model(0);
-          readonly min = input<number | undefined>();
+          readonly formFieldMin = input<number | undefined>();
         }
 
         @Component({
@@ -3171,16 +3219,16 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().min()).toBe(10);
+        expect(component.customControl().formFieldMin()).toBe(10);
 
         act(() => component.field.set(component.f.y));
-        expect(component.customControl().min()).toBeUndefined();
+        expect(component.customControl().formFieldMin()).toBeUndefined();
       });
 
       it('should bind to directive input on native control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly min = input.required<number | undefined>();
+          readonly min = input<number | undefined>();
         }
 
         @Component({
@@ -3207,7 +3255,7 @@ describe('field directive', () => {
       it('should bind to directive input on custom control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly min = input.required<number | undefined>();
+          readonly formFieldMin = input<number | undefined>();
         }
 
         @Component({selector: 'input[custom]', template: ``})
@@ -3231,11 +3279,11 @@ describe('field directive', () => {
         const dir = fixture.componentInstance.dir();
         const element = fixture.nativeElement.querySelector('input') as HTMLInputElement;
 
-        expect(dir.min()).toBe(10);
+        expect(dir.formFieldMin()).toBe(10);
         expect(element.min).toBe('10');
 
         act(() => fixture.componentInstance.min.set(5));
-        expect(dir.min()).toBe(5);
+        expect(dir.formFieldMin()).toBe(5);
         expect(element.min).toBe('5');
       });
     });
@@ -3265,14 +3313,18 @@ describe('field directive', () => {
         @Directive()
         class CustomControlDir implements FormValueControl<string> {
           readonly value = model('');
-          readonly maxLength = input<number>();
+          readonly formFieldMaxLength = input<number>();
         }
 
         @Component({
           selector: 'custom-control',
           template: '',
           hostDirectives: [
-            {directive: CustomControlDir, inputs: ['maxLength', 'value'], outputs: ['valueChange']},
+            {
+              directive: CustomControlDir,
+              inputs: ['formFieldMaxLength', 'value'],
+              outputs: ['valueChange'],
+            },
           ],
         })
         class CustomControl {}
@@ -3291,10 +3343,10 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().maxLength()).toBe(10);
+        expect(component.customControl().formFieldMaxLength()).toBe(10);
 
         act(() => component.maxLength.set(5));
-        expect(component.customControl().maxLength()).toBe(5);
+        expect(component.customControl().formFieldMaxLength()).toBe(5);
       });
 
       it('should bind to a custom control when composed as a host directive', () => {
@@ -3305,7 +3357,7 @@ describe('field directive', () => {
         })
         class CustomControl implements FormValueControl<string> {
           readonly value = model('');
-          readonly maxLength = input<number>();
+          readonly formFieldMaxLength = input<number>();
         }
 
         @Component({
@@ -3322,17 +3374,17 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().maxLength()).toBe(10);
+        expect(component.customControl().formFieldMaxLength()).toBe(10);
 
         act(() => component.maxLength.set(5));
-        expect(component.customControl().maxLength()).toBe(5);
+        expect(component.customControl().formFieldMaxLength()).toBe(5);
       });
 
       it('should bind to custom control', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<string> {
           readonly value = model('');
-          readonly maxLength = input<number>();
+          readonly formFieldMaxLength = input<number>();
         }
 
         @Component({
@@ -3349,10 +3401,10 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().maxLength()).toBe(10);
+        expect(component.customControl().formFieldMaxLength()).toBe(10);
 
         act(() => component.maxLength.set(5));
-        expect(component.customControl().maxLength()).toBe(5);
+        expect(component.customControl().formFieldMaxLength()).toBe(5);
       });
 
       it('should bind to native control host of custom control without input', () => {
@@ -3440,7 +3492,7 @@ describe('field directive', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<string> {
           readonly value = model('');
-          readonly maxLength = input<number | undefined>();
+          readonly formFieldMaxLength = input<number | undefined>();
         }
 
         @Component({
@@ -3457,16 +3509,16 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().maxLength()).toBe(10);
+        expect(component.customControl().formFieldMaxLength()).toBe(10);
 
         act(() => component.field.set(component.f.y));
-        expect(component.customControl().maxLength()).toBe(undefined);
+        expect(component.customControl().formFieldMaxLength()).toBe(undefined);
       });
 
       it('should bind to directive input on native control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly maxLength = input.required<number | undefined>();
+          readonly maxLength = input<number | undefined>();
         }
 
         @Component({
@@ -3493,7 +3545,7 @@ describe('field directive', () => {
       it('should bind to directive input on custom control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly maxLength = input.required<number | undefined>();
+          readonly formFieldMaxLength = input<number | undefined>();
         }
 
         @Component({selector: 'input[custom]', template: ``})
@@ -3517,11 +3569,11 @@ describe('field directive', () => {
         const dir = fixture.componentInstance.dir();
         const element = fixture.nativeElement.querySelector('input') as HTMLInputElement;
 
-        expect(dir.maxLength()).toBe(10);
+        expect(dir.formFieldMaxLength()).toBe(10);
         expect(element.maxLength).toBe(10);
 
         act(() => fixture.componentInstance.maxLength.set(5));
-        expect(dir.maxLength()).toBe(5);
+        expect(dir.formFieldMaxLength()).toBe(5);
         expect(element.maxLength).toBe(5);
       });
     });
@@ -3547,18 +3599,44 @@ describe('field directive', () => {
         expect(element.minLength).toBe(15);
       });
 
+      it('should not write minLength to an unrelated custom control input', () => {
+        type DayLike = {day?: number};
+
+        @Component({selector: 'custom-control', template: ''})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model('');
+          readonly unrelatedMinLength = input<DayLike | null>({day: 1}, {alias: 'minLength'});
+        }
+
+        @Component({
+          imports: [FormField, CustomControl],
+          template: `<custom-control [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal('value'), (p) => minLength(p, 3));
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        expect(fixture.componentInstance.customControl().unrelatedMinLength()).toEqual({day: 1});
+      });
+
       it('should bind to a custom control host directive', () => {
         @Directive()
         class CustomControlDir implements FormValueControl<string> {
           readonly value = model('');
-          readonly minLength = input<number>();
+          readonly formFieldMinLength = input<number>();
         }
 
         @Component({
           selector: 'custom-control',
           template: '',
           hostDirectives: [
-            {directive: CustomControlDir, inputs: ['minLength', 'value'], outputs: ['valueChange']},
+            {
+              directive: CustomControlDir,
+              inputs: ['formFieldMinLength', 'value'],
+              outputs: ['valueChange'],
+            },
           ],
         })
         class CustomControl {}
@@ -3577,10 +3655,10 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().minLength()).toBe(10);
+        expect(component.customControl().formFieldMinLength()).toBe(10);
 
         act(() => component.minLength.set(5));
-        expect(component.customControl().minLength()).toBe(5);
+        expect(component.customControl().formFieldMinLength()).toBe(5);
       });
 
       it('should bind to a custom control when composed as a host directive', () => {
@@ -3591,7 +3669,7 @@ describe('field directive', () => {
         })
         class CustomControl implements FormValueControl<string> {
           readonly value = model('');
-          readonly minLength = input<number>();
+          readonly formFieldMinLength = input<number>();
         }
 
         @Component({
@@ -3608,17 +3686,17 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().minLength()).toBe(10);
+        expect(component.customControl().formFieldMinLength()).toBe(10);
 
         act(() => component.minLength.set(5));
-        expect(component.customControl().minLength()).toBe(5);
+        expect(component.customControl().formFieldMinLength()).toBe(5);
       });
 
       it('should bind to custom control', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<string> {
           readonly value = model('');
-          readonly minLength = input<number>();
+          readonly formFieldMinLength = input<number>();
         }
 
         @Component({
@@ -3635,10 +3713,10 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().minLength()).toBe(10);
+        expect(component.customControl().formFieldMinLength()).toBe(10);
 
         act(() => component.minLength.set(5));
-        expect(component.customControl().minLength()).toBe(5);
+        expect(component.customControl().formFieldMinLength()).toBe(5);
       });
 
       it('should bind to native control host of custom control without input', () => {
@@ -3708,7 +3786,7 @@ describe('field directive', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<string> {
           readonly value = model('');
-          readonly minLength = input<number | undefined>();
+          readonly formFieldMinLength = input<number | undefined>();
         }
 
         @Component({
@@ -3725,16 +3803,16 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        expect(component.customControl().minLength()).toBe(10);
+        expect(component.customControl().formFieldMinLength()).toBe(10);
 
         act(() => component.field.set(component.f.y));
-        expect(component.customControl().minLength()).toBeUndefined();
+        expect(component.customControl().formFieldMinLength()).toBeUndefined();
       });
 
       it('should bind to directive input on native control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly minLength = input.required<number | undefined>();
+          readonly minLength = input<number | undefined>();
         }
 
         @Component({
@@ -3761,7 +3839,7 @@ describe('field directive', () => {
       it('should bind to directive input on custom control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly minLength = input.required<number | undefined>();
+          readonly formFieldMinLength = input<number | undefined>();
         }
 
         @Component({selector: 'input[custom]', template: ``})
@@ -3785,11 +3863,11 @@ describe('field directive', () => {
         const dir = fixture.componentInstance.dir();
         const element = fixture.nativeElement.querySelector('input') as HTMLInputElement;
 
-        expect(dir.minLength()).toBe(10);
+        expect(dir.formFieldMinLength()).toBe(10);
         expect(element.minLength).toBe(10);
 
         act(() => fixture.componentInstance.minLength.set(5));
-        expect(dir.minLength()).toBe(5);
+        expect(dir.formFieldMinLength()).toBe(5);
         expect(element.minLength).toBe(5);
       });
     });
@@ -4009,8 +4087,8 @@ describe('field directive', () => {
         readonly pending = input(false);
         readonly dirty = input(false);
         readonly touched = input(false);
-        readonly minLength = input<number | undefined>(1);
-        readonly maxLength = input<number | undefined>(5);
+        readonly formFieldMinLength = input<number | undefined>(1);
+        readonly formFieldMaxLength = input<number | undefined>(5);
       }
 
       @Component({
@@ -4055,12 +4133,16 @@ describe('field directive', () => {
       @Component({selector: 'custom-control', template: ``})
       class CustomControl implements FormValueControl<number> {
         readonly value = model(0);
-        readonly min = input<number | undefined, unknown>(undefined, {transform: numberAttribute});
-        readonly max = input<number | undefined, unknown>(undefined, {transform: numberAttribute});
-        readonly minLength = input<number | undefined, unknown>(undefined, {
+        readonly formFieldMin = input<number | undefined, unknown>(undefined, {
           transform: numberAttribute,
         });
-        readonly maxLength = input<number | undefined, unknown>(undefined, {
+        readonly formFieldMax = input<number | undefined, unknown>(undefined, {
+          transform: numberAttribute,
+        });
+        readonly formFieldMinLength = input<number | undefined, unknown>(undefined, {
+          transform: numberAttribute,
+        });
+        readonly formFieldMaxLength = input<number | undefined, unknown>(undefined, {
           transform: numberAttribute,
         });
       }

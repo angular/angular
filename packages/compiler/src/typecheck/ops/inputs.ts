@@ -55,6 +55,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
     private dir: TcbDirectiveMetadata,
     private isFormControl: boolean = false,
     private customFormControlType: CustomFormControlType | null,
+    private usesCustomControlConstraintInputs: boolean,
   ) {
     super();
   }
@@ -79,6 +80,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
         this.dir,
         this.node,
         this.customFormControlType,
+        this.usesCustomControlConstraintInputs,
       );
 
       if (additionalBindings !== null) {

@@ -182,14 +182,14 @@ NOTE: `disabledReasons` is an array of `DisabledReason` objects. Each object has
 
 Receive validation constraint values from the form:
 
-| Property    | Purpose                                              |
-| ----------- | ---------------------------------------------------- |
-| `required`  | Whether the field is required                        |
-| `min`       | Minimum numeric value (`undefined` if no constraint) |
-| `max`       | Maximum numeric value (`undefined` if no constraint) |
-| `minLength` | Minimum string length (undefined if no constraint)   |
-| `maxLength` | Maximum string length (undefined if no constraint)   |
-| `pattern`   | Array of regular expression patterns to match        |
+| Property             | Purpose                                              |
+| -------------------- | ---------------------------------------------------- |
+| `required`           | Whether the field is required                        |
+| `formFieldMin`       | Minimum value (`undefined` if no constraint)         |
+| `formFieldMax`       | Maximum value (`undefined` if no constraint)         |
+| `formFieldMinLength` | Minimum string length (`undefined` if no constraint) |
+| `formFieldMaxLength` | Maximum string length (`undefined` if no constraint) |
+| `pattern`            | Array of regular expression patterns to match        |
 
 #### Field metadata
 
@@ -478,7 +478,7 @@ orderForm.amount().reset();
 
 Controls display validation state but don't perform validation. Validation happens in the form schema - your control receives `invalid()` and `errors()` signals from the FormField directive and displays them (as shown in the StatefulInput example above).
 
-The FormField directive also passes validation constraint values like `required`, `min`, `max`, `minLength`, `maxLength`, and `pattern`. Your control can use these to enhance the UI:
+The FormField directive also passes validation constraint values like `required`, `formFieldMin`, `formFieldMax`, `formFieldMinLength`, `formFieldMaxLength`, and `pattern`. Your control can use these to enhance the UI. The `formField` prefix makes the four native-like constraints explicit opt-ins and leaves common component inputs such as `min` and `max` available for other purposes.
 
 ```ts
 export class NumberInput implements FormValueControl<number> {
@@ -486,12 +486,12 @@ export class NumberInput implements FormValueControl<number> {
 
   // Constraint values from schema validation rules
   required = input<boolean>(false);
-  min = input<number | undefined>(undefined);
-  max = input<number | undefined>(undefined);
+  formFieldMin = input<number | undefined>(undefined);
+  formFieldMax = input<number | undefined>(undefined);
 }
 ```
 
-When you add `min()` and `max()` validation rules to the schema, the FormField directive passes these values to your control. Use them to apply HTML5 attributes or show constraint hints in your template.
+When you add `min()` and `max()` validation rules to the schema, the FormField directive passes these values to your control's `formFieldMin` and `formFieldMax` inputs. Use them to apply HTML5 attributes or show constraint hints in your template.
 
 IMPORTANT: Don't implement validation logic in your control. Define validation rules in the form schema and let your control display the results:
 

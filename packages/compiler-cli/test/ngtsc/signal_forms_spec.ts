@@ -431,6 +431,100 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should not treat native constraint names as form bindings on custom controls', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, input, model, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          type Range = readonly [number, number];
+          type DayLike = {day?: number; month?: number; year?: number};
+
+          @Component({selector: 'range-control', template: ''})
+          class RangeControl {
+            readonly value = model.required<Range>();
+            readonly min = input(0);
+            readonly max = input(100);
+            readonly minLength = input<DayLike | null>(null);
+            readonly maxLength = input<DayLike | null>(null);
+          }
+
+          @Component({
+            imports: [FormField, RangeControl],
+            template: '<range-control [formField]="field" [min]="0" [max]="100"/>',
+          })
+          class TestCmp {
+            readonly field = form(signal<Range>([20, 80]));
+          }
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should type-check opted-in custom control constraint inputs', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, input, model, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({selector: 'custom-control', template: ''})
+          class CustomControl {
+            readonly value = model.required<string>();
+            readonly formFieldMinLength = input<{value: number}>({value: 0});
+          }
+
+          @Component({
+            imports: [FormField, CustomControl],
+            template: '<custom-control [formField]="field"/>',
+          })
+          class TestCmp {
+            readonly field = form(signal('value'));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      if (diags.length === 1) {
+        expect(extractMessage(diags[0])).toBe(
+          `Type 'number | undefined' is not assignable to type '{ value: number; }'.`,
+        );
+      }
+    });
+
+    it('should type-check opted-in constraint inputs on directives attached to custom controls', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive, input, model, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Directive({selector: '[constraints]'})
+          class Constraints {
+            readonly formFieldMax = input.required<number | undefined>();
+          }
+
+          @Component({selector: 'custom-control', template: ''})
+          class CustomControl {
+            readonly value = model.required<number>();
+          }
+
+          @Component({
+            imports: [FormField, Constraints, CustomControl],
+            template: '<custom-control constraints [formField]="field"/>',
+          })
+          class TestCmp {
+            readonly field = form(signal(1));
+          }
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
     it('should report unsupported property bindings on a field', () => {
       env.write(
         'test.ts',
@@ -515,11 +609,11 @@ runInEachFileSystem(() => {
           @Component({selector: 'custom-control', template: ''})
           export class CustomControl implements FormValueControl<number> {
             readonly value = model<number>(0);
-            readonly max = input<number | undefined>(1);
+            readonly formFieldMax = input<number | undefined>(1);
           }
 
           @Component({
-            template: '<custom-control [formField]="f" [max]="2"/>',
+            template: '<custom-control [formField]="f" [formFieldMax]="2"/>',
             imports: [FormField, CustomControl]
           })
           export class Comp {
@@ -531,7 +625,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Binding to '[max]' is not allowed on nodes using the '[formField]' directive`,
+        `Binding to '[formFieldMax]' is not allowed on nodes using the '[formField]' directive`,
       );
     });
 

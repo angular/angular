@@ -14,7 +14,7 @@ import type {ValidationError} from '../api/rules';
 import {createParser} from '../util/parser';
 import {
   bindingUpdated,
-  CONTROL_BINDING_NAMES,
+  CONTROL_BINDINGS,
   createBindings,
   readFieldStateBindingValue,
   type ControlBindingKey,
@@ -99,8 +99,9 @@ export function nativeControlCreate(
   return () => {
     const state = parent.state();
 
-    for (const name of CONTROL_BINDING_NAMES) {
-      const value = readFieldStateBindingValue(state, name);
+    for (const binding of CONTROL_BINDINGS) {
+      const name = binding.nativeProperty;
+      const value = readFieldStateBindingValue(state, binding);
       if (bindingUpdated(bindings, name, value)) {
         host.setInputOnDirectives(name, value);
         if (parent.elementAcceptsNativeProperty(name)) {

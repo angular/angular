@@ -1078,7 +1078,7 @@ describe('ControlValueAccessor', () => {
       it('should bind to directive input', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly max = input.required<number | string | undefined>();
+          readonly max = input<number | string | undefined>();
         }
 
         @Component({
@@ -1128,7 +1128,7 @@ describe('ControlValueAccessor', () => {
       it('should bind to directive input', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly maxLength = input.required<number | undefined>();
+          readonly maxLength = input<number | undefined>();
         }
 
         @Component({
@@ -1178,7 +1178,7 @@ describe('ControlValueAccessor', () => {
       it('should bind to directive input', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly min = input.required<number | string | undefined>();
+          readonly min = input<number | string | undefined>();
         }
 
         @Component({
@@ -1228,7 +1228,7 @@ describe('ControlValueAccessor', () => {
       it('should bind to directive input', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly minLength = input.required<number | undefined>();
+          readonly minLength = input<number | undefined>();
         }
 
         @Component({

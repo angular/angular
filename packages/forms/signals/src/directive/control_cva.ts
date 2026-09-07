@@ -19,7 +19,7 @@ import {reactiveErrorsToSignalErrors} from '../compat/validation_errors';
 import {type ValidationError} from '../api/rules';
 import {
   bindingUpdated,
-  CONTROL_BINDING_NAMES,
+  CONTROL_BINDINGS,
   type ControlBindingKey,
   createBindings,
   readFieldStateBindingValue,
@@ -96,8 +96,9 @@ export function cvaControlCreate(
       untracked(() => parent.controlValueAccessor!.writeValue(controlValue));
     }
 
-    for (const name of CONTROL_BINDING_NAMES) {
-      const value = readFieldStateBindingValue(fieldState, name);
+    for (const binding of CONTROL_BINDINGS) {
+      const name = binding.nativeProperty;
+      const value = readFieldStateBindingValue(fieldState, binding);
       if (bindingUpdated(bindings, name, value)) {
         const propertyWasSet = host.setInputOnDirectives(name, value);
         if (name === 'disabled' && parent.controlValueAccessor!.setDisabledState) {

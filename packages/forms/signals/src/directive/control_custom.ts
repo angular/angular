@@ -10,7 +10,7 @@ import type {ɵControlDirectiveHost as ControlDirectiveHost} from '@angular/core
 import type {FormField, FormFieldBindingOptions} from './form_field';
 import {
   bindingUpdated,
-  CONTROL_BINDING_NAMES,
+  CONTROL_BINDINGS,
   type ControlBindingKey,
   createBindings,
   readFieldStateBindingValue,
@@ -36,24 +36,32 @@ export function customControlCreate(
     }
 
     // Bind remaining field state properties.
-    for (const name of CONTROL_BINDING_NAMES) {
+    for (const binding of CONTROL_BINDINGS) {
+      const {customControlInput, nativeProperty} = binding;
       let value: unknown;
-      if (name === 'errors') {
+      if (customControlInput === 'errors') {
         value = parent.errors();
       } else {
-        value = readFieldStateBindingValue(state, name);
+        value = readFieldStateBindingValue(state, binding);
       }
-      if (bindingUpdated(bindings, name, value)) {
-        host.setInputOnDirectives(name, value);
+      if (bindingUpdated(bindings, customControlInput, value)) {
+        host.setInputOnDirectives(customControlInput, value);
 
         // If the host node is a native control, we can bind field state properties to native
         // properties for any that weren't defined as inputs on the custom control.
-        if (parent.elementAcceptsNativeProperty(name) && !host.customControlHasInput(name)) {
-          const domValue = formatDateForMinMax(name, value, parent.nativeFormElement.type);
+        if (
+          parent.elementAcceptsNativeProperty(nativeProperty) &&
+          !host.customControlHasInput(customControlInput)
+        ) {
+          const domValue = formatDateForMinMax(
+            nativeProperty,
+            value,
+            parent.nativeFormElement.type,
+          );
           setNativeDomProperty(
             parent.renderer,
             parent.nativeFormElement,
-            name,
+            nativeProperty,
             domValue as string | number | boolean | undefined,
           );
         }

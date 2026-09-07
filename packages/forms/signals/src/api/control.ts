@@ -83,37 +83,34 @@ export interface FormUiControl<TValue> {
    * An input to receive the min value for the field. If implemented, the `Field` directive will
    * automatically bind the min value from the bound field to this input.
    */
-  readonly min?:
+  readonly formFieldMin?:
     | InputSignal<NonNullable<TValue> | undefined>
     | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
   /**
    * An input to receive the min length for the field. If implemented, the `Field` directive will
    * automatically bind the min length from the bound field to this input.
    */
-  readonly minLength?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+  readonly formFieldMinLength?:
+    InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
   /**
    * An input to receive the max value for the field. If implemented, the `Field` directive will
    * automatically bind the max value from the bound field to this input.
    */
-  readonly max?:
+  readonly formFieldMax?:
     | InputSignal<NonNullable<TValue> | undefined>
     | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
   /**
    * An input to receive the max length for the field. If implemented, the `Field` directive will
    * automatically bind the max length from the bound field to this input.
    */
-  readonly maxLength?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+  readonly formFieldMaxLength?:
+    InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
   /**
    * An input to receive the value patterns for the field. If implemented, the `Field` directive
    * will automatically bind the value patterns from the bound field to this input.
    */
   readonly pattern?:
-    | InputSignal<readonly RegExp[]>
-    | InputSignalWithTransform<readonly RegExp[], unknown>;
+    InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
   /**
    * An output to emit when the user finishes interacting with the control, marking the field as
    * touched. Emit this in response to the native `blur` event (when focus leaves the control), not
