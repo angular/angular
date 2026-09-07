@@ -102,7 +102,7 @@ The following table provides the status for Angular versions under support.
 | ^21.0.0 | LTS    | 2025-11-19 | 2026-06-03  | 2027-06    |
 | ^20.0.0 | LTS    | 2025-05-28 | 2025-11-19  | 2026-11-28 |
 
-Angular versions v2 to v19 are no longer supported.
+IMPORTANT: Angular versions v2 to v19 are no longer supported.
 
 ### LTS fixes
 
