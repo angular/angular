@@ -12,7 +12,7 @@
 import {execSync, spawnSync} from 'child_process';
 
 process.stdout.write('Gathering all partial golden update targets');
-const queryCommand = `pnpm -s bazel query --output label "kind(_write_source_file, //packages/compiler-cli/test/compliance/test_cases:*)"`;
+const queryCommand = `pnpm run -s bazel query --output label "kind(_write_source_file, //packages/compiler-cli/test/compliance/test_cases:*)"`;
 const allUpdateTargets = execSync(queryCommand, {encoding: 'utf-8', stdio: 'pipe'})
   .trim()
   .split('\n')
