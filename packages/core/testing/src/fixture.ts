@@ -85,7 +85,7 @@ export abstract class AbstractFixture<E> {
   readonly changeDetectorRef: ChangeDetectorRef;
 
   /** @docs-private */
-  constructor(private readonly hostRef: ComponentRef<unknown>) {
+  constructor(protected readonly hostRef: ComponentRef<unknown>) {
     this.changeDetectorRef = hostRef.changeDetectorRef;
     this.debugElement = getDebugNode(hostRef.location.nativeElement) as DebugElement;
     this.nativeElement = hostRef.location.nativeElement;
@@ -313,5 +313,10 @@ export class DirectiveFixture<T> extends AbstractFixture<Element> {
   constructor(hostRef: ComponentRef<unknown>, directiveInstance: T) {
     super(hostRef);
     this.directiveInstance = directiveInstance;
+  }
+
+  /** Registers a callback that will be invoked when the fixture is destroyed. */
+  onDestroy(callback: () => void) {
+    this.hostRef.onDestroy(callback);
   }
 }

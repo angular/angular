@@ -3157,4 +3157,23 @@ describe('TestBed.createDirective', () => {
     expect(dir.moduleService.value).toBe('hello-module');
     expect(dir.dirService.value).toBe('hello-directive');
   });
+
+  it('should invoke destroy callbacks when the fixture is destroyed', () => {
+    const callbacks: string[] = [];
+
+    @Directive()
+    class Dir {
+      ngOnDestroy() {
+        callbacks.push('directive: ngOnDestroy');
+      }
+    }
+
+    const fixture = TestBed.createDirective(Dir, {tagName: 'div'});
+    fixture.onDestroy(() => callbacks.push('fixture: onDestroy'));
+    fixture.detectChanges();
+    expect(callbacks).toEqual([]);
+
+    fixture.destroy();
+    expect(callbacks).toEqual(['directive: ngOnDestroy', 'fixture: onDestroy']);
+  });
 });
