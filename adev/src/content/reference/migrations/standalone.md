@@ -67,8 +67,7 @@ HELPFUL: The schematic ignores NgModules which bootstrap a component during this
 
 **Before:**
 
-```typescript
-// shared.module.ts
+```typescript {header: "shared.module.ts"}
 @NgModule({
   imports: [CommonModule],
   declarations: [Greeter],
@@ -77,8 +76,7 @@ HELPFUL: The schematic ignores NgModules which bootstrap a component during this
 export class SharedModule {}
 ```
 
-```angular-ts
-// greeter.ts
+```angular-ts {header: "greeter.ts"}
 @Component({
   selector: 'greeter',
   template: '<div *ngIf="showGreeting">Hello</div>',
@@ -91,8 +89,7 @@ export class Greeter {
 
 **After:**
 
-```typescript
-// shared.module.ts
+```typescript {header: "shared.module.ts"}
 @NgModule({
   imports: [CommonModule, Greeter],
   exports: [Greeter],
@@ -100,8 +97,7 @@ export class Greeter {
 export class SharedModule {}
 ```
 
-```angular-ts
-// greeter.ts
+```angular-ts {header: "greeter.ts"}
 @Component({
   selector: 'greeter',
   template: '<div *ngIf="showGreeting">Hello</div>',
@@ -130,8 +126,7 @@ The migration considers a module safe to remove if that module:
 
 **Before:**
 
-```typescript
-// importer.module.ts
+```typescript {header: "importer.module.ts"}
 @NgModule({
   imports: [FooComponent, BarPipe],
   exports: [FooComponent, BarPipe],
@@ -141,8 +136,7 @@ export class ImporterModule {}
 
 **After:**
 
-```typescript
-// importer.module.ts
+```typescript {header: "importer.module.ts"}
 // Does not exist!
 ```
 
@@ -152,8 +146,7 @@ This step converts any usages of `bootstrapModule` to the new, standalone-based 
 
 **Before:**
 
-```typescript
-// ./app/app.module.ts
+```typescript {header: "./app/app.module.ts"}
 import {NgModule} from '@angular/core';
 import {App} from './app';
 
@@ -164,8 +157,7 @@ import {App} from './app';
 export class AppModule {}
 ```
 
-```typescript
-// ./app/app.ts
+```typescript {header: "./app/app.ts"}
 @Component({
   selector: 'app',
   template: 'hello',
@@ -174,8 +166,7 @@ export class AppModule {}
 export class App {}
 ```
 
-```typescript
-// ./main.ts
+```typescript {header: "./main.ts"}
 import {platformBrowser} from '@angular/platform-browser';
 import {AppModule} from './app/app.module';
 
@@ -186,13 +177,11 @@ platformBrowser()
 
 **After:**
 
-```typescript
-// ./app/app.module.ts
+```typescript {header: "./app/app.module.ts"}
 // Does not exist!
 ```
 
-```typescript
-// ./app/app.ts
+```typescript {header: "./app/app.ts"}
 @Component({
   selector: 'app',
   template: 'hello',
@@ -200,8 +189,7 @@ platformBrowser()
 export class App {}
 ```
 
-```typescript
-// ./main.ts
+```typescript {header: "./main.ts"}
 import {bootstrapApplication} from '@angular/platform-browser';
 import {App} from './app';
 

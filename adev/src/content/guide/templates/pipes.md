@@ -177,8 +177,7 @@ The TypeScript class should additionally implement the `PipeTransform` interface
 
 Here is an example of a custom pipe that transforms strings to kebab case:
 
-```angular-ts
-// kebab-case.pipe.ts
+```angular-ts {header: "kebab-case.pipe.ts"}
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({

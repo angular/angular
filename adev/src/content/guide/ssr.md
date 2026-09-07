@@ -28,8 +28,7 @@ NOTE: By default, Angular prerenders your entire application and generates a ser
 
 You can create a server route config by declaring an array of [`ServerRoute`](api/ssr/ServerRoute 'API reference') objects. This configuration typically lives in a file named `app.routes.server.ts`.
 
-```typescript
-// app.routes.server.ts
+```typescript {header: "app.routes.server.ts"}
 import {RenderMode, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
@@ -54,11 +53,10 @@ export const serverRoutes: ServerRoute[] = [
 
 You can add this config to your application with [`provideServerRendering`](api/ssr/provideServerRendering 'API reference') using the [`withRoutes`](api/ssr/withRoutes 'API reference') function:
 
-```typescript
+```typescript {header: "app.config.server.ts"}
 import {provideServerRendering, withRoutes} from '@angular/ssr';
 import {serverRoutes} from './app.routes.server';
 
-// app.config.server.ts
 const serverConfig: ApplicationConfig = {
   providers: [
     provideServerRendering(withRoutes(serverRoutes)),
@@ -137,8 +135,7 @@ NOTE: When using Angular service worker, the first request is server-rendered, b
 
 You can set custom headers and status codes for individual server routes using the `headers` and `status` properties in the `ServerRoute` configuration.
 
-```typescript
-// app.routes.server.ts
+```typescript {header: "app.routes.server.ts"}
 import {RenderMode, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
@@ -178,8 +175,7 @@ The body of [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPre
 
 You can also use this function with catch-all routes (e.g., `/**`), where the parameter name will be `"**"` and the return value will be the segments of the path, such as `foo/bar`. These can be combined with other parameters (e.g., `/post/:id/**`) to handle more complex route configuration.
 
-```ts
-// app.routes.server.ts
+```ts {header: "app.routes.server.ts"}
 import {RenderMode, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
@@ -220,8 +216,7 @@ The available fallback strategies are:
 - **Client:** Falls back to client-side rendering.
 - **None:** No fallback. Angular will not handle requests for paths that are not prerendered.
 
-```ts
-// app.routes.server.ts
+```ts {header: "app.routes.server.ts"}
 import {RenderMode, PrerenderFallback, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
@@ -309,8 +304,7 @@ export class ServerAnalyticsService implements AnalyticsService {
 
 Register the browser implementation in your main application configuration:
 
-```ts
-// app.config.ts
+```ts {header: "app.config.ts"}
 export const appConfig: ApplicationConfig = {
   providers: [{provide: AnalyticsService, useClass: BrowserAnalyticsService}],
 };
@@ -318,8 +312,7 @@ export const appConfig: ApplicationConfig = {
 
 Override with the server implementation in your server configuration:
 
-```ts
-// app.config.server.ts
+```ts {header: "app.config.server.ts"}
 const serverConfig: ApplicationConfig = {
   providers: [{provide: AnalyticsService, useClass: ServerAnalyticsService}],
 };
@@ -614,8 +607,7 @@ NOTE: If your application uses different HTTP origins to make API calls on the s
 
 The `@angular/ssr/node` extends `@angular/ssr` specifically for Node.js environments. It provides APIs that make it easier to implement server-side rendering within your Node.js application. For a complete list of functions and usage examples, refer to the [`@angular/ssr/node` API reference](api/ssr/node/AngularNodeAppEngine) API reference.
 
-```ts
-// server.ts
+```ts {header: "server.ts"}
 import {
   AngularNodeAppEngine,
   createNodeRequestHandler,
@@ -649,8 +641,7 @@ export const reqHandler = createNodeRequestHandler(app);
 
 The `@angular/ssr` provides essential APIs for server-side rendering your Angular application on platforms other than Node.js. It leverages the standard [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) objects from the Web API, enabling you to integrate Angular SSR into various server environments. For detailed information and examples, refer to the [`@angular/ssr` API reference](api/ssr/AngularAppEngine).
 
-```ts
-// server.ts
+```ts {header: "server.ts"}
 import {AngularAppEngine, createRequestHandler} from '@angular/ssr';
 
 const angularApp = new AngularAppEngine();
