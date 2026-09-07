@@ -35,6 +35,14 @@ describe('markdown to html', () => {
     expect(noteEl?.textContent?.trim()).toContain(`This is a multiline note`);
   });
 
+  it(`should handle an alert that follows prose in the same paragraph`, () => {
+    const tipEls = markdownDocument.querySelectorAll(`.docs-alert-tip`);
+
+    expect(tipEls[tipEls.length - 1]?.textContent?.trim()).toContain(
+      `THIS TIP FOLLOWS PROSE ON THE NEXT LINE`,
+    );
+  });
+
   it(`should handle alerts without a line return`, () => {
     const noteEl = markdownDocument.querySelector(`.docs-alert-note:last-of-type`);
 

@@ -34,9 +34,15 @@ const tokenMatcher = new RegExp(
   's',
 );
 
+const tokenStartMatcher = new RegExp(`\n(?:${alertSeverityLevels.join('|')}): `);
+
 export const docsAlertExtension: TokenizerAndRendererExtension = {
   name: 'docs-alert',
   level: 'inline',
+  start(src: string) {
+    const index = src.match(tokenStartMatcher)?.index;
+    return index === undefined ? undefined : index + 1;
+  },
   tokenizer(this: TokenizerThis, src: string): DocsAlertToken | undefined {
     const execMatch = tokenMatcher.exec(src);
     if (execMatch === null) {
