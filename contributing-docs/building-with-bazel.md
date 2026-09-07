@@ -138,7 +138,7 @@ Open `external` directory which contains everything that bazel downloaded while 
 workspace file:
 
 ```sh
-open $(pnpm -s bazel info output_base)/external
+open $(pnpm run -s bazel info output_base)/external
 ```
 
 See subcommands that bazel executes (helpful for debugging):

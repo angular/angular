@@ -6,11 +6,11 @@
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
-  "packageManager": "pnpm@11.24.0",
+  "packageManager": "pnpm@12.3.4",
   "engines": {
     "npm": "Please use pnpm instead of NPM to install dependencies",
     "yarn": "Please use pnpm instead of Yarn to install dependencies",
-    "pnpm": "11.24.0"
+    "pnpm": "12.3.4"
   },
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "public-api:update": "node goldens/public-api/manage.js accept",
     "symbol-extractor:check": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js test",
     "symbol-extractor:update": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js accept",
-    "ts-circular-deps:check": "pnpm -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.cjs",
+    "ts-circular-deps:check": "pnpm run -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.cjs",
     "check-tooling-setup": "tsc --project scripts/tsconfig.json",
     "devtools:devserver": "ibazel run //devtools/src:devserver",
     "devtools:test:e2e": "cypress run --project ./devtools/cypress",
