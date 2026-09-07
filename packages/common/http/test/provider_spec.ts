@@ -1047,12 +1047,9 @@ describe('HttpInterceptor signal tracking', () => {
     });
 
     it('should return a set without error when no interceptors are provided', () => {
-      TestBed.configureTestingModule({
-        providers: [provideHttpClient()],
-      });
-
       const set = TestBed.inject(HTTP_CONFIGURED_INTERCEPTOR_FNS);
       expect(set).toBeInstanceOf(Set);
+      expect(set.size).toBe(0);
     });
   });
 });
