@@ -51,6 +51,7 @@ export enum DeferBlockState {
 export class DirectiveFixture<T> extends AbstractFixture<Element> {
     constructor(hostRef: ComponentRef<unknown>, directiveInstance: T);
     readonly directiveInstance: T;
+    onDestroy(callback: () => void): void;
 }
 
 // @public
