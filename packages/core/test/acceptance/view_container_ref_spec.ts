@@ -393,7 +393,6 @@ describe('ViewContainerRef', () => {
           @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
         }
 
-        TestBed.configureTestingModule({imports: [TestComp, HtmlComp]});
         const fixture = TestBed.createComponent(TestComp);
         fixture.detectChanges();
 
@@ -432,7 +431,6 @@ describe('ViewContainerRef', () => {
           @ViewChild(InnerComp) inner!: InnerComp;
         }
 
-        TestBed.configureTestingModule({imports: [TestComp, InnerComp, HtmlComp]});
         const fixture = TestBed.createComponent(TestComp);
         fixture.detectChanges();
 
@@ -466,7 +464,6 @@ describe('ViewContainerRef', () => {
           @ViewChild('inner', {read: ViewContainerRef}) inner!: ViewContainerRef;
         }
 
-        TestBed.configureTestingModule({imports: [TestComp, SvgGroupComp]});
         const fixture = TestBed.createComponent(TestComp);
         fixture.detectChanges();
 
