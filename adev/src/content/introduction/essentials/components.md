@@ -15,8 +15,7 @@ Every component has a few main parts:
 
 Here is a simplified example of a `UserProfile` component.
 
-```angular-ts
-// user-profile.ts
+```angular-ts {header: "user-profile.ts"}
 @Component({
   selector: 'user-profile',
   template: `
@@ -31,8 +30,7 @@ export class UserProfile {
 
 The `@Component` decorator also optionally accepts a `styles` property for any CSS you want to apply to your template:
 
-```angular-ts
-// user-profile.ts
+```angular-ts {header: "user-profile.ts"}
 @Component({
   selector: 'user-profile',
   template: `
@@ -54,8 +52,7 @@ export class UserProfile {
 
 You can define a component's HTML and CSS in separate files using `templateUrl` and `styleUrl`:
 
-```angular-ts
-// user-profile.ts
+```angular-ts {header: "user-profile.ts"}
 @Component({
   selector: 'user-profile',
   templateUrl: 'user-profile.html',
@@ -66,14 +63,12 @@ export class UserProfile {
 }
 ```
 
-```angular-html
-<!-- user-profile.html -->
+```angular-html {header: "user-profile.html"}
 <h1>User profile</h1>
 <p>This is the user profile page</p>
 ```
 
-```css
-/* user-profile.css */
+```css {header: "user-profile.css"}
 h1 {
   font-size: 3em;
 }
@@ -102,8 +97,7 @@ To import and use a component, you need to:
 
 Here's an example of a `UserProfile` component importing a `ProfilePhoto` component:
 
-```angular-ts
-// user-profile.ts
+```angular-ts {header: "user-profile.ts"}
 import {ProfilePhoto} from 'profile-photo.ts';
 
 @Component({
