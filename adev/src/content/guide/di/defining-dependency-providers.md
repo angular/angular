@@ -38,8 +38,7 @@ NOTE: The string parameter (e.g., `'api.url'`) is a description purely for debug
 
 An `InjectionToken` that has a `factory` results in `providedIn: 'root'` by default (but can be overridden via the `providedIn` prop).
 
-```ts
-// 📁 /app/config.token.ts
+```ts {header: "/app/config.token.ts"}
 import {InjectionToken} from '@angular/core';
 
 export interface AppConfig {
@@ -75,8 +74,7 @@ export class Header {
 
 InjectionToken with factory functions is ideal when you can't use a class but need to provide dependencies globally:
 
-```ts
-// 📁 /app/logger.token.ts
+```ts {header: "/app/logger.token.ts"}
 import {InjectionToken, inject} from '@angular/core';
 import {APP_CONFIG} from './config.token';
 
@@ -96,8 +94,9 @@ export const LOGGER_FN = new InjectionToken<LoggerFn>('logger.function', {
     };
   },
 });
+```
 
-// 📁 /app/storage.token.ts
+```ts {header: "/app/storage.token.ts"}
 // Providing browser APIs as tokens
 export const LOCAL_STORAGE = new InjectionToken<Storage>('localStorage', {
   // providedIn: 'root' is configured as the default
@@ -108,8 +107,9 @@ export const SESSION_STORAGE = new InjectionToken<Storage>('sessionStorage', {
   providedIn: 'root',
   factory: () => window.sessionStorage,
 });
+```
 
-// 📁 /app/feature-flags.token.ts
+```ts {header: "/app/feature-flags.token.ts"}
 // Complex configuration with runtime logic
 export const FEATURE_FLAGS = new InjectionToken<Map<string, boolean>>('feature.flags', {
   providedIn: 'root',
@@ -300,8 +300,7 @@ The class serves as both the identifier and the implementation, which is why Ang
 
 Angular provides a built-in [`InjectionToken`](api/core/InjectionToken) class that creates a unique object reference for injectable values or when you want to provide multiple implementations of the same interface.
 
-```ts
-// 📁 /app/tokens.ts
+```ts {header: "/app/tokens.ts"}
 import {InjectionToken} from '@angular/core';
 import {DataService} from './data-service.interface';
 
@@ -624,8 +623,7 @@ Use application-level providers in `bootstrapApplication` when:
 - **The service has no component-specific configuration** - General-purpose utilities that work the same everywhere
 - **You're providing global configuration** - API endpoints, feature flags, or environment settings
 
-```ts
-// main.ts
+```ts {header: "main.ts"}
 bootstrapApplication(App, {
   providers: [
     {provide: API_BASE_URL, useValue: 'https://api.example.com'},
@@ -709,8 +707,7 @@ Use route-level providers for:
 - **Lazy-loaded module dependencies** - Services that should only load with specific features
 - **Route-specific configuration** - Settings that vary by application area
 
-```ts
-// routes.ts
+```ts {header: "routes.ts"}
 export const routes: Routes = [
   {
     path: 'admin',
@@ -743,8 +740,7 @@ When creating Angular libraries, you often need to provide flexible configuratio
 
 Instead of requiring users to manually configure complex providers, library authors can export functions that return provider configurations:
 
-```ts
-// 📁 /libs/analytics/src/providers.ts
+```ts {header: "/libs/analytics/src/providers.ts"}
 import {InjectionToken, Provider, inject} from '@angular/core';
 
 // Configuration interface
@@ -770,9 +766,10 @@ export class AnalyticsService {
 export function provideAnalytics(config: AnalyticsConfig): Provider[] {
   return [{provide: ANALYTICS_CONFIG, useValue: config}, AnalyticsService];
 }
+```
 
+```ts {header: "main.ts"}
 // Usage in consumer app
-// main.ts
 bootstrapApplication(App, {
   providers: [
     provideAnalytics({
@@ -787,8 +784,7 @@ bootstrapApplication(App, {
 
 For more complex scenarios, you can combine multiple configuration approaches:
 
-```ts
-// 📁 /libs/http-client/src/provider.ts
+```ts {header: "/libs/http-client/src/provider.ts"}
 import {Provider, InjectionToken, inject} from '@angular/core';
 
 // Feature flags for optional functionality
