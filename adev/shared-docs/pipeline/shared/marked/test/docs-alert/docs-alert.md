@@ -17,4 +17,7 @@ IMPORTANT: Use Important for information that's crucial to comprehending the tex
 
 HELPFUL: Use Best practice to call out practices that are known to be successful or better than alternatives.
 
+Some prose that runs straight into the alert with no blank line.
+TIP: THIS TIP FOLLOWS PROSE ON THE NEXT LINE
+
 NOTE: THIS NOTE WITHOUT A LINE RETURN
