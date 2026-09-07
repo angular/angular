@@ -1758,21 +1758,25 @@ describe('reactive forms integration tests', () => {
 
     it('should work with single fields and async validators', async () => {
       const fixture = initTest(FormControlComp);
-      const control = new FormControl('', null!, uniqLoginAsyncValidator('good'));
+      // Delay validation so the scheduled renders can observe the pending state.
+      const control = new FormControl('', null!, uniqLoginAsyncValidator('good', 100));
       fixture.debugElement.componentInstance.control = control;
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
       expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
       dispatchEvent(input, 'blur');
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
 
       input.value = 'good';
       dispatchEvent(input, 'input');
-      await timeout();
-      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
+
+      await timeout(100);
+      await fixture.whenStable();
 
       expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
     });
