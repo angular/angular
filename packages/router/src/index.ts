@@ -51,6 +51,7 @@ export {
   GuardResult,
   LoadChildren,
   LoadChildrenCallback,
+  LoadConfigRoute,
   MaybeAsync,
   NavigationBehaviorOptions,
   OnSameUrlNavigation,
