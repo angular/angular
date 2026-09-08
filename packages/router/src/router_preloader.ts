@@ -20,6 +20,7 @@ import {Event, NavigationEnd} from './events';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {Router} from './router';
 import {RouterConfigLoader} from './router_config_loader';
+import {isConfigLoaded} from './utils/config';
 
 /**
  * @description
@@ -152,7 +153,8 @@ export class RouterPreloader implements OnDestroy {
       // and should not be used as a security measure to prevent loading of code.
       if (
         (route.loadChildren && !route._loadedRoutes && route.canLoad === undefined) ||
-        (route.loadComponent && !route._loadedComponent)
+        (route.loadComponent && !route._loadedComponent) ||
+        (route.loadConfig && !isConfigLoaded(route))
       ) {
         res.push(this.preloadConfig(injectorForCurrentRoute, route));
       }
@@ -168,6 +170,11 @@ export class RouterPreloader implements OnDestroy {
       if (injector.destroyed) {
         return of(null);
       }
+      const loaders: Observable<unknown>[] = [];
+      if (route.loadConfig && !isConfigLoaded(route)) {
+        loaders.push(from(this.loader.loadConfig(route)));
+      }
+
       let loadedChildren$: Observable<LoadedRouterConfig | null>;
       if (route.loadChildren && route.canLoad === undefined) {
         loadedChildren$ = from(this.loader.loadChildren(injector, route));
@@ -188,12 +195,11 @@ export class RouterPreloader implements OnDestroy {
           return this.processRoutes(config.injector ?? injector, config.routes);
         }),
       );
+      loaders.push(recursiveLoadChildren$);
       if (route.loadComponent && !route._loadedComponent) {
-        const loadComponent$ = this.loader.loadComponent(injector, route);
-        return from([recursiveLoadChildren$, loadComponent$]).pipe(mergeAll());
-      } else {
-        return recursiveLoadChildren$;
+        loaders.push(from(this.loader.loadComponent(injector, route)));
       }
+      return from(loaders).pipe(mergeAll()) as Observable<void>;
     });
   }
 }

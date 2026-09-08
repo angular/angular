@@ -321,6 +321,30 @@ export type LoadChildrenCallback = () =>
 export type LoadChildren = LoadChildrenCallback;
 
 /**
+ * The route configuration that can be loaded lazily via `Route.loadConfig`.
+ *
+ * Route matching, redirection, hierarchy, and loader properties (`path`, `pathMatch`,
+ * `matcher`, `outlet`, `redirectTo`, `loadConfig`, `children`, `loadChildren`,
+ * and `loadComponent`) cannot be defined in `loadConfig`. Because a lazily loaded configuration
+ * can never contribute these, the shape of the route tree is always known without running any loader.
+ * This is what allows tooling and the router to analyze, prerender, and preload an application's routes.
+ *
+ * @publicApi
+ */
+export type LoadConfigRoute = Omit<
+  Route,
+  | 'path'
+  | 'pathMatch'
+  | 'matcher'
+  | 'outlet'
+  | 'redirectTo'
+  | 'loadConfig'
+  | 'children'
+  | 'loadChildren'
+  | 'loadComponent'
+>;
+
+/**
  *
  * How to handle query parameters in a router link.
  * One of:
@@ -672,6 +696,45 @@ export interface Route {
   _loadedComponent?: Type<unknown>;
 
   /**
+   * An object specifying lazy-loaded route configuration.
+   *
+   * Route matching, redirection, hierarchy, and loader properties (`path`, `pathMatch`, `matcher`,
+   * `outlet`, `redirectTo`, `children`, `loadChildren`, and `loadComponent`) must be specified
+   * on the route directly. The lazy configuration can provide `component`, `providers`, `canActivate`,
+   * `canActivateChild`, `canDeactivate`, `canMatch`, `resolve`, `resources`, `data`, `title`, and
+   * `runGuardsAndResolvers`.
+   *
+   * ```ts
+   * [{
+   *   path: 'feature',
+   *   loadComponent: () => import('./feature.component'),
+   *   loadConfig: () => import('./feature.config').then(mod => mod.CONFIG),
+   * }];
+   * ```
+   *
+   * If the lazy-loaded config is exported via a `default` export, the `.then` can be omitted:
+   * ```ts
+   * [{
+   *   path: 'feature',
+   *   loadComponent: () => import('./feature.component'),
+   *   loadConfig: () => import('./feature.config'),
+   * }];
+   * ```
+   *
+   * Unlike `loadChildren` and `loadComponent`, the `loadConfig` loader is not invoked in an
+   * injection context and cannot use `inject()`.
+   *
+   * This is intentional. `loadConfig` is what supplies the route's own `providers`, so the only
+   * injector available to the loader would be the _parent_ route's — and that injector does not
+   * exist until the parent has been matched and had its own configuration applied. Tying the
+   * loader to an injector would therefore couple loading a configuration to having already
+   * matched and configured every route above it. Keeping the loader dependency-free means a
+   * configuration can be fetched from anywhere, including ahead of or independently of the
+   * navigation that needs it.
+   */
+  loadConfig?: () => LoadConfigRoute | Promise<LoadConfigRoute | DefaultExport<LoadConfigRoute>>;
+
+  /**
    * A URL or function that returns a URL to redirect to when the path matches.
    *
    * Absolute if the URL begins with a slash (/) or the function returns a `UrlTree`, otherwise
@@ -835,6 +898,11 @@ export interface Route {
    * @internal
    */
   _loadedNgModuleFactory?: NgModuleFactory<any>;
+  /**
+   * Whether the route configuration from `loadConfig` has been loaded.
+   * @internal
+   */
+  _configLoaded?: boolean;
 }
 
 export interface LoadedRouterConfig {

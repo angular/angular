@@ -394,6 +394,9 @@ export type LoadChildren = LoadChildrenCallback;
 export type LoadChildrenCallback = () => Type<any> | NgModuleFactory<any> | Routes | Observable<Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>> | Promise<NgModuleFactory<any> | Type<any> | Routes | DefaultExport<Type<any>> | DefaultExport<Routes>>;
 
 // @public
+export type LoadConfigRoute = Omit<Route, 'path' | 'pathMatch' | 'matcher' | 'outlet' | 'redirectTo' | 'loadConfig' | 'children' | 'loadChildren' | 'loadComponent'>;
+
+// @public
 export function mapToCanActivate(providers: Array<Type<CanActivate>>): CanActivateFn[];
 
 // @public
@@ -691,6 +694,7 @@ export interface Route {
     data?: Data;
     loadChildren?: LoadChildren;
     loadComponent?: () => Type<unknown> | Observable<Type<unknown> | DefaultExport<Type<unknown>>> | Promise<Type<unknown> | DefaultExport<Type<unknown>>>;
+    loadConfig?: () => LoadConfigRoute | Promise<LoadConfigRoute | DefaultExport<LoadConfigRoute>>;
     matcher?: UrlMatcher;
     outlet?: string;
     path?: string;

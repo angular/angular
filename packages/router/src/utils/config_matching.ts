@@ -7,16 +7,16 @@
  */
 
 import {EnvironmentInjector} from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {map} from 'rxjs/operators';
 
 import {PartialMatchRouteSnapshot, Route} from '../models';
 import {runCanMatchGuards} from '../operators/check_guards';
+import {RouterConfigLoader} from '../router_config_loader';
 import {ActivatedRouteSnapshot} from '../router_state';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
-import {getOrCreateRouteInjectorIfNeeded, getOutlet} from './config';
+import {getOrCreateRouteInjectorIfNeeded, getOutlet, isConfigLoaded} from './config';
+import {firstValueFrom} from './first_value_from';
 
 export interface MatchResult {
   matched: boolean;
@@ -51,7 +51,7 @@ export function createPreMatchRouteSnapshot(
   };
 }
 
-export function matchWithChecks(
+export async function matchWithChecks(
   segmentGroup: UrlSegmentGroup,
   route: Route,
   segments: UrlSegment[],
@@ -59,24 +59,28 @@ export function matchWithChecks(
   urlSerializer: UrlSerializer,
   createSnapshot: (result: MatchResult) => ActivatedRouteSnapshot,
   abortSignal: AbortSignal,
-): Observable<MatchResult> {
+  configLoader: RouterConfigLoader,
+): Promise<MatchResult> {
   const result = match(segmentGroup, route, segments);
   if (!result.matched) {
-    return of(result);
+    return result;
+  }
+
+  if (route.loadConfig && !isConfigLoaded(route)) {
+    await configLoader.loadConfig(route);
+    if (abortSignal.aborted) {
+      throw new Error(abortSignal.reason);
+    }
   }
 
   const currentSnapshot = createPreMatchRouteSnapshot(createSnapshot(result));
   // Only create the Route's `EnvironmentInjector` if it matches the attempted
   // navigation
   injector = getOrCreateRouteInjectorIfNeeded(route, injector);
-  return runCanMatchGuards(
-    injector,
-    route,
-    segments,
-    urlSerializer,
-    currentSnapshot,
-    abortSignal,
-  ).pipe(map((v) => (v === true ? result : {...noMatch})));
+  const canMatch = await firstValueFrom(
+    runCanMatchGuards(injector, route, segments, urlSerializer, currentSnapshot, abortSignal),
+  );
+  return canMatch === true ? result : {...noMatch};
 }
 
 export function match(

@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
-import {Route, Routes} from '../models';
+import {LoadConfigRoute, Route, Routes} from '../models';
 import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
@@ -57,6 +57,10 @@ export function getProvidersInjector(route: Route): EnvironmentInjector | undefi
   return route._injector;
 }
 
+export function isConfigLoaded(route: Route): boolean {
+  return !!route._configLoaded;
+}
+
 export function validateConfig(
   config: Routes,
   parentPath: string = '',
@@ -82,6 +86,50 @@ export function assertStandalone(fullPath: string, component: Type<unknown> | un
       RuntimeErrorCode.INVALID_ROUTE_CONFIG,
       `Invalid configuration of route '${fullPath}'. The component must be standalone.`,
     );
+  }
+}
+
+const DISALLOWED_LOADED_CONFIG_KEYS = new Set([
+  'path',
+  'pathMatch',
+  'matcher',
+  'outlet',
+  'redirectTo',
+  'loadConfig',
+  'children',
+  'loadChildren',
+  'loadComponent',
+]);
+
+export function validateLoadedConfig(route: Route, config: LoadConfigRoute): void {
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+      `Invalid configuration of route '${route.path ?? ''}': 'loadConfig' must return an object.`,
+    );
+  }
+  if (config.component) {
+    if (route.loadComponent) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${route.path ?? ''}': component from 'loadConfig' and 'loadComponent' cannot be used together`,
+      );
+    }
+    assertStandalone(route.path ?? '', config.component);
+  }
+  for (const key of Object.keys(config)) {
+    if (DISALLOWED_LOADED_CONFIG_KEYS.has(key)) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${route.path ?? ''}': property '${key}' cannot be returned from 'loadConfig'.`,
+      );
+    }
+    if ((route as Record<string, unknown>)[key] !== undefined) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${route.path ?? ''}': property '${key}' is already defined on the route and cannot be overridden by 'loadConfig'.`,
+      );
+    }
   }
 }
 
@@ -113,6 +161,7 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
       !route.redirectTo &&
       !route.component &&
       !route.loadComponent &&
+      !route.loadConfig &&
       !route.children &&
       !route.loadChildren &&
       route.outlet &&
@@ -147,6 +196,12 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
         `Invalid configuration of route '${fullPath}': component and loadComponent cannot be used together`,
       );
     }
+    if (route.loadConfig && route.redirectTo) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${fullPath}': redirectTo and loadConfig cannot be used together`,
+      );
+    }
 
     if (route.redirectTo) {
       if (route.component || route.loadComponent) {
@@ -174,12 +229,13 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
       route.redirectTo === void 0 &&
       !route.component &&
       !route.loadComponent &&
+      !route.loadConfig &&
       !route.children &&
       !route.loadChildren
     ) {
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_ROUTE_CONFIG,
-        `Invalid configuration of route '${fullPath}'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`,
+        `Invalid configuration of route '${fullPath}'. One of the following must be provided: component, loadComponent, loadConfig, redirectTo, children or loadChildren`,
       );
     }
     if (route.path === void 0 && route.matcher === void 0) {
