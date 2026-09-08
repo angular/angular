@@ -1775,6 +1775,8 @@ describe('reactive forms integration tests', () => {
       await fixture.whenStable();
       expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
 
+      // Wait for the validator's 100 ms delay, which keeps it pending during rendering.
+      // whenStable() doesn't wait for this timer; useAutoTick advances the mock clock.
       await timeout(100);
       await fixture.whenStable();
 
