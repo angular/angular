@@ -49,6 +49,7 @@ export {
   Data,
   DefaultExport,
   GuardResult,
+  LazyRouteConfig,
   LoadChildren,
   LoadChildrenCallback,
   MaybeAsync,

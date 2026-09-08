@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
-import {Route, Routes} from '../models';
+import {LazyRouteConfig, Route, Routes} from '../models';
 import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 
@@ -36,7 +36,7 @@ export function getOrCreateRouteInjectorIfNeeded(
     route._injector = createEnvironmentInjector(
       route.providers,
       currentInjector,
-      `Route: ${route.path}`,
+      typeof ngDevMode === 'undefined' || ngDevMode ? `Route: ${route.path}` : '',
     );
   }
   return route._injector ?? currentInjector;
@@ -85,7 +85,50 @@ export function assertStandalone(fullPath: string, component: Type<unknown> | un
   }
 }
 
-function validateNode(route: Route, fullPath: string, requireStandaloneComponents: boolean): void {
+const DISALLOWED_LOADED_CONFIG_KEYS = /* @__PURE__ */ new Set([
+  'path',
+  'pathMatch',
+  'matcher',
+  'outlet',
+  'data',
+  'redirectTo',
+  'loadConfig',
+  'children',
+  'loadChildren',
+  'loadComponent',
+]);
+
+export function validateLoadedConfig(route: Route, config: LazyRouteConfig): void {
+  const fullPath = route.path ?? '';
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+      `Invalid configuration of route '${fullPath}': 'loadConfig' must return an object.`,
+    );
+  }
+  for (const key of Object.keys(config)) {
+    if (DISALLOWED_LOADED_CONFIG_KEYS.has(key)) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${fullPath}': property '${key}' cannot be returned from 'loadConfig'.`,
+      );
+    }
+    if ((route as Record<string, unknown>)[key] !== undefined) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${fullPath}': property '${key}' is already defined on the route and cannot be overridden by 'loadConfig'.`,
+      );
+    }
+  }
+  validateNode({...route, ...config, _configLoaded: true}, fullPath, true, false);
+}
+
+function validateNode(
+  route: Route,
+  fullPath: string,
+  requireStandaloneComponents: boolean,
+  recurseChildren = true,
+): void {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (!route) {
       throw new RuntimeError(
@@ -109,10 +152,12 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
         `Invalid configuration of route '${fullPath}': Array cannot be specified`,
       );
     }
+    const hasPendingLoadConfig = Boolean(route.loadConfig && !route._configLoaded);
     if (
       !route.redirectTo &&
       !route.component &&
       !route.loadComponent &&
+      !hasPendingLoadConfig &&
       !route.children &&
       !route.loadChildren &&
       route.outlet &&
@@ -147,6 +192,12 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
         `Invalid configuration of route '${fullPath}': component and loadComponent cannot be used together`,
       );
     }
+    if (route.loadConfig && route.redirectTo) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${fullPath}': redirectTo and loadConfig cannot be used together`,
+      );
+    }
 
     if (route.redirectTo) {
       if (route.component || route.loadComponent) {
@@ -174,12 +225,13 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
       route.redirectTo === void 0 &&
       !route.component &&
       !route.loadComponent &&
+      !hasPendingLoadConfig &&
       !route.children &&
       !route.loadChildren
     ) {
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_ROUTE_CONFIG,
-        `Invalid configuration of route '${fullPath}'. One of the following must be provided: component, loadComponent, redirectTo, children or loadChildren`,
+        `Invalid configuration of route '${fullPath}'. One of the following must be provided: component, loadComponent, loadConfig, redirectTo, children or loadChildren`,
       );
     }
     if (route.path === void 0 && route.matcher === void 0) {
@@ -205,7 +257,7 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
       assertStandalone(fullPath, route.component);
     }
   }
-  if (route.children) {
+  if (recurseChildren && route.children) {
     validateConfig(route.children, fullPath, requireStandaloneComponents);
   }
 }

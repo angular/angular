@@ -906,5 +906,41 @@ describe('RouterPreloader', () => {
       preloader.preload().subscribe(() => {});
       expect(lazyComponentSpy).toHaveBeenCalledTimes(4);
     });
+
+    it('preloads nested child components when parent loadComponent is skipped by PreloadingStrategy', () => {
+      @Component({template: ''})
+      class LoadedComponent {}
+      const parentSpy = jasmine.createSpy('parent').and.returnValue(LoadedComponent);
+      const childSpy = jasmine.createSpy('child').and.returnValue(LoadedComponent);
+
+      @Injectable({providedIn: 'root'})
+      class SelectivePreloadingStrategy implements PreloadingStrategy {
+        preload(route: Route, fn: () => Observable<unknown>): Observable<unknown> {
+          return route.data?.['preload'] ? fn() : of(null);
+        }
+      }
+
+      TestBed.overrideProvider(PreloadingStrategy, {
+        useFactory: () => new SelectivePreloadingStrategy(),
+      });
+      TestBed.inject(Router).resetConfig([
+        {
+          path: 'a',
+          loadComponent: parentSpy,
+          children: [
+            {
+              path: 'b',
+              loadComponent: childSpy,
+              data: {preload: true},
+            },
+          ],
+        },
+      ]);
+
+      const preloader = TestBed.inject(RouterPreloader);
+      preloader.preload().subscribe(() => {});
+      expect(parentSpy).not.toHaveBeenCalled();
+      expect(childSpy).toHaveBeenCalledTimes(1);
+    });
   });
 });
