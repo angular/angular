@@ -15,7 +15,6 @@ import {
   signal,
   WritableSignal,
   resource,
-  ɵpromiseWithResolvers,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {provideRouter, Router, UrlTree} from '@angular/router';

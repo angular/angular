@@ -5,14 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {
-  afterNextRender,
-  DestroyRef,
-  EnvironmentInjector,
-  inject,
-  ɵpromiseWithResolvers as promiseWithResolvers,
-  Service,
-} from '@angular/core';
+import {afterNextRender, DestroyRef, EnvironmentInjector, inject, Service} from '@angular/core';
 
 import {
   Location,
@@ -449,13 +442,13 @@ export class NavigationStateManager extends StateManager {
       promise: handlerPromise,
       resolve: resolveHandler,
       reject: rejectHandler,
-    } = promiseWithResolvers<void>();
+    } = Promise.withResolvers<void>();
 
     const {
       promise: precommitHandlerPromise,
       resolve: resolvePrecommitHandler,
       reject: rejectPrecommitHandler,
-    } = promiseWithResolvers<void>();
+    } = Promise.withResolvers<void>();
     this.currentNavigation.rejectNavigateEvent = () => {
       event.signal.removeEventListener('abort', abortHandler);
       rejectPrecommitHandler();

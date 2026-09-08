@@ -17,7 +17,6 @@ import {
   ResourceStatus,
   Signal,
   signal,
-  ɵpromiseWithResolvers as promiseWithResolvers,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
@@ -81,7 +80,7 @@ describe('Router resources integration', () => {
     });
 
     it('should support async resource functions returning a Promise', async () => {
-      const loaderDeferred = promiseWithResolvers<string>();
+      const loaderDeferred = Promise.withResolvers<string>();
 
       const {harness, router} = await setupRouter([
         {
@@ -139,7 +138,7 @@ describe('Router resources integration', () => {
     });
 
     it('should await blocking resource resolution even when resources function is async', async () => {
-      const loaderDeferred = promiseWithResolvers<string>();
+      const loaderDeferred = Promise.withResolvers<string>();
 
       const {harness, router} = await setupRouter([
         {
@@ -174,7 +173,7 @@ describe('Router resources integration', () => {
     });
 
     it('should cleanly ignore resolution of async resource function if navigation was cancelled', async () => {
-      const firstResources = promiseWithResolvers<void>();
+      const firstResources = Promise.withResolvers<void>();
 
       const {harness, router} = await setupRouter([
         {
@@ -213,7 +212,7 @@ describe('Router resources integration', () => {
     });
 
     it('should cleanly ignore resolution of async resource function if navigation was cancelled (blocking)', async () => {
-      const firstResources = promiseWithResolvers<void>();
+      const firstResources = Promise.withResolvers<void>();
 
       const {harness, router} = await setupRouter([
         {
@@ -349,7 +348,7 @@ describe('Router resources integration', () => {
   describe('Blocking vs Non-blocking Resources', () => {
     it('should resolve resources before component initialization if blocking', async () => {
       let resolverSpy = jasmine.createSpy('resolver');
-      const deferred = promiseWithResolvers<string>();
+      const deferred = Promise.withResolvers<string>();
 
       const {harness, router} = await setupRouter([
         {
@@ -587,7 +586,7 @@ describe('Router resources integration', () => {
     });
 
     it('should abort previous request via AbortSignal when a new navigation comes in', async () => {
-      const deferred = promiseWithResolvers<{name: string}>();
+      const deferred = Promise.withResolvers<{name: string}>();
       let aborted = false;
 
       const {harness, router} = await setupRouter([
@@ -628,7 +627,7 @@ describe('Router resources integration', () => {
 
     it('should correctly propagate parameter state when a pending navigation supersedes identically reused routes', async () => {
       const p2 = new Promise(() => {}); // never resolves
-      const p3 = promiseWithResolvers<string>();
+      const p3 = Promise.withResolvers<string>();
 
       let loadedParams: any[] = [];
 
@@ -672,7 +671,7 @@ describe('Router resources integration', () => {
     });
 
     it('should mask loading states during multi-step Guard UrlTree redirects', async () => {
-      let loader = promiseWithResolvers<string>();
+      let loader = Promise.withResolvers<string>();
 
       const {harness, router} = await setupRouter([
         {
@@ -702,7 +701,7 @@ describe('Router resources integration', () => {
       expect(resourceRef.value()).toBe('1');
       expect(resourceRef.isLoading()).toBe(false);
 
-      loader = promiseWithResolvers<string>();
+      loader = Promise.withResolvers<string>();
 
       // Initiate a navigation to a link that Redirects using a UrlTree Guard.
       const nav2 = harness.navigateByUrl('/bad-link');
@@ -862,7 +861,7 @@ describe('Router resources integration', () => {
 
     describe('dependent resources', () => {
       it('should support resources depending on each other on the same route', async () => {
-        const {promise: userPromise, resolve: resolveUser} = promiseWithResolvers<{
+        const {promise: userPromise, resolve: resolveUser} = Promise.withResolvers<{
           id: string;
           teamId: string;
         }>();
@@ -903,8 +902,8 @@ describe('Router resources integration', () => {
       });
 
       it('should support child route resource depending on shared signal updated by parent resource', async () => {
-        const {promise: parentPromise, resolve: resolveParent} = promiseWithResolvers<any>();
-        const {promise: childPromise, resolve: resolveChild} = promiseWithResolvers<any>();
+        const {promise: parentPromise, resolve: resolveParent} = Promise.withResolvers<any>();
+        const {promise: childPromise, resolve: resolveChild} = Promise.withResolvers<any>();
 
         const sharedUserSignal = signal<any>(undefined);
 
