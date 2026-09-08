@@ -62,63 +62,143 @@ function isValidPosition(position: unknown): position is SignalNodePosition {
   );
 }
 
+function isDetached(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
+  return (
+    msg.includes('not attached') ||
+    msg.includes('already detached') ||
+    msg.includes('target closed') ||
+    msg.includes('detached')
+  );
+}
+
 /**
  * Deterministic element/signal position key: `${element.join('/')}#${signalId}`
  */
 export type SignalKey = string;
+export type TabId = number;
+export type ScriptId = string;
+export type ScriptUrl = string;
 
 export class BreakpointManager {
   /**
    * Tracks active CDP signal breakpoints per browser tab.
-   * - Outer Map Key: tabId (number) — Chrome tab ID being inspected.
+   * - Outer Map Key: tabId (TabId) — Chrome tab ID being inspected.
    * - Inner Map Key: positionKey (SignalKey) — Deterministic element/signal key (${element.join('/')}#${signalId}).
    * - Inner Map Value: ActiveBreakpointEntry — Contains original SignalNodePosition and CDP breakpointId.
    */
-  private readonly activeBreakpoints = new Map<number, Map<SignalKey, ActiveBreakpointEntry>>();
+  private readonly activeBreakpoints = new Map<TabId, Map<SignalKey, ActiveBreakpointEntry>>();
 
   /**
-   * Maps CDP scriptId to script URL.
-   * - Key: scriptId (string) — Internal script identifier assigned by V8/CDP (from `Debugger.scriptParsed`).
-   * - Value: url (string) — Source URL of the parsed script file.
+   * Maps tabId -> (scriptId -> script URL).
+   * Keyed by tabId to prevent cross-tab collisions and allow clean lifecycle management.
    */
-  private readonly scriptMap = new Map<string, string>();
+  private readonly scriptMap = new Map<TabId, Map<ScriptId, ScriptUrl>>();
 
-  private constructor(
+  constructor(
     private readonly debuggerApi: typeof chrome.debugger = chrome.debugger,
     private readonly runtimeApi: typeof chrome.runtime = chrome.runtime,
   ) {}
 
-  static initialize(): BreakpointManager {
-    const manager = new BreakpointManager();
+  static initialize(
+    debuggerApi: typeof chrome.debugger = chrome.debugger,
+    runtimeApi: typeof chrome.runtime = chrome.runtime,
+  ): BreakpointManager {
+    const manager = new BreakpointManager(debuggerApi, runtimeApi);
     manager.initialize();
     return manager;
   }
 
-  private initialize(): void {
+  private get extensionOrigin(): string {
+    if (typeof this.runtimeApi.getURL === 'function') {
+      const url = this.runtimeApi.getURL('');
+      return url.endsWith('/') ? url.slice(0, -1) : url;
+    }
+    if (this.runtimeApi.id) {
+      return `chrome-extension://${this.runtimeApi.id}`;
+    }
+    return typeof self !== 'undefined' ? self.origin : '';
+  }
+
+  initialize(): void {
     this.debuggerApi.onEvent.addListener(this.handleDebuggerEvent);
+    this.debuggerApi.onDetach.addListener(this.handleDebuggerDetach);
     this.runtimeApi.onMessage.addListener(this.handleRuntimeMessage);
   }
 
   private readonly handleDebuggerEvent = (
-    _source: chrome.debugger.Debuggee,
+    source: chrome.debugger.Debuggee,
     method: string,
     params?: unknown,
   ): void => {
-    if (method === 'Debugger.scriptParsed' && params) {
+    if (method === 'Debugger.scriptParsed' && params && source.tabId !== undefined) {
       const {scriptId, url} = params as ScriptParsedParams;
       if (scriptId && url) {
-        this.scriptMap.set(scriptId, url);
+        let tabScripts = this.scriptMap.get(source.tabId);
+        if (!tabScripts) {
+          tabScripts = new Map();
+          this.scriptMap.set(source.tabId, tabScripts);
+        }
+        tabScripts.set(scriptId, url);
       }
     }
   };
 
+  private readonly handleDebuggerDetach = (source: chrome.debugger.Debuggee): void => {
+    if (source.tabId !== undefined) {
+      this.activeBreakpoints.delete(source.tabId);
+      this.scriptMap.delete(source.tabId);
+    }
+  };
+
+  /**
+   * Validates that the message sender originates from this extension's internal DevTools panel.
+   * Disallows messages from injected content scripts (which have sender.tab defined)
+   * and external pages.
+   */
+  private isValidSender(sender: chrome.runtime.MessageSender): boolean {
+    // 1. Ensure the sender extension ID matches our own extension ID
+    if (sender.id !== this.runtimeApi.id) {
+      return false;
+    }
+    // 2. Ensure the message originates from an extension internal context (DevTools panel),
+    //    and not an injected content script or webpage where sender.tab is defined.
+    if (sender.tab !== undefined) {
+      return false;
+    }
+    // 3. Ensure the message originates from this extension's origin
+    if (!sender.origin || sender.origin !== this.extensionOrigin) {
+      return false;
+    }
+    return true;
+  }
+
   private readonly handleRuntimeMessage = (
     message: any,
-    _sender: chrome.runtime.MessageSender,
+    sender: chrome.runtime.MessageSender,
     sendResponse: (response?: any) => void,
   ): boolean => {
+    if (
+      message?.action !== 'setSignalBreakpoint' &&
+      message?.action !== 'removeSignalBreakpoint' &&
+      message?.action !== 'getActiveSignalBreakpoints'
+    ) {
+      return false;
+    }
+
+    if (!this.isValidSender(sender)) {
+      console.warn('Rejected unauthorized breakpoint message from sender:', sender);
+      return false;
+    }
+
+    const {tabId} = message;
+    if (typeof tabId !== 'number' || !Number.isInteger(tabId) || tabId < 0) {
+      sendResponse({success: false, error: 'Invalid tab ID'});
+      return false;
+    }
+
     if (message.action === 'setSignalBreakpoint') {
-      const {tabId, position} = message;
+      const {position} = message;
       this.setBreakpoint(tabId, position)
         .then((result) => sendResponse({success: true, result}))
         .catch((err) => {
@@ -127,7 +207,7 @@ export class BreakpointManager {
         });
       return true;
     } else if (message.action === 'removeSignalBreakpoint') {
-      const {tabId, position} = message;
+      const {position} = message;
       this.removeBreakpoint(tabId, position)
         .then((result) => sendResponse({success: true, result}))
         .catch((err) => {
@@ -136,10 +216,9 @@ export class BreakpointManager {
         });
       return true;
     } else if (message.action === 'getActiveSignalBreakpoints') {
-      const {tabId} = message;
       const activePositions = this.getActiveBreakpoints(tabId);
       sendResponse({success: true, activePositions});
-      return true;
+      return false;
     }
     return false;
   };
@@ -200,7 +279,7 @@ export class BreakpointManager {
     const {scriptId, lineNumber, columnNumber} = location;
 
     let bpResult: SetBreakpointResult | undefined;
-    const url = this.scriptMap.get(scriptId);
+    const url = this.scriptMap.get(tabId)?.get(scriptId);
 
     if (!url) {
       console.warn('Could not find URL for scriptId:', scriptId, 'falling back to scriptId');
@@ -247,15 +326,28 @@ export class BreakpointManager {
       throw new Error('No active breakpoint found for this signal');
     }
 
-    await this.ensureAttached(target);
-
-    await this.debuggerApi.sendCommand(target, 'Debugger.removeBreakpoint', {
-      breakpointId: entry.breakpointId,
-    });
-
-    tabBps.delete(posKey);
-    if (tabBps.size === 0) {
-      this.activeBreakpoints.delete(tabId);
+    try {
+      await this.debuggerApi.sendCommand(target, 'Debugger.removeBreakpoint', {
+        breakpointId: entry.breakpointId,
+      });
+    } catch (err: unknown) {
+      // If the debugger is already detached or target closed, CDP has already dropped breakpoints
+      if (!isDetached(err)) {
+        throw err;
+      }
+    } finally {
+      tabBps.delete(posKey);
+      if (tabBps.size === 0) {
+        this.activeBreakpoints.delete(tabId);
+        this.scriptMap.delete(tabId);
+        try {
+          await this.debuggerApi.detach(target);
+        } catch (err: unknown) {
+          if (!isDetached(err)) {
+            console.warn('Unexpected error while detaching debugger:', err);
+          }
+        }
+      }
     }
   }
 }

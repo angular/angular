@@ -197,6 +197,36 @@ ts_project(
     ],
 )
 
+zoneless_web_test_suite(
+    name = "breakpoint_manager_test",
+    deps = [
+        ":breakpoint_manager_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "fake_chrome_debugger",
+    srcs = [
+        "fake_chrome_debugger.ts",
+    ],
+    deps = [
+        "//:node_modules/@types/chrome",
+    ],
+)
+
+ts_test_library(
+    name = "breakpoint_manager_test_lib",
+    srcs = [
+        "breakpoint_manager.spec.ts",
+    ],
+    deps = [
+        ":breakpoint_manager",
+        ":fake_chrome_debugger",
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/protocol",
+    ],
+)
+
 ts_project(
     name = "tab_manager",
     srcs = [
