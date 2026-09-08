@@ -465,6 +465,39 @@ describe('Router resources integration', () => {
       expect(resourceRef.value()).toBe('1');
     });
 
+    it('should block navigation when a resource has a defaultValue until loading is complete', async () => {
+      const loaderDeferred = promiseWithResolvers<string>();
+
+      const {harness, router} = await setupRouter([
+        {
+          path: 'test',
+          component: TargetCmp,
+          resources: () => ({
+            user: resource({
+              defaultValue: 'default-user',
+              loader: async () => loaderDeferred.promise,
+            }),
+          }),
+        },
+      ]);
+
+      const nav = harness.navigateByUrl('/test');
+      await timeout();
+
+      // Navigation is blocked on loading even though the resource has a defaultValue
+      expect(router.url).not.toBe('/test');
+
+      loaderDeferred.resolve('loaded-user');
+      await nav;
+
+      expect(router.url).toBe('/test');
+
+      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
+        ?.resources?.['user'] as any;
+      expect(resourceRef.value()).toBe('loaded-user');
+      expect(resourceRef.isLoading()).toBe(false);
+    });
+
     it('should complete navigation and expose error for non-blocking resources', async () => {
       const {harness, router} = await setupRouter([
         {
@@ -811,20 +844,25 @@ describe('Router resources integration', () => {
       expect(resourceRef.value()).toBe('rx loaded 123');
     });
 
-    it('should unblock navigation when a resource emits a value even while remaining in loading state', async () => {
+    it('should remain blocked when a resource emits a value while remaining in loading state until loading completes', async () => {
       const valueSignal = signal<string | undefined>(undefined);
+      const statusSignal = signal<ResourceStatus>('loading');
+      const isLoadingSignal = signal<boolean>(true);
       const hasValueSignal = signal<boolean>(false);
 
       const customResource: Resource<string> = {
         value: valueSignal as Signal<string>,
-        status: signal<ResourceStatus>('loading').asReadonly(),
-        isLoading: signal(true).asReadonly(),
+        status: statusSignal.asReadonly(),
+        isLoading: isLoadingSignal.asReadonly(),
         hasValue: (() => hasValueSignal()) as any,
         error: signal<Error | undefined>(undefined).asReadonly(),
-        snapshot: computed(() => ({
-          status: 'loading' as const,
-          value: valueSignal()!,
-        })),
+        snapshot: computed(
+          () =>
+            ({
+              status: statusSignal(),
+              value: valueSignal()!,
+            }) as any,
+        ),
       };
 
       const {harness, router} = await setupRouter([
@@ -837,27 +875,30 @@ describe('Router resources integration', () => {
         },
       ]);
 
-      harness.navigateByUrl('/stream');
+      const nav = harness.navigateByUrl('/stream');
       await timeout();
 
-      // Navigation should be pending because customResource has no value yet
+      // Navigation should be pending because customResource is in loading state
       expect(router.url).not.toBe('/stream');
 
       // Custom resource emits a value while retaining isLoading() === true and status 'loading'
       valueSignal.set('streamed-1');
       hasValueSignal.set(true);
-      await harness.fixture.whenStable();
+      await timeout();
+
+      // Navigation should still be blocked because loading state is true
+      expect(router.url).not.toBe('/stream');
+
+      // Resource finishes loading
+      statusSignal.set('resolved');
+      isLoadingSignal.set(false);
+      await nav;
 
       expect(router.url).toBe('/stream');
       const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
         ?.resources?.['data'] as any;
       expect(resourceRef.value()).toBe('streamed-1');
-      expect(resourceRef.isLoading()).toBe(true);
-
-      // Verify subsequent value update while still in loading state
-      valueSignal.set('streamed-2');
-      await harness.fixture.whenStable();
-      expect(resourceRef.value()).toBe('streamed-2');
+      expect(resourceRef.isLoading()).toBe(false);
     });
 
     describe('dependent resources', () => {
