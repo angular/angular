@@ -51,14 +51,21 @@ export function createBoundaryBlock(
 
     for (const param of block.parameters) {
       const letMatch = param.expression.match(LET_PATTERN);
-      if (letMatch !== null) {
-        const variablesSpan = new ParseSourceSpan(
-          param.sourceSpan.start.moveBy(letMatch[0].length - letMatch[1].length),
-          param.sourceSpan.end,
-        );
+      const isAliasMatch = param.expression.match(/^\s*[$A-Z_][0-9A-Z_$]*\s*=/i) !== null;
+
+      if (letMatch !== null || isAliasMatch) {
+        const expressionToParse = letMatch !== null ? letMatch[1] : param.expression;
+        const variablesSpan =
+          letMatch !== null
+            ? new ParseSourceSpan(
+                param.sourceSpan.start.moveBy(letMatch[0].length - letMatch[1].length),
+                param.sourceSpan.end,
+              )
+            : param.sourceSpan;
+
         parseLetParameters(
           param.sourceSpan,
-          letMatch[1],
+          expressionToParse,
           variablesSpan,
           contextVariables,
           errors,
