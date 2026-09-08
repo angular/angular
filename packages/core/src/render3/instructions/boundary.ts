@@ -21,19 +21,15 @@ import {
   ON_ERROR,
   TVIEW,
 } from '../interfaces/view';
-import {ComponentTemplate} from '../interfaces/definition';
-import {LocalRefExtractor} from '../interfaces/node';
 import {getLView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {markViewForRefresh} from '../util/view_utils';
 import {addLViewToLContainer, removeLViewFromLContainer} from '../view/container';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
-import {createControlFlowBranch, getExistingTNode, getLContainer} from './control_flow';
+import {getExistingTNode, getLContainer} from './control_flow';
 
 /**
  * Error thrown when an error falls through an @boundary without matching any @error block.
- *
- * @publicApi 22.2
  */
 export class BoundaryError extends Error {
   constructor(message: string, options?: {cause?: unknown}) {
