@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CssSelector} from '../../directive_matching';
+import {splitNsName} from '../../ml_parser/tags';
 import {
   BoundaryBlock,
   BoundaryErrorBlock,
@@ -664,11 +666,10 @@ export class Scope {
       }
 
       this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node.inputs, node, claimedInputs));
-      // If there are no directives which match this element, then it's a "plain" DOM element (or a
-      // web component), and should be checked against the DOM schema. If any directives match,
-      // we must assume that the element could be custom (either a component, or a directive like
-      // <router-outlet>) and shouldn't validate the element name itself.
-      const checkElement = directives.length === 0;
+      // Check the element against the DOM schema unless it is matched by an Angular component
+      // or by a directive that explicitly targets the element's tag name (such as `<router-outlet>`).
+      // Directives that only match attributes (like `[formControl]`) do not claim the element name.
+      const checkElement = this.requiresUnknownElementCheck(node, directives);
       this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
     }
   }
@@ -888,11 +889,7 @@ export class Scope {
           }
         }
 
-        let hasDirectives: boolean;
-        if (directives === null || directives.length === 0) {
-          hasDirectives = false;
-        } else {
-          hasDirectives = true;
+        if (directives !== null && directives.length > 0) {
           for (const dir of directives) {
             for (const propertyName of dir.inputs.propertyNames) {
               claimedInputs.add(propertyName);
@@ -901,9 +898,8 @@ export class Scope {
         }
         const isForeign = this.tcb.boundTarget.getForeignComponent(node) !== null;
         if (!isForeign) {
-          this.opQueue.push(
-            new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs),
-          );
+          const checkElement = this.requiresUnknownElementCheck(node, directives);
+          this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
         }
       }
 
@@ -1108,5 +1104,41 @@ export class Scope {
         );
       }
     }
+  }
+
+  /**
+   * Checks the element against the DOM schema unless it is matched by an Angular component
+   * or by a directive that explicitly targets the element's tag name (such as `<router-outlet>`).
+   * Directives that only match attributes (like `[formControl]`) do not claim the element name.
+   */
+  private requiresUnknownElementCheck(
+    node: Element,
+    directives: TcbDirectiveMetadata[] | null,
+  ): boolean {
+    if (directives === null || directives.length === 0) {
+      return true;
+    }
+
+    if (!this.tcb.env.config.checkUnknownElementTagsMatchedByDirectives) {
+      return false;
+    }
+
+    const hasComponent = directives.some((dir) => dir.isComponent);
+    const hasDirectiveMatchingTag = directives.some((dir) =>
+      matchesTagName(dir.selector, node.name),
+    );
+    return !hasComponent && !hasDirectiveMatchingTag;
+  }
+}
+
+function matchesTagName(selector: string | null, tagName: string): boolean {
+  if (selector === null) {
+    return false;
+  }
+  const lowerTag = splitNsName(tagName, false)[1].toLowerCase();
+  try {
+    return CssSelector.parse(selector).some((sel) => sel.element?.toLowerCase() === lowerTag);
+  } catch {
+    return false;
   }
 }

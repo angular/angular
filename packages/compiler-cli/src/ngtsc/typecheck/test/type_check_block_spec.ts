@@ -1194,6 +1194,7 @@ describe('type check blocks', () => {
       unusedStandaloneImports: 'warning',
       allowSignalsInTwoWayBindings: true,
       allowDomEventAssertion: true,
+      checkUnknownElementTagsMatchedByDirectives: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {

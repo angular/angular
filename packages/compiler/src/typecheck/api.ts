@@ -290,4 +290,9 @@ export interface TypeCheckingConfig {
    * Whether to descend into the bodies of control flow blocks (`@if`, `@switch` and `@for`).
    */
   checkControlFlowBodies: boolean;
+
+  /**
+   * Whether to validate unknown element tags even when matched by attribute directives.
+   */
+  checkUnknownElementTagsMatchedByDirectives: boolean;
 }

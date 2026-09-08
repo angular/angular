@@ -22,8 +22,8 @@ import {InjectableClassRegistry, JitDeclarationRegistry} from '../../annotations
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {
   addDiagnosticDetails,
-  errorCodeWithGuideFromDiagnosticCode,
   ErrorCode,
+  errorCodeWithGuideFromDiagnosticCode,
   isFatalDiagnosticError,
   ngErrorCode,
 } from '../../diagnostics';
@@ -1123,6 +1123,8 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
+        // TODO: set to `false` when g3 has been cleaned-up, we don't want to introduce a breaking change
+        checkUnknownElementTagsMatchedByDirectives: true,
       };
     } else {
       typeCheckingConfig = {
@@ -1155,6 +1157,7 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
+        checkUnknownElementTagsMatchedByDirectives: false,
       };
     }
 
@@ -1202,6 +1205,10 @@ export class NgCompiler {
     if (this.options.extendedDiagnostics?.checks?.unusedStandaloneImports !== undefined) {
       typeCheckingConfig.unusedStandaloneImports =
         this.options.extendedDiagnostics.checks.unusedStandaloneImports;
+    }
+    if (this.options.strictUnknownElementEventualValidation !== undefined) {
+      typeCheckingConfig.checkUnknownElementTagsMatchedByDirectives =
+        this.options.strictUnknownElementEventualValidation;
     }
 
     return typeCheckingConfig;
