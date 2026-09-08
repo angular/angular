@@ -120,6 +120,14 @@ export interface InternalOptions {
    * import e.g. `Component` relatively and should be detected by the compiler.
    */
   _isAngularCoreCompilation?: boolean;
+
+  /**
+   * Whether to validate unknown element tags even when matched by attribute directives.
+   * This is an internal flag to help land a breaking change in G3.
+   *
+   * @internal
+   */
+  _strictUnknownElementEventualValidation?: boolean;
 }
 
 /**

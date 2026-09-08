@@ -1123,6 +1123,7 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
+        checkUnknownElementTagsMatchedByDirectives: false,
       };
     } else {
       typeCheckingConfig = {
@@ -1155,6 +1156,7 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
+        checkUnknownElementTagsMatchedByDirectives: false,
       };
     }
 
@@ -1202,6 +1204,10 @@ export class NgCompiler {
     if (this.options.extendedDiagnostics?.checks?.unusedStandaloneImports !== undefined) {
       typeCheckingConfig.unusedStandaloneImports =
         this.options.extendedDiagnostics.checks.unusedStandaloneImports;
+    }
+    if (this.options['_strictUnknownElementEventualValidation'] !== undefined) {
+      typeCheckingConfig.checkUnknownElementTagsMatchedByDirectives =
+        this.options['_strictUnknownElementEventualValidation'];
     }
 
     return typeCheckingConfig;
