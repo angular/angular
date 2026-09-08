@@ -602,5 +602,5 @@ export function makeGenericsText(generics: GenericEntry[] | undefined): string {
 }
 
 function isClassLikeDecorator(entry: DecoratorEntry): boolean {
-  return !!entry.members;
+  return !entry.signatures?.length;
 }
