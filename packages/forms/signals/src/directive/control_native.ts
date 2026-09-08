@@ -90,7 +90,13 @@ export function nativeControlCreate(
     setNativeControlValue(input, value);
   };
   // Pass undefined as the raw value since the parse function doesn't care about it.
-  host.listenToDom('input', () => parser.setRawValue(undefined));
+  host.listenToDom('input', () => {
+    // An `input` event is the definitive signal of user interaction, so dirty the field up front.
+    // Parsing may fail — typing `e` into a number input, or an incomplete date — in which case no
+    // value reaches `controlValue` and nothing else would mark the field as edited.
+    parent.state().markAsDirty();
+    parser.setRawValue(undefined);
+  });
   host.listenToDom('blur', () => parent.state().markAsTouched());
 
   // TODO: move extraction to first update pass?

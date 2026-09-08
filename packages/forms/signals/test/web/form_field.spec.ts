@@ -5528,13 +5528,14 @@ describe('field directive', () => {
       expect(cmp.f().value()).toBe('2024-01-01');
       expect(cmp.f().dirty()).toBe(false);
 
-      // 2. Transition to bad input state (parse error; value/controlValue unchanged).
+      // 2. Transition to bad input state. This clears the native value, so an `input` event fires
+      //    and the field is dirtied even though the parse failed and the model value is unchanged.
       act(() => {
         validityMonitor.setInputState(input, '', true);
       });
       expect(cmp.f().errors()).toEqual([jasmine.objectContaining({kind: 'parse'})]);
-      // Bad input didn't change the value, so still pristine.
-      expect(cmp.f().dirty()).toBe(false);
+      expect(cmp.f().value()).toBe('2024-01-01');
+      expect(cmp.f().dirty()).toBe(true);
 
       // 3. Native UI clears the date to empty WITHOUT an `input` event
       //    (only the validity-monitor callback fires).
@@ -5574,6 +5575,32 @@ describe('field directive', () => {
       act(() => validityMonitor.setInputState(input, '', false));
       expect(cmp.f().errors()).toEqual([]);
       expect(cmp.f().value()).toBe('');
+      expect(cmp.f().dirty()).toBe(true);
+    });
+
+    it('should mark the field dirty when the user types a value that fails to parse', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal<number | null>(5));
+      }
+
+      const validityMonitor = configureTestValidityMonitor();
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      expect(input.value).toBe('5');
+      expect(cmp.f().dirty()).toBe(false);
+
+      // Typing `e` into a number input empties `value` and flags `badInput`, so the parse fails
+      // and no value ever reaches the model. The user still edited the field.
+      act(() => validityMonitor.setInputState(input, '', true));
+
+      expect(cmp.f().errors()).toEqual([jasmine.objectContaining({kind: 'parse'})]);
+      expect(cmp.f().value()).toBe(5);
       expect(cmp.f().dirty()).toBe(true);
     });
 
