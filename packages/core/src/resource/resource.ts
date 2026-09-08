@@ -110,6 +110,40 @@ type WrappedRequest = {
 };
 
 /**
+ * Checks if the given `value` is a reactive `Resource`.
+ *
+ * @publicApi 22.0
+ */
+export function isResource(value: unknown): value is Resource<unknown> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    isSignal((value as any).value) &&
+    isSignal((value as any).status) &&
+    isSignal((value as any).error) &&
+    isSignal((value as any).isLoading) &&
+    isSignal((value as any).snapshot) &&
+    typeof (value as any).hasValue === 'function'
+  );
+}
+
+/**
+ * Checks if the given `value` is a `ResourceRef`.
+ *
+ * @publicApi 22.0
+ */
+export function isResourceRef(value: unknown): value is ResourceRef<unknown> {
+  return (
+    isResource(value) &&
+    typeof (value as any).set === 'function' &&
+    typeof (value as any).update === 'function' &&
+    typeof (value as any).reload === 'function' &&
+    typeof (value as any).asReadonly === 'function' &&
+    typeof (value as any).destroy === 'function'
+  );
+}
+
+/**
  * Base class which implements `.value` as a `WritableSignal` by delegating `.set` and `.update`.
  */
 abstract class BaseWritableResource<T> implements WritableResource<T> {

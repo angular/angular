@@ -11,6 +11,8 @@ export {debounced} from './debounce';
 export {resourceFromSnapshots} from './from_snapshots';
 export {
   isInParamsFunction as ɵisInParamsFunction,
+  isResource,
+  isResourceRef,
   resource,
   setInParamsFunction as ɵsetInParamsFunction,
 } from './resource';
