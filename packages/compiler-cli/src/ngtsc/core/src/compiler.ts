@@ -1106,8 +1106,13 @@ export class NgCompiler {
         // - error TS2531: Object is possibly 'null'.
         // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
         checkTypeOfDomEvents: true,
+
+        // TODO: Enable those 2 flags by default in v23
         checkUnclaimedEventNames: false, // 3p-only
         // g3-only checkUnclaimedEventNames: true,
+        checkUnknownElements: false, // 3p-only
+        // g3-only checkUnknownElements: true,
+
         checkTypeOfDomReferences: true,
         // Non-DOM references have the correct type in View Engine so there is no strictness flag.
         checkTypeOfNonDomReferences: true,
@@ -1156,6 +1161,7 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         allowDomEventAssertion,
+        checkUnknownElements: false,
       };
     }
 
@@ -1206,6 +1212,9 @@ export class NgCompiler {
     if (this.options.extendedDiagnostics?.checks?.unusedStandaloneImports !== undefined) {
       typeCheckingConfig.unusedStandaloneImports =
         this.options.extendedDiagnostics.checks.unusedStandaloneImports;
+    }
+    if (this.options.strictUnknownElements !== undefined) {
+      typeCheckingConfig.checkUnknownElements = this.options.strictUnknownElements;
     }
 
     return typeCheckingConfig;

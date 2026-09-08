@@ -14,8 +14,8 @@ import {
   I18nOptions,
   LegacyNgcOptions,
   MiscOptions,
-  TypeCheckingOptions,
   TargetOptions,
+  TypeCheckingOptions,
 } from './public_options';
 
 /**
