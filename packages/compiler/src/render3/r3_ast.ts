@@ -394,10 +394,6 @@ export class BoundaryErrorBlock extends BlockNode implements Node {
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitBoundaryErrorBlock(this);
   }
-
-  get errorAlias(): Variable | null {
-    return this.contextVariables.find((v) => v.value === '$error') ?? null;
-  }
 }
 
 export interface DeferredBlockTriggers {

@@ -159,12 +159,8 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitBoundaryErrorBlock(block: t.BoundaryErrorBlock): void {
-    this.result.push([
-      'BoundaryErrorBlock',
-      block.errorAlias ? block.errorAlias.name : null,
-      block.expression ? unparse(block.expression) : null,
-    ]);
-    this.visitAll([block.children]);
+    this.result.push(['BoundaryErrorBlock', block.expression ? unparse(block.expression) : null]);
+    this.visitAll([block.contextVariables, block.children]);
   }
 
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
@@ -295,10 +291,15 @@ describe('R3 template transform', () => {
         ['BoundaryBlock'],
         ['Element', 'div'],
         ['Text', 'Content'],
-        ['BoundaryErrorBlock', '$error', 'err instanceof SpecificError'],
+        ['BoundaryErrorBlock', 'err instanceof SpecificError'],
+        ['Variable', '$error', '$error'],
+        ['Variable', '$reset', '$reset'],
         ['Element', 'div'],
         ['Text', 'Specific Error'],
-        ['BoundaryErrorBlock', '$error', null],
+        ['BoundaryErrorBlock', null],
+        ['Variable', '$error', '$error'],
+        ['Variable', '$reset', '$reset'],
+        ['Variable', 'err', '$error'],
         ['Element', 'div'],
         ['BoundText', 'General Error {{ err }}'],
       ]);

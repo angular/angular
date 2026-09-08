@@ -50,7 +50,7 @@ export function generateConditionalExpressions(job: ComponentCompilationJob): vo
             useTmp,
             conditionalCase.expr,
           );
-        } else if (op.kind === ir.OpKind.Conditional && conditionalCase.alias !== null) {
+        } else if (conditionalCase.alias !== null) {
           // Since we can only pass one variable into the conditional instruction,
           // reuse the same variable to store the result of the expressions.
           caseExpressionTemporaryXref ??= job.allocateXrefId();

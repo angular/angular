@@ -82,40 +82,6 @@ export function createBoundaryBlock(
         continue;
       }
 
-      const aliasMatch = param.expression.match(
-        /^([$A-Z_][0-9A-Z_$]*)\s*=\s*([$A-Z_][0-9A-Z_$]*)$/i,
-      );
-      if (aliasMatch) {
-        const name = aliasMatch[1];
-        const variableName = aliasMatch[2];
-
-        if (variableName !== '$error' && variableName !== '$reset') {
-          errors.push(
-            new ParseError(
-              param.sourceSpan,
-              `Unknown context variable "${variableName}". Only "$error" and "$reset" are allowed`,
-            ),
-          );
-        } else if (contextVariables.some((v) => v.name === name)) {
-          errors.push(new ParseError(param.sourceSpan, `Duplicate parameter variable "${name}"`));
-        } else {
-          const nameIndex = param.expression.indexOf(name);
-          const keySpan = new ParseSourceSpan(
-            param.sourceSpan.start.moveBy(nameIndex),
-            param.sourceSpan.start.moveBy(nameIndex + name.length),
-          );
-          const equalsIndex = param.expression.indexOf('=');
-          const valueIndex = param.expression.indexOf(variableName, equalsIndex + 1);
-          const valueSpan = new ParseSourceSpan(
-            param.sourceSpan.start.moveBy(valueIndex),
-            param.sourceSpan.start.moveBy(valueIndex + variableName.length),
-          );
-          const sourceSpan = new ParseSourceSpan(keySpan.start, valueSpan.end);
-          contextVariables.push(new t.Variable(name, variableName, sourceSpan, keySpan, valueSpan));
-        }
-        continue;
-      }
-
       const whenMatch = param.expression.match(WHEN_PATTERN);
       if (whenMatch) {
         if (expression !== null) {

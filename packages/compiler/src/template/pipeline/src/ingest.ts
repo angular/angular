@@ -709,7 +709,6 @@ function ingestBoundaryBlock(unit: ViewCompilationUnit, boundaryBlock: t.Boundar
   // 2. Process @error blocks (fallbacks)
   for (const errorBlock of boundaryBlock.errorBlocks) {
     const errorView = unit.job.allocateView(unit.xref);
-    const tagName = ingestControlFlowInsertionPoint(unit, errorView.xref, errorBlock);
 
     // Create branch creation operation
     const branchCreateOp = ir.createBoundaryErrorCreateOp(
@@ -2083,7 +2082,13 @@ function convertSourceSpan(
 function ingestControlFlowInsertionPoint(
   unit: ViewCompilationUnit,
   xref: ir.XrefId,
-  node: t.IfBlockBranch | t.SwitchBlockCaseGroup | t.ForLoopBlock | t.ForLoopBlockEmpty,
+  node:
+    | t.IfBlockBranch
+    | t.SwitchBlockCaseGroup
+    | t.ForLoopBlock
+    | t.ForLoopBlockEmpty
+    | t.BoundaryBlock
+    | t.BoundaryErrorBlock,
 ): string | null {
   let root: t.Element | t.Template | null = null;
 
