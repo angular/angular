@@ -16,9 +16,18 @@ import {
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
-import {Route, Routes} from '../models';
+import {LazyRouteConfig, Route, Routes} from '../models';
 import {ActivatedRouteSnapshot} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
+
+export interface DeferredInjector {
+  baseInjector: EnvironmentInjector;
+  routes: Route[];
+}
+
+export function hasUnloadedConfig(route: Route): boolean {
+  return Boolean(route.loadConfig && !route._configLoaded);
+}
 
 /**
  * Creates an `EnvironmentInjector` if the `Route` has providers and one does not already exist
@@ -36,10 +45,21 @@ export function getOrCreateRouteInjectorIfNeeded(
     route._injector = createEnvironmentInjector(
       route.providers,
       currentInjector,
-      `Route: ${route.path}`,
+      typeof ngDevMode === 'undefined' || ngDevMode ? `Route: ${route.path}` : '',
     );
   }
   return route._injector ?? currentInjector;
+}
+
+export function hydrateRouteInjectors(
+  route: Route,
+  parentInjector: EnvironmentInjector,
+): {routeInjector: EnvironmentInjector; childInjector: EnvironmentInjector} {
+  const routeInjector = getOrCreateRouteInjectorIfNeeded(route, parentInjector);
+  if (route._loadedNgModuleFactory && !route._loadedInjector) {
+    route._loadedInjector = route._loadedNgModuleFactory.create(routeInjector).injector;
+  }
+  return {routeInjector, childInjector: route._loadedInjector ?? routeInjector};
 }
 
 export function getLoadedRoutes(route: Route): Route[] | undefined {
@@ -82,6 +102,44 @@ export function assertStandalone(fullPath: string, component: Type<unknown> | un
       RuntimeErrorCode.INVALID_ROUTE_CONFIG,
       `Invalid configuration of route '${fullPath}'. The component must be standalone.`,
     );
+  }
+}
+
+const ALLOWED_LOADED_CONFIG_KEYS: ReadonlySet<string> = /* @__PURE__ */ new Set<
+  keyof LazyRouteConfig
+>([
+  'title',
+  'errorComponent',
+  'canActivate',
+  'canActivateChild',
+  'canDeactivate',
+  'resolve',
+  'resources',
+  'runGuardsAndResolvers',
+  'providers',
+]);
+
+export function validateLoadedConfig(route: Route, config: LazyRouteConfig): void {
+  const path = route.path ?? '';
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+      `Invalid configuration of route '${path}': 'loadConfig' must return an object.`,
+    );
+  }
+  for (const key of Object.keys(config)) {
+    if (!ALLOWED_LOADED_CONFIG_KEYS.has(key)) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${path}': property '${key}' cannot be returned from 'loadConfig'.`,
+      );
+    }
+    if ((route as Record<string, unknown>)[key] !== undefined) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${path}': property '${key}' is already defined on the route and cannot be overridden by 'loadConfig'.`,
+      );
+    }
   }
 }
 
@@ -147,7 +205,12 @@ function validateNode(route: Route, fullPath: string, requireStandaloneComponent
         `Invalid configuration of route '${fullPath}': component and loadComponent cannot be used together`,
       );
     }
-
+    if (route.loadConfig && route.redirectTo !== undefined) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_ROUTE_CONFIG,
+        `Invalid configuration of route '${fullPath}': redirectTo and loadConfig cannot be used together`,
+      );
+    }
     if (route.redirectTo) {
       if (route.component || route.loadComponent) {
         throw new RuntimeError(
