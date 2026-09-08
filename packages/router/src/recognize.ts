@@ -22,7 +22,7 @@ import {
 } from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {getOutlet, sortByMatchingOutlets} from './utils/config';
+import {getOrCreateRouteInjectorIfNeeded, getOutlet, sortByMatchingOutlets} from './utils/config';
 import {
   createPreMatchRouteSnapshot,
   emptyPathMatch,
@@ -440,8 +440,16 @@ export class Recognizer {
     if (!result?.matched) {
       throw new NoMatch(rawSegment);
     }
+
+    if (route.loadConfig && !route._configLoaded) {
+      await this.configLoader.loadConfig(route);
+      if (this.abortSignal.aborted) {
+        throw new Error(this.abortSignal.reason);
+      }
+    }
+
     // If the route has an injector created from providers, we should start using that.
-    injector = route._injector ?? injector;
+    injector = getOrCreateRouteInjectorIfNeeded(route, injector);
     const {routes: childConfig} = await this.getChildConfig(injector, route, segments);
     const childInjector = route._loadedInjector ?? injector;
 

@@ -328,6 +328,42 @@ export type LoadChildrenCallback = () =>
 export type LoadChildren = LoadChildrenCallback;
 
 /**
+ * The route configuration that can be loaded lazily via `Route.loadConfig`.
+ *
+ * Route matching, static data, redirection, hierarchy, and loader properties (`path`, `pathMatch`,
+ * `matcher`, `outlet`, `data`, `redirectTo`, `canMatch`, `canLoad`, `component`, `loadComponent`,
+ * `loadConfig`, `children`, and `loadChildren`) cannot be defined in `loadConfig`.
+ *
+ * - `path`, `pathMatch`, `matcher`, `outlet`, `redirectTo`, `children`, `loadChildren`,
+ *   `loadComponent`, and `loadConfig` define the static shape and loaders of the route tree so it
+ *   is known upfront without running any loader.
+ * - `canMatch` and `data` are omitted so that URL matching, `canMatch` guards, and `redirectTo`
+ *   functions (which receive `data` on `PartialMatchRouteSnapshot`) can execute without blocking
+ *   on `loadConfig`.
+ * - `component` is omitted (use `loadComponent` instead) because under
+ *   `paramsInheritanceStrategy: 'emptyOnly'`, whether a parent route is componentless determines
+ *   whether child routes inherit its `params` and `data` during matching.
+ *
+ * @publicApi 23.0
+ */
+export type LazyRouteConfig = Omit<
+  Route,
+  | 'path'
+  | 'pathMatch'
+  | 'matcher'
+  | 'outlet'
+  | 'data'
+  | 'redirectTo'
+  | 'canMatch'
+  | 'canLoad'
+  | 'component'
+  | 'loadComponent'
+  | 'loadConfig'
+  | 'children'
+  | 'loadChildren'
+>;
+
+/**
  *
  * How to handle query parameters in a router link.
  * One of:
@@ -679,6 +715,40 @@ export interface Route {
   _loadedComponent?: Type<unknown>;
 
   /**
+   * An object specifying lazy-loaded route configuration.
+   *
+   * Route matching, static data, redirection, hierarchy, and loader properties (`path`, `pathMatch`,
+   * `matcher`, `outlet`, `data`, `redirectTo`, `canMatch`, `canLoad`, `component`, `loadComponent`,
+   * `loadConfig`, `children`, and `loadChildren`) must be specified on the route directly. The lazy
+   * configuration can provide `providers`, `canActivate`, `canActivateChild`, `canDeactivate`,
+   * `resolve`, `resources`, `title`, and `runGuardsAndResolvers`.
+   *
+   * ```ts
+   * [{
+   *   path: 'feature',
+   *   loadComponent: () => import('./feature.component'),
+   *   loadConfig: () => import('./feature.config').then(mod => mod.CONFIG),
+   * }];
+   * ```
+   *
+   * If the lazy-loaded config is exported via a `default` export, the `.then` can be omitted:
+   * ```ts
+   * [{
+   *   path: 'feature',
+   *   loadComponent: () => import('./feature.component'),
+   *   loadConfig: () => import('./feature.config'),
+   * }];
+   * ```
+   *
+   * The `loadConfig` callback is run in the root `EnvironmentInjector` injection context (not in
+   * any parent route's injector) so that loading a configuration does not depend on parent routes
+   * having already been matched and configured.
+   *
+   * @internal // 3p-only
+   */
+  loadConfig?: () => LazyRouteConfig | Promise<LazyRouteConfig | DefaultExport<LazyRouteConfig>>;
+
+  /**
    * A URL or function that returns a URL to redirect to when the path matches.
    *
    * Absolute if the URL begins with a slash (/) or the function returns a `UrlTree`, otherwise
@@ -844,6 +914,11 @@ export interface Route {
    * @internal
    */
   _loadedNgModuleFactory?: NgModuleFactory<any>;
+  /**
+   * Whether the route configuration from `loadConfig` has been loaded.
+   * @internal
+   */
+  _configLoaded?: boolean;
 }
 
 export interface LoadedRouterConfig {

@@ -49,6 +49,7 @@ export {
   Data,
   DefaultExport,
   GuardResult,
+  // g3-only LazyRouteConfig,
   LoadChildren,
   LoadChildrenCallback,
   MaybeAsync,
