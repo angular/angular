@@ -23,7 +23,7 @@ import {
 import {standardizeConfig} from './components/empty_outlet';
 import {LoadedRouterConfig, Route, Routes} from './models';
 import {wrapIntoPromise} from './utils/collection';
-import {assertStandalone, validateConfig} from './utils/config';
+import {assertStandalone, validateConfig, validateLoadedConfig} from './utils/config';
 
 /**
  * The DI token for a router configuration.
@@ -43,11 +43,39 @@ export const ROUTES = new InjectionToken<Route[][]>(
 export class RouterConfigLoader {
   private componentLoaders = new WeakMap<Route, Promise<Type<unknown>>>();
   private childrenLoaders = new WeakMap<Route, Promise<LoadedRouterConfig>>();
+  private configLoaders = new WeakMap<Route, Promise<void>>();
   onLoadStartListener?: (r: Route) => void;
   onLoadEndListener?: (r: Route) => void;
   private readonly compiler = inject(Compiler);
   // TODO(v23): Run loadComponent and loadChildren in root environment injector in 3p as well.
-  // g3-only private readonly environmentInjector = inject(EnvironmentInjector);
+  private readonly environmentInjector = inject(EnvironmentInjector);
+
+  loadConfig(route: Route): Promise<void> {
+    let loader = this.configLoaders.get(route);
+    if (loader) {
+      return loader;
+    } else if (route._configLoaded) {
+      return Promise.resolve();
+    }
+
+    loader = (async () => {
+      try {
+        const loaded = await runInInjectionContext(this.environmentInjector, () =>
+          route.loadConfig!(),
+        );
+        const config = await maybeResolveResources(maybeUnwrapDefaultExport(loaded));
+
+        (typeof ngDevMode === 'undefined' || ngDevMode) && validateLoadedConfig(route, config);
+
+        Object.assign(route, config);
+        route._configLoaded = true;
+      } finally {
+        this.configLoaders.delete(route);
+      }
+    })();
+    this.configLoaders.set(route, loader);
+    return loader;
+  }
 
   // TODO(v23): Remove unused `injector` parameter once `loadComponent` uses `this.environmentInjector` in 3p.
   async loadComponent(injector: EnvironmentInjector, route: Route): Promise<Type<unknown>> {
