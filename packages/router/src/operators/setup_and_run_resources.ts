@@ -19,7 +19,6 @@ import {ActivatedRoute, ActivatedRouteSnapshot, initializeActivatedRoute} from '
 import {TreeNode} from '../utils/tree';
 import {
   BLOCKING_SYMBOL,
-  hasValueOrResolved,
   InternalRouterResource,
   routerResource,
   SOURCE_RESOURCE_SYMBOL,
@@ -214,7 +213,7 @@ function setupBlocking(
           if (status === 'error') {
             cleanup();
             reject(underlyingRes.error());
-          } else if (hasValueOrResolved(underlyingRes)) {
+          } else if (!underlyingRes.isLoading()) {
             cleanup();
             resolve();
           }
