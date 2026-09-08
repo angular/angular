@@ -98,4 +98,15 @@ describe('renderable', () => {
 
     expect(card.getAttribute('id')).toBe('selector');
   });
+
+  it('should render the signature of a decorator that has no members', () => {
+    const decorator = entries.get('FakeHostListener')!;
+    expect(decorator).toBeDefined();
+
+    const code = JSDOM.fragment(renderEntry(decorator)).querySelector('pre')!.textContent!;
+
+    expect(code).toContain('eventName: string');
+    expect(code).toContain('args?: string[]');
+    expect(code).not.toContain('{}');
+  });
 });
