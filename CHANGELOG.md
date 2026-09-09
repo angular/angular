@@ -1,3 +1,28 @@
+<a name="22.1.6"></a>
+# 22.1.6 (2026-09-09)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cbb8702143](https://github.com/angular/angular/commit/cbb8702143bd04b68253758dbc2c4a8fb49c0237) | fix | namespace `@property` declarations |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [aea121e532](https://github.com/angular/angular/commit/aea121e53217a7f74d2a8e4a7a6bf0f3a96b7c49) | fix | do not flag callable objects with zero parameters in uninvoked track function check |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c19b948ef8](https://github.com/angular/angular/commit/c19b948ef8d34e5a15e41cd5a88cdd4bda848f8f) | fix | apply SkipSelf to only the starting node in embedded views |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d20a379583](https://github.com/angular/angular/commit/d20a37958318c898a72109480cee556e388cd78b) | fix | avoid sourcemap corruption during domino path substitution |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [95c01e9cde](https://github.com/angular/angular/commit/95c01e9cdea251e09d321a01e9b982b2fe1b7873) | fix | keep detached route subtree contexts isolated and intact |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.1.5"></a>
 # 22.1.5 (2026-09-02)
 ### compiler-cli
