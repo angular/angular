@@ -14,7 +14,6 @@ TEST_DEPS = [
     "//packages/platform-browser:platform-browser",
     "//packages/core/primitives/signals:signals",
     "//:node_modules/rxjs",
-    "//packages/core/test/animation_utils",
     "//packages/private/testing",
 ]
 
