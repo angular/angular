@@ -45,8 +45,9 @@ export class TcbForOfOp extends TcbOp {
 
     // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
     // Add a non-null expression to allow such values to be assigned.
-    const expression = new TcbExpr(
-      `${tcbExpression(this.block.expression, this.tcb, this.scope).print()}!`,
+    const expr = tcbExpression(this.block.expression, this.tcb, this.scope).wrapForTypeChecker();
+    const expression = new TcbExpr(`${expr.print()}!`).addParseSpanInfo(
+      this.block.expression.sourceSpan,
     );
 
     let statements: TcbExpr[];
