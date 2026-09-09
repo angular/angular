@@ -213,6 +213,9 @@ export interface FormOptions<TModel> {
     experimentalWebMcpTool?: {
         name: string;
         description: string;
+        annotations?: {
+            consequentialHint?: boolean;
+        };
     };
     injector?: Injector;
     name?: string;
