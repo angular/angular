@@ -433,7 +433,7 @@ describe('ShadowCss', () => {
       const input = `
 .foo {
   border: var(--global--border-size) solid var(--border-color);
-  box-shadow: 
+  box-shadow:
     var(--shadow-1),
     var(--global--shadow-2),
     var(--shadow-3);
@@ -443,7 +443,7 @@ describe('ShadowCss', () => {
       const expected = `
 .foo {
   border: var(--border-size) solid var(--%NS%border-color);
-  box-shadow: 
+  box-shadow:
     var(--%NS%shadow-1),
     var(--shadow-2),
     var(--%NS%shadow-3);
@@ -596,6 +596,94 @@ p {
       expect(() => namespaceCssVariables('p { --global-: red; }')).toThrowError(
         'CSS variable "--global-" has a single hyphen after "--global". Use two hyphens ("--global--") to opt-out of namespacing.',
       );
+    });
+
+    it('should namespace @property declarations', () => {
+      const input = `
+  @property --myColor {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --myWidth {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--myColor);
+    width: var(--myWidth);
+    color: white;
+  }
+`.trim();
+
+      const expected = `
+  @property --%NS%myColor {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --%NS%myWidth {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--%NS%myColor);
+    width: var(--%NS%myWidth);
+    color: white;
+  }
+`.trim();
+
+      expect(namespaceCssVariables(input)).toBe(expected);
+    });
+
+    it('should not namespace @property if --global-- is present', () => {
+      const input = `
+  @property --global--my-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --global--my-width {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--global--my-color);
+    width: var(--global--my-width);
+    color: white;
+  }
+`.trim();
+
+      const expected = `
+  @property --my-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rebeccapurple;
+  }
+
+  @property --my-width {
+    syntax: "<length> | <percentage>";
+    inherits: true;
+    initial-value: 200px;
+  }
+
+  p {
+    background-color: var(--my-color);
+    width: var(--my-width);
+    color: white;
+  }
+`.trim();
+
+      expect(namespaceCssVariables(input)).toBe(expected);
     });
   });
 });
