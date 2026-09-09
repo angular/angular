@@ -58,6 +58,10 @@ export interface TranslateFn {
  * $localize `some string to localize`
  * ```
  *
+ * IMPORTANT: `$localize` does not support ICU expressions. Use an Angular template with an `i18n`
+ * marker for ICU messages. An ICU expression must also be present in the source template; it cannot
+ * be introduced only by a translation.
+ *
  * **Providing meaning, description and id**
  *
  * You can optionally specify one or more of `meaning`, `description` and `id` for a localized
