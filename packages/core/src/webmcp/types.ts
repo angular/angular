@@ -75,6 +75,12 @@ export interface Annotations {
    * author of the tool.
    */
   untrustedContentHint?: boolean;
+
+  /**
+   * A hint that the tool will have consequential effects like mutating state or interacting
+   * with the external world.
+   */
+  consequentialHint?: boolean;
 }
 
 /**
