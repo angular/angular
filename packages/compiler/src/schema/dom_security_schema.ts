@@ -182,12 +182,18 @@ export function checkSecurityContext(
   const namespacedWildcardContext = namespace
     ? schema[`:${namespace}:*|${normalizedPropName}`]
     : undefined;
+  const svgContext = !namespace
+    ? schema[`:${SVG_NAMESPACE}:${normalizedTagName}|${normalizedPropName}`]
+    : undefined;
 
   return (
     namespacedContext ??
     namespacedWildcardContext ??
     schema[`${normalizedTagName}|${normalizedPropName}`] ??
     schema[`*|${normalizedPropName}`] ??
+    // An SVG animation element declared outside of an `<svg>` has no explicit namespace at compile
+    // time, but can still animate once it is projected into an SVG subtree.
+    svgContext ??
     SecurityContext.NONE
   );
 }
