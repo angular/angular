@@ -486,6 +486,18 @@ export enum ErrorCode {
   CONFLICTING_CONTENT_AND_PROPERTY = 8029,
 
   /**
+   * An event binding on an element with matched directives refers to an event which is neither
+   * an output of the matched directives nor a known native DOM event. For example:
+   *
+   * ```html
+   * <some-cmp (outputTypo)="handle()"></some-cmp>
+   * ```
+   *
+   * This is only reported when `strictUnclaimedEventNames` is enabled.
+   */
+  UNCLAIMED_EVENT_BINDING = 8030,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
