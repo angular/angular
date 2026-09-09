@@ -10,13 +10,16 @@ import {
   Component,
   computed,
   inject,
+  Injector,
   Input,
   resource,
   Resource,
-  ResourceSnapshot,
   ResourceStatus,
+  runInInjectionContext,
   signal,
   WritableResource,
+  ɵpromiseWithResolvers as promiseWithResolvers,
+  ResourceSnapshot,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
@@ -27,6 +30,7 @@ import {
   RedirectCommand,
   withRouterResources,
   withComponentInputBinding,
+  withRouterConfig,
   nonBlocking,
   ActivatedRoute,
   ResourceResult,
@@ -200,7 +204,6 @@ describe('Router resources integration', () => {
 
       // Supersede with navigation to /second
       await harness.navigateByUrl('/second');
-      await harness.fixture.whenStable();
 
       expect(router.url).toBe('/second');
 
@@ -239,7 +242,6 @@ describe('Router resources integration', () => {
 
       // Supersede with navigation to /second
       await harness.navigateByUrl('/second');
-      await harness.fixture.whenStable();
 
       expect(router.url).toBe('/second');
 
@@ -808,7 +810,6 @@ describe('Router resources integration', () => {
       // Settle initial state
       loader.resolve('1');
       await harness.navigateByUrl('/target/1');
-      await harness.fixture.whenStable();
 
       const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
       expect(resourceRef?.value()).toBe('1');
@@ -826,7 +827,6 @@ describe('Router resources integration', () => {
 
       loader.resolve('3');
       await nav2;
-      await harness.fixture.whenStable();
 
       expect(resourceRef?.isLoading()).toBe(false);
       expect(resourceRef?.value()).toBe('3');
@@ -1076,11 +1076,658 @@ describe('Router resources integration', () => {
         expect(router.url).toBe('/user/1/details');
         const parentRoute = router.routerState.root.firstChild!;
         const childRoute = parentRoute.firstChild!;
-        expect(parentRoute.resources?.['user'].value()).toEqual({id: '1', role: 'admin'});
-        expect(childRoute.resources?.['details'].value()).toEqual({
+        expect(parentRoute.resources!['user'].value()).toEqual({id: '1', role: 'admin'});
+        expect(childRoute.resources!['details'].value()).toEqual({
           role: 'admin',
           permissions: ['read', 'write'],
         });
+      });
+
+      it('should handle parallel dependent resources where parent setup takes longer than child', async () => {
+        const parentSetupDeferred = promiseWithResolvers<void>();
+        const parentLoaderDeferred = promiseWithResolvers<{id: string; role: string}>();
+        const childLoaderDeferred = promiseWithResolvers<string[]>();
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user',
+            resources: async () => {
+              const injector = inject(Injector);
+              // Parent setup is async and delayed
+              await parentSetupDeferred.promise;
+              return runInInjectionContext(injector, () => ({
+                user: resource({
+                  loader: () => parentLoaderDeferred.promise,
+                }),
+              }));
+            },
+            children: [
+              {
+                path: 'roles',
+                component: TargetCmp,
+                resources: (ctx) => ({
+                  roles: resource({
+                    params: ({chain}) => (chain(ctx.resources()['user']) as any).role,
+                    loader: async () => {
+                      return childLoaderDeferred.promise;
+                    },
+                  }),
+                }),
+              },
+            ],
+          },
+        ]);
+
+        const nav = harness.navigateByUrl('/user/roles');
+        await timeout(10);
+
+        // Navigation is blocked: parent setup hasn't finished yet
+        expect(router.url).not.toBe('/user/roles');
+
+        // 1. Resolve parent setup function
+        parentSetupDeferred.resolve();
+        await timeout(10);
+
+        // Navigation is still blocked: parent loader is running
+        expect(router.url).not.toBe('/user/roles');
+
+        // 2. Resolve parent loader
+        parentLoaderDeferred.resolve({id: '123', role: 'admin'});
+        await timeout(10);
+
+        // Navigation is still blocked: child loader received role='admin' and is now running
+        expect(router.url).not.toBe('/user/roles');
+
+        // 3. Resolve child loader
+        childLoaderDeferred.resolve(['read', 'write', 'admin']);
+        await nav;
+
+        expect(router.url).toBe('/user/roles');
+        const parentRoute = router.routerState.root.firstChild!;
+        const childRoute = parentRoute.firstChild!;
+
+        expect(parentRoute.resources!['user'].value()).toEqual({id: '123', role: 'admin'});
+        expect(childRoute.resources!['user'].value()).toEqual({id: '123', role: 'admin'});
+        expect(childRoute.resources!['roles'].value()).toEqual(['read', 'write', 'admin']);
+      });
+
+      it('should reload dependent child resources and mask UI state when parent route parameters change', async () => {
+        let parentDeferred = promiseWithResolvers<{id: string; role: string}>();
+        let childDeferred = promiseWithResolvers<string>();
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user/:id',
+            resources: (ctx) => ({
+              user: resource({
+                params: () => ctx.params()['id'],
+                loader: () => parentDeferred.promise,
+              }),
+            }),
+            children: [
+              {
+                path: 'details',
+                component: TargetCmp,
+                resources: (ctx) => ({
+                  details: resource({
+                    params: ({chain}) => (chain(ctx.resources()['user']) as any).role,
+                    loader: () => childDeferred.promise,
+                  }),
+                }),
+              },
+            ],
+          },
+        ]);
+
+        // 1. Initial navigation to /user/1/details
+        parentDeferred.resolve({id: '1', role: 'viewer'});
+        childDeferred.resolve('viewer-details');
+        await harness.navigateByUrl('/user/1/details');
+
+        const childRoute = router.routerState.root.firstChild!.firstChild!;
+        expect(childRoute.resources!['user'].value()).toEqual({id: '1', role: 'viewer'});
+        expect(childRoute.resources!['details'].value()).toBe('viewer-details');
+
+        // 2. Navigate to /user/2/details (reusing both parent and child routes)
+        parentDeferred = promiseWithResolvers<{id: string; role: string}>();
+        childDeferred = promiseWithResolvers<string>();
+        const nav2 = harness.navigateByUrl('/user/2/details');
+        await timeout(10);
+
+        // Navigation is blocked and UI resources remain frozen at /user/1/details values
+        expect(router.url).toBe('/user/1/details');
+        expect(childRoute.resources!['user'].value()).toEqual({id: '1', role: 'viewer'});
+        expect(childRoute.resources!['details'].value()).toBe('viewer-details');
+
+        // 3. Resolve parent resource for id='2'; navigation must remain blocked until dependent child resource resolves
+        parentDeferred.resolve({id: '2', role: 'admin'});
+        await timeout(10);
+
+        expect(router.url).toBe('/user/1/details');
+        expect(childRoute.resources!['user'].value()).toEqual({id: '1', role: 'viewer'});
+        expect(childRoute.resources!['details'].value()).toBe('viewer-details');
+
+        // 4. Resolve dependent child resource for role='admin'
+        childDeferred.resolve('admin-details');
+        await nav2;
+
+        expect(router.url).toBe('/user/2/details');
+        expect(childRoute.resources!['user'].value()).toEqual({id: '2', role: 'admin'});
+        expect(childRoute.resources!['details'].value()).toBe('admin-details');
+      });
+
+      it('should not block a child resource created before await in an async child setup from reading an already-resolved parent resource', async () => {
+        const childSetupDeferred = promiseWithResolvers<void>();
+        let childLoaderStartedWithRole: string | undefined;
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user',
+            resources: () => ({
+              user: resource({
+                loader: async () => ({id: '1', role: 'editor'}),
+              }),
+            }),
+            children: [
+              {
+                path: 'details',
+                component: TargetCmp,
+                resources: async (ctx) => {
+                  const details = resource({
+                    params: ({chain}) => (chain(ctx.resources()['user']) as any).role,
+                    loader: async ({params: role}) => {
+                      childLoaderStartedWithRole = role;
+                      return `details-for-${role}`;
+                    },
+                  });
+                  // Child setup remains suspended after creating `details`
+                  await childSetupDeferred.promise;
+                  return {details};
+                },
+              },
+            ],
+          },
+        ]);
+
+        const nav = harness.navigateByUrl('/user/details');
+        await timeout(10);
+
+        expect(childLoaderStartedWithRole).toBe('editor');
+        expect(router.url).not.toBe('/user/details');
+
+        childSetupDeferred.resolve();
+        await nav;
+
+        expect(router.url).toBe('/user/details');
+        const childRoute = router.routerState.root.firstChild!.firstChild!;
+        expect(childRoute.resources!['details'].value()).toBe('details-for-editor');
+      });
+
+      it('should propagate loading state through an intermediate computed() when grandparent setup is async across a middle route without resources', async () => {
+        const grandparentSetupDeferred = promiseWithResolvers<void>();
+        const grandparentLoaderDeferred = promiseWithResolvers<{orgId: string}>();
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'org',
+            resources: async () => {
+              const injector = inject(Injector);
+              await grandparentSetupDeferred.promise;
+              return runInInjectionContext(injector, () => ({
+                org: resource({
+                  loader: () => grandparentLoaderDeferred.promise,
+                }),
+              }));
+            },
+            children: [
+              {
+                // Middle route without its own resources
+                path: 'team',
+                children: [
+                  {
+                    path: 'members',
+                    component: TargetCmp,
+                    resources: (ctx) => {
+                      // Intermediate computed derived from ctx.resources()
+                      const orgResource = computed(() => ctx.resources()['org']);
+                      return {
+                        members: resource({
+                          params: ({chain}) => (chain(orgResource()) as any).orgId,
+                          loader: async ({params: orgId}) => [`member-of-${orgId}`],
+                        }),
+                      };
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ]);
+
+        const nav = harness.navigateByUrl('/org/team/members');
+        await timeout(10);
+
+        expect(router.url).not.toBe('/org/team/members');
+
+        grandparentSetupDeferred.resolve();
+        await timeout(10);
+        expect(router.url).not.toBe('/org/team/members');
+
+        grandparentLoaderDeferred.resolve({orgId: 'ng-org'});
+        await nav;
+
+        expect(router.url).toBe('/org/team/members');
+        const grandchildRoute = router.routerState.root.firstChild!.firstChild!.firstChild!;
+        expect(grandchildRoute.resources!['org'].value()).toEqual({orgId: 'ng-org'});
+        expect(grandchildRoute.resources!['members'].value()).toEqual(['member-of-ng-org']);
+      });
+    });
+
+    describe('Resource inheritance', () => {
+      it('should inherit resources from parent routes to child routes', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'parent',
+            resources: () => ({
+              parentData: resource({loader: async () => 'parent-value'}),
+            }),
+            children: [
+              {
+                path: 'child',
+                component: TargetCmp,
+                resources: () => ({
+                  childData: resource({loader: async () => 'child-value'}),
+                }),
+              },
+            ],
+          },
+        ]);
+
+        await harness.navigateByUrl('/parent/child');
+
+        const parentRoute = router.routerState.root.firstChild!;
+        const childRoute = parentRoute.firstChild!;
+
+        expect(parentRoute.resources!['parentData'].value()).toBe('parent-value');
+        expect(parentRoute.resources!['childData']).toBeUndefined();
+
+        expect(childRoute.resources!['parentData'].value()).toBe('parent-value');
+        expect(childRoute.resources!['childData'].value()).toBe('child-value');
+        expect(childRoute.snapshot.resources!['parentData'].value()).toBe('parent-value');
+        expect(childRoute.snapshot.resources!['childData'].value()).toBe('child-value');
+      });
+
+      it('should inherit resources to child routes without own resources config', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'parent',
+            resources: () => ({
+              parentData: resource({loader: async () => 'parent-value'}),
+            }),
+            children: [
+              {
+                path: 'child',
+                component: TargetCmp,
+              },
+            ],
+          },
+        ]);
+
+        await harness.navigateByUrl('/parent/child');
+
+        const parentRoute = router.routerState.root.firstChild!;
+        const childRoute = parentRoute.firstChild!;
+
+        expect(childRoute.resources!['parentData'].value()).toBe('parent-value');
+        expect(childRoute.snapshot.resources!['parentData'].value()).toBe('parent-value');
+      });
+
+      it('should allow child resources to override inherited parent resources with the same key', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'parent',
+            resources: () => ({
+              shared: resource({loader: async () => 'parent-shared'}),
+              onlyParent: resource({loader: async () => 'parent-only'}),
+            }),
+            children: [
+              {
+                path: 'child',
+                resources: () => ({
+                  shared: resource({loader: async () => 'child-shared'}),
+                }),
+                children: [
+                  {
+                    path: 'grandchild',
+                    component: TargetCmp,
+                    resources: (ctx) => ({
+                      summary: resource({
+                        params: ({chain}) =>
+                          `${chain(ctx.resources()['shared'])}:${chain(ctx.resources()['onlyParent'])}`,
+                        loader: async ({params}) => params,
+                      }),
+                    }),
+                  },
+                ],
+              },
+            ],
+          },
+        ]);
+
+        await harness.navigateByUrl('/parent/child/grandchild');
+
+        const parentRoute = router.routerState.root.firstChild!;
+        const childRoute = parentRoute.firstChild!;
+        const grandchildRoute = childRoute.firstChild!;
+
+        expect(parentRoute.resources!['shared'].value()).toBe('parent-shared');
+        expect(childRoute.resources!['shared'].value()).toBe('child-shared');
+        expect(grandchildRoute.resources!['shared'].value()).toBe('child-shared');
+        expect(grandchildRoute.resources!['onlyParent'].value()).toBe('parent-only');
+        expect(grandchildRoute.resources!['summary'].value()).toBe('child-shared:parent-only');
+      });
+
+      it('should always inherit resources from parent routes regardless of paramsInheritanceStrategy emptyOnly', async () => {
+        const {harness, router} = await setupRouter(
+          [
+            {
+              path: 'parent',
+              component: TargetCmp,
+              resources: () => ({
+                data: resource({loader: async () => 'parent-data'}),
+              }),
+              children: [
+                {
+                  path: 'non-empty-child',
+                  component: TargetCmp,
+                },
+                {
+                  path: '',
+                  component: TargetCmp,
+                },
+              ],
+            },
+            {
+              path: 'componentless',
+              resources: () => ({
+                data: resource({loader: async () => 'comp-data'}),
+              }),
+              children: [
+                {
+                  path: 'sub',
+                  component: TargetCmp,
+                },
+              ],
+            },
+          ],
+          withRouterConfig({paramsInheritanceStrategy: 'emptyOnly'}),
+        );
+
+        // 1. Non-empty path child of a component route STILL inherits resources
+        await harness.navigateByUrl('/parent/non-empty-child');
+        const parentRoute = router.routerState.root.firstChild!;
+        const nonEmptyChild = parentRoute.firstChild!;
+        expect(nonEmptyChild.resources!['data'].value()).toBe('parent-data');
+
+        // 2. Empty path child inherits resources
+        await harness.navigateByUrl('/parent');
+        const emptyChild = parentRoute.firstChild!;
+        expect(emptyChild.resources!['data'].value()).toBe('parent-data');
+
+        // 3. Child of componentless route inherits resources
+        await harness.navigateByUrl('/componentless/sub');
+        const compRoute = router.routerState.root.firstChild!;
+        const subRoute = compRoute.firstChild!;
+        expect(subRoute.resources!['data'].value()).toBe('comp-data');
+      });
+
+      it('should leave resources undefined on routes that do not configure or inherit resources', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'no-resources',
+            component: TargetCmp,
+          },
+        ]);
+
+        await harness.navigateByUrl('/no-resources');
+
+        const route = router.routerState.root.firstChild!;
+        expect(route.resources).toBeUndefined();
+        expect(route.snapshot.resources).toBeUndefined();
+      });
+
+      it('should bind inherited blocking and non-blocking resources to component inputs', async () => {
+        const {harness} = await setupRouter(
+          [
+            {
+              path: 'parent',
+              resources: () => ({
+                user: resource({loader: async () => ({name: 'Alice'})}),
+                extra: nonBlocking(resource({loader: async () => 'extra-info'})),
+              }),
+              children: [
+                {
+                  path: 'child',
+                  component: InputBindingCmp,
+                },
+              ],
+            },
+          ],
+          withComponentInputBinding(),
+        );
+
+        const cmpInstance = await harness.navigateByUrl('/parent/child', InputBindingCmp);
+
+        // Blocking resource binds unwrapped value directly
+        expect(cmpInstance.user).toEqual({name: 'Alice'});
+        // Non-blocking resource binds Resource instance
+        expect(cmpInstance.extra.value()).toBe('extra-info');
+      });
+    });
+
+    describe('Inherited resource edge cases', () => {
+      it('should fail the navigation when a blocking descendant chains off a non-blocking ancestor resource that errors', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user',
+            resources: () => ({
+              user: nonBlocking(
+                resource({
+                  loader: async () => {
+                    throw new Error('user fetch failed');
+                  },
+                }),
+              ),
+            }),
+            children: [
+              {
+                path: 'orders',
+                component: TargetCmp,
+                resources: (ctx) => ({
+                  orders: resource({
+                    params: ({chain}) => (chain(ctx.resources()['user']) as {id: string}).id,
+                    loader: async () => ['order-1'],
+                  }),
+                }),
+              },
+            ],
+          },
+        ]);
+
+        await expectAsync(harness.navigateByUrl('/user/orders')).toBeRejected();
+        expect(router.url).not.toBe('/user/orders');
+      });
+
+      it('should still block navigation on a blocking descendant chained off a non-blocking ancestor', async () => {
+        const ancestorLoader = promiseWithResolvers<{role: string}>();
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user',
+            resources: () => ({
+              user: nonBlocking(resource({loader: () => ancestorLoader.promise})),
+            }),
+            children: [
+              {
+                path: 'perms',
+                component: TargetCmp,
+                resources: (ctx) => ({
+                  perms: resource({
+                    params: ({chain}) => (chain(ctx.resources()['user']) as {role: string}).role,
+                    loader: async ({params}) => `perms-for-${params}`,
+                  }),
+                }),
+              },
+            ],
+          },
+        ]);
+
+        const nav = harness.navigateByUrl('/user/perms');
+        await timeout(10);
+
+        expect(router.url).not.toBe('/user/perms');
+
+        ancestorLoader.resolve({role: 'admin'});
+        await nav;
+
+        expect(router.url).toBe('/user/perms');
+        const childRoute = router.routerState.root.firstChild!.firstChild!;
+        expect(childRoute.resources!['perms'].value()).toBe('perms-for-admin');
+      });
+
+      it('should fail the navigation when ctx.resources() is read outside a params function while an ancestor is still resolving', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user',
+            resources: async () => {
+              const injector = inject(Injector);
+              await Promise.resolve();
+              return runInInjectionContext(injector, () => ({
+                user: resource({loader: async () => ({id: '1'})}),
+              }));
+            },
+            children: [
+              {
+                path: 'orders',
+                component: TargetCmp,
+                resources: (ctx) => {
+                  const user = ctx.resources()['user'];
+                  return {
+                    orders: resource({
+                      params: () => user.value(),
+                      loader: async () => ['order-1'],
+                    }),
+                  };
+                },
+              },
+            ],
+          },
+        ]);
+
+        await expectAsync(harness.navigateByUrl('/user/orders')).toBeRejected();
+        expect(router.url).not.toBe('/user/orders');
+      });
+
+      it('should inherit parent resources into every named outlet sibling', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'parent',
+            resources: () => ({
+              shared: resource({loader: async () => 'shared-value'}),
+            }),
+            children: [
+              {path: 'primary', component: TargetCmp},
+              {path: 'aux', outlet: 'side', component: TargetCmp},
+            ],
+          },
+        ]);
+
+        await harness.navigateByUrl('/parent/(primary//side:aux)');
+
+        const parentRoute = router.routerState.root.firstChild!;
+        expect(parentRoute.children.length).toBe(2);
+        for (const child of parentRoute.children) {
+          expect(child.resources!['shared'].value()).toBe('shared-value');
+        }
+      });
+
+      it('should provide an empty object from ctx.resources() when no ancestor configures resources', async () => {
+        let observedResources: ResourceResult | undefined;
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'top',
+            component: TargetCmp,
+            resources: (ctx) => ({
+              data: resource({
+                params: () => {
+                  observedResources = ctx.resources();
+                  return 'ok';
+                },
+                loader: async ({params}) => params,
+              }),
+            }),
+          },
+        ]);
+
+        await harness.navigateByUrl('/top');
+
+        expect(observedResources).toEqual({});
+        expect(router.routerState.root.firstChild!.resources!['data'].value()).toBe('ok');
+      });
+
+      it('should chain off an already-resolved parent resource when navigating to a newly activated sibling child route', async () => {
+        let parentLoadCount = 0;
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user/:id',
+            resources: (ctx) => {
+              const id = computed(() => ctx.params()['id']);
+              return {
+              user: resource({
+                params: id, 
+                loader: async ({params: id}) => {
+                  parentLoadCount++;
+                  return {id, role: 'maintainer'};
+                },
+              }),
+              }
+            },
+            children: [
+              {
+                path: 'overview',
+                component: TargetCmp,
+              },
+              {
+                path: 'orders',
+                component: TargetCmp,
+                resources: (ctx) => ({
+                  orders: resource({
+                    params: ({chain}) => (chain(ctx.resources()['user']) as {role: string}).role,
+                    loader: async ({params: role}) => [`orders-for-${role}`],
+                  }),
+                }),
+              },
+            ],
+          },
+        ]);
+
+        await harness.navigateByUrl('/user/1/overview');
+        const parentRoute = router.routerState.root.firstChild!;
+        expect(parentLoadCount).toBe(1);
+        expect(parentRoute.firstChild!.resources!['user'].value()).toEqual({
+          id: '1',
+          role: 'maintainer',
+        });
+
+        await harness.navigateByUrl('/user/1/orders');
+        expect(router.routerState.root.firstChild).toBe(parentRoute);
+        expect(parentLoadCount).toBe(1);
+
+        const ordersRoute = parentRoute.firstChild!;
+        expect(ordersRoute.resources!['user'].value()).toEqual({id: '1', role: 'maintainer'});
+        expect(ordersRoute.resources!['orders'].value()).toEqual(['orders-for-maintainer']);
       });
     });
 
@@ -1121,26 +1768,6 @@ describe('Router resources integration', () => {
 
         expect(fetchCount).toBe(2);
         expect(instance.userResource?.value()).toBe('User #2');
-      });
-
-      it('should type resources on ActivatedRoute with reload()', async () => {
-        const {harness, router} = await setupRouter([
-          {
-            path: 'test',
-            component: TargetCmp,
-            resources: () => ({
-              data: resource({loader: async () => 'hello'}),
-            }),
-          },
-        ]);
-
-        await harness.navigateByUrl('/test');
-        await harness.fixture.whenStable();
-
-        const route = router.routerState.root.firstChild!;
-        const dataResource = route.resources?.['data'];
-        expect(dataResource?.reload()).toBe(true);
-        expect(dataResource?.value()).toBe('hello');
       });
 
       it('should return false from reload() when the underlying resource does not support reload', async () => {
