@@ -25,8 +25,28 @@
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/testbed/testbed-harness-environment.ts",
-        "startLine": 25,
-        "endLine": 28
+        "startLine": 26,
+        "endLine": 29
+      }
+    },
+    {
+      "name": "Fixture",
+      "type": "ComponentFixture<T> | DirectiveFixture<T>",
+      "entryType": "type_alias",
+      "generics": [
+        {
+          "name": "T",
+          "default": "unknown"
+        }
+      ],
+      "rawComment": "/** Covers all fixtures supported by `TestBed`. */",
+      "description": "Covers all fixtures supported by `TestBed`.",
+      "jsdocTags": [],
+      "members": [],
+      "source": {
+        "filePath": "/src/cdk/testing/testbed/testbed-harness-environment.ts",
+        "startLine": 37,
+        "endLine": 37
       }
     },
     {
@@ -49,7 +69,7 @@
               {
                 "name": "_fixture",
                 "description": "",
-                "type": "ComponentFixture<unknown>",
+                "type": "any",
                 "isOptional": false,
                 "isRestParam": false
               },
@@ -347,7 +367,7 @@
                 {
                   "name": "fixture",
                   "description": "",
-                  "type": "ComponentFixture<unknown>",
+                  "type": "any",
                   "isOptional": false,
                   "isRestParam": false
                 },
@@ -368,7 +388,7 @@
               {
                 "name": "fixture",
                 "description": "",
-                "type": "ComponentFixture<unknown>",
+                "type": "any",
                 "isOptional": false,
                 "isRestParam": false
               },
@@ -412,7 +432,7 @@
                 {
                   "name": "fixture",
                   "description": "",
-                  "type": "ComponentFixture<unknown>",
+                  "type": "any",
                   "isOptional": false,
                   "isRestParam": false
                 },
@@ -433,7 +453,7 @@
               {
                 "name": "fixture",
                 "description": "",
-                "type": "ComponentFixture<unknown>",
+                "type": "any",
                 "isOptional": false,
                 "isRestParam": false
               },
@@ -533,7 +553,7 @@
                 {
                   "name": "fixture",
                   "description": "",
-                  "type": "ComponentFixture<unknown>",
+                  "type": "any",
                   "isOptional": false,
                   "isRestParam": false
                 },
@@ -561,7 +581,7 @@
               {
                 "name": "fixture",
                 "description": "",
-                "type": "ComponentFixture<unknown>",
+                "type": "any",
                 "isOptional": false,
                 "isRestParam": false
               },
@@ -612,8 +632,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/testbed/testbed-harness-environment.ts",
-        "startLine": 89,
-        "endLine": 225
+        "startLine": 93,
+        "endLine": 234
       }
     },
     {
@@ -1753,11 +1773,27 @@
       "@angular/core/testing"
     ],
     [
+      "DirectiveFixture",
+      "@angular/core/testing"
+    ],
+    [
       "flush",
       "@angular/core/testing"
     ],
     [
+      "TestBed",
+      "@angular/core/testing"
+    ],
+    [
+      "DestroyRef",
+      "@angular/core"
+    ],
+    [
       "TestbedHarnessEnvironmentOptions",
+      "@angular/cdk/testing/testbed"
+    ],
+    [
+      "Fixture",
       "@angular/cdk/testing/testbed"
     ],
     [
@@ -1774,6 +1810,10 @@
     ],
     [
       "TestbedHarnessEnvironmentOptions.queryFn",
+      "@angular/cdk/testing/testbed"
+    ],
+    [
+      "Fixture",
       "@angular/cdk/testing/testbed"
     ],
     [
