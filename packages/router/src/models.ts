@@ -61,6 +61,13 @@ export interface ResourceContext {
    * @developerPreview 22.2
    */
   data: Signal<Record<string, any>>;
+  /**
+   * Inherited resources from ancestor routes.
+   * Updates reactively as ancestor route resource setup functions complete.
+   *
+   * @developerPreview 22.2
+   */
+  resources: Signal<ResourceResult>;
 }
 
 /**
