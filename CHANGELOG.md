@@ -1,3 +1,9 @@
+<a name="22.2.0-next.7"></a>
+# 22.2.0-next.7 (2026-09-09)
+No user facing changes in this release
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.2.0-next.6"></a>
 # 22.2.0-next.6 (2026-09-09)
 ### compiler
