@@ -107,7 +107,6 @@ async function setupNewRouterResources(
     queryParams: route.queryParamsSignal,
     fragment: route.fragmentSignal,
     data: route.dataSignal,
-    snapshot: route._futureSnapshot,
   };
 
   const resourceResultRaw = runInInjectionContext(childInjector, () => resourcesFn(context));
