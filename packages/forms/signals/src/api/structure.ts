@@ -69,6 +69,20 @@ export interface FormOptions<TModel> {
 
     /** A description of the tool's purpose and usage information. */
     description: string;
+
+    /**
+     * Set of configuration values extending the core tool behavior.
+     */
+    annotations?: {
+      // `readOnlyHint` and `untrustedContentHint` are intentionally omitted as they have
+      // hard-coded values.
+
+      /**
+       * A hint that the tool will have consequential effects like mutating state or interacting
+       * with the external world.
+       */
+      consequentialHint?: boolean;
+    };
   };
 
   /** Options that define how to handle form submission. */
@@ -232,6 +246,7 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
         registerWebMcpForm(fieldRoot.fieldTree, {
           name: experimentalWebMcpTool.name,
           description: experimentalWebMcpTool.description,
+          annotations: experimentalWebMcpTool.annotations,
         }),
       );
     } else {
