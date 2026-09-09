@@ -768,6 +768,9 @@ export class NavigationTransitions {
             return of(t);
           }),
 
+          // TODO(atscott): Consider running `setupAndRunResources` in parallel with `loadComponents`
+          // (and potentially `resolveData` when independent) rather than waiting for `loadComponents`
+          // to finish, so that route resources can start fetching while component chunks download.
           this.routerResourcesFeature?.setupAndRunResources(abortController.signal) ?? ((t) => t),
           switchTap(() => this.afterPreactivation()),
 

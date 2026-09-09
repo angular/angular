@@ -65,6 +65,16 @@ export interface ResourceContext {
    * @developerPreview 22.2
    */
   data: Signal<Record<string, any>>;
+  /**
+   * Resources inherited from ancestor routes, keyed by name.
+   *
+   * Read this signal inside a reactive context such as a resource's `params` function (for example,
+   * with `chain(ctx.resources()['user'])`) rather than synchronously in the `resources` function
+   * body, as ancestor `resources` functions may still be initializing asynchronously.
+   *
+   * @developerPreview 22.2
+   */
+  resources: Signal<ResourceResult>;
 }
 
 /**
