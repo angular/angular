@@ -1051,32 +1051,33 @@ const _cssRbraceInPlaceholderReGlobal = new RegExp(RBRACE_IN_PLACEHOLDER, 'g');
 
 // Matches any CSS variable name, defined by a double-hyphen followed by any valid ident.
 // https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
-const _cssVariableRe = /(var\(\s*)?(--(?:[a-zA-Z0-9_-]|[^\x00-\x7F])+)(\s*:)?/g;
+const _cssVariableRe = /(var\(\s*|@property\s+)?(--(?:[a-zA-Z0-9_-]|[^\x00-\x7F])+)(\s*:)?/g;
 
 /**
  * Transforms CSS variables within a stylesheet to include a namespace placeholder.
  *
  * E.g. `--foo: bar;` becomes `--%NS%foo: bar;`
  * E.g. `color: var(--foo);` becomes `color: var(--%NS%foo);`
+ * E.g. `@property --foo` becomes `@property --%NS%foo`
  *
  * If a variable is prefixed with `--global--`, it is NOT namespaced and the prefix is removed.
  * E.g. `--global--mycolor: red;` becomes `--mycolor: red;`
  */
 export function namespaceCssVariables(cssText: string): string {
-  return cssText.replace(_cssVariableRe, (match, leadingVar, varName, trailingColon) => {
-    // Check for a leading `var(` or trailing `:` to approximate whether we're operating on a
-    // real CSS variable, not another piece of syntax that resembles it. For example, this
-    // guards against:
+  return cssText.replace(_cssVariableRe, (match, prefix, varName, trailingColon) => {
+    // Check for a leading `var(`, `@property`, or trailing `:` to approximate whether we're
+    // operating on a real CSS variable, not another piece of syntax that resembles it.
+    // For example, this guards against:
     // - `.foo--bar {}`
     // - `/* --foo */`
     // - `p { content: "--foo" }`
     // - `[data---bar] {}`
     // - `[data-status=foo--bar] {}`
     // etc.
-    if (!leadingVar && !trailingColon) {
+    if (!prefix && !trailingColon) {
       return match;
     }
-    return (leadingVar ?? '') + namespaceCssVariable(varName) + (trailingColon ?? '');
+    return (prefix ?? '') + namespaceCssVariable(varName) + (trailingColon ?? '');
   });
 }
 
