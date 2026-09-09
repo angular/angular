@@ -1,15 +1,20 @@
-import {browser, by, element} from 'protractor';
+import * as webdriver from 'selenium-webdriver';
 
 export class AppPage {
-  navigateTo() {
-    return browser.get('/');
+  constructor(
+    private driver: webdriver.WebDriver,
+    private baseUrl: string,
+  ) {}
+
+  async navigateTo(): Promise<void> {
+    await this.driver.get(this.baseUrl);
   }
 
-  getHeading() {
-    return element(by.css('app-root h1')).getText();
+  async getHeading(): Promise<string> {
+    return this.driver.findElement(webdriver.By.css('app-root h1')).getText();
   }
 
-  getParagraph(name: string) {
-    return element(by.css('app-root p#' + name)).getText();
+  async getParagraph(name: string): Promise<string> {
+    return this.driver.findElement(webdriver.By.css('app-root p#' + name)).getText();
   }
 }

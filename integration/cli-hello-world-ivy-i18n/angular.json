@@ -39,6 +39,7 @@
             "scripts": [],
             "progress": false,
             "optimization": false,
+            "preserveSymlinks": true,
             "i18nMissingTranslation": "error",
             "browser": "src/main.ts"
           },
@@ -107,6 +108,7 @@
             "styles": ["src/styles.css"],
             "scripts": [],
             "progress": false,
+            "preserveSymlinks": true,
             "watch": false
           }
         },

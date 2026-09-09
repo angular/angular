@@ -28,6 +28,7 @@
             "scripts": [],
             "optimization": false,
             "progress": false,
+            "preserveSymlinks": true,
             "browser": "src/main.ts"
           },
           "configurations": {
