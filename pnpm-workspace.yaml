@@ -90,3 +90,7 @@ autoInstallPeers: false
 
 # Workaround as the default 'install' causes problems during `pnpm ng-dev pr merge` as the lockfile is updated.
 verifyDepsBeforeRun: warn
+
+# Prevent pnpm from prepending packageManagerDependencies document to the lockfile
+pmOnFail: ignore
+
