@@ -244,6 +244,8 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
 }
 ```
 
+IMPORTANT: Inherited route [resources](guide/routing/data-fetching-with-resources#resource-inheritance) do not work with a custom `RouteReuseStrategy` that detaches a route without also detaching the ancestors whose resources it depends on.
+
 ### Manually destroying detached route handles
 
 When implementing a custom `RouteReuseStrategy`, you may need to manually destroy a `DetachedRouteHandle` if you decide to discard it without reattaching it. For example, if your strategy has a cache size limit or expires handles after a certain time, you must ensure the component and its state are properly destroyed to avoid memory leaks.
