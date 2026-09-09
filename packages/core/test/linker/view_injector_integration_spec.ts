@@ -35,7 +35,7 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
-import {ComponentFixture, fakeAsync, TestBed} from '../../testing';
+import {ComponentFixture, TestBed} from '../../testing';
 
 @Directive({
   selector: '[simpleDirective]',
@@ -822,22 +822,22 @@ describe('View injector', () => {
       );
     });
 
-    it('should instantiate directives that depend on other directives', fakeAsync(() => {
+    it('should instantiate directives that depend on other directives', () => {
       TestBed.configureTestingModule({declarations: [SimpleDirective, NeedsDirective]});
       const el = createComponent('<div simpleDirective><div needsDirective></div></div>');
       const d = el.children[0].children[0].injector.get(NeedsDirective);
 
       expect(d).toBeInstanceOf(NeedsDirective);
       expect(d.dependency).toBeInstanceOf(SimpleDirective);
-    }));
+    });
 
-    it('should throw when a dependency cannot be resolved', fakeAsync(() => {
+    it('should throw when a dependency cannot be resolved', () => {
       TestBed.configureTestingModule({declarations: [NeedsService]});
 
       expect(() => createComponent('<div needsService></div>')).toThrowError(
         /NG0201: No provider found for `service`\./,
       );
-    }));
+    });
 
     it('should inject null when an optional dependency cannot be resolved', () => {
       TestBed.configureTestingModule({declarations: [OptionallyNeedsDirective]});
