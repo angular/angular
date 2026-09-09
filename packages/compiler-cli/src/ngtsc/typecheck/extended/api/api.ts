@@ -13,6 +13,12 @@ import {
   ParseSourceSpan,
   TmplAstNode,
   TmplAstTemplate,
+  KeyedRead,
+  SafePropertyRead,
+  SafeKeyedRead,
+  SafeCall,
+  ParenthesizedExpression,
+  NonNullAssert,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -160,4 +166,24 @@ class TemplateVisitor<Code extends ErrorCode> extends CombinedRecursiveAstVisito
     this.visitAllTemplateNodes(template);
     return this.diagnostics;
   }
+}
+
+/**
+ * Checks if the given AST node originates from a KeyedRead (indexed access)
+ * by unwrapping parentheses, non-null assertions, and traversing the receivers
+ * of safe navigation operations (?. property access, ?.[] keyed access, ?.() calls).
+ */
+export function isAccessFromUncheckedIndex(node: AST): boolean {
+  if (node instanceof KeyedRead) {
+    return true;
+  } else if (
+    node instanceof SafePropertyRead ||
+    node instanceof SafeKeyedRead ||
+    node instanceof SafeCall
+  ) {
+    return isAccessFromUncheckedIndex(node.receiver);
+  } else if (node instanceof ParenthesizedExpression || node instanceof NonNullAssert) {
+    return isAccessFromUncheckedIndex(node.expression);
+  }
+  return false;
 }
