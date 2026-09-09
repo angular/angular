@@ -23,7 +23,6 @@ import {
   EnvironmentInjector,
   ErrorHandler,
   inject,
-  input,
   NgModule,
   OnDestroy,
   provideZonelessChangeDetection,
@@ -33,13 +32,12 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {ComponentRef} from '@angular/core/src/render3';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
-import {isNode} from '@angular/private/testing';
+import {isNode, nextAnimationFrame, timeout} from '@angular/private/testing';
 import {reusedNodes} from '../../src/animation/utils';
-import {tickAnimationFrames} from '../animation_utils/tick_animation_frames';
 
 @NgModule({
   providers: [provideZonelessChangeDetection()],
@@ -88,7 +86,7 @@ describe('Animation', () => {
     }
     `;
 
-    it('should delay element removal when an animation is specified', fakeAsync(() => {
+    it('should delay element removal when an animation is specified', async () => {
       const logSpy = jasmine.createSpy('logSpy');
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -110,26 +108,26 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const paragragh = fixture.debugElement.query(By.css('p'));
 
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
-      fixture.detectChanges();
+      await fixture.whenStable();
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
-      tick();
+      await timeout();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       expect(logSpy).toHaveBeenCalled();
-    }));
+    });
 
-    it('should remove right away when animations are disabled', fakeAsync(() => {
+    it('should remove right away when animations are disabled', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -144,15 +142,15 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.show.set(false);
-      tickAnimationFrames(1);
-      fixture.detectChanges();
+      await nextAnimationFrame();
+      await fixture.whenStable();
       expect(cmp.show()).toBeFalsy();
       expect(cmp.el).toBeUndefined();
-    }));
+    });
 
-    it('should remove right away when classes have no animations', fakeAsync(() => {
+    it('should remove right away when classes have no animations', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -168,15 +166,15 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.show.set(false);
-      tickAnimationFrames(1);
-      fixture.detectChanges();
+      await nextAnimationFrame();
+      await fixture.whenStable();
       expect(cmp.show()).toBeFalsy();
       expect(cmp.el).toBeUndefined();
-    }));
+    });
 
-    it('should support string arrays', fakeAsync(() => {
+    it('should support string arrays', async () => {
       const multiple = `
         .slide-out {
           animation: slide-out 2ms;
@@ -219,28 +217,28 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const paragragh = fixture.debugElement.query(By.css('p'));
 
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.outerHTML).toContain('class="slide-out fade"');
-      fixture.detectChanges();
+      await fixture.whenStable();
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
-      tick();
+      await timeout();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
-    }));
+    });
 
-    it('should support binding strings with spaces', fakeAsync(() => {
+    it('should support binding strings with spaces', async () => {
       const multiple = `
         .slide-out {
           animation: slide-out 2ms;
@@ -285,28 +283,28 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const paragragh = fixture.debugElement.query(By.css('p'));
 
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.outerHTML).toContain('class="slide-out fade"');
-      fixture.detectChanges();
+      await fixture.whenStable();
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
-      tick();
+      await timeout();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
-    }));
+    });
 
-    it('should support multiple classes as a single string with spaces', fakeAsync(() => {
+    it('should support multiple classes as a single string with spaces', async () => {
       const multiple = `
         .slide-out {
           animation: slide-out 2ms;
@@ -348,28 +346,28 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const paragragh = fixture.debugElement.query(By.css('p'));
 
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fixture.nativeElement.outerHTML).toContain('class="slide-out fade"');
-      fixture.detectChanges();
+      await fixture.whenStable();
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
-      tick();
+      await timeout();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
-    }));
+    });
 
-    it('should support function syntax', fakeAsync(() => {
+    it('should support function syntax', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -389,15 +387,15 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
       expect(fixture.debugElement.nativeElement.outerHTML).not.toContain('class="slide-in"');
-    }));
+    });
 
-    it('should be host bindable', fakeAsync(() => {
+    it('should be host bindable', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'fade-cmp',
@@ -422,24 +420,24 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const fadeCmp = fixture.debugElement.query(By.css('fade-cmp'));
 
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
       expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
-      fixture.detectChanges();
+      await fixture.whenStable();
       fadeCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
-      tick();
+      await timeout();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
-    }));
+    });
 
-    it('should be host bindable with brackets', fakeAsync(() => {
+    it('should be host bindable with brackets', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'fade-cmp',
@@ -466,24 +464,24 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const fadeCmp = fixture.debugElement.query(By.css('fade-cmp'));
 
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
       expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
-      fixture.detectChanges();
+      await fixture.whenStable();
       fadeCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
-      tick();
+      await timeout();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
-    }));
+    });
 
-    it('should be host bindable with events', fakeAsync(() => {
+    it('should be host bindable with events', async () => {
       const fadeCalled = jasmine.createSpy('fadeCalled');
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -515,16 +513,16 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(fadeCalled).toHaveBeenCalled();
-    }));
+    });
 
     it('should remove element from DOM with (animate.leave) after list reordering', async () => {
       @Component({
@@ -580,7 +578,7 @@ describe('Animation', () => {
       expect(elements.length).toBe(1);
     });
 
-    it('should compose class list when host binding and regular binding', fakeAsync(() => {
+    it('should compose class list when host binding and regular binding', async () => {
       const multiple = `
         .slide-out {
           animation: slide-out 2ms;
@@ -632,14 +630,14 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const childCmp = fixture.debugElement.query(By.css('child-cmp'));
 
       expect(childCmp.nativeElement.className).not.toContain('fade');
       expect(childCmp.nativeElement.className).not.toContain('slide-out');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
       expect(childCmp.nativeElement.className).toContain('fade');
       expect(childCmp.nativeElement.className).toContain('slide-out');
@@ -650,14 +648,14 @@ describe('Animation', () => {
       childCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
-      tick();
+      await timeout();
 
       expect(fixture.nativeElement.outerHTML).not.toContain('fade');
       expect(fixture.nativeElement.outerHTML).not.toContain('slide-out');
       expect(fixture.debugElement.query(By.css('child-cmp'))).toBeNull();
-    }));
+    });
 
-    it('should compose class list when host binding on a directive and regular binding', fakeAsync(() => {
+    it('should compose class list when host binding on a directive and regular binding', async () => {
       const multiple = `
         .slide-out {
           animation: slide-out 2ms;
@@ -714,27 +712,27 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const childCmp = fixture.debugElement.query(By.css('child-cmp'));
 
       expect(childCmp.nativeElement.className).not.toContain('slide-out');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(childCmp.nativeElement.className).toContain('slide-out');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       childCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
-      tick();
+      await timeout();
       expect(fixture.nativeElement.outerHTML).not.toContain('slide-out');
       expect(fixture.debugElement.query(By.css('child-cmp'))).toBeNull();
-    }));
+    });
 
-    it('should compose class list when host binding a string and regular class strings', fakeAsync(() => {
+    it('should compose class list when host binding a string and regular class strings', async () => {
       const multiple = `
         .slide-out {
           animation: slide-out 2ms;
@@ -783,17 +781,17 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const childCmp = fixture.debugElement.query(By.css('child-cmp'));
 
       expect(childCmp.nativeElement.className).not.toContain('slide-out fade');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(childCmp.nativeElement.className).toContain('slide-out fade');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       childCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
@@ -804,9 +802,9 @@ describe('Animation', () => {
 
       expect(fixture.nativeElement.outerHTML).not.toContain('slide-out fade ');
       expect(fixture.debugElement.query(By.css('child-cmp'))).toBeNull();
-    }));
+    });
 
-    it('should await the longest animation when multiple transitions are present', fakeAsync(() => {
+    it('should await the longest animation when multiple transitions are present', async () => {
       const multiple = `
         .slide-out {
           grid-template-rows: 0fr;
@@ -832,17 +830,17 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const div = fixture.debugElement.query(By.css('div'));
 
       expect(div.nativeElement.className).not.toContain('slide-out');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(div.nativeElement.className).toContain('slide-out');
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       div.nativeElement.dispatchEvent(
         new TransitionEvent('transitionend', {propertyName: 'opacity'}),
@@ -859,12 +857,12 @@ describe('Animation', () => {
       div.nativeElement.dispatchEvent(
         new TransitionEvent('transitionend', {propertyName: 'grid-template-rows'}),
       );
-      tick();
+      await timeout();
       expect(fixture.nativeElement.outerHTML).not.toContain('slide-out');
       expect(fixture.debugElement.query(By.css('div'))).toBeNull();
-    }));
+    });
 
-    it('should wait for the longest duplicate-named animation when getAnimations is empty', fakeAsync(() => {
+    it('should wait for the longest duplicate-named animation when getAnimations is empty', async () => {
       const multiple = `
         .duplicate-animation-name {
           animation:
@@ -896,17 +894,17 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const paragraph = fixture.debugElement.query(By.css('p'));
       const getAnimations = paragraph.nativeElement.getAnimations.bind(paragraph.nativeElement);
       spyOn(paragraph.nativeElement, 'getAnimations').and.returnValue([]);
 
       expect(paragraph.nativeElement.className).not.toContain('duplicate-animation-name');
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalse();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(paragraph.nativeElement.className).toContain('duplicate-animation-name');
 
       const [shortAnimation, longAnimation] = getAnimations();
@@ -917,14 +915,14 @@ describe('Animation', () => {
       };
 
       dispatchAnimationEnd(shortAnimation);
-      tick();
+      await timeout();
       expect(fixture.nativeElement.outerHTML).toContain('duplicate-animation-name');
 
       dispatchAnimationEnd(longAnimation);
-      tick();
+      await timeout();
       expect(fixture.nativeElement.outerHTML).not.toContain('duplicate-animation-name');
       expect(fixture.debugElement.query(By.css('p'))).toBeNull();
-    }));
+    });
 
     describe('legacy animations compatibility', () => {
       beforeAll(() => {
@@ -949,7 +947,7 @@ describe('Animation', () => {
       }
       `;
 
-      it('should have the same exact timing when AnimationsModule is present', fakeAsync(() => {
+      it('should have the same exact timing when AnimationsModule is present', async () => {
         const logSpy = jasmine.createSpy('logSpy');
         @Component({
           changeDetection: ChangeDetectionStrategy.Eager,
@@ -971,24 +969,24 @@ describe('Animation', () => {
 
         const fixture = TestBed.createComponent(TestComponent);
         const cmp = fixture.componentInstance;
-        fixture.detectChanges();
+        await fixture.whenStable();
         const paragragh = fixture.debugElement.query(By.css('p'));
 
         expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
         cmp.show.set(false);
-        fixture.detectChanges();
-        tickAnimationFrames(1);
+        await fixture.whenStable();
+        await nextAnimationFrame();
         expect(cmp.show()).toBeFalsy();
-        fixture.detectChanges();
+        await fixture.whenStable();
         expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
-        fixture.detectChanges();
+        await fixture.whenStable();
         paragragh.nativeElement.dispatchEvent(
           new AnimationEvent('animationend', {animationName: 'fade-out'}),
         );
-        tick();
+        await timeout();
         expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
         expect(logSpy).toHaveBeenCalled();
-      }));
+      });
     });
   });
 
@@ -1018,7 +1016,7 @@ describe('Animation', () => {
     }
     `;
 
-    it('should apply classes on entry when animation is specified with no control flow', fakeAsync(() => {
+    it('should apply classes on entry when animation is specified with no control flow', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -1033,12 +1031,12 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in"');
-    }));
+    });
 
-    it('should call animation function on entry when animation is specified with no control flow', fakeAsync(() => {
+    it('should call animation function on entry when animation is specified with no control flow', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -1057,12 +1055,12 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.count()).toBe(1);
-    }));
+    });
 
-    it('should call animation function only once on entry when animation is specified with control flow', fakeAsync(() => {
+    it('should call animation function only once on entry when animation is specified with control flow', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -1083,17 +1081,17 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.count()).toBe(0);
 
       cmp.show.update((s) => !s);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.count()).toBe(1);
-    }));
+    });
 
-    it('should apply classes on entry when animation is specified', fakeAsync(() => {
+    it('should apply classes on entry when animation is specified', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -1109,15 +1107,15 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in"');
-    }));
+    });
 
-    it('should support binding syntax', fakeAsync(() => {
+    it('should support binding syntax', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -1135,15 +1133,15 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in"');
-    }));
+    });
 
-    it('should remove classes when animation is done', fakeAsync(() => {
+    it('should remove classes when animation is done', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -1159,10 +1157,10 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       const paragraph = fixture.debugElement.query(By.css('p'));
 
       paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
@@ -1171,9 +1169,9 @@ describe('Animation', () => {
         new AnimationEvent('animationend', {animationName: 'slide-in'}),
       );
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in"');
-    }));
+    });
 
-    it('should support function syntax', fakeAsync(() => {
+    it('should support function syntax', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -1193,10 +1191,10 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeTruthy();
       const paragraph = fixture.debugElement.query(By.css('p'));
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in"');
@@ -1205,9 +1203,9 @@ describe('Animation', () => {
         new AnimationEvent('animationend', {animationName: 'fade-in'}),
       );
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
-    }));
+    });
 
-    it('should support string arrays', fakeAsync(() => {
+    it('should support string arrays', async () => {
       const multiple = `
       .slide-in {
         animation: slide-in 1ms;
@@ -1249,11 +1247,11 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(cmp.show()).toBeFalsy();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       const paragraph = fixture.debugElement.query(By.css('p'));
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
@@ -1262,9 +1260,9 @@ describe('Animation', () => {
         new AnimationEvent('animationend', {animationName: 'fade-in'}),
       );
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
-    }));
+    });
 
-    it('should support binding to a string with a space', fakeAsync(() => {
+    it('should support binding to a string with a space', async () => {
       const multiple = `
       .slide-in {
         animation: slide-in 1ms;
@@ -1308,11 +1306,11 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(cmp.show()).toBeFalsy();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       const paragraph = fixture.debugElement.query(By.css('p'));
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
@@ -1321,9 +1319,9 @@ describe('Animation', () => {
         new AnimationEvent('animationend', {animationName: 'fade-in'}),
       );
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
-    }));
+    });
 
-    it('should support multiple classes as a single string separated by a space', fakeAsync(() => {
+    it('should support multiple classes as a single string separated by a space', async () => {
       const multiple = `
       .slide-in {
         animation: slide-in 1ms;
@@ -1364,10 +1362,10 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
       const paragraph = fixture.debugElement.query(By.css('p'));
@@ -1380,9 +1378,9 @@ describe('Animation', () => {
       );
       expect(fixture.debugElement.nativeElement.className).not.toContain('fade-in');
       expect(fixture.debugElement.nativeElement.className).not.toContain('slide-in');
-    }));
+    });
 
-    it('should remove right away when animations are disabled', fakeAsync(() => {
+    it('should remove right away when animations are disabled', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -1397,14 +1395,14 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.show.set(true);
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in"');
-    }));
+    });
 
-    it('should remove right away when no classes have animations', fakeAsync(() => {
+    it('should remove right away when no classes have animations', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -1420,15 +1418,15 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="not-a-class"');
-    }));
+    });
 
-    it('should be host bindable', fakeAsync(() => {
+    it('should be host bindable', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
@@ -1451,8 +1449,8 @@ describe('Animation', () => {
       TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
 
       expect(fixture.debugElement.nativeElement.outerHTML).toContain('class="slide-in"');
       const paragraph = fixture.debugElement.query(By.css('p'));
@@ -1461,9 +1459,9 @@ describe('Animation', () => {
         new AnimationEvent('animationend', {animationName: 'slide-in'}),
       );
       expect(fixture.debugElement.nativeElement.outerHTML).toContain('class="slide-in"');
-    }));
+    });
 
-    it('should be host bindable with brackets', fakeAsync(() => {
+    it('should be host bindable with brackets', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
@@ -1487,8 +1485,8 @@ describe('Animation', () => {
       TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
 
       expect(fixture.debugElement.nativeElement.outerHTML).toContain('class="slide-in"');
       const paragraph = fixture.debugElement.query(By.css('p'));
@@ -1497,9 +1495,9 @@ describe('Animation', () => {
         new AnimationEvent('animationend', {animationName: 'slide-in'}),
       );
       expect(fixture.debugElement.nativeElement.outerHTML).toContain('class="slide-in"');
-    }));
+    });
 
-    it('should be host bindable with events', fakeAsync(() => {
+    it('should be host bindable with events', async () => {
       const slideInCalled = jasmine.createSpy('slideInCalled');
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -1534,11 +1532,11 @@ describe('Animation', () => {
       TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(slideInCalled).toHaveBeenCalled();
-    }));
+    });
 
-    it('should compose class list when host binding and regular binding', fakeAsync(() => {
+    it('should compose class list when host binding and regular binding', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
@@ -1564,12 +1562,12 @@ describe('Animation', () => {
       TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const childCmp = fixture.debugElement.query(By.css('child-cmp'));
 
       expect(childCmp.nativeElement.className).toContain('slide-in');
       expect(childCmp.nativeElement.className).toContain('fade-in');
-      tickAnimationFrames(1);
+      await nextAnimationFrame();
 
       childCmp.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
       childCmp.nativeElement.dispatchEvent(
@@ -1580,9 +1578,9 @@ describe('Animation', () => {
       );
       expect(childCmp.nativeElement.className).not.toContain('slide-in');
       expect(childCmp.nativeElement.className).not.toContain('fade-in');
-    }));
+    });
 
-    it('should compose class list when host binding a string and regular class strings', fakeAsync(() => {
+    it('should compose class list when host binding a string and regular class strings', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'child-cmp',
@@ -1604,8 +1602,8 @@ describe('Animation', () => {
       TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       const childCmp = fixture.debugElement.query(By.css('child-cmp'));
 
       expect(childCmp.nativeElement.className).toContain('slide-in fade-in');
@@ -1616,11 +1614,11 @@ describe('Animation', () => {
       childCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-in'}),
       );
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(childCmp.nativeElement.className).not.toContain('slide-in fade-in');
-    }));
+    });
 
-    it('should reset leave animation and not duplicate node when toggled quickly', fakeAsync(() => {
+    it('should reset leave animation and not duplicate node when toggled quickly', async () => {
       const animateStyles = `
         .slide-in {
           animation: slide-in 500ms;
@@ -1662,26 +1660,26 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       cmp.show.set(true);
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(cmp.show()).toBeTruthy();
       cmp.show.set(false);
-      tickAnimationFrames(1);
-      fixture.detectChanges();
+      await nextAnimationFrame();
+      await fixture.whenStable();
       expect(cmp.show()).toBeFalsy();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeTruthy();
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       expect(paragraphs.length).toBe(1);
-    }));
+    });
 
-    it('should reset leave animation and not duplicate node when toggled quickly using event bindings', fakeAsync(() => {
+    it('should reset leave animation and not duplicate node when toggled quickly using event bindings', async () => {
       const animateStyles = `
         .slide-in {
           animation: slide-in 500ms;
@@ -1733,25 +1731,25 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeTruthy();
       cmp.show.set(false);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeFalsy();
       cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       expect(cmp.show()).toBeTruthy();
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       expect(paragraphs.length).toBe(1);
-    }));
+    });
 
-    it('should reset leave animation and not duplicate node when toggled programmatically very quickly', fakeAsync(() => {
+    it('should reset leave animation and not duplicate node when toggled programmatically very quickly', async () => {
       const animateStyles = `
         .fade {
           animation: fade-out 500ms;
@@ -1795,13 +1793,13 @@ describe('Animation', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
       cmp.toggle();
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       expect(paragraphs.length).toBe(1);
-    }));
+    });
 
-    it('should always run animations for `@for` loops when adding and removing quickly', fakeAsync(() => {
+    it('should always run animations for `@for` loops when adding and removing quickly', async () => {
       const animateStyles = `
         .slide-in {
           animation: slide-in 500ms;
@@ -1855,8 +1853,8 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       paragraphs.forEach((p) => {
         p.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
@@ -1866,15 +1864,15 @@ describe('Animation', () => {
       });
       cmp.addremove();
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
 
       expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
       expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(1);
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
-    }));
+    });
 
-    it('should run leave and enter animations for `@for` loops when adding / removing simultaneously', fakeAsync(() => {
+    it('should run leave and enter animations for `@for` loops when adding / removing simultaneously', async () => {
       const animateStyles = `
         .slide-in {
           animation: slide-in 500ms;
@@ -1926,8 +1924,8 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       paragraphs.forEach((p) => {
         p.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
@@ -1936,8 +1934,8 @@ describe('Animation', () => {
         );
       });
       cmp.addremove();
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
 
       const first = fixture.debugElement.query(By.css('p#item-1'));
       const last = fixture.debugElement.query(By.css('p#item-4'));
@@ -1952,16 +1950,16 @@ describe('Animation', () => {
       first.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
-      fixture.detectChanges();
-      tickAnimationFrames(1);
-      tick();
+      await fixture.whenStable();
+      await nextAnimationFrame();
+      await timeout();
 
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(3);
       expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(0);
       expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(0);
-    }));
+    });
 
-    it('should run leave and enter animations for `@for` loops when adding / removing simultaneously with leave function', fakeAsync(() => {
+    it('should run leave and enter animations for `@for` loops when adding / removing simultaneously with leave function', async () => {
       const animateStyles = `
         .slide-in {
           animation: slide-in 500ms;
@@ -2018,8 +2016,8 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       paragraphs.forEach((p) => {
         p.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
@@ -2028,8 +2026,8 @@ describe('Animation', () => {
         );
       });
       cmp.addremove();
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
 
       const first = fixture.debugElement.query(By.css('p#item-1'));
       const last = fixture.debugElement.query(By.css('p#item-4'));
@@ -2044,16 +2042,16 @@ describe('Animation', () => {
       first.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
-      fixture.detectChanges();
-      tickAnimationFrames(1);
-      tick();
+      await fixture.whenStable();
+      await nextAnimationFrame();
+      await timeout();
 
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(3);
       expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(0);
       expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(0);
-    }));
+    });
 
-    it('should always run animations for custom repeater loops when adding and removing quickly', fakeAsync(() => {
+    it('should always run animations for custom repeater loops when adding and removing quickly', async () => {
       const animateStyles = `
         .slide-in {
           animation: slide-in 500ms;
@@ -2108,8 +2106,8 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       paragraphs.forEach((p) => {
         p.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
@@ -2119,15 +2117,15 @@ describe('Animation', () => {
       });
       cmp.addremove();
       fixture.changeDetectorRef.markForCheck();
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
 
       expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
       expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(1);
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
-    }));
+    });
 
-    it('should only remove one element in reactive `@for` loops when removing the second to last item', fakeAsync(() => {
+    it('should only remove one element in reactive `@for` loops when removing the second to last item', async () => {
       const animateStyles = `
         .fade {
           animation: fade-out 500ms;
@@ -2173,10 +2171,10 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.removeSecondToLast();
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
 
       expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
@@ -2185,11 +2183,11 @@ describe('Animation', () => {
         .nativeElement.dispatchEvent(
           new AnimationEvent('animationend', {animationName: 'fade-out'}),
         );
-      tick();
+      await timeout();
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(3);
-    }));
+    });
 
-    it('should not remove elements when swapping or moving nodes', fakeAsync(() => {
+    it('should not remove elements when swapping or moving nodes', async () => {
       const animateSpy = jasmine.createSpy('animateSpy');
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -2226,12 +2224,12 @@ describe('Animation', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
       cmp.shuffle();
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(animateSpy).not.toHaveBeenCalled();
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(3);
-    }));
+    });
 
-    it('should not remove elements when child element animations finish', fakeAsync(() => {
+    it('should not remove elements when child element animations finish', async () => {
       const animateStyles = `
         .fade {
           animation: fade-out 500ms;
@@ -2285,30 +2283,30 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.flash();
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
 
       fixture.debugElement
         .query(By.css('button'))
         .nativeElement.dispatchEvent(
           new AnimationEvent('animationend', {animationName: 'flash', bubbles: true}),
         );
-      tick();
+      await timeout();
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(1);
       fixture.debugElement
         .query(By.css('p'))
         .nativeElement.dispatchEvent(
           new AnimationEvent('animationend', {animationName: 'fade-out', bubbles: true}),
         );
-      tick();
+      await timeout();
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(0);
-    }));
+    });
   });
 
   describe('animation queue timing', () => {
-    it('should run animations with a fresh componentRef after destroy', fakeAsync(() => {
+    it('should run animations with a fresh componentRef after destroy', async () => {
       @Component({
         selector: 'app-control-panel',
         template: `
@@ -2376,37 +2374,37 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.debugElement.query(By.css('p.all-there-is'))).not.toBeNull();
       expect(fixture.debugElement.query(By.css('p.not-here.fade-out'))).not.toBeNull();
 
       // Finish the leave animation to ensure it is removed
-      tickAnimationFrames(1);
+      await nextAnimationFrame();
 
       // verify element is removed post animation
       expect(fixture.debugElement.query(By.css('p.not-here'))).toBeNull();
 
       cmp.toggleOverlay();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       // show is false. Nothing should be present.
       expect(fixture.debugElement.query(By.css('p.all-there-is'))).toBeNull();
       expect(fixture.debugElement.query(By.css('p.not-here'))).toBeNull();
 
       cmp.toggleOverlay();
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(fixture.debugElement.query(By.css('p.not-here'))).not.toBeNull();
 
-      tickAnimationFrames(1);
+      await nextAnimationFrame();
 
       // show is true. Only one element should be present.
       expect(fixture.debugElement.query(By.css('p.all-there-is'))).not.toBeNull();
       expect(fixture.debugElement.query(By.css('p.not-here'))).toBeNull();
-    }));
+    });
 
-    it('should not throw INJECTOR_ALREADY_DESTROYED when lView injector is destroyed before animation queue runs', fakeAsync(() => {
+    it('should not throw INJECTOR_ALREADY_DESTROYED when lView injector is destroyed before animation queue runs', async () => {
       const animateStyles = `
         .fade-out {
           animation: fade-out 100ms;
@@ -2449,8 +2447,7 @@ describe('Animation', () => {
         hostElement: hostEl,
       });
       appRef.attachView(compRef.hostView);
-      appRef.tick();
-      tickAnimationFrames(1);
+      await appRef.whenStable();
 
       expect(hostEl.querySelector('.item')).not.toBeNull();
 
@@ -2464,16 +2461,16 @@ describe('Animation', () => {
       // destroyed while leave animations are pending.
       childEnvInjector.destroy();
 
-      // Tick to flush the animation queue. Without the fix, the animation
+      // Wait for the animation queue to flush. Without the fix, the animation
       // function would call lView[INJECTOR].get(NgZone) which delegates to
       // the destroyed childEnvInjector, throwing NG0205.
-      appRef.tick();
-      tickAnimationFrames(1);
+      await appRef.whenStable();
+      await nextAnimationFrame();
 
       expect(errorHandler.handleError).not.toHaveBeenCalled();
-    }));
+    });
 
-    it('should not wait for child component leave animations when host is inside an ng-container', fakeAsync(() => {
+    it('should not wait for child component leave animations when host is inside an ng-container', async () => {
       const animateStyles = `
         .fade-out {
           animation: fade-out 5000ms;
@@ -2509,26 +2506,25 @@ describe('Animation', () => {
       TestBed.configureTestingModule({animationsEnabled: true});
       const fixture = TestBed.createComponent(TestCmp);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
 
       expect(fixture.debugElement.query(By.css('.child'))).not.toBeNull();
 
       cmp.show.set(false);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       // If the bounding logic works, the ng-container (TNodeType.ElementContainer)
       // containing the child component will NOT recurse into the child component's
       // views, so the parent host will be removed immediately without waiting
       // for the child's 5000ms animation.
-      tickAnimationFrames(1);
+      await nextAnimationFrame();
 
       expect(fixture.debugElement.query(By.css('.child'))).toBeNull();
-    }));
+    });
   });
 
   describe('animation element duplication', () => {
-    it('should not duplicate elements when using dynamic components in overlay-like containers', fakeAsync(() => {
+    it('should not duplicate elements when using dynamic components in overlay-like containers', async () => {
       const animateStyles = `
         .example-menu {
           display: inline-flex;
@@ -2612,7 +2608,7 @@ describe('Animation', () => {
 
       TestBed.configureTestingModule({animationsEnabled: true});
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const cmp = fixture.debugElement.query(By.css('dynamic-menu')).componentInstance;
 
@@ -2620,35 +2616,35 @@ describe('Animation', () => {
       const countMenus = () => document.querySelectorAll('.example-menu').length;
 
       // Helper to complete the leave animation for all leaving menu elements
-      const finishLeaveAnimations = () => {
-        tickAnimationFrames(1);
+      const finishLeaveAnimations = async () => {
+        await nextAnimationFrame();
         document.querySelectorAll('.example-menu.close').forEach((el) => {
           el.dispatchEvent(new AnimationEvent('animationend', {animationName: 'open'}));
         });
-        tick();
+        await timeout();
       };
 
       // Simulate rapid clicking with CD between each toggle
       for (let i = 0; i < 20; i++) {
         cmp.toggle();
-        fixture.detectChanges();
-        tickAnimationFrames(1);
+        await fixture.whenStable();
+        await nextAnimationFrame();
         // At no point should there be more than one menu element
         expect(countMenus()).toBeLessThanOrEqual(1);
       }
 
       // Complete any remaining leave animations
-      finishLeaveAnimations();
-      fixture.detectChanges();
+      await finishLeaveAnimations();
+      await fixture.whenStable();
 
       // 20 toggles (even) = closed = 0 elements
       expect(countMenus()).toBe(0);
 
       // Clean up overlay panes
       document.querySelectorAll('.overlay-pane').forEach((p) => p.remove());
-    }));
+    });
 
-    it('should run animate.leave for a sibling instance when another instance of the same template enters', fakeAsync(() => {
+    it('should run animate.leave for a sibling instance when another instance of the same template enters', async () => {
       // Regression test for a case where two *separate* instances of the same
       // component (which therefore share a `TNode`) are toggled in the same
       // change-detection tick: one panel collapses (`animate.leave`) while a
@@ -2712,13 +2708,13 @@ describe('Animation', () => {
       TestBed.configureTestingModule({animationsEnabled: true});
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.a.id = 'A';
       cmp.b.id = 'B';
       // Initially only A is open.
       cmp.a.open.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
 
       const panels = () => Array.from(fixture.nativeElement.querySelectorAll('.panel'));
       const panelByText = (text: string) =>
@@ -2735,8 +2731,8 @@ describe('Animation', () => {
       // but live in different DOM parents (their respective hosts).
       cmp.a.open.set(false);
       cmp.b.open.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
+      await fixture.whenStable();
+      await nextAnimationFrame();
 
       // B's panel should have entered.
       expect(panelByText('Panel B')).toBeTruthy();
@@ -2748,13 +2744,13 @@ describe('Animation', () => {
 
       // Once A's leave animation completes, it is removed as usual.
       leavingPanelA.dispatchEvent(new AnimationEvent('animationend', {animationName: 'shrink'}));
-      tickAnimationFrames(1);
-      fixture.detectChanges();
+      await nextAnimationFrame();
+      await fixture.whenStable();
 
       expect(leavingPanelA.isConnected).toBe(false);
       expect(panelByText('Panel A')).toBeUndefined();
       expect(panelByText('Panel B')).toBeTruthy();
-    }));
+    });
   });
 
   describe('infinite animations', () => {
@@ -2768,7 +2764,7 @@ describe('Animation', () => {
       }
     `;
 
-    it('should ignore infinite animations during animate.leave and remove element immediately', fakeAsync(() => {
+    it('should ignore infinite animations during animate.leave and remove element immediately', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -2786,24 +2782,24 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       const paragraph = fixture.debugElement.query(By.css('p'));
       expect(paragraph).toBeTruthy();
 
       cmp.show.set(false);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       // Simulate a frame. If the animation is ignored, it should be removed already.
       // If it's NOT ignored, it will wait for the animation (forever).
-      tickAnimationFrames(1);
-      fixture.detectChanges();
+      await nextAnimationFrame();
+      await fixture.whenStable();
 
       // The element should be removed if infinite animations are ignored.
       expect(cmp.show()).toBeFalsy();
       expect(fixture.debugElement.query(By.css('p'))).toBeNull();
-    }));
+    });
 
-    it('should ignore infinite animations during animate.enter and remove classes immediately', fakeAsync(() => {
+    it('should ignore infinite animations during animate.enter and remove classes immediately', async () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.Eager,
         selector: 'test-cmp',
@@ -2821,21 +2817,21 @@ describe('Animation', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       cmp.show.set(true);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       // Check that class is added initially (maybe?)
       let paragraph = fixture.debugElement.query(By.css('p'));
       expect(paragraph.nativeElement.classList.contains('infinite-anim')).toBe(true);
 
       // Simulate a frame. If ignored, class should be removed immediately.
-      tickAnimationFrames(1);
-      fixture.detectChanges();
+      await nextAnimationFrame();
+      await fixture.whenStable();
 
       paragraph = fixture.debugElement.query(By.css('p'));
       expect(paragraph.nativeElement.classList.contains('infinite-anim')).toBe(false);
-    }));
+    });
   });
 });
