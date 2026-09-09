@@ -8,7 +8,7 @@
     "#comment-2": "The below is used is for integration tests",
     "build:standalone": "ng run standalone:build:development",
     "serve:standalone": "node ./dist/standalone/server/server.mjs",
-    "test:standalone": "pnpm build:standalone && concurrently \"pnpm serve:standalone\" \"protractor e2e/protractor.conf.js\" --kill-others --success first",
+    "test:standalone": "pnpm build:standalone && concurrently \"pnpm serve:standalone\" \"jasmine --config=e2e/jasmine.json 'e2e/src/**/*-spec.ts'\" --kill-others --success first",
     "test": "ng version && pnpm test:standalone"
   },
   "private": true,
@@ -24,7 +24,8 @@
     "@angular/ssr": "22.2.0-next.6",
     "express": "~5.2.0",
     "rxjs": "^7.0.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "xhr2": "^0.2.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "22.2.0-next.6",
@@ -36,9 +37,9 @@
     "@types/node": "^20.14.8",
     "@types/selenium-webdriver": "3.0.7",
     "concurrently": "10.0.5",
+    "jasmine": "6.3.0",
     "jasmine-core": "6.3.0",
     "jasmine-spec-reporter": "~7.0.0",
-    "protractor": "^7.0.0",
     "selenium-webdriver": "3.5.0",
     "ts-node": "^10.9.1",
     "typescript": "6.0.3"

@@ -27,6 +27,7 @@
             "scripts": [],
             "optimization": false,
             "progress": false,
+            "preserveSymlinks": true,
             "browser": "src/main.ts"
           },
           "configurations": {
@@ -85,6 +86,7 @@
             "styles": ["src/styles.css"],
             "scripts": [],
             "progress": false,
+            "preserveSymlinks": true,
             "watch": false
           }
         },

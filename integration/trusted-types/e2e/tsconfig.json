@@ -4,10 +4,8 @@
   "compilerOptions": {
     "outDir": "../out-tsc/e2e",
     "module": "commonjs",
-    "target": "es2018",
-    "types": [
-      "jasmine",
-      "node"
-    ]
+    "target": "ES2022",
+    "skipLibCheck": true,
+    "types": ["jasmine", "node", "selenium-webdriver"]
   }
 }

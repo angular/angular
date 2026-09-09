@@ -9,6 +9,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "declaration": false,
     "experimentalDecorators": true,

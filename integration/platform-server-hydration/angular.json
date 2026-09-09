@@ -20,6 +20,8 @@
           "builder": "@angular/build:application",
           "options": {
             "progress": false,
+            "preserveSymlinks": true,
+            "externalDependencies": ["xhr2"],
             "outputPath": "dist",
             "index": "src/index.html",
             "browser": "src/main.ts",
