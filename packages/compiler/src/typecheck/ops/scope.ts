@@ -713,7 +713,16 @@ export class Scope {
       }
 
       this.opQueue.push(
-        new TcbUnclaimedOutputsOp(this.tcb, this, node, events, bindings, claimedOutputs),
+        new TcbUnclaimedOutputsOp(
+          this.tcb,
+          this,
+          node,
+          events,
+          bindings,
+          claimedOutputs,
+          /* hasDirectives */ true,
+          /* hasComponent */ directives.some((dir) => dir.isComponent),
+        ),
       );
     }
   }
