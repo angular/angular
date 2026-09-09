@@ -88,22 +88,18 @@ export function routerResource<T>(source: Resource<T>): Resource<T> & {reload():
   res[BLOCKING_SYMBOL] =
     (source as unknown as InternalRouterResource<T>)[BLOCKING_SYMBOL] !== false;
 
-  if (typeof (source as any).reload === 'function') {
-    res.reload = function (): boolean {
-      // If the resource is currently frozen (e.g., during an active navigation transition
-      // or while recovering from a cancelled navigation), we reject manual reload requests.
-      // Triggering a reload during an active navigation (where the resource may already be
-      // reactively loading new parameters behind the scenes) would disrupt the router's resource
-      // tracking for the transition. Similarly, during a rollback recovery, the router is
-      // already managing the resource reload to restore the previous state.
-      if (frozenSnapshot() !== null) {
-        return false;
-      }
-      return (source as any).reload();
-    };
-  } else {
-    res.reload = () => false;
-  }
+  res.reload = function (): boolean {
+    // If the resource is currently frozen (e.g., during an active navigation transition
+    // or while recovering from a cancelled navigation), we reject manual reload requests.
+    // Triggering a reload during an active navigation (where the resource may already be
+    // reactively loading new parameters behind the scenes) would disrupt the router's resource
+    // tracking for the transition. Similarly, during a rollback recovery, the router is
+    // already managing the resource reload to restore the previous state.
+    if (frozenSnapshot() !== null) {
+      return false;
+    }
+    return (source as any).reload?.() ?? false;
+  };
 
   return res;
 }
@@ -201,12 +197,13 @@ export function createResourceOutletBindingEffects(
   const createdEffects: EffectRef[] = [];
   const handledKeys: string[] = [];
   const mirror = route.component ? reflectComponentType(route.component) : null;
-  if (!mirror) {
+  const resources = route.resources;
+  if (!mirror || !resources) {
     return {createdEffects, handledKeys};
   }
 
   for (const {templateName} of mirror.inputs) {
-    const resource = route.resources?.[templateName];
+    const resource = resources[templateName];
     if (!resource || !(resource as InternalRouterResource)[BLOCKING_SYMBOL]) {
       continue;
     }

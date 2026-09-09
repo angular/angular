@@ -12,9 +12,14 @@ import {
   EnvironmentProviders,
   EnvironmentInjector,
   inject,
+  Injector,
+  Input,
+  input,
   resource,
   Resource,
+  ResourceParamsStatus,
   ResourceStatus,
+  runInInjectionContext,
   Signal,
   signal,
   ɵpromiseWithResolvers as promiseWithResolvers,
@@ -27,6 +32,8 @@ import {
   withNavigationErrorHandler,
   RedirectCommand,
   withRouterResources,
+  withComponentInputBinding,
+  withRouterConfig,
   nonBlocking,
   ActivatedRoute,
   Route,
@@ -47,12 +54,16 @@ async function setupRouter(routes: Route[], ...features: RouterFeatures[]) {
   return {harness, router};
 }
 
-type ActivatedRouteInternal = ActivatedRoute & {
-  resources?: {[key: string]: Resource<unknown>};
-};
+type ActivatedRouteInternal = ActivatedRoute;
 
 @Component({template: ''})
 class TargetCmp {}
+
+@Component({template: ''})
+class InputBindingCmp {
+  @Input() user: any;
+  @Input() extra: any;
+}
 
 describe('Router resources integration', () => {
   useAutoTick();
@@ -130,7 +141,6 @@ describe('Router resources integration', () => {
       ]);
 
       await harness.navigateByUrl('/test');
-      await harness.fixture.whenStable();
 
       const route = router.routerState.root.firstChild as ActivatedRouteInternal;
       const resourceRef = route?.resources?.['data'] as any;
@@ -165,7 +175,6 @@ describe('Router resources integration', () => {
       // 2. Now resolve the blocking resource loader
       loaderDeferred.resolve('resolved data');
       await navPromise;
-      await harness.fixture.whenStable();
 
       expect(router.url).toBe('/test');
       const route = router.routerState.root.firstChild as ActivatedRouteInternal;
@@ -200,7 +209,6 @@ describe('Router resources integration', () => {
 
       // Supersede with navigation to /second
       await harness.navigateByUrl('/second');
-      await harness.fixture.whenStable();
 
       expect(router.url).toBe('/second');
 
@@ -239,7 +247,6 @@ describe('Router resources integration', () => {
 
       // Supersede with navigation to /second
       await harness.navigateByUrl('/second');
-      await harness.fixture.whenStable();
 
       expect(router.url).toBe('/second');
 
@@ -315,7 +322,6 @@ describe('Router resources integration', () => {
       ]);
 
       await harness.navigateByUrl('/parent/componentless/child');
-      await harness.fixture.whenStable();
       await timeout(20);
 
       const parentRoute = router.routerState.root.firstChild!;
@@ -442,7 +448,6 @@ describe('Router resources integration', () => {
 
       // 1. Initial navigation succeeds
       await harness.navigateByUrl('/test/1');
-      await harness.fixture.whenStable();
       expect(router.url).toBe('/test/1');
 
       const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
@@ -458,11 +463,87 @@ describe('Router resources integration', () => {
       // 3. Retry the identical route with same parameters using onSameUrlNavigation: 'reload'
       shouldError = false;
       await router.navigateByUrl('/test/1', {onSameUrlNavigation: 'reload'});
-      await harness.fixture.whenStable();
 
       expect(router.url).toBe('/test/1'); // Succeeded!
       expect(resourceRef.status()).toBe('resolved');
       expect(resourceRef.value()).toBe('1');
+    });
+
+    it('should block navigation when reloading an existing resource that already has a value', async () => {
+      let loaderPromise = promiseWithResolvers<string>();
+
+      const {harness, router} = await setupRouter([
+        {
+          path: 'test/:id',
+          component: TargetCmp,
+          resources: (ctx) => ({
+            data: resource({
+              params: () => ctx.params()['id'],
+              loader: async () => loaderPromise.promise,
+            }),
+          }),
+        },
+      ]);
+
+      // 1. Initial load
+      loaderPromise.resolve('val-1');
+      await harness.navigateByUrl('/test/1');
+      expect(router.url).toBe('/test/1');
+
+      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
+        ?.resources?.['data'] as any;
+      expect(resourceRef.value()).toBe('val-1');
+
+      // 2. Navigate to /test/2: resets loaderPromise
+      loaderPromise = promiseWithResolvers<string>();
+      const nav = harness.navigateByUrl('/test/2');
+      await timeout();
+
+      // Navigation is blocked on loading even though resource previously had a value
+      expect(router.url).toBe('/test/1');
+
+      loaderPromise.resolve('val-2');
+      await nav;
+
+      expect(router.url).toBe('/test/2');
+      expect(resourceRef.value()).toBe('val-2');
+    });
+
+    it('should block navigation when a resource has a defaultValue until loading is complete', async () => {
+      const loaderDeferred = promiseWithResolvers<string>();
+
+      const {harness, router} = await setupRouter(
+        [
+          {
+            path: 'test',
+            component: InputBindingCmp,
+            resources: () => ({
+              user: resource({
+                defaultValue: 'default-user',
+                loader: async () => loaderDeferred.promise,
+              }),
+            }),
+          },
+        ],
+        withComponentInputBinding(),
+      );
+
+      const nav = harness.navigateByUrl('/test', InputBindingCmp);
+      await timeout();
+
+      // Navigation is blocked on loading even though the resource has a defaultValue
+      expect(router.url).not.toBe('/test');
+
+      loaderDeferred.resolve('loaded-user');
+      const cmp = await nav;
+
+      expect(router.url).toBe('/test');
+      expect(cmp.user).toBe('loaded-user');
+
+      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
+        ?.resources?.['user'] as any;
+      expect(resourceRef.value()).toBe('loaded-user');
+      expect(resourceRef.isLoading()).toBe(false);
     });
 
     it('should complete navigation and expose error for non-blocking resources', async () => {
@@ -509,7 +590,6 @@ describe('Router resources integration', () => {
 
       // Navigate without query params -> params() is undefined -> resource is idle
       await harness.navigateByUrl('/search');
-      await harness.fixture.whenStable();
 
       expect(router.url).toBe('/search');
       const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
@@ -538,7 +618,6 @@ describe('Router resources integration', () => {
       ]);
 
       await harness.navigateByUrl('/test');
-      await harness.fixture.whenStable();
       const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
         ?.resources?.['data'] as any;
 
@@ -579,7 +658,6 @@ describe('Router resources integration', () => {
       // Fail next navigation
       canActivate = false;
       await harness.navigateByUrl('/test/2');
-      await harness.fixture.whenStable();
 
       // The navigation is cancelled so the resource should retain the old value without loading flicker.
       expect(resourceRef.value()).toBe('1');
@@ -664,7 +742,6 @@ describe('Router resources integration', () => {
 
       p3.resolve('loaded-3');
       await nav3;
-      await harness.fixture.whenStable();
 
       const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
         ?.resources?.['data'] as any;
@@ -695,7 +772,6 @@ describe('Router resources integration', () => {
       // Settle initial state
       loader.resolve('1');
       await harness.navigateByUrl('/target/1');
-      await harness.fixture.whenStable();
 
       const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
         ?.resources?.['data'] as any;
@@ -714,7 +790,6 @@ describe('Router resources integration', () => {
 
       loader.resolve('3');
       await nav2;
-      await harness.fixture.whenStable();
 
       expect(resourceRef.isLoading()).toBe(false);
       expect(resourceRef.value()).toBe('3');
@@ -805,26 +880,30 @@ describe('Router resources integration', () => {
       expect(resourceRef.value()).toBeUndefined();
 
       await nav;
-      await harness.fixture.whenStable();
 
       expect(resourceRef.isLoading()).toBe(false);
       expect(resourceRef.value()).toBe('rx loaded 123');
     });
 
-    it('should unblock navigation when a resource emits a value even while remaining in loading state', async () => {
+    it('should remain blocked when a resource emits a value while remaining in loading state until loading completes', async () => {
       const valueSignal = signal<string | undefined>(undefined);
+      const statusSignal = signal<ResourceStatus>('loading');
+      const isLoadingSignal = signal<boolean>(true);
       const hasValueSignal = signal<boolean>(false);
 
       const customResource: Resource<string> = {
         value: valueSignal as Signal<string>,
-        status: signal<ResourceStatus>('loading').asReadonly(),
-        isLoading: signal(true).asReadonly(),
+        status: statusSignal.asReadonly(),
+        isLoading: isLoadingSignal.asReadonly(),
         hasValue: (() => hasValueSignal()) as any,
         error: signal<Error | undefined>(undefined).asReadonly(),
-        snapshot: computed(() => ({
-          status: 'loading' as const,
-          value: valueSignal()!,
-        })),
+        snapshot: computed(
+          () =>
+            ({
+              status: statusSignal(),
+              value: valueSignal()!,
+            }) as any,
+        ),
       };
 
       const {harness, router} = await setupRouter([
@@ -837,27 +916,30 @@ describe('Router resources integration', () => {
         },
       ]);
 
-      harness.navigateByUrl('/stream');
+      const nav = harness.navigateByUrl('/stream');
       await timeout();
 
-      // Navigation should be pending because customResource has no value yet
+      // Navigation should be pending because customResource is in loading state
       expect(router.url).not.toBe('/stream');
 
       // Custom resource emits a value while retaining isLoading() === true and status 'loading'
       valueSignal.set('streamed-1');
       hasValueSignal.set(true);
-      await harness.fixture.whenStable();
+      await timeout();
+
+      // Navigation should still be blocked because loading state is true
+      expect(router.url).not.toBe('/stream');
+
+      // Resource finishes loading
+      statusSignal.set('resolved');
+      isLoadingSignal.set(false);
+      await nav;
 
       expect(router.url).toBe('/stream');
       const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
         ?.resources?.['data'] as any;
       expect(resourceRef.value()).toBe('streamed-1');
-      expect(resourceRef.isLoading()).toBe(true);
-
-      // Verify subsequent value update while still in loading state
-      valueSignal.set('streamed-2');
-      await harness.fixture.whenStable();
-      expect(resourceRef.value()).toBe('streamed-2');
+      expect(resourceRef.isLoading()).toBe(false);
     });
 
     describe('dependent resources', () => {
@@ -893,7 +975,6 @@ describe('Router resources integration', () => {
         // Resolve user
         resolveUser({id: 'u1', teamId: 't42'});
         await nav;
-        await harness.fixture.whenStable();
 
         expect(router.url).toBe('/user-team');
         const resources = (router.routerState.root.firstChild as ActivatedRouteInternal)
@@ -957,16 +1038,300 @@ describe('Router resources integration', () => {
         // Resolve child
         resolveChild({role: 'admin', permissions: ['read', 'write']});
         await nav;
-        await harness.fixture.whenStable();
 
         expect(router.url).toBe('/user/1/details');
         const parentRoute = router.routerState.root.firstChild as ActivatedRouteInternal;
         const childRoute = parentRoute.firstChild as ActivatedRouteInternal;
-        expect(parentRoute.resources?.['user'].value()).toEqual({id: '1', role: 'admin'});
-        expect(childRoute.resources?.['details'].value()).toEqual({
+        expect(parentRoute.resources!['user'].value()).toEqual({id: '1', role: 'admin'});
+        expect(childRoute.resources!['details'].value()).toEqual({
           role: 'admin',
           permissions: ['read', 'write'],
         });
+      });
+
+      it('should handle parallel dependent resources where parent setup takes longer than child', async () => {
+        const parentSetupDeferred = promiseWithResolvers<void>();
+        const parentLoaderDeferred = promiseWithResolvers<{id: string; role: string}>();
+        const childLoaderDeferred = promiseWithResolvers<string[]>();
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user',
+            resources: async () => {
+              const injector = inject(Injector);
+              // Parent setup is async and delayed
+              await parentSetupDeferred.promise;
+              return runInInjectionContext(injector, () => ({
+                user: resource({
+                  loader: () => parentLoaderDeferred.promise,
+                }),
+              }));
+            },
+            children: [
+              {
+                path: 'roles',
+                component: TargetCmp,
+                resources: (ctx) => ({
+                  roles: resource({
+                    params: ({chain}) => {
+                      const user = ctx.resources()['user'];
+                      if (!user) {
+                        throw ResourceParamsStatus.LOADING;
+                      }
+                      return (chain(user) as any).role;
+                    },
+                    loader: async () => {
+                      return childLoaderDeferred.promise;
+                    },
+                  }),
+                }),
+              },
+            ],
+          },
+        ]);
+
+        const nav = harness.navigateByUrl('/user/roles');
+        await timeout(10);
+
+        // Navigation is blocked: parent setup hasn't finished yet
+        expect(router.url).not.toBe('/user/roles');
+
+        // 1. Resolve parent setup function
+        parentSetupDeferred.resolve();
+        await timeout(10);
+
+        // Navigation is still blocked: parent loader is running
+        expect(router.url).not.toBe('/user/roles');
+
+        // 2. Resolve parent loader
+        parentLoaderDeferred.resolve({id: '123', role: 'admin'});
+        await timeout(10);
+
+        // Navigation is still blocked: child loader received role='admin' and is now running
+        expect(router.url).not.toBe('/user/roles');
+
+        // 3. Resolve child loader
+        childLoaderDeferred.resolve(['read', 'write', 'admin']);
+        await nav;
+
+        expect(router.url).toBe('/user/roles');
+        const parentRoute = router.routerState.root.firstChild!;
+        const childRoute = parentRoute.firstChild!;
+
+        expect(parentRoute.resources!['user'].value()).toEqual({id: '123', role: 'admin'});
+        expect(childRoute.resources!['user'].value()).toEqual({id: '123', role: 'admin'});
+        expect(childRoute.resources!['roles'].value()).toEqual(['read', 'write', 'admin']);
+      });
+    });
+
+    describe('Resource inheritance', () => {
+      it('should inherit resources from parent routes to child routes', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'parent',
+            resources: () => ({
+              parentData: resource({loader: async () => 'parent-value'}),
+            }),
+            children: [
+              {
+                path: 'child',
+                component: TargetCmp,
+                resources: () => ({
+                  childData: resource({loader: async () => 'child-value'}),
+                }),
+              },
+            ],
+          },
+        ]);
+
+        await harness.navigateByUrl('/parent/child');
+
+        const parentRoute = router.routerState.root.firstChild!;
+        const childRoute = parentRoute.firstChild!;
+
+        expect(parentRoute.resources!['parentData'].value()).toBe('parent-value');
+        expect(parentRoute.resources!['childData']).toBeUndefined();
+
+        expect(childRoute.resources!['parentData'].value()).toBe('parent-value');
+        expect(childRoute.resources!['childData'].value()).toBe('child-value');
+        expect(childRoute.snapshot.resources!['parentData'].value()).toBe('parent-value');
+        expect(childRoute.snapshot.resources!['childData'].value()).toBe('child-value');
+      });
+
+      it('should inherit resources to child routes without own resources config', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'parent',
+            resources: () => ({
+              parentData: resource({loader: async () => 'parent-value'}),
+            }),
+            children: [
+              {
+                path: 'child',
+                component: TargetCmp,
+              },
+            ],
+          },
+        ]);
+
+        await harness.navigateByUrl('/parent/child');
+
+        const parentRoute = router.routerState.root.firstChild!;
+        const childRoute = parentRoute.firstChild!;
+
+        expect(childRoute.resources!['parentData'].value()).toBe('parent-value');
+        expect(childRoute.snapshot.resources!['parentData'].value()).toBe('parent-value');
+      });
+
+      it('should allow child resources to override inherited parent resources with the same key', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'parent',
+            resources: () => ({
+              shared: resource({loader: async () => 'parent-shared'}),
+            }),
+            children: [
+              {
+                path: 'child',
+                component: TargetCmp,
+                resources: () => ({
+                  shared: resource({loader: async () => 'child-shared'}),
+                }),
+              },
+            ],
+          },
+        ]);
+
+        await harness.navigateByUrl('/parent/child');
+
+        const parentRoute = router.routerState.root.firstChild!;
+        const childRoute = parentRoute.firstChild!;
+
+        expect(parentRoute.resources!['shared'].value()).toBe('parent-shared');
+        expect(childRoute.resources!['shared'].value()).toBe('child-shared');
+      });
+
+      it('should always inherit resources from parent routes regardless of paramsInheritanceStrategy emptyOnly', async () => {
+        const {harness, router} = await setupRouter(
+          [
+            {
+              path: 'parent',
+              component: TargetCmp,
+              resources: () => ({
+                data: resource({loader: async () => 'parent-data'}),
+              }),
+              children: [
+                {
+                  path: 'non-empty-child',
+                  component: TargetCmp,
+                },
+                {
+                  path: '',
+                  component: TargetCmp,
+                },
+              ],
+            },
+            {
+              path: 'componentless',
+              resources: () => ({
+                data: resource({loader: async () => 'comp-data'}),
+              }),
+              children: [
+                {
+                  path: 'sub',
+                  component: TargetCmp,
+                },
+              ],
+            },
+          ],
+          withRouterConfig({paramsInheritanceStrategy: 'emptyOnly'}),
+        );
+
+        // 1. Non-empty path child of a component route STILL inherits resources
+        await harness.navigateByUrl('/parent/non-empty-child');
+        const parentRoute = router.routerState.root.firstChild!;
+        const nonEmptyChild = parentRoute.firstChild!;
+        expect(nonEmptyChild.resources!['data'].value()).toBe('parent-data');
+
+        // 2. Empty path child inherits resources
+        await harness.navigateByUrl('/parent');
+        const emptyChild = parentRoute.firstChild!;
+        expect(emptyChild.resources!['data'].value()).toBe('parent-data');
+
+        // 3. Child of componentless route inherits resources
+        await harness.navigateByUrl('/componentless/sub');
+        const compRoute = router.routerState.root.firstChild!;
+        const subRoute = compRoute.firstChild!;
+        expect(subRoute.resources!['data'].value()).toBe('comp-data');
+      });
+
+      it('should leave resources undefined on routes that do not configure or inherit resources', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'no-resources',
+            component: TargetCmp,
+          },
+        ]);
+
+        await harness.navigateByUrl('/no-resources');
+
+        const route = router.routerState.root.firstChild!;
+        expect(route.resources).toBeUndefined();
+        expect(route.snapshot.resources).toBeUndefined();
+      });
+
+      it('should bind inherited blocking and non-blocking resources to component inputs', async () => {
+        const {harness} = await setupRouter(
+          [
+            {
+              path: 'parent',
+              resources: () => ({
+                user: resource({loader: async () => ({name: 'Alice'})}),
+                extra: nonBlocking(resource({loader: async () => 'extra-info'})),
+              }),
+              children: [
+                {
+                  path: 'child',
+                  component: InputBindingCmp,
+                },
+              ],
+            },
+          ],
+          withComponentInputBinding(),
+        );
+
+        const cmpInstance = await harness.navigateByUrl('/parent/child', InputBindingCmp);
+
+        // Blocking resource binds unwrapped value directly
+        expect(cmpInstance.user).toEqual({name: 'Alice'});
+        // Non-blocking resource binds Resource instance
+        expect(cmpInstance.extra.value()).toBe('extra-info');
+      });
+
+      it('should pass routeConfig and reactive resources to ResourceContext without snapshot', async () => {
+        let receivedContext: any = null;
+
+        const {harness} = await setupRouter([
+          {
+            path: 'meta',
+            component: TargetCmp,
+            title: 'Meta Page',
+            resources: (ctx) => {
+              receivedContext = ctx;
+              return {
+                data: nonBlocking(resource({loader: async () => 'ok'})),
+              };
+            },
+          },
+        ]);
+
+        await harness.navigateByUrl('/meta');
+
+        expect(receivedContext).not.toBeNull();
+        expect(receivedContext.routeConfig?.path).toBe('meta');
+        expect(receivedContext.routeConfig?.title).toBe('Meta Page');
+        expect(typeof receivedContext.resources).toBe('function');
+        expect(receivedContext.snapshot).toBeUndefined();
       });
     });
   });
