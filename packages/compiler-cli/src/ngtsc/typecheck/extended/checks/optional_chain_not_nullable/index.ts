@@ -24,6 +24,7 @@ import {
   TemplateCheckWithVisitor,
   TemplateContext,
   formatExtendedError,
+  isAccessFromUncheckedIndex,
 } from '../../api';
 
 /**
@@ -54,7 +55,7 @@ class OptionalChainNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.O
 
     // When `noUncheckedIndexedAccess` is disabled, an indexed access is not checked
     // and may result in `undefined`.
-    if (node.receiver instanceof KeyedRead && !this.noUncheckedIndexedAccess) {
+    if (!this.noUncheckedIndexedAccess && isAccessFromUncheckedIndex(node.receiver)) {
       return [];
     }
 
