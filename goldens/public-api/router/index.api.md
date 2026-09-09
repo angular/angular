@@ -672,7 +672,8 @@ export interface ResourceContext {
     fragment: Signal<string | null>;
     params: Signal<Params>;
     queryParams: Signal<Params>;
-    snapshot: ActivatedRouteSnapshot;
+    resources: Signal<ResourceResult>;
+    routeConfig: Route | null;
 }
 
 // @public

@@ -4,16 +4,16 @@ The Angular Router integrates with Angular Signals through the `resources` route
 
 ## Why use route resources?
 
-Route resources offer several advantages over traditional [data resolvers](/guide/routing/data-resolvers):
+Route resources integrate the Angular Router directly with Angular Signals and `Resource` APIs, offering significant advantages over traditional [data resolvers](/guide/routing/data-resolvers):
 
-- **Parallel execution**: Route resources run concurrently across all matched routes, eliminating the sequential waterfall delays of resolvers.
-- **Non-blocking data loading**: Use `nonBlocking()` to activate the route immediately and render loading skeletons or UI states while data loads in the background.
-- **Reload without renavigation**: Call `.reload()` on individual resources or update signal parameters to refresh data without triggering a full route navigation, rerun guards, or re-match routes.
-- **Reactive data fetching**: Resources integrate directly with Angular Signals, automatically re-evaluating when signal dependencies change and exposing reactive status signals like `isLoading()` and `error()`.
+- **Parallel execution without waterfalls**: Resources across all matched routes execute concurrently. Even when child routes depend on data from parent routes, reactive coordination eliminates traditional sequential network waterfalls.
+- **Automatic, fine-grained change tracking**: Resources subscribe directly to the exact signal properties they read (such as `ctx.params()['id']` or `ctx.queryParams()['tab']`). Navigating between URLs only re-evaluates resources whose specific dependencies changed, with zero manual dependency arrays or cache invalidation keys.
+- **Non-blocking data loading**: Unlike resolvers which strictly block navigation, you can wrap resources with `nonBlocking()` to activate the route immediately and render loading skeletons or progressive UI states.
+- **Reload without renavigation**: Call `.reload()` on individual resources or update signal dependencies to refresh data without triggering full route navigations, running route guards, or re-matching routes.
 
-## Setup
+## Enabling route resources
 
-To enable this feature, provide `withRouterResources()` to your router configuration:
+To enable route resources, provide `withRouterResources()` to your router configuration:
 
 ```ts
 import {provideRouter, withComponentInputBinding, withRouterResources} from '@angular/router';
@@ -23,9 +23,11 @@ bootstrapApplication(App, {
 });
 ```
 
-You can then define resources in your `Route` definitions and access them directly as component inputs.
+TIP: Enable `withComponentInputBinding()` so the router can bind resolved resources directly to component inputs.
 
-The `resources` function runs in an injection context, allowing you to use `inject()` to access services, API clients, or stores directly inside the route definition.
+## Defining route resources
+
+You define resources on a route using the `resources` function. The function runs in an injection context, allowing you to use `inject()` to access services, API clients, or stores directly inside the route definition.
 
 ```angular-ts
 import {Component, inject, input, resource} from '@angular/core';
@@ -57,21 +59,15 @@ export class UserProfile {
 }
 ```
 
-TIP: Notice we map the exact primitive ID we need in `params: () => ctx.params()['id']`. Passing the entire parameters object (e.g. `params: () => ctx.params()`) can cause unnecessary resource reloads during navigations. Because the router generates a new object identity for the parameters on navigation, the resource will trigger a refetch even if the specific `id` value you care about hasn't changed.
+### The ResourceContext
 
-### Parallel execution (avoiding waterfalls)
+The `resources` function receives a `ResourceContext` providing:
 
-Traditional data resolvers execute sequentially from parent routes to child routes. If a parent route resolver takes 200ms and a child route resolver takes 300ms, the navigation is blocked for 500ms total.
+- Route signals: `params`, `queryParams`, `fragment`, and `data`.
+- `resources`: A `Signal<ResourceResult>` containing resources defined on or inherited by the route.
+- `routeConfig`: The matched route configuration object (`Route | null`).
 
-In contrast, all route resources across the entire matched route hierarchy execute concurrently during navigation. In the same scenario, navigation completes in 300ms (the time of the slowest resource), eliminating network waterfalls.
-
-TIP: If a resource depends on data from another resource, you can compose the requests within a single resource's loader function, or chain dependent resources using [`chain()`](/guide/signals/resource#chaining-resources).
-
-### ResourceContext
-
-The `resources` function receives a `ResourceContext` providing access to route signals (such as `params`, `queryParams`, and `data`) as well as the static `snapshot`.
-
-### Resource implementations and async configuration
+### Supported resource implementations
 
 The `resources` map supports any Angular `Resource` implementation (such as `resource()`, `rxResource()`, or custom resources).
 
@@ -109,37 +105,134 @@ resources: async (ctx) => {
 },
 ```
 
-## Reloading resources without renavigation
+## Fine-grained change tracking with signals
 
-With traditional data resolvers, refetching data requires triggering a route navigation (such as navigating with `onSameUrlNavigation: 'reload'`), which re-evaluates all route guards, resolvers, and route matching logic.
+Route resources leverage Angular Signals to track dependencies automatically at the property level.
 
-With route resources, you can reload data without renavigating:
+When you access a route parameter or query parameter within a resource's `params` computation, Angular establishes a fine-grained reactive dependency:
 
-1. **Programmatic reload**: Call `.reload()` directly on the `Resource` instance.
-2. **Reactive reload**: If a resource's `params` computation reads signals (such as an application filter or state signal), updating those signals automatically re-triggers the resource loader.
+```ts
+resources: (ctx) => ({
+  products: resource({
+    // Only subscribes to the 'category' query parameter
+    params: () => ctx.queryParams()['category'],
+    loader: ({params: category}) => fetchProducts(category),
+  }),
+}),
+```
 
-When using `withComponentInputBinding()`, blocking resources bind only their unwrapped value directly to component inputs. If you need to interact with the underlying `Resource` instance (for example, to trigger a manual `.reload()` or inspect status signals), access it through `ActivatedRoute` or `ActivatedRouteSnapshot`:
+Because `ctx.queryParams()['category']` reads only the `'category'` property:
+
+- If a navigation updates an unrelated query parameter (such as `?sort=desc` or `?page=2`), the `'category'` property remains unchanged.
+- The resource automatically recognizes that its dependency did not change and does not refetch.
+
+You do not need to maintain manual dependency arrays, configure query keys, or write custom cache-invalidation logic. Angular's reactive graph automatically tracks the exact data dependencies.
+
+TIP: Always read specific properties directly (such as `ctx.params()['id']` or `ctx.queryParams()['category']`) rather than returning the entire parameters object (such as `ctx.params()`). If you return the entire object, the router creates a new object reference on every navigation, which triggers a refetch even if individual parameter values did not change.
+
+## Parallel execution without waterfalls
+
+Traditional data resolvers execute sequentially from parent routes to child routes. If a parent route resolver takes 200ms and a child route resolver takes 300ms, the navigation is blocked for 500ms total.
+
+In contrast, route resources across the entire matched route hierarchy execute concurrently during navigation. In that same scenario, navigation completes in 300ms (the time of the slowest resource), eliminating network waterfalls.
+
+### Reactive coordination for dependent resources
+
+Nested routes frequently require data from a parent route before loading child data. In traditional routing architectures, this forces a sequential waterfall: the child loader cannot even be called until the parent loader finishes.
+
+With route resources, all setup functions and independent loaders across all route levels initialize concurrently. When a child resource depends on a parent resource, it coordinates reactively through Signals:
+
+```ts
+const routes: Routes = [
+  {
+    path: 'user/:id',
+    resources: (ctx) => ({
+      user: resource({
+        params: () => ctx.params()['id'],
+        loader: ({params: id}) => fetchUser(id),
+      }),
+    }),
+    children: [
+      {
+        path: 'details',
+        component: UserDetails,
+        resources: (ctx) => ({
+          details: resource({
+            // Retains the loading state while the parent resource resolves
+            params: ({chain}) => chain(ctx.resources()['user']).role,
+            loader: ({params: role}) => fetchRoleDetails(role),
+          }),
+        }),
+      },
+    ],
+  },
+];
+```
+
+In this architecture:
+
+1. Both the parent route and child route run their `resources` setup functions concurrently.
+2. The parent `user` resource immediately begins fetching user data.
+3. The child `details` resource chains off the parent resource with `chain(ctx.resources()['user'])`, keeping the child in a `loading` state while the parent is in flight.
+4. The instant the parent `user` resource emits its resolved value, the child's `params` computation receives the result and triggers `fetchRoleDetails(role)`.
+
+This reactive coordination gives you the best of both worlds: independent resources load concurrently without waiting, and dependent resources start fetching as soon as their prerequisite data is available, with zero manual orchestration.
+
+TIP: Within the same route, you can also compose requests inside a single resource's loader or use [`chain()`](/guide/signals/resource#chaining-resources).
+
+## Resource inheritance
+
+Resources defined on ancestor routes are always inherited down the route tree to all descendant routes.
+
+Child routes and components can access inherited ancestor resources through:
+
+- In route configuration, child resources can read ancestor resources via `ctx.resources()`.
+- With `withComponentInputBinding()`, child components receive inherited resources directly as inputs.
+- Through `ActivatedRoute` or `ActivatedRouteSnapshot`, you can inspect ancestor resources using `route.resources`.
+
+For example, consider a nested project management view:
 
 ```angular-ts
-import {Component, inject, input} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+const routes: Routes = [
+  {
+    path: 'projects/:projectId',
+    resources: (ctx) => ({
+      project: resource({
+        params: () => ctx.params()['projectId'],
+        loader: ({params: id}) => fetchProject(id),
+      }),
+    }),
+    children: [
+      {
+        path: 'tasks/:taskId',
+        component: TaskDetail,
+        resources: (ctx) => ({
+          task: resource({
+            params: () => ctx.params()['taskId'],
+            loader: ({params: id}) => fetchTask(id),
+          }),
+        }),
+      },
+    ],
+  },
+];
 
 @Component({
   template: `
-    <p>User: {{ user().name }}</p>
-    <button (click)="refreshUser()">Refresh</button>
+    <h1>Project: {{ project().name }}</h1>
+    <h2>Task: {{ task().title }}</h2>
   `,
 })
-export class UserProfile {
-  user = input.required<User>();
-  private userResource = inject(ActivatedRoute).resources?.['user'];
+export class TaskDetail {
+  // Inherited from the parent 'projects/:projectId' route
+  project = input.required<Project>();
 
-  refreshUser() {
-    // Reloads only this specific resource without renavigating the route
-    this.userResource?.reload();
-  }
+  // Bound from the route's own resource
+  task = input.required<Task>();
 }
 ```
+
+The `TaskDetail` component receives both the parent `project` resource and its own `task` resource directly as inputs.
 
 ## Blocking and non-blocking resources
 
@@ -219,6 +312,38 @@ const routes: Routes = [
     },
   },
 ];
+```
+
+## Reloading resources without renavigation
+
+With traditional data resolvers, refetching data requires triggering a route navigation (such as navigating with `onSameUrlNavigation: 'reload'`), which re-evaluates all route guards, resolvers, and route matching logic.
+
+With route resources, you can reload data without renavigating:
+
+1. **Programmatic reload**: Call `.reload()` directly on the `Resource` instance.
+2. **Reactive reload**: If a resource's `params` computation reads signals (such as an application filter or state signal), updating those signals automatically re-triggers the resource loader.
+
+When using `withComponentInputBinding()`, blocking resources bind only their unwrapped value directly to component inputs. If you need to interact with the underlying `Resource` instance (for example, to trigger a manual `.reload()` or inspect status signals), access it through `ActivatedRoute` or `ActivatedRouteSnapshot`:
+
+```angular-ts
+import {Component, inject, input} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+
+@Component({
+  template: `
+    <p>User: {{ user().name }}</p>
+    <button (click)="refreshUser()">Refresh</button>
+  `,
+})
+export class UserProfile {
+  user = input.required<User>();
+  private userResource = inject(ActivatedRoute).resources?.['user'];
+
+  refreshUser() {
+    // Reloads only this specific resource without renavigating the route
+    this.userResource?.reload();
+  }
+}
 ```
 
 ## Transitional states during pending navigations
