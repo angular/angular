@@ -1,3 +1,15 @@
+<a name="20.3.31"></a>
+
+# 20.3.31 (2026-09-09)
+
+### platform-server
+
+| Commit                                                                                           | Type | Description                     |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------- |
+| [3db26e2544](https://github.com/angular/angular/commit/3db26e2544964d07a520836ad01f02f36ec88e25) | fix  | update domino to latest version |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.30"></a>
 
 # 20.3.30 (2026-08-26)
