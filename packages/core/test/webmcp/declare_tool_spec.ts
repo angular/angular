@@ -76,6 +76,7 @@ describe('declareExperimentalWebMcpTool', () => {
         annotations: {
           readOnlyHint: true,
           untrustedContentHint: true,
+          consequentialHint: true,
         },
       },
       Injector.create({providers: []}),
@@ -86,6 +87,7 @@ describe('declareExperimentalWebMcpTool', () => {
         annotations: {
           readOnlyHint: true,
           untrustedContentHint: true,
+          consequentialHint: true,
         },
       }),
       jasmine.anything(),
