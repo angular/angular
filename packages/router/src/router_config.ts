@@ -169,20 +169,20 @@ export interface InMemoryScrollingOptions {
    * in the following example.
    *
    * ```ts
-   * class AppComponent {
-   *   movieData: any;
+   * class App {
+   *   movieData = signal<MovieData | null>(null);
+   *   private router = inject(Router);
+   *   private viewportScroller = inject(ViewportScroller);
+   *   private changeDetectorRef = inject(ChangeDetectorRef);
    *
-   *   constructor(private router: Router, private viewportScroller: ViewportScroller,
-   * changeDetectorRef: ChangeDetectorRef) {
-   *   router.events.pipe(filter((event: Event): event is Scroll => event instanceof Scroll)
+   *   constructor() {
+   *    this.router.events.pipe(filter((event: Event): event is Scroll => event instanceof Scroll)
    *     ).subscribe(e => {
    *       fetch('http://example.com/movies.json').then(response => {
-   *         this.movieData = response.json();
-   *         // update the template with the data before restoring scroll
-   *         changeDetectorRef.detectChanges();
+   *         this.movieData.set(response.json());
    *
    *         if (e.position) {
-   *           viewportScroller.scrollToPosition(e.position);
+   *           this.viewportScroller.scrollToPosition(e.position);
    *         }
    *       });
    *     });
