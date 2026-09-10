@@ -338,6 +338,33 @@ describe('platform-server partial hydration integration', () => {
         // which contains parent id (which is not needed for top-level blocks).
         expect(ssrContents).toContain('"__nghDeferData__":{"d0":{"r":1,"s":2}}}');
       });
+
+      it('should serialize blocks whose only hydrate trigger is `hydrate when`', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @defer (hydrate when shouldHydrate) {
+              Hello world!
+            } @placeholder {
+              <span>Placeholder</span>
+            }
+          `,
+        })
+        class SimpleComponent {
+          shouldHydrate = false;
+        }
+
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+
+        const html = await ssr(SimpleComponent, {
+          envProviders: providers,
+        });
+
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('"__nghDeferData__":{"d0":{"r":1,"s":2}}}');
+      });
     });
 
     describe('basic hydration behavior', () => {
