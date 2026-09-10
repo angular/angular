@@ -9,6 +9,7 @@
 import {expect} from '@angular/private/testing/matchers';
 import {
   Attribute,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   createComponent as coreCreateComponent,
@@ -247,6 +248,8 @@ class DirectiveNeedsChangeDetectorRef {
 @Component({
   selector: '[componentNeedsChangeDetectorRef]',
   template: '{{counter}}',
+  // Until #69898 lands we need to explicit OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
 class PushComponentNeedsChangeDetectorRef {
