@@ -745,6 +745,41 @@ The projected `<app-inspector>` gets <code>🐳</code> because <code>🐶</code>
 
 The `<app-inspector>` that lives directly inside `Child`'s template (not projected) gets <code>🐶</code> — it's inside the `<#VIEW>`, so no boundary to cross.
 
+### Giving projected content access to a view injector
+
+Content projected with `<ng-content>` can't see a component's `viewProviders`, because Angular resolves injection against the injector where the content is declared, not where it renders.
+
+When you specifically want projected content to reach a view-level service — or the projecting component instance itself — accept the content as a template instead of `<ng-content>` and render it with an explicit injector.
+
+Update `Child` to provide `AnimalService` in `viewProviders`, query the projected template, and render it through [`NgTemplateOutlet`](/api/common/NgTemplateOutlet) with `ngTemplateOutletInjector` set to an injector that can see that service:
+
+```ts
+@Component({
+  selector: 'app-child',
+  viewProviders: [AnimalService],
+  imports: [NgTemplateOutlet],
+  template: `
+    <ng-container [ngTemplateOutlet]="content()" [ngTemplateOutletInjector]="injector" />
+  `,
+})
+export class Child {
+  readonly content = contentChild.required(TemplateRef);
+  readonly injector = inject(Injector);
+}
+```
+
+The consumer wraps the projected markup in an `<ng-template>`:
+
+```html
+<app-child>
+  <ng-template>
+    <app-inspector />
+  </ng-template>
+</app-child>
+```
+
+`Child` now creates `<app-inspector>` at the outlet using its own injector, so `AnimalService` resolves to the dog <code>🐶</code> even though the markup is written in `App`'s template. The cost is a little extra markup on both sides compared with `<ng-content>`.
+
 ### Visibility of provided tokens
 
 Visibility decorators influence where the search for the injection token begins and ends in the logic tree.
