@@ -8,7 +8,7 @@
 
 import {computed, linkedSignal, runInInjectionContext, Signal, untracked} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {AbstractControl} from '@angular/forms';
+import {AbstractControl, Validators} from '@angular/forms';
 import {Observable, ReplaySubject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 import {FieldNode} from '../../src/field/node';
@@ -22,10 +22,18 @@ import type {CompatFieldNodeOptions} from './compat_structure';
  */
 export class CompatFieldNode extends FieldNode {
   readonly control: Signal<AbstractControl>;
+  private readonly requiredSignal: Signal<boolean>;
 
   constructor(public readonly options: CompatFieldNodeOptions) {
     super(options);
     this.control = this.options.control;
+    this.requiredSignal = getControlStatusSignal(this.options, (c) =>
+      c.hasValidator(Validators.required),
+    );
+  }
+
+  override get required(): Signal<boolean> {
+    return this.requiredSignal;
   }
 }
 
