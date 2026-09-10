@@ -1097,6 +1097,9 @@ importers:
       '@mcp-b/webmcp-types':
         specifier: ^5.0.0
         version: 5.1.0
+      '@modelcontextprotocol/server':
+        specifier: ^2.0.0
+        version: 2.0.0
 
   packages/core/test/bundling:
     dependencies:
