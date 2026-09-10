@@ -385,13 +385,10 @@ export class FakeNavigation implements Navigation {
   }
 
   /** Creates a FakeNavigationDestination matching a given history entry. */
-  private createDestinationFromEntry(
-    entry: FakeNavigationHistoryEntry,
-    state?: unknown,
-  ): FakeNavigationDestination {
+  private createDestinationFromEntry(entry: FakeNavigationHistoryEntry): FakeNavigationDestination {
     return new FakeNavigationDestination({
       url: entry.url!,
-      state: state !== undefined ? state : entry.getState(),
+      state: entry.getState(),
       historyState: entry.getHistoryState(),
       key: entry.key,
       id: entry.id,
@@ -402,7 +399,8 @@ export class FakeNavigation implements Navigation {
 
   /**
    * Implementation of "performing a non-traverse navigation" from the spec.
-   * https://html.spec.whatwg.org/multipage/nav-history-apis.html#performing-a-non-traverse-navigation
+   * https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigation-navigate
+   * https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigation-reload
    */
   private performNonTraverseNavigation(
     destination: FakeNavigationDestination,
@@ -582,10 +580,10 @@ export class FakeNavigation implements Navigation {
       this.currentEntryIndex++;
       this.propsectiveTraversalDestinations = []; // prospectiveEntryIndex isn't in the spec but is an implementation detail
       disposedNHEs.push(...this.entriesArr.splice(this.currentEntryIndex));
-    } else if (navigationType === 'replace' || navigationType === 'reload') {
+    } else if (navigationType === 'replace') {
       disposedNHEs.push(oldCurrentNHE);
     }
-    if (navigationType === 'push' || navigationType === 'replace' || navigationType === 'reload') {
+    if (navigationType === 'push' || navigationType === 'replace') {
       const index = this.currentEntryIndex;
       const key =
         navigationType === 'push'
@@ -600,6 +598,8 @@ export class FakeNavigation implements Navigation {
         historyState: destination.getHistoryState(),
       });
       this.entriesArr[this.currentEntryIndex] = newNHE;
+    } else if (navigationType === 'reload') {
+      oldCurrentNHE.setState(destination.getState());
     }
     result.committedResolve(this.currentEntry);
     const currentEntryChangeEvent = createFakeNavigationCurrentEntryChangeEvent({
@@ -737,7 +737,15 @@ export class FakeNavigation implements Navigation {
     }
 
     const state = options && 'state' in options ? options.state : current.getState();
-    const destination = this.createDestinationFromEntry(current, state);
+    const destination = new FakeNavigationDestination({
+      url: current.url!,
+      state,
+      historyState: current.getHistoryState(),
+      key: '',
+      id: '',
+      index: -1,
+      sameDocument: current.sameDocument,
+    });
 
     return this.performNonTraverseNavigation(destination, {
       navigationType: 'reload',

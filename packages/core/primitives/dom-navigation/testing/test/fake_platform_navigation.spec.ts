@@ -2276,11 +2276,15 @@ describe('navigation', () => {
       expect(locals.navigateEvents[0].navigationType).toBe('reload');
       expect(locals.navigateEvents[0].info).toBe('reloadInfo');
       expect(locals.navigateEvents[0].destination.url).toBe(initialEntry.url!);
+      expect(locals.navigateEvents[0].destination.key).toBe('');
+      expect(locals.navigateEvents[0].destination.id).toBe('');
+      expect(locals.navigateEvents[0].destination.index).toBe(-1);
 
       const reloadedEntry = await result.finished;
+      expect(reloadedEntry).toBe(initialEntry);
       expect(reloadedEntry.url).toBe(initialEntry.url!);
       expect(reloadedEntry.key).toBe(initialEntry.key);
-      expect(reloadedEntry.id).not.toBe(initialEntry.id);
+      expect(reloadedEntry.id).toBe(initialEntry.id);
     });
 
     it('allows intercepting reload', async () => {
@@ -2309,7 +2313,14 @@ describe('navigation', () => {
       expect(entry.getState()).toEqual({preserved: 'yes'});
     });
 
-    it('disposes the previous entry on reload', async () => {
+    it('resets state when explicitly passed state: undefined', async () => {
+      locals.navigation.updateCurrentEntry({state: {toReset: true}});
+      const result = locals.navigation.reload({state: undefined});
+      const entry = await result.finished;
+      expect(entry.getState()).toBeUndefined();
+    });
+
+    it('does not dispose the current entry on reload', async () => {
       const initialEntry = locals.navigation.currentEntry;
       let disposed = false;
       initialEntry.ondispose = () => {
@@ -2317,7 +2328,7 @@ describe('navigation', () => {
       };
 
       await locals.navigation.reload().finished;
-      expect(disposed).toBeTrue();
+      expect(disposed).toBeFalse();
     });
   });
 
