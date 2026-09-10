@@ -16,6 +16,13 @@ import {
 } from '../../primitives/signals';
 
 describe('signals', () => {
+  it('should default to undefined when called with no argument', () => {
+    const s = signal<string>();
+    expect(s()).toBeUndefined();
+    s.set('hello');
+    expect(s()).toBe('hello');
+  });
+
   it('should be a getter which reflects the set value', () => {
     const state = signal(false);
     expect(state()).toBeFalse();
