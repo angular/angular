@@ -1,3 +1,13 @@
+## 22.1.1 (2026-09-10)
+
+- fix(vscode-extension): prevent JSDoc link provider injection ([731b959a81](https://github.com/angular/angular/commit/731b959a810a3cef8436ebea483397f9dcdaea78))
+- fix(vscode-extension): handle escaped delimiters in inline template and styles highlighting ([120aac9108](https://github.com/angular/angular/commit/120aac91089f8f2665013e8f3ecd9b31ce6d1828))
+- fix(language-service): honor quote style preference when generating imports ([93d7f718d2](https://github.com/angular/angular/commit/93d7f718d2e057e37deda42d197e46672fe7f7f5))
+- fix(language-server): recover project for external templates in solution-style workspaces ([14fbe04612](https://github.com/angular/angular/commit/14fbe04612d29460c5d01d6c65cde579f0a42e95))
+- fix(vscode-extension): prevent command URI injection in TSDK approval ([8adaa09f95](https://github.com/angular/angular/commit/8adaa09f959c2e758de5811e7b9f6abd99be8b7d))
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 22.1.0 (2026-08-12)
 
 - fix(language-service): account for strictTemplates being enabled by default ([a99fb915c0](https://github.com/angular/angular/commit/a99fb915c09b352ac67f24e71af84cda30bcbf3e))
