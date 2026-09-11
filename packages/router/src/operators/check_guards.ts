@@ -234,7 +234,8 @@ export function runCanLoadGuards(
   urlSerializer: UrlSerializer,
   abortSignal?: AbortSignal,
 ): Observable<boolean> {
-  const canLoad = route.canLoad;
+  // TODO: Remove `canLoad` check once removed from 3p.
+  const canLoad = (route as any).canLoad;
   if (canLoad === undefined || canLoad.length === 0) {
     return of(true);
   }
