@@ -27,7 +27,6 @@
     "@angular/cli": "22.2.0-next.6",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "@types/jasmine": "^6.0.0",
-    "@types/jasminewd2": "^2.0.8",
     "@types/node": "^20.14.8",
     "jasmine-core": "6.3.0",
     "jasmine-spec-reporter": "~7.0.0",
@@ -35,7 +34,6 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-jasmine": "^5.0.0",
     "karma-jasmine-html-reporter": "^2.1.0",
-    "protractor": "^7.0.0",
     "ts-node": "^10.9.1",
     "typescript": "6.0.3"
   },

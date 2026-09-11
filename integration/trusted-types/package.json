@@ -8,8 +8,8 @@
     "pretest": "ng version",
     "test": "ng test && pnpm e2e:dev && pnpm e2e:prod",
     "lint": "ng lint",
-    "e2e:dev": "ng build && concurrently \"serve dist/trusted-types/browser -l 4213 --no-clipboard --single\" \"protractor e2e/protractor.conf.js --baseUrl=http://localhost:4213\" --kill-others --success first",
-    "e2e:prod": "ng build --configuration production && concurrently \"serve dist/trusted-types/browser -l 4214 --no-clipboard --single\" \"protractor e2e/protractor.conf.js --baseUrl=http://localhost:4214\" --kill-others --success first"
+    "e2e:dev": "ng build && concurrently \"serve dist/trusted-types/browser -l 4213 --no-clipboard --single\" \"E2E_BASE_URL=http://localhost:4213 jasmine --config=e2e/jasmine.json 'e2e/src/**/*.e2e-spec.ts'\" --kill-others --success first",
+    "e2e:prod": "ng build --configuration production && concurrently \"serve dist/trusted-types/browser -l 4214 --no-clipboard --single\" \"E2E_BASE_URL=http://localhost:4214 jasmine --config=e2e/jasmine.json 'e2e/src/**/*.e2e-spec.ts'\" --kill-others --success first"
   },
   "private": true,
   "dependencies": {
@@ -32,7 +32,9 @@
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
+    "@types/selenium-webdriver": "3.0.7",
     "concurrently": "10.0.5",
+    "jasmine": "6.3.0",
     "jasmine-core": "6.3.0",
     "serve": "^14.2.5",
     "jasmine-spec-reporter": "~7.0.0",
@@ -41,7 +43,7 @@
     "karma-coverage": "^2.2.1",
     "karma-jasmine": "^5.0.0",
     "karma-jasmine-html-reporter": "^2.2.0",
-    "protractor": "^7.0.0",
+    "selenium-webdriver": "3.5.0",
     "ts-node": "^10.9.1",
     "typescript": "6.0.3"
   },
