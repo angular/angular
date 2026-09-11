@@ -5,6 +5,7 @@
 ```ts
 
 import * as _angular_core from '@angular/core';
+import type { JsonSchemaType } from '@modelcontextprotocol/server';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
@@ -1081,6 +1082,12 @@ export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
 
 // @public
 export function isDevMode(): boolean;
+
+// @public
+export function isResource(value: unknown): value is Resource<unknown>;
+
+// @public
+export function isResourceRef(value: unknown): value is ResourceRef<unknown>;
 
 // @public
 export function isSignal(value: unknown): value is Signal<unknown>;
