@@ -8,7 +8,7 @@
 
 import {InputFlags} from '../../core';
 import {BindingType} from '../../expression_parser/ast';
-import {splitNsName} from '../../ml_parser/tags';
+import {isNgTemplate, splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
 import {CssSelector} from '../../directive_matching';
 import * as t from '../r3_ast';
@@ -201,7 +201,7 @@ export function createCssSelectorFromNode(node: t.Element | t.Template): CssSele
 function getAttrsForDirectiveMatching(elOrTpl: t.Element | t.Template): {[name: string]: string} {
   const attributesMap: {[name: string]: string} = {};
 
-  if (elOrTpl instanceof t.Template && elOrTpl.tagName !== 'ng-template') {
+  if (elOrTpl instanceof t.Template && (!elOrTpl.tagName || !isNgTemplate(elOrTpl.tagName))) {
     elOrTpl.templateAttrs.forEach((a) => (attributesMap[a.name] = ''));
   } else {
     elOrTpl.attributes.forEach((a) => {
