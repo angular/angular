@@ -10,7 +10,7 @@ import {Component, inject, Injectable, InjectionToken, NgModule} from '@angular/
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {timeout} from '@angular/private/testing';
-import {Router, RouterModule} from '../index';
+import {provideRouter, Route, Router, RouterModule, withInMemoryScrolling} from '../index';
 
 @Component({template: '<div>simple standalone</div>'})
 export class SimpleStandaloneComponent {}
@@ -543,6 +543,36 @@ describe('standalone in Router API', () => {
       await TestBed.inject(Router).navigateByUrl('/parent/child');
       expect(TestBed.inject(Router).url).toContain('parent/child');
     });
+  });
+});
+
+describe('readonly route configuration', () => {
+  // These tests are primarily compile-time checks: passing a `ReadonlyArray<Route>` (or a readonly
+  // array of features) to the route configuration APIs should not require casting away `readonly`.
+  const readonlyRoutes: readonly Route[] = [{path: 'simple', component: SimpleStandaloneComponent}];
+
+  it('provideRouter accepts readonly routes and features arrays', () => {
+    const features = [withInMemoryScrolling()] as const;
+    TestBed.configureTestingModule({providers: [provideRouter(readonlyRoutes, ...features)]});
+
+    expect(TestBed.inject(Router).config).toEqual([...readonlyRoutes]);
+  });
+
+  it('RouterModule.forRoot and forChild accept a readonly routes array', () => {
+    TestBed.configureTestingModule({
+      imports: [RouterModule.forRoot(readonlyRoutes), RouterModule.forChild(readonlyRoutes)],
+    });
+
+    expect(TestBed.inject(Router)).toBeDefined();
+  });
+
+  it('Router.resetConfig accepts a readonly routes array', () => {
+    TestBed.configureTestingModule({providers: [provideRouter([])]});
+    const router = TestBed.inject(Router);
+
+    router.resetConfig(readonlyRoutes);
+
+    expect(router.config.length).toBe(1);
   });
 });
 
