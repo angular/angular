@@ -21,6 +21,7 @@ import {
   DeclarationListEmitMode,
   DeclareComponentTemplateInfo,
   DeferBlockDepsEmitMode,
+  DeferDependencyLoadingMode,
   DirectiveMatcher,
   DomElementSchemaRegistry,
   ExternalExpr,
@@ -1337,17 +1338,13 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     let data: ComponentResolutionData;
 
     if (this.compilationMode === CompilationMode.LOCAL) {
-      const deferPerBlockDependencies = new Map<
-        TmplAstDeferredBlock,
-        DeferredComponentDependency[]
-      >();
+      const deferPerBlockDependencies = this.locateDeferBlocksWithoutScope(analysis.template);
       let deferBlockDepsEmitMode = DeferBlockDepsEmitMode.PerComponent;
       const hasBlockSpecificImports = analysis.explicitlyDeferredTypesByBlock != null;
-      const deferBlocks = this.locateDeferBlocksWithoutScope(analysis.template);
 
       if (hasBlockSpecificImports) {
         deferBlockDepsEmitMode = DeferBlockDepsEmitMode.PerBlock;
-        for (const [block] of deferBlocks) {
+        for (const [block] of deferPerBlockDependencies) {
           const blockName = block.definedName;
           if (blockName === null) {
             diagnostics.push(
@@ -1385,7 +1382,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           deferPerBlockDependencies.set(block, mappedDeps);
         }
       } else {
-        for (const [block] of deferBlocks) {
+        for (const [block] of deferPerBlockDependencies) {
           if (block.definedName !== null) {
             diagnostics.push(
               makeDiagnostic(
@@ -2760,7 +2757,15 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       for (const [block, dependencies] of perBlockDeps) {
         blocks.set(
           block,
-          dependencies.length === 0 ? null : compileDeferResolverFunction({mode, dependencies}),
+          dependencies.length === 0
+            ? null
+            : compileDeferResolverFunction({
+                mode,
+                dependencies,
+                dependencyLoadingMode: this.getDeferDependencyLoadingMode(
+                  (block.error?.retryCount ?? 0) > 0,
+                ),
+              }),
         );
       }
 
@@ -2773,16 +2778,37 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           'Internal error: deferPerComponentDependencies must be present in PerComponent mode',
         );
       }
+      if (perComponentDeps.length === 0) {
+        return {mode, dependenciesFn: null};
+      }
+
+      let hasRetry = false;
+      for (const block of perBlockDeps?.keys() ?? []) {
+        if ((block.error?.retryCount ?? 0) > 0) {
+          hasRetry = true;
+          break;
+        }
+      }
+
       return {
         mode,
-        dependenciesFn:
-          perComponentDeps.length === 0
-            ? null
-            : compileDeferResolverFunction({mode, dependencies: perComponentDeps}),
+        dependenciesFn: compileDeferResolverFunction({
+          mode,
+          dependencies: perComponentDeps,
+          dependencyLoadingMode: this.getDeferDependencyLoadingMode(hasRetry),
+        }),
       };
     }
 
     throw new Error(`Invalid deferBlockDepsEmitMode. Cannot compile deferred block metadata.`);
+  }
+
+  private getDeferDependencyLoadingMode(hasRetry: boolean): DeferDependencyLoadingMode {
+    if (!hasRetry) {
+      return DeferDependencyLoadingMode.Default;
+    }
+
+    return DeferDependencyLoadingMode.Retryable;
   }
 
   /** Creates a new binding parser. */

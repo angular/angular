@@ -32,6 +32,7 @@ import {onHover, onInteraction} from '../../primitives/defer/src/triggers';
 import {onIdleWrapper} from './idle_scheduler';
 import {
   DEFER_BLOCK_STATE,
+  DeferBlockDependencyLoader,
   DeferBlockInternalState,
   DeferBlockState,
   DeferDependenciesLoadingState,
@@ -58,6 +59,7 @@ import {
   isIncrementalHydrationEnabled,
 } from '../hydration/utils';
 import {ɵɵdeferEnableTimerScheduling, renderPlaceholder} from './rendering';
+import type {ɵɵdeferEnableRetry} from './retry';
 
 import {
   getHydrateTriggers,
@@ -80,6 +82,24 @@ import {Injector} from '../di';
  * prevents the logic from producing it multiple times.
  */
 let _hmrWarningProduced = false;
+
+/**
+ * Creates a retryable deferred dependency loader.
+ *
+ * The import and dependency resolution stay separate so each retry can invoke
+ * the same dynamic import again.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdeferDependency<TModule, T>(
+  load: () => Promise<TModule>,
+  resolve: (module: TModule) => T,
+): DeferBlockDependencyLoader<T> {
+  return {
+    load,
+    resolve: (module: unknown) => resolve(module as TModule),
+  };
+}
 
 /**
  * Logs a message into the console to indicate that `@defer` block
@@ -119,6 +139,8 @@ function logHmrWarning(injector: Injector) {
  * @param flags A set of flags to define a particular behavior (e.g. to indicate that
  *              hydrate triggers are present and regular triggers should be deactivated
  *              in certain scenarios).
+ * @param retryCount Number of additional dependency-loading retry rounds.
+ * @param enableRetry Enables retry loading when `retryCount` is set.
  *
  * @codeGenApi
  */
@@ -133,6 +155,8 @@ export function ɵɵdefer(
   placeholderConfigIndex?: number | null,
   enableTimerScheduling?: typeof ɵɵdeferEnableTimerScheduling | null,
   flags?: TDeferDetailsFlags | null,
+  retryCount?: number | null,
+  enableRetry?: typeof ɵɵdeferEnableRetry | null,
 ) {
   const lView = getLView();
   const tView = getTView();
@@ -167,8 +191,13 @@ export function ɵɵdefer(
       hydrateTriggers: null,
       debug: null,
       flags: flags ?? TDeferDetailsFlags.Default,
+      maxRetryCount: null,
+      retryLoadingFn: null,
     };
     enableTimerScheduling?.(tView, tDetails, placeholderConfigIndex, loadingConfigIndex);
+    if (retryCount != null) {
+      enableRetry?.(tDetails, retryCount);
+    }
     setTDeferBlockDetails(tView, adjustedIndex, tDetails);
   }
 

@@ -49,6 +49,9 @@ const ON_PARAMETER_PATTERN = /^on\s/;
 /** Pattern to identify a `name` parameter in a block. */
 const NAME_PARAMETER_PATTERN = /^name\s+/;
 
+/** Pattern to identify a `retry` parameter in a block. */
+const RETRY_PARAMETER_PATTERN = /^retry(\s|$)/;
+
 /**
  * Predicate function that determines if a block with
  * a specific name cam be connected to a `defer` block.
@@ -253,8 +256,34 @@ function parseLoadingBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBl
 }
 
 function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBlockError {
-  if (ast.parameters.length > 0) {
-    throw new Error(`@error block cannot have parameters`);
+  let retryCount: number | null = null;
+
+  for (const param of ast.parameters) {
+    if (RETRY_PARAMETER_PATTERN.test(param.expression)) {
+      if (retryCount != null) {
+        throw new Error(`@error block can only have one "retry" parameter`);
+      }
+
+      const valueStart = getTriggerParametersStart(param.expression);
+      const rawValue = valueStart === -1 ? '' : param.expression.slice(valueStart).trim();
+
+      if (rawValue === '') {
+        throw new Error(`The "retry" parameter requires a value, e.g. "retry 2"`);
+      }
+
+      const parsed = parseRetryCount(rawValue);
+
+      if (parsed === null) {
+        throw new Error(
+          `Could not parse value of "retry" parameter: expected a non-negative integer ` +
+            `within JavaScript's safe integer range, got "${rawValue}"`,
+        );
+      }
+
+      retryCount = parsed;
+    } else {
+      throw new Error(`Unrecognized parameter in @error block: "${param.expression}"`);
+    }
   }
 
   return new t.DeferredBlockError(
@@ -264,7 +293,19 @@ function parseErrorBlock(ast: html.Block, visitor: html.Visitor): t.DeferredBloc
     ast.startSourceSpan,
     ast.endSourceSpan,
     ast.i18n,
+    retryCount,
   );
+}
+
+function parseRetryCount(value: string): number | null {
+  if (!/^\d+$/.test(value)) {
+    return null;
+  }
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 0) {
+    return null;
+  }
+  return parsed;
 }
 
 function parsePrimaryTriggers(

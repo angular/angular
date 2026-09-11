@@ -116,6 +116,66 @@ The `@error` block is an optional block that displays if deferred loading fails.
 }
 ```
 
+#### Automatically retry failed loads with `@error (retry N)`
+
+HELPFUL: Retrying failed loads with `@error (retry N)` is currently in [developer preview](/reference/releases#developer-preview).
+
+Temporary network or server errors can cause a deferred dependency to fail. Add a `retry` parameter to the `@error` block to try the load again:
+
+```angular-html
+@defer {
+  <large-component />
+} @error (retry 3) {
+  <p>We couldn't load this section. Please refresh.</p>
+}
+```
+
+`N` must be a non-negative safe integer literal. Angular makes the initial load and up to `N` additional attempts. Retries run sequentially and reload only dependencies that have not succeeded.
+
+Angular invokes the same compiler-generated dynamic import without changing its URL. The [HTML module fetching algorithm](https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-single-module-script) removes failed network and HTTP fetches from the module map, allowing a later import to request the module again. Angular does not add query parameters or change the module's identity.
+
+A module that downloads but throws during evaluation remains cached by the JavaScript module system. Retrying cannot re-evaluate that module or recover a chunk that is no longer available on the server.
+
+Retry works with loading blocks, triggers, prefetching, and incremental hydration. It runs only in the browser; server-side rendering loads deferred dependencies once.
+
+#### What renders during a retry?
+
+Retries extend the loading operation. The normal `@placeholder` and `@loading` timing rules continue across every attempt, and the `minimum` timer is not restarted. Angular renders `@error` only after retrying is exhausted or stopped by a custom handler.
+
+When only a prefetch trigger has fired, the placeholder remains visible. A successful retry does not render the main block until the main trigger fires.
+
+For example, if the main trigger has fired and the third loading attempt succeeds:
+
+| Phase            | Block shown   |
+| ---------------- | ------------- |
+| Initial attempt  | `@loading`    |
+| Retry 1 fails    | `@loading`    |
+| Retry 2 succeeds | Main `@defer` |
+
+If every attempt fails, Angular renders `@error` after applying the normal loading timing.
+
+#### Customize retry behavior
+
+Customize when Angular starts each retry by registering a handler with `provideDeferBlockRetryHandler`. This is useful for telemetry, exponential backoff, or waiting for the browser to come online.
+
+```ts
+import {provideDeferBlockRetryHandler} from '@angular/core';
+
+bootstrapApplication(App, {
+  providers: [
+    provideDeferBlockRetryHandler(async (ctx) => {
+      // Exponential backoff before each retry.
+      await new Promise((resolve) => setTimeout(resolve, 2 ** ctx.attempt * 100));
+      ctx.retry();
+    }),
+  ],
+});
+```
+
+The handler runs once before each retry, but not before the initial load. Its context contains `attempt`, where `1` is the first retry, `maxRetryCount`, the error from the previous attempt, and `retry()`. Angular starts the next attempt when the handler calls `retry()`.
+
+Only the first call to `retry()` has an effect. Throwing or returning a rejected promise before that call stops the sequence and renders `@error` with the previous loading error. Returning without calling `retry()` leaves the block loading. The handler runs in the defer block's injection context and only in the browser.
+
 ## Controlling deferred content loading with triggers
 
 You can specify **triggers** that control when Angular loads and displays deferred content.
