@@ -77,6 +77,31 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
     return undefined;
   },
 
+  has(getTgt: () => FieldNode, property: string | symbol): boolean {
+    if (property === FIELD_TREE) {
+      return true;
+    }
+
+    const tgt = getTgt();
+    if (tgt.structure.getChild(property) !== undefined) {
+      return true;
+    }
+
+    const value = untracked(tgt.value);
+
+    if (isArray(value)) {
+      if (property === 'length' || property === Symbol.iterator) {
+        return true;
+      }
+    } else if (isObject(value)) {
+      if (property === Symbol.iterator) {
+        return true;
+      }
+    }
+
+    return false;
+  },
+
   getOwnPropertyDescriptor(getTgt: () => FieldNode, prop: string | symbol) {
     const value = untracked(getTgt().value) as Object;
     const desc = Reflect.getOwnPropertyDescriptor(value, prop);
