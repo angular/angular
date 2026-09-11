@@ -172,7 +172,7 @@ describe('navigation', () => {
           }),
         }),
       );
-      expect(Object.hasOwn(navigateEvent, 'hasUAVisualTransition')).toBeFalse();
+      expect(navigateEvent.hasUAVisualTransition).toBe(false);
       expect(navigateEvent.destination.getState()).toBeUndefined();
       const committedEntry = await committed;
       expect(committedEntry).toEqual(
@@ -962,7 +962,7 @@ describe('navigation', () => {
       expect(locals.popStateEvents.length).toBe(1);
       const popStateEvent = locals.popStateEvents[0];
       expect(popStateEvent.state).toBeNull();
-      expect(Object.hasOwn(popStateEvent, 'hasUAVisualTransition')).toBeFalse();
+      expect(popStateEvent.hasUAVisualTransition).toBe(false);
       expect(locals.navigation.canGoBack).toBeTrue();
       expect(locals.navigation.canGoForward).toBeTrue();
       const finishedEntry = await finished;
@@ -2176,17 +2176,90 @@ describe('navigation', () => {
       expect(committedEntry.getState()).toEqual(state);
     });
 
-    it('throws an error if navigationType is "traverse"', async () => {
+    it('throws InvalidStateError if navigationType is "traverse"', async () => {
       await setUpEntries();
+      let caughtError: any = null;
       locals.pendingInterceptOptions.push({
         precommitHandler: async (event) => {
-          expect(() => event.redirect('/redirected')).toThrowError();
+          try {
+            event.redirect('/redirected');
+          } catch (e: any) {
+            caughtError = e;
+          }
         },
       });
       // Use back() to trigger a 'traverse' navigation
       await locals.navigation.back().finished;
+      expect(caughtError).not.toBeNull();
+      expect(caughtError?.name).toBe('InvalidStateError');
+      expect(caughtError?.message).toContain(
+        "cannot redirect when navigationType is not 'push' or 'replace'",
+      );
       // Check that a navigate event occurred (it should, even if redirect fails)
       expect(locals.navigateEvents.length).toBe(1);
+    });
+
+    it('throws SecurityError when redirecting to a cross-origin URL', async () => {
+      let caughtError: any = null;
+      locals.pendingInterceptOptions.push({
+        precommitHandler: (controller) => {
+          try {
+            controller.redirect('https://evil.com');
+          } catch (e: any) {
+            caughtError = e;
+          }
+        },
+      });
+
+      await locals.navigation.navigate('/page').finished;
+      expect(caughtError).not.toBeNull();
+      expect(caughtError?.name).toBe('SecurityError');
+    });
+
+    it('throws SecurityError when redirecting to a script URL', async () => {
+      let caughtError: any = null;
+      locals.pendingInterceptOptions.push({
+        precommitHandler: (controller) => {
+          try {
+            controller.redirect('javascript:alert(1)');
+          } catch (e: any) {
+            caughtError = e;
+          }
+        },
+      });
+
+      await locals.navigation.navigate('/page').finished;
+      expect(caughtError).not.toBeNull();
+      expect(caughtError?.name).toBe('SecurityError');
+    });
+
+    it('throws SyntaxError when redirecting to an unparseable URL', async () => {
+      let caughtError: any = null;
+      locals.pendingInterceptOptions.push({
+        precommitHandler: (controller) => {
+          try {
+            controller.redirect('http://:invalid-url');
+          } catch (e: any) {
+            caughtError = e;
+          }
+        },
+      });
+
+      await locals.navigation.navigate('/page').finished;
+      expect(caughtError).not.toBeNull();
+      expect(caughtError?.name).toBe('SyntaxError');
+    });
+
+    it('synchronously clones state passed to redirect', async () => {
+      const redirectState = {count: 10};
+      locals.pendingInterceptOptions.push({
+        precommitHandler: (controller) => {
+          controller.redirect('/redirected', {state: redirectState});
+          redirectState.count = 99;
+        },
+      });
+      await locals.navigation.navigate('/page').finished;
+      expect((locals.navigation.currentEntry.getState() as any).count).toBe(10);
     });
   });
 
@@ -2336,7 +2409,7 @@ describe('navigation', () => {
     it('has default hasUAVisualTransition and sourceElement values', async () => {
       await locals.navigation.navigate('/page').finished;
       const event = locals.navigateEvents[0];
-      expect(event.hasUAVisualTransition).toBeFalsy();
+      expect(event.hasUAVisualTransition).toBe(false);
       expect(event.sourceElement).toBeNull();
     });
   });
@@ -2427,6 +2500,766 @@ describe('navigation', () => {
 
       await locals.navigation.navigate('/test').finished;
       expect(onNavigateCalled).toBeFalse();
+    });
+  });
+
+  describe('superseded navigation race condition in commit()', () => {
+    it('prevents a superseded navigation from committing after asynchronous precommit handlers resolve', async () => {
+      let resolveNav1: () => void;
+      const nav1Deferred = new Promise<void>((res) => (resolveNav1 = res));
+
+      locals.pendingInterceptOptions.push({
+        precommitHandler: () => nav1Deferred,
+      });
+
+      const nav1 = locals.navigation.navigate('/page1');
+      const nav2 = locals.navigation.navigate('/page2');
+
+      // Finish nav1 after nav2 has already started
+      resolveNav1!();
+
+      await expectAsync(nav1.committed).toBeRejected();
+      await nav2.committed;
+
+      expect(locals.navigation.currentEntry?.url).toContain('/page2');
+      expect(locals.navigation.entries().length).toBe(2); // Initial and page2
+    });
+  });
+
+  describe('isolated history entry EventTarget and disposal', () => {
+    it('isolates dispose events so entries only receive their own disposal event', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      const entry1 = locals.navigation.currentEntry!;
+      let entry1DisposedCount = 0;
+      entry1.ondispose = () => entry1DisposedCount++;
+
+      await locals.navigation.navigate('/page2').finished;
+      const entry2 = locals.navigation.currentEntry!;
+      let entry2DisposedCount = 0;
+      entry2.ondispose = () => entry2DisposedCount++;
+
+      // Replace entry 2; entry 1 must NOT receive a dispose event
+      await locals.navigation.navigate('/page3', {history: 'replace'}).finished;
+
+      expect(entry2DisposedCount).toBe(1);
+      expect(entry1DisposedCount).toBe(0);
+    });
+
+    it('does not throw when removing listeners or setting ondispose on a disposed entry', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      const entry = locals.navigation.currentEntry!;
+      const listener = () => {};
+      entry.addEventListener('dispose', listener);
+      entry.ondispose = () => {};
+
+      await locals.navigation.navigate('/page2', {history: 'replace'}).finished;
+
+      expect(() => {
+        entry.removeEventListener('dispose', listener);
+        entry.ondispose = null;
+      }).not.toThrow();
+    });
+  });
+
+  describe('hasUAVisualTransition and sourceElement propagation', () => {
+    it('propagates hasUAVisualTransition: true to NavigateEvent and PopStateEvent on back()', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      await locals.navigation.navigate('/page2').finished;
+
+      await locals.navigation.back({hasUAVisualTransition: true}).finished;
+
+      const navEvent = locals.navigateEvents[locals.navigateEvents.length - 1];
+      expect(navEvent.hasUAVisualTransition).toBe(true);
+      const popEvent = locals.popStateEvents[locals.popStateEvents.length - 1];
+      expect(popEvent.hasUAVisualTransition).toBe(true);
+    });
+
+    it('propagates hasUAVisualTransition: true on forward()', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      await locals.navigation.navigate('/page2').finished;
+      await locals.navigation.back().finished;
+
+      await locals.navigation.forward({hasUAVisualTransition: true}).finished;
+
+      expect(locals.navigateEvents[locals.navigateEvents.length - 1].hasUAVisualTransition).toBe(
+        true,
+      );
+      expect(locals.popStateEvents[locals.popStateEvents.length - 1].hasUAVisualTransition).toBe(
+        true,
+      );
+    });
+
+    it('propagates hasUAVisualTransition: true on traverseTo()', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      const target = locals.navigation.currentEntry;
+      await locals.navigation.navigate('/page2').finished;
+
+      await locals.navigation.traverseTo(target.key, {hasUAVisualTransition: true}).finished;
+
+      expect(locals.navigateEvents[locals.navigateEvents.length - 1].hasUAVisualTransition).toBe(
+        true,
+      );
+    });
+
+    it('defaults hasUAVisualTransition to false for a traversal without the option', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      await locals.navigation.navigate('/page2').finished;
+
+      await locals.navigation.back().finished;
+
+      expect(locals.navigateEvents[locals.navigateEvents.length - 1].hasUAVisualTransition).toBe(
+        false,
+      );
+      expect(locals.popStateEvents[locals.popStateEvents.length - 1].hasUAVisualTransition).toBe(
+        false,
+      );
+    });
+
+    it('propagates sourceElement to NavigateEvent via navigateForTesting()', async () => {
+      const button = document.createElement('button');
+      await locals.navigation.navigateForTesting('/page', {sourceElement: button}).finished;
+      const navEvent = locals.navigateEvents[locals.navigateEvents.length - 1];
+      expect(navEvent.sourceElement).toBe(button);
+    });
+  });
+
+  describe('NavigateEvent.intercept() state validation and check order', () => {
+    it('throws InvalidStateError when called outside of the navigate event dispatch', async () => {
+      let eventRef: FakeNavigateEvent | null = null;
+      locals.setExtraNavigateCallback((event) => {
+        eventRef = event;
+      });
+
+      // A navigation that is never intercepted, so its interceptionState stays 'none'. The only
+      // thing making a later intercept() invalid is the unset dispatch flag.
+      await locals.navigation.navigate('/page').finished;
+      expect(eventRef).not.toBeNull();
+      expect((eventRef as any).interceptionState).toBe('none');
+
+      expect(() => {
+        eventRef!.intercept({});
+      }).toThrowMatching((e: any) => e.name === 'InvalidStateError');
+
+      // The rejected call must not have mutated the event.
+      expect((eventRef as any).interceptionState).toBe('none');
+      expect((eventRef as any).sameDocument).toBe(false);
+    });
+
+    it('throws InvalidStateError when called after an intercepted navigation finished', async () => {
+      let eventRef: FakeNavigateEvent | null = null;
+      locals.pendingInterceptOptions.push({handler: () => {}});
+      locals.setExtraNavigateCallback((event) => {
+        eventRef = event;
+      });
+
+      await locals.navigation.navigate('/page').finished;
+
+      expect(() => {
+        eventRef!.intercept({});
+      }).toThrowMatching((e: any) => e.name === 'InvalidStateError');
+    });
+
+    it('rejects a precommitHandler on a non-cancelable event without mutating the event', async () => {
+      let caughtError: any = null;
+      let eventRef: FakeNavigateEvent | null = null;
+      // Checked during dispatch, which is the only point at which intercept() is valid.
+      locals.setExtraNavigateCallback((event) => {
+        eventRef = event;
+        try {
+          event.intercept({precommitHandler: () => {}});
+        } catch (e) {
+          caughtError = e;
+        }
+      });
+
+      await locals.navigation.navigateForTesting('/page', {cancelable: false}).finished;
+
+      expect(caughtError?.name).toBe('InvalidStateError');
+      // The cancelable check runs before any state is written, so the navigation stayed
+      // un-intercepted.
+      expect((eventRef as any).interceptionState).toBe('none');
+      expect((eventRef as any).sameDocument).toBe(false);
+    });
+
+    it('throws SecurityError when canIntercept is false, before the dispatch flag check', async () => {
+      // `canIntercept` is checked ahead of the dispatch flag, so a stale non-interceptable event
+      // reports SecurityError rather than InvalidStateError.
+      let eventRef: FakeNavigateEvent | null = null;
+      locals.setExtraNavigateCallback((event) => {
+        eventRef = event;
+      });
+      await locals.navigation.navigate('/page').finished;
+      (eventRef as any).canIntercept = false;
+
+      expect(() => {
+        eventRef!.intercept({});
+      }).toThrowMatching((e: any) => e.name === 'SecurityError');
+    });
+
+    it('throws InvalidStateError from intercept() once the event was canceled mid-dispatch', async () => {
+      let caughtError: any = null;
+      locals.setExtraNavigateCallback((event) => {
+        // Aborting while the event is still dispatching sets the spec's "canceled flag", which is
+        // what a nested navigation started from a `navigate` listener does.
+        (event as any).abort(new DOMException('superseded', 'AbortError'));
+        try {
+          event.intercept({});
+        } catch (e) {
+          caughtError = e;
+        }
+      });
+
+      await expectAsync(locals.navigation.navigate('/page').finished).toBeRejected();
+      expect(caughtError?.name).toBe('InvalidStateError');
+    });
+  });
+
+  describe('structuredClone state serialization', () => {
+    it('supports Date, Map, and Set objects in navigation state', async () => {
+      const testDate = new Date(2026, 0, 1);
+      const testMap = new Map([['key', 'val']]);
+      const testSet = new Set([1, 2, 3]);
+
+      await locals.navigation.navigate('/page', {
+        state: {testDate, testMap, testSet},
+      }).finished;
+
+      const state = locals.navigation.currentEntry.getState() as any;
+      expect(state.testDate instanceof Date).toBeTrue();
+      expect(state.testDate.getTime()).toBe(testDate.getTime());
+      expect(state.testMap instanceof Map).toBeTrue();
+      expect(state.testMap.get('key')).toBe('val');
+      expect(state.testSet instanceof Set).toBeTrue();
+      expect(state.testSet.has(2)).toBeTrue();
+    });
+
+    it('synchronously clones state upon navigate() call', async () => {
+      const mutableState = {counter: 1};
+      const navPromise = locals.navigation.navigate('/page', {state: mutableState});
+      mutableState.counter = 2; // Mutate immediately after navigate() call
+
+      await navPromise.finished;
+      const state = locals.navigation.currentEntry.getState() as any;
+      expect(state.counter).toBe(1);
+    });
+
+    it('clones state returned by destination.getState() and entry.getState()', async () => {
+      locals.setExtraNavigateCallback((event) => {
+        const destState = event.destination.getState() as any;
+        destState.mutated = true;
+        expect((event.destination.getState() as any).mutated).toBeUndefined();
+      });
+
+      await locals.navigation.navigate('/page', {state: {initial: true}}).finished;
+      const entryState = locals.navigation.currentEntry.getState() as any;
+      entryState.mutated = true;
+      expect((locals.navigation.currentEntry.getState() as any).mutated).toBeUndefined();
+    });
+
+    it('rejects with DataCloneError when non-cloneable objects are passed to navigate()', async () => {
+      const unclonable = {fn: () => {}};
+      const result = locals.navigation.navigate('/page', {state: unclonable});
+      await expectAsync(result.committed).toBeRejectedWith(
+        jasmine.objectContaining({name: 'DataCloneError'}),
+      );
+      await expectAsync(result.finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'DataCloneError'}),
+      );
+    });
+
+    it('throws DataCloneError when non-cloneable objects are passed to updateCurrentEntry()', () => {
+      const unclonable = {fn: () => {}};
+      expect(() => {
+        locals.navigation.updateCurrentEntry({state: unclonable});
+      }).toThrowMatching((e: any) => e.name === 'DataCloneError');
+    });
+  });
+
+  describe('IDL event handler attribute this binding', () => {
+    it('binds "this" to Navigation in IDL event handlers', async () => {
+      let onnavigateThis: any;
+      let oncurrententrychangeThis: any;
+      let onnavigatesuccessThis: any;
+
+      locals.navigation.onnavigate = function () {
+        onnavigateThis = this;
+      };
+      locals.navigation.oncurrententrychange = function () {
+        oncurrententrychangeThis = this;
+      };
+      locals.navigation.onnavigatesuccess = function () {
+        onnavigatesuccessThis = this;
+      };
+
+      await locals.navigation.navigate('/page').finished;
+
+      expect(onnavigateThis).toBe(locals.navigation);
+      expect(oncurrententrychangeThis).toBe(locals.navigation);
+      expect(onnavigatesuccessThis).toBe(locals.navigation);
+    });
+
+    it('binds "this" to Navigation in onnavigateerror', async () => {
+      let onnavigateerrorThis: any;
+      locals.navigation.onnavigate = (e) => {
+        e.intercept({
+          handler: () => {
+            throw new Error('boom');
+          },
+        });
+      };
+      locals.navigation.onnavigateerror = function () {
+        onnavigateerrorThis = this;
+      };
+
+      await expectAsync(locals.navigation.navigate('/page').finished).toBeRejected();
+      expect(onnavigateerrorThis).toBe(locals.navigation);
+    });
+
+    it('binds "this" to NavigationHistoryEntry in ondispose', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      const entry1 = locals.navigation.currentEntry!;
+      let ondisposeThis: any;
+      entry1.ondispose = function () {
+        ondisposeThis = this;
+      };
+
+      await locals.navigation.navigate('/page2', {history: 'replace'}).finished;
+      expect(ondisposeThis).toBe(entry1);
+    });
+  });
+
+  describe('navigateEvent cleanup', () => {
+    it('clears navigateEvent after unintercepted navigation completes', async () => {
+      await locals.navigation.navigate('/page').finished;
+      expect((locals.navigation as any).navigateEvent).toBeNull();
+    });
+
+    it('clears navigateEvent after unintercepted traversal completes', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      await locals.navigation.navigate('/page2').finished;
+      await locals.navigation.back().finished;
+      expect((locals.navigation as any).navigateEvent).toBeNull();
+    });
+  });
+
+  describe('post-commit handlers error handling', () => {
+    it('handles multiple rejecting post-commit handlers without unhandled rejections', async () => {
+      locals.pendingInterceptOptions.push({
+        handler: () => {
+          throw new Error('first post-commit failure');
+        },
+      });
+      locals.navigation.addEventListener('navigate', (e: Event) => {
+        (e as FakeNavigateEvent).intercept({
+          handler: () => Promise.reject(new Error('second post-commit failure')),
+        });
+      });
+
+      await expectAsync(locals.navigation.navigate('/page').finished).toBeRejected();
+    });
+  });
+
+  describe('FakeNavigation.prototype.dispose()', () => {
+    it('cleans up navigation state and event handlers', () => {
+      locals.navigation.onnavigate = () => {};
+      locals.navigation.oncurrententrychange = () => {};
+      locals.navigation.onnavigatesuccess = () => {};
+      locals.navigation.onnavigateerror = () => {};
+
+      locals.navigation.dispose();
+
+      expect(locals.navigation.isDisposed()).toBeTrue();
+      expect((locals.navigation as any).navigateEvent).toBeNull();
+      expect(locals.navigation.transition).toBeNull();
+      expect(locals.navigation.onnavigate).toBeNull();
+      expect(locals.navigation.oncurrententrychange).toBeNull();
+      expect(locals.navigation.onnavigatesuccess).toBeNull();
+      expect(locals.navigation.onnavigateerror).toBeNull();
+    });
+
+    it('settles the in-flight navigation promises', async () => {
+      let releaseHandler!: () => void;
+      locals.pendingInterceptOptions.push({
+        handler: () => new Promise<void>((resolve) => (releaseHandler = resolve)),
+      });
+      const result = locals.navigation.navigate('/page');
+      await result.committed;
+
+      locals.navigation.dispose();
+
+      // Without this, `finished` would stay pending forever and hang teardown.
+      await expectAsync(result.finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'AbortError'}),
+      );
+      releaseHandler();
+    });
+
+    it('settles queued traversal promises', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      await locals.navigation.navigate('/page2').finished;
+      // `back()` queues the traversal behind a timeout, so it is still pending here.
+      const traversal = locals.navigation.back();
+
+      locals.navigation.dispose();
+
+      await expectAsync(traversal.committed).toBeRejectedWith(
+        jasmine.objectContaining({name: 'AbortError'}),
+      );
+      await expectAsync(traversal.finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'AbortError'}),
+      );
+    });
+
+    it('does not run a queued traversal after disposal', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      await locals.navigation.navigate('/page2').finished;
+      const urlBeforeDispose = locals.navigation.currentEntry.url;
+      const traversal = locals.navigation.back();
+      traversal.finished.catch(() => {});
+
+      locals.navigation.dispose();
+      // Give the queued timeout a chance to fire.
+      await timeout(10);
+
+      expect(locals.navigation.currentEntry.url).toBe(urlBeforeDispose);
+      expect(locals.popStateEvents.length).toBe(0);
+    });
+  });
+
+  describe('navigate() URL validation', () => {
+    it('rejects with SyntaxError for an unparseable URL', async () => {
+      const result = locals.navigation.navigate('http://:invalid-url');
+
+      await expectAsync(result.committed).toBeRejectedWith(
+        jasmine.objectContaining({name: 'SyntaxError'}),
+      );
+      await expectAsync(result.finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'SyntaxError'}),
+      );
+      expect(locals.navigateEvents.length).toBe(0);
+    });
+
+    it('rejects with NotSupportedError for a javascript: URL', async () => {
+      const result = locals.navigation.navigate('javascript:alert(1)');
+
+      await expectAsync(result.committed).toBeRejectedWith(
+        jasmine.objectContaining({name: 'NotSupportedError'}),
+      );
+      await expectAsync(result.finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'NotSupportedError'}),
+      );
+      expect(locals.navigateEvents.length).toBe(0);
+    });
+  });
+
+  describe('reload() state serialization', () => {
+    it('rejects with DataCloneError for non-cloneable state', async () => {
+      const result = locals.navigation.reload({state: {fn: () => {}}});
+
+      await expectAsync(result.committed).toBeRejectedWith(
+        jasmine.objectContaining({name: 'DataCloneError'}),
+      );
+      await expectAsync(result.finished).toBeRejectedWith(
+        jasmine.objectContaining({name: 'DataCloneError'}),
+      );
+    });
+
+    it('clones state synchronously', async () => {
+      const state = {counter: 1};
+      const result = locals.navigation.reload({state});
+      state.counter = 2;
+
+      await result.finished;
+      expect((locals.navigation.currentEntry.getState() as any).counter).toBe(1);
+    });
+  });
+
+  describe('redirect() history option', () => {
+    /** Redirects the next navigation and resolves with the resulting navigationType. */
+    const redirectNextNavigation = async (
+      from: string,
+      options?: Parameters<NavigationPrecommitController['redirect']>[1],
+    ) => {
+      let navigationTypeAfterRedirect: string | undefined;
+      locals.pendingInterceptOptions.push({
+        precommitHandler: (controller) => {
+          controller.redirect('/redirected', options);
+          navigationTypeAfterRedirect =
+            locals.navigateEvents[locals.navigateEvents.length - 1].navigationType;
+        },
+      });
+      await locals.navigation.navigate(from).finished;
+      return navigationTypeAfterRedirect;
+    };
+
+    it("leaves navigationType unchanged for history: 'auto'", async () => {
+      // The spec only reassigns navigationType for 'push' and 'replace'; 'auto' (the WebIDL
+      // default) must not turn a push into a replace.
+      expect(await redirectNextNavigation('/page', {history: 'auto'})).toBe('push');
+      expect(locals.navigation.entries().length).toBe(2);
+    });
+
+    it('leaves navigationType unchanged when history is omitted', async () => {
+      expect(await redirectNextNavigation('/page')).toBe('push');
+      expect(locals.navigation.entries().length).toBe(2);
+    });
+
+    it("sets navigationType to 'replace' for history: 'replace'", async () => {
+      expect(await redirectNextNavigation('/page', {history: 'replace'})).toBe('replace');
+      expect(locals.navigation.entries().length).toBe(1);
+    });
+
+    it("keeps navigationType 'push' for history: 'push'", async () => {
+      expect(await redirectNextNavigation('/page', {history: 'push'})).toBe('push');
+      expect(locals.navigation.entries().length).toBe(2);
+    });
+  });
+
+  describe('redirect() URL rewrite check', () => {
+    /** Runs `redirect(url)` during a navigation and returns the thrown error, if any. */
+    const redirectTo = async (url: string) => {
+      let caughtError: any = null;
+      locals.pendingInterceptOptions.push({
+        precommitHandler: (controller) => {
+          try {
+            controller.redirect(url);
+          } catch (e) {
+            caughtError = e;
+          }
+        },
+      });
+      await locals.navigation.navigate('/page').finished;
+      return caughtError;
+    };
+
+    it('resolves a relative URL against the current entry', async () => {
+      expect(await redirectTo('/redirected?a=1#frag')).toBeNull();
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/redirected?a=1#frag');
+    });
+
+    it('allows a same-origin URL with a different path and query', async () => {
+      expect(await redirectTo('https://test.com/elsewhere?q=2')).toBeNull();
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/elsewhere?q=2');
+    });
+
+    it('throws SecurityError for a different host', async () => {
+      expect((await redirectTo('https://evil.com/'))?.name).toBe('SecurityError');
+    });
+
+    it('throws SecurityError for a different port', async () => {
+      expect((await redirectTo('https://test.com:8443/page'))?.name).toBe('SecurityError');
+    });
+
+    it('throws SecurityError for a different scheme', async () => {
+      expect((await redirectTo('http://test.com/page'))?.name).toBe('SecurityError');
+    });
+
+    it('throws SecurityError for a javascript: URL', async () => {
+      expect((await redirectTo('javascript:alert(1)'))?.name).toBe('SecurityError');
+    });
+
+    it('throws SecurityError when credentials are added', async () => {
+      expect((await redirectTo('https://user:pass@test.com/page'))?.name).toBe('SecurityError');
+    });
+
+    it('throws SyntaxError for an unparseable URL', async () => {
+      expect((await redirectTo('http://:invalid-url'))?.name).toBe('SyntaxError');
+    });
+  });
+
+  describe('pushState()/replaceState() validation', () => {
+    it('throws DataCloneError synchronously for non-cloneable data', () => {
+      expect(() => {
+        locals.navigation.pushState({fn: () => {}}, '', '/page');
+      }).toThrowMatching((e: any) => e.name === 'DataCloneError');
+      expect(() => {
+        locals.navigation.replaceState({fn: () => {}}, '', '/page');
+      }).toThrowMatching((e: any) => e.name === 'DataCloneError');
+      // The failed calls must not have navigated.
+      expect(locals.navigateEvents.length).toBe(0);
+    });
+
+    it('serializes data before parsing the URL', () => {
+      // Both arguments are invalid; the spec serializes first, so DataCloneError wins.
+      expect(() => {
+        locals.navigation.pushState({fn: () => {}}, '', 'http://:invalid-url');
+      }).toThrowMatching((e: any) => e.name === 'DataCloneError');
+    });
+
+    it('throws SecurityError for an unparseable URL', () => {
+      expect(() => {
+        locals.navigation.pushState(null, '', 'http://:invalid-url');
+      }).toThrowMatching((e: any) => e.name === 'SecurityError');
+    });
+
+    it('throws SecurityError for a cross-origin URL', () => {
+      expect(() => {
+        locals.navigation.pushState(null, '', 'https://evil.com/');
+      }).toThrowMatching((e: any) => e.name === 'SecurityError');
+      expect(() => {
+        locals.navigation.replaceState(null, '', 'https://evil.com/');
+      }).toThrowMatching((e: any) => e.name === 'SecurityError');
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
+    });
+
+    it('allows a same-origin URL with a different path', () => {
+      locals.navigation.pushState({a: 1}, '', '/elsewhere');
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/elsewhere');
+    });
+
+    it('clones data synchronously', () => {
+      const data = {counter: 1};
+      locals.navigation.pushState(data, '', '/page');
+      data.counter = 2;
+      expect((locals.navigation.currentEntry.getHistoryState() as any).counter).toBe(1);
+    });
+  });
+
+  describe('history.state identity', () => {
+    it('returns the same object from repeated getHistoryState() reads', () => {
+      locals.navigation.pushState({a: 1}, '', '/page');
+      const entry = locals.navigation.currentEntry;
+
+      // `history.state` is deserialized once per navigation, so its identity is stable.
+      expect(entry.getHistoryState()).toBe(entry.getHistoryState());
+    });
+
+    it('gives popstate the same state object as the current entry', async () => {
+      locals.navigation.pushState({a: 1}, '', '/page1');
+      locals.navigation.pushState({b: 2}, '', '/page2');
+      locals.popStateEvents.length = 0;
+
+      await locals.navigation.back().finished;
+
+      expect(locals.popStateEvents.length).toBe(1);
+      expect(locals.popStateEvents[0].state).toBe(locals.navigation.currentEntry.getHistoryState());
+      expect(locals.popStateEvents[0].state).toEqual({a: 1});
+    });
+
+    it('still returns a fresh object from repeated getState() reads', async () => {
+      await locals.navigation.navigate('/page', {state: {a: 1}}).finished;
+      const entry = locals.navigation.currentEntry;
+
+      // Unlike `history.state`, `getState()` is defined as a StructuredDeserialize per call.
+      expect(entry.getState()).not.toBe(entry.getState());
+      expect(entry.getState()).toEqual({a: 1});
+    });
+  });
+
+  describe('setInitialEntryForTesting()', () => {
+    it('clones the provided state', () => {
+      const navigation = new FakeNavigation(document, 'https://test.com');
+      const historyState = {a: 1};
+      const state = {b: 2};
+
+      navigation.setInitialEntryForTesting('https://test.com', {historyState, state});
+      historyState.a = 99;
+      state.b = 99;
+
+      expect(navigation.currentEntry.getHistoryState()).toEqual({a: 1});
+      expect(navigation.currentEntry.getState()).toEqual({b: 2});
+      navigation.dispose();
+    });
+
+    it('throws DataCloneError for non-cloneable state', () => {
+      const navigation = new FakeNavigation(document, 'https://test.com');
+      expect(() => {
+        navigation.setInitialEntryForTesting('https://test.com', {
+          historyState: null,
+          state: {fn: () => {}},
+        });
+      }).toThrowMatching((e: any) => e.name === 'DataCloneError');
+      navigation.dispose();
+    });
+  });
+
+  describe('IDL event handler attributes', () => {
+    it('returns the assigned handler from the getter', () => {
+      const handler = () => {};
+      locals.navigation.onnavigate = handler;
+      expect(locals.navigation.onnavigate).toBe(handler);
+
+      locals.navigation.onnavigate = null;
+      expect(locals.navigation.onnavigate).toBeNull();
+    });
+
+    it('replaces the previous handler rather than adding a second one', async () => {
+      let firstCalls = 0;
+      let secondCalls = 0;
+      locals.navigation.onnavigate = () => firstCalls++;
+      locals.navigation.onnavigate = () => secondCalls++;
+
+      await locals.navigation.navigate('/page').finished;
+
+      expect(firstCalls).toBe(0);
+      expect(secondCalls).toBe(1);
+    });
+
+    it('removes the listener when set to null', async () => {
+      let calls = 0;
+      locals.navigation.onnavigate = () => calls++;
+      locals.navigation.onnavigate = null;
+
+      await locals.navigation.navigate('/page').finished;
+
+      expect(calls).toBe(0);
+    });
+
+    it('does not affect listeners added with addEventListener', async () => {
+      let attributeCalls = 0;
+      let listenerCalls = 0;
+      locals.navigation.addEventListener('navigate', () => listenerCalls++);
+      locals.navigation.onnavigate = () => attributeCalls++;
+      locals.navigation.onnavigate = null;
+
+      await locals.navigation.navigate('/page').finished;
+
+      expect(attributeCalls).toBe(0);
+      expect(listenerCalls).toBe(1);
+    });
+  });
+
+  describe('FakeNavigationHistoryEntry disposal', () => {
+    it('releases listeners registered before disposal', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      const entry = locals.navigation.currentEntry;
+      let disposeCalls = 0;
+      entry.addEventListener('dispose', () => disposeCalls++);
+
+      await locals.navigation.navigate('/page2', {history: 'replace'}).finished;
+      expect(disposeCalls).toBe(1);
+
+      // The listener was released, so a second dispatch must not reach it.
+      entry.dispatchEvent(new Event('dispose'));
+      expect(disposeCalls).toBe(1);
+    });
+
+    it('can still dispatch events after disposal', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      const entry = locals.navigation.currentEntry;
+
+      await locals.navigation.navigate('/page2', {history: 'replace'}).finished;
+
+      // The replacement EventTarget must be built the same way as the original, otherwise
+      // dispatching a document-created Event throws in Domino based environments.
+      expect(() => entry.dispatchEvent(new Event('dispose'))).not.toThrow();
+      let calls = 0;
+      entry.addEventListener('dispose', () => calls++);
+      entry.dispatchEvent(new Event('dispose'));
+      expect(calls).toBe(1);
+    });
+
+    it('keeps ondispose readable after disposal', async () => {
+      await locals.navigation.navigate('/page1').finished;
+      const entry = locals.navigation.currentEntry;
+      const handler = () => {};
+      entry.ondispose = handler;
+
+      await locals.navigation.navigate('/page2', {history: 'replace'}).finished;
+
+      // A browser does not reset the IDL attribute when the entry is disposed.
+      expect(entry.ondispose).toBe(handler);
+      expect(() => (entry.ondispose = null)).not.toThrow();
     });
   });
 });
