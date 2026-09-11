@@ -1282,7 +1282,9 @@ describe('platform-server partial hydration integration', () => {
             selector: 'app',
             template: `
               <main>
-                @defer (hydrate on viewport({rootMargin: '123px', threshold: 0.5})) {
+                @defer (
+                  hydrate on viewport({rootMargin: '123px', scrollMargin: '456px', threshold: 0.5})
+                ) {
                   <article>defer block rendered!</article>
                 } @placeholder {
                   <span>Outer block placeholder</span>
@@ -1300,7 +1302,7 @@ describe('platform-server partial hydration integration', () => {
           const ssrContents = getAppContents(html);
 
           expect(ssrContents).toContain(
-            '"__nghDeferData__":{"d0":{"r":1,"s":2,"t":[{"trigger":2,"intersectionObserverOptions":{"rootMargin":"123px","threshold":0.5}}]}}',
+            '"__nghDeferData__":{"d0":{"r":1,"s":2,"t":[{"trigger":2,"intersectionObserverOptions":{"rootMargin":"123px","scrollMargin":"456px","threshold":0.5}}]}}',
           );
 
           // Internal cleanup before we do server->client transition in this test.
@@ -1316,7 +1318,11 @@ describe('platform-server partial hydration integration', () => {
           await appRef.whenStable();
 
           expect(activeObservers.length).toBe(1);
-          expect(activeObservers[0].options).toEqual({rootMargin: '123px', threshold: 0.5});
+          expect(activeObservers[0].options).toEqual({
+            rootMargin: '123px',
+            scrollMargin: '456px',
+            threshold: 0.5,
+          });
         });
 
         it('should create an IntersectionObserver for a nested routed viewport block', async () => {
