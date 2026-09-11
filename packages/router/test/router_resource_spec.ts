@@ -619,6 +619,62 @@ describe('Router resources integration', () => {
       expect(resourceRef.isLoading()).toBe(false);
     });
 
+    it('should maintain frozen state on rollback when navigation fails until rollback reload completes', async () => {
+      let loaderDeferred = promiseWithResolvers<string>();
+
+      const {harness, router} = await setupRouter([
+        {
+          path: 'test/:id',
+          component: TargetCmp,
+          resources: (ctx) => ({
+            data: resource({
+              defaultValue: 'default-value',
+              params: () => ctx.params(),
+              loader: async ({params}) => {
+                if (params['id'] === '2') {
+                  throw new Error('Failed navigation');
+                }
+                return loaderDeferred.promise;
+              },
+            }),
+          }),
+        },
+      ]);
+
+      // Initial navigation to /test/1
+      const nav1 = harness.navigateByUrl('/test/1');
+      await timeout();
+      loaderDeferred.resolve('loaded-1');
+      await nav1;
+      await harness.fixture.whenStable();
+
+      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
+        ?.resources?.['data'] as any;
+      expect(resourceRef.value()).toBe('loaded-1');
+      expect(resourceRef.isLoading()).toBe(false);
+
+      // Prepare a new deferred for the reload of id '1' when /test/2 fails and rolls back to /test/1
+      loaderDeferred = promiseWithResolvers<string>();
+
+      const nav2 = harness.navigateByUrl('/test/2').catch(() => {});
+      await nav2;
+      await timeout();
+
+      // The rollback reload for /test/1 is pending (loaderDeferred is not resolved yet).
+      // The resource should remain frozen: value is 'loaded-1', isLoading is false, status is 'resolved'
+      expect(resourceRef.isLoading()).toBe(false);
+      expect(resourceRef.value()).toBe('loaded-1');
+      expect(resourceRef.status()).toBe('resolved');
+
+      // Now resolve the rollback reload
+      loaderDeferred.resolve('reloaded-1');
+      await harness.fixture.whenStable();
+
+      // After settling, resource is unfrozen and has the new value
+      expect(resourceRef.isLoading()).toBe(false);
+      expect(resourceRef.value()).toBe('reloaded-1');
+    });
+
     it('should abort previous request via AbortSignal when a new navigation comes in', async () => {
       const deferred = promiseWithResolvers<{name: string}>();
       let aborted = false;

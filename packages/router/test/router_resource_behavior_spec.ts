@@ -466,24 +466,30 @@ describe('routerResource behavior tests', () => {
       expect(wrapped.value()).toBe('updated-2');
     });
 
-    it('should complete rollback recovery when a resource has a value even while remaining in loading state', async () => {
+    it('should maintain frozen state during rollback recovery until loading completes', async () => {
       const valueSignal = signal<string | undefined>('initial');
+      const statusSignal = signal<ResourceStatus>('resolved');
+      const isLoadingSignal = signal<boolean>(false);
       const hasValueSignal = signal<boolean>(true);
 
       const customResource: Resource<string> = {
         value: valueSignal as Signal<string>,
-        status: signal<ResourceStatus>('loading').asReadonly(),
-        isLoading: signal(true).asReadonly(),
+        status: statusSignal.asReadonly(),
+        isLoading: isLoadingSignal.asReadonly(),
         hasValue: (() => hasValueSignal()) as any,
         error: signal<Error | undefined>(undefined).asReadonly(),
-        snapshot: computed(() => ({
-          status: 'loading' as const,
-          value: valueSignal()!,
-        })),
+        snapshot: computed(
+          () =>
+            ({
+              status: statusSignal(),
+              value: valueSignal()!,
+            }) as any,
+        ),
       };
 
       const wrapped = TestBed.runInInjectionContext(() => routerResource(customResource));
       expect(wrapped.value()).toBe('initial');
+      expect(wrapped.isLoading()).toBe(false);
 
       // Start navigation to route2 with a failing guard to trigger rollback
       guardPromise2 = Promise.reject(new Error('Navigation failed'));
@@ -492,21 +498,33 @@ describe('routerResource behavior tests', () => {
       } catch {}
 
       // Reset value and set hasValue to false to simulate recovery fetch starting
+      statusSignal.set('loading');
+      isLoadingSignal.set(true);
       valueSignal.set(undefined);
       hasValueSignal.set(false);
       await timeout();
 
       // Wrapped snapshot should be frozen at 'initial' during recovery loading
       expect(wrapped.value()).toBe('initial');
+      expect(wrapped.isLoading()).toBe(false);
 
       // Resource receives value while isLoading() remains true and status is 'loading'
       valueSignal.set('recovered-stream-1');
       hasValueSignal.set(true);
+      await timeout();
+
+      // Rollback recovery remains frozen because isLoading is still true
+      expect(wrapped.value()).toBe('initial');
+      expect(wrapped.isLoading()).toBe(false);
+
+      // Loading completes
+      statusSignal.set('resolved');
+      isLoadingSignal.set(false);
       await harness.fixture.whenStable();
 
-      // Rollback recovery unfreezes because hasValue is true despite isLoading being true
+      // Rollback recovery unfreezes because loading is complete
       expect(wrapped.value()).toBe('recovered-stream-1');
-      expect(wrapped.isLoading()).toBe(true);
+      expect(wrapped.isLoading()).toBe(false);
     });
   });
 });
