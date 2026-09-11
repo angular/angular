@@ -33,10 +33,10 @@ import {
   NavigationCancellationCode,
 } from './events';
 
-export const BLOCKING_SYMBOL: unique symbol = Symbol(
+export const BLOCKING_SYMBOL: unique symbol = /* @__PURE__ */ Symbol(
   typeof ngDevMode === 'undefined' || ngDevMode ? '__isBlocking' : '',
 );
-export const SOURCE_RESOURCE_SYMBOL: unique symbol = Symbol(
+export const SOURCE_RESOURCE_SYMBOL: unique symbol = /* @__PURE__ */ Symbol(
   typeof ngDevMode === 'undefined' || ngDevMode ? '__sourceResource' : '',
 );
 
