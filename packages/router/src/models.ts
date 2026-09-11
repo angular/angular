@@ -734,6 +734,7 @@ export interface Route {
    *
    */
   canDeactivate?: Array<CanDeactivateFn<any> | DeprecatedGuard>;
+  // 3p-only-start
   /**
    * An array of `CanLoadFn` or DI tokens used to look up `CanLoad()`
    * handlers, in order to determine if the current user is allowed to
@@ -744,6 +745,7 @@ export interface Route {
    * @deprecated Use `canMatch` instead
    */
   canLoad?: Array<CanLoadFn | DeprecatedGuard>;
+  // 3p-only-end
   /**
    * Additional developer-defined data provided to the component via
    * `ActivatedRoute`. By default, no additional data is passed.
