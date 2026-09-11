@@ -30,6 +30,7 @@ import { Resource } from '@angular/core';
 import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 import { Type } from '@angular/core';
+import { WritableResource } from '@angular/core';
 import { WritableSignal } from '@angular/core';
 
 // @public
