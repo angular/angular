@@ -37925,6 +37925,7 @@ var yellow = styleText.bind(null, "yellow");
 var bold = styleText.bind(null, "bold");
 var blue = styleText.bind(null, "blue");
 var underline = styleText.bind(null, "underline");
+var magenta = styleText.bind(null, "magenta");
 var Log = class {
 };
 Log.info = buildLogLevelFunction(() => console.info, LogLevel.INFO, null);
@@ -65331,7 +65332,7 @@ content-type/dist/index.js:
 @octokit/graphql/dist-bundle/index.js:
   (* v8 ignore if -- @preserve *)
 
-@angular/ng-dev/bundles/chunk-H3MYIWGQ.mjs:
+@angular/ng-dev/bundles/chunk-3TPHGSIP.mjs:
   (*! Bundled license information:
   
   yargs-parser/build/lib/string-utils.js:
@@ -65372,7 +65373,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-U7PAJR6D.mjs:
+@angular/ng-dev/bundles/chunk-7IRT7ROC.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
