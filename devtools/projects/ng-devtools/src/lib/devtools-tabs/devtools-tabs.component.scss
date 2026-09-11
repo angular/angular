@@ -63,7 +63,13 @@ $toolbar-height: 30px;
 
     .frame-selector {
       width: 100px;
+      flex: 0 0 100px;
       margin: 0 0.5rem;
+    }
+
+    ng-horizontal-scroller {
+      --horizontal-scroller-height: #{$toolbar-height};
+      flex: 1;
     }
 
     .tab-link {
@@ -74,7 +80,6 @@ $toolbar-height: 30px;
     }
 
     .settings {
-      flex: 1;
       display: flex;
       justify-content: end;
       align-items: center;
