@@ -41,13 +41,15 @@ import {
   RelativeLinkCmp,
   RootCmp,
   SimpleCmp,
+  provideTestRouter,
 } from './integration_helpers';
 
 export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigation') {
   function setup(routes?: Routes): Router {
     TestBed.configureTestingModule({
       providers: [
-        provideRouter(
+        provideTestRouter(
+          browserAPI,
           routes ?? [
             {
               path: '**',
@@ -62,7 +64,9 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
   describe('navigation', () => {
     it('should navigate to the current URL', async () => {
       TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({onSameUrlNavigation: 'reload'}))],
+        providers: [
+          provideTestRouter(browserAPI, [], withRouterConfig({onSameUrlNavigation: 'reload'})),
+        ],
       });
       const router = TestBed.inject(Router);
       router.resetConfig([
@@ -89,7 +93,9 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
 
     it('should override default onSameUrlNavigation with extras (ignore => reload)', async () => {
       TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({onSameUrlNavigation: 'ignore'}))],
+        providers: [
+          provideTestRouter(browserAPI, [], withRouterConfig({onSameUrlNavigation: 'ignore'})),
+        ],
       });
       const router = TestBed.inject(Router);
       router.resetConfig([
@@ -119,7 +125,9 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
 
     it('should override default onSameUrlNavigation with extras (reload => ignore)', async () => {
       TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({onSameUrlNavigation: 'reload'}))],
+        providers: [
+          provideTestRouter(browserAPI, [], withRouterConfig({onSameUrlNavigation: 'reload'})),
+        ],
       });
       const router = TestBed.inject(Router);
       router.resetConfig([
