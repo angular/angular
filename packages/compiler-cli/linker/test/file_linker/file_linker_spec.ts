@@ -179,6 +179,64 @@ describe('FileLinker', () => {
     });
   });
 
+  describe('host binding validation', () => {
+    function linkDeclarationWithHost(
+      declarationFn: 'ɵɵngDeclareDirective' | 'ɵɵngDeclareComponent',
+      host: string,
+      version = '0.0.0-PLACEHOLDER',
+    ): string {
+      const componentMetadata =
+        declarationFn === 'ɵɵngDeclareComponent' ? `template: '', isInline: true,` : '';
+      const source = `
+        ${declarationFn}({
+          minVersion: '0.0.0-PLACEHOLDER',
+          version: '${version}',
+          ngImport: core,
+          type: SomeType,
+          ${componentMetadata}
+          host: ${host}
+        });
+      `;
+
+      const {fileLinker} = createFileLinker(source);
+      const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+      const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+        .expression as ts.CallExpression;
+      const result = fileLinker.linkPartialDeclaration(
+        declarationFn,
+        [call.arguments[0]],
+        new MockDeclarationScope(),
+      );
+      return ts.createPrinter().printNode(ts.EmitHint.Unspecified, result, sourceFile);
+    }
+
+    it('should reject event attribute host bindings in partial directives', () => {
+      expect(() =>
+        linkDeclarationWithHost(
+          'ɵɵngDeclareDirective',
+          `{properties: {'attr.onmouseover': 'this.pay'}}`,
+          '22.0.6',
+        ),
+      ).toThrowError(/Binding to event attribute 'onmouseover' is disallowed for security reasons/);
+    });
+
+    it('should reject case-insensitive event property host bindings in partial components', () => {
+      expect(() =>
+        linkDeclarationWithHost('ɵɵngDeclareComponent', `{properties: {OnError: 'this.pay'}}`),
+      ).toThrowError(/Binding to event property 'OnError' is disallowed for security reasons/);
+    });
+
+    it('should preserve legitimate host properties and listeners', () => {
+      const result = linkDeclarationWithHost(
+        'ɵɵngDeclareDirective',
+        `{properties: {'attr.title': 'this.title'}, listeners: {click: 'this.onClick($event)'}}`,
+      );
+
+      expect(result).toContain(`core.ɵɵattribute("title", ctx.title)`);
+      expect(result).toContain(`core.ɵɵlistener("click"`);
+    });
+  });
+
   describe('legacyOptionalChaining support', () => {
     function linkComponentWithTemplate(version: string, template: string): string {
       // Note that the `minVersion` is set to the placeholder,
