@@ -11,7 +11,7 @@ import {DevtoolsConfig} from '../../../../protocol';
 // Global config state instance
 let instance: DevtoolsConfigState;
 
-class DevtoolsConfigState implements DevtoolsConfig {
+class DevtoolsConfigState {
   private config: DevtoolsConfig = {
     performanceTrack: false,
     hydrationOverlays: false,
@@ -20,20 +20,9 @@ class DevtoolsConfigState implements DevtoolsConfig {
   };
   private readonly listeners = new Map<keyof DevtoolsConfig, ((v: any) => void)[]>();
 
-  get performanceTrack() {
-    return this.config.performanceTrack;
-  }
-
-  get hydrationOverlays() {
-    return this.config.hydrationOverlays;
-  }
-
-  get cdHighlighting() {
-    return this.config.cdHighlighting;
-  }
-
-  get cdDataStream() {
-    return this.config.cdDataStream;
+  /** Returns a snapshot of the current config. */
+  snapshot() {
+    return structuredClone(this.config);
   }
 
   set(cfg: Partial<DevtoolsConfig>) {

@@ -37,29 +37,33 @@ describe('config', () => {
   });
 
   it('should have all properties disabled by default', () => {
-    expect(config.performanceTrack).toBeFalse();
-    expect(config.hydrationOverlays).toBeFalse();
-    expect(config.cdHighlighting).toBeFalse();
-    expect(config.cdDataStream).toBeFalse();
+    const snapshot = config.snapshot();
+
+    expect(snapshot.performanceTrack).toBeFalse();
+    expect(snapshot.hydrationOverlays).toBeFalse();
+    expect(snapshot.cdHighlighting).toBeFalse();
+    expect(snapshot.cdDataStream).toBeFalse();
   });
 
   describe('set', () => {
     it('should update a single property without affecting the rest', () => {
       config.set({cdHighlighting: true});
+      const snapshot = config.snapshot();
 
-      expect(config.cdHighlighting).toBeTrue();
-      expect(config.performanceTrack).toBeFalse();
-      expect(config.hydrationOverlays).toBeFalse();
-      expect(config.cdDataStream).toBeFalse();
+      expect(snapshot.cdHighlighting).toBeTrue();
+      expect(snapshot.performanceTrack).toBeFalse();
+      expect(snapshot.hydrationOverlays).toBeFalse();
+      expect(snapshot.cdDataStream).toBeFalse();
     });
 
     it('should update multiple properties at once', () => {
       config.set({performanceTrack: true, cdDataStream: true});
+      const snapshot = config.snapshot();
 
-      expect(config.performanceTrack).toBeTrue();
-      expect(config.cdDataStream).toBeTrue();
-      expect(config.hydrationOverlays).toBeFalse();
-      expect(config.cdHighlighting).toBeFalse();
+      expect(snapshot.performanceTrack).toBeTrue();
+      expect(snapshot.cdDataStream).toBeTrue();
+      expect(snapshot.hydrationOverlays).toBeFalse();
+      expect(snapshot.cdHighlighting).toBeFalse();
     });
 
     it('should be a no-op for an empty config', () => {

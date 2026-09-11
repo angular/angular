@@ -90,12 +90,14 @@ export const subscribeToClientEvents = (
   const inspector: InspectorRef = {ref: null};
   setupLogging(config?.devtoolsDevMode ?? false);
 
-  loadCdDataStream(messageBus);
-  loadCdHighlighting();
-  loadHydrationOverlays();
-  loadPerformanceTrack();
+  const cleanUpFns: (() => void)[] = [
+    loadCdDataStream(messageBus),
+    loadCdHighlighting(),
+    loadHydrationOverlays(),
+    loadPerformanceTrack(),
+  ];
 
-  messageBus.on('shutdown', shutdownCallback(messageBus));
+  messageBus.on('shutdown', shutdownCallback(messageBus, cleanUpFns));
 
   messageBus.on('devtoolsShutdown', devtoolsShutdownCallback(inspector));
 
@@ -160,7 +162,10 @@ export const subscribeToClientEvents = (
 // Callback Definitions
 //
 
-const shutdownCallback = (messageBus: MessageBus<Events>) => () => {
+const shutdownCallback = (messageBus: MessageBus<Events>, cleanUpFns: (() => void)[]) => () => {
+  for (const fn of cleanUpFns) {
+    fn();
+  }
   messageBus.destroy();
 };
 

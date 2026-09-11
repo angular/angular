@@ -19,8 +19,8 @@ import {CdAnalyzer, CdData, getCdAnalyzer} from './analyzer';
 let cdAnalyzerUnsubscriber: (() => void) | undefined;
 let cdAnalyzerDispose: (() => void) | undefined;
 
-export function loadCdDataStream(messageBus: MessageBus<Events>) {
-  getConfig().onChange('cdDataStream', (enabled) => {
+export function loadCdDataStream(messageBus: MessageBus<Events>): () => void {
+  return getConfig().onChange('cdDataStream', (enabled) => {
     if (enabled) {
       const {analyzer, disposeFn} = getCdAnalyzer();
       cdAnalyzerDispose = disposeFn;

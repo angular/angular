@@ -25,8 +25,8 @@ import {CdAnalyzer, getCdAnalyzer} from './analyzer';
 let cdAnalyzerUnsubscriber: (() => void) | undefined;
 let cdAnalyzerDispose: (() => void) | undefined;
 
-export function loadCdHighlighting() {
-  getConfig().onChange('cdHighlighting', (enabled) => {
+export function loadCdHighlighting(): () => void {
+  return getConfig().onChange('cdHighlighting', (enabled) => {
     if (enabled) {
       const {analyzer, disposeFn} = getCdAnalyzer();
       cdAnalyzerDispose = disposeFn;
