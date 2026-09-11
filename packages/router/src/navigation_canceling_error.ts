@@ -26,15 +26,16 @@ export function redirectingNavigationError(
   urlSerializer: UrlSerializer,
   redirect: UrlTree | RedirectCommand,
 ): RedirectingNavigationCancelingError {
-  const {redirectTo, navigationBehaviorOptions} = isUrlTree(redirect)
-    ? {redirectTo: redirect, navigationBehaviorOptions: undefined}
-    : redirect;
+  const target = isUrlTree(redirect) ? redirect : redirect.redirectTo;
+  const url = isUrlTree(target) ? target : urlSerializer.parse(target);
   const error = navigationCancelingError(
-    ngDevMode && `Redirecting to "${urlSerializer.serialize(redirectTo)}"`,
+    ngDevMode && `Redirecting to "${urlSerializer.serialize(url)}"`,
     NavigationCancellationCode.Redirect,
   ) as RedirectingNavigationCancelingError;
-  error.url = redirectTo;
-  error.navigationBehaviorOptions = navigationBehaviorOptions;
+  error.url = url;
+  error.navigationBehaviorOptions = isUrlTree(redirect)
+    ? undefined
+    : redirect.navigationBehaviorOptions;
   return error;
 }
 
