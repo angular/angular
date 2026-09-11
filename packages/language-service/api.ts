@@ -428,6 +428,18 @@ export interface NgLanguageService extends ts.LanguageService {
   getTcb(fileName: string, position: number): GetTcbResponse | undefined;
 
   /**
+   * Gets the smart selection range (nested ranges used by the editor's
+   * "Expand/Shrink Selection" feature) at a position inside an Angular
+   * template, or `undefined` when the position is not in a template.
+   *
+   * Unlike `getSmartSelectionRange` (inherited from `ts.LanguageService`),
+   * this never falls back to TypeScript's own smart selection: the editor is
+   * expected to query every registered selection range provider and merge the
+   * resulting containment trees.
+   */
+  getTemplateSelectionRange(fileName: string, position: number): ts.SelectionRange | undefined;
+
+  /**
    * Gets linked editing ranges for synchronized editing of HTML tag pairs.
    *
    * When the cursor is on an element tag name, returns both the opening and closing

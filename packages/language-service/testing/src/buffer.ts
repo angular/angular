@@ -123,6 +123,10 @@ export class OpenBuffer {
     return this.ngLS.getOutliningSpans(this.scriptInfo.fileName);
   }
 
+  getTemplateSelectionRange() {
+    return this.ngLS.getTemplateSelectionRange(this.scriptInfo.fileName, this._cursor);
+  }
+
   getTemplateLocationForComponent() {
     return this.ngLS.getTemplateLocationForComponent(this.scriptInfo.fileName, this._cursor);
   }
