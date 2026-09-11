@@ -110,12 +110,22 @@ export class RegistrationComponent {
 }
 ```
 
-A field is considered "empty" when:
+A field is considered "empty" when its value is one of the following, and non-empty for every other
+value — including `0` and the empty array `[]`:
 
-| Condition                | Example |
-| ------------------------ | ------- |
-| Value is `null`          | `null`, |
-| Value is an empty string | `''`    |
+| Condition                | Example     | Where it comes from                                    |
+| ------------------------ | ----------- | ------------------------------------------------------ |
+| Value is `null`          | `null`      | A cleared control, or a model initialized to `null`    |
+| Value is `undefined`     | `undefined` | A model property left unset (models should avoid this) |
+| Value is an empty string | `''`        | A blank `<input type="text">`                          |
+| Value is `false`         | `false`     | An unchecked `<input type="checkbox">`                 |
+| Value is `NaN`           | `NaN`       | A blank or unparseable `<input type="number">`         |
+
+IMPORTANT: `false` and `NaN` are empty because they are the values native controls produce when left
+blank. A blank `<input type="number">` binds `NaN`, so the field reports a `required` error rather
+than a number-specific one — [`min()`](#min-and-max) and [`max()`](#min-and-max) skip `NaN`
+entirely. If you want a blank number field to read as empty without relying on `NaN`, initialize the
+model to `null` instead of `0`; see [Designing your form model](guide/forms/signals/designing-your-form-model).
 
 For conditional requirements, use the `when` option:
 
@@ -130,7 +140,7 @@ registrationForm = form(this.registrationModel, (schemaPath) => {
 
 The validation rule only runs when the `when` function returns `true`.
 
-Note: `required` treats an empty array as present (valid), so use [`minLength()`](#minlength-and-maxlength) to enforce a minimum number of array items; it treats `false` as missing (invalid), matching `<input type="checkbox" required>`.
+Note: `required` treats an empty array as present (valid), so use [`minLength()`](#minlength-and-maxlength) to enforce a minimum number of array items.
 
 ### email()
 
@@ -505,9 +515,7 @@ interface User {
   lastName: string;
 }
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserFormComponent {
   readonly userModel = model<User>({
     firstName: '',
@@ -750,9 +758,7 @@ import {Component, computed, signal} from '@angular/core';
 import {form, FormField, validateStandardSchema} from '@angular/forms/signals';
 import z from 'zod';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class DynamicSchema {
   model = signal({document: '', type: 'dni'});
 

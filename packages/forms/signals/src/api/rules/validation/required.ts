@@ -17,6 +17,16 @@ import {requiredError} from './validation_errors';
  * This function can only be called on any type of path.
  * In addition to binding a validator, this function adds `REQUIRED` property to the field.
  *
+ * A value is considered empty when it is `null`, `undefined`, the empty string `''`, `false`, or
+ * `NaN`. Every other value is considered non-empty, including `0` and the empty array `[]` — use
+ * [`minLength()`](api/forms/signals/minLength) to require a minimum number of items in an array.
+ *
+ * `false` and `NaN` are empty because they are the values native controls produce when left blank:
+ * an unchecked `<input type="checkbox">` binds `false`, and a blank or unparseable
+ * `<input type="number">` binds `NaN`. A blank number input therefore reports a `required` error
+ * rather than a number-specific one, since [`min()`](api/forms/signals/min) and
+ * [`max()`](api/forms/signals/max) skip `NaN`.
+ *
  * @param path Path of the field to validate
  * @param config Optional, allows providing any of the following options:
  *  - `message`: A user-facing message for the error.
