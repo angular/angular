@@ -51,6 +51,29 @@ export function createScript(
   return script;
 }
 
+/**
+ * Serializes a value to a JSON string that is safe to embed as a literal
+ * inside inline `<script>` content that gets built up via string
+ * concatenation (as opposed to being set as the sole `textContent` of a
+ * dedicated `<script type="application/json">`, which `TransferState` uses).
+ *
+ * Without this, a value containing `</script` (or other markup) could
+ * prematurely close the enclosing `<script>` element once the server-rendered
+ * DOM is serialized back to an HTML string, letting attacker-influenced
+ * content (e.g. a custom `APP_ID` provided per-request) inject arbitrary
+ * markup/script into the response.
+ *
+ * Mirrors the escaping performed by `TransferState.toJson()` in
+ * `packages/core/src/transfer_state.ts`.
+ */
+export function toInlineScriptJson(value: unknown): string {
+  // Escape `<` so a `</script>` sequence embedded in `value` cannot close the
+  // surrounding `<script>` tag when the document is serialized to a string.
+  // Escaping `/` additionally avoids crawlers misinterpreting embedded
+  // relative URLs.
+  return JSON.stringify(value).replace(/</g, '\\u003C').replace(/\//g, '\\u002F');
+}
+
 function warnIfStateTransferHappened(injector: Injector): void {
   const transferStateStatus = injector.get(TRANSFER_STATE_STATUS);
 
