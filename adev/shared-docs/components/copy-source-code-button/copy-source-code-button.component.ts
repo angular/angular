@@ -17,7 +17,6 @@ import {
 } from '@angular/core';
 import {IconComponent} from '../icon/icon.component';
 
-export const REMOVED_LINE_CLASS_NAME = '.line.remove';
 export const CONFIRMATION_DISPLAY_TIME_MS = 2000;
 
 @Component({
@@ -58,19 +57,16 @@ export class CopySourceCodeButton {
     this.showCopySuccess.set(false);
     this.showCopyFailure.set(false);
 
-    const removedLines: NodeList = codeElement.querySelectorAll(REMOVED_LINE_CLASS_NAME);
+    const lines = Array.from(codeElement.querySelectorAll('.line:not(.hidden)'));
 
-    if (removedLines.length) {
-      // Get only those lines which are not marked as removed
-      const formattedText = Array.from(codeElement.querySelectorAll('.line:not(.remove)'))
-        .map((line) => (line as HTMLDivElement).innerText)
-        .join('\n');
-
-      return formattedText.trim();
-    } else {
-      const text: string = codeElement.innerText || '';
-      return text.replace(/\n\n\n/g, ``).trim();
+    if (lines.length) {
+      return lines
+        .map((line) => line.textContent)
+        .join('\n')
+        .trim();
     }
+
+    return (codeElement.innerText || '').trim();
   }
 
   private showResult(messageState: WritableSignal<boolean>) {
