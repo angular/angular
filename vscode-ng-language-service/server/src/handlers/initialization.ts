@@ -20,6 +20,7 @@ export function onInitialize(session: Session, params: lsp.InitializeParams): ls
     capabilities: {
       foldingRangeProvider: true,
       documentSymbolProvider: true,
+      selectionRangeProvider: true,
       codeLensProvider: {resolveProvider: true},
       textDocumentSync: lsp.TextDocumentSyncKind.Incremental,
       completionProvider: {
