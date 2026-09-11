@@ -23,10 +23,12 @@ import {
   CHILD_TAIL,
   CONTEXT,
   ENVIRONMENT,
+  FLAGS,
   HEADER_OFFSET,
   HOST,
   INJECTOR,
   LView,
+  LViewFlags,
   NEXT,
   PARENT,
   RENDERER,
@@ -307,7 +309,9 @@ function recreateLView(
     // Creation pass for the new view.
     renderView(newTView, newLView, instance);
 
-    // Update pass for the new view.
+    // Consume the initial refresh flag before updating, as in normal change detection,
+    // so views dirtied during this pass (e.g. by an error boundary) can schedule a refresh.
+    newLView[FLAGS] &= ~LViewFlags.RefreshView;
     refreshView(newTView, newLView, newTView.template, instance);
   };
 
