@@ -25,8 +25,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/testbed/testbed-harness-environment.ts",
-        "startLine": 26,
-        "endLine": 29
+        "startLine": 25,
+        "endLine": 28
       }
     },
     {
@@ -45,8 +45,8 @@
       "members": [],
       "source": {
         "filePath": "/src/cdk/testing/testbed/testbed-harness-environment.ts",
-        "startLine": 37,
-        "endLine": 37
+        "startLine": 36,
+        "endLine": 36
       }
     },
     {
@@ -632,8 +632,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/testbed/testbed-harness-environment.ts",
-        "startLine": 93,
-        "endLine": 234
+        "startLine": 92,
+        "endLine": 232
       }
     },
     {
@@ -1779,14 +1779,6 @@
     [
       "flush",
       "@angular/core/testing"
-    ],
-    [
-      "TestBed",
-      "@angular/core/testing"
-    ],
-    [
-      "DestroyRef",
-      "@angular/core"
     ],
     [
       "TestbedHarnessEnvironmentOptions",
