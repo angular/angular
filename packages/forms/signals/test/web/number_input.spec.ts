@@ -98,6 +98,73 @@ describe('numeric inputs', () => {
       expect(input1.value).toBe('42');
       expect(input2.value).toBe('42');
     });
+
+    it('should preserve a negative decimal typed into a number input', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" step="0.01" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(null);
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      input.focus();
+
+      act(() => {
+        validityMonitor.setInputState(input, '-', true);
+      });
+
+      expect(fixture.componentInstance.f().value()).toBeNull();
+      expect(fixture.componentInstance.f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'parse'}),
+      ]);
+
+      act(() => {
+        validityMonitor.setInputState(input, '-0', false);
+      });
+
+      expect(fixture.componentInstance.f().value()).toBe(0);
+      expect(fixture.componentInstance.f().errors()).toEqual([]);
+      expect(input.value).toBe('-0');
+
+      act(() => {
+        validityMonitor.setInputState(input, '-0.5', false);
+      });
+
+      expect(fixture.componentInstance.f().value()).toBe(-0.5);
+      expect(input.value).toBe('-0.5');
+    });
+
+    it('should preserve fractional zeroes while editing a number input', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" step="0.01" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(null);
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      input.focus();
+
+      act(() => {
+        validityMonitor.setInputState(input, '1', false);
+      });
+      act(() => {
+        validityMonitor.setInputState(input, '1.0', false);
+      });
+      act(() => {
+        validityMonitor.setInputState(input, '1.00', false);
+      });
+
+      expect(fixture.componentInstance.f().value()).toBe(1);
+      expect(input.value).toBe('1.00');
+    });
   });
 
   describe('nullability', () => {
@@ -203,6 +270,82 @@ describe('text input with numeric model', () => {
 
     expect(fixture.componentInstance.f().value()).toBe(123);
     expect(fixture.componentInstance.f().errors()).toEqual([]);
+  });
+
+  it('should preserve a negative decimal typed into a text input with a numeric model', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(null);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.focus();
+
+    act(() => {
+      input.value = '-';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(fixture.componentInstance.f().value()).toBeNull();
+    expect(fixture.componentInstance.f().errors()).toEqual([
+      jasmine.objectContaining({kind: 'parse'}),
+    ]);
+    expect(input.value).toBe('-');
+
+    act(() => {
+      input.value = '-0';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(fixture.componentInstance.f().errors()).toEqual([]);
+    expect(input.value).toBe('-0');
+
+    act(() => {
+      input.value = '-0.5';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(fixture.componentInstance.f().value()).toBe(-0.5);
+    expect(input.value).toBe('-0.5');
+  });
+
+  it('should not parse non-decimal numeric text', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(42);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    act(() => {
+      input.value = '0b0101';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(fixture.componentInstance.f().value()).toBe(42);
+    expect(fixture.componentInstance.f().errors()).toEqual([
+      jasmine.objectContaining({kind: 'parse'}),
+    ]);
+
+    act(() => {
+      input.value = '0x22';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(fixture.componentInstance.f().value()).toBe(42);
+    expect(fixture.componentInstance.f().errors()).toEqual([
+      jasmine.objectContaining({kind: 'parse'}),
+    ]);
   });
 
   it('should produce a parse error when user types non-numeric text', () => {
