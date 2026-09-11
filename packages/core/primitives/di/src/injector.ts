@@ -18,18 +18,22 @@ export interface Injector {
  * - `undefined`: it is an error to call `inject`
  * - `null`: `inject` can be called but there is no injector (limp-mode).
  * - Injector instance: Use the injector for resolution.
+ *
+ * Safari 16-17 have a JIT bug where assigning to a module-level let/var can
+ * sometimes fail to write the value. We wrap in an array to keep a constant
+ * variable with a mutable internal value.
  */
-let _currentInjector: Injector | undefined | null = undefined;
+const _currentInjector: [Injector | undefined | null] = [undefined];
 
 export function getCurrentInjector(): Injector | undefined | null {
-  return _currentInjector;
+  return _currentInjector[0];
 }
 
 export function setCurrentInjector(
   injector: Injector | null | undefined,
 ): Injector | undefined | null {
-  const former = _currentInjector;
-  _currentInjector = injector;
+  const former = _currentInjector[0];
+  _currentInjector[0] = injector;
   return former;
 }
 
