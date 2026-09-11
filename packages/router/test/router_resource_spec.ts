@@ -14,9 +14,11 @@ import {
   inject,
   resource,
   Resource,
+  ResourceSnapshot,
   ResourceStatus,
   Signal,
   signal,
+  WritableResource,
   ɵpromiseWithResolvers as promiseWithResolvers,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
@@ -29,6 +31,7 @@ import {
   withRouterResources,
   nonBlocking,
   ActivatedRoute,
+  ResourceResult,
   Route,
   RouterFeatures,
 } from '@angular/router';
@@ -46,10 +49,6 @@ async function setupRouter(routes: Route[], ...features: RouterFeatures[]) {
   const router = TestBed.inject(Router);
   return {harness, router};
 }
-
-type ActivatedRouteInternal = ActivatedRoute & {
-  resources?: {[key: string]: Resource<unknown>};
-};
 
 @Component({template: ''})
 class TargetCmp {}
@@ -75,9 +74,8 @@ describe('Router resources integration', () => {
       await harness.fixture.whenStable();
       expect(loaderSpy).toHaveBeenCalled();
 
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
-      expect(resourceRef.value()).toBe('loaded');
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      expect(resourceRef?.value()).toBe('loaded');
     });
 
     it('should support async resource functions returning a Promise', async () => {
@@ -103,17 +101,17 @@ describe('Router resources integration', () => {
 
       expect(router.url).toBe('/test');
 
-      const route = router.routerState.root.firstChild as ActivatedRouteInternal;
-      const resourceRef = route?.resources?.['data'] as any;
+      const route = router.routerState.root.firstChild;
+      const resourceRef = route?.resources?.['data'];
       expect(resourceRef).toBeDefined();
-      expect(resourceRef.isLoading()).toBe(true);
-      expect(resourceRef.value()).toBeUndefined();
+      expect(resourceRef?.isLoading()).toBe(true);
+      expect(resourceRef?.value()).toBeUndefined();
 
       loaderDeferred.resolve('async loaded');
       await harness.fixture.whenStable();
 
-      expect(resourceRef.isLoading()).toBe(false);
-      expect(resourceRef.value()).toBe('async loaded');
+      expect(resourceRef?.isLoading()).toBe(false);
+      expect(resourceRef?.value()).toBe('async loaded');
     });
 
     it('should support async resource functions returning a Promise (blocking)', async () => {
@@ -132,10 +130,10 @@ describe('Router resources integration', () => {
       await harness.navigateByUrl('/test');
       await harness.fixture.whenStable();
 
-      const route = router.routerState.root.firstChild as ActivatedRouteInternal;
-      const resourceRef = route?.resources?.['data'] as any;
+      const route = router.routerState.root.firstChild;
+      const resourceRef = route?.resources?.['data'];
       expect(resourceRef).toBeDefined();
-      expect(resourceRef.value()).toBe('async loaded');
+      expect(resourceRef?.value()).toBe('async loaded');
     });
 
     it('should await blocking resource resolution even when resources function is async', async () => {
@@ -168,9 +166,9 @@ describe('Router resources integration', () => {
       await harness.fixture.whenStable();
 
       expect(router.url).toBe('/test');
-      const route = router.routerState.root.firstChild as ActivatedRouteInternal;
-      const resourceRef = route?.resources?.['data'] as any;
-      expect(resourceRef.value()).toBe('resolved data');
+      const route = router.routerState.root.firstChild;
+      const resourceRef = route?.resources?.['data'];
+      expect(resourceRef?.value()).toBe('resolved data');
     });
 
     it('should cleanly ignore resolution of async resource function if navigation was cancelled', async () => {
@@ -321,12 +319,8 @@ describe('Router resources integration', () => {
       const parentRoute = router.routerState.root.firstChild!;
       const componentlessRoute = parentRoute.firstChild!;
 
-      expect(
-        ((parentRoute as ActivatedRouteInternal).resources?.['parentData'] as any).value(),
-      ).toBe('parent');
-      expect(
-        ((componentlessRoute as ActivatedRouteInternal).resources?.['compData'] as any).value(),
-      ).toBe('comp');
+      expect(parentRoute.resources?.['parentData']?.value()).toBe('parent');
+      expect(componentlessRoute.resources?.['compData']?.value()).toBe('comp');
     });
 
     it('should throw an error in dev mode if resource function does not return a Resource', async () => {
@@ -335,7 +329,8 @@ describe('Router resources integration', () => {
           path: 'test',
           component: TargetCmp,
           resources: () => ({
-            data: {foo: 'bar'} as any,
+            data: {foo: 'bar'} as unknown as Resource<unknown> &
+              Pick<WritableResource<unknown>, 'reload'>,
           }),
         },
       ]);
@@ -445,15 +440,14 @@ describe('Router resources integration', () => {
       await harness.fixture.whenStable();
       expect(router.url).toBe('/test/1');
 
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
-      expect(resourceRef.value()).toBe('1');
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      expect(resourceRef?.value()).toBe('1');
 
       // 2. Resource encounters an error while on the route
       shouldError = true;
-      resourceRef.reload();
+      resourceRef?.reload();
       await harness.fixture.whenStable();
-      expect(resourceRef.status()).toBe('error');
+      expect(resourceRef?.status()).toBe('error');
 
       // 3. Retry the identical route with same parameters using onSameUrlNavigation: 'reload'
       shouldError = false;
@@ -461,8 +455,8 @@ describe('Router resources integration', () => {
       await harness.fixture.whenStable();
 
       expect(router.url).toBe('/test/1'); // Succeeded!
-      expect(resourceRef.status()).toBe('resolved');
-      expect(resourceRef.value()).toBe('1');
+      expect(resourceRef?.status()).toBe('resolved');
+      expect(resourceRef?.value()).toBe('1');
     });
 
     it('should block navigation when a resource has a defaultValue until loading is complete', async () => {
@@ -492,10 +486,9 @@ describe('Router resources integration', () => {
 
       expect(router.url).toBe('/test');
 
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['user'] as any;
-      expect(resourceRef.value()).toBe('loaded-user');
-      expect(resourceRef.isLoading()).toBe(false);
+      const resourceRef = router.routerState.root.firstChild?.resources?.['user'];
+      expect(resourceRef?.value()).toBe('loaded-user');
+      expect(resourceRef?.isLoading()).toBe(false);
     });
 
     it('should complete navigation and expose error for non-blocking resources', async () => {
@@ -520,10 +513,9 @@ describe('Router resources integration', () => {
       await harness.fixture.whenStable();
 
       expect(router.url).toBe('/test');
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
-      expect(resourceRef.error()?.message).toBe('Non-blocking error');
-      expect(resourceRef.isLoading()).toBe(false);
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      expect(resourceRef?.error()?.message).toBe('Non-blocking error');
+      expect(resourceRef?.isLoading()).toBe(false);
     });
 
     it('should complete navigation when a resource is idle and not loading', async () => {
@@ -545,10 +537,9 @@ describe('Router resources integration', () => {
       await harness.fixture.whenStable();
 
       expect(router.url).toBe('/search');
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
-      expect(resourceRef.status()).toBe('idle');
-      expect(resourceRef.value()).toBeUndefined();
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      expect(resourceRef?.status()).toBe('idle');
+      expect(resourceRef?.value()).toBeUndefined();
     });
   });
 
@@ -572,11 +563,10 @@ describe('Router resources integration', () => {
 
       await harness.navigateByUrl('/test');
       await harness.fixture.whenStable();
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
 
       await timeout(20);
-      expect(resourceRef.value()).toEqual({name: 'user 123'});
+      expect(resourceRef?.value()).toEqual({name: 'user 123'});
     });
 
     it('should rollback parameter state on failed navigation', async () => {
@@ -605,9 +595,8 @@ describe('Router resources integration', () => {
 
       await harness.navigateByUrl('/test/1');
       await harness.fixture.whenStable();
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
-      expect(resourceRef.value()).toBe('1');
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      expect(resourceRef?.value()).toBe('1');
 
       // Fail next navigation
       canActivate = false;
@@ -615,8 +604,8 @@ describe('Router resources integration', () => {
       await harness.fixture.whenStable();
 
       // The navigation is cancelled so the resource should retain the old value without loading flicker.
-      expect(resourceRef.value()).toBe('1');
-      expect(resourceRef.isLoading()).toBe(false);
+      expect(resourceRef?.value()).toBe('1');
+      expect(resourceRef?.isLoading()).toBe(false);
     });
 
     it('should abort previous request via AbortSignal when a new navigation comes in', async () => {
@@ -649,14 +638,13 @@ describe('Router resources integration', () => {
       await harness.fixture.whenStable();
       expect(aborted).toBe(true);
 
-      const userResource = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['user'] as any;
+      const userResource = router.routerState.root.firstChild?.resources?.['user'];
       expect(userResource?.value()).toEqual({name: 'user 2'});
 
       // Resolving the old promise should have no effect
       deferred.resolve({name: 'user 1'});
       await timeout(10);
-      expect(userResource.value()).toEqual({name: 'user 2'});
+      expect(userResource?.value()).toEqual({name: 'user 2'});
     });
 
     it('should correctly propagate parameter state when a pending navigation supersedes identically reused routes', async () => {
@@ -699,9 +687,8 @@ describe('Router resources integration', () => {
       await nav3;
       await harness.fixture.whenStable();
 
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
-      expect(resourceRef.value()).toBe('loaded-3');
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      expect(resourceRef?.value()).toBe('loaded-3');
     });
 
     it('should mask loading states during multi-step Guard UrlTree redirects', async () => {
@@ -730,10 +717,9 @@ describe('Router resources integration', () => {
       await harness.navigateByUrl('/target/1');
       await harness.fixture.whenStable();
 
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
-      expect(resourceRef.value()).toBe('1');
-      expect(resourceRef.isLoading()).toBe(false);
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      expect(resourceRef?.value()).toBe('1');
+      expect(resourceRef?.isLoading()).toBe(false);
 
       loader = promiseWithResolvers<string>();
 
@@ -742,15 +728,15 @@ describe('Router resources integration', () => {
       await timeout(50);
 
       // UI is still masked looking like '1'
-      expect(resourceRef.isLoading()).toBe(false);
-      expect(resourceRef.value()).toBe('1');
+      expect(resourceRef?.isLoading()).toBe(false);
+      expect(resourceRef?.value()).toBe('1');
 
       loader.resolve('3');
       await nav2;
       await harness.fixture.whenStable();
 
-      expect(resourceRef.isLoading()).toBe(false);
-      expect(resourceRef.value()).toBe('3');
+      expect(resourceRef?.isLoading()).toBe(false);
+      expect(resourceRef?.value()).toBe('3');
     });
 
     it('should be able to redirect from a blocking resource using a NavigationErrorHandler', async () => {
@@ -832,16 +818,15 @@ describe('Router resources integration', () => {
       const nav = harness.navigateByUrl('/rx/123');
       await timeout(5);
 
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
-      expect(resourceRef.isLoading()).toBe(true);
-      expect(resourceRef.value()).toBeUndefined();
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      expect(resourceRef?.isLoading()).toBe(true);
+      expect(resourceRef?.value()).toBeUndefined();
 
       await nav;
       await harness.fixture.whenStable();
 
-      expect(resourceRef.isLoading()).toBe(false);
-      expect(resourceRef.value()).toBe('rx loaded 123');
+      expect(resourceRef?.isLoading()).toBe(false);
+      expect(resourceRef?.value()).toBe('rx loaded 123');
     });
 
     it('should remain blocked when a resource emits a value while remaining in loading state until loading completes', async () => {
@@ -850,19 +835,19 @@ describe('Router resources integration', () => {
       const isLoadingSignal = signal<boolean>(true);
       const hasValueSignal = signal<boolean>(false);
 
-      const customResource: Resource<string> = {
-        value: valueSignal as Signal<string>,
+      const customResource: Resource<string | undefined> & {reload(): boolean} = {
+        value: valueSignal.asReadonly(),
         status: statusSignal.asReadonly(),
         isLoading: isLoadingSignal.asReadonly(),
-        hasValue: (() => hasValueSignal()) as any,
+        hasValue(): this is Resource<string> {
+          return hasValueSignal();
+        },
         error: signal<Error | undefined>(undefined).asReadonly(),
-        snapshot: computed(
-          () =>
-            ({
-              status: statusSignal(),
-              value: valueSignal()!,
-            }) as any,
-        ),
+        snapshot: computed<ResourceSnapshot<string | undefined>>(() => ({
+          status: statusSignal() as 'loading' | 'resolved',
+          value: valueSignal(),
+        })),
+        reload: () => false,
       };
 
       const {harness, router} = await setupRouter([
@@ -895,10 +880,9 @@ describe('Router resources integration', () => {
       await nav;
 
       expect(router.url).toBe('/stream');
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
-      expect(resourceRef.value()).toBe('streamed-1');
-      expect(resourceRef.isLoading()).toBe(false);
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      expect(resourceRef?.value()).toBe('streamed-1');
+      expect(resourceRef?.isLoading()).toBe(false);
     });
 
     describe('dependent resources', () => {
@@ -937,10 +921,9 @@ describe('Router resources integration', () => {
         await harness.fixture.whenStable();
 
         expect(router.url).toBe('/user-team');
-        const resources = (router.routerState.root.firstChild as ActivatedRouteInternal)
-          ?.resources as any;
-        expect(resources['user'].value()).toEqual({id: 'u1', teamId: 't42'});
-        expect(resources['team'].value()).toEqual({id: 't42', name: 'Angular Team'});
+        const resources = router.routerState.root.firstChild?.resources;
+        expect(resources?.['user']?.value()).toEqual({id: 'u1', teamId: 't42'});
+        expect(resources?.['team']?.value()).toEqual({id: 't42', name: 'Angular Team'});
       });
 
       it('should support child route resource depending on shared signal updated by parent resource', async () => {
@@ -1001,13 +984,108 @@ describe('Router resources integration', () => {
         await harness.fixture.whenStable();
 
         expect(router.url).toBe('/user/1/details');
-        const parentRoute = router.routerState.root.firstChild as ActivatedRouteInternal;
-        const childRoute = parentRoute.firstChild as ActivatedRouteInternal;
+        const parentRoute = router.routerState.root.firstChild!;
+        const childRoute = parentRoute.firstChild!;
         expect(parentRoute.resources?.['user'].value()).toEqual({id: '1', role: 'admin'});
         expect(childRoute.resources?.['details'].value()).toEqual({
           role: 'admin',
           permissions: ['read', 'write'],
         });
+      });
+    });
+
+    describe('Resource reloading', () => {
+      it('should expose reload() on ActivatedRoute.resources without requiring a cast', async () => {
+        let fetchCount = 0;
+        @Component({
+          template: '<p>{{ userResource?.value() }}</p>',
+        })
+        class UserProfileCmp {
+          userResource = inject(ActivatedRoute).resources?.['user'];
+
+          refreshUser(): boolean | undefined {
+            return this.userResource?.reload();
+          }
+        }
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'user',
+            component: UserProfileCmp,
+            resources: () => ({
+              user: resource({
+                loader: async () => `User #${++fetchCount}`,
+              }),
+            }),
+          },
+        ]);
+
+        const instance = await harness.navigateByUrl('/user', UserProfileCmp);
+        await harness.fixture.whenStable();
+
+        expect(fetchCount).toBe(1);
+        expect(instance.userResource?.value()).toBe('User #1');
+
+        const reloaded = instance.refreshUser();
+        expect(reloaded).toBe(true);
+        await harness.fixture.whenStable();
+
+        expect(fetchCount).toBe(2);
+        expect(instance.userResource?.value()).toBe('User #2');
+      });
+
+      it('should type resources on ActivatedRoute with reload()', async () => {
+        const {harness, router} = await setupRouter([
+          {
+            path: 'test',
+            component: TargetCmp,
+            resources: () => ({
+              data: resource({loader: async () => 'hello'}),
+            }),
+          },
+        ]);
+
+        await harness.navigateByUrl('/test');
+        await harness.fixture.whenStable();
+
+        const route = router.routerState.root.firstChild!;
+        const dataResource = route.resources?.['data'];
+        expect(dataResource?.reload()).toBe(true);
+        expect(dataResource?.value()).toBe('hello');
+      });
+
+      it('should return false from reload() when the underlying resource does not support reload', async () => {
+        const customResource: Resource<string> = {
+          value: signal('static').asReadonly(),
+          status: signal<ResourceStatus>('resolved').asReadonly(),
+          isLoading: signal(false).asReadonly(),
+          hasValue(): this is Resource<string> {
+            return true;
+          },
+          error: signal<Error | undefined>(undefined).asReadonly(),
+          snapshot: signal<ResourceSnapshot<string>>({
+            status: 'resolved',
+            value: 'static',
+          }),
+        };
+
+        const {harness, router} = await setupRouter([
+          {
+            path: 'custom',
+            component: TargetCmp,
+            resources: () =>
+              ({
+                custom: customResource,
+              }) as unknown as ResourceResult,
+          },
+        ]);
+
+        await harness.navigateByUrl('/custom');
+        await harness.fixture.whenStable();
+
+        const route = router.routerState.root.firstChild!;
+        expect(route.resources?.['custom']?.reload()).toBe(false);
+        expect(route.resources?.['custom']?.value()).toBe('static');
       });
     });
   });

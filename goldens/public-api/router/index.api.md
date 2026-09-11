@@ -32,6 +32,7 @@ import { SimpleChanges } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
+import { WritableResource } from '@angular/core';
 
 // @public
 export class ActivatedRoute {
@@ -675,7 +676,7 @@ export interface ResourceContext {
 }
 
 // @public
-export type ResourceResult = Record<string, Resource<unknown>>;
+export type ResourceResult = Record<string, Resource<unknown> & Pick<WritableResource<unknown>, 'reload'>>;
 
 // @public
 export interface Route {
