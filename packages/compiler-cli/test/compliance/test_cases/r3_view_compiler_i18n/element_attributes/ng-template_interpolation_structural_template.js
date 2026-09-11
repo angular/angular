@@ -13,7 +13,7 @@ function MyComponent_0_Template(rf, ctx) {
   consts: () => {
 	__i18nMsg__('Hello {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ name }}'}}, {})
 	return [
-	  ["title", $i18n_0$],
+	  ["title", $i18n_0$, 1],
 	  [__AttributeMarker.Template__, "ngIf"],
 	  [__AttributeMarker.Bindings__, "title"]
 	];
@@ -26,4 +26,3 @@ function MyComponent_0_Template(rf, ctx) {
 	  $r3$.ɵɵproperty("ngIf", true);
 	}
   },
-  

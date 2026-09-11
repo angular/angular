@@ -157,7 +157,7 @@ export function ɵɵi18n(index: number, messageIndex: number, subTemplateIndex?:
 export function ɵɵi18nAttributes(index: number, attrsIndex: number): void {
   const tView = getTView();
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  const attrs = getConstant<string[]>(tView.consts, attrsIndex)!;
+  const attrs = getConstant<Array<string | number>>(tView.consts, attrsIndex)!;
   i18nAttributesFirstPass(tView, index + HEADER_OFFSET, attrs);
 }
 

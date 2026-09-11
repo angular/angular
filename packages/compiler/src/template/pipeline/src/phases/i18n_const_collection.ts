@@ -151,8 +151,8 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
   }
 
   // Step Three: Serialize I18nAttributes configurations into the const array. Each I18nAttributes
-  // instruction has a config array, which contains k-v pairs describing each binding name, and the
-  // i18n variable that provides the value.
+  // instruction has a config array, which contains the binding name, the i18n variable that
+  // provides the value, and the number of source expressions for that binding.
 
   for (const unit of job.units) {
     for (const elem of unit.create) {
@@ -172,6 +172,11 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
           );
         }
 
+        const bindingCounts = new Map<ir.XrefId, number>();
+        for (const i18nExpr of i18nExpressions) {
+          bindingCounts.set(i18nExpr.context, (bindingCounts.get(i18nExpr.context) ?? 0) + 1);
+        }
+
         // Find expressions for all the unique property names, removing duplicates.
         const seenPropertyNames = new Set<string>();
         i18nExpressions = i18nExpressions.filter((i18nExpr) => {
@@ -185,7 +190,11 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
           if (i18nExprValue === undefined) {
             throw new Error("AssertionError: Could not find i18n expression's value");
           }
-          return [o.literal(i18nExpr.name), i18nExprValue];
+          return [
+            o.literal(i18nExpr.name),
+            i18nExprValue,
+            o.literal(bindingCounts.get(i18nExpr.context)!),
+          ];
         });
 
         i18nAttributes.i18nAttributesConfig = job.addConst(
