@@ -14,8 +14,8 @@ import {getConfig} from '../config/config';
 
 type Method = keyof LifecycleProfile | 'changeDetection' | string;
 
-export function loadPerformanceTrack() {
-  getConfig().onChange('performanceTrack', (enabled: boolean) => {
+export function loadPerformanceTrack(): () => void {
+  return getConfig().onChange('performanceTrack', (enabled: boolean) => {
     if (enabled) {
       getProfiler().subscribe(timingHooks);
     } else {

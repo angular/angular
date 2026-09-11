@@ -26,8 +26,8 @@ import {runOutsideAngular} from '../shared/utils/general';
 let hydrationOverlaysEnabled = false;
 let profilerSubs: Subscription | undefined;
 
-export function loadHydrationOverlays() {
-  getConfig().onChange('hydrationOverlays', (enabled) => {
+export function loadHydrationOverlays(): () => void {
+  return getConfig().onChange('hydrationOverlays', (enabled) => {
     if (enabled) {
       enableHydrationOverlays();
     } else {
