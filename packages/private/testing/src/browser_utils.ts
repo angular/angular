@@ -9,6 +9,11 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {NgZone} from '@angular/core';
 
+/** Waits for callbacks queued for the next animation frame to run. */
+export function nextAnimationFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
 export function dispatchEvent(element: any, eventType: any): Event {
   const evt: Event = getDOM().getDefaultDocument().createEvent('Event');
   evt.initEvent(eventType, true, true);
