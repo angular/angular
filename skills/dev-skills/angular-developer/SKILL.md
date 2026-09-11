@@ -50,6 +50,7 @@ When working with Angular components, consult the following references based on 
 - **Outputs**: Signal-based outputs and custom event best practices. Read [outputs.md](references/outputs.md)
 - **Host Elements**: Host bindings and attribute injection. Read [host-elements.md](references/host-elements.md)
 - **Naming Conventions**: Modern Angular v20+ naming style ("Intent over Role") for files, components, services, directives, pipes, and models. Read [naming-conventions.md](references/naming-conventions.md)
+- **View Queries and Content Projection**: Signal-based queries (viewChild, contentChild) and content projection with fallback content. Read [queries-and-projection.md](references/queries-and-projection.md)
 
 If you require deeper documentation not found in the references above, read the documentation at `https://angular.dev/guide/components`.
 
