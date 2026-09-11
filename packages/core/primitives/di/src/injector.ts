@@ -8,6 +8,7 @@
 
 import {Constructor, InjectionToken} from './injection_token';
 import {NotFound} from './not_found';
+import {get, make, set, Store} from './store';
 
 export interface Injector {
   retrieve<T>(token: InjectionToken<T>, options?: unknown): T | NotFound;
@@ -19,18 +20,16 @@ export interface Injector {
  * - `null`: `inject` can be called but there is no injector (limp-mode).
  * - Injector instance: Use the injector for resolution.
  */
-let _currentInjector: Injector | undefined | null = undefined;
+const _currentInjector: Store<Injector | undefined | null> = make(undefined);
 
 export function getCurrentInjector(): Injector | undefined | null {
-  return _currentInjector;
+  return get(_currentInjector);
 }
 
 export function setCurrentInjector(
   injector: Injector | null | undefined,
 ): Injector | undefined | null {
-  const former = _currentInjector;
-  _currentInjector = injector;
-  return former;
+  return set(_currentInjector, injector);
 }
 
 export function inject<T>(token: InjectionToken<T> | Constructor<T>): T;

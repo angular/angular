@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {get, make, set, Store} from './store';
+
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.
 declare const ngDevMode: boolean | undefined;
@@ -15,8 +17,8 @@ declare const ngDevMode: boolean | undefined;
  *
  * Change this via `setActiveConsumer`.
  */
-let activeConsumer: ReactiveNode | null = null;
-let inNotificationPhase = false;
+const activeConsumer: Store<ReactiveNode | null> = make(null);
+const inNotificationPhase: Store<boolean> = make(false);
 
 export type Version = number & {__brand: 'Version'};
 
@@ -40,17 +42,15 @@ let postProducerCreatedFn: ReactiveHookFn | null = null;
 export const SIGNAL: unique symbol = /* @__PURE__ */ Symbol('SIGNAL');
 
 export function setActiveConsumer(consumer: ReactiveNode | null): ReactiveNode | null {
-  const prev = activeConsumer;
-  activeConsumer = consumer;
-  return prev;
+  return set(activeConsumer, consumer);
 }
 
 export function getActiveConsumer(): ReactiveNode | null {
-  return activeConsumer;
+  return get(activeConsumer);
 }
 
 export function isInNotificationPhase(): boolean {
-  return inNotificationPhase;
+  return get(inNotificationPhase);
 }
 
 export interface Reactive {
@@ -210,7 +210,7 @@ export interface ReactiveNode {
  * Called by implementations when a producer's signal is read.
  */
 export function producerAccessed(node: ReactiveNode): void {
-  if (inNotificationPhase) {
+  if (get(inNotificationPhase)) {
     throw new Error(
       typeof ngDevMode !== 'undefined' && ngDevMode
         ? `Assertion error: signal read during notification phase`
@@ -218,14 +218,15 @@ export function producerAccessed(node: ReactiveNode): void {
     );
   }
 
-  if (activeConsumer === null) {
+  const consumer = get(activeConsumer);
+  if (consumer === null) {
     // Accessed outside of a reactive context, so nothing to record.
     return;
   }
 
-  activeConsumer.consumerOnSignalRead(node);
+  consumer.consumerOnSignalRead(node);
 
-  const prevProducerLink = activeConsumer.producersTail;
+  const prevProducerLink = consumer.producersTail;
 
   // If the last producer we accessed is the same as the current one, we can skip adding a new
   // link
@@ -234,7 +235,7 @@ export function producerAccessed(node: ReactiveNode): void {
   }
 
   let nextProducerLink: ReactiveLink | undefined = undefined;
-  const isRecomputing = activeConsumer.recomputing;
+  const isRecomputing = consumer.recomputing;
   if (isRecomputing) {
     // If we're incrementally rebuilding the producers list, we want to check if the next producer
     // in the list is the same as the one we're trying to add.
@@ -242,11 +243,11 @@ export function producerAccessed(node: ReactiveNode): void {
     // If the previous producer is defined, then the next producer is just the one that follows it.
     // Otherwise, we should check the head of the producers list (the first node that we accessed the last time this consumer was run).
     nextProducerLink =
-      prevProducerLink !== undefined ? prevProducerLink.nextProducer : activeConsumer.producers;
+      prevProducerLink !== undefined ? prevProducerLink.nextProducer : consumer.producers;
     if (nextProducerLink !== undefined && nextProducerLink.producer === node) {
       // If the next producer is the same as the one we're trying to add, we can just update the
       // last read version, update the tail of the producers list of this rerun, and return.
-      activeConsumer.producersTail = nextProducerLink;
+      consumer.producersTail = nextProducerLink;
       nextProducerLink.lastReadVersion = node.version;
       nextProducerLink.knownValidAtEpoch = epoch;
       return;
@@ -259,17 +260,17 @@ export function producerAccessed(node: ReactiveNode): void {
   // link. This can short circuit the creation of a new link in the case where the consumer reads alternating ReactiveNodes
   if (
     prevConsumerLink !== undefined &&
-    prevConsumerLink.consumer === activeConsumer &&
+    prevConsumerLink.consumer === consumer &&
     (!isRecomputing || prevConsumerLink.knownValidAtEpoch === epoch)
   ) {
     return;
   }
 
   // If we got here, it means that we need to create a new link between the producer and the consumer.
-  const isLive = consumerIsLive(activeConsumer);
+  const isLive = consumerIsLive(consumer);
   const newLink: ReactiveLink = {
     producer: node,
-    consumer: activeConsumer,
+    consumer: consumer,
     // instead of eagerly destroying the previous link, we delay until we've finished recomputing
     // the producers list, so that we can destroy all of the old links at once.
     nextProducer: nextProducerLink,
@@ -282,11 +283,11 @@ export function producerAccessed(node: ReactiveNode): void {
     lastReadVersion: node.version,
     nextConsumer: undefined,
   };
-  activeConsumer.producersTail = newLink;
+  consumer.producersTail = newLink;
   if (prevProducerLink !== undefined) {
     prevProducerLink.nextProducer = newLink;
   } else {
-    activeConsumer.producers = newLink;
+    consumer.producers = newLink;
   }
 
   if (isLive) {
@@ -342,8 +343,7 @@ export function producerNotifyConsumers(node: ReactiveNode): void {
   }
 
   // Prevent signal reads when we're updating the graph
-  const prev = inNotificationPhase;
-  inNotificationPhase = true;
+  const prev = set(inNotificationPhase, true);
   try {
     for (
       let link: ReactiveLink | undefined = node.consumers;
@@ -356,7 +356,7 @@ export function producerNotifyConsumers(node: ReactiveNode): void {
       }
     }
   } finally {
-    inNotificationPhase = prev;
+    set(inNotificationPhase, prev);
   }
 }
 
@@ -365,7 +365,7 @@ export function producerNotifyConsumers(node: ReactiveNode): void {
  * based on the current consumer context.
  */
 export function producerUpdatesAllowed(): boolean {
-  return activeConsumer?.consumerAllowSignalWrites !== false;
+  return get(activeConsumer)?.consumerAllowSignalWrites !== false;
 }
 
 export function consumerMarkDirty(node: ReactiveNode): void {
