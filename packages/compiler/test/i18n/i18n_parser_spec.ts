@@ -147,6 +147,17 @@ describe('I18nParser', () => {
         [[`[before, <ph name="TEST"> exp //i18n(ph='teSt') </ph>, after]`], 'm', 'd', ''],
       ]);
     });
+
+    it('should not backtrack on an unterminated placeholder annotation', () => {
+      // A `//i18n(ph=...` annotation that never closes must fall back to the default
+      // INTERPOLATION placeholder quickly instead of hanging while extracting the name.
+      const expression = '//' + 'i18n(ph='.repeat(200);
+      const start = Date.now();
+      expect(_humanizeMessages(`<div i18n="m|d">before{{ ${expression} }}after</div>`)).toEqual([
+        [[`[before, <ph name="INTERPOLATION"> ${expression} </ph>, after]`], 'm', 'd', ''],
+      ]);
+      expect(Date.now() - start).toBeLessThan(2000);
+    });
   });
 
   describe('blocks', () => {
