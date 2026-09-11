@@ -21,6 +21,24 @@ import {LocalSymbol} from './references';
 
 const EVENT_PARAMETER = '$event';
 
+/**
+ * Matches combined key event names handled by KeyEventsPlugin,
+ * such as `keydown.enter` or `keyup.control.shift.a`.
+ */
+const KEY_EVENT_NAME_RE = /^(keydown|keyup)\..+$/i;
+
+/**
+ * Returns the DOM event name used for `$event` type inference.
+ *
+ * Combined key events aren't real DOM events, so they aren't present
+ * in HTMLElementEventMap. Use the underlying event instead to infer
+ * KeyboardEvent.
+ */
+function domEventNameForTypeInference(eventName: string): string {
+  const match = KEY_EVENT_NAME_RE.exec(eventName);
+  return match ? match[1].toLowerCase() : eventName;
+}
+
 const enum EventParamType {
   /* Generates code to infer the type of `$event` based on how the listener is registered. */
   Infer,
@@ -232,7 +250,9 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
           domEventAssertion,
         );
         const call = new TcbExpr(
-          `${propertyAccess.print()}(${TcbExpr.quoteAndEscape(output.name)}, ${handler.print()})`,
+          `${propertyAccess.print()}(${TcbExpr.quoteAndEscape(
+            domEventNameForTypeInference(output.name),
+          )}, ${handler.print()})`,
         );
         call.addParseSpanInfo(output.sourceSpan);
         this.scope.addStatement(call);
