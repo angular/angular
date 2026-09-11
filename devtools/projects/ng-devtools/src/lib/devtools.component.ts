@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, effect, inject, OnDestroy, signal} from '@angular/core';
+import {Component, computed, effect, inject, Injector, OnDestroy, signal} from '@angular/core';
 import {Events, MessageBus} from '../../../protocol';
 import {interval} from 'rxjs';
 
@@ -63,6 +63,7 @@ export class DevToolsComponent implements OnDestroy {
   private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
   private readonly frameManager = inject(FrameManager);
   private readonly settings = inject(Settings);
+  private readonly injector = inject(Injector);
 
   readonly angularStatus = signal(AngularStatus.UNKNOWN);
 
@@ -101,9 +102,9 @@ export class DevToolsComponent implements OnDestroy {
       if (supportedApis) {
         this.supportedApis.init(supportedApis);
       }
-    });
 
-    this.syncBackendWithSettings();
+      this.syncBackendWithSettings();
+    });
   }
 
   inspectFrame(frame: Frame) {
@@ -115,38 +116,18 @@ export class DevToolsComponent implements OnDestroy {
   }
 
   private syncBackendWithSettings() {
-    // Keep BE in sync with the performance track setting.
-    effect(() => {
-      if (this.settings.performanceTrack()) {
-        this.messageBus.emit('enablePerformanceTrack');
-      } else {
-        this.messageBus.emit('disablePerformanceTrack');
-      }
-    });
-
-    // Keep BE in sync with hydration visualization.
-    effect(() => {
-      if (this.settings.showHydrationOverlays()) {
-        this.messageBus.emit('enableHydrationOverlays');
-      } else {
-        this.messageBus.emit('disableHydrationOverlays');
-      }
-    });
-
-    effect(() => {
-      if (this.settings.highlightChangeDetection()) {
-        this.messageBus.emit('enableCdHighlighting');
-      } else {
-        this.messageBus.emit('disableCdHighlighting');
-      }
-    });
-
-    effect(() => {
-      if (this.settings.showCdInExplorer()) {
-        this.messageBus.emit('enableCdDataStream');
-      } else {
-        this.messageBus.emit('disableCdDataStream');
-      }
-    });
+    effect(
+      () => {
+        this.messageBus.emit('setConfig', [
+          {
+            performanceTrack: this.settings.performanceTrack(),
+            hydrationOverlays: this.settings.showHydrationOverlays(),
+            cdHighlighting: this.settings.highlightChangeDetection(),
+            cdDataStream: this.settings.showCdInExplorer(),
+          },
+        ]);
+      },
+      {injector: this.injector},
+    );
   }
 }
