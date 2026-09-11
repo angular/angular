@@ -391,8 +391,10 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
   /**
    * Value of the `srcset` attribute if set on the host `<img>` element.
-   * This input is exclusively read to assert that `srcset` is not set in conflict
-   * with `ngSrcset` and that images don't start to load until a lazy loading strategy is set.
+   * This input is read to assert that `srcset` is not set in conflict with `ngSrcset` and that
+   * images don't start to load until a lazy loading strategy is set. When `disableOptimizedSrcset`
+   * is set, this value is also written back to the host element's `srcset` attribute (otherwise a
+   * `[srcset]` binding would be captured by this input and never reach the DOM).
    * @internal
    */
   @Input() srcset?: string;
@@ -692,6 +694,10 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
     if (rewrittenSrcset) {
       this.setHostAttribute('srcset', rewrittenSrcset);
+    } else if (this.disableOptimizedSrcset && this.srcset) {
+      // A `[srcset]` binding is captured by the `srcset` input rather than reaching the DOM. When
+      // the user opted out of optimized srcset generation, pass their value through unchanged.
+      this.setHostAttribute('srcset', this.srcset);
     }
     return rewrittenSrcset;
   }
