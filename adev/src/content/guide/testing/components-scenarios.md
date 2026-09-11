@@ -783,9 +783,7 @@ The component has to _subscribe_ to the `ActivatedRoute.paramMap` observable and
 ```ts
 constructor() {
   // get hero when `id` param changes
-  this.route.paramMap
-    .pipe(takeUntilDestroyed())
-    .subscribe((pmap) => this.getHero(pmap.get('id')));
+  this.route.paramMap.subscribe((pmap) => this.getHero(pmap.get('id')));
 }
 ```
 
