@@ -78,7 +78,7 @@
     "karma-jasmine": "5.1.0",
     "karma-jasmine-html-reporter": "2.3.0",
     "marked": "18.0.11",
-    "mermaid": "11.17.2",
+    "mermaid": "12.0.0",
     "ngx-progressbar": "14.0.0",
     "playwright-core": "1.62.1",
     "preact": "10.29.8",
