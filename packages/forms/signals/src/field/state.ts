@@ -138,6 +138,16 @@ export class FieldNodeState {
   );
 
   /**
+   * Whether validation should be forced for this field even though it is disabled or readonly.
+   *
+   * A field forces validation if the schema contains logic that directly set `validate: true`
+   * on a `disabled()` or `readonly()` rule.
+   */
+  readonly forceValidate: Signal<boolean> = computed(() =>
+    this.node.logicNode.logic.forceValidate.compute(this.node.context),
+  );
+
+  /**
    * Whether this field is considered hidden.
    *
    * A field is considered hidden if one of the following is true:
