@@ -13,7 +13,7 @@ import {appConfig} from './app.config';
 const serverConfig: ApplicationConfig = {
   providers: [
     provideServerRendering(
-      {maxResponseBodySize: 2 * 1024 * 1024},
+      {maxResponseBodySize: 4 * 1024 * 1024},
       withRoutes([{path: '**', renderMode: RenderMode.Prerender}]),
     ),
   ],
