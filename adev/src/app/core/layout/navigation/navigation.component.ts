@@ -28,6 +28,7 @@ import {ANGULAR_LINKS} from '../../constants/links';
 import {PAGE_PREFIX} from '../../constants/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
+import {angieSrcFromSearch} from '../../utils/angie.utils';
 
 type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
@@ -55,6 +56,8 @@ export class Navigation {
 
   // We can't use the ActivatedRouter queryParams as we're outside the router outlet
   protected readonly isUwu = 'location' in globalThis ? location.search.includes('uwu') : false;
+  protected readonly angieSrc =
+    'location' in globalThis ? angieSrcFromSearch(location.search) : null;
 
   protected miniMenuPositions = [
     new ConnectionPositionPair(

@@ -11,6 +11,7 @@ import {A11yModule} from '@angular/cdk/a11y';
 import {afterRenderEffect, Component, ElementRef, inject, signal, viewChild} from '@angular/core';
 import {IconComponent, IS_SEARCH_DIALOG_OPEN, TextField} from '@angular/docs';
 import {ActivatedRoute, RouterLink} from '@angular/router';
+import {angieSrcFromParams} from '../../core/utils/angie.utils';
 import {ControlFlowExample} from './components/control-flow/control-flow-example';
 import {DeferrableViewsExample} from './components/deferrable-views-example/deferrable-views-example';
 import {HydrationExample} from './components/hydration-example/hydration-example';
@@ -46,6 +47,7 @@ const FEATURE_TAB = {
 export default class Home {
   private readonly activatedRoute = inject(ActivatedRoute);
   protected readonly isUwu = 'uwu' in this.activatedRoute.snapshot.queryParams;
+  protected readonly angieSrc = angieSrcFromParams(this.activatedRoute.snapshot.queryParams);
 
   protected readonly displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 
