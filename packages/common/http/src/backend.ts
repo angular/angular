@@ -31,6 +31,7 @@ import {
   interceptorChainEndFn,
   REQUESTS_CONTRIBUTE_TO_STABILITY,
 } from './interceptor';
+import {validateXsrfRequest} from './xsrf';
 
 /**
  * A final `HttpHandler` which will dispatch the request via browser HTTP APIs to a backend.
@@ -57,6 +58,7 @@ export function resetFetchBackendWarningFlag() {
 @Injectable({providedIn: 'root'})
 export class HttpInterceptorHandler implements HttpHandler {
   private chain: ChainedInterceptorFn<unknown> | null = null;
+  private isDelegating = false;
   private readonly pendingTasks = inject(PendingTasks);
   private readonly contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
 
@@ -100,11 +102,11 @@ export class HttpInterceptorHandler implements HttpHandler {
   handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {
     if (this.chain === null) {
       const parentHandler = this.injector.get(HttpHandler, null, {skipSelf: true});
-      const isDelegating = parentHandler !== null && this.backend === parentHandler;
+      this.isDelegating = parentHandler !== null && this.backend === parentHandler;
       const rootInterceptorFns = this.injector.get(
         HTTP_ROOT_INTERCEPTOR_FNS,
         [],
-        isDelegating ? {self: true} : undefined,
+        this.isDelegating ? {self: true} : undefined,
       );
       const dedupedInterceptorFns = Array.from(
         new Set([...this.injector.get(HTTP_INTERCEPTOR_FNS), ...rootInterceptorFns]),
@@ -122,15 +124,20 @@ export class HttpInterceptorHandler implements HttpHandler {
     }
 
     const chain = this.chain;
+    const finalHandlerFn = (downstreamRequest: HttpRequest<unknown>) => {
+      // Delegating handlers are not terminal: parent interceptors can still rewrite the request.
+      // Validate only immediately before the actual backend so the final request origin is used.
+      const request = this.isDelegating
+        ? downstreamRequest
+        : validateXsrfRequest(downstreamRequest);
+      return this.backend.handle(request);
+    };
+
     if (this.contributeToStability) {
       const removeTask = this.pendingTasks.add();
-      return untracked(() =>
-        chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)),
-      ).pipe(finalize(removeTask));
+      return untracked(() => chain(initialRequest, finalHandlerFn)).pipe(finalize(removeTask));
     } else {
-      return untracked(() =>
-        chain(initialRequest, (downstreamRequest) => this.backend.handle(downstreamRequest)),
-      );
+      return untracked(() => chain(initialRequest, finalHandlerFn));
     }
   }
 }

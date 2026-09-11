@@ -18,6 +18,7 @@ import {Observable} from 'rxjs';
 import {DOCUMENT, ɵparseCookieValue as parseCookieValue, PlatformLocation} from '../../index';
 
 import type {HttpHandler} from './backend';
+import {HttpContextToken} from './context';
 import type {HttpHandlerFn, HttpInterceptor} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
@@ -45,6 +46,60 @@ export const XSRF_HEADER_NAME = new InjectionToken<string>(
     factory: () => XSRF_DEFAULT_HEADER_NAME,
   },
 );
+
+type AddedXsrfHeader = Readonly<{name: string; value: string; origin: string}>;
+
+/**
+ * Tracks headers added by Angular's XSRF interceptor so that the terminal HTTP handler can
+ * remove only Angular-owned token values if a downstream interceptor changes the request origin.
+ */
+const XSRF_ADDED_HEADERS = new HttpContextToken<readonly AddedXsrfHeader[]>(() => []);
+
+function getSameOrigin(req: HttpRequest<unknown>): string | null {
+  try {
+    const locationHref = inject(PlatformLocation).href;
+    const {origin: locationOrigin} = new URL(locationHref);
+    // We can use `new URL` to normalize a relative URL like '//something.com' to
+    // 'https://something.com' in order to make consistent same-origin comparisons.
+    const {origin: requestOrigin} = new URL(req.url, locationOrigin);
+    return locationOrigin === requestOrigin ? locationOrigin : null;
+  } catch {
+    // Treat invalid URLs as non-same-origin. This matches the interceptor's existing behavior of
+    // not adding XSRF headers when the request origin cannot be validated.
+    return null;
+  }
+}
+
+function isRequestSameOrigin(req: HttpRequest<unknown>, origin: string): boolean {
+  try {
+    return new URL(req.url, origin).origin === origin;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Removes Angular-added XSRF header values when the final request is no longer same-origin.
+ *
+ * This is invoked immediately before the terminal backend. The request context tracks only values
+ * that Angular itself added, so user-provided values with the same header name are preserved.
+ */
+export function validateXsrfRequest(req: HttpRequest<unknown>): HttpRequest<unknown> {
+  if (!req.context.has(XSRF_ADDED_HEADERS)) {
+    return req;
+  }
+
+  let headers = req.headers;
+  let changed = false;
+  for (const {name, value, origin} of req.context.get(XSRF_ADDED_HEADERS)) {
+    if (!isRequestSameOrigin(req, origin) && headers.getAll(name)?.includes(value)) {
+      headers = headers.delete(name, value);
+      changed = true;
+    }
+  }
+
+  return changed ? req.clone({headers}) : req;
+}
 
 /**
  * `HttpXsrfTokenExtractor` which retrieves the token from a cookie.
@@ -101,18 +156,8 @@ export function xsrfInterceptorFn(
     return next(req);
   }
 
-  try {
-    const locationHref = inject(PlatformLocation).href;
-    const {origin: locationOrigin} = new URL(locationHref);
-    // We can use `new URL` to normalize a relative URL like '//something.com' to
-    // 'https://something.com' in order to make consistent same-origin comparisons.
-    const {origin: requestOrigin} = new URL(req.url, locationOrigin);
-
-    if (locationOrigin !== requestOrigin) {
-      return next(req);
-    }
-  } catch {
-    // Handle invalid URLs gracefully.
+  const origin = getSameOrigin(req);
+  if (origin === null) {
     return next(req);
   }
 
@@ -122,6 +167,10 @@ export function xsrfInterceptorFn(
   // Be careful not to overwrite an existing header of the same name.
   if (token != null && !req.headers.has(headerName)) {
     req = req.clone({headers: req.headers.set(headerName, token)});
+    req.context.set(XSRF_ADDED_HEADERS, [
+      ...req.context.get(XSRF_ADDED_HEADERS),
+      {name: headerName, value: token, origin},
+    ]);
   }
   return next(req);
 }
