@@ -21,11 +21,9 @@ import {requiredError} from './validation_errors';
  * `NaN`. Every other value is considered non-empty, including `0` and the empty array `[]` — use
  * [`minLength()`](api/forms/signals/minLength) to require a minimum number of items in an array.
  *
- * `false` and `NaN` are empty because they are the values native controls produce when left blank:
- * an unchecked `<input type="checkbox">` binds `false`, and a blank or unparseable
- * `<input type="number">` binds `NaN`. A blank number input therefore reports a `required` error
- * rather than a number-specific one, since [`min()`](api/forms/signals/min) and
- * [`max()`](api/forms/signals/max) skip `NaN`.
+ * `false` is empty to follow the native semantics of `required` on `<input type="checkbox">`, where
+ * an unchecked box fails validation. `NaN` is empty because it is usually the result of a parsing
+ * error, and is not a valid number.
  *
  * @param path Path of the field to validate
  * @param config Optional, allows providing any of the following options:

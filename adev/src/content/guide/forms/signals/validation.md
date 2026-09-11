@@ -113,19 +113,19 @@ export class RegistrationComponent {
 A field is considered "empty" when its value is one of the following, and non-empty for every other
 value — including `0` and the empty array `[]`:
 
-| Condition                | Example     | Where it comes from                                    |
-| ------------------------ | ----------- | ------------------------------------------------------ |
-| Value is `null`          | `null`      | A cleared control, or a model initialized to `null`    |
-| Value is `undefined`     | `undefined` | A model property left unset (models should avoid this) |
-| Value is an empty string | `''`        | A blank `<input type="text">`                          |
-| Value is `false`         | `false`     | An unchecked `<input type="checkbox">`                 |
-| Value is `NaN`           | `NaN`       | A blank or unparseable `<input type="number">`         |
+| Condition                | Example     |
+| ------------------------ | ----------- |
+| Value is `null`          | `null`      |
+| Value is `undefined`     | `undefined` |
+| Value is an empty string | `''`        |
+| Value is `false`         | `false`     |
+| Value is `NaN`           | `NaN`       |
 
-IMPORTANT: `false` and `NaN` are empty because they are the values native controls produce when left
-blank. A blank `<input type="number">` binds `NaN`, so the field reports a `required` error rather
-than a number-specific one — [`min()`](#min-and-max) and [`max()`](#min-and-max) skip `NaN`
-entirely. If you want a blank number field to read as empty without relying on `NaN`, initialize the
-model to `null` instead of `0`; see [Designing your form model](guide/forms/signals/designing-your-form-model).
+The last two are worth calling out:
+
+- `false` is empty to follow the native semantics of `required` on `<input type="checkbox">`, where
+  an unchecked box fails validation.
+- `NaN` is empty because it is usually the result of a parsing error, and is not a valid number.
 
 For conditional requirements, use the `when` option:
 

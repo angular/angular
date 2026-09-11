@@ -12,9 +12,8 @@ import {form, required} from '../../../../public_api';
 import {requiredError} from '../../../../src/api/rules/validation/validation_errors';
 
 describe('required validator', () => {
-  // Documented on `required()` and in guide/forms/signals/validation#required. `false` and `NaN`
-  // are empty because they are what native controls bind when left blank: an unchecked
-  // `<input type="checkbox">` binds `false`, and a blank `<input type="number">` binds `NaN`.
+  // Documented on `required()` and in guide/forms/signals/validation#required. `false` follows the
+  // native semantics of `required` on `<input type="checkbox">`; `NaN` is not a valid number.
   describe('emptiness', () => {
     it('treats null, empty string, false and NaN as empty', () => {
       const model = signal<{
