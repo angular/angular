@@ -4441,6 +4441,122 @@ runInEachFileSystem(() => {
         expect(diags).toEqual([]);
       });
 
+      it('should report unknown element error when matched only by an attribute directive', () => {
+        env.tsconfig({strictTemplates: true, _strictUnknownElementEventualValidation: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[formControl]',
+          })
+          export class FormControlDir {
+            @Input() formControl!: any;
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [FormControlDir],
+            template: '<tn-uploader [formControl]="ctrl"></tn-uploader>',
+          })
+          export class TestCmp {
+            ctrl = {};
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toMatch(
+          /^'tn-uploader' is not a known element:\n1\. If 'tn-uploader' is an Angular component, then verify that it is included in the '@Component\.imports' of this component\.\n2\. If 'tn-uploader' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component\.schemas' of this component to suppress this message\. Find more at .*$/,
+        );
+      });
+
+      it('should not report unknown element error when matched by a directive targeting the tag name', () => {
+        env.tsconfig({strictTemplates: true, _strictUnknownElementEventualValidation: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: 'router-outlet',
+          })
+          export class RouterOutletDir {
+            @Input() name: string = '';
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [RouterOutletDir],
+            template: '<router-outlet [name]="outletName"></router-outlet>',
+          })
+          export class TestCmp {
+            outletName = 'main';
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should not report unknown element error when matched by attribute directive with CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, _strictUnknownElementEventualValidation: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Input, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+
+          @Directive({
+            selector: '[formControl]',
+          })
+          export class FormControlDir {
+            @Input() formControl!: any;
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [FormControlDir],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            template: '<tn-uploader [formControl]="ctrl"></tn-uploader>',
+          })
+          export class TestCmp {
+            ctrl = {};
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
+      it('should not report unknown element error for standard HTML element with attribute directive', () => {
+        env.tsconfig({strictTemplates: true, _strictUnknownElementEventualValidation: true});
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[matButton]',
+          })
+          export class MatButtonDir {
+            @Input() color: string = '';
+          }
+
+          @Component({
+            selector: 'test-cmp',
+            imports: [MatButtonDir],
+            template: '<button matButton [color]="btnColor">Click</button>',
+          })
+          export class TestCmp {
+            btnColor = 'primary';
+          }
+        `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
       it('should not produce diagnostics when using the NO_ERRORS_SCHEMA', () => {
         env.write(
           'test.ts',
