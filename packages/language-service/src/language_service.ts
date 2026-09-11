@@ -58,6 +58,7 @@ import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
 import {createLocationKey} from './references_and_rename_utils';
 import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
 import {getSignatureHelp} from './signature_help';
+import {getSmartSelectionRange} from './smart_selection';
 import {
   getTargetAtPosition,
   getTcbNodesOfTemplateAtPosition,
@@ -581,6 +582,19 @@ export class LanguageService {
       }
 
       return getSignatureHelp(compiler, this.tsLS, fileName, position, options);
+    });
+  }
+
+  /**
+   * Gets the smart selection range (nested ranges used by the editor's
+   * "Expand/Shrink Selection" feature) at a position. Inside Angular templates
+   * the ranges follow the template AST, so control flow blocks (`@if`, `@for`,
+   * ...) and their bodies become selection steps. Outside templates the
+   * request is delegated to the TypeScript language service.
+   */
+  getSmartSelectionRange(fileName: string, position: number): ts.SelectionRange {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsSmartSelection, (compiler) => {
+      return getSmartSelectionRange(compiler, this.tsLS, fileName, position);
     });
   }
 

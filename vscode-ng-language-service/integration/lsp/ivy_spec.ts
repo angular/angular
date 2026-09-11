@@ -318,6 +318,50 @@ export class AppComponent {
     expect(response).toContain({startLine: 32, endLine: 33}); // empty
   });
 
+  it('provides selection ranges that follow control flow blocks', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  template: \`<div>@if (name) {<span>{{name}}</span>}</div>\`,
+})
+export class AppComponent {
+  name = 'Angular';
+}`,
+    );
+    const response = (await client.sendRequest(lsp.SelectionRangeRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+      // Inside `name` of the `{{name}}` interpolation.
+      positions: [{line: 5, character: 40}],
+    })) as lsp.SelectionRange[];
+    expect(Array.isArray(response)).toBe(true);
+    expect(response.length).toEqual(1);
+    const chain: lsp.Range[] = [];
+    let current: lsp.SelectionRange | undefined = response[0];
+    while (current !== undefined) {
+      chain.push(current.range);
+      current = current.parent;
+    }
+    expect(chain.slice(0, 4)).toEqual([
+      // {{name}}
+      {start: {line: 5, character: 36}, end: {line: 5, character: 44}},
+      // <span>{{name}}</span>
+      {start: {line: 5, character: 30}, end: {line: 5, character: 51}},
+      // @if (name) {<span>{{name}}</span>}
+      {start: {line: 5, character: 18}, end: {line: 5, character: 52}},
+      // <div>@if (name) {<span>{{name}}</span>}</div>
+      {start: {line: 5, character: 13}, end: {line: 5, character: 58}},
+    ]);
+    // The chain continues beyond the inline template into the TypeScript file.
+    expect(chain.length).toBeGreaterThan(4);
+  });
+
   it('provides document symbols for TypeScript files (default: filtered to components)', async () => {
     openTextDocument(
       client,
