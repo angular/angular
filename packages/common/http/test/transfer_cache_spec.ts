@@ -541,7 +541,7 @@ describe('TransferCache', () => {
 
       const transferState = TestBed.inject(TransferState);
       expect(JSON.parse(transferState.toJson()) as Record<string, unknown>).toEqual({
-        'd501aa2d57b63a95df74e3b0558782b71b077974e968ed303cd30b27e4b70702': {
+        '0b6e4c00c4fc4ff7474413ec4eee9ad06986ba020ea9435ede66801414fe12ee': {
           [BODY]: 'foo',
           [HEADERS]: {},
           [STATUS]: 200,
@@ -549,7 +549,7 @@ describe('TransferCache', () => {
           [REQ_URL]: '/test-1',
           [RESPONSE_TYPE]: 'json',
         },
-        'ceddc6689dc1f2fc3a0b8c364b6e00a79b99a149f27e84da87cec03d44c150c8': {
+        '16af864024ff480eb7b907c8d06909577f956909b85e2a02d0602ca8b5c4bb4f': {
           [BODY]: 'buzz',
           [HEADERS]: {},
           [STATUS]: 200,
@@ -923,6 +923,76 @@ describe('TransferCache', () => {
         method: 'POST',
         transferCache: true,
         body: new URLSearchParams('foo=2'),
+      });
+    });
+
+    it('should differentiate POST requests with ArrayBuffer bodies', () => {
+      const firstBody = new Uint8Array([1, 2, 3]).buffer;
+      const equivalentBody = new Uint8Array([1, 2, 3]).buffer;
+      const differentBody = new Uint8Array([4, 5, 6]).buffer;
+
+      makeRequestAndExpectOne('/test-arraybuffer-body', 'first', {
+        method: 'POST',
+        transferCache: true,
+        body: firstBody,
+      });
+      const cachedResponse = makeRequestAndExpectNone('/test-arraybuffer-body', 'POST', {
+        transferCache: true,
+        body: equivalentBody,
+      });
+      expect(cachedResponse.body).toBe('first');
+      makeRequestAndExpectOne('/test-arraybuffer-body', 'second', {
+        method: 'POST',
+        transferCache: true,
+        body: differentBody,
+      });
+    });
+
+    it('should differentiate POST requests with null and empty string bodies', () => {
+      makeRequestAndExpectOne('/test-empty-body', 'null-body', {
+        method: 'POST',
+        transferCache: true,
+        body: null,
+      });
+      makeRequestAndExpectNone('/test-empty-body', 'POST', {
+        transferCache: true,
+        body: null,
+      });
+      makeRequestAndExpectOne('/test-empty-body', 'empty-string-body', {
+        method: 'POST',
+        transferCache: true,
+        body: '',
+      });
+    });
+
+    it('should not cache POST requests with Blob bodies', () => {
+      const body = new Blob(['test']);
+
+      makeRequestAndExpectOne('/test-blob-body', 'first', {
+        method: 'POST',
+        transferCache: true,
+        body,
+      });
+      makeRequestAndExpectOne('/test-blob-body', 'second', {
+        method: 'POST',
+        transferCache: true,
+        body,
+      });
+    });
+
+    it('should not cache POST requests with FormData bodies', () => {
+      const body = new FormData();
+      body.set('field', 'value');
+
+      makeRequestAndExpectOne('/test-form-data-body', 'first', {
+        method: 'POST',
+        transferCache: true,
+        body,
+      });
+      makeRequestAndExpectOne('/test-form-data-body', 'second', {
+        method: 'POST',
+        transferCache: true,
+        body,
       });
     });
 
