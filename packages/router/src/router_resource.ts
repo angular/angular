@@ -41,14 +41,6 @@ export const SOURCE_RESOURCE_SYMBOL: unique symbol = Symbol(
 );
 
 /**
- * Checks if a resource has a value or has transitioned to a resolved/non-loading status.
- */
-export function hasValueOrResolved(res: Resource<unknown>): boolean {
-  const status = res.status();
-  return res.hasValue() || (status !== 'loading' && status !== 'reloading');
-}
-
-/**
  * @internal
  */
 export interface InternalRouterResource<T = unknown> extends Resource<T> {
@@ -169,7 +161,7 @@ function createTransactionalSnapshot<T>(
 
   effect(
     () => {
-      if (isRollbackRecoveryPending() && hasValueOrResolved(source)) {
+      if (isRollbackRecoveryPending() && !source.isLoading()) {
         isRollbackRecoveryPending.set(false);
         frozenSnapshot.set(null);
       }
