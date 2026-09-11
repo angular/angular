@@ -17,6 +17,7 @@ import {
   PrefixNot,
   PropertyRead,
   TmplAstBoundAttribute,
+  TmplAstDeferredBlock,
   TmplAstElement,
   TmplAstIfBlock,
   TmplAstNode,
@@ -106,6 +107,19 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
       if (expression instanceof PropertyRead) {
         return buildDiagnosticForSignal(ctx, expression, component);
       }
+    }
+    // defer blocks like `@defer (when mySignal) { ... }`
+    else if (node instanceof TmplAstDeferredBlock) {
+      return [node.triggers.when, node.prefetchTriggers.when, node.hydrateTriggers.when]
+        .filter((trigger): trigger is NonNullable<typeof trigger> => trigger !== undefined)
+        .flatMap((trigger) => {
+          const ast = trigger.value instanceof ASTWithSource ? trigger.value.ast : trigger.value;
+          const expression = ast instanceof PrefixNot ? ast.expression : ast;
+          if (expression instanceof PropertyRead) {
+            return buildDiagnosticForSignal(ctx, expression, component);
+          }
+          return [];
+        });
     }
 
     return [];
