@@ -24,7 +24,7 @@ Content is rendered on the server for the **initial request**. Subsequent naviga
 
 - **Use case**: E-commerce product pages, news sites, personalized dynamic content.
 - **Pros**: Excellent SEO, fast initial content visibility.
-- **Cons**: Requires a server (Node.js), higher server cost/latency.
+- **Cons**: Requires a compatible server or serverless runtime, with higher server cost and latency.
 
 ## Hydration
 
