@@ -84,6 +84,7 @@ APPLICATION_DEPS = [
     ":node_modules/@algolia/client-common",
     ":node_modules/@algolia/requester-browser-xhr",
     ":node_modules/@algolia/requester-node-http",
+    ":node_modules/beasties",
     ":node_modules/@lezer/css",
     ":node_modules/@lezer/html",
     ":node_modules/@lezer/lr",
