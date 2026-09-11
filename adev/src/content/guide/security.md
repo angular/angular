@@ -155,7 +155,8 @@ You can set the nonce for Angular in one of the following ways:
 1. Provide the nonce using the `CSP_NONCE` injection token. Use this approach if you have access to the nonce at runtime and you want to be able to cache the `index.html`.
 
 ```ts
-import {bootstrapApplication, CSP_NONCE} from '@angular/core';
+import {CSP_NONCE} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
 import {AppComponent} from './app/app.component';
 
 bootstrapApplication(AppComponent, {
