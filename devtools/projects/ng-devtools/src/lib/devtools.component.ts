@@ -117,6 +117,8 @@ export class DevToolsComponent implements OnDestroy {
   private syncBackendWithSettings() {
     // Keep BE in sync with the performance track setting.
     effect(() => {
+      if (!this.frameManager.selectedFrame()) return;
+
       if (this.settings.performanceTrack()) {
         this.messageBus.emit('enablePerformanceTrack');
       } else {
@@ -126,6 +128,8 @@ export class DevToolsComponent implements OnDestroy {
 
     // Keep BE in sync with hydration visualization.
     effect(() => {
+      if (!this.frameManager.selectedFrame()) return;
+
       if (this.settings.showHydrationOverlays()) {
         this.messageBus.emit('enableHydrationOverlays');
       } else {
@@ -134,6 +138,8 @@ export class DevToolsComponent implements OnDestroy {
     });
 
     effect(() => {
+      if (!this.frameManager.selectedFrame()) return;
+
       if (this.settings.highlightChangeDetection()) {
         this.messageBus.emit('enableCdHighlighting');
       } else {
@@ -142,6 +148,8 @@ export class DevToolsComponent implements OnDestroy {
     });
 
     effect(() => {
+      if (!this.frameManager.selectedFrame()) return;
+
       if (this.settings.showCdInExplorer()) {
         this.messageBus.emit('enableCdDataStream');
       } else {

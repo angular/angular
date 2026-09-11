@@ -50,6 +50,7 @@ ts_test_library(
         "//:node_modules/tslib",
         "//devtools/projects/ng-devtools/src/lib/application-providers:app_data",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/application-services:settings",
         "//devtools/projects/ng-devtools/src/lib/application-services/test-utils:settings_mock",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs",
         "//devtools/projects/protocol",

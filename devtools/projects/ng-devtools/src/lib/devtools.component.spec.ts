@@ -14,6 +14,7 @@ import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
 import {MessageBus} from '../../../protocol';
 import {SETTINGS_MOCK} from './application-services/test-utils/settings_mock';
 import {APP_DATA, AppData} from './application-providers/app_data';
+import {Settings} from './application-services/settings';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -21,8 +22,15 @@ import {APP_DATA, AppData} from './application-providers/app_data';
 })
 export class MockNgDevToolsTabs {}
 
-async function configureTestingModule(appData?: Partial<AppData>) {
+async function configureTestingModule(
+  appData?: Partial<AppData>,
+  configureSettings?: (settings: Settings) => void,
+) {
   const mockMessageBus = jasmine.createSpyObj('MessageBus', ['on', 'emit', 'once']);
+  const topicToCallback: {[topic: string]: Function} = {};
+  mockMessageBus.on.and.callFake((topic: string, cb: Function) => {
+    topicToCallback[topic] = cb;
+  });
 
   TestBed.configureTestingModule({
     providers: [
@@ -50,6 +58,8 @@ async function configureTestingModule(appData?: Partial<AppData>) {
     },
   });
 
+  configureSettings?.(TestBed.inject(Settings));
+
   const fixture = TestBed.createComponent(DevToolsComponent);
   const component = fixture.componentInstance;
 
@@ -58,6 +68,8 @@ async function configureTestingModule(appData?: Partial<AppData>) {
   return {
     fixture,
     component,
+    mockMessageBus,
+    topicToCallback,
   };
 }
 
@@ -124,4 +136,27 @@ describe('DevtoolsComponent', () => {
 
     expect(fixture.nativeElement.querySelector('.loading svg')).toBeTruthy();
   });
+
+  const backendSettings = [
+    ['performanceTrack', 'enablePerformanceTrack'],
+    ['showHydrationOverlays', 'enableHydrationOverlays'],
+    ['highlightChangeDetection', 'enableCdHighlighting'],
+    ['showCdInExplorer', 'enableCdDataStream'],
+  ] as const;
+
+  for (const [settingName, enableEvent] of backendSettings) {
+    it(`should synchronize the persisted ${settingName} setting after a frame connects`, async () => {
+      const {fixture, mockMessageBus, topicToCallback} = await configureTestingModule(
+        undefined,
+        (settings) => settings[settingName].set(true),
+      );
+      mockMessageBus.emit.calls.reset();
+
+      topicToCallback['contentScriptConnected'](0, 'name', 'http://localhost:4200/');
+      topicToCallback['frameConnected'](0);
+      await fixture.whenStable();
+
+      expect(mockMessageBus.emit).toHaveBeenCalledWith(enableEvent);
+    });
+  }
 });
