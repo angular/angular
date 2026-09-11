@@ -35,7 +35,7 @@ describe('Calculator', () => {
 
   beforeEach(() => {
     // Injects the Calculator service which is available to Angular
-    // because the service uses `providedIn: 'root'`
+    // because the service uses `@Service`
     service = TestBed.inject(Calculator);
   });
 
