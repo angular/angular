@@ -79,6 +79,23 @@ describe('ComponentFactoryNgElementStrategy', () => {
     });
   });
 
+  it('should allow subscribing to exposed host directive output events', () => {
+    const events: NgElementStrategyEvent[] = [];
+    strategy.events.subscribe((e) => events.push(e));
+
+    strategy.connect(document.createElement('div'));
+    const componentRef = getComponentRef(strategy)!;
+    const hostDirective = componentRef.injector.get(TestHostDirective);
+
+    hostDirective.hostOutput.next('host-output-a');
+    hostDirective.hostOutput.next('host-output-b');
+
+    expect(events).toEqual([
+      {name: 'exposedHostOutput', value: 'host-output-a'},
+      {name: 'exposedHostOutput', value: 'host-output-b'},
+    ]);
+  });
+
   describe('after connected', () => {
     let componentRef: ComponentRef<TestComponent>;
 
@@ -134,6 +151,16 @@ describe('ComponentFactoryNgElementStrategy', () => {
       expect(componentRef.instance.fooFoo).toBe('fooFoo-1');
     });
 
+    it('should set and read exposed host directive inputs', async () => {
+      const hostDirective = componentRef.injector.get(TestHostDirective);
+
+      strategy.setInputValue('exposedHostInput', 'value');
+      await whenStable();
+
+      expect(hostDirective.hostInput).toBe('host:value');
+      expect(strategy.getInputValue('exposedHostInput')).toBe('host:value');
+    });
+
     it('should initialize the component with falsy initial values', () => {
       expect(strategy.getInputValue('falsyUndefined')).toEqual(undefined);
       expect(componentRef.instance.falsyUndefined).toEqual(undefined);
@@ -170,6 +197,21 @@ describe('ComponentFactoryNgElementStrategy', () => {
         barBar: new SimpleChange(undefined, 'barBar-1', true),
         falsyUndefined: new SimpleChange(undefined, 'notanymore', false),
       });
+    });
+  });
+
+  describe('host directive inputs before connected', () => {
+    it('should apply cached values when the component is created', () => {
+      const strategyFactory = new ComponentNgElementStrategyFactory(TestComponent);
+      const hostStrategy = strategyFactory.create(injector);
+
+      hostStrategy.setInputValue('exposedHostInput', 'initial');
+      hostStrategy.connect(document.createElement('div'));
+
+      const componentRef = getComponentRef(hostStrategy)!;
+      const hostDirective = componentRef.injector.get(TestHostDirective);
+      expect(hostDirective.hostInput).toBe('host:initial');
+      expect(hostStrategy.getInputValue('exposedHostInput')).toBe('host:initial');
     });
   });
 
@@ -370,9 +412,23 @@ export class CdTrackerDir {
   }
 }
 
+@Directive()
+export class TestHostDirective {
+  @Input({transform: (value: unknown) => `host:${value}`}) hostInput!: string;
+  @Input() hiddenHostInput!: string;
+  @Output() hostOutput = new Subject<string>();
+}
+
 @Component({
   selector: 'fake-component',
   imports: [CdTrackerDir],
+  hostDirectives: [
+    {
+      directive: TestHostDirective,
+      inputs: ['hostInput: exposedHostInput'],
+      outputs: ['hostOutput: exposedHostOutput'],
+    },
+  ],
   template: `
     <ng-container cdTracker></ng-container>
     <ng-content select="content-1"></ng-content>

@@ -36,7 +36,13 @@ import {
   NgElementStrategyFactory,
 } from './element-strategy';
 import {extractProjectableNodes} from './extract-projectable-nodes';
-import {scheduler} from './utils';
+import {
+  getCustomElementHostDirectiveInputs,
+  getHostDirectiveBindings,
+  HostDirectiveInput,
+  HostDirectiveOutput,
+  scheduler,
+} from './utils';
 
 /** Time in milliseconds to wait before destroying the component ref when disconnected. */
 const DESTROY_DELAY = 10;
@@ -50,15 +56,31 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
 
   inputMap = new Map<string, string>();
 
+  private readonly hostDirectiveInputs = new Map<string, HostDirectiveInput>();
+  private readonly hostDirectiveOutputs: readonly HostDirectiveOutput[];
+
   constructor(private component: Type<any>) {
     this.componentMirror = reflectComponentType(component)!;
     for (const input of this.componentMirror.inputs) {
       this.inputMap.set(input.propName, input.templateName);
     }
+
+    for (const input of getCustomElementHostDirectiveInputs(component)) {
+      this.inputMap.set(input.publicName, input.publicName);
+      this.hostDirectiveInputs.set(input.publicName, input);
+    }
+
+    this.hostDirectiveOutputs = getHostDirectiveBindings(component).outputs;
   }
 
   create(injector: Injector) {
-    return new ComponentNgElementStrategy(this.component, injector, this.inputMap);
+    return new ComponentNgElementStrategy(
+      this.component,
+      injector,
+      this.inputMap,
+      this.hostDirectiveInputs,
+      this.hostDirectiveOutputs,
+    );
   }
 }
 
@@ -102,6 +124,8 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     private component: Type<any>,
     private injector: Injector,
     private inputMap: Map<string, string>,
+    private hostDirectiveInputs: Map<string, HostDirectiveInput>,
+    private hostDirectiveOutputs: readonly HostDirectiveOutput[],
   ) {
     this.ngZone = this.injector.get(NgZone);
     this.appRef = this.injector.get(ApplicationRef);
@@ -159,6 +183,15 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     return this.runInZone(() => {
       if (this.componentRef === null) {
         return this.initialInputValues.get(property);
+      }
+
+      const hostDirectiveInput = this.hostDirectiveInputs.get(property);
+      if (hostDirectiveInput) {
+        const instance = this.componentRef.injector.get(hostDirectiveInput.directive) as Record<
+          string,
+          unknown
+        >;
+        return instance[hostDirectiveInput.directivePropName];
       }
 
       return this.componentRef.instance[property];
@@ -232,13 +265,26 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       this.component,
     )!.outputs.map(({propName, templateName}) => {
       const emitter: EventEmitter<any> | OutputRef<any> = componentRef.instance[propName];
-      return new Observable((observer) => {
-        const sub = emitter.subscribe((value) => observer.next({name: templateName, value}));
-        return () => sub.unsubscribe();
-      });
+      return this.createOutputObservable(emitter, templateName);
     });
 
+    for (const output of this.hostDirectiveOutputs) {
+      const instance = componentRef.injector.get(output.directive) as Record<string, unknown>;
+      const emitter = instance[output.directivePropName] as EventEmitter<any> | OutputRef<any>;
+      eventEmitters.push(this.createOutputObservable(emitter, output.publicName));
+    }
+
     this.eventEmitters.next(eventEmitters);
+  }
+
+  private createOutputObservable(
+    emitter: EventEmitter<any> | OutputRef<any>,
+    name: string,
+  ): Observable<NgElementStrategyEvent> {
+    return new Observable((observer) => {
+      const sub = emitter.subscribe((value) => observer.next({name, value}));
+      return () => sub.unsubscribe();
+    });
   }
 
   /** Runs in the angular zone, if present. */
