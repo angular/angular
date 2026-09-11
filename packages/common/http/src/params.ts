@@ -44,7 +44,7 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
    * @returns The encoded key name.
    */
   encodeKey(key: string): string {
-    return standardEncoding(key);
+    return standardEncoding(key, KEY_ENCODING_REPLACEMENTS);
   }
 
   /**
@@ -53,7 +53,7 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
    * @returns The encoded value.
    */
   encodeValue(value: string): string {
-    return standardEncoding(value);
+    return standardEncoding(value, VALUE_ENCODING_REPLACEMENTS);
   }
 
   /**
@@ -100,22 +100,24 @@ function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, 
  * Encode input string with standard encodeURIComponent and then un-encode specific characters.
  */
 const STANDARD_ENCODING_REGEX = /%(\d[a-f0-9])/gi;
-const STANDARD_ENCODING_REPLACEMENTS: {[x: string]: string} = {
+const KEY_ENCODING_REPLACEMENTS: {[x: string]: string} = {
   '40': '@',
   '3A': ':',
   '24': '$',
   '2C': ',',
   '3B': ';',
-  '3D': '=',
   '3F': '?',
   '2F': '/',
 };
+// A pair is split at its first `=`, so that character only carries its literal meaning in a
+// value and has to stay percent-encoded in a key.
+const VALUE_ENCODING_REPLACEMENTS: {[x: string]: string} = {
+  ...KEY_ENCODING_REPLACEMENTS,
+  '3D': '=',
+};
 
-function standardEncoding(v: string): string {
-  return encodeURIComponent(v).replace(
-    STANDARD_ENCODING_REGEX,
-    (s, t) => STANDARD_ENCODING_REPLACEMENTS[t] ?? s,
-  );
+function standardEncoding(v: string, replacements: {[x: string]: string}): string {
+  return encodeURIComponent(v).replace(STANDARD_ENCODING_REGEX, (s, t) => replacements[t] ?? s);
 }
 
 function valueToString(value: string | number | boolean): string {
