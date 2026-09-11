@@ -68,6 +68,12 @@ When communicating with backend services, use Angular HTTP APIs and consult the 
 
 - **HTTP Client and Resources**: `provideHttpClient`, `HttpClient`, interceptors, and `httpResource`. Read [http-client.md](references/http-client.md)
 
+## Security
+
+When rendering dynamic or untrusted HTML content, consult the sanitization reference. For the full Angular security model (CSRF, SSRF, HTTP-level vulnerabilities, CSP), refer to the [Angular Security Guide](https://angular.dev/best-practices/security).
+
+- **HTML Sanitization**: Context-based sanitization, bypassing security with `DomSanitizer`, third-party sanitization libraries (DomPurify), and Trusted Types. Read [sanitization.md](references/sanitization.md)
+
 ## Forms
 
 In most cases for new apps, **prefer signal forms**. When making a forms decision, analyze the project and consider the following guidelines:
