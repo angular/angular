@@ -18,12 +18,6 @@ import type {ComponentCompilationJob} from '../compilation';
  * and propagating that number into the `Template` operations which declare embedded views.
  */
 export function allocateSlots(job: ComponentCompilationJob): void {
-  // Map of all declarations in all views within the component which require an assigned slot index.
-  // This map needs to be global (across all views within the component) since it's possible to
-  // reference a slot from one view from an expression within another (e.g. local references work
-  // this way).
-  const slotMap = new Map<ir.XrefId, number>();
-
   // Process all views in the component and assign slot indexes.
   for (const unit of job.units) {
     // Slot indices start at 0 for each view (and are not unique between views).
@@ -38,9 +32,6 @@ export function allocateSlots(job: ComponentCompilationJob): void {
       // Assign slots to this declaration starting at the current `slotCount`.
       op.handle.slot = slotCount;
 
-      // And track its assigned slot in the `slotMap`.
-      slotMap.set(op.xref, op.handle.slot);
-
       // Each declaration may use more than 1 slot, so increment `slotCount` to reserve the number
       // of slots required.
       slotCount += op.numSlotsUsed;
@@ -51,11 +42,8 @@ export function allocateSlots(job: ComponentCompilationJob): void {
     unit.decls = slotCount;
   }
 
-  // After slot assignment, `slotMap` now contains slot assignments for every declaration in the
-  // whole template, across all views. Next, look for expressions which implement
-  // `UsesSlotIndexExprTrait` and propagate the assigned slot indexes into them.
-  // Additionally, this second scan allows us to find `ir.TemplateOp`s which declare views and
-  // propagate the number of slots used for each view into the operation which declares it.
+  // After slot assignment, scan for `ir.TemplateOp`s which declare views and propagate the number
+  // of slots used for each view into the operation which declares it.
   for (const unit of job.units) {
     for (const op of unit.ops()) {
       if (
