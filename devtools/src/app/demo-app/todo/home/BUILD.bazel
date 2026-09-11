@@ -7,10 +7,17 @@ sass_binary(
     src = "todo.component.scss",
 )
 
+sass_binary(
+    name = "control_flow_cases_styles",
+    src = "control-flow-cases.component.scss",
+)
+
 ng_project(
     name = "home",
     srcs = [
+        "control-flow-cases.component.ts",
         "home.routes.ts",
+        "rendered-text.component.ts",
         "sample.pipe.ts",
         "todo.component.ts",
         "todo.ts",
@@ -20,8 +27,10 @@ ng_project(
         "tooltip.directive.ts",
     ],
     angular_assets = [
+        "control-flow-cases.component.html",
         "todos.component.html",
         "todo.component.html",
+        ":control_flow_cases_styles",
         ":home_styles",
     ],
     deps = [

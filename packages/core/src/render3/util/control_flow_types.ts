@@ -13,6 +13,8 @@ import {LiveCollection} from '../list_reconciliation';
 export enum ControlFlowBlockType {
   Defer,
   For,
+  If,
+  Switch,
 }
 
 export interface ControlFlowBlockDataBase {
@@ -75,10 +77,50 @@ export interface ForLoopBlockData extends ControlFlowBlockDataBase {
   trackExpression: string;
 }
 
+/** Retrieved information about an `@if` block. */
+export interface IfBlockData extends ControlFlowBlockDataBase {
+  type: ControlFlowBlockType.If;
+
+  /** Number of branches connected to this block, including `@else if` and `@else`. */
+  branchCount: number;
+
+  /** Index of the currently rendered branch, or null if no branch is rendered. */
+  activeBranchIndex: number | null;
+
+  /** Index of the connected `@else` branch, or null if the block does not have one. */
+  defaultBranchIndex: number | null;
+
+  /** Expression text for each conditional branch, or null for `@else`. */
+  conditionExpressions: Array<string | null>;
+}
+
+/** Retrieved information about an `@switch` block. */
+export interface SwitchBlockData extends ControlFlowBlockDataBase {
+  type: ControlFlowBlockType.Switch;
+
+  /** Number of case groups connected to this block, including `@default`. */
+  branchCount: number;
+
+  /** Index of the currently rendered case group, or null if no case matched. */
+  activeBranchIndex: number | null;
+
+  /** Index of the connected `@default` case group, or null if the block does not have one. */
+  defaultBranchIndex: number | null;
+
+  /** Expression text evaluated by the `@switch` block. */
+  expression: string | null;
+
+  /** Expression text for each case group. `@default` groups are represented by an empty array. */
+  caseExpressions: string[][];
+
+  /** Whether the switch block declares an exhaustive type check via `@default never`. */
+  hasExhaustiveCheck: boolean;
+}
+
 /**
  * A control flow block information object.
  */
-export type ControlFlowBlock = DeferBlockData | ForLoopBlockData;
+export type ControlFlowBlock = DeferBlockData | ForLoopBlockData | IfBlockData | SwitchBlockData;
 
 /**
  * A configuration object passed to a `ControlFlowBlockViewFinder` function.
