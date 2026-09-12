@@ -4316,6 +4316,37 @@ describe('di', () => {
       expect(fixture.nativeElement.innerHTML).toEqual('default value');
     });
 
+    it('should not give environment-provided pipes access to the node context', () => {
+      const TOKEN = new InjectionToken<string>('TOKEN');
+
+      @Pipe({name: 'test'})
+      class TestPipe {
+        readonly injectedValue = inject(TOKEN);
+
+        constructor(@Inject(TOKEN) readonly constructorValue: string) {}
+
+        transform(value: string): string {
+          return value;
+        }
+      }
+
+      @Component({
+        template: '',
+        providers: [{provide: TOKEN, useValue: 'node value'}],
+      })
+      class TestCmp {
+        readonly pipe = inject(TestPipe);
+      }
+
+      TestBed.configureTestingModule({
+        providers: [TestPipe, {provide: TOKEN, useValue: 'environment value'}],
+      });
+      const pipe = TestBed.createComponent(TestCmp).componentInstance.pipe;
+
+      expect(pipe.constructorValue).toBe('environment value');
+      expect(pipe.injectedValue).toBe('environment value');
+    });
+
     describe('with an options object argument', () => {
       it('should be able to optionally inject a service', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');
