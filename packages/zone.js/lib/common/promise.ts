@@ -160,8 +160,8 @@ export function patchPromise(Zone: ZoneType): void {
         if (
           state !== REJECTED &&
           value instanceof ZoneAwarePromise &&
-          value.hasOwnProperty(symbolState) &&
-          value.hasOwnProperty(symbolValue) &&
+          Object.hasOwn(value, symbolState) &&
+          Object.hasOwn(value, symbolValue) &&
           (value as any)[symbolState] !== UNRESOLVED
         ) {
           clearRejectedNoCatch(value);
@@ -212,7 +212,7 @@ export function patchPromise(Zone: ZoneType): void {
             }
           }
 
-          for (let i = 0; i < queue.length; ) {
+          for (let i = 0; i < queue.length;) {
             scheduleResolveOrReject(promise, queue[i++], queue[i++], queue[i++], queue[i++]);
           }
           if (queue.length == 0 && state == REJECTED) {

@@ -191,6 +191,7 @@ export class FetchBackend implements HttpBackend {
         Number.isFinite(contentLengthValue) &&
         contentLengthValue > this.maxResponseSize
       ) {
+        await response.body.cancel();
         throwBodyTooLargeError(this.maxResponseSize);
       }
 

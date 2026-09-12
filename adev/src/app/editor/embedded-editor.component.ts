@@ -20,10 +20,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {toSignal} from '@angular/core/rxjs-interop';
 import {IconComponent, TutorialType} from '@angular/docs';
 import {MatTab, MatTabGroup, MatTabLabel} from '@angular/material/tabs';
-import {map} from 'rxjs';
 
 import {MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES} from './alert-manager.service';
 
@@ -93,10 +91,9 @@ export class EmbeddedEditor {
       !this.nodeRuntimeState.isResetting(),
   );
 
-  private readonly errorsCount$ = this.diagnosticsState.diagnostics$.pipe(
-    map((diagnosticsItem) => diagnosticsItem.filter((item) => item.severity === 'error').length),
+  protected readonly errorsCount = computed(
+    () => this.diagnosticsState.diagnostics().filter((item) => item.severity === 'error').length,
   );
-  protected readonly errorsCount = toSignal(this.errorsCount$, {initialValue: 0});
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) {

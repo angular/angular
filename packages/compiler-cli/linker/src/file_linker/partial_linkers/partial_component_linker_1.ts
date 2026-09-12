@@ -255,6 +255,7 @@ export class PartialComponentLinkerVersion1<
       declarations,
       hasDirectiveDependencies: !baseMeta.isStandalone || hasDirectiveDependencies,
       foreignImports: null,
+      enableTemplateSourceLocations: false,
     };
   }
 

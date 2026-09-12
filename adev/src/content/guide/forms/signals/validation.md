@@ -110,12 +110,22 @@ export class RegistrationComponent {
 }
 ```
 
-A field is considered "empty" when:
+A field is considered "empty" when its value is one of the following, and non-empty for every other
+value — including `0` and the empty array `[]`:
 
-| Condition                | Example |
-| ------------------------ | ------- |
-| Value is `null`          | `null`, |
-| Value is an empty string | `''`    |
+| Condition                | Example     |
+| ------------------------ | ----------- |
+| Value is `null`          | `null`      |
+| Value is `undefined`     | `undefined` |
+| Value is an empty string | `''`        |
+| Value is `false`         | `false`     |
+| Value is `NaN`           | `NaN`       |
+
+The last two are worth calling out:
+
+- `false` is empty to follow the native semantics of `required` on `<input type="checkbox">`, where
+  an unchecked box fails validation.
+- `NaN` is empty because it is usually the result of a parsing error, and is not a valid number.
 
 For conditional requirements, use the `when` option:
 
@@ -130,7 +140,7 @@ registrationForm = form(this.registrationModel, (schemaPath) => {
 
 The validation rule only runs when the `when` function returns `true`.
 
-Note: `required` treats an empty array as present (valid), so use [`minLength()`](#minlength-and-maxlength) to enforce a minimum number of array items; it treats `false` as missing (invalid), matching `<input type="checkbox" required>`.
+Note: `required` treats an empty array as present (valid), so use [`minLength()`](#minlength-and-maxlength) to enforce a minimum number of array items.
 
 ### email()
 
@@ -505,9 +515,7 @@ interface User {
   lastName: string;
 }
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserFormComponent {
   readonly userModel = model<User>({
     firstName: '',
@@ -750,9 +758,7 @@ import {Component, computed, signal} from '@angular/core';
 import {form, FormField, validateStandardSchema} from '@angular/forms/signals';
 import z from 'zod';
 
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class DynamicSchema {
   model = signal({document: '', type: 'dni'});
 

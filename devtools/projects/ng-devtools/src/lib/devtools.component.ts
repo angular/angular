@@ -127,9 +127,25 @@ export class DevToolsComponent implements OnDestroy {
     // Keep BE in sync with hydration visualization.
     effect(() => {
       if (this.settings.showHydrationOverlays()) {
-        this.messageBus.emit('createHydrationOverlay');
+        this.messageBus.emit('enableHydrationOverlays');
       } else {
-        this.messageBus.emit('removeHydrationOverlay');
+        this.messageBus.emit('disableHydrationOverlays');
+      }
+    });
+
+    effect(() => {
+      if (this.settings.highlightChangeDetection()) {
+        this.messageBus.emit('enableCdHighlighting');
+      } else {
+        this.messageBus.emit('disableCdHighlighting');
+      }
+    });
+
+    effect(() => {
+      if (this.settings.showCdInExplorer()) {
+        this.messageBus.emit('enableCdDataStream');
+      } else {
+        this.messageBus.emit('disableCdDataStream');
       }
     });
   }

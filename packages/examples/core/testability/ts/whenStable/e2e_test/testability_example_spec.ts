@@ -6,45 +6,45 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser, by, element} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
-
-// Declare the global "window" and "document" constant since we don't want to add the "dom"
-// TypeScript lib for the e2e specs that execute code in the browser and reference such
-// global constants.
-declare const window: any;
-declare const document: any;
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors} from '../../../../../test-utils';
 
 describe('testability example', () => {
-  afterEach(verifyNoBrowserErrors);
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
+
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
+
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
 
   describe('using task tracking', () => {
-    const URL = '/testability/whenStable/';
-
-    it('times out with a list of tasks', (done) => {
-      browser.get(URL);
-      browser.ignoreSynchronization = true;
+    it('times out with a list of tasks', async () => {
+      await driver.get(`${baseUrl}/testability/whenStable/`);
 
       // Script that runs in the browser and calls whenStable with a timeout.
-      let waitWithResultScript = function (done: any) {
-        let rootEl = document.querySelector('example-app');
-        let testability = window.getAngularTestability(rootEl);
-        testability.whenStable(() => {
+      const waitWithResultScript = `
+        var done = arguments[arguments.length - 1];
+        var rootEl = document.querySelector('example-app');
+        var testability = window.getAngularTestability(rootEl);
+        testability.whenStable(function() {
           done();
         }, 1000);
-      };
+      `;
 
-      element(by.css('.start-button')).click();
+      const startButton = await driver.findElement(webdriver.By.css('.start-button'));
+      await startButton.click();
 
-      browser.driver.executeAsyncScript(waitWithResultScript).then(() => {
-        expect(element(by.css('.status')).getText()).not.toContain('done');
-        done();
-      });
-    });
-
-    afterAll(() => {
-      browser.ignoreSynchronization = false;
+      await driver.executeAsyncScript(waitWithResultScript);
+      const statusEl = await driver.findElement(webdriver.By.css('.status'));
+      expect(await statusEl.getText()).not.toContain('done');
     });
   });
 });

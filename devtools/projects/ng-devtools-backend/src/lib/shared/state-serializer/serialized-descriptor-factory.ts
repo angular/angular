@@ -312,7 +312,7 @@ function getNestedDescriptorValue(
     case PropType.Object:
       return nodes.reduce(
         (accumulator, nestedProp) => {
-          if (prop.hasOwnProperty(nestedProp.name) && !ignoreList.has(nestedProp.name)) {
+          if (Object.hasOwn(prop, nestedProp.name) && !ignoreList.has(nestedProp.name)) {
             accumulator[nestedProp.name] = nestedSerializer(
               value,
               nestedProp.name,

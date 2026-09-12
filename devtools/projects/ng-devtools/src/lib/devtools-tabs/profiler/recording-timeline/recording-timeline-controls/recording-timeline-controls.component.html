@@ -1,9 +1,25 @@
-<input
-  class="ng-input size-mid filter-input"
-  (keyup)="filter.emit($any($event.target).value)"
-  (focus)="filterPlaceholder.set('duration: >30 source: click')"
-  (blur)="filterPlaceholder.set(FILTER_PLACEHOLDER)"
-  [placeholder]="filterPlaceholder()"
-  aria-label="Frames filter"
-/>
+<div class="filter-input-wrapper">
+  <div class="filter-input">
+    <input
+      #filter
+      class="ng-input size-mid filter-input"
+      (keyup)="onFilterInput($event.target.value)"
+      placeholder="Filter"
+      aria-label="Frames filter"
+    />
+    @if (filter.value.length) {
+      <button ng-button btnType="icon" (click)="clearFilter()" title="Clear filter">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+  <mat-icon
+    class="info"
+    matTooltipClass="multiline-tooltip"
+    [matTooltip]="'Filter by duration (ms) and/or source.\nExample: duration: >5 source: setTimeout'"
+    aria-label="Filter by duration (ms) and/or source. Example: duration: >5 source: setTimeout"
+  >
+    info
+  </mat-icon>
+</div>
 <button ng-button size="mid" (click)="exportProfile.emit()">Save Profile</button>

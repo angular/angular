@@ -508,7 +508,7 @@ function parseAndConvertInputsForDefinition<T>(
     [minifiedName: string, flags: InputFlags, transform: InputTransformFunction | null]
   > = {};
   for (const minifiedKey in obj) {
-    if (obj.hasOwnProperty(minifiedKey)) {
+    if (Object.hasOwn(obj, minifiedKey)) {
       const value = obj[minifiedKey]!;
       let publicName: string;
       let declaredName: string;
@@ -540,7 +540,7 @@ function parseAndConvertOutputsForDefinition<T>(
   if (obj == null) return EMPTY_OBJ as any;
   const newLookup: any = {};
   for (const minifiedKey in obj) {
-    if (obj.hasOwnProperty(minifiedKey)) {
+    if (Object.hasOwn(obj, minifiedKey)) {
       newLookup[obj[minifiedKey]!] = minifiedKey;
     }
   }

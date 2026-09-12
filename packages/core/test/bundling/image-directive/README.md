@@ -6,8 +6,8 @@ This folder contains a simple application that can be used as a playground for t
 pnpm ibazel run packages/core/test/bundling/image-directive:devserver
 ```
 
-There is also a set of e2e tests (powered by Protractor), which can be invoked by running:
+There is also a set of e2e tests (powered by Selenium WebDriver), which can be invoked by running:
 
 ```
-pnpm bazel test packages/core/test/bundling/image-directive:protractor_tests
+pnpm bazel test packages/core/test/bundling/image-directive:webdriver_tests
 ```

@@ -1978,7 +1978,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content');
           expect(content.innerHTML).toBe(
-            'Start  Inner Start  Hello <span>World</span>!<!--ICU 28:0--> Inner End  Middle <span>Span</span> End',
+            'Start  Inner Start  Hello <span>World</span>!<!--ICU 29:0--> Inner End  Middle <span>Span</span> End',
           );
         });
 
@@ -2030,7 +2030,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content-outer');
           expect(content.innerHTML).toBe(
-            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>!<!--ICU 28:0--> Outer End  Middle  End</app-content-inner>',
+            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>!<!--ICU 29:0--> Outer End  Middle  End</app-content-inner>',
           );
         });
 
@@ -2267,7 +2267,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const div = clientRootNode.querySelector('div');
-          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 28:0--> content/);
+          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 29:0--> content/);
         });
 
         it('should support translations that remove elements', async () => {
@@ -6252,6 +6252,288 @@ describe('platform-server full application hydration integration', () => {
         });
       });
 
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when an element ' +
+          'instruction locates a Text node in production mode (ngDevMode off)',
+        async () => {
+          // Regression test. `locateOrCreateElementNodeImpl` always calls
+          // `hasSkipHydrationAttrOnRElement(native)`, which calls
+          // `native.hasAttribute(...)`. The `validateMatchingNode` check that would
+          // normally catch a "found a Text node instead of an <b> element" mismatch
+          // only runs in dev mode, so it's removed from production builds. Without
+          // the extra `nodeType` guard added for this fix, if hydration finds a Text
+          // node here instead of an Element (because the server-rendered DOM didn't
+          // match what the client's compiled template expected), production would
+          // hit `native.hasAttribute`, which doesn't exist on a Text node, and throw
+          // a raw TypeError instead of a coded RuntimeError.
+          @Component({
+            selector: 'app',
+            template: `
+              <div id="abc">
+                <p>This is an original content</p>
+                <b>Bold text</b>
+                <i>Italic text</i>
+              </div>
+            `,
+          })
+          class SimpleComponent {
+            private doc = inject(DOCUMENT);
+            private isServer = isPlatformServer(inject(PLATFORM_ID));
+            ngAfterViewInit() {
+              // Only change the DOM on the server, right before it gets serialized.
+              // The client's compiled template still expects a `<b>` element here,
+              // but the serialized (and later hydrated) DOM will have a plain Text
+              // node instead.
+              if (this.isServer) {
+                const b = this.doc.querySelector('b');
+                const text = this.doc.createTextNode('Not an element anymore!');
+                b?.parentNode?.replaceChild(text, b);
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          // Simulate a production build. `locateOrCreateElementNodeImpl` only calls
+          // `validateMatchingNode` when `ngDevMode` is truthy, so turning it off
+          // here means the full mismatch check is skipped, and only the new
+          // `nodeType` guard runs.
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            });
+            fail('Expected the hydration process to throw.');
+          } catch (e: unknown) {
+            const error = e as Error;
+            // This is the fixed behavior: a coded NG0500 RuntimeError, not a raw
+            // TypeError. Production intentionally gets a bare code with no
+            // description — building one (even a cheap one) is debug-only work
+            // that shouldn't ship unconditionally in production bundles.
+            expect(error instanceof TypeError).toBe(false);
+            expect(error.message).toBe('NG0500');
+            expect(error.message).not.toContain('hasAttribute is not a function');
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        },
+      );
+
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when an element ' +
+          'instruction cannot locate a matching DOM node in production mode (ngDevMode off)',
+        async () => {
+          // Regression test. When the client-rendered DOM has fewer nodes than the
+          // server-rendered HTML (e.g. a node was removed before hydration runs),
+          // `locateNextRNode` returns `null`. The `validateMatchingNode` check that
+          // would normally catch this only runs in dev mode, so it's removed from
+          // production builds. Without a dedicated null guard, production would fall
+          // through to `native.nodeType`, which throws a raw TypeError instead of a
+          // coded RuntimeError.
+          @Component({
+            selector: 'app',
+            template: `
+              <div id="abc">
+                <p>This is an original content</p>
+                <b>Bold text</b>
+                <i>Italic text</i>
+              </div>
+            `,
+          })
+          class SimpleComponent {
+            private doc = inject(DOCUMENT);
+            private isServer = isPlatformServer(inject(PLATFORM_ID));
+            ngAfterViewInit() {
+              // Only change the DOM on the server, right before it gets serialized.
+              // `<i>` is the last child, so removing it means hydration's sibling walk
+              // runs off the end of the DOM (`nextSibling` is `null`) instead of landing
+              // on some other, wrongly-typed node — exercising the missing-node path
+              // rather than the node-mismatch path covered by the test above.
+              if (this.isServer) {
+                this.doc.querySelector('i')?.remove();
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          // Simulate a production build. `locateOrCreateElementNodeImpl` only calls
+          // `validateMatchingNode` when `ngDevMode` is truthy, so turning it off
+          // here means the full mismatch check is skipped, and only the new
+          // null guard runs.
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            });
+            fail('Expected the hydration process to throw.');
+          } catch (e: unknown) {
+            const error = e as Error;
+            // This is the fixed behavior: a coded NG0502 RuntimeError, not a raw
+            // TypeError.
+            expect(error instanceof TypeError).toBe(false);
+            expect(error.message).toBe('NG0502: <i>');
+            expect(error.message).not.toContain("reading 'nodeType'");
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        },
+      );
+
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when siblingAfter runs out ' +
+          'of DOM siblings to skip in production mode (ngDevMode off)',
+        async () => {
+          // Regression test. `siblingAfter` walks forward a fixed number of DOM siblings
+          // (based on the server-serialized container size) to find a container's anchor
+          // comment node. The dev-mode check that would normally catch a missing sibling
+          // (`validateSiblingNodeExists`) is gated behind `ngDevMode`, so it's removed from
+          // production builds. If the client DOM has fewer real siblings than the server
+          // expected (here, two of the three `@for`-rendered items are removed before
+          // hydration runs), production keeps walking past the end of the DOM and throws a
+          // raw TypeError instead of a coded RuntimeError.
+          @Component({
+            selector: 'app',
+            template: `
+              <div id="abc">
+                @for (item of items; track item) {
+                  <p>{{ item }}</p>
+                }
+              </div>
+            `,
+          })
+          class SimpleComponent {
+            items = [1, 2, 3];
+            private doc = inject(DOCUMENT);
+            private isServer = isPlatformServer(inject(PLATFORM_ID));
+            ngAfterViewInit() {
+              // Only change the DOM on the server, right before it gets serialized. The
+              // serialized container size still says "3 items", but the DOM hydration
+              // actually sees will only have 1.
+              if (this.isServer) {
+                const items = this.doc.querySelectorAll('#abc p');
+                items[1]?.remove();
+                items[2]?.remove();
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          // Simulate a production build. `siblingAfter` only calls
+          // `validateSiblingNodeExists` when `ngDevMode` is truthy, so turning it off here
+          // means the walk runs fully unguarded.
+          const previousNgDevMode = (globalThis as any).ngDevMode;
+          (globalThis as any).ngDevMode = false;
+          try {
+            await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+              envProviders: [withNoopErrorHandler()],
+            });
+            fail('Expected the hydration process to throw.');
+          } catch (e: unknown) {
+            const error = e as Error;
+            // This is the fixed behavior: a coded NG0501 RuntimeError, not a raw TypeError.
+            // Production intentionally gets a bare code with no description.
+            expect(error instanceof TypeError).toBe(false);
+            expect(error.message).toBe('NG0501');
+            expect(error.message).not.toContain("reading 'nextSibling'");
+          } finally {
+            (globalThis as any).ngDevMode = previousNgDevMode;
+          }
+        },
+      );
+
+      it(
+        'should throw a coded RuntimeError, not a raw TypeError, when an @if branch is ' +
+          're-entered after a hydration mismatch corrupted its template on the first pass',
+        async () => {
+          // Regression test for getParentRElement() (node_manipulation.ts) receiving a null
+          // TNode. Unlike the siblingAfter/navigateToNode bugs above, this one isn't gated
+          // behind ngDevMode at all in the original code — it reproduces every time, with no
+          // need to simulate a production build.
+          //
+          // The mechanism: an @if/@switch branch's content is its own embedded template, with
+          // its own TView, built lazily the first time that branch is actually rendered
+          // (renderView() in render.ts). If an error is thrown partway through that *first*
+          // pass — here, a hydration node-mismatch on the branch's *second* child, so the
+          // first child's TNode is created but the second's never is — TView.firstCreatePass
+          // still gets flipped to false in render.ts's `catch` block before the error
+          // propagates, and the TView is marked `incompleteFirstPass`. Unlike a *component's*
+          // TView (which gets rebuilt from scratch next time via
+          // getOrCreateComponentTView()'s `incompleteFirstPass` check), nothing rebuilds an
+          // *embedded view's* TView. So the next time this exact branch is selected again —
+          // here, by flipping the condition off and back on — its instructions see
+          // `!tView.firstCreatePass` and read straight from `tView.data[slot]` instead of
+          // creating a fresh TNode, and the second child's slot is still null from the
+          // interrupted first pass.
+          let instance!: SimpleComponent;
+
+          @Component({
+            selector: 'app',
+            template: `
+              @if (cond()) {
+                <span>first</span>
+                <span>{{ text() }}</span>
+              } @else {
+                <span>else</span>
+              }
+            `,
+          })
+          class SimpleComponent {
+            cond = signal(true);
+            text = signal('orig');
+            private doc = inject(DOCUMENT);
+            constructor() {
+              instance = this;
+            }
+            ngAfterViewInit() {
+              // Swap the second <span> for a <div>, bypassing Angular's own node tracking
+              // (mimics a third-party script mutating the DOM, like the test above), so
+              // hydration hits a tag mismatch on the branch's SECOND node specifically,
+              // interrupting its first creation pass after the first node already succeeded.
+              const spans = this.doc.querySelectorAll('app span');
+              if (spans.length >= 2) {
+                const bad = this.doc.createElement('div');
+                bad.textContent = spans[1].textContent;
+                spans[1].replaceWith(bad);
+              }
+            }
+          }
+
+          const html = await ssr(SimpleComponent);
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [withNoopErrorHandler()],
+          });
+
+          // Re-enter the same @if branch: leave it, then come back. This is what exposes the
+          // corrupted TView from the interrupted first pass above.
+          instance.cond.set(false);
+          appRef.tick();
+          instance.cond.set(true);
+
+          expect(() => appRef.tick()).toThrowError(/NG0510/);
+        },
+      );
+
       it('should if there are any third-party scripts that manipulate the DOM', async () => {
         @Component({
           selector: 'app',
@@ -7754,6 +8036,146 @@ describe('platform-server full application hydration integration', () => {
         verifyAllNodesClaimedForHydration(clientRootNode);
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         expect(clientRootNode.textContent).toContain('Main:  Slot: 2');
+      });
+    });
+
+    describe('@boundary', () => {
+      it('should hydrate successfully when no error occurs', async () => {
+        const doc = TestBed.inject(DOCUMENT);
+        @Component({
+          selector: 'app',
+          template: `
+            @boundary {
+              Hello, {{ name }}
+            } @error {
+              Error occurred!
+            }
+          `,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class SimpleComponent {
+          name = 'Frodo';
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('Hello, Frodo');
+        expect(ssrContents).not.toContain('Error occurred!');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(clientRootNode.textContent).toContain('Hello, Frodo');
+
+        compRef.instance.name = 'Bilbo';
+        compRef.changeDetectorRef.detectChanges();
+        expect(clientRootNode.textContent).toContain('Hello, Bilbo');
+      });
+
+      it('should render fallback during SSR and recover to primary during client hydration if error is resolved', async () => {
+        const doc = TestBed.inject(DOCUMENT);
+        @Component({
+          selector: 'child',
+          template: 'Child rendering...',
+        })
+        class ChildComponent {
+          @Input() fail = false;
+          ngOnInit() {
+            if (this.fail) {
+              throw new Error('Server error');
+            }
+          }
+        }
+
+        @Component({
+          selector: 'app',
+          imports: [ChildComponent],
+          template: `
+            @boundary {
+              <child [fail]="fail" />
+            } @error {
+              Error occurred on server!
+            }
+          `,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class SimpleComponent {
+          fail = isPlatformServer(inject(PLATFORM_ID));
+        }
+
+        // 1. SSR where an error occurs
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        // Ensure server rendered the fallback
+        expect(ssrContents).toContain('Error occurred on server!');
+        expect(ssrContents).not.toContain('Child rendering...');
+
+        // 2. Hydration where error does NOT occur (fail is false on client)
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        // Since the server rendered fallback but client successfully rendered primary,
+        // it shouldn't crash, and the fallback should be replaced with primary.
+        expect(clientRootNode.textContent).toContain('Child rendering...');
+        expect(clientRootNode.textContent).not.toContain('Error occurred on server!');
+      });
+
+      it('should render fallback during SSR and remain in error state during client hydration if error persists', async () => {
+        const doc = TestBed.inject(DOCUMENT);
+        @Component({
+          selector: 'child',
+          template: 'Child rendering...',
+        })
+        class ChildComponent {
+          @Input() fail = false;
+          ngOnInit() {
+            if (this.fail) {
+              throw new Error('Persistent error');
+            }
+          }
+        }
+
+        @Component({
+          selector: 'app',
+          imports: [ChildComponent],
+          template: `
+            @boundary {
+              <child [fail]="true" />
+            } @error {
+              Error occurred on server and client!
+            }
+          `,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class SimpleComponent {}
+
+        // 1. SSR where an error occurs
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('Error occurred on server and client!');
+
+        // 2. Hydration where error DOES occur again
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+
+        // The fallback should still be rendered (either hydrated or re-created)
+        expect(clientRootNode.textContent).toContain('Error occurred on server and client!');
       });
     });
 

@@ -369,7 +369,9 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     ngContentSelectors: null,
     preserveWhitespaces: false,
     isExplicitlyDeferred: false,
+    deferredBlocks: null,
     deferredImports: null,
+    deferredImportsByBlock: null,
     inputFieldNamesFromMetadataArray: null,
     selectorlessEnabled: false,
     localReferencedSymbols: null,
@@ -386,6 +388,7 @@ function fakePipe(ref: Reference<ClassDeclaration>): PipeMeta {
     isStandalone: false,
     decorator: null,
     isExplicitlyDeferred: false,
+    deferredBlocks: null,
     isPure: false,
   };
 }

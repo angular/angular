@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NgtscIsolatedPreprocessor} from '@angular/compiler-cli/src/ngtsc/preprocessor';
 import ts from 'typescript';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {NgtscTestCompilerHost} from '../../../src/ngtsc/testing';
 import {
+  CompileResult,
   getBuildOutputDirectory,
   getOptions,
   getRootDirectory,
-  CompileResult,
 } from '../test_helpers/compile_test';
 import {ComplianceTest} from '../test_helpers/get_compliance_tests';
-import {NgtscIsolatedPreprocessor} from '@angular/compiler-cli/src/ngtsc/preprocessor';
 import {runTests} from '../test_helpers/test_runner';
 
 runTests('instruction compile', compileTests, {
@@ -55,8 +55,7 @@ function compileTests(fs: FileSystem, test: ComplianceTest): CompileResult {
 
   const verifyHost = new NgtscTestCompilerHost(fs, options);
   const extraPaths = test.compilerOptions?.['paths'] as unknown as
-    | Record<string, string[]>
-    | undefined;
+    Record<string, string[]> | undefined;
   const verifyProgram = ts.createProgram({
     rootNames: [...emittedFiles],
     options: {
@@ -71,7 +70,6 @@ function compileTests(fs: FileSystem, test: ComplianceTest): CompileResult {
       // than 'Bundler' or 'NodeNext' which expect specific package.json exports.
       moduleResolution: ts.ModuleResolutionKind.Node16,
       module: ts.ModuleKind.Node16,
-      strict: true,
       target: ts.ScriptTarget.ES2015,
       experimentalDecorators: true,
       types: [],

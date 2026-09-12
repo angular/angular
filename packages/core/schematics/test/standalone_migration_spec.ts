@@ -128,6 +128,8 @@ describe('standalone migration', () => {
           [typeof NgIf, typeof NgForOf], [typeof NgIf, typeof NgForOf]>;
       }
 
+      export declare function registerLocaleData(data: any, localeId?: any, extraData?: any): void;
+
       export {NgForOf as NgFor};
     `,
     );
@@ -4281,6 +4283,66 @@ describe('standalone migration', () => {
 
       @Component({template: 'hello'})
       export class AppComponent {}
+    `),
+    );
+  });
+
+  it('should copy top-level registerLocaleData calls to the main file', async () => {
+    writeFile(
+      '/node_modules/@angular/common/locales/fr.d.ts',
+      `
+      declare const localeFr: unknown[];
+      export default localeFr;
+    `,
+    );
+
+    writeFile(
+      'main.ts',
+      `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `,
+    );
+
+    writeFile(
+      './app/app.module.ts',
+      `
+      import {NgModule, Component, LOCALE_ID} from '@angular/core';
+      import {registerLocaleData} from '@angular/common';
+      import localeFr from '@angular/common/locales/fr';
+
+      registerLocaleData(localeFr);
+
+      @Component({template: 'hello', standalone: false})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        providers: [{provide: LOCALE_ID, useValue: 'fr'}]
+      })
+      export class AppModule {}
+    `,
+    );
+
+    await runMigration('standalone-bootstrap');
+
+    const content = stripWhitespace(tree.readContent('main.ts'));
+
+    expect(content).toContain(
+      stripWhitespace(`import localeFr from '@angular/common/locales/fr';`),
+    );
+    expect(content).toContain(
+      stripWhitespace(`import {registerLocaleData} from '@angular/common';`),
+    );
+    expect(content).toContain(stripWhitespace(`registerLocaleData(localeFr);`));
+    expect(content).toContain(
+      stripWhitespace(`
+      bootstrapApplication(AppComponent, {
+        providers: [{provide: LOCALE_ID, useValue: 'fr'}]
+      }).catch(e => console.error(e));
     `),
     );
   });

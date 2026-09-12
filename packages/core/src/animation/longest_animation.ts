@@ -69,6 +69,24 @@ function longestExists(longest: LongestAnimation): boolean {
   );
 }
 
+/** Gets an animation's total duration, including its delay and playback rate. */
+export function getAnimationDuration(animation: Animation): number | undefined {
+  const timing = animation.effect?.getTiming();
+  if (timing === undefined) return undefined;
+
+  // duration can be a string 'auto' or a number.
+  const animationDuration = typeof timing.duration === 'number' ? timing.duration : 0;
+  let duration = (timing.delay ?? 0) + animationDuration;
+
+  // Account for playback rate if it is set.
+  const playbackRate = animation.playbackRate;
+  if (playbackRate !== undefined && playbackRate !== 0 && playbackRate !== 1) {
+    duration /= Math.abs(playbackRate);
+  }
+
+  return duration;
+}
+
 /**
  * Determines the longest animation, but with `getComputedStyles` instead of `getAnimations`. This
  * is ultimately safer than getAnimations because it can be used when recalculations are in
@@ -127,15 +145,7 @@ function determineLongestAnimationFromElementAnimations(
     if (timing?.iterations === Infinity) {
       continue;
     }
-    // duration can be a string 'auto' or a number.
-    const animDuration = typeof timing?.duration === 'number' ? timing.duration : 0;
-    let duration = (timing?.delay ?? 0) + animDuration;
-
-    // Account for playback rate if it is set
-    const playbackRate = animation.playbackRate;
-    if (playbackRate !== undefined && playbackRate !== 0 && playbackRate !== 1) {
-      duration /= Math.abs(playbackRate);
-    }
+    const duration = getAnimationDuration(animation) ?? 0;
 
     let propertyName: string | undefined;
     let animationName: string | undefined;

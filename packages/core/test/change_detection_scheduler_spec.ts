@@ -469,10 +469,7 @@ describe('Angular with zoneless enabled', () => {
     });
 
     it('executes render hooks when a new one is registered', async () => {
-      let resolveFn: Function;
-      let calledPromise = new Promise((resolve) => {
-        resolveFn = resolve;
-      });
+      const {promise: calledPromise, resolve: resolveFn} = Promise.withResolvers<void>();
       TestBed.runInInjectionContext(() => {
         afterNextRender(() => {
           resolveFn();
@@ -496,10 +493,7 @@ describe('Angular with zoneless enabled', () => {
       await fixture.whenStable();
       expect(checks).toBe(1);
 
-      let resolveFn: Function;
-      let calledPromise = new Promise((resolve) => {
-        resolveFn = resolve;
-      });
+      const {promise: calledPromise, resolve: resolveFn} = Promise.withResolvers<void>();
       TestBed.runInInjectionContext(() => {
         afterNextRender(() => {
           resolveFn();

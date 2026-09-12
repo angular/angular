@@ -95,6 +95,7 @@ function getCodeActions({typeCheckInfo, start, compiler, tsLs, preferences}: Cod
         currMatch,
         tsLs,
         preferences.includeCompletionsForModuleExports,
+        preferences,
       ) ?? [];
 
     codeActions.push(

@@ -1143,6 +1143,38 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toContain('component');
     });
 
+    it('should retain metadata for non-standalone declarations', () => {
+      env.write(
+        'app.ts',
+        `
+        import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';
+
+        @Component({selector: 'legacy-cmp', standalone: false, template: ''})
+        export class LegacyCmp {}
+
+        @Pipe({name: 'legacy', standalone: false})
+        export class LegacyPipe implements PipeTransform {
+          transform(value: unknown): unknown { return value; }
+        }
+
+        @NgModule({
+          declarations: [LegacyCmp, LegacyPipe],
+          exports: [LegacyCmp, LegacyPipe],
+        })
+        export class LegacyModule {}
+
+        @Component({imports: [LegacyModule], template: '<legacy-cmp />{{value | legacy}}'})
+        export class TestCmp { value = ''; }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.map((diag) => diag.code)).toEqual([
+        ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED),
+        ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED),
+      ]);
+    });
+
     it('should not allow a non-standalone directive', () => {
       env.write(
         'app.ts',

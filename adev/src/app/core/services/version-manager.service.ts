@@ -10,6 +10,7 @@ import {httpResource} from '@angular/common/http';
 import {DOCUMENT, Service, VERSION, computed, inject} from '@angular/core';
 
 import versionJson from '../../../assets/others/versions.json';
+import {ANGULAR_DEV} from '../constants/links';
 
 export interface Version {
   displayName: string;
@@ -60,7 +61,7 @@ export class VersionManager {
   // which is the most up-to-date anyway.
   remoteVersions = httpResource(
     () => ({
-      url: 'https://angular.dev/assets/others/versions.json',
+      url: `${ANGULAR_DEV}/assets/others/versions.json`,
       transferCache: false,
       cache: 'no-cache',
     }),

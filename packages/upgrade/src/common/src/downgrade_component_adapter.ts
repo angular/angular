@@ -139,7 +139,7 @@ export class DowngradeComponentAdapter {
       const inputBinding = new PropertyBinding(input.propName, input.templateName);
       let expr: string | null = null;
 
-      if (attrs.hasOwnProperty(inputBinding.attr)) {
+      if (Object.hasOwn(attrs, inputBinding.attr)) {
         const observeFn = ((prop, isSignal) => {
           let prevValue = INITIAL_VALUE;
           return (currValue: any) => {
@@ -164,13 +164,13 @@ export class DowngradeComponentAdapter {
           unwatch = null;
           observeFn(attrs[inputBinding.attr]);
         });
-      } else if (attrs.hasOwnProperty(inputBinding.bindAttr)) {
+      } else if (Object.hasOwn(attrs, inputBinding.bindAttr)) {
         expr = attrs[inputBinding.bindAttr];
-      } else if (attrs.hasOwnProperty(inputBinding.bracketAttr)) {
+      } else if (Object.hasOwn(attrs, inputBinding.bracketAttr)) {
         expr = attrs[inputBinding.bracketAttr];
-      } else if (attrs.hasOwnProperty(inputBinding.bindonAttr)) {
+      } else if (Object.hasOwn(attrs, inputBinding.bindonAttr)) {
         expr = attrs[inputBinding.bindonAttr];
-      } else if (attrs.hasOwnProperty(inputBinding.bracketParenAttr)) {
+      } else if (Object.hasOwn(attrs, inputBinding.bracketParenAttr)) {
         expr = attrs[inputBinding.bracketParenAttr];
       }
       if (expr != null) {
@@ -238,16 +238,16 @@ export class DowngradeComponentAdapter {
         outputBindings.bracketParenAttr.length - 8,
       )})]`;
       // order below is important - first update bindings then evaluate expressions
-      if (attrs.hasOwnProperty(bindonAttr)) {
+      if (Object.hasOwn(attrs, bindonAttr)) {
         this.subscribeToOutput(componentRef, outputBindings, attrs[bindonAttr], true);
       }
-      if (attrs.hasOwnProperty(bracketParenAttr)) {
+      if (Object.hasOwn(attrs, bracketParenAttr)) {
         this.subscribeToOutput(componentRef, outputBindings, attrs[bracketParenAttr], true);
       }
-      if (attrs.hasOwnProperty(outputBindings.onAttr)) {
+      if (Object.hasOwn(attrs, outputBindings.onAttr)) {
         this.subscribeToOutput(componentRef, outputBindings, attrs[outputBindings.onAttr]);
       }
-      if (attrs.hasOwnProperty(outputBindings.parenAttr)) {
+      if (Object.hasOwn(attrs, outputBindings.parenAttr)) {
         this.subscribeToOutput(componentRef, outputBindings, attrs[outputBindings.parenAttr]);
       }
     }

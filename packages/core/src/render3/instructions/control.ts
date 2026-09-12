@@ -5,10 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {SIGNAL} from '../../../primitives/signals';
+import {REQUIRED_UNSET_VALUE, type InputSignalNode} from '../../authoring/input/input_signal_node';
 import {performanceMarkFeature} from '../../util/performance';
 import {assertFirstCreatePass} from '../assert';
 import type {ControlDirectiveHost} from '../interfaces/control';
 import type {DirectiveDef} from '../interfaces/definition';
+import {InputFlags} from '../interfaces/input_flags';
 import {type TNode, TNodeFlags} from '../interfaces/node';
 import {isComponentHost} from '../interfaces/type_checks';
 import {type LView, RENDERER, type TView} from '../interfaces/view';
@@ -155,7 +158,11 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
     );
   }
 
-  setInputOnDirectives(inputName: string, value: unknown): boolean {
+  setInputOnDirectives(
+    inputName: string,
+    value: unknown,
+    writePredicate?: (currentValue: unknown) => boolean,
+  ): boolean {
     const directiveIndices = this.tNode.inputs?.[inputName];
     const hostDirectiveInputs = this.tNode.hostDirectiveInputs?.[inputName];
     if (!directiveIndices && !hostDirectiveInputs) {
@@ -169,10 +176,16 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
         if (index === this.tNode.controlDirectiveIndex) {
           continue;
         }
-        const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
         const directive = this.lView[index];
-        writeToDirectiveInput(directiveDef, directive, inputName, value);
-        wasSet = true;
+        const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
+        const matchesPredicate =
+          !writePredicate ||
+          writePredicate(readInputFromDirective(directive, directiveDef, inputName));
+
+        if (matchesPredicate) {
+          writeToDirectiveInput(directiveDef, directive, inputName, value);
+          wasSet = true;
+        }
       }
     }
 
@@ -183,11 +196,17 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
         if (index === this.tNode.controlDirectiveIndex) {
           continue;
         }
+        const directive = this.lView[index];
         const internalName = hostDirectiveInputs[i + 1] as string;
         const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
-        const directive = this.lView[index];
-        writeToDirectiveInput(directiveDef, directive, internalName, value);
-        wasSet = true;
+        const matchesPredicate =
+          !writePredicate ||
+          writePredicate(readInputFromDirective(directive, directiveDef, inputName));
+
+        if (matchesPredicate) {
+          writeToDirectiveInput(directiveDef, directive, internalName, value);
+          wasSet = true;
+        }
       }
     }
 
@@ -265,6 +284,26 @@ function getHostDirectives(directiveType: any): readonly any[] | null {
     return (directiveType as any).ɵdir.hostDirectives ?? null;
   }
   return null;
+}
+
+function readInputFromDirective(
+  instance: unknown,
+  directiveDef: DirectiveDef<unknown>,
+  inputName: string,
+): unknown {
+  if (!directiveDef.inputs || !Object.hasOwn(directiveDef.inputs, inputName)) {
+    return undefined;
+  }
+
+  const [privateName, flags] = directiveDef.inputs[inputName];
+
+  if ((flags & InputFlags.SignalBased) !== 0) {
+    const field = (instance as any)[privateName];
+    const node = field[SIGNAL] as InputSignalNode<unknown, unknown> | undefined;
+    return node!.value === REQUIRED_UNSET_VALUE ? undefined : node!.value;
+  }
+
+  return (instance as any)[privateName];
 }
 
 function initializeControlFirstCreatePass(tView: TView, tNode: TNode, lView: LView): void {

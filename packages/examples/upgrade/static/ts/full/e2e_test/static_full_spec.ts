@@ -6,48 +6,73 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
-
-function loadPage() {
-  browser.rootEl = 'example-app';
-  browser.get('/');
-}
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../../test-utils';
 
 describe('upgrade/static (full)', () => {
-  beforeEach(loadPage);
-  afterEach(verifyNoBrowserErrors);
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  it('should render the `ng2-heroes` component', () => {
-    expect(element(by.css('h1')).getText()).toEqual('Heroes');
-    expect(element.all(by.css('p')).get(0).getText()).toEqual('There are 3 heroes.');
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
   });
 
-  it('should render 3 ng1-hero components', () => {
-    const heroComponents = element.all(by.css('ng1-hero'));
-    expect(heroComponents.count()).toEqual(3);
+  afterAll(async () => {
+    await driver.quit();
   });
 
-  it('should add a new hero when the "Add Hero" button is pressed', () => {
-    const addHeroButton = element.all(by.css('button')).last();
-    expect(addHeroButton.getText()).toEqual('Add Hero');
-    addHeroButton.click();
-    const heroComponents = element.all(by.css('ng1-hero'));
-    expect(heroComponents.last().element(by.css('h2')).getText()).toEqual('Kamala Khan');
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
   });
 
-  it('should remove a hero when the "Remove" button is pressed', () => {
-    let firstHero = element.all(by.css('ng1-hero')).get(0);
-    expect(firstHero.element(by.css('h2')).getText()).toEqual('Superman');
+  beforeEach(async () => {
+    await driver.get(`${baseUrl}/`);
+    await waitForAngular(driver);
+  });
 
-    const removeHeroButton = firstHero.element(by.css('button'));
-    expect(removeHeroButton.getText()).toEqual('Remove');
-    removeHeroButton.click();
+  it('should render the `ng2-heroes` component', async () => {
+    const h1 = await driver.findElement(webdriver.By.css('h1'));
+    expect(await h1.getText()).toEqual('Heroes');
 
-    const heroComponents = element.all(by.css('ng1-hero'));
-    expect(heroComponents.count()).toEqual(2);
+    const ps = await driver.findElements(webdriver.By.css('p'));
+    expect(await ps[0].getText()).toEqual('There are 3 heroes.');
+  });
 
-    firstHero = element.all(by.css('ng1-hero')).get(0);
-    expect(firstHero.element(by.css('h2')).getText()).toEqual('Wonder Woman');
+  it('should render 3 ng1-hero components', async () => {
+    const heroComponents = await driver.findElements(webdriver.By.css('ng1-hero'));
+    expect(heroComponents.length).toEqual(3);
+  });
+
+  it('should add a new hero when the "Add Hero" button is pressed', async () => {
+    const buttons = await driver.findElements(webdriver.By.css('button'));
+    const addHeroButton = buttons[buttons.length - 1];
+    expect(await addHeroButton.getText()).toEqual('Add Hero');
+    await addHeroButton.click();
+    await waitForAngular(driver);
+
+    const heroComponents = await driver.findElements(webdriver.By.css('ng1-hero'));
+    const lastHeroName = await heroComponents[heroComponents.length - 1]
+      .findElement(webdriver.By.css('h2'))
+      .getText();
+    expect(lastHeroName).toEqual('Kamala Khan');
+  });
+
+  it('should remove a hero when the "Remove" button is pressed', async () => {
+    let heroComponents = await driver.findElements(webdriver.By.css('ng1-hero'));
+    const firstHeroName = await heroComponents[0].findElement(webdriver.By.css('h2')).getText();
+    expect(firstHeroName).toEqual('Superman');
+
+    const removeHeroButton = await heroComponents[0].findElement(
+      webdriver.By.xpath(".//button[text()='Remove']"),
+    );
+    expect(await removeHeroButton.getText()).toEqual('Remove');
+    await removeHeroButton.click();
+    await waitForAngular(driver);
+
+    heroComponents = await driver.findElements(webdriver.By.css('ng1-hero'));
+    expect(heroComponents.length).toEqual(2);
+
+    const newFirstHeroName = await heroComponents[0].findElement(webdriver.By.css('h2')).getText();
+    expect(newFirstHeroName).toEqual('Wonder Woman');
   });
 });

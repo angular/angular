@@ -178,10 +178,7 @@ describe('AsyncPipe', () => {
     let promise: Promise<any>;
 
     beforeEach(() => {
-      promise = new Promise((res, rej) => {
-        resolve = res;
-        reject = rej;
-      });
+      ({promise, resolve, reject} = Promise.withResolvers<any>());
     });
 
     describe('transform', () => {

@@ -152,6 +152,7 @@ const SUPPORTED_BLOCKS = [
   '@defer',
   '@placeholder',
   '@loading',
+  '@boundary',
   '@error',
   '@content',
 ] as const;
@@ -742,7 +743,7 @@ class _Tokenizer {
       } else {
         const name = this._cursor.getChars(nameStart);
         this._cursor.advance();
-        const char = NAMED_ENTITIES.hasOwnProperty(name) && NAMED_ENTITIES[name];
+        const char = Object.hasOwn(NAMED_ENTITIES, name) && NAMED_ENTITIES[name];
         if (!char) {
           throw this._createError(_unknownEntityErrorMsg(name), this._cursor.getSpan(start));
         }

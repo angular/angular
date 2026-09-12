@@ -6,38 +6,55 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser, by, element, ElementArrayFinder} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../test-utils';
 
 describe('nestedFormArray example', () => {
-  afterEach(verifyNoBrowserErrors);
-  let inputs: ElementArrayFinder;
-  let buttons: ElementArrayFinder;
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  beforeEach(() => {
-    browser.get('/nestedFormArray');
-    inputs = element.all(by.css('input'));
-    buttons = element.all(by.css('button'));
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
   });
 
-  it('should populate the UI with initial values', () => {
-    expect(inputs.get(0).getAttribute('value')).toEqual('SF');
-    expect(inputs.get(1).getAttribute('value')).toEqual('NY');
+  afterAll(async () => {
+    await driver.quit();
   });
 
-  it('should add inputs programmatically', () => {
-    expect(inputs.count()).toBe(2);
-
-    buttons.get(1).click();
-    inputs = element.all(by.css('input'));
-
-    expect(inputs.count()).toBe(3);
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
   });
 
-  it('should set the value programmatically', () => {
-    buttons.get(2).click();
-    expect(inputs.get(0).getAttribute('value')).toEqual('LA');
-    expect(inputs.get(1).getAttribute('value')).toEqual('MTV');
+  beforeEach(async () => {
+    await driver.get(`${baseUrl}/nestedFormArray`);
+    await waitForAngular(driver);
+  });
+
+  it('should populate the UI with initial values', async () => {
+    const inputs = await driver.findElements(webdriver.By.css('input'));
+    expect(await inputs[0].getAttribute('value')).toEqual('SF');
+    expect(await inputs[1].getAttribute('value')).toEqual('NY');
+  });
+
+  it('should add inputs programmatically', async () => {
+    let inputs = await driver.findElements(webdriver.By.css('input'));
+    expect(inputs.length).toBe(2);
+
+    const buttons = await driver.findElements(webdriver.By.css('button'));
+    await buttons[1].click();
+    await waitForAngular(driver);
+
+    inputs = await driver.findElements(webdriver.By.css('input'));
+    expect(inputs.length).toBe(3);
+  });
+
+  it('should set the value programmatically', async () => {
+    const buttons = await driver.findElements(webdriver.By.css('button'));
+    await buttons[2].click();
+    await waitForAngular(driver);
+
+    const inputs = await driver.findElements(webdriver.By.css('input'));
+    expect(await inputs[0].getAttribute('value')).toEqual('LA');
+    expect(await inputs[1].getAttribute('value')).toEqual('MTV');
   });
 });

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -283,7 +283,7 @@ function validateHostDirectiveMappings(
   const exposedRequiredBindings = new Set<string>();
 
   for (const publicName in hostDirectiveMappings) {
-    if (hostDirectiveMappings.hasOwnProperty(publicName)) {
+    if (Object.hasOwn(hostDirectiveMappings, publicName)) {
       const bindings = existingBindings.getByBindingPropertyName(publicName);
 
       if (bindings === null) {

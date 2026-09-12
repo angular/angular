@@ -48,7 +48,7 @@ export const docsCodeBlockExtension = {
       const token: DocsCodeBlock = {
         raw: match[0],
         type: 'docs-code-block',
-        code: deindent(match[3]),
+        code: match[3],
         language: match[1],
         header: headerRule.exec(metadataStr)?.[2],
         highlight: highlightRule.exec(metadataStr)?.[1],
@@ -68,20 +68,3 @@ export const docsCodeBlockExtension = {
     return formatCode(token, (this.parser.renderer as AdevDocsRenderer).context);
   },
 };
-
-/**
- * Removes leading indentation from code blocks.
- */
-function deindent(str: string): string {
-  const lines = str.split('\n');
-  let minIndent = Infinity;
-  for (const line of lines) {
-    if (!line.trim()) {
-      minIndent = Math.min(line.match(/^(\s*)/)?.[1].length ?? 0, minIndent);
-    }
-  }
-  if (minIndent === Infinity || minIndent === 0) {
-    return str;
-  }
-  return lines.map((line) => line.slice(minIndent)).join('\n');
-}

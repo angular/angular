@@ -296,7 +296,7 @@ function setupSelectorMatchedInputsOrOutputs<T>(
   const aliasMap = mode === BindingType.Inputs ? def.inputs : def.outputs;
 
   for (const publicName in aliasMap) {
-    if (aliasMap.hasOwnProperty(publicName)) {
+    if (Object.hasOwn(aliasMap, publicName)) {
       let bindings: NodeInputBindings | NodeOutputBindings;
       if (mode === BindingType.Inputs) {
         bindings = tNode.inputs ??= {};
@@ -326,7 +326,7 @@ function setupHostDirectiveInputsOrOutputs(
   const aliasMap = mode === BindingType.Inputs ? config.inputs : config.outputs;
 
   for (const initialName in aliasMap) {
-    if (aliasMap.hasOwnProperty(initialName)) {
+    if (Object.hasOwn(aliasMap, initialName)) {
       const publicName = aliasMap[initialName];
       let bindings: HostDirectiveInputs | HostDirectiveOutputs;
       if (mode === BindingType.Inputs) {
@@ -396,7 +396,7 @@ function setupInitialInputs(tNode: TNode, directiveIndex: number, isHostDirectiv
       break;
     }
 
-    if (!isHostDirective && inputs!.hasOwnProperty(attrName as string)) {
+    if (!isHostDirective && Object.hasOwn(inputs!, attrName as string)) {
       // Find the input's public name from the input store. Note that we can be found easier
       // through the directive def, but we want to do it using the inputs store so that it can
       // account for host directive aliases.
@@ -410,7 +410,7 @@ function setupInitialInputs(tNode: TNode, directiveIndex: number, isHostDirectiv
           break;
         }
       }
-    } else if (isHostDirective && hostDirectiveInputs!.hasOwnProperty(attrName as string)) {
+    } else if (isHostDirective && Object.hasOwn(hostDirectiveInputs!, attrName as string)) {
       const config = hostDirectiveInputs![attrName as string];
       for (let j = 0; j < config.length; j += 2) {
         if (config[j] === directiveIndex) {

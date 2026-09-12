@@ -225,8 +225,7 @@ export function buildAttributeCompletionTable(
   // Use the `ElementSymbol` or `TemplateSymbol` to iterate over directives present on the node, and
   // their inputs/outputs. These have the highest priority of completion results.
   const symbol: ElementSymbol | TemplateSymbol = checker.getSymbolOfNode(element, component) as
-    | ElementSymbol
-    | TemplateSymbol;
+    ElementSymbol | TemplateSymbol;
   const presentDirectives = new Set<ts.ClassDeclaration>();
   if (symbol !== null) {
     // An `ElementSymbol` was available. This means inputs and outputs for directives on the
@@ -248,7 +247,10 @@ export function buildAttributeCompletionTable(
         let propertyName: string;
 
         if (dirSymbol.matchSource === MatchSource.HostDirective) {
-          if (!dirSymbol.exposedInputs?.hasOwnProperty(bindingPropertyName)) {
+          if (
+            !dirSymbol.exposedInputs ||
+            !Object.hasOwn(dirSymbol.exposedInputs, bindingPropertyName)
+          ) {
             continue;
           }
           propertyName = dirSymbol.exposedInputs[bindingPropertyName];
@@ -273,7 +275,10 @@ export function buildAttributeCompletionTable(
         let propertyName: string;
 
         if (dirSymbol.matchSource === MatchSource.HostDirective) {
-          if (!dirSymbol.exposedOutputs?.hasOwnProperty(bindingPropertyName)) {
+          if (
+            !dirSymbol.exposedOutputs ||
+            !Object.hasOwn(dirSymbol.exposedOutputs, bindingPropertyName)
+          ) {
             continue;
           }
           propertyName = dirSymbol.exposedOutputs[bindingPropertyName];

@@ -50,7 +50,7 @@
     {
       "name": "ai-config",
       "command": "ai-config",
-      "shortDescription": "Generates AI configuration files for Angular projects. This schematic creates AGENTS.md file and Angular MCP server configuration, improving the quality of AI-generated code and suggestions.",
+      "shortDescription": "Generates AI configuration files for Angular projects. This schematic creates instruction files (e.g. AGENTS.md, CLAUDE.md) and Angular MCP server configuration, improving the quality of AI-generated code and suggestions.",
       "options": [
         {
           "name": "tool",
@@ -66,7 +66,7 @@
             "open-ai-codex",
             "vscode"
           ],
-          "description": "Specifies which AI tools to generate configuration files (AGENTS.md, MCP server config) for."
+          "description": "Specifies which AI tools to generate configuration files (AGENTS.md, CLAUDE.md, MCP server config) for."
         }
       ],
       "aliases": [],

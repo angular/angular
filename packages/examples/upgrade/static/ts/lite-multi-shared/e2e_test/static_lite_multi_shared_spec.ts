@@ -6,24 +6,39 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser, by, element} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../../test-utils';
 
 describe('upgrade/static (lite with multiple downgraded modules and shared root module)', () => {
-  const compA = element(by.css('ng2-a'));
-  const compB = element(by.css('ng2-b'));
-  const compC = element(by.css('ng2-c'));
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  beforeEach(() => browser.get('/'));
-  afterEach(verifyNoBrowserErrors);
-
-  it('should share the same injectable instance across downgraded modules A and B', () => {
-    expect(compA.getText()).toBe('Component A (Service ID: 2)');
-    expect(compB.getText()).toBe('Component B (Service ID: 2)');
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
   });
 
-  it('should use a different injectable instance on downgraded module C', () => {
-    expect(compC.getText()).toBe('Component C (Service ID: 1)');
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
+
+  beforeEach(async () => {
+    await driver.get(`${baseUrl}/`);
+    await waitForAngular(driver);
+  });
+
+  it('should share the same injectable instance across downgraded modules A and B', async () => {
+    const compA = await driver.findElement(webdriver.By.css('ng2-a'));
+    const compB = await driver.findElement(webdriver.By.css('ng2-b'));
+    expect(await compA.getText()).toBe('Component A (Service ID: 2)');
+    expect(await compB.getText()).toBe('Component B (Service ID: 2)');
+  });
+
+  it('should use a different injectable instance on downgraded module C', async () => {
+    const compC = await driver.findElement(webdriver.By.css('ng2-c'));
+    expect(await compC.getText()).toBe('Component C (Service ID: 1)');
   });
 });

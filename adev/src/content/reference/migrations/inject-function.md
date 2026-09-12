@@ -64,7 +64,7 @@ In some cases this can lead to compilation errors when classes with Angular deco
 other classes with Angular decorators. If you enable this option, the migration will generate an
 additional constructor signature to keep it backwards compatible, at the expense of more code.
 
-#### Before
+#### Before {#backwards-compatible-constructors-before}
 
 ```typescript
 import {Component} from '@angular/core';
@@ -76,7 +76,7 @@ export class MyComp {
 }
 ```
 
-#### After
+#### After {#backwards-compatible-constructors-after}
 
 ```ts
 import { Component } from '@angular/core';
@@ -105,7 +105,7 @@ at the expense of potentially hiding type errors.
 **NOTE:** non-null assertions won't be added to parameters that are already typed to be nullable,
 because the code that depends on them likely already accounts for their nullability.
 
-#### Before
+#### Before {#non-nullable-optional-before}
 
 ```typescript
 import {Component, Inject, Optional} from '@angular/core';
@@ -120,7 +120,7 @@ export class MyComp {
 }
 ```
 
-#### After
+#### After {#non-nullable-optional-after}
 
 ```typescript
 import {Component, inject} from '@angular/core';

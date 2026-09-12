@@ -6,38 +6,45 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser} from 'protractor';
-import {logging} from 'selenium-webdriver';
+import * as webdriver from 'selenium-webdriver';
+import {collectBrowserLogs, createWebDriver, waitForBrowserLogs} from '../browser-logs-util';
 
-import {collectBrowserLogs} from '../browser-logs-util';
+describe('NgOptimizedImage directive (image-distortion)', () => {
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-describe('NgOptimizedImage directive', () => {
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+
+    // Prime the memory cache with `a.png` by visiting the passing component first.
+    // Chromium's native lazy loading defers `display: none` images indefinitely
+    // unless they are already in the memory cache.
+    await driver.get(`${baseUrl}/e2e/image-distortion-passing`);
+    await new Promise((r) => setTimeout(r, 1000));
+  });
+
+  afterAll(async () => {
+    await driver.quit();
+  });
+
   it('should not warn if there is no image distortion', async () => {
-    await browser.get('/e2e/image-distortion-passing');
-    const logs = await collectBrowserLogs(logging.Level.WARNING);
+    await driver.get(`${baseUrl}/e2e/image-distortion-passing`);
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    const logs = await collectBrowserLogs(driver, webdriver.logging.Level.WARNING);
     expect(logs.length).toEqual(0);
   });
 
   it('should warn if there is image distortion', async () => {
-    await browser.get('/e2e/image-distortion-failing');
-
-    // Use a deterministic wait to pool logs until all image distortion warnings are detected.
-    const logs: logging.Entry[] = [];
-    await browser.wait(
-      async () => {
-        const newLogs = await collectBrowserLogs(logging.Level.WARNING);
-        logs.push(
-          ...newLogs.filter((l) => l.message.includes(`NG02952`)), // RuntimeErrorCode.UNEXPECTED_DEV_MODE_CHECK_IN_PROD_MODE
-        );
-        return logs.length >= 8;
-      },
-      5000,
-      'Expected 8 image distortion logs to be produced.',
+    await driver.get(`${baseUrl}/e2e/image-distortion-failing`);
+    const logs = await waitForBrowserLogs(driver, webdriver.logging.Level.WARNING, 8, 15000, (l) =>
+      l.message.includes('NG02952'),
     );
+
+    expect(logs.length).toEqual(8);
 
     // Image loading order is not guaranteed, so all logs, rather than single entry
     // needs to be checked in order to test whether a given error message is present.
-    const expectErrorMessageInLogs = (logs: logging.Entry[], message: string) => {
+    const expectErrorMessageInLogs = (logs: webdriver.logging.Entry[], message: string) => {
       expect(
         logs.some((log) => {
           return log.message.includes(message);

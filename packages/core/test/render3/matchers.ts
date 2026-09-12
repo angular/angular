@@ -34,7 +34,7 @@ export function matchObjectShape<T>(
     _matcherUtils = matcherUtils;
     if (!shapePredicate(actual)) return false;
     for (const key in expected) {
-      if (expected.hasOwnProperty(key) && !matcherUtils.equals(actual[key], expected[key])) {
+      if (Object.hasOwn(expected, key) && !matcherUtils.equals(actual[key], expected[key])) {
         return false;
       }
     }
@@ -46,7 +46,7 @@ export function matchObjectShape<T>(
       return `Expecting ${pp(expect)} got ${pp(_actual)}`;
     }
     for (const key in expected) {
-      if (expected.hasOwnProperty(key) && !_matcherUtils.equals(_actual[key], expected[key]))
+      if (Object.hasOwn(expected, key) && !_matcherUtils.equals(_actual[key], expected[key]))
         errors.push(`\n  property obj.${key} to equal ${expected[key]} but got ${_actual[key]}`);
     }
     return errors.join('\n');
@@ -162,7 +162,7 @@ export function matchDomElement(
     }
     if (expectedAttrs) {
       for (const attrName in expectedAttrs) {
-        if (expectedAttrs.hasOwnProperty(attrName)) {
+        if (Object.hasOwn(expectedAttrs, attrName)) {
           const expectedAttrValue = expectedAttrs[attrName];
           const actualAttrValue = actual.getAttribute(attrName);
           if (expectedAttrValue !== actualAttrValue) {

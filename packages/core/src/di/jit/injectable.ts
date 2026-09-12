@@ -36,7 +36,7 @@ export function compileInjectable(type: Type<any>, meta?: Injectable): void {
   let ngFactoryDef: any = null;
 
   // if NG_PROV_DEF is already defined on this class then don't overwrite it
-  if (!type.hasOwnProperty(NG_PROV_DEF)) {
+  if (!Object.hasOwn(type, NG_PROV_DEF)) {
     Object.defineProperty(type, NG_PROV_DEF, {
       get: () => {
         if (ngInjectableDef === null) {
@@ -57,7 +57,7 @@ export function compileInjectable(type: Type<any>, meta?: Injectable): void {
   }
 
   // if NG_FACTORY_DEF is already defined on this class then don't overwrite it
-  if (!type.hasOwnProperty(NG_FACTORY_DEF)) {
+  if (!Object.hasOwn(type, NG_FACTORY_DEF)) {
     Object.defineProperty(type, NG_FACTORY_DEF, {
       get: () => {
         if (ngFactoryDef === null) {

@@ -9,12 +9,13 @@
 import type {ɵFrameworkAgnosticGlobalUtils as GlobalUtils} from '@angular/core';
 import {getAppRoots} from '../../directive-forest/component-tree/get-roots';
 import {Framework} from '../../directive-forest/core-enums';
+import {AngularDevtoolsError} from '../utils/error';
 
 /** Returns a handle to window.ng APIs (global angular debugging). */
 export const ngDebugClient = () => {
   if (typeof (window as any).ng === 'undefined') {
-    throw new Error(
-      'Angular DevTools: Angular debugging APIs are not available. Ensure that your Angular app is in development mode and does not invoke `enableProdMode()`.',
+    throw new AngularDevtoolsError(
+      'Angular debugging APIs are not available. Ensure that your Angular app is in development mode and does not invoke `enableProdMode()`.',
     );
   }
   return (window as any).ng as Partial<GlobalUtils>;
@@ -57,7 +58,7 @@ export function ngDebugProfilerApiIsSupported(): boolean {
   // Temporary solution. Convert to an eligible API when available.
   // https://github.com/angular/angular/pull/60585#discussion_r2017047132
   // If there is a Wiz application, make Profiler API unavailable.
-  const roots = getAppRoots();
+  const roots = getAppRoots().filter((el) => ng.getComponent?.(el));
   return (
     !!roots.length &&
     !roots.some((el) => {
@@ -97,7 +98,7 @@ export function ngDebugSignalPropertiesInspectionApiIsSupported(): boolean {
   const ng = ngDebugClient();
 
   // If all apps are Angular, make the API available.
-  const roots = getAppRoots();
+  const roots = getAppRoots().filter((el) => ng.getComponent?.(el));
   return (
     !!roots.length &&
     roots.every((el) => {

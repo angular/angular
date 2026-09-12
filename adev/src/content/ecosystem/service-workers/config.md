@@ -201,7 +201,7 @@ export interface DataGroup {
 
 Each `DataGroup` is defined by the following data group properties.
 
-#### `name`
+#### `name` {#datagroups-name}
 
 Similar to `assetGroups`, every data group has a `name` which uniquely identifies it.
 
@@ -318,7 +318,7 @@ If you are not able to implement CORS — for example, if you don't control the 
 
 </docs-callout>
 
-#### `cacheQueryOptions`
+#### `cacheQueryOptions` {#datagroups-cachequeryoptions}
 
 See [assetGroups](#assetgroups) for details.
 

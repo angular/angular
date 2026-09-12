@@ -864,6 +864,68 @@ describe('Animation', () => {
       expect(fixture.debugElement.query(By.css('div'))).toBeNull();
     }));
 
+    it('should wait for the longest duplicate-named animation when getAnimations is empty', fakeAsync(() => {
+      const multiple = `
+        .duplicate-animation-name {
+          animation:
+            duplicate-name 10s linear,
+            duplicate-name 20s linear;
+        }
+        @keyframes duplicate-name {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+      @Component({
+        changeDetection: ChangeDetectionStrategy.Eager,
+        selector: 'test-cmp',
+        styles: multiple,
+        template:
+          '@if (show()) { <p animate.leave="duplicate-animation-name">Element with text</p> }',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      const paragraph = fixture.debugElement.query(By.css('p'));
+      const getAnimations = paragraph.nativeElement.getAnimations.bind(paragraph.nativeElement);
+      spyOn(paragraph.nativeElement, 'getAnimations').and.returnValue([]);
+
+      expect(paragraph.nativeElement.className).not.toContain('duplicate-animation-name');
+      cmp.show.set(false);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      expect(cmp.show()).toBeFalse();
+      fixture.detectChanges();
+      expect(paragraph.nativeElement.className).toContain('duplicate-animation-name');
+
+      const [shortAnimation, longAnimation] = getAnimations();
+      const dispatchAnimationEnd = (animation: Animation) => {
+        const event = new AnimationEvent('animationend', {animationName: 'duplicate-name'});
+        Object.defineProperty(event, 'animation', {value: animation});
+        paragraph.nativeElement.dispatchEvent(event);
+      };
+
+      dispatchAnimationEnd(shortAnimation);
+      tick();
+      expect(fixture.nativeElement.outerHTML).toContain('duplicate-animation-name');
+
+      dispatchAnimationEnd(longAnimation);
+      tick();
+      expect(fixture.nativeElement.outerHTML).not.toContain('duplicate-animation-name');
+      expect(fixture.debugElement.query(By.css('p'))).toBeNull();
+    }));
+
     describe('legacy animations compatibility', () => {
       beforeAll(() => {
         TestBed.resetTestEnvironment();
@@ -2247,20 +2309,6 @@ describe('Animation', () => {
 
   describe('animation queue timing', () => {
     it('should run animations with a fresh componentRef after destroy', fakeAsync(() => {
-      const animateStyles = `
-        .fade {
-          animation: fade-out 500ms;
-        }
-        @keyframes fade-out {
-          from {
-            opacity: 1;
-          }
-          to {
-            opacity: 0;
-          }
-        }
-      `;
-
       @Component({
         selector: 'app-control-panel',
         template: `
@@ -2271,7 +2319,6 @@ describe('Animation', () => {
             <p class="all-there-is">THIS SHOULD BE ALL THERE IS</p>
           }
         `,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class StepperComponent {
         readonly step = signal(0);
@@ -2280,7 +2327,6 @@ describe('Animation', () => {
       @Component({
         selector: 'app-dynamic',
         template: `<ng-container #dynamicComponent></ng-container>`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class DynamicComponent implements AfterViewInit, OnDestroy {
         @ViewChild('dynamicComponent', {read: ViewContainerRef})
@@ -2517,7 +2563,6 @@ describe('Animation', () => {
             </div>
           </ng-template>
         `,
-        changeDetection: ChangeDetectionStrategy.OnPush,
         encapsulation: ViewEncapsulation.None,
       })
       class MenuComponent {
@@ -2678,8 +2723,7 @@ describe('Animation', () => {
       const panels = () => Array.from(fixture.nativeElement.querySelectorAll('.panel'));
       const panelByText = (text: string) =>
         panels().find((el) => (el as HTMLElement).textContent?.includes(text)) as
-          | HTMLElement
-          | undefined;
+          HTMLElement | undefined;
 
       expect(panels().length).toBe(1);
       expect(panelByText('Panel A')).toBeTruthy();

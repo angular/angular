@@ -214,7 +214,6 @@ describe('Integration', () => {
             isActive: {{ rla.isActive }}
           </div>
         `,
-        changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
       class OnPushComponent {}

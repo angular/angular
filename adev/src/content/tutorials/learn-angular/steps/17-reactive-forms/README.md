@@ -110,7 +110,7 @@ handleSubmit() {
 You have access to the form values, now it is time to handle the submission event and use the `handleSubmit` method.
 Angular has an event handler for this specific purpose called `ngSubmit`. Update the form element to call the `handleSubmit` method when the form is submitted.
 
-```angular-html {highlight:[3]}
+```angular-html {highlight:[1]}
 <form [formGroup]="profileForm" (ngSubmit)="handleSubmit()"></form>
 ```
 

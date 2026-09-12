@@ -7,18 +7,24 @@
  */
 
 import {
+  afterNextRender,
+  afterRenderEffect,
   Component,
   computed,
-  effect,
+  DestroyRef,
   ElementRef,
   input,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
+import {MatIcon} from '@angular/material/icon';
 
 import {FlatNode} from '../component-data-source';
-import {MatIcon} from '@angular/material/icon';
+import {Debouncer} from '../../../../shared/utils/debouncer';
+
+const RESIZE_DEBOUNCE = 100;
 
 @Component({
   selector: 'ng-breadcrumbs',
@@ -57,11 +63,30 @@ export class BreadcrumbsComponent {
     | undefined
   >(undefined);
 
-  constructor() {
-    effect((cleanup) => {
-      const observer = new ResizeObserver(() => this.updateScrollButtonVisibility());
+  constructor(destroyRef: DestroyRef) {
+    const debouncer = new Debouncer();
+    const observer = new ResizeObserver(
+      debouncer.debounce(() => {
+        this.updateScrollButtonVisibility();
+      }, RESIZE_DEBOUNCE),
+    );
+
+    afterNextRender(() => {
       observer.observe(this.breadcrumbsScrollContent().nativeElement);
-      cleanup(() => observer.disconnect());
+    });
+
+    afterRenderEffect({
+      read: () => {
+        // We use the parents as a dependency to trigger a layout
+        // update that would show the navigation buttons.
+        this.parents();
+        untracked(() => this.updateScrollButtonVisibility());
+      },
+    });
+
+    destroyRef.onDestroy(() => {
+      debouncer.cancel();
+      observer.disconnect();
     });
   }
 

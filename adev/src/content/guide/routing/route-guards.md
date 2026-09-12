@@ -142,8 +142,7 @@ export const featureToggleGuard: CanMatchFn = (
 
 It can also allow you to use different components for the same path.
 
-```ts
-// 📄 routes.ts
+```ts {header: "routes.ts"}
 const routes: Routes = [
   {
     path: 'dashboard',

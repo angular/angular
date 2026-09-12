@@ -35,6 +35,17 @@
       />
       <label for="show-hydration-overlays">Show hydration overlays</label>
     </li>
+    <li>
+      <input
+        id="show-cd-in-explorer"
+        type="checkbox"
+        (change)="settings.showCdInExplorer.set($event.target.checked)"
+        [checked]="settings.showCdInExplorer()"
+      />
+      <label for="show-cd-in-explorer"
+        >Show change detection data next to nodes (experimental)</label
+      >
+    </li>
   </ul>
 
   <h3>Profiling</h3>
@@ -48,6 +59,17 @@
       />
       <label for="enable-performance-track"
         >Enable Angular’s performance track in the Chrome DevTools profiler</label
+      >
+    </li>
+    <li>
+      <input
+        id="highlight-change-detection"
+        type="checkbox"
+        (change)="settings.highlightChangeDetection.set($event.target.checked)"
+        [checked]="settings.highlightChangeDetection()"
+      />
+      <label for="highlight-change-detection"
+        >Highlight components undergoing change detection (experimental)</label
       >
     </li>
   </ul>

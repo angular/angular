@@ -13,7 +13,8 @@ When reviewing a pull request for the `angular` repository, follow these essenti
 
 2. **Key Focus Areas**:
    - **Comprehensive Reviews**: You **MUST always** perform a deep, comprehensive review of the _entire_ pull request. If the user asks you to look into a specific issue, file, or area of concern, you must investigate that specific area _in addition to_ reviewing the rest of the PR's substantive changes. Do not terminate your review after addressing only the user's focal point.
-   - **Package-Specific Guidelines**: Check if there are specific guidelines for the package being modified in the `reference/` directory (e.g., `reference/router.md`). Always prioritize these rules for their respective packages.
+   - **Package-Specific & Topic Guidelines**: Check if there are specific guidelines for the package or topic being modified in the `reference/` directory (e.g., `reference/router.md` or `reference/object_create_null.md`). Always prioritize these rules for their respective areas.
+   - **Prototype Collision & `Object.create(null)` PRs**: When reviewing PRs that swap `{}` for `Object.create(null)`, consult `reference/object_create_null.md` for technical evaluation criteria and rules.
    - **Commit Messages**: Evaluate the quality of commit messages. They should explain the _why_ behind the change, not just the _what_. Someone should be able to look at the commit history years from now and clearly understand the context and reasoning for the change.
    - **Code Cleanliness**: Ensure the code is readable, maintainable, and follows Angular's project standards.
    - **Performance**: Look out for code that might negatively impact runtime performance or bundle size, particularly in hot paths like change detection or rendering.

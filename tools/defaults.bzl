@@ -14,9 +14,9 @@ load("//tools/bazel:esbuild.bzl", _esbuild = "esbuild", _esbuild_checked_in = "e
 load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_test", _jasmine_test = "jasmine_test", _zone_compatible_jasmine_test = "zone_compatible_jasmine_test", _zoneless_jasmine_test = "zoneless_jasmine_test")
 load("//tools/bazel:js_defs.bzl", _js_binary = "js_binary", _js_run_binary = "js_run_binary", _js_test = "js_test")
 load("//tools/bazel:npm_packages.bzl", _ng_package = "ng_package", _npm_package = "npm_package")
-load("//tools/bazel:protractor_test.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
 load("//tools/bazel:web_test.bzl", _ng_web_test_suite = "ng_web_test_suite", _web_test = "web_test", _zoneless_web_test_suite = "zoneless_web_test_suite")
+load("//tools/bazel:webdriver_test.bzl", _webdriver_test = "webdriver_test")
 
 extract_types = _extract_types
 esbuild = _esbuild
@@ -36,7 +36,7 @@ web_test = _web_test
 sass_binary = _sass_binary
 sass_library = _sass_library
 npm_sass_library = _npm_sass_library
-protractor_web_test_suite = _protractor_web_test_suite
+webdriver_test = _webdriver_test
 esbuild_checked_in = _esbuild_checked_in
 http_server = _http_server
 api_golden_test = _api_golden_test

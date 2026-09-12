@@ -157,7 +157,7 @@ export function createCustomElement<P>(
         // strategy.
         // TODO(alxhub): why are we doing this? this makes no sense.
         inputs.forEach(({propName, transform}) => {
-          if (!this.hasOwnProperty(propName)) {
+          if (!Object.hasOwn(this, propName)) {
             // No pre-existing value for `propName`.
             return;
           }

@@ -9,6 +9,7 @@
 import {EventEmitter} from '@angular/core';
 import {Highlight, HighlightLabelDefinition, HighlightTemplate, HighlightType} from './highlights';
 import {OVERLAY_CLASS} from './dom';
+import {debugLog} from '../utils/log';
 
 function createTemplate(overrides?: Partial<HighlightTemplate<any>>): HighlightTemplate<any> {
   return {
@@ -131,6 +132,21 @@ describe('Highlight', () => {
 
       expect(document.body.querySelectorAll('.' + OVERLAY_CLASS).length).toBe(1);
     });
+
+    it('should destroy the highlight after the configured TTL elapses', () => {
+      jasmine.clock().install();
+
+      const highlight = createHighlight(createTemplate({ttl: 1000}), {
+        title: document.createElement('div'),
+      });
+
+      highlight.display();
+      jasmine.clock().tick(1000);
+
+      expect(getOverlay()).toBeNull();
+
+      jasmine.clock().uninstall();
+    });
   });
 
   describe('hide', () => {
@@ -222,12 +238,12 @@ describe('Highlight', () => {
       const highlight = createHighlight(createTemplate(), {
         title: document.createElement('div'),
       });
-      spyOn(console, 'warn');
+      spyOn(debugLog, 'warn');
 
       highlight.destroy();
       highlight.destroy();
 
-      expect(console.warn).toHaveBeenCalledOnceWith(
+      expect(debugLog.warn).toHaveBeenCalledOnceWith(
         'The highlight has already been destroyed. Check references storing.',
       );
     });

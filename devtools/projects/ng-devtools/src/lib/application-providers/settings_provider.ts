@@ -116,6 +116,12 @@ export function applyMigrations(
       // - router_graph_enabled@general
       // - signal_graph_enabled@general
       // - transfer_state_enabled@general
+
+      // New flags that are part of SettingsDataV2.
+      // We set them to `undefined` to meet the type requirements
+      // since the SettingsStore is responsible for the initial/default values.
+      'highlight_change_detection@profiling': undefined as any,
+      'show_cd_in_explorer@components': undefined as any,
     };
 
     dataCopy = newData as unknown as {[key: string]: unknown};

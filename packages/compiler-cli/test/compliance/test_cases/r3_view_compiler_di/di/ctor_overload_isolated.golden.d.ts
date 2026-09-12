@@ -4,7 +4,7 @@ declare class MyDependency {
 export declare class MyService {
     constructor(dep: MyDependency);
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, [null, { optional: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export {};
 

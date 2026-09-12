@@ -107,7 +107,11 @@ export class ActivateRoutes {
 
     if (context && context.outlet) {
       const componentRef = context.outlet.detach();
-      const contexts = context.children.onOutletDeactivated();
+      // Reset child contexts so subsequent activations in this outlet do not mutate the detached
+      // tree (see #57285). The detached outlets are still alive, so `onOutletDeactivated()` (which
+      // the destruction path uses to prune) is intentionally not called here.
+      const contexts = context.children.contexts;
+      context.resetChildren();
       this.routeReuseStrategy.store(route.value.snapshot, {componentRef, route, contexts});
     }
   }

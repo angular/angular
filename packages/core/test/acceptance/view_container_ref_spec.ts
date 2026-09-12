@@ -308,6 +308,71 @@ describe('ViewContainerRef', () => {
 
       // Also test with selector that has element name in uppercase
       runTestWithSelectors('SVG[some-attr]', 'MATH[some-attr]');
+
+      it('should inherit the namespace of the insertion context for dynamic host elements', () => {
+        @Component({
+          selector: 'g[dynamic-group]',
+          template: '<svg:text>SVG content</svg:text>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class SvgGroupComp {}
+
+        @Component({
+          template: '<svg><ng-container #container></ng-container></svg>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({imports: [TestComp, SvgGroupComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.container.createComponent(SvgGroupComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe('http://www.w3.org/2000/svg');
+        expect(componentRef.location.nativeElement.tagName.toLowerCase()).toBe('g');
+      });
+
+      it('should use the HTML namespace inside an SVG foreignObject', () => {
+        @Component({
+          selector: 'div[dynamic-html]',
+          template: 'HTML content',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class HtmlComp {}
+
+        @Component({
+          template: `
+            <svg>
+              <foreignObject>
+                <div #container></div>
+              </foreignObject>
+            </svg>
+          `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({imports: [TestComp, HtmlComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.container.createComponent(HtmlComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe(
+          'http://www.w3.org/1999/xhtml',
+        );
+      });
     });
 
     it('should apply attributes and classes to host element based on selector', () => {

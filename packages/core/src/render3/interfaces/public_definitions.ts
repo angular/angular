@@ -82,7 +82,7 @@ export type ɵɵInjectorDeclaration<T> = unknown;
  */
 export type ɵɵFactoryDeclaration<T, CtorDependencies extends CtorDependency[]> = (
   parent?: Type<any>,
-) => T;
+) => any;
 
 /**
  * An object literal of this type is used to represent the metadata of a constructor dependency.

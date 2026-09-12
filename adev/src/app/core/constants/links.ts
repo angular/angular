@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+export const ANGULAR_DEV = 'https://angular.dev';
+
 export const ANGULAR_LINKS = {
   GITHUB: 'https://github.com/angular/angular',
   X: 'https://x.com/angular',

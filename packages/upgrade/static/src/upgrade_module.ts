@@ -151,7 +151,7 @@ export class UpgradeModule {
   /**
    * The AngularJS `$injector` for the upgrade application.
    */
-  public $injector: any /*angular.IInjectorService*/;
+  public $injector: any; /*angular.IInjectorService*/
   /** The Angular Injector **/
   public injector: Injector;
   private readonly applicationRef: ApplicationRef;
@@ -266,7 +266,7 @@ export class UpgradeModule {
                 );
 
                 // the `flush` method will be present when ngMocks is used
-                if (intervalDelegate.hasOwnProperty('flush')) {
+                if (Object.hasOwn(intervalDelegate, 'flush')) {
                   (wrappedInterval as any)['flush'] = () => {
                     (intervalDelegate as any)['flush']();
                     return wrappedInterval;

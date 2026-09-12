@@ -130,7 +130,7 @@ export function isComponentDefPendingResolution(type: Type<any>): boolean {
 
 export function componentNeedsResolution(component: Component): boolean {
   return !!(
-    (component.templateUrl && !component.hasOwnProperty('template')) ||
+    (component.templateUrl && !Object.hasOwn(component, 'template')) ||
     component.styleUrls?.length ||
     component.styleUrl
   );

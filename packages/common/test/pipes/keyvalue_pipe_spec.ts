@@ -100,6 +100,38 @@ describe('KeyValuePipe', () => {
       expect(pipe.transform(value)).toEqual(null);
     });
 
+    it('should preserve a literal key union instead of widening it to string', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input: Record<'a' | 'b', number> = {a: 1, b: 2};
+      const result = pipe.transform(input);
+
+      // Compile-time check: if `key` had widened back to plain `string`, this
+      // assignment would fail to compile — that's the actual bug from #43883.
+      const key: 'a' | 'b' = result[0].key;
+
+      expect(key).toBe('a');
+      expect(result).toEqual([
+        {key: 'a', value: 1},
+        {key: 'b', value: 2},
+      ]);
+    });
+
+    it('should still collapse a numerically-keyed object to string keys', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      const input: Record<1 | 2, string> = {1: 'one', 2: 'two'};
+      const result = pipe.transform(input);
+
+      // Numeric keys become strings at runtime (Object.keys() always returns
+      // strings), so `key` should stay `string`, not narrow to `1 | 2`.
+      const key: string = result[0].key;
+
+      expect(key).toBe('1');
+      expect(result).toEqual([
+        {key: '1', value: 'one'},
+        {key: '2', value: 'two'},
+      ]);
+    });
+
     it('should accept an object with optional keys', () => {
       interface MyInterface {
         one: string;

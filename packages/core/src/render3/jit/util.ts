@@ -8,11 +8,16 @@
 
 import {isForwardRef, resolveForwardRef} from '../../di/forward_ref';
 import {ModuleWithProviders} from '../../di/interface/provider';
+import {ForeignComponent, RENDER} from '../../interface/foreign_component';
 import {Type} from '../../interface/type';
 import {NgModuleDef} from '../../metadata/ng_module_def';
 import {getComponentDef, getDirectiveDef, getPipeDef, getNgModuleDef} from '../def_getters';
 import type {ComponentType, DirectiveType, PipeType} from '../interfaces/definition';
 import {stringifyForError} from '../util/stringify_utils';
+
+export function isForeignComponent(value: any): value is ForeignComponent {
+  return typeof value === 'object' && value !== null && RENDER in value;
+}
 
 export function isModuleWithProviders(value: any): value is ModuleWithProviders<{}> {
   return (value as {ngModule?: any}).ngModule !== undefined;
@@ -74,6 +79,12 @@ export function verifyStandaloneImport(depType: Type<unknown>, importingType: Ty
           `A module with providers was imported from "${stringifyForError(
             importingType,
           )}". Modules with providers are not supported in standalone components imports.`,
+        );
+      } else if (isForeignComponent(depType)) {
+        throw new Error(
+          `A foreign component, imported from "${stringifyForError(
+            importingType,
+          )}", cannot be imported using 'imports'. Foreign components are only supported in AOT mode and must be registered in 'foreignImports'.`,
         );
       } else {
         throw new Error(

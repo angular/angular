@@ -124,7 +124,7 @@ Include [interpolations](guide/templates/binding#render-dynamic-text-with-text-i
 $localize`string_to_translate ${variable_name}`;
 ```
 
-### Name the interpolation placeholder
+### Name the interpolation placeholder {#name-the-interpolation-placeholder-in-code}
 
 ```ts
 $localize`string_to_translate ${variable_name}:placeholder_name:`;
@@ -265,7 +265,7 @@ other { default_quantity }
 
 HELPFUL: For more information about pluralization categories, see [Choosing plural category names][UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames] in the [CLDR - Unicode Common Locale Data Repository][UnicodeCldrMain].
 
-<docs-callout header='Background: Locales may not support some pluralization categories'>
+<docs-callout title="Background: Locales may not support some pluralization categories">
 
 Many locales don't support some of the pluralization categories.
 The default locale \(`en-US`\) uses a very simple `plural()` function that doesn't support the `few` pluralization category.

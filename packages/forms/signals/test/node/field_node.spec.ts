@@ -1570,10 +1570,7 @@ describe('FieldNode', () => {
     });
 
     it('should immediately update value on reset even if a debounce is pending', async () => {
-      let resolveDebounce: (value: void | PromiseLike<void>) => void;
-      const debouncePromise = new Promise<void>((resolve) => {
-        resolveDebounce = resolve;
-      });
+      const {promise: debouncePromise, resolve: resolveDebounce} = Promise.withResolvers<void>();
 
       const model = signal('initial');
       const f = form(
@@ -1598,7 +1595,7 @@ describe('FieldNode', () => {
       expect(f().controlValue()).toBe('reset value');
 
       // 3. Resolve the debounce
-      resolveDebounce!();
+      resolveDebounce();
       await Promise.resolve(); // Wait for promise microtasks
 
       // Value should STILL be 'reset value', not 'user input'
@@ -1635,10 +1632,7 @@ describe('FieldNode', () => {
     });
 
     it('should abort pending debounce on reset without value and not trigger further sync', async () => {
-      let resolveDebounce: (value: void | PromiseLike<void>) => void;
-      const debouncePromise = new Promise<void>((resolve) => {
-        resolveDebounce = resolve;
-      });
+      const {promise: debouncePromise, resolve: resolveDebounce} = Promise.withResolvers<void>();
 
       const model = signal('initial');
       const f = form(
@@ -1664,7 +1658,7 @@ describe('FieldNode', () => {
       expect(f().controlValue()).toBe('initial');
 
       // 3. Resolve the debounce
-      resolveDebounce!();
+      resolveDebounce();
       await Promise.resolve(); // Wait for promise microtasks
 
       // value.set should NEVER have been called during or after reset
@@ -1673,10 +1667,7 @@ describe('FieldNode', () => {
     });
 
     it('should abort pending debounce on reset with new value and only call value.set once immediately', async () => {
-      let resolveDebounce: (value: void | PromiseLike<void>) => void;
-      const debouncePromise = new Promise<void>((resolve) => {
-        resolveDebounce = resolve;
-      });
+      const {promise: debouncePromise, resolve: resolveDebounce} = Promise.withResolvers<void>();
 
       const model = signal('initial');
       const f = form(
@@ -1704,7 +1695,7 @@ describe('FieldNode', () => {
       expect(f().value.set).toHaveBeenCalledWith('reset value');
 
       // 3. Resolve the debounce
-      resolveDebounce!();
+      resolveDebounce();
       await Promise.resolve(); // Wait for promise microtasks
 
       // value.set should STILL have only been called once (the immediate one)

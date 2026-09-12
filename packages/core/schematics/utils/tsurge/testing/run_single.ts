@@ -8,10 +8,10 @@
 
 import {absoluteFrom, AbsoluteFsPath, getFileSystem} from '@angular/compiler-cli';
 import {MockFileSystem} from '@angular/compiler-cli/private/testing';
-import {TsurgeFunnelMigration, TsurgeMigration} from '../migration';
-import {groupReplacementsByFile} from '../helpers/group_replacements';
-import {applyTextUpdates} from '../replacement';
 import ts from 'typescript';
+import {groupReplacementsByFile} from '../helpers/group_replacements';
+import {TsurgeFunnelMigration, TsurgeMigration} from '../migration';
+import {applyTextUpdates} from '../replacement';
 import {TestRun} from './test_run';
 
 /**
@@ -46,7 +46,6 @@ export async function runTsurgeMigration<Stats>(
     absoluteFrom('/tsconfig.json'),
     JSON.stringify({
       compilerOptions: {
-        strict: true,
         rootDir: '/',
         ...compilerOptions,
       },

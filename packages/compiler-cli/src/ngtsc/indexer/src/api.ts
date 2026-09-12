@@ -8,6 +8,8 @@
 
 import {
   AST,
+  TmplAstBoundAttribute,
+  TmplAstBoundEvent,
   TmplAstComponent,
   TmplAstDirective,
   TmplAstElement,
@@ -15,6 +17,7 @@ import {
   TmplAstNode,
   TmplAstReference,
   TmplAstTemplate,
+  TmplAstTextAttribute,
   TmplAstVariable,
 } from '@angular/compiler';
 import {DeclarationNode} from '../../reflection';
@@ -33,6 +36,9 @@ export enum IdentifierKind {
   LetDeclaration,
   Component,
   Directive,
+  Input,
+  Output,
+  Pipe,
 }
 
 /**
@@ -138,9 +144,25 @@ export interface VariableIdentifier extends TemplateIdentifier {
   kind: IdentifierKind.Variable;
 }
 
-/** Describes a `@let` declaration in a template. */
+/** Describes an `@let` declaration in a template. */
 export interface LetDeclarationIdentifier extends TemplateIdentifier {
   kind: IdentifierKind.LetDeclaration;
+}
+
+/** Describes a bound attribute or event in a template targeting an Angular input/output. */
+export interface BoundAttributeIdentifier<T = DeclarationNode> extends TemplateIdentifier {
+  kind: IdentifierKind.Input | IdentifierKind.Output;
+  target: {
+    node: T;
+  } | null;
+}
+
+/** Describes a pipe used in a template expression. */
+export interface PipeIdentifier<T = DeclarationNode> extends TemplateIdentifier {
+  kind: IdentifierKind.Pipe;
+  target: {
+    node: T;
+  } | null;
 }
 
 /**
@@ -156,7 +178,9 @@ export type TopLevelIdentifier<T = DeclarationNode> =
   | MethodIdentifier<T>
   | LetDeclarationIdentifier
   | ComponentNodeIdentifier<T>
-  | DirectiveNodeIdentifier<T>;
+  | DirectiveNodeIdentifier<T>
+  | BoundAttributeIdentifier<T>
+  | PipeIdentifier<T>;
 
 /** Identifiers that can bring in directives to the template. */
 export type DirectiveHostIdentifier<T = DeclarationNode> =
@@ -207,9 +231,13 @@ export interface AbstractBoundTemplate<T> {
         directive: {ref: {node: T}};
       }
     | null;
+  getConsumerOfBinding?(
+    binding: TmplAstBoundAttribute | TmplAstBoundEvent | TmplAstTextAttribute,
+  ): {ref: {node: T}} | TmplAstElement | TmplAstTemplate | null;
   getExpressionTarget(ast: AST): TmplAstReference | TmplAstVariable | TmplAstLetDeclaration | null;
   getUsedDirectives(): Array<{ref: {node: T}; isComponent: boolean}>;
   getTemplateAst(): TmplAstNode[] | undefined;
+  getPipe(name: string): {ref: {node: T}} | null;
 }
 
 /**

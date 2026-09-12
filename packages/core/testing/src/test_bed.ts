@@ -18,10 +18,12 @@ import {
   ComponentRef,
   ɵDeferBlockBehavior as DeferBlockBehavior,
   Directive,
+  DirectiveWithBindings,
   EnvironmentInjector,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetComponentDef as getComponentDef,
+  ɵgetDirectiveDef as getDirectiveDef,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode as getUnknownPropertyStrictMode,
   ɵinferTagNameFromDefinition as inferTagNameFromDefinition,
@@ -40,9 +42,11 @@ import {
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
   Type,
+  ViewEncapsulation,
+  ɵɵdefineComponent,
 } from '../../src/core';
 
-import {ComponentFixture} from './component_fixture';
+import {AbstractFixture, ComponentFixture, DirectiveFixture} from './fixture';
 import {MetadataOverride} from './metadata_override';
 import {
   ANIMATIONS_ENABLED_DEFAULT,
@@ -81,6 +85,18 @@ export interface TestComponentOptions {
    * Otherwise `div` will be used as its tag name.
    */
   inferTagName?: boolean;
+}
+
+/**
+ * Options that can be configured for a test directive.
+ *
+ * @publicApi 22.2
+ */
+export interface TestDirectiveOptions {
+  tagName?: string;
+
+  /** Bindings to apply to the test directive. */
+  bindings?: Binding[];
 }
 
 /**
@@ -170,6 +186,8 @@ export interface TestBed {
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBed;
 
   createComponent<T>(component: Type<T>, options?: TestComponentOptions): ComponentFixture<T>;
+
+  createDirective<T>(directive: Type<T>, options?: TestDirectiveOptions): DirectiveFixture<T>;
 
   /**
    * Returns the most recently created `ComponentFixture`, or throws an error if one has not
@@ -420,6 +438,13 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.createComponent(component, options);
   }
 
+  static createDirective<T>(
+    directive: Type<T>,
+    options?: TestDirectiveOptions,
+  ): DirectiveFixture<T> {
+    return TestBedImpl.INSTANCE.createDirective(directive, options);
+  }
+
   static getLastFixture<T = unknown>(): ComponentFixture<T> {
     return TestBedImpl.INSTANCE.getLastFixture();
   }
@@ -455,8 +480,7 @@ export class TestBedImpl implements TestBed {
 
   private _compiler: TestBedCompiler | null = null;
   private _testModuleRef: NgModuleRef<any> | null = null;
-
-  private _activeFixtures: ComponentFixture<any>[] = [];
+  private _activeFixtures: AbstractFixture<unknown>[] = [];
 
   /**
    * Internal-only flag to indicate whether a module
@@ -678,56 +702,114 @@ export class TestBedImpl implements TestBed {
   }
 
   createComponent<T>(type: Type<T>, options?: TestComponentOptions): ComponentFixture<T> {
-    if (getAsyncClassMetadataFn(type)) {
-      const isCompiled = !!getComponentDef(type);
-
-      if (!isCompiled) {
-        throw new Error(
-          `Component '${type.name}' has unresolved metadata. ` +
-            `Please call \`await TestBed.compileComponents()\` before running this test.`,
-        );
-      }
-    }
-
     // Note: injecting the renderer before accessing the definition appears to be load-bearing.
-    const testComponentRenderer = this.inject(TestComponentRenderer);
-    const shouldInferTagName = options?.inferTagName ?? this._instanceInferTagName ?? false;
+    const renderer = this.inject(TestComponentRenderer);
     const componentDef = getComponentDef(type);
-    const rootElId = `root${_nextRootElementId++}`;
 
     if (!componentDef) {
+      throw new Error(
+        getAsyncClassMetadataFn(type)
+          ? `Component '${type.name}' has unresolved metadata. ` +
+              `Please call \`await TestBed.compileComponents()\` before running this test.`
+          : `It looks like '${stringify(type)}' has not been compiled.`,
+      );
+    }
+
+    const shouldInferTagName = options?.inferTagName ?? this._instanceInferTagName ?? false;
+    const tagName = shouldInferTagName ? inferTagNameFromDefinition(componentDef) : null;
+    const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
+    const ngZone = noNgZone ? null : this.inject(NgZone, null);
+    const init = () => {
+      const ref = this.createComponentRef(type, tagName, renderer, options?.bindings);
+      const fixture = this.runInInjectionContext(() => new ComponentFixture(ref));
+      this._activeFixtures.push(fixture);
+      return fixture;
+    };
+
+    return ngZone ? ngZone.run(init) : init();
+  }
+
+  createDirective<T>(type: Type<T>, options?: TestDirectiveOptions): DirectiveFixture<T> {
+    const renderer = this.inject(TestComponentRenderer);
+    const directiveDef = getDirectiveDef(type);
+
+    if (!directiveDef) {
       throw new Error(`It looks like '${stringify(type)}' has not been compiled.`);
     }
 
-    testComponentRenderer.insertRootElement(
-      rootElId,
-      shouldInferTagName ? inferTagNameFromDefinition(componentDef) : undefined,
-    );
+    let tagName = options?.tagName;
 
-    const componentFactory = new ComponentFactory(componentDef);
-    const initComponent = () => {
-      const componentRef = componentFactory.create(
-        Injector.NULL,
-        [],
-        `#${rootElId}`,
-        this.testModuleRef,
-        undefined,
-        options?.bindings,
-      ) as ComponentRef<T>;
-      return this.runInInjectionContext(() => new ComponentFixture(componentRef));
-    };
+    if (!tagName) {
+      let tagNameFromSelectors: string | undefined;
+
+      for (const [currentTagName] of directiveDef.selectors) {
+        if (currentTagName) {
+          if (tagNameFromSelectors && currentTagName !== tagNameFromSelectors) {
+            const allTagNames = directiveDef.selectors
+              .filter((selector) => selector[0])
+              .map((selector) => selector[0])
+              .join(', ');
+
+            throw new Error(
+              `Directive ${stringify(type)} specifies multiple tag names in its selector ` +
+                `(${allTagNames}). Specify which tag name should be used via the \`tagName\` ` +
+                `key in the options parameter.`,
+            );
+          }
+          tagNameFromSelectors = currentTagName as string;
+        }
+      }
+
+      tagName = tagNameFromSelectors;
+    }
+
+    if (!tagName) {
+      throw new Error(
+        `Cannot determine tag name for ${stringify(type)}, because one was not set in ` +
+          `the options object and the selector for ${stringify(type)} does not ` +
+          `include a tag name. Specify which tag name should be used via the \`tagName\` ` +
+          `key in the options parameter.`,
+      );
+    }
+
     const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
     const ngZone = noNgZone ? null : this.inject(NgZone, null);
-    const fixture = ngZone ? ngZone.run(initComponent) : initComponent();
-    this._activeFixtures.push(fixture);
-    return fixture;
+    const init = () => {
+      const hostRef = this.createComponentRef(
+        DirectiveTestHost,
+        tagName,
+        renderer,
+        undefined,
+        [
+          options?.bindings
+            ? {
+                type,
+                bindings: options.bindings,
+              }
+            : type,
+        ],
+        true,
+      );
+      const fixture = this.runInInjectionContext(
+        () => new DirectiveFixture(hostRef, hostRef.injector.get(type, null, {self: true})!),
+      );
+      this._activeFixtures.push(fixture);
+      return fixture;
+    };
+
+    return ngZone ? ngZone.run(init) : init();
   }
 
   getLastFixture<T = unknown>(): ComponentFixture<T> {
-    if (this._activeFixtures.length === 0) {
-      throw new Error('No fixture has been created yet.');
+    for (let i = this._activeFixtures.length - 1; i > -1; i--) {
+      const fixture = this._activeFixtures[i];
+
+      if (fixture instanceof ComponentFixture) {
+        return fixture as ComponentFixture<T>;
+      }
     }
-    return this._activeFixtures[this._activeFixtures.length - 1];
+
+    throw new Error('No fixture has been created yet.');
   }
 
   /**
@@ -782,6 +864,30 @@ export class TestBedImpl implements TestBed {
     this.globalCompilationChecked = true;
   }
 
+  private createComponentRef<T>(
+    type: Type<T>,
+    tagName: string | null,
+    renderer: TestComponentRenderer,
+    rootTypeBindings?: Binding[],
+    directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
+    allowNonStandaloneDirectives?: boolean,
+  ) {
+    const rootElId = `root${_nextRootElementId++}`;
+    renderer.insertRootElement(rootElId, tagName ?? undefined);
+    const factory = new ComponentFactory(getComponentDef(type)!);
+
+    return factory.create(
+      Injector.NULL,
+      [],
+      `#${rootElId}`,
+      this.testModuleRef,
+      directives,
+      rootTypeBindings,
+      undefined,
+      allowNonStandaloneDirectives,
+    ) as ComponentRef<T>;
+  }
+
   private destroyActiveFixtures(): void {
     let errorCount = 0;
     this._activeFixtures.forEach((fixture) => {
@@ -789,17 +895,27 @@ export class TestBedImpl implements TestBed {
         fixture.destroy();
       } catch (e) {
         errorCount++;
-        console.error('Error during cleanup of component', {
-          component: fixture.componentInstance,
-          stacktrace: e,
-        });
+
+        if (fixture instanceof ComponentFixture) {
+          console.error('Error during cleanup of component', {
+            component: fixture.componentInstance,
+            stacktrace: e,
+          });
+        } else if (fixture instanceof DirectiveFixture) {
+          console.error('Error during cleanup of directive', {
+            component: fixture.directiveInstance,
+            stacktrace: e,
+          });
+        } else {
+          console.error('Error during cleanup of fixture', e);
+        }
       }
     });
     this._activeFixtures = [];
 
     if (errorCount > 0 && this.shouldRethrowTeardownErrors()) {
       throw Error(
-        `${errorCount} ${errorCount === 1 ? 'component' : 'components'} ` +
+        `${errorCount} ${errorCount === 1 ? 'fixture' : 'fixtures'} ` +
           `threw errors during cleanup`,
       );
     }
@@ -995,4 +1111,18 @@ export function withModule(
     };
   }
   return new InjectSetupWrapper(() => moduleDef);
+}
+
+/** Host component used when creating directives during tests. */
+class DirectiveTestHost {
+  static ɵfac = () => new DirectiveTestHost();
+  static ɵcmp = ɵɵdefineComponent({
+    type: DirectiveTestHost,
+    // Set an attribute on the selector so we don't trigger component ID conflict warnings.
+    selectors: [['div', 'ng-directive-test-component', '']],
+    decls: 0,
+    vars: 0,
+    template: () => {},
+    encapsulation: ViewEncapsulation.None,
+  });
 }

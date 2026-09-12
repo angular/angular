@@ -1,5 +1,5 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//tools:defaults.bzl", "http_server", "ng_project", "protractor_web_test_suite", "ts_project")
+load("//tools:defaults.bzl", "http_server", "ng_project", "ts_project", "webdriver_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -66,16 +66,16 @@ ts_project(
     ]),
     tsconfig = ":e2e/tsconfig-e2e.json",
     deps = [
-        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/@types/jasmine",
         "//:node_modules/@types/node",
         "//:node_modules/@types/selenium-webdriver",
-        "//:node_modules/protractor",
+        "//:node_modules/selenium-webdriver",
         "//packages/private/testing",
     ],
 )
 
-protractor_web_test_suite(
-    name = "protractor_tests",
+webdriver_test(
+    name = "webdriver_tests",
     server = ":devserver",
     deps = [
         ":img_dir_e2e_tests_lib",

@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -47,6 +50,17 @@ export function formGroupNameException(): Error {
     Option 2:  Update ngModel's parent be ngModelGroup (template-driven strategy):
 
     ${ngModelGroupExample}`,
+  );
+}
+
+export function ngModelInChildComponentWarning(containerTypeName: string): string {
+  return formatRuntimeError(
+    RuntimeErrorCode.NGMODEL_IN_CHILD_COMPONENT,
+    `ngModel on a form control inside a child component cannot register with the ${containerTypeName} in the ` +
+      `parent component because @Host() stops injection at the component boundary. ` +
+      `To register this control with the parent form, add viewProviders to the child component: ` +
+      `@Component({ ..., viewProviders: [{ provide: ControlContainer, useExisting: ${containerTypeName} }] }). ` +
+      `Or, to opt out of form registration, use [ngModelOptions]="{standalone: true}".`,
   );
 }
 

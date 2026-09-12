@@ -143,6 +143,7 @@ function addNamesToView(unit: CompilationUnit, baseName: string, state: {index: 
         break;
       case ir.OpKind.ConditionalCreate:
       case ir.OpKind.ConditionalBranchCreate:
+      case ir.OpKind.BoundaryErrorCreate:
       case ir.OpKind.Template:
         if (!(unit instanceof ViewCompilationUnit)) {
           throw new Error(`AssertionError: must be compiling a component`);
@@ -190,6 +191,9 @@ function getVariableName(variable: ir.SemanticVariable, state: {index: number}):
         // special check for that as well.
         const compatPrefix = variable.identifier === CONTEXT_NAME ? 'i' : '';
         variable.name = `${variable.identifier}_${compatPrefix}r${++state.index}`;
+        break;
+      case ir.SemanticVariableKind.BoundaryState:
+        variable.name = `bnd_r${++state.index}`;
         break;
       default:
         // TODO: Prefix increment for compatibility only.

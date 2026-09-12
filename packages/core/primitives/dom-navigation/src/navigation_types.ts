@@ -146,11 +146,13 @@ export declare class NavigateEvent extends Event {
   readonly canIntercept: boolean;
   readonly userInitiated: boolean;
   readonly hashChange: boolean;
+  readonly hasUAVisualTransition: boolean;
   readonly destination: NavigationDestination;
   readonly signal: AbortSignal;
   readonly formData: FormData | null;
   readonly downloadRequest: string | null;
   readonly info?: unknown;
+  readonly sourceElement: Element | null;
 
   intercept(options?: NavigationInterceptOptions): void;
   scroll(): void;
@@ -161,15 +163,28 @@ export interface NavigateEventInit extends EventInit {
   canIntercept?: boolean;
   userInitiated?: boolean;
   hashChange?: boolean;
+  hasUAVisualTransition?: boolean;
   destination: NavigationDestination;
   signal: AbortSignal;
   formData?: FormData | null;
   downloadRequest?: string | null;
   info?: unknown;
+  sourceElement?: Element | null;
+}
+
+export type NavigationInterceptHandler = () => PromiseLike<void> | void;
+export type NavigationPrecommitHandler = (
+  controller: NavigationPrecommitController,
+) => PromiseLike<void> | void;
+
+export interface NavigationPrecommitController {
+  redirect: (url: string, options?: NavigationNavigateOptions) => void;
+  addHandler: (handler: NavigationInterceptHandler) => void;
 }
 
 export interface NavigationInterceptOptions {
-  handler?: () => Promise<void>;
+  precommitHandler?: NavigationPrecommitHandler;
+  handler?: NavigationInterceptHandler;
   focusReset?: 'after-transition' | 'manual';
   scroll?: 'after-transition' | 'manual';
 }

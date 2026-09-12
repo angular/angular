@@ -216,7 +216,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
   }
 
   private _isControlChanged(changes: {[key: string]: any}): boolean {
-    return changes.hasOwnProperty('form');
+    return Object.hasOwn(changes, 'form');
   }
 
   /**

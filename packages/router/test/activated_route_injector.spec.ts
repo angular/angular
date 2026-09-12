@@ -18,7 +18,7 @@ import {
   Router,
   destroyDetachedRouteHandle,
   provideRouter,
-  ɵwithActivatedRouteInjectors,
+  withRouterResources,
 } from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
 
@@ -66,7 +66,7 @@ describe('ActivatedRoute local injector', () => {
   async function setUpRouter(routes: Route[]): Promise<RouterTestingHarness> {
     TestBed.configureTestingModule({
       providers: [
-        provideRouter(routes, ɵwithActivatedRouteInjectors()),
+        provideRouter(routes, withRouterResources()),
         {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
       ],
     });
@@ -76,13 +76,13 @@ describe('ActivatedRoute local injector', () => {
     return await RouterTestingHarness.create();
   }
 
-  it('should create and destroy local injector for routes with ɵUseActivatedRouteInjector', async () => {
+  it('should create and destroy local injector for routes with resources', async () => {
     const harness = await setUpRouter([
       {
         path: 'home',
         component: HomeComponent,
-        'ɵUseActivatedRouteInjector': true,
-      } as any,
+        resources: () => ({}),
+      },
       {
         path: 'away',
         component: AwayComponent,
@@ -107,7 +107,7 @@ describe('ActivatedRoute local injector', () => {
     expect(destroyed).toBe(true);
   });
 
-  it('should NOT create local injector for routes without ɵUseActivatedRouteInjector', async () => {
+  it('should NOT create local injector for routes without resources', async () => {
     const harness = await setUpRouter([
       {
         path: 'home',
@@ -127,8 +127,8 @@ describe('ActivatedRoute local injector', () => {
       {
         path: 'home',
         component: HomeComponent,
-        'ɵUseActivatedRouteInjector': true,
-      } as any,
+        resources: () => ({}),
+      },
       {
         path: 'away',
         component: AwayComponent,
@@ -186,13 +186,13 @@ describe('ActivatedRoute local injector', () => {
       {
         path: 'home',
         component: HomeComponent,
-        'ɵUseActivatedRouteInjector': true,
-      } as any,
+        resources: () => ({}),
+      },
       {
         path: 'throwing',
         component: ThrowingComponent,
-        'ɵUseActivatedRouteInjector': true,
-      } as any,
+        resources: () => ({}),
+      },
     ]);
 
     await harness.navigateByUrl('/home');

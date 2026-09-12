@@ -8,6 +8,7 @@
 
 import {determineLongestAnimation} from '../../src/animation/longest_animation';
 import {LongestAnimation} from '../../src/animation/interfaces';
+import {isLongestAnimation, longestAnimations} from '../../src/animation/utils';
 import {isNode} from '@angular/private/testing';
 
 describe('determineLongestAnimation', () => {
@@ -25,6 +26,33 @@ describe('determineLongestAnimation', () => {
 
     expect(animationsMap.has(el)).toBeFalse();
     expect(el.getAnimations).not.toHaveBeenCalled();
+  });
+
+  it('should tolerate duration rounding when checking the longest animation event', () => {
+    const el = document.createElement('div');
+    longestAnimations.set(el, {
+      animationName: 'duplicate-name',
+      propertyName: undefined,
+      // Equivalent to calc(20s / 3) + calc(1s / 7) after CSSOM serialization.
+      duration: 6809.527,
+    });
+
+    const createAnimationEndEvent = (duration: number) => {
+      const event = new AnimationEvent('animationend', {animationName: 'duplicate-name'});
+      const animation = {
+        playbackRate: 1,
+        effect: {
+          getTiming: () => ({duration, delay: 1000 / 7}),
+        },
+      } as unknown as Animation;
+      Object.defineProperty(event, 'animation', {value: animation});
+      spyOn(event, 'composedPath').and.returnValue([el]);
+      return event;
+    };
+
+    expect(isLongestAnimation(createAnimationEndEvent(20_000 / 3), el)).toBeTrue();
+    expect(isLongestAnimation(createAnimationEndEvent(10_000 / 3), el)).toBeFalse();
+    longestAnimations.delete(el);
   });
 
   describe('with getAnimations() support', () => {

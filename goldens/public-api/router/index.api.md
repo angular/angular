@@ -26,6 +26,7 @@ import { Provider } from '@angular/core';
 import { ProviderToken } from '@angular/core';
 import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
+import { Resource } from '@angular/core';
 import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 import { Title } from '@angular/platform-browser';
@@ -46,6 +47,7 @@ export class ActivatedRoute {
     get pathFromRoot(): ActivatedRoute[];
     get queryParamMap(): Observable<ParamMap>;
     queryParams: Observable<Params>;
+    resources?: ResourceResult;
     get root(): ActivatedRoute;
     get routeConfig(): Route | null;
     snapshot: ActivatedRouteSnapshot;
@@ -71,6 +73,7 @@ export class ActivatedRouteSnapshot {
     // (undocumented)
     get queryParamMap(): ParamMap;
     queryParams: Params;
+    resources?: ResourceResult;
     get root(): ActivatedRouteSnapshot;
     readonly routeConfig: Route | null;
     get title(): string | undefined;
@@ -100,6 +103,9 @@ export class ActivationStart {
     // (undocumented)
     readonly type = EventType.ActivationStart;
 }
+
+// @public
+export type AutoCleanupInjectorsFeature = RouterFeature<RouterFeatureKind.AutoCleanupInjectorsFeature>;
 
 // @public
 export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
@@ -193,7 +199,7 @@ export class ChildrenOutletContexts {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<ChildrenOutletContexts, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<ChildrenOutletContexts>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -204,6 +210,9 @@ export interface ComponentInputBindingOptions {
     queryParams?: boolean;
     unmatchedInputBehavior?: 'alwaysUndefined' | 'undefinedIfStale';
 }
+
+// @public
+export function containsTree(container: UrlTree, containee: UrlTree, options?: Partial<IsActiveMatchOptions>): boolean;
 
 // @public
 export function convertToParamMap(params: Params): ParamMap;
@@ -230,7 +239,7 @@ export class DefaultTitleStrategy extends TitleStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<DefaultTitleStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<DefaultTitleStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -525,13 +534,16 @@ export class NavigationStart extends RouterEvent {
 }
 
 // @public
+export function nonBlocking<T, R extends Resource<T>>(res: R): R;
+
+// @public
 export class NoPreloading implements PreloadingStrategy {
     // (undocumented)
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NoPreloading, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<NoPreloading>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -575,7 +587,7 @@ export class PreloadAllModules implements PreloadingStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PreloadAllModules, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<PreloadAllModules>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -597,7 +609,7 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
 export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
 // @public
-export class RedirectCommand {
+export class RedirectCommand extends Error {
     constructor(redirectTo: UrlTree, navigationBehaviorOptions?: NavigationBehaviorOptions | undefined);
     // (undocumented)
     readonly navigationBehaviorOptions?: NavigationBehaviorOptions | undefined;
@@ -655,6 +667,17 @@ export class ResolveStart extends RouterEvent {
 }
 
 // @public
+export interface ResourceContext {
+    data: Signal<Record<string, any>>;
+    fragment: Signal<string | null>;
+    params: Signal<Params>;
+    queryParams: Signal<Params>;
+}
+
+// @public
+export type ResourceResult = Record<string, Resource<unknown>>;
+
+// @public
 export interface Route {
     canActivate?: Array<CanActivateFn | DeprecatedGuard>;
     canActivateChild?: Array<CanActivateChildFn | DeprecatedGuard>;
@@ -674,6 +697,7 @@ export interface Route {
     providers?: Array<Provider | EnvironmentProviders>;
     redirectTo?: string | RedirectFunction;
     resolve?: ResolveData;
+    resources?: (ctx: ResourceContext) => ResourceResult | Promise<ResourceResult>;
     runGuardsAndResolvers?: RunGuardsAndResolvers;
     title?: string | Type<Resolve<string>> | ResolveFn<string>;
 }
@@ -735,7 +759,7 @@ export class Router {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Router, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<Router>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -763,14 +787,16 @@ export type RouterConfigurationFeature = RouterFeature<RouterFeatureKind.RouterC
 // @public
 export abstract class RouteReuseStrategy {
     abstract retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
+    retrieveStoredRouteHandles?(): Array<DetachedRouteHandle>;
     abstract shouldAttach(route: ActivatedRouteSnapshot): boolean;
+    shouldDestroyInjector?(route: Route): boolean;
     abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
     abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
     abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouteReuseStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<RouteReuseStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -791,7 +817,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | ExperimentalAutoCleanupInjectorsFeature | RouterHashLocationFeature | ExperimentalPlatformNavigationFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | AutoCleanupInjectorsFeature | RouterHashLocationFeature | ExperimentalPlatformNavigationFeature | RouterResourcesFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -955,8 +981,11 @@ export class RouterPreloader implements OnDestroy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterPreloader, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<RouterPreloader>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
+
+// @public
+export type RouterResourcesFeature = RouterFeature<RouterFeatureKind.RouterResourcesFeature>;
 
 // @public
 export class RouterState extends Tree<ActivatedRoute> {
@@ -1026,7 +1055,7 @@ export abstract class TitleStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<TitleStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<TitleStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1046,7 +1075,7 @@ export abstract class UrlHandlingStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<UrlHandlingStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<UrlHandlingStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1100,7 +1129,7 @@ export abstract class UrlSerializer {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<UrlSerializer, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<UrlSerializer>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1137,6 +1166,9 @@ export interface ViewTransitionsFeatureOptions {
 }
 
 // @public
+export function withAutoCleanupInjectors(): AutoCleanupInjectorsFeature;
+
+// @public
 export function withComponentInputBinding(options?: ComponentInputBindingOptions): ComponentInputBindingFeature;
 
 // @public
@@ -1148,8 +1180,8 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
 // @public
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature;
 
-// @public
-export function withExperimentalAutoCleanupInjectors(): ExperimentalAutoCleanupInjectorsFeature;
+// @public @deprecated
+export function withExperimentalAutoCleanupInjectors(): AutoCleanupInjectorsFeature;
 
 // @public
 export function withExperimentalPlatformNavigation(): ExperimentalPlatformNavigationFeature;
@@ -1168,6 +1200,9 @@ export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): Pr
 
 // @public
 export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature;
+
+// @public
+export function withRouterResources(): RouterResourcesFeature;
 
 // @public
 export function withViewTransitions(options?: ViewTransitionsFeatureOptions): ViewTransitionsFeature;

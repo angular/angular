@@ -122,7 +122,7 @@
     }
   }
 
-  :not(.docs-card-container) .docs-card {
+  :not(.docs-card-grid) > .docs-card {
     margin: 1rem 0;
   }
 

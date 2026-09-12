@@ -1141,7 +1141,6 @@ describe('createComponent', () => {
 
     it('should update view of component set with the onPush strategy after input change', () => {
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: 'Value: {{ value }}',
       })
       class DisplayOnPushComponent {

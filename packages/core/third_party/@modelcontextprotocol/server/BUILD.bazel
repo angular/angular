@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "js_library")
+
+genrule(
+    name = "license",
+    srcs = ["//packages/core:node_modules/@modelcontextprotocol/server/dir"],
+    outs = [
+        "LICENSE",
+    ],
+    cmd = """
+        readonly SRC_DIR="$(location //packages/core:node_modules/@modelcontextprotocol/server/dir)"
+        cp "$${SRC_DIR}/LICENSE" "$(location LICENSE)"
+    """,
+)
+
+js_library(
+    name = "server",
+    srcs = [
+        "index.d.ts",
+        ":license",
+    ],
+    visibility = ["//packages/core:__subpackages__"],
+)

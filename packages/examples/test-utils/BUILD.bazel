@@ -4,9 +4,14 @@ package(default_visibility = ["//visibility:public"])
 
 ts_project(
     name = "test-utils",
+    testonly = True,
     srcs = ["index.ts"],
+    tsconfig = "//packages/examples:tsconfig_e2e",
     deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
         "//:node_modules/@types/selenium-webdriver",
+        "//:node_modules/selenium-webdriver",
     ],
 )
 

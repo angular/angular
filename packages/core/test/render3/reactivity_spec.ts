@@ -44,7 +44,7 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {EffectNode} from '../../src/render3/reactivity/effect';
-import {TestBed} from '../../testing';
+import {type ComponentFixture, TestBed} from '../../testing';
 
 describe('reactivity', () => {
   describe('effects', () => {
@@ -349,7 +349,6 @@ describe('reactivity', () => {
 
       const source = signal('');
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         template: '{{ data }}',
       })
       class TestCmp {
@@ -392,7 +391,6 @@ describe('reactivity', () => {
       }
 
       @Component({
-        changeDetection: ChangeDetectionStrategy.OnPush,
         providers: [Service],
         template: '{{ service.data }}',
       })
@@ -439,7 +437,6 @@ describe('reactivity', () => {
       @Component({
         imports: [Dir],
         template: `<ng-template dir let-data>{{ data }}</ng-template>`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class TestCmp {}
 
@@ -485,6 +482,87 @@ describe('reactivity', () => {
 
         fix.destroy();
         expect(destroyed).toBeTrue();
+      });
+
+      it("should stop running a view's remaining effects once an earlier one destroys the view", async () => {
+        const recorder: string[] = [];
+        let fixture: ComponentFixture<TestCmp>;
+
+        @Component({})
+        class TestCmp {
+          readonly counter = signal(0);
+
+          constructor() {
+            // Added first, so it's visited first when the view's effects are flushed.
+            effect(() => {
+              recorder.push(`a: ${this.counter()}`);
+              if (this.counter() === 1) {
+                fixture.destroy();
+              }
+            });
+
+            // Added second. Also dirty in the same flush pass as "a" above, so it must not
+            // run once "a" has destroyed the view partway through that pass.
+            effect(() => {
+              recorder.push(`b: ${this.counter()}`);
+            });
+          }
+        }
+
+        fixture = TestBed.createComponent(TestCmp);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(recorder).toEqual(['a: 0', 'b: 0']);
+
+        fixture.componentInstance.counter.set(1);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(recorder).toEqual(['a: 0', 'b: 0', 'a: 1']);
+      });
+
+      it('should not restart the flush loop once an effect dirties a sibling and destroys the view in the same run', async () => {
+        const recorder: string[] = [];
+        const trigger = signal(0);
+        let fixture: ComponentFixture<TestCmp>;
+
+        @Component({})
+        class TestCmp {
+          readonly counter = signal(0);
+
+          constructor() {
+            // Added first, so it's already had its turn (and was not dirty) earlier in the
+            // same flush pass by the time "a" below dirties it.
+            effect(() => {
+              trigger();
+              recorder.push('b');
+            });
+
+            // Added second. On its second run, dirties "b" above (which sets
+            // HasChildViewsToRefresh on this view) and destroys the view in the same call.
+            // That combination makes the outer while loop want to restart even though the
+            // view is already gone.
+            effect(() => {
+              const value = this.counter();
+              recorder.push(`a: ${value}`);
+              if (value === 1) {
+                trigger.update((v) => v + 1);
+                fixture.destroy();
+              }
+            });
+          }
+        }
+
+        fixture = TestBed.createComponent(TestCmp);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(recorder).toEqual(['b', 'a: 0']);
+
+        fixture.componentInstance.counter.set(1);
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(recorder).toEqual(['b', 'a: 0', 'a: 1']);
       });
 
       it('should destroy effects when their DestroyRef is separately destroyed', () => {

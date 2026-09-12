@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "stableTypeOrdering": true,
     "module": "esnext",
     "target": "es2022",
     "moduleResolution": "node",
@@ -9,7 +10,6 @@
     "declaration": true,
     "noEmitOnError": false,
     "stripInternal": true,
-    "strict": true,
     "sourceMap": true,
     "noImplicitOverride": true,
     "lib": [

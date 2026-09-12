@@ -29,7 +29,7 @@ provideRouter(routes, withRouterConfig({canceledNavigationResolution: 'computed'
 
 ### React to same-URL navigations
 
-`onSameUrlNavigation` configures what should happen when the user asks to navigate to the current URL. The default `'ignore'` skips work, while `'reload'` re-runs guards and resolvers and refreshes component instances.
+`onSameUrlNavigation` configures what should happen when the user asks to navigate to the current URL. The default `'ignore'` skips work, while `'reload'` instructs the Router to process the URL in its navigation pipeline rather than skipping it. Guard and resolver reruns are governed by [`runGuardsAndResolvers`](api/router/RunGuardsAndResolvers), and component reuse is determined by the [route reuse strategy](#route-reuse-strategy).
 
 This is useful when you want repeated clicks on a list filter, left-nav item, or refresh button to trigger new data retrieval even though the URL does not change.
 
@@ -42,6 +42,8 @@ You can also control this behavior on individual navigations rather than globall
 ```ts
 router.navigate(['/some-path'], {onSameUrlNavigation: 'reload'});
 ```
+
+TIP: If you use [route resources](/guide/routing/data-fetching-with-resources#reloading-resources-without-renavigation), you can refresh data on-demand by calling `.reload()` on the resource or by updating signals read in `params`, without needing to configure `onSameUrlNavigation` or trigger a router navigation.
 
 ### Control parameter inheritance
 
@@ -75,9 +77,7 @@ export const routes: Routes = [
 ```
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class Customer {
   private route = inject(ActivatedRoute);
 
@@ -94,9 +94,7 @@ This ensures matrix parameters, route data, and resolved values are available fu
 ```
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class Customer {
   private route = inject(ActivatedRoute);
 
@@ -265,17 +263,17 @@ if (this.handles.size > MAX_CACHE_SIZE) {
 
 NOTE: Avoid using the route path as the key when `canMatch` guards are involved, as it may lead to duplicate entries.
 
-### (Experimental) Automatic cleanup of unused route injectors
+### Automatic cleanup of unused route injectors
 
 By default, Angular does not destroy the injectors of detached routes, even if they are no longer stored by the `RouteReuseStrategy`. This is primarily because this level of memory management is not commonly needed for most applications.
 
-To enable automatic cleanup of unused route injectors, you can use the `withExperimentalAutoCleanupInjectors` feature in your router configuration. This feature checks which routes are currently stored by the strategy after navigations and destroys the injectors of any detached routes that are not currently stored by the reuse strategy.
+To enable automatic cleanup of unused route injectors, you can use the `withAutoCleanupInjectors` feature in your router configuration. This feature checks which routes are currently stored by the strategy after navigations and destroys the injectors of any detached routes that are not currently stored by the reuse strategy.
 
 ```ts
-import {provideRouter, withExperimentalAutoCleanupInjectors} from '@angular/router';
+import {provideRouter, withAutoCleanupInjectors} from '@angular/router';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes, withExperimentalAutoCleanupInjectors())],
+  providers: [provideRouter(routes, withAutoCleanupInjectors())],
 };
 ```
 
@@ -307,7 +305,7 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
     this.handles.set(route.routeConfig!, handle);
   }
 
-  retrieveStoredRouteHandles(): DetachedRouteHandle {
+  retrieveStoredRouteHandles(): DetachedRouteHandle[] {
     return Array.from(this.handles.values());
   }
 

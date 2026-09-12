@@ -11,6 +11,8 @@ import {
   ASTWithSource,
   TmplAstBoundAttribute,
   TmplAstBoundDeferredTrigger,
+  TmplAstBoundaryBlock,
+  TmplAstBoundaryErrorBlock,
   TmplAstComponent,
   TmplAstContent,
   TmplAstDeferredBlock,
@@ -521,6 +523,57 @@ class TemplateSymbolVisitor extends TmplAstRecursiveVisitor {
     };
     this.addSymbol(symbol);
     this.pushChildren(symbol);
+    tmplAstVisitAll(this, block.children);
+    this.popChildren();
+  }
+  override visitBoundaryBlock(block: TmplAstBoundaryBlock): void {
+    const symbol: TemplateDocumentSymbol = {
+      text: '@boundary',
+      kind: ts.ScriptElementKind.functionElement,
+      lspKind: AngularSymbolKind.Event, // @boundary → Event ⚡
+      spans: [toTextSpan(block.mainBlockSpan)],
+      nameSpan: toTextSpan(block.startSourceSpan),
+    };
+    this.addSymbol(symbol);
+    this.pushChildren(symbol);
+    tmplAstVisitAll(this, block.children);
+    tmplAstVisitAll(this, block.errorBlocks);
+    this.popChildren();
+  }
+
+  override visitBoundaryErrorBlock(block: TmplAstBoundaryErrorBlock): void {
+    const triggers: string[] = [];
+    if (block.expression) {
+      const exprText = getExpressionText(block.expression);
+      triggers.push(`when ${exprText}`);
+    }
+    const name = triggers.length > 0 ? `@error (${triggers.join('; ')})` : '@error';
+
+    const symbol: TemplateDocumentSymbol = {
+      text: name,
+      kind: ts.ScriptElementKind.functionElement,
+      lspKind: AngularSymbolKind.Event, // @error → Event ⚡
+      spans: [toTextSpan(block.sourceSpan)],
+      nameSpan: toTextSpan(block.startSourceSpan),
+    };
+    this.addSymbol(symbol);
+    this.pushChildren(symbol);
+
+    for (const contextVar of block.contextVariables) {
+      this.processedVariables.add(contextVar);
+      // Show if explicitly aliased (name differs from value) OR if showImplicitForVariables is enabled
+      const isExplicitlyAliased = contextVar.name !== contextVar.value;
+      if (isExplicitlyAliased || this.options.showImplicitForVariables) {
+        const contextSymbol: TemplateDocumentSymbol = {
+          text: `let ${contextVar.name}`,
+          kind: ts.ScriptElementKind.localVariableElement,
+          spans: [toTextSpan(contextVar.keySpan)],
+          nameSpan: toTextSpan(contextVar.keySpan),
+        };
+        this.addSymbol(contextSymbol);
+      }
+    }
+
     tmplAstVisitAll(this, block.children);
     this.popChildren();
   }

@@ -102,7 +102,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<BrowserPlatformLocation, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<BrowserPlatformLocation>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -294,7 +294,7 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HashLocationStrategy, [null, { optional: true; }]>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HashLocationStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -379,17 +379,17 @@ export class KeyValuePipe implements PipeTransform {
     // (undocumented)
     transform<K, V>(input: ReadonlyMap<K, V>, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>>;
     // (undocumented)
-    transform<K extends number, V>(input: Record<K, V>, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>>;
-    // (undocumented)
     transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V>, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>>;
+    // (undocumented)
+    transform<K extends number, V>(input: Record<K, V>, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>>;
     // (undocumented)
     transform(input: null | undefined, compareFn?: ((a: KeyValue<unknown, unknown>, b: KeyValue<unknown, unknown>) => number) | null): null;
     // (undocumented)
     transform<K, V>(input: ReadonlyMap<K, V> | null | undefined, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>> | null;
     // (undocumented)
-    transform<K extends number, V>(input: Record<K, V> | null | undefined, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>> | null;
-    // (undocumented)
     transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V> | null | undefined, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>> | null;
+    // (undocumented)
+    transform<K extends number, V>(input: Record<K, V> | null | undefined, compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null): Array<KeyValue<string, V>> | null;
     // (undocumented)
     transform<T>(input: T, compareFn?: T extends object ? (a: T[keyof T], b: T[keyof T]) => number : never): T extends object ? Array<KeyValue<keyof T, T[keyof T]>> : null;
     // (undocumented)
@@ -420,7 +420,7 @@ class Location_2 implements OnDestroy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Location_2, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<Location_2>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 export { Location_2 as Location }
 
@@ -429,6 +429,7 @@ export const LOCATION_INITIALIZED: InjectionToken<Promise<any>>;
 
 // @public
 export interface LocationChangeEvent {
+    hasUAVisualTransition?: boolean;
     // (undocumented)
     state: any;
     // (undocumented)
@@ -466,7 +467,7 @@ export abstract class LocationStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<LocationStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<LocationStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -600,7 +601,7 @@ export class NgLocaleLocalization extends NgLocalization {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgLocaleLocalization, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<NgLocaleLocalization>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public (undocumented)
@@ -610,7 +611,7 @@ export abstract class NgLocalization {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgLocalization, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<NgLocalization>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -748,7 +749,7 @@ export class NoTrailingSlashPathLocationStrategy extends PathLocationStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NoTrailingSlashPathLocationStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<NoTrailingSlashPathLocationStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public @deprecated
@@ -811,7 +812,7 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PathLocationStrategy, [null, { optional: true; }]>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<PathLocationStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -864,7 +865,7 @@ export abstract class PlatformLocation {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PlatformLocation, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<PlatformLocation>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -908,7 +909,7 @@ export abstract class PlatformNavigation implements ɵNavigation {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PlatformNavigation, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<PlatformNavigation>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public @deprecated
@@ -929,6 +930,7 @@ export enum Plural {
 
 // @public (undocumented)
 interface PopStateEvent_2 {
+    hasUAVisualTransition?: boolean;
     // (undocumented)
     pop?: boolean;
     // (undocumented)
@@ -1006,7 +1008,7 @@ export class TrailingSlashPathLocationStrategy extends PathLocationStrategy {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<TrailingSlashPathLocationStrategy, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<TrailingSlashPathLocationStrategy>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // @public @deprecated
@@ -1042,7 +1044,7 @@ export abstract class ViewportScroller {
     abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
     abstract setOffset(offset: [number, number] | (() => [number, number])): void;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<NullViewportScroller | BrowserViewportScroller>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<BrowserViewportScroller | NullViewportScroller>;
 }
 
 // @public @deprecated
@@ -1070,7 +1072,7 @@ export abstract class XhrFactory {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<XhrFactory, never>;
     // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<XhrFactory>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<any>;
 }
 
 // (No @packageDocumentation comment for this package)

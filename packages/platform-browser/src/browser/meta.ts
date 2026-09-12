@@ -7,11 +7,14 @@
  */
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {inject, Service} from '@angular/core';
+import {inject, ɵRuntimeError as RuntimeError, Service} from '@angular/core';
+
+import {RuntimeErrorCode} from '../errors';
 
 /**
  * Represents the attributes of an HTML `<meta>` element. The element itself is
- * represented by the internal `HTMLMetaElement`.
+ * represented by the internal `HTMLMetaElement`. Event handler attributes, which start with
+ * `on`, are not allowed.
  *
  * @see [HTML meta tag](https://developer.mozilla.org/docs/Web/HTML/Element/meta)
  * @see {@link Meta}
@@ -124,6 +127,7 @@ export class Meta {
    * @return The modified element.
    */
   updateTag(tag: MetaDefinition, selector?: string): HTMLMetaElement | null {
+    validateMetaDefinition(tag);
     selector ??= parseSelector(tag);
     const meta = this.getTag(selector);
     if (meta) {
@@ -156,6 +160,7 @@ export class Meta {
     meta: MetaDefinition,
     forceCreation: boolean = false,
   ): HTMLMetaElement {
+    validateMetaDefinition(meta);
     if (!forceCreation) {
       const selector: string = parseSelector(meta);
       // It's allowed to have multiple elements with the same name so it's not enough to
@@ -180,6 +185,19 @@ function setMetaElementAttributes(tag: MetaDefinition, el: HTMLMetaElement) {
   Object.keys(tag).forEach((prop: string) => el.setAttribute(getMetaKeyMap(prop), tag[prop]));
 }
 
+function validateMetaDefinition(tag: MetaDefinition): void {
+  for (const prop of Object.keys(tag)) {
+    const attributeName = getMetaKeyMap(prop);
+    if (attributeName.toLowerCase().startsWith('on')) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_EVENT_ATTRIBUTE,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          `The Meta service does not allow setting event handler attribute '${attributeName}' for security reasons.`,
+      );
+    }
+  }
+}
+
 function parseSelector(tag: MetaDefinition): string {
   const attr: string = tag.name ? 'name' : 'property';
   return `${attr}=${escapeSelectorValue(String(tag[attr]))}`;
@@ -196,7 +214,7 @@ function containsAttributes(tag: MetaDefinition, elem: HTMLMetaElement): boolean
 }
 
 function getMetaKeyMap(prop: string): string {
-  return META_KEYS_MAP[prop] || prop;
+  return Object.hasOwn(META_KEYS_MAP, prop) ? META_KEYS_MAP[prop] : prop;
 }
 
 function isMetaTag(tag: HTMLElement | null): tag is HTMLMetaElement {

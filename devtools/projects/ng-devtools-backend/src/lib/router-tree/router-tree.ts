@@ -189,7 +189,7 @@ function assignChildrenToParent(
  * @returns The formatted name: class name, function name with '()', or '[Function]' for anonymous/arrow functions
  */
 function getClassOrFunctionName(fn: Function, defaultName?: string) {
-  const isArrow = !fn.hasOwnProperty('prototype');
+  const isArrow = !Object.hasOwn(fn, 'prototype');
 
   const isEmptyName = fn.name === '';
 

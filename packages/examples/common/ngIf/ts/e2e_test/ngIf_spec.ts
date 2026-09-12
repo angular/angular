@@ -6,80 +6,92 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {$, browser, by, element, ExpectedConditions} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../test-utils';
-
-function waitForElement(selector: string) {
-  const EC = ExpectedConditions;
-  // Waits for the element with id 'abc' to be present on the dom.
-  browser.wait(EC.presenceOf($(selector)), 20000);
-}
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../test-utils';
 
 describe('ngIf', () => {
-  const URL = '/ngIf';
-  afterEach(verifyNoBrowserErrors);
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
+
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
+
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
+
+  async function loadPage() {
+    await driver.get(`${baseUrl}/ngIf`);
+    await waitForAngular(driver);
+  }
 
   describe('ng-if-simple', () => {
-    let comp = 'ng-if-simple';
-    it('should hide/show content', () => {
-      browser.get(URL);
-      waitForElement(comp);
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual('hide show = true\nText to show');
-      element(by.css(comp + ' button')).click();
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual('show show = false');
+    const comp = 'ng-if-simple';
+    it('should hide/show content', async () => {
+      await loadPage();
+      const compEl = await driver.findElement(webdriver.By.css(comp));
+      expect(await compEl.getText()).toEqual('hide show = true\nText to show');
+      const button = await driver.findElement(webdriver.By.css(`${comp} button`));
+      await button.click();
+      await waitForAngular(driver);
+      expect(await compEl.getText()).toEqual('show show = false');
     });
   });
 
   describe('ng-if-else', () => {
-    let comp = 'ng-if-else';
-    it('should hide/show content', () => {
-      browser.get(URL);
-      waitForElement(comp);
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual('hide show = true\nText to show');
-      element(by.css(comp + ' button')).click();
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual(
+    const comp = 'ng-if-else';
+    it('should hide/show content', async () => {
+      await loadPage();
+      const compEl = await driver.findElement(webdriver.By.css(comp));
+      expect(await compEl.getText()).toEqual('hide show = true\nText to show');
+      const button = await driver.findElement(webdriver.By.css(`${comp} button`));
+      await button.click();
+      await waitForAngular(driver);
+      expect(await compEl.getText()).toEqual(
         'show show = false\nAlternate text while primary text is hidden',
       );
     });
   });
 
   describe('ng-if-then-else', () => {
-    let comp = 'ng-if-then-else';
+    const comp = 'ng-if-then-else';
 
-    it('should hide/show content', () => {
-      browser.get(URL);
-      waitForElement(comp);
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual(
+    it('should hide/show content', async () => {
+      await loadPage();
+      const compEl = await driver.findElement(webdriver.By.css(comp));
+      expect(await compEl.getText()).toEqual(
         'hideSwitch Primary show = true\nPrimary text to show',
       );
-      element
-        .all(by.css(comp + ' button'))
-        .get(1)
-        .click();
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual(
+      const buttons = await driver.findElements(webdriver.By.css(`${comp} button`));
+      await buttons[1].click();
+      await waitForAngular(driver);
+      expect(await compEl.getText()).toEqual(
         'hideSwitch Primary show = true\nSecondary text to show',
       );
-      element
-        .all(by.css(comp + ' button'))
-        .get(0)
-        .click();
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual(
+      const updatedButtons = await driver.findElements(webdriver.By.css(`${comp} button`));
+      await updatedButtons[0].click();
+      await waitForAngular(driver);
+      expect(await compEl.getText()).toEqual(
         'showSwitch Primary show = false\nAlternate text while primary text is hidden',
       );
     });
   });
 
   describe('ng-if-as', () => {
-    let comp = 'ng-if-as';
-    it('should hide/show content', () => {
-      browser.get(URL);
-      waitForElement(comp);
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual(
-        'Next User\nWaiting... (user is null)',
-      );
-      element(by.css(comp + ' button')).click();
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual('Next User\nHello Smith, John!');
+    const comp = 'ng-if-as';
+    it('should hide/show content', async () => {
+      await loadPage();
+      const compEl = await driver.findElement(webdriver.By.css(comp));
+      expect(await compEl.getText()).toEqual('Next User\nWaiting... (user is null)');
+      const button = await driver.findElement(webdriver.By.css(`${comp} button`));
+      await button.click();
+      await waitForAngular(driver);
+      expect(await compEl.getText()).toEqual('Next User\nHello Smith, John!');
     });
   });
 });

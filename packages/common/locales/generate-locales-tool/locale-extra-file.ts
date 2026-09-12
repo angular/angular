@@ -49,7 +49,7 @@ export function generateLocaleExtraDataArrayCode(locale: string, localeData: Cld
   // TODO(gkalpak): If this turns out to be a bug and is fixed in CLDR, restore the previous logic
   //                of expecting the exact same keys in `dayPeriods` and `dayPeriodRules`.
   const dayPeriodKeys = Object.keys(dayPeriods.format.narrow).filter((key) =>
-    dayPeriodRules.hasOwnProperty(key),
+    Object.hasOwn(dayPeriodRules, key),
   );
 
   let dayPeriodsSupplemental: any[] = [];

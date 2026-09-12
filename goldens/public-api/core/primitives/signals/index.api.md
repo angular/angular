@@ -62,6 +62,9 @@ export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, sch
 export function defaultEquals<T>(a: T, b: T): boolean;
 
 // @public
+export const ERRORED: any;
+
+// @public
 export function finalizeConsumerAfterComputation(node: ReactiveNode): void;
 
 // @public (undocumented)

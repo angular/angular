@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "strict": true,
     "noImplicitReturns": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
@@ -12,7 +11,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "es2022",
-    "lib": ["es2019"],
+    "lib": ["es2022"],
     "types": ["node"],
     "paths": {
       "@angular/core": ["../"],

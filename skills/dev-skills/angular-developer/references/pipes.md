@@ -54,10 +54,10 @@ export class KebabCasePipe implements PipeTransform {
 
 ```ts
 // formatter.service.ts — import the function, NOT the pipe
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 import {toKebabCase} from './kebab-case';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class FormatterService {
   toSlug(title: string): string {
     return toKebabCase(title);
@@ -80,10 +80,10 @@ Inject `LOCALE_ID` to get the current locale and pass it to the function.
 
 ```ts
 // CORRECT — use formatNumber instead of injecting DecimalPipe
-import {Injectable, LOCALE_ID, inject} from '@angular/core';
+import {Service, LOCALE_ID, inject} from '@angular/core';
 import {formatNumber} from '@angular/common';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class PriceService {
   private locale = inject(LOCALE_ID);
 
@@ -95,10 +95,10 @@ export class PriceService {
 
 ```ts
 // WRONG — do not inject pipe classes
-import {Injectable} from '@angular/core';
+import {Service, inject} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
 
-@Injectable({providedIn: 'root'})
+@Service()
 export class PriceService {
   // ❌ DecimalPipe is not designed to be injected
   private pipe = inject(DecimalPipe);

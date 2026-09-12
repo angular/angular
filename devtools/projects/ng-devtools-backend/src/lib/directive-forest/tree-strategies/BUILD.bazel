@@ -18,6 +18,7 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/utils:control-flow",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
         "//devtools/projects/protocol",
     ],

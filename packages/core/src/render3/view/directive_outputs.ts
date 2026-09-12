@@ -69,7 +69,8 @@ export function listenToDirectiveOutput(
   if (
     hostDirectivesStart !== null &&
     hostDirectivesEnd !== null &&
-    tNode.hostDirectiveOutputs?.hasOwnProperty(eventName)
+    tNode.hostDirectiveOutputs &&
+    Object.hasOwn(tNode.hostDirectiveOutputs, eventName)
   ) {
     const hostDirectiveOutputs = tNode.hostDirectiveOutputs[eventName];
 
@@ -93,7 +94,7 @@ export function listenToDirectiveOutput(
     }
   }
 
-  if (target.outputs.hasOwnProperty(eventName)) {
+  if (Object.hasOwn(target.outputs, eventName)) {
     ngDevMode && assertIndexInRange(lView, hostIndex);
     hasOutput = true;
     listenToOutput(tNode, lView, hostIndex, eventName, eventName, listenerFn);

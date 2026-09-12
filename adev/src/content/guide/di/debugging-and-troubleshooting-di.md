@@ -84,7 +84,7 @@ export class EagerView {
 
 Lazy-loaded routes create child injectors that are only available after the route loads.
 
-NOTE: By default, route injectors and their services persist even after navigating away from the route. They are not destroyed until the application is closed. For automatic cleanup of unused route injectors, see [customizing route behavior](guide/routing/customizing-route-behavior#experimental-automatic-cleanup-of-unused-route-injectors).
+NOTE: By default, route injectors and their services persist even after navigating away from the route. They are not destroyed until the application is closed. For automatic cleanup of unused route injectors, see [customizing route behavior](guide/routing/customizing-route-behavior#automatic-cleanup-of-unused-route-injectors).
 
 **Solution:** Use `@Service` for services that need to be shared across lazy boundaries.
 
@@ -907,6 +907,7 @@ Other injection contexts that `inject()` also works in include:
 - [provideEnvironmentInitializer](api/core/provideEnvironmentInitializer)
 - Functional [route guards](guide/routing/route-guards)
 - Functional [data resolvers](guide/routing/data-resolvers)
+- Route [resources](guide/routing/data-fetching-with-resources)
 
 #### When this error occurs
 

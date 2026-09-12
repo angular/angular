@@ -51,7 +51,7 @@ import {QueryList} from '../../src/linker/query_list';
 import {TemplateRef} from '../../src/linker/template_ref';
 import {ViewContainerRef} from '../../src/linker/view_container_ref';
 import {EmbeddedViewRef} from '../../src/linker/view_ref';
-import {fakeAsync, getTestBed, TestBed, tick, waitForAsync} from '../../testing';
+import {getTestBed, TestBed, waitForAsync} from '../../testing';
 
 import {stringify} from '../../src/util/stringify';
 
@@ -589,13 +589,13 @@ describe('integration tests', function () {
       });
 
       if (getDOM().supportsDOMEvents) {
-        it('should allow to destroy a component from within a host event handler', fakeAsync(() => {
+        it('should allow to destroy a component from within a host event handler', async () => {
           TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithHostEvent]]]});
           const template = '<push-cmp-with-host-event></push-cmp-with-host-event>';
           TestBed.overrideComponent(MyComp, {set: {template}});
           const fixture = TestBed.createComponent(MyComp);
 
-          tick();
+          await fixture.whenStable();
           fixture.detectChanges();
 
           const cmpEl = fixture.debugElement.children[0];
@@ -603,7 +603,7 @@ describe('integration tests', function () {
           cmp.ctxCallback = (_: any) => fixture.destroy();
 
           expect(() => cmpEl.triggerEventHandler('click', <Event>{})).not.toThrow();
-        }));
+        });
       }
 
       it('should be checked when an event is fired', () => {
@@ -663,7 +663,7 @@ describe('integration tests', function () {
         expect(cmp.prop).toEqual('two');
       });
 
-      it('should be checked when an async pipe requests a check', fakeAsync(() => {
+      it('should be checked when an async pipe requests a check', async () => {
         TestBed.configureTestingModule({
           declarations: [MyComp, PushCmpWithAsyncPipe],
           imports: [CommonModule],
@@ -672,7 +672,7 @@ describe('integration tests', function () {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        tick();
+        await fixture.whenStable();
 
         const cmp: PushCmpWithAsyncPipe = fixture.debugElement.children[0].references!['cmp'];
         fixture.detectChanges();
@@ -683,11 +683,11 @@ describe('integration tests', function () {
         expect(cmp.numberOfChecks).toEqual(1);
 
         cmp.resolve(2);
-        tick();
+        await fixture.whenStable();
 
         fixture.detectChanges();
         expect(cmp.numberOfChecks).toEqual(2);
-      }));
+      });
     });
 
     it('should create a component that injects an @Host', () => {
@@ -1384,6 +1384,41 @@ describe('integration tests', function () {
       expect(() => TestBed.createComponent(MyComp)).not.toThrowError();
     });
 
+    it('should not throw when a declared pipe extends an abstract directive base class', () => {
+      // https://github.com/angular/angular/issues/36427
+      // An abstract base class with a lifecycle hook is compiled as a selector-less
+      // directive. A pipe that extends it inherits that directive def, which used to trip
+      // the "has no selector" (and later the "is standalone") NgModule checks.
+      @Directive({standalone: false})
+      abstract class NonStandaloneBase implements OnDestroy {
+        ngOnDestroy() {}
+      }
+
+      @Pipe({name: 'nonStandalonePipe', standalone: false})
+      class NonStandalonePipe extends NonStandaloneBase implements PipeTransform {
+        transform(value: unknown): unknown {
+          return value;
+        }
+      }
+
+      @Directive()
+      abstract class StandaloneBase implements OnDestroy {
+        ngOnDestroy() {}
+      }
+
+      @Pipe({name: 'standaloneDefaultPipe', standalone: false})
+      class StandaloneDefaultPipe extends StandaloneBase implements PipeTransform {
+        transform(value: unknown): unknown {
+          return value;
+        }
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [MyComp, NonStandalonePipe, StandaloneDefaultPipe],
+      });
+      expect(() => TestBed.createComponent(MyComp)).not.toThrowError();
+    });
+
     it('should throw when using directives with empty string selector', () => {
       @Directive({
         selector: '',
@@ -1995,7 +2030,7 @@ describe('integration tests', function () {
     });
 
     if (getDOM().supportsDOMEvents) {
-      it('should support event decorators', fakeAsync(() => {
+      it('should support event decorators', async () => {
         TestBed.configureTestingModule({
           declarations: [MyComp, DirectiveWithPropDecorators],
           schemas: [NO_ERRORS_SCHEMA],
@@ -2004,15 +2039,15 @@ describe('integration tests', function () {
         TestBed.overrideComponent(MyComp, {set: {template}});
         const fixture = TestBed.createComponent(MyComp);
 
-        tick();
+        await fixture.whenStable();
 
         const emitter = fixture.debugElement.children[0].injector.get(DirectiveWithPropDecorators);
         emitter.fireEvent('fired !');
 
-        tick();
+        await fixture.whenStable();
 
         expect(fixture.componentInstance.ctxProp()).toEqual('called');
-      }));
+      });
 
       it('should support host listener decorators', () => {
         TestBed.configureTestingModule({
@@ -2324,7 +2359,6 @@ class EventCmp {
   selector: 'push-cmp',
   inputs: ['prop'],
   host: {'(click)': 'true'},
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template:
     '{{field}}<div (click)="noop()"></div><div *ngIf="true" (click)="noop()"></div><event-cmp></event-cmp>',
   standalone: false,
@@ -2348,7 +2382,6 @@ class PushCmp {
 @Component({
   selector: 'push-cmp-with-ref',
   inputs: ['prop'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: '{{field}}',
   standalone: false,
 })
@@ -2375,7 +2408,6 @@ class PushCmpWithRef {
 @Component({
   selector: 'push-cmp-with-host-event',
   host: {'(click)': 'ctxCallback($event)'},
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: '',
   standalone: false,
 })
@@ -2385,19 +2417,16 @@ class PushCmpWithHostEvent {
 
 @Component({
   selector: 'push-cmp-with-async',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: '{{field | async}}',
   standalone: false,
 })
 class PushCmpWithAsyncPipe {
   numberOfChecks: number = 0;
-  resolve!: (result: any) => void;
+  resolve: (result: any) => void;
   promise: Promise<any>;
 
   constructor() {
-    this.promise = new Promise((resolve) => {
-      this.resolve = resolve;
-    });
+    ({promise: this.promise, resolve: this.resolve} = Promise.withResolvers<any>());
   }
 
   get field() {

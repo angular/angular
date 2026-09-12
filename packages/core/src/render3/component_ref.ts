@@ -174,13 +174,21 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
   };
 }
 
-function createHostElement(componentDef: ComponentDef<unknown>, renderer: Renderer): RElement {
+function createHostElement(
+  componentDef: ComponentDef<unknown>,
+  renderer: Renderer,
+  hostElementNamespace: string | null,
+): RElement {
   // Determine a tag name used for creating host elements when this component is created
   // dynamically. Default to 'div' if this component did not specify any tag name in its
   // selector.
   const tagName = inferTagNameFromDefinition(componentDef);
   const namespace =
-    tagName === 'svg' ? SVG_NAMESPACE : tagName === 'math' ? MATH_ML_NAMESPACE : null;
+    tagName === 'svg'
+      ? SVG_NAMESPACE
+      : tagName === 'math'
+        ? MATH_ML_NAMESPACE
+        : hostElementNamespace;
   return createElementNode(renderer, tagName, namespace);
 }
 
@@ -262,6 +270,8 @@ export class ComponentFactory<T> {
     environmentInjector?: NgModuleRef<any> | EnvironmentInjector | undefined,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     componentBindings?: Binding[],
+    hostElementNamespace?: string | null,
+    allowNonStandaloneDirectives?: boolean,
   ): AbstractComponentRef<T> {
     profiler(ProfilerEvent.DynamicComponentStart);
 
@@ -286,6 +296,8 @@ export class ComponentFactory<T> {
             rootSelectorOrNode,
             directives,
             componentBindings,
+            hostElementNamespace,
+            allowNonStandaloneDirectives,
           ),
         );
       } else {
@@ -296,6 +308,8 @@ export class ComponentFactory<T> {
           rootSelectorOrNode,
           directives,
           componentBindings,
+          hostElementNamespace,
+          allowNonStandaloneDirectives,
         );
       }
     } finally {
@@ -310,14 +324,22 @@ export class ComponentFactory<T> {
     rootSelectorOrNode?: any,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     componentBindings?: Binding[],
+    hostElementNamespace?: string | null,
+    allowNonStandaloneDirectives?: boolean,
   ) {
     const cmpDef = this.componentDef;
-    const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
+    const rootTView = createRootTView(
+      rootSelectorOrNode,
+      cmpDef,
+      componentBindings,
+      directives,
+      allowNonStandaloneDirectives,
+    );
 
     const hostRenderer = environment.rendererFactory.createRenderer(null, cmpDef);
     const hostElement = rootSelectorOrNode
       ? locateHostElement(hostRenderer, rootSelectorOrNode, cmpDef.encapsulation, rootViewInjector)
-      : createHostElement(cmpDef, hostRenderer);
+      : createHostElement(cmpDef, hostRenderer, hostElementNamespace ?? null);
     assertNotScriptHostElement(hostElement);
 
     const sharedStylesHost = rootViewInjector.get(SHARED_STYLES_HOST, null);
@@ -422,6 +444,7 @@ function createRootTView(
   componentDef: ComponentDef<unknown>,
   componentBindings: Binding[] | undefined,
   directives: (Type<unknown> | DirectiveWithBindings<unknown>)[] | undefined,
+  allowNonStandaloneDirectives?: boolean,
 ): TView {
   const tAttributes = rootSelectorOrNode
     ? ['ng-version', '0.0.0-PLACEHOLDER']
@@ -436,12 +459,12 @@ function createRootTView(
       varsToAllocate += binding[BINDING].requiredVars;
 
       if (binding.create) {
-        (binding as BindingInternal).targetIdx = 0;
+        binding.targetIdx = 0;
         (creationBindings ??= []).push(binding);
       }
 
       if (binding.update) {
-        (binding as BindingInternal).targetIdx = 0;
+        binding.targetIdx = 0;
         (updateBindings ??= []).push(binding);
       }
     }
@@ -454,13 +477,14 @@ function createRootTView(
         for (const binding of directive.bindings as BindingInternal[]) {
           varsToAllocate += binding[BINDING].requiredVars;
           const targetDirectiveIdx = i + 1;
+
           if (binding.create) {
-            (binding as BindingInternal).targetIdx = targetDirectiveIdx;
+            binding.targetIdx = targetDirectiveIdx;
             (creationBindings ??= []).push(binding);
           }
 
           if (binding.update) {
-            (binding as BindingInternal).targetIdx = targetDirectiveIdx;
+            binding.targetIdx = targetDirectiveIdx;
             (updateBindings ??= []).push(binding);
           }
         }
@@ -476,7 +500,7 @@ function createRootTView(
         ? getDirectiveDefOrThrow(directiveType)
         : getDirectiveDef(directiveType)!;
 
-      if (ngDevMode && !directiveDef.standalone) {
+      if (ngDevMode && !allowNonStandaloneDirectives && !directiveDef.standalone) {
         throw new RuntimeError(
           RuntimeErrorCode.TYPE_IS_NOT_STANDALONE,
           `The ${stringifyForError(directiveType)} directive must be standalone in ` +

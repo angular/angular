@@ -119,7 +119,7 @@ describe('$localize tag with translations', () => {
       // The malicious id must be stored as an own key rather than assigned through the inherited
       // `__proto__` setter, which would reparent the map (and drop the entry).
       expect(Object.getPrototypeOf(store)).toBe(null);
-      expect(Object.prototype.hasOwnProperty.call(store, '__proto__')).toBe(true);
+      expect(Object.hasOwn(store, '__proto__')).toBe(true);
       // A translation loaded alongside it still resolves.
       expect($localize`abc`).toEqual('abc');
     });

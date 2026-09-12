@@ -12,6 +12,7 @@ import {DevToolsNode, ElementPosition} from '../../../../../../../protocol';
 export interface IndexedNode extends DevToolsNode {
   position: ElementPosition;
   children: IndexedNode[];
+  original: DevToolsNode;
 
   nativeElement?: never;
   // Instead we will have this boolean
@@ -37,6 +38,7 @@ const indexTree = (
     static: node.static,
     hasNativeElement: (node as any).hasNativeElement,
     injector: node.injector,
+    original: node,
   };
 };
 

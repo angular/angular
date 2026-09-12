@@ -6,25 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Injector, inject, provideZonelessChangeDetection, signal} from '@angular/core';
+import {Component, Injector, inject, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {disabled} from '@angular/forms/signals';
+import {disabled, FormField} from '@angular/forms/signals';
 
 import {SignalFormControl} from '../../compat';
-import {FormField} from '../../src/directive/form_field';
+import {act} from '@angular/private/testing';
 
 describe('SignalFormControl (web)', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-      imports: [ReactiveFormsModule, FormField],
-    });
-  });
-
   it('binds to formField directive', () => {
     @Component({
-      standalone: true,
       imports: [ReactiveFormsModule, FormField],
       template: `<input [formField]="signalControl.fieldTree" />`,
     })
@@ -51,7 +43,6 @@ describe('SignalFormControl (web)', () => {
 
   it('binds inside nested FormGroup via formGroupName', () => {
     @Component({
-      standalone: true,
       imports: [ReactiveFormsModule, FormField],
       template: `
         <div [formGroup]="group">
@@ -90,7 +81,6 @@ describe('SignalFormControl (web)', () => {
 
   it('should unregister disabled callback when directive is destroyed', () => {
     @Component({
-      standalone: true,
       imports: [ReactiveFormsModule],
       template: `
         @if (showInput()) {
@@ -123,11 +113,3 @@ describe('SignalFormControl (web)', () => {
     }).not.toThrow();
   });
 });
-
-function act<T>(fn: () => T): T {
-  try {
-    return fn();
-  } finally {
-    TestBed.tick();
-  }
-}

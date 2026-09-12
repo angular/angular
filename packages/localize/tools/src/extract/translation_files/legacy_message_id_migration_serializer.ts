@@ -23,7 +23,7 @@ export class LegacyMessageIdMigrationSerializer implements TranslationSerializer
       (output, message) => {
         if (shouldMigrate(message)) {
           for (const legacyId of message.legacyIds!) {
-            if (output.hasOwnProperty(legacyId)) {
+            if (Object.hasOwn(output, legacyId)) {
               this._diagnostics.warn(`Detected duplicate legacy ID ${legacyId}.`);
             }
 

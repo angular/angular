@@ -1599,7 +1599,7 @@ describe('completions', () => {
                       'start': 303,
                       'length': 0,
                     },
-                    'newText': '\nimport { HighlightDirective } from "@app/highlight";',
+                    'newText': "\nimport { HighlightDirective } from '@app/highlight';",
                   },
                   {
                     'span': {
@@ -1805,7 +1805,7 @@ describe('completions', () => {
                       'start': 303,
                       'length': 0,
                     },
-                    'newText': '\nimport { HighlightDirective } from "@app/highlight";',
+                    'newText': "\nimport { HighlightDirective } from '@app/highlight';",
                   },
                   {
                     'span': {

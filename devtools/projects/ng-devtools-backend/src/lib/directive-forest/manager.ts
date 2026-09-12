@@ -10,6 +10,7 @@ import {ElementPosition} from '../../../../protocol';
 import {ComponentTreeNode, DirectiveInstance} from '../shared/interfaces';
 import {getProfiler} from '../profiling/profiler';
 import {IdentityTracker, IndexedNode, IndexingOutput} from './identity-tracker/identity-tracker';
+import {debugLog} from '../shared/utils/log';
 
 // Global reference.
 let directiveForestManager: DirectiveForestManager;
@@ -27,7 +28,7 @@ export class DirectiveForestManager {
   getDirectivePosition(dir: DirectiveInstance): ElementPosition | undefined {
     const result = this._tracker.getDirectivePosition(dir);
     if (result === undefined) {
-      console.warn('Unable to find position of', dir);
+      debugLog.warn('Unable to find position of', dir);
     }
     return result;
   }
@@ -35,7 +36,7 @@ export class DirectiveForestManager {
   getDirectiveId(dir: DirectiveInstance): number | undefined {
     const result = this._tracker.getDirectiveId(dir);
     if (result === undefined) {
-      console.warn('Unable to find ID of', result);
+      debugLog.warn('Unable to find ID of', result);
     }
     return result;
   }

@@ -197,8 +197,12 @@ export class TypeCheckScopeRegistry {
   private applyExplicitlyDeferredFlag<T extends DirectiveMeta | PipeMeta>(
     meta: T,
     isExplicitlyDeferred: boolean,
+    deferredBlocks?: Set<string> | null,
   ): T {
-    return isExplicitlyDeferred === true ? {...meta, isExplicitlyDeferred} : meta;
+    if (isExplicitlyDeferred === true) {
+      return {...meta, isExplicitlyDeferred, deferredBlocks: deferredBlocks ?? null};
+    }
+    return meta;
   }
 
   private getSelectorMatcher(
@@ -213,8 +217,12 @@ export class TypeCheckScopeRegistry {
           continue;
         }
 
-        // Carry over the `isExplicitlyDeferred` flag from the dependency info.
-        const directiveMeta = this.applyExplicitlyDeferredFlag(extMeta, meta.isExplicitlyDeferred);
+        // Carry over the `isExplicitlyDeferred` flag and `deferredBlocks` from the dependency info.
+        const directiveMeta = this.applyExplicitlyDeferredFlag(
+          extMeta,
+          meta.isExplicitlyDeferred,
+          meta.deferredBlocks,
+        );
         matcher.addSelectables(
           CssSelector.parse(meta.selector),
           this.combineWithHostDirectives(directiveMeta),

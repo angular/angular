@@ -244,7 +244,7 @@ export function invalidSkipHydrationHost(rNode: RNode): Error {
 function stringifyTNodeAttrs(tNode: TNode): string {
   const results = [];
   if (tNode.attrs) {
-    for (let i = 0; i < tNode.attrs.length; ) {
+    for (let i = 0; i < tNode.attrs.length;) {
       const attrName = tNode.attrs[i++];
       // Once we reach the first flag, we know that the list of
       // attributes is over.
@@ -489,4 +489,15 @@ function shorten(input: string | null, maxLength = 50): string {
   }
   input = stripNewlines(input);
   return input.length > maxLength ? `${input.substring(0, maxLength - 1)}…` : input;
+}
+
+/**
+ * Cheap, production-safe description of a DOM node for error messages: its `nodeName`, plus a
+ * truncated snippet of its `textContent` if it has any. Unlike `shorten()` above, this is meant
+ * to be called from code paths that also run in production, so it skips the newline-stripping
+ * and ellipsis formatting that `shorten()` does.
+ */
+export function describeDomNode(node: Node): string {
+  const textContent = node.textContent?.slice(0, 50);
+  return textContent ? `${node.nodeName} ("${textContent}")` : node.nodeName;
 }

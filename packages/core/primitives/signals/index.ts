@@ -8,7 +8,7 @@
 
 import {installDevToolsSignalFormatter} from './src/formatter';
 
-export {ComputedNode, createComputed} from './src/computed';
+export {ComputedNode, createComputed, ERRORED} from './src/computed';
 export {
   ComputationFn,
   LinkedSignalNode,

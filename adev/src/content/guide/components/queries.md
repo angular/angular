@@ -225,6 +225,30 @@ the `TemplateRef` associated with that element.
 
 Developers most commonly use `read` to retrieve `ElementRef` and `TemplateRef`.
 
+You can also pass `Injector` to `read`.
+
+```angular-ts
+@Component({
+  selector: 'custom-table',
+  template: `
+    <third-party-table #inner>
+      <ng-template>
+        <ng-container [ngTemplateOutlet]="columns()" [ngTemplateOutletInjector]="innerInjector()" />
+      </ng-template>
+    </third-party-table>
+  `,
+})
+export class CustomTable {
+  columns = contentChild(TemplateRef);
+  innerInjector = viewChild('inner', {read: Injector});
+}
+```
+
+The above example retrieves the node injector of the `third-party-table` element, meaning the
+injector as seen from that element's position in the tree. Passing it to `NgTemplateOutlet` through
+`ngTemplateOutletInjector` lets directives in the projected template inject values that the
+third-party component provides.
+
 ### Content descendants
 
 By default, `contentChildren` queries find only _direct_ children of the component and do not traverse into descendants.

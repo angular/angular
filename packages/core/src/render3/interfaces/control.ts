@@ -77,8 +77,17 @@ export interface ControlDirectiveHost<_TPassthroughInput extends string | undefi
   /**
    * Updates a property binding on all directives on this node, aside from the control directive
    * itself.
+   *
+   * @param inputName Name of the input to update.
+   * @param value New value to write to the input.
+   * @param writePredicate Optional predicate function that receives the current value of the
+   * input to decide if the value should be written.
    */
-  setInputOnDirectives(inputName: string, value: unknown): boolean;
+  setInputOnDirectives(
+    inputName: string,
+    value: unknown,
+    writePredicate?: (currentValue: unknown) => boolean,
+  ): boolean;
 
   /**
    * Listens to a DOM event on the host element.

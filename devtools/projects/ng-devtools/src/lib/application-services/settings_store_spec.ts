@@ -16,6 +16,7 @@ interface MockSettingsData {
   'item@test': string;
   'first@test': string;
   'second@test': string;
+  'third@test': string;
 }
 
 describe('SettingsStore', () => {
@@ -30,7 +31,10 @@ describe('SettingsStore', () => {
         {provide: ApplicationOperations, useValue: appOperationsMock},
         {
           provide: SettingsStore,
-          useFactory: () => new SettingsStore({}),
+          useFactory: () =>
+            new SettingsStore({
+              'third@test': undefined,
+            }),
         },
       ],
     });
@@ -46,6 +50,15 @@ describe('SettingsStore', () => {
       initialValue: 'foo',
     });
     expect(item()).toEqual('foo');
+  });
+
+  it('should return a settings item with an initial value even though the data prop exists, but undefined', () => {
+    const item = settingsStore.create({
+      key: 'third',
+      category: 'test',
+      initialValue: 'bar',
+    });
+    expect(item()).toEqual('bar');
   });
 
   it('should set a settings item value', async () => {

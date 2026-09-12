@@ -25,7 +25,7 @@ export class R3JitReflector implements ExternalReferenceResolver {
         `Cannot resolve external reference to ${ref.moduleName}, only references to @angular/core are supported.`,
       );
     }
-    if (!this.context.hasOwnProperty(ref.name!)) {
+    if (!Object.hasOwn(this.context, ref.name!)) {
       throw new Error(`No value provided for @angular/core symbol '${ref.name!}'.`);
     }
     return this.context[ref.name!];

@@ -518,7 +518,7 @@ class _Visitor implements html.Visitor {
         return;
       }
 
-      if (attr.value && attr.value != '' && i18nParsedMessageMeta.hasOwnProperty(attr.name)) {
+      if (attr.value && attr.value != '' && Object.hasOwn(i18nParsedMessageMeta, attr.name)) {
         const {meaning, description, id} = i18nParsedMessageMeta[attr.name];
         const message: i18n.Message = this._createI18nMessage([attr], meaning, description, id);
         const nodes = this._translations.get(message);

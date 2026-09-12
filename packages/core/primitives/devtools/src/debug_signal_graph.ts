@@ -15,6 +15,7 @@ export interface DebugSignalGraphNode {
   label?: string;
   value?: unknown;
   debuggableFn?: () => unknown;
+  watched?: boolean;
 }
 
 export interface DebugSignalGraphEdge {

@@ -900,7 +900,6 @@ describe('after render hooks', () => {
           selector: 'comp',
           standalone: false,
           template: `{{ outerHookCount() }}:{{ innerHookCount }}`,
-          changeDetection: ChangeDetectionStrategy.OnPush,
         })
         class Comp {
           injector = inject(Injector);
@@ -951,7 +950,6 @@ describe('after render hooks', () => {
         @Component({
           selector: 'inner',
           standalone: false,
-          changeDetection: ChangeDetectionStrategy.OnPush,
         })
         class Inner {
           constructor() {
@@ -965,7 +963,6 @@ describe('after render hooks', () => {
           selector: 'outer',
           standalone: false,
           template: '<inner></inner>',
-          changeDetection: ChangeDetectionStrategy.OnPush,
         })
         class Outer {
           changeDetectorRef = inject(ChangeDetectorRef);

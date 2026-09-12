@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig-test.json",
   "compilerOptions": {
-    "types": ["node", "jasminewd2"]
+    "types": ["node", "jasmine", "selenium-webdriver"]
   }
 }

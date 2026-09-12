@@ -8,6 +8,10 @@
 
 import {DevToolsNode} from '../../../../protocol';
 
+export interface DevtoolsBackendConfig {
+  devtoolsDevMode?: boolean;
+}
+
 export interface DebuggingAPI {
   getComponent(node: Node): ComponentInstance;
   getDirectives(node: Node): DirectiveInstance[];

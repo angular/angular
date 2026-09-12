@@ -76,7 +76,7 @@ export class TreeMapVisualizerComponent implements OnDestroy {
   private _createTree(): void {
     render(this.tree().nativeElement, this.treeMapRecords(), {
       padding: [20, 5, 5, 5],
-      caption: (node) => `${node.id}: ${node.size.toFixed(3)} ms`,
+      caption: (node) => `${node.id}: ${node.size.toFixed(1)} ms`,
       showNode: () => true,
     });
   }

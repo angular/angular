@@ -42,7 +42,7 @@ export type DetachedRouteHandleInternal = {
  *
  * @param handle The detached route handle to destroy.
  *
- * @publicApi
+ * @publicApi 22.2
  * @see [Manually destroying detached route handles](guide/routing/customizing-route-behavior#manually-destroying-detached-route-handles)
  */
 export function destroyDetachedRouteHandle(handle: DetachedRouteHandle): void {
@@ -56,11 +56,6 @@ export function destroyDetachedRouteHandle(handle: DetachedRouteHandle): void {
     // they must manually invoke `destroyDetachedRouteHandle` to prevent a memory leak.
     internalHandle.route.value._localInjector?.destroy();
   }
-}
-
-export interface ExperimentalRouteReuseStrategy {
-  shouldDestroyInjector?(route: Route): boolean;
-  retrieveStoredRouteHandles?(): Array<DetachedRouteHandleInternal>;
 }
 
 /**
@@ -90,6 +85,25 @@ export abstract class RouteReuseStrategy {
 
   /** Determines if a route should be reused */
   abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
+
+  /**
+   * Returns a list of all currently stored `DetachedRouteHandle`s.
+   *
+   * This method is called by the router after navigations to identify which injectors
+   * are still needed by detached routes.
+   *
+   * @see {@link withAutoCleanupInjectors}
+   */
+  retrieveStoredRouteHandles?(): Array<DetachedRouteHandle>;
+
+  /**
+   * Determines if the injector for the given route should be destroyed.
+   *
+   * If this method returns `true`, the router will destroy the injector for the given route.
+   *
+   * @see {@link withAutoCleanupInjectors}
+   */
+  shouldDestroyInjector?(route: Route): boolean;
 }
 
 /**
@@ -145,11 +159,10 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
   /**
    * Determines if the injector for the given route should be destroyed.
    *
-   * This method is called by the router when the `RouteReuseStrategy` is destroyed.
+   * This method is called by the router after navigations.
    * If this method returns `true`, the router will destroy the injector for the given route.
    *
-   * @see {@link withExperimentalAutoCleanupInjectors}
-   * @xperimental 21.1
+   * @see {@link withAutoCleanupInjectors}
    */
   shouldDestroyInjector(route: Route): boolean {
     return true;

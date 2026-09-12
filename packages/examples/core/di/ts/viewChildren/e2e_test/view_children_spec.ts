@@ -6,26 +6,38 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {browser, by, element, ElementFinder} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../../test-utils';
 
 describe('viewChildren example', () => {
-  afterEach(verifyNoBrowserErrors);
-  let button: ElementFinder;
-  let result: ElementFinder;
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
 
-  beforeEach(() => {
-    browser.get('/di/viewChildren');
-    button = element(by.css('button'));
-    result = element(by.css('div'));
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
   });
 
-  it('should query view children', () => {
-    expect(result.getText()).toEqual('panes: 1, 2');
+  afterAll(async () => {
+    await driver.quit();
+  });
 
-    button.click();
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
 
-    expect(result.getText()).toEqual('panes: 1, 2, 3');
+  beforeEach(async () => {
+    await driver.get(`${baseUrl}/di/viewChildren`);
+    await waitForAngular(driver);
+  });
+
+  it('should query view children', async () => {
+    const result = await driver.findElement(webdriver.By.css('div'));
+    expect(await result.getText()).toEqual('panes: 1, 2');
+
+    const button = await driver.findElement(webdriver.By.css('button'));
+    await button.click();
+    await waitForAngular(driver);
+
+    expect(await result.getText()).toEqual('panes: 1, 2, 3');
   });
 });

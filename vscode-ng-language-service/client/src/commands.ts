@@ -182,17 +182,20 @@ function goToTemplateForComponent(ngClient: AngularLanguageClient): Command {
 /**
  * Proxy command for opening links in jsdoc comments.
  *
- * This is needed to avoid incorrectly rewriting uris.
+ * This is needed to avoid VS Code incorrectly rewriting file names.
  */
 function openJsDocLinkCommand(): Command<OpenJsDocLinkCommand_Args> {
   return {
     id: OpenJsDocLinkCommandId,
     isTextEditorCommand: false,
     async execute(args) {
-      if (!args?.file) {
+      if (typeof args?.file !== 'string' || args.file.length === 0) {
         return;
       }
-      const uri = vscode.Uri.parse(args.file);
+      // Command URI arguments are untrusted. This value is a filesystem path, so use `Uri.file`
+      // to prevent URI schemes from selecting another VS Code resource provider.
+      // https://code.visualstudio.com/api/references/vscode-api#Uri.file
+      const uri = vscode.Uri.file(args.file);
       const document = await vscode.workspace.openTextDocument(uri);
       return await vscode.window.showTextDocument(document, {
         selection: new vscode.Range(

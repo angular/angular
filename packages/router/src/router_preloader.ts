@@ -125,7 +125,7 @@ export class RouterPreloader implements OnDestroy {
   }
 
   private processRoutes(injector: EnvironmentInjector, routes: Routes): Observable<void> {
-    const res: Observable<any>[] = [];
+    const res: Observable<void>[] = [];
     for (const route of routes) {
       if (route.providers && !route._injector) {
         route._injector = createEnvironmentInjector(

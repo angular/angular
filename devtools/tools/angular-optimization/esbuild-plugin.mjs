@@ -27,15 +27,14 @@ export function createEsbuildAngularOptimizePlugin(opts) {
       );
 
       build.onLoad({filter: /\.[cm]?js$/}, async (args) => {
-        const sideEffects = opts.optimize?.isSideEffectFree
-          ? !opts.optimize.isSideEffectFree(args.path)
-          : true;
+        const contents = await javascriptTransformer.transformFile(args.path, {
+          skipLinker: !opts.enableLinker,
+          sideEffects: () => {
+            const sideEffects = opts.optimize?.isSideEffectFree?.(args.path) !== true;
 
-        const contents = await javascriptTransformer.transformFile(
-          args.path,
-          /** skipLinker */ !opts.enableLinker,
-          sideEffects,
-        );
+            return Promise.resolve(sideEffects);
+          },
+        });
 
         return {contents};
       });

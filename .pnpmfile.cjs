@@ -53,7 +53,7 @@ function readPackage(pkg, context) {
     if (pkg.version === '0.0.0-PLACEHOLDER' && localAngularPackages.has(key)) {
       pkg.dependencies = {
         ...pkg.dependencies,
-        [key]: 'workspace: *',
+        [key]: 'workspace:*',
       };
 
       delete pkg.peerDependencies[key];

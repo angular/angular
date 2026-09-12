@@ -29,6 +29,7 @@ import {specializeBindings} from './phases/binding_specialization';
 import {chain} from './phases/chaining';
 import {collapseSingletonInterpolations} from './phases/collapse_singleton_interpolations';
 import {generateConditionalExpressions} from './phases/conditionals';
+import {generateBoundaryConditions} from './phases/boundary_conditions';
 import {collectElementConsts} from './phases/const_collection';
 import {specializeControlProperties} from './phases/control_directives';
 import {convertAnimations} from './phases/convert_animations';
@@ -70,6 +71,7 @@ import {removeEmptyBindings} from './phases/remove_empty_bindings';
 import {removeI18nContexts} from './phases/remove_i18n_contexts';
 import {removeIllegalLetReferences} from './phases/remove_illegal_let_references';
 import {removeUnusedI18nAttributesOps} from './phases/remove_unused_i18n_attrs';
+import {resolveBoundaries} from './phases/resolve_boundaries';
 import {resolveContexts} from './phases/resolve_contexts';
 import {resolveDeferDepsFns} from './phases/resolve_defer_deps_fns';
 import {resolveDollarEvent} from './phases/resolve_dollar_event';
@@ -127,6 +129,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: collapseSingletonInterpolations},
   {kind: Kind.Both, fn: orderOps},
   {kind: Kind.Tmpl, fn: generateConditionalExpressions},
+  {kind: Kind.Tmpl, fn: generateBoundaryConditions},
   {kind: Kind.Tmpl, fn: createPipes},
   {kind: Kind.Tmpl, fn: configureDeferInstructions},
   {kind: Kind.Tmpl, fn: insertIncrementalHydrationRuntime},
@@ -136,6 +139,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateProjectionDefs},
   {kind: Kind.Tmpl, fn: generateLocalLetReferences},
   {kind: Kind.Tmpl, fn: generateVariables},
+  {kind: Kind.Tmpl, fn: resolveBoundaries},
   {kind: Kind.Tmpl, fn: saveAndRestoreView},
   {kind: Kind.Both, fn: deleteAnyCasts},
   {kind: Kind.Both, fn: removeSafeNavigationMigration},

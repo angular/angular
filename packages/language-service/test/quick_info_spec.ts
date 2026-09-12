@@ -848,6 +848,22 @@ describe('quick info', () => {
         });
       });
 
+      it('boundary error block context variables', () => {
+        expectQuickInfo({
+          templateOverride: `@boundary { } @error (let er¦r) { }`,
+          expectedSpanText: 'err',
+          expectedDisplayString: '(variable) err: Error',
+        });
+      });
+
+      it('boundary error block retry context variable', () => {
+        expectQuickInfo({
+          templateOverride: `@boundary { } @error (let err, rt¦ry = $reset) { }`,
+          expectedSpanText: 'rtry',
+          expectedDisplayString: '(variable) rtry: () => void',
+        });
+      });
+
       it('if block alias variable narrowed', () => {
         expectQuickInfo({
           templateOverride: `@if (signalValue; as al¦iasName) {}`,

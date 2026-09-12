@@ -13,7 +13,9 @@ import ts from 'typescript';
 
 import {ChangeTracker, ImportRemapper} from '../../utils/change_tracker';
 import {getAngularDecorators} from '../../utils/ng_decorators';
+import {getImportSpecifier} from '../../utils/typescript/imports';
 import {closestNode} from '../../utils/typescript/nodes';
+import {isReferenceToImport} from '../../utils/typescript/symbol';
 
 import {
   DeclarationImportsRemapper,
@@ -253,6 +255,22 @@ function migrateBootstrapCall(
       referenceResolver,
       typeChecker,
     );
+  }
+
+  // Top-level `registerLocaleData` calls aren't referenced from the module's metadata so they
+  // have to be carried over explicitly, otherwise the locale data won't be registered anymore
+  // once the module file is pruned.
+  if (moduleSourceFile !== sourceFile) {
+    const localeDataCalls = findRegisterLocaleDataCalls(moduleSourceFile, typeChecker);
+
+    if (localeDataCalls.length > 0) {
+      nodeLookup = nodeLookup || getNodeLookup(moduleSourceFile);
+
+      for (const statement of localeDataCalls) {
+        addNodesToCopy(sourceFile, statement, nodeLookup, tracker, nodesToCopy, referenceResolver);
+        nodesToCopy.add(statement);
+      }
+    }
   }
 
   if (additionalProviders) {
@@ -634,6 +652,30 @@ function getRouterModuleForRootFeatures(
 }
 
 /**
+ * Finds all the top-level `registerLocaleData` calls within a file.
+ * @param sourceFile File in which to search for the calls.
+ * @param typeChecker
+ */
+function findRegisterLocaleDataCalls(
+  sourceFile: ts.SourceFile,
+  typeChecker: ts.TypeChecker,
+): ts.ExpressionStatement[] {
+  const importSpecifier = getImportSpecifier(sourceFile, '@angular/common', 'registerLocaleData');
+
+  if (importSpecifier === null) {
+    return [];
+  }
+
+  return sourceFile.statements.filter(
+    (statement): statement is ts.ExpressionStatement =>
+      ts.isExpressionStatement(statement) &&
+      ts.isCallExpression(statement.expression) &&
+      ts.isIdentifier(statement.expression.expression) &&
+      isReferenceToImport(typeChecker, statement.expression.expression, importSpecifier),
+  );
+}
+
+/**
  * Finds all the nodes that are referenced inside a root node and would need to be copied into a
  * new file in order for the node to compile, and tracks them.
  * @param targetFile File to which the nodes will be copied.
@@ -674,6 +716,37 @@ function addNodesToCopy(
       const alias = importSpecifier.propertyName ? importSpecifier.name.text : undefined;
       tracker.addImport(targetFile, symbolName, moduleName, alias);
       continue;
+    }
+
+    // The reference can also be a default import (e.g. locale data files like
+    // `import localeFr from '@angular/common/locales/fr'`) which the import manager
+    // doesn't support. Copy the import declaration over or recreate it as a named
+    // import of the `default` symbol if it can't be copied verbatim.
+    // Note: when the import clause consists only of a default import, the clause and its name
+    // have the same offsets so the node lookup can resolve the reference to either of the two.
+    const importClause = closestOrSelf(ref, ts.isImportClause);
+    const defaultImportName =
+      importClause !== null && (ref === importClause || ref === importClause.name)
+        ? (importClause.name ?? null)
+        : null;
+
+    if (importClause && defaultImportName) {
+      const declaration = closestNode(importClause, ts.isImportDeclaration);
+
+      if (declaration && ts.isStringLiteralLike(declaration.moduleSpecifier)) {
+        if (
+          importClause.namedBindings === undefined &&
+          !declaration.moduleSpecifier.text.startsWith('.')
+        ) {
+          nodesToCopy.add(declaration);
+        } else {
+          const moduleName = declaration.moduleSpecifier.text.startsWith('.')
+            ? remapRelativeImport(targetFile.fileName, declaration.moduleSpecifier)
+            : declaration.moduleSpecifier.text;
+          tracker.addImport(targetFile, 'default', moduleName, defaultImportName.text);
+        }
+        continue;
+      }
     }
 
     const variableDeclaration = closestOrSelf(ref, ts.isVariableDeclaration);

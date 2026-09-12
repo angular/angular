@@ -256,6 +256,36 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should not produce optional chain warning for a chained safe property read off an indexed access if noUncheckedIndexedAccess is false', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup(
+        [
+          {
+            fileName,
+            templates: {
+              'TestCmp': `{{ arr[0]?.bar?.length }}`,
+            },
+            source: `
+               export class TestCmp {
+                  arr: Array<{ bar: string }> = [];
+               }
+             `,
+          },
+        ],
+        {options: {noUncheckedIndexedAccess: false}},
+      );
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [optionalChainNotNullableFactory],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
+
     it('should produce optional chain warning for an indexed access if noUncheckedIndexedAccess is true', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup(
@@ -386,6 +416,66 @@ runInEachFileSystem(() => {
                 }
               }
              `,
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+      templateTypeChecker,
+      program.getTypeChecker(),
+      [optionalChainNotNullableFactory],
+      {strictNullChecks: true} /* options */,
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(0);
+  });
+
+  it('should produce optional chain warning for chained property access', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      {
+        fileName,
+        templates: {
+          'TestCmp': `{{ var1?.bar.baz.qux }}`,
+        },
+        source:
+          'export class TestCmp { var1: { bar: { baz: { qux: string } } } = { bar: { baz: { qux: "text" } } }; }',
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+      templateTypeChecker,
+      program.getTypeChecker(),
+      [optionalChainNotNullableFactory],
+      {strictNullChecks: true} /* options */,
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(1);
+    expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+    expect(diags[0].code).toBe(ngErrorCode(ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE));
+    expect(diags[0].messageText).toContain(
+      `the '?.' operator can be replaced with the '.' operator`,
+    );
+    expect(getSourceCodeForDiagnostic(diags[0])).toBe(`bar`);
+  });
+
+  it('should not produce a warning on property access with consecutive optional chaining when the root is nullable', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      {
+        fileName,
+        templates: {
+          'TestCmp': `{{ var1?.bar?.baz?.qux }} {{ var1?.bar.baz.qux }} {{ var2?.bar().baz.qux }} {{ value?.data.foo.bar() }} {{ keyed?.data.foo['bar'] }}`,
+        },
+        source: `
+          export class TestCmp { 
+            var1: { bar: { baz: { qux: string } } } | null = null; 
+            var2: { bar: () => { baz: { qux: string } } } | null = null;
+            value: { data: { foo: { bar: () => boolean } } } | null = null;
+            keyed: { data: { foo: { bar: string } } } | null = null;
+          }
+        `,
       },
     ]);
     const sf = getSourceFileOrError(program, fileName);

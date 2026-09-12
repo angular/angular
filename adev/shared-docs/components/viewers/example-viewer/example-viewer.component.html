@@ -5,6 +5,7 @@
         #codeTabs
         animationDuration="0ms"
         mat-stretch-tabs="false"
+        [selectedIndex]="selectedTabIndex()"
         (selectedTabChange)="onTabIndexChange($event.index)"
       >
         @for (tab of tabs(); track tab) {
@@ -21,7 +22,7 @@
         [class.docs-example-code-toggle__show]="!showCode()"
         [attr.aria-checked]="showCode()"
         [attr.aria-label]="showCode() ? 'Hide code' : 'Show code'"
-        (click)="showCode.set(!showCode())"
+        (click)="toggleCodeVisibility()"
         [matTooltip]="showCode() ? 'Hide code' : 'Show code'"
         matTooltipPosition="above"
       >

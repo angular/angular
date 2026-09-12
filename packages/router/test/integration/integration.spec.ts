@@ -123,7 +123,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       @Component({
         selector: 'root-cmp',
         template: `<router-outlet></router-outlet>`,
-        changeDetection: ChangeDetectionStrategy.OnPush,
         standalone: false,
       })
       class OnPushOutlet {}

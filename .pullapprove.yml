@@ -120,6 +120,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files.exclude('packages/core/primitives/*'), [
+          '.agent/skills/**/{*,.*}',
           'contributing-docs/public-api-surface.md',
           'dev-app/**/{*,.*}',
           'integration/**/{*,.*}',
@@ -137,6 +138,7 @@ groups:
           'packages/platform-browser/**/{*,.*}',
           'packages/platform-browser-dynamic/**/{*,.*}',
           'packages/platform-server/**/{*,.*}',
+          'packages/private/**/{*,.*}',
           'packages/ssr/**/{*,.*}',
           'packages/router/**/{*,.*}',
           'packages/service-worker/**/{*,.*}',
@@ -206,6 +208,7 @@ groups:
         - crisbeto
         - devversion
         - kirjs
+        - alan-agius4
         - ~thePunderWoman
         - ~pkozlowski-opensource
         - ~amishne
@@ -300,9 +303,10 @@ groups:
     conditions:
       - >
         contains_any_globs(files
-            .exclude('.pullapprove.yml') 
+            .exclude('.pullapprove.yml')
             .exclude('tools/manual_api_docs/blocks/*.md')
-            .exclude('tools/manual_api_docs/elements/*.md'),
+            .exclude('tools/manual_api_docs/elements/*.md')
+            .exclude('.agent/**/*.md'),
         [
           '{*,.*}',
           '.agent/**/{*,.*}',
@@ -319,7 +323,6 @@ groups:
           'modules/{*,.*}',
           'packages/{*,.*}',
           'packages/examples/test-utils/**/{*,.*}',
-          'packages/private/**/{*,.*}',
           'packages/examples/{*,.*}',
           'scripts/**/{*,.*}',
           'third_party/**/{*,.*}',
@@ -481,23 +484,9 @@ groups:
         - ~thePunderWoman # Jessica Janiuk
         - ~AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
-
-  # External team required reviews
-  primitives-shared:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files.exclude('packages/core/primitives/**/*spec.ts'), [
-          'packages/core/primitives/**/{*,.*}',
-        ])
-    reviewers:
-      users:
-        - csmick # Cameron Smick
-        - mturco # Matt Turco
-        - iteriani # Thomas Nguyen
-        - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
-        - ENAML # Ethan Cline
+        - e-cline # Ethan Cline
+        - rockymeza # Rocky Meza
 
   ####################################################################################
   # Override managed result groups

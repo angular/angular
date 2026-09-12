@@ -153,6 +153,7 @@ export abstract class StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike;
 
@@ -194,6 +195,7 @@ export class HistoryStateManager extends StateManager {
       state: RestoredState | null | undefined,
       trigger: NavigationTrigger,
       extras: NavigationExtras,
+      hasUAVisualTransition?: boolean,
     ) => void,
   ): SubscriptionLike {
     return this.location.subscribe((event) => {
@@ -201,9 +203,15 @@ export class HistoryStateManager extends StateManager {
         // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
         // hybrid apps.
         setTimeout(() => {
-          listener(event['url']!, event.state as RestoredState | null | undefined, 'popstate', {
-            replaceUrl: true,
-          });
+          listener(
+            event['url']!,
+            event.state as RestoredState | null | undefined,
+            'popstate',
+            {
+              replaceUrl: true,
+            },
+            event.hasUAVisualTransition,
+          );
         });
       }
     });

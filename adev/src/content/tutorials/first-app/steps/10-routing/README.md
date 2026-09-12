@@ -37,11 +37,11 @@ In this lesson, you will enable routing in your application to navigate to the d
 2.  In `main.ts`, make the following updates to enable routing in the application:
     1.  Import the routes file and the `provideRouter` function:
 
-          <docs-code header="Import routing details in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[7,8]"/>
+          <docs-code header="Import routing details in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[3,4]"/>
 
     1.  Update the call to `bootstrapApplication` to include the routing configuration:
 
-          <docs-code header="Add router configuration in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[10,17]"/>
+          <docs-code header="Add router configuration in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[6,8]"/>
 
 3.  In `src/app/app.ts`, update the component to use routing:
     1.  Add file level imports for the router directives `RouterOutlet` and `RouterLink`:

@@ -27,7 +27,7 @@ export function compileService(type: Type<any>, meta?: Service): void {
   let factoryDef: any = null;
 
   // if NG_PROV_DEF is already defined on this class then don't overwrite it
-  if (!type.hasOwnProperty(NG_PROV_DEF)) {
+  if (!Object.hasOwn(type, NG_PROV_DEF)) {
     Object.defineProperty(type, NG_PROV_DEF, {
       get: () => {
         if (def === null) {
@@ -47,7 +47,7 @@ export function compileService(type: Type<any>, meta?: Service): void {
     });
   }
 
-  if (!type.hasOwnProperty(NG_FACTORY_DEF)) {
+  if (!Object.hasOwn(type, NG_FACTORY_DEF)) {
     Object.defineProperty(type, NG_FACTORY_DEF, {
       get: () => {
         if (factoryDef === null) {

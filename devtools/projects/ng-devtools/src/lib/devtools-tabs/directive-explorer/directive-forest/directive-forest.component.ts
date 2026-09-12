@@ -27,7 +27,13 @@ import {
   viewChild,
 } from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {DevToolsNode, ElementPosition, Events, MessageBus} from '../../../../../../protocol';
+import {
+  CdElementData,
+  DevToolsNode,
+  ElementPosition,
+  Events,
+  MessageBus,
+} from '../../../../../../protocol';
 
 import {TabUpdate} from '../../tab-update/index';
 import {DEEP_LINK_INSTANCE_ID} from '../../../application-providers/deep_link';
@@ -76,6 +82,7 @@ export class DirectiveForestComponent {
   readonly forest = input<DevToolsNode[]>([]);
   readonly showCommentNodes = input<boolean>(false);
   readonly currentSelectedElement = input.required<IndexedNode>();
+  readonly cdData = input<CdElementData[]>();
 
   readonly selectNode = output<IndexedNode | null>();
   readonly selectDomElement = output<IndexedNode>();
@@ -97,6 +104,38 @@ export class DirectiveForestComponent {
       return this.dataSource.data.indexOf(node);
     }
     return -1;
+  });
+
+  protected readonly mappedCdData = computed<Map<DevToolsNode, CdElementData>>(() => {
+    const mapped = new Map<DevToolsNode, CdElementData>();
+    const cdData = this.cdData();
+    if (!cdData || !cdData.length) {
+      return mapped;
+    }
+
+    const forest = this.forest();
+
+    for (const data of cdData ?? []) {
+      // Wrap the forest in a fake root node-like object.
+      let node: DevToolsNode | null = {children: forest} as DevToolsNode;
+
+      // Attempt to find the target node using the
+      // non-indexed `DevToolsNode[]` structure.
+      for (const pos of data.element) {
+        if (node.children[pos]) {
+          node = node.children[pos];
+        } else {
+          node = null;
+          break;
+        }
+      }
+
+      if (node) {
+        mapped.set(node, data);
+      }
+    }
+
+    return mapped;
   });
 
   readonly treeControl = new FlatTreeControl<FlatNode>(

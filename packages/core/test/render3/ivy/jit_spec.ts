@@ -31,6 +31,7 @@ import {ɵɵdefineInjectable, ɵɵInjectorDef} from '../../../src/di/interface/d
 import {FactoryFn} from '../../../src/render3/definition_factory';
 import {ComponentDef, PipeDef} from '../../../src/render3/interfaces/definition';
 import {InputFlags} from '../../../src/render3/interfaces/input_flags';
+import {foreignImport} from '../../../src/render3/foreign_import';
 
 describe('render3 jit', () => {
   let injector: any;
@@ -543,6 +544,52 @@ describe('render3 jit', () => {
       expect(TestDirAny.ɵfac).toBeDefined();
       expect(() => TestDirAny.ɵfac()).toThrowError(
         /constructor is not compatible with Angular Dependency Injection because its dependency at index 0 of the parameter list is invalid/,
+      );
+    });
+  });
+
+  describe('foreign components', () => {
+    function fooImport<TProps>(component: (props: TProps) => Node[]) {
+      return foreignImport<TProps>(
+        (props) => [component(props)],
+        () => {},
+        (producer) => producer(),
+      );
+    }
+
+    function FooComponent(props: {children?: Node[]}): Node[] {
+      return [];
+    }
+
+    it('should error when foreignImports is specified on a component in JIT mode', () => {
+      expect(() => {
+        @Component({
+          selector: 'test-cmp',
+          template: 'test',
+          // @ts-ignore
+          foreignImports: [fooImport(FooComponent)],
+        })
+        class SomeCmp {}
+
+        const _ = (SomeCmp as any).ɵcmp;
+      }).toThrowError(
+        `Foreign components are not supported in JIT mode. Component 'SomeCmp' cannot specify 'foreignImports'.`,
+      );
+    });
+
+    it('should error when a foreign component is imported via imports array in JIT mode', () => {
+      @Component({
+        selector: 'test-cmp',
+        template: 'test',
+        imports: [fooImport(FooComponent) as any],
+      })
+      class SomeCmp {}
+
+      const cmpDef = (SomeCmp as any).ɵcmp as ComponentDef<SomeCmp>;
+      expect(() => {
+        (cmpDef.directiveDefs! as () => unknown)();
+      }).toThrowError(
+        /A foreign component, imported from "SomeCmp", cannot be imported using 'imports'\. Foreign components are only supported in AOT mode and must be registered in 'foreignImports'\./,
       );
     });
   });

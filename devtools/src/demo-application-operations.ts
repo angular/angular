@@ -7,7 +7,7 @@
  */
 
 import {inject} from '@angular/core';
-import {ApplicationOperations} from '../projects/ng-devtools';
+import {ApplicationOperations, Frame} from '../projects/ng-devtools';
 import {DirectivePosition, ElementPosition, SignalNodePosition} from '../projects/protocol';
 import {LOCAL_STORAGE} from './local-storage';
 
@@ -34,6 +34,22 @@ export class DemoApplicationOperations extends ApplicationOperations {
   override inspectSignal(position: SignalNodePosition): void {
     console.warn('inspectSignal() is not implemented because the demo app runs in an Iframe');
     return;
+  }
+
+  override setSignalBreakpoint(position: SignalNodePosition, target?: Frame): Promise<boolean> {
+    console.warn('setSignalBreakpoint() is not implemented because the demo app runs in an Iframe');
+    return Promise.resolve(false);
+  }
+
+  override removeSignalBreakpoint(position: SignalNodePosition, target?: Frame): Promise<boolean> {
+    console.warn(
+      'removeSignalBreakpoint() is not implemented because the demo app runs in an Iframe',
+    );
+    return Promise.resolve(false);
+  }
+
+  override getActiveSignalBreakpoints(target?: Frame): Promise<SignalNodePosition[]> {
+    return Promise.resolve([]);
   }
 
   override viewSourceFromRouter(name: string, type: string): void {

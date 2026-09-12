@@ -18,7 +18,7 @@ import {
   Router,
   RouterOutlet,
   provideRouter,
-  withExperimentalAutoCleanupInjectors,
+  withAutoCleanupInjectors,
   RouterModule,
   destroyDetachedRouteHandle,
 } from '@angular/router';
@@ -133,7 +133,7 @@ describe('Route Injector Destruction', () => {
               loadChildren: () => Promise.resolve(LazyModule),
             },
           ],
-          withExperimentalAutoCleanupInjectors(),
+          withAutoCleanupInjectors(),
         ),
         {provide: RouteReuseStrategy, useClass: CustomReuseStrategy},
       ],

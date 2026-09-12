@@ -48,6 +48,11 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
   return key as StateKey<T>;
 }
 
+function createDictionary<T>(): Record<string, T> {
+  // StateKey can be any string, including names of special Object prototype properties.
+  return Object.create(null);
+}
+
 /**
  * A key value store that is transferred from the application on the server side to the application
  * on the client side.
@@ -79,15 +84,20 @@ export class TransferState {
   });
 
   /** @internal */
-  store: Record<string, unknown | undefined> = {};
+  store: Record<string, unknown | undefined> = createDictionary();
 
-  private onSerializeCallbacks: {[k: string]: () => unknown | undefined} = {};
+  private onSerializeCallbacks: {[k: string]: () => unknown | undefined} = createDictionary();
 
   /**
    * Get the value corresponding to a key. Return `defaultValue` if key is not found.
    */
   get<T>(key: StateKey<T>, defaultValue: T): T {
-    return this.store[key] !== undefined ? (this.store[key] as T) : defaultValue;
+    if (!Object.hasOwn(this.store, key)) {
+      return defaultValue;
+    }
+
+    const value = this.store[key];
+    return value !== undefined ? (value as T) : defaultValue;
   }
 
   /**
@@ -108,7 +118,7 @@ export class TransferState {
    * Test whether a key exists in the store.
    */
   hasKey<T>(key: StateKey<T>): boolean {
-    return this.store.hasOwnProperty(key);
+    return Object.hasOwn(this.store, key);
   }
 
   /**
@@ -131,7 +141,7 @@ export class TransferState {
   toJson(): string {
     // Call the onSerialize callbacks and put those values into the store.
     for (const key in this.onSerializeCallbacks) {
-      if (this.onSerializeCallbacks.hasOwnProperty(key)) {
+      if (Object.hasOwn(this.onSerializeCallbacks, key)) {
         try {
           this.store[key] = this.onSerializeCallbacks[key]();
         } catch (e) {
@@ -159,11 +169,14 @@ export function retrieveTransferredState(
       // Avoid using any here as it triggers lint errors in google3 (any is not allowed).
       // Decoding of `<` is done of the box by browsers and node.js, same behaviour as G3
       // script_builders.
-      return JSON.parse(script.textContent) as {};
+      return Object.assign(
+        createDictionary<unknown | undefined>(),
+        JSON.parse(script.textContent) as {},
+      );
     } catch (e) {
       console.warn('Exception while restoring TransferState for app ' + appId, e);
     }
   }
 
-  return {};
+  return createDictionary();
 }

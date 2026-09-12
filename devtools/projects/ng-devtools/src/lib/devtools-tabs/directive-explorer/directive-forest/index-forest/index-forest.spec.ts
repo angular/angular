@@ -15,108 +15,106 @@ describe('indexForest', () => {
   });
 
   it('should index a forest', () => {
-    expect(
-      indexForest([
+    const child1_1: DevToolsNode & {hasNativeElement?: boolean} = {
+      tagName: 'Child1_1',
+      directives: [
         {
-          tagName: 'Parent1',
-          directives: [],
-          component: {
-            isElement: false,
-            name: 'Cmp1',
-            id: 1,
-          },
-          children: [
-            {
-              tagName: 'Child1_1',
-              directives: [
-                {
-                  name: 'Dir1',
-                  id: 1,
-                },
-                {
-                  name: 'Dir2',
-                  id: 1,
-                },
-              ],
-              component: null,
-              children: [],
-              changeDetection: 'ng-on-push',
-              controlFlowBlock: null,
-              hasNativeElement: true,
-              static: false,
-            } as DevToolsNode & {hasNativeElement?: boolean},
-            {
-              tagName: 'Child1_2',
-              directives: [],
-              component: {
-                isElement: false,
-                name: 'Cmp2',
-                id: 1,
-              },
-              children: [],
-              changeDetection: 'ng-on-push',
-              controlFlowBlock: null,
-              hasNativeElement: true,
-              static: false,
-            } as DevToolsNode & {hasNativeElement?: boolean},
-          ],
-          changeDetection: 'ng-on-push',
-          controlFlowBlock: null,
-          hasNativeElement: true,
-          static: false,
+          name: 'Dir1',
+          id: 1,
         },
         {
-          tagName: 'Parent2',
-          directives: [],
-          component: null,
-          children: [
-            {
-              tagName: 'Child2_1',
-              directives: [
-                {
-                  name: 'Dir3',
-                  id: 1,
-                },
-              ],
-              component: null,
-              children: [],
-              changeDetection: 'ng-eager',
-              controlFlowBlock: null,
-              hasNativeElement: true,
-              static: false,
-            } as DevToolsNode & {hasNativeElement?: boolean},
-            {
-              tagName: 'Child2_2',
-              directives: [
-                {
-                  name: 'Dir4',
-                  id: 1,
-                },
-                {
-                  name: 'Dir5',
-                  id: 1,
-                },
-              ],
-              component: null,
-              children: [],
-              changeDetection: 'ng-eager',
-              controlFlowBlock: null,
-              hasNativeElement: true,
-              static: false,
-            } as DevToolsNode & {hasNativeElement?: boolean},
-          ],
-          changeDetection: 'ng-eager',
-          controlFlowBlock: null,
-          hasNativeElement: true,
-          static: false,
+          name: 'Dir2',
+          id: 1,
         },
-      ]),
-    ).toEqual([
+      ],
+      component: null,
+      children: [],
+      changeDetection: 'ng-on-push',
+      controlFlowBlock: null,
+      hasNativeElement: true,
+      static: false,
+    };
+    const child1_2: DevToolsNode & {hasNativeElement?: boolean} = {
+      tagName: 'Child1_2',
+      directives: [],
+      component: {
+        isElement: false,
+        name: 'Cmp2',
+        id: 1,
+      },
+      children: [],
+      changeDetection: 'ng-on-push',
+      controlFlowBlock: null,
+      hasNativeElement: true,
+      static: false,
+    };
+    const parent1: DevToolsNode & {hasNativeElement?: boolean} = {
+      tagName: 'Parent1',
+      directives: [],
+      component: {
+        isElement: false,
+        name: 'Cmp1',
+        id: 1,
+      },
+      children: [child1_1, child1_2],
+      changeDetection: 'ng-on-push',
+      controlFlowBlock: null,
+      hasNativeElement: true,
+      static: false,
+    };
+
+    const child2_1: DevToolsNode & {hasNativeElement?: boolean} = {
+      tagName: 'Child2_1',
+      directives: [
+        {
+          name: 'Dir3',
+          id: 1,
+        },
+      ],
+      component: null,
+      children: [],
+      changeDetection: 'ng-eager',
+      controlFlowBlock: null,
+      hasNativeElement: true,
+      static: false,
+    };
+    const child2_2: DevToolsNode & {hasNativeElement?: boolean} = {
+      tagName: 'Child2_2',
+      directives: [
+        {
+          name: 'Dir4',
+          id: 1,
+        },
+        {
+          name: 'Dir5',
+          id: 1,
+        },
+      ],
+      component: null,
+      children: [],
+      changeDetection: 'ng-eager',
+      controlFlowBlock: null,
+      hasNativeElement: true,
+      static: false,
+    };
+    const parent2: DevToolsNode & {hasNativeElement?: boolean} = {
+      tagName: 'Parent2',
+      directives: [],
+      component: null,
+      children: [child2_1, child2_2],
+      changeDetection: 'ng-eager',
+      controlFlowBlock: null,
+      hasNativeElement: true,
+      static: false,
+    };
+
+    expect(indexForest([parent1, parent2])).toEqual([
       {
         tagName: 'Parent1',
         directives: [],
         position: [0],
         hydration: undefined,
+        original: parent1,
         component: {
           isElement: false,
           name: 'Cmp1',
@@ -138,6 +136,7 @@ describe('indexForest', () => {
             ],
             component: null,
             hydration: undefined,
+            original: child1_1,
             children: [],
             changeDetection: 'ng-on-push',
             controlFlowBlock: null,
@@ -155,6 +154,7 @@ describe('indexForest', () => {
               id: 1,
             },
             hydration: undefined,
+            original: child1_2,
             children: [],
             controlFlowBlock: null,
             changeDetection: 'ng-on-push',
@@ -175,6 +175,7 @@ describe('indexForest', () => {
         component: null,
         position: [1],
         hydration: undefined,
+        original: parent2,
         children: [
           {
             tagName: 'Child2_1',
@@ -187,6 +188,7 @@ describe('indexForest', () => {
             ],
             component: null,
             hydration: undefined,
+            original: child2_1,
             children: [],
             changeDetection: 'ng-eager',
             controlFlowBlock: null,
@@ -210,6 +212,7 @@ describe('indexForest', () => {
             component: null,
             children: [],
             hydration: undefined,
+            original: child2_2,
             changeDetection: 'ng-eager',
             controlFlowBlock: null,
             hasNativeElement: true,

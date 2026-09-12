@@ -46,6 +46,7 @@ describe('markdown to html', () => {
   it('should load header and html code', () => {
     const codeBlock = markdownDocument.querySelectorAll('code')[3];
     expect(codeBlock).toBeTruthy();
+    expect(codeBlock?.textContent).not.toContain('docregion');
   });
 
   it('should not link property names in object literals', () => {
@@ -56,5 +57,10 @@ describe('markdown to html', () => {
   it('should parse the hideDollar attribute', () => {
     const codeBlock = markdownDocument.querySelectorAll('.docs-code')[5];
     expect(codeBlock.getAttribute('hideDollar')).toBe('true');
+  });
+
+  it('should deindent inline code blocks correctly', () => {
+    const codeBlock = markdownDocument.querySelectorAll('.docs-code')[6]?.querySelector('code');
+    expect(codeBlock?.textContent).toMatch(/^  \/\/ bar/m);
   });
 });

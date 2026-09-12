@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {Toolbar, ToolbarWidget} from '@angular/aria/toolbar';
 
 @Component({
@@ -7,4 +7,8 @@ import {Toolbar, ToolbarWidget} from '@angular/aria/toolbar';
   styleUrl: 'app.css',
   imports: [Toolbar, ToolbarWidget],
 })
-export class App {}
+export class App {
+  readonly bold = signal(false);
+  readonly italic = signal(false);
+  readonly underlined = signal(false);
+}

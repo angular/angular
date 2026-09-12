@@ -6066,6 +6066,51 @@ describe('di', () => {
       expect(fixture.componentInstance.menu.tokenValue).toBeNull();
     });
 
+    it('should skip only the current node with @SkipSelf when providing an injection token through an embedded view injector', () => {
+      @Directive({
+        selector: 'menu',
+        providers: [{provide: token, useValue: 'hello from menu'}],
+        standalone: false,
+      })
+      class Menu {}
+
+      @Directive({
+        selector: 'menu-item',
+        providers: [{provide: token, useValue: 'hello from menu item'}],
+        standalone: false,
+      })
+      class MenuItem {
+        constructor(@Inject(token) @SkipSelf() public tokenValue: string) {}
+      }
+
+      @Component({
+        template: `
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <ng-template #menuTemplate>
+            <menu>
+              <menu-item></menu-item>
+            </menu>
+          </ng-template>
+        `,
+        standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class App {
+        @ViewChild(MenuTrigger) trigger!: MenuTrigger;
+        @ViewChild(MenuItem) menuItem!: MenuItem;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MenuTrigger, Menu, MenuItem]});
+      const injector = Injector.create({providers: [{provide: token, useValue: 'hello'}]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.open(injector);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.menuItem.tokenValue).toBe('hello from menu');
+    });
+
     it('should be able to provide an injection token to a nested template through a custom injector', () => {
       @Directive({
         selector: 'menu',

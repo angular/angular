@@ -68,6 +68,62 @@ describe('resolveUrl', () => {
       const url = 'ht\ntp://evil.com/path';
       expect(() => resolveUrl(url, 'http://test.com')).toThrowError(/NG05703/);
     });
+
+    it('should not trim unicode whitespace into protocol-relative URLs', () => {
+      const urls = ['\u00A0//attacker.example/collect', '\uFEFF//attacker.example/collect'];
+
+      for (const urlStr of urls) {
+        const urlWithProtocolRelative = resolveUrl(urlStr, 'http://test.com', {
+          allowProtocolRelative: true,
+        });
+        expect(urlWithProtocolRelative.origin).toBe('http://test.com');
+        expect(urlWithProtocolRelative.pathname).toContain('//attacker.example/collect');
+
+        const urlWithoutProtocolRelative = resolveUrl(urlStr, 'http://test.com');
+        expect(urlWithoutProtocolRelative.origin).toBe('http://test.com');
+        expect(urlWithoutProtocolRelative.pathname).toContain('//attacker.example/collect');
+      }
+    });
+
+    it('should resolve scheme URLs without authority against origin of the same scheme', () => {
+      const urlA = resolveUrl('http:/attacker.example/steal', 'http://test.com');
+      expect(urlA.origin).toBe('http://test.com');
+      expect(urlA.pathname).toBe('/attacker.example/steal');
+
+      const urlB = resolveUrl('http:attacker.example/steal', 'http://test.com');
+      expect(urlB.origin).toBe('http://test.com');
+      expect(urlB.pathname).toBe('/attacker.example/steal');
+
+      const urlHttpsA = resolveUrl('https:/attacker.example/steal', 'https://test.com');
+      expect(urlHttpsA.origin).toBe('https://test.com');
+      expect(urlHttpsA.pathname).toBe('/attacker.example/steal');
+
+      const urlHttpsB = resolveUrl('https:attacker.example/steal', 'https://test.com');
+      expect(urlHttpsB.origin).toBe('https://test.com');
+      expect(urlHttpsB.pathname).toBe('/attacker.example/steal');
+
+      const urlBackslash = resolveUrl('http:\\attacker.example/steal', 'http://test.com');
+      expect(urlBackslash.origin).toBe('http://test.com');
+      expect(urlBackslash.pathname).toBe('/attacker.example/steal');
+    });
+
+    it('should throw on scheme URLs without authority when origin scheme differs', () => {
+      expect(() => resolveUrl('http:/attacker.example/steal', 'https://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('http:attacker.example/steal', 'https://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('https:/attacker.example/steal', 'http://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('https:attacker.example/steal', 'http://test.com')).toThrowError(
+        /NG05703/,
+      );
+      expect(() => resolveUrl('http:\\attacker.example/steal', 'https://test.com')).toThrowError(
+        /NG05703/,
+      );
+    });
   });
 
   describe('without origin', () => {
@@ -76,6 +132,7 @@ describe('resolveUrl', () => {
       expect(resolveUrl('deep/path')).toBeNull();
       expect(resolveUrl('/\\attacker.com/deep/path')).toBeNull();
       expect(resolveUrl('\\\\attacker.com/deep/path')).toBeNull();
+      expect(resolveUrl('\u00A0//attacker.com/deep/path')).toBeNull();
     });
 
     it('should parse valid absolute URLs', () => {

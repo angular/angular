@@ -7,11 +7,18 @@
  */
 
 import {
+  AbsoluteSourceSpan,
   AST,
   CombinedRecursiveAstVisitor,
   ParseSourceSpan,
   TmplAstNode,
   TmplAstTemplate,
+  KeyedRead,
+  SafePropertyRead,
+  SafeKeyedRead,
+  SafeCall,
+  ParenthesizedExpression,
+  NonNullAssert,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -51,15 +58,19 @@ export interface TemplateContext<Code extends ErrorCode> {
   /**
    * Creates a template diagnostic with the given information for the template being processed and
    * using the diagnostic category configured for the extended template diagnostic.
+   *
+   * @param relatedInformation Optional list of secondary related messages:
+   *   - Omit `sourceFile` when `start` and `end` offsets are locations within the template itself.
+   *   - Specify `sourceFile` only when referencing a separate file (e.g. directive class declaration).
    */
   makeTemplateDiagnostic(
-    sourceSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan | AbsoluteSourceSpan,
     message: string,
     relatedInformation?: {
       text: string;
       start: number;
       end: number;
-      sourceFile: ts.SourceFile;
+      sourceFile?: ts.SourceFile;
     }[],
   ): NgTemplateDiagnostic<Code>;
 }
@@ -80,9 +91,9 @@ export interface TemplateCheckFactory<
 /**
  * This abstract class provides a base implementation for the run method.
  */
-export abstract class TemplateCheckWithVisitor<Code extends ErrorCode>
-  implements TemplateCheck<Code>
-{
+export abstract class TemplateCheckWithVisitor<
+  Code extends ErrorCode,
+> implements TemplateCheck<Code> {
   abstract code: Code;
 
   /**
@@ -155,4 +166,24 @@ class TemplateVisitor<Code extends ErrorCode> extends CombinedRecursiveAstVisito
     this.visitAllTemplateNodes(template);
     return this.diagnostics;
   }
+}
+
+/**
+ * Checks if the given AST node originates from a KeyedRead (indexed access)
+ * by unwrapping parentheses, non-null assertions, and traversing the receivers
+ * of safe navigation operations (?. property access, ?.[] keyed access, ?.() calls).
+ */
+export function isAccessFromUncheckedIndex(node: AST): boolean {
+  if (node instanceof KeyedRead) {
+    return true;
+  } else if (
+    node instanceof SafePropertyRead ||
+    node instanceof SafeKeyedRead ||
+    node instanceof SafeCall
+  ) {
+    return isAccessFromUncheckedIndex(node.receiver);
+  } else if (node instanceof ParenthesizedExpression || node instanceof NonNullAssert) {
+    return isAccessFromUncheckedIndex(node.expression);
+  }
+  return false;
 }

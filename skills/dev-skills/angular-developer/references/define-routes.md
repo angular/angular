@@ -38,6 +38,24 @@ Use `redirectTo` to point one path to another.
 { path: 'blog', component: Blog },
 ```
 
+### Conditional Redirects
+
+Pass a function to `redirectTo` to apply logic when redirecting.
+
+```ts
+{
+  path: 'restaurant/:location/menu',
+  redirectTo: ({ params }) => {
+    const base = `/restaurant/${params['location']}/menu`;
+    const hour = new Date().getHours();
+
+    if (hour < 11) return `${base}/breakfast`;
+    if (hour < 17) return `${base}/lunch`;
+    return `${base}/dinner`;
+  },
+},
+```
+
 ## Page Titles
 
 Associate titles with routes for accessibility. Titles can be static or dynamic (via `ResolveFn` or a custom `TitleStrategy`).

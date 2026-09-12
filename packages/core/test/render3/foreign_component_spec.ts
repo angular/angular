@@ -20,6 +20,7 @@ import {ɵɵtext} from '../../src/render3/instructions/text';
 import {ɵɵadvance} from '../../src/render3/instructions/advance';
 import {ɵɵtextInterpolate2} from '../../src/render3/instructions/text_interpolation';
 import {createLView} from '../../src/render3/view/construction';
+import {refreshView} from '../../src/render3/instructions/change_detection';
 import {renderView} from '../../src/render3/instructions/render';
 import {LView, LViewFlags, PARENT, RENDERER, T_HOST} from '../../src/render3/interfaces/view';
 
@@ -46,6 +47,7 @@ describe('ɵɵforeignComponent', () => {
         ɵɵforeignComponent(0, 0);
       },
     });
+    fixture.update(() => {});
 
     expect(fixture.host.innerHTML).toContain('<div id="foreign-el">Foreign Content</div>');
   });
@@ -54,16 +56,43 @@ describe('ɵɵforeignComponent', () => {
     const render = jasmine.createSpy('render').and.returnValue([[]]);
     const foreignComp = foreignImport<{name: string}>(render, noopOnDestroy, eagerContentAdapter);
 
-    new ViewFixture({
+    const fixture = new ViewFixture({
       decls: 1,
       vars: 0,
       consts: [foreignComp],
       create: () => {
-        ɵɵforeignComponent(0, 0, {name: 'Angular'});
+        ɵɵforeignComponent(0, 0, () => ({name: 'Angular'}));
+      },
+    });
+    expect(render).not.toHaveBeenCalled();
+
+    fixture.update(() => {});
+    expect(render).toHaveBeenCalledOnceWith({name: 'Angular'}, /* context= */ undefined);
+  });
+
+  it('should support passing props as a factory function and evaluate during update pass', () => {
+    const render = jasmine.createSpy('render').and.returnValue([[]]);
+    const propsFactory = jasmine
+      .createSpy('propsFactory')
+      .and.returnValue({name: 'Deferred Angular'});
+    const foreignComp = foreignImport<{name: string}>(render, noopOnDestroy, eagerContentAdapter);
+
+    const fixture = new ViewFixture({
+      decls: 1,
+      vars: 0,
+      consts: [foreignComp],
+      create: () => {
+        ɵɵforeignComponent(0, 0, propsFactory);
       },
     });
 
-    expect(render).toHaveBeenCalledOnceWith({name: 'Angular'}, /* context= */ undefined);
+    expect(propsFactory).not.toHaveBeenCalled();
+    expect(render).not.toHaveBeenCalled();
+
+    fixture.update(() => {});
+
+    expect(propsFactory).toHaveBeenCalledTimes(1);
+    expect(render).toHaveBeenCalledOnceWith({name: 'Deferred Angular'}, /* context= */ undefined);
   });
 
   it('should call the dispose function when the containing view is destroyed', () => {
@@ -84,6 +113,7 @@ describe('ɵɵforeignComponent', () => {
         ɵɵforeignComponent(0, 0);
       },
     });
+    fixture.update(() => {});
 
     expect(dispose).toHaveBeenCalledTimes(0);
 
@@ -113,6 +143,7 @@ describe('ɵɵforeignComponent', () => {
         ɵɵelement(2, 'span');
       },
     });
+    fixture.update(() => {});
 
     expect(fixture.host.innerHTML).toContain(
       '' +
@@ -146,6 +177,7 @@ describe('ɵɵforeignComponent', () => {
         ɵɵelementEnd();
       },
     });
+    fixture.update(() => {});
 
     expect(fixture.host.innerHTML).toContain(
       '' +
@@ -185,6 +217,7 @@ describe('ɵɵforeignComponent', () => {
       consts: [foreignComp1],
       create: createFn,
     });
+    fixture.update(() => {});
     expect(fixture.host.innerHTML).toContain(expectedHtml);
 
     // Create second instance reusing the TView
@@ -262,13 +295,17 @@ describe('ɵɵforeignComponent', () => {
         ɵɵdomTemplate(0, iconTemplate, 2, 0);
         ɵɵdomTemplate(1, descriptionTemplate, 2, 0);
         ɵɵdomTemplate(2, childrenTemplate, 2, 0);
-        ɵɵforeignComponent(3, 0, {
-          icon: ɵɵforeignContent(0, 0),
-          description: ɵɵforeignContent(1, 0),
-          children: ɵɵforeignContent(2, 0),
-        });
+        const iconContent = ɵɵforeignContent(0, 0);
+        const descriptionContent = ɵɵforeignContent(1, 0);
+        const childrenContent = ɵɵforeignContent(2, 0);
+        ɵɵforeignComponent(3, 0, () => ({
+          icon: iconContent,
+          description: descriptionContent,
+          children: childrenContent,
+        }));
       },
     });
+    fixture.update(() => {});
 
     expect(fixture.host.innerHTML).toContain(
       '' +
@@ -324,9 +361,10 @@ describe('ɵɵforeignComponent', () => {
       consts: [foreignComp],
       create: () => {
         ɵɵdomTemplate(0, itemTemplate, 2, 2);
-        ɵɵforeignComponent(1, 0, {
-          renderItem: ɵɵforeignContentFn(0, 0),
-        });
+        const renderItem = ɵɵforeignContentFn(0, 0);
+        ɵɵforeignComponent(1, 0, () => ({
+          renderItem,
+        }));
       },
     });
 
@@ -365,5 +403,6 @@ function renderSecondInstance(fixture: ViewFixture): HTMLElement {
   );
 
   renderView(fixture.tView, lView, {});
+  refreshView(fixture.tView, lView, fixture.tView.template, {});
   return host;
 }

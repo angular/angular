@@ -1758,21 +1758,27 @@ describe('reactive forms integration tests', () => {
 
     it('should work with single fields and async validators', async () => {
       const fixture = initTest(FormControlComp);
-      const control = new FormControl('', null!, uniqLoginAsyncValidator('good'));
+      // Delay validation so the scheduled renders can observe the pending state.
+      const control = new FormControl('', null!, uniqLoginAsyncValidator('good', 100));
       fixture.debugElement.componentInstance.control = control;
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
       expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
       dispatchEvent(input, 'blur');
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
 
       input.value = 'good';
       dispatchEvent(input, 'input');
-      await timeout();
-      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
+
+      // Wait for the validator's 100 ms delay, which keeps it pending during rendering.
+      // whenStable() doesn't wait for this timer; useAutoTick advances the mock clock.
+      await timeout(100);
+      await fixture.whenStable();
 
       expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
     });
@@ -6300,10 +6306,7 @@ function asyncValidator(
   },
 ) {
   return (c: AbstractControl) => {
-    let resolve: (result: any) => void;
-    const promise = new Promise<any>((res) => {
-      resolve = res;
-    });
+    const {promise, resolve} = Promise.withResolvers<any>();
     const res = checker(c) ? null : error;
     setTimeout(() => resolve(res), timeout);
     return promise;

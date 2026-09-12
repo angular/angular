@@ -37,7 +37,7 @@ const registerWebMcpForm: RegisterWebMcpForm = (formTree, options) => {
 
 async function initWebMcpForm(
   formTree: FieldTree<unknown>,
-  options: {name: string; description: string},
+  options: {name: string; description: string; annotations?: {consequentialHint?: boolean}},
   injector: Injector,
 ) {
   const node = formTree() as FieldNode;
@@ -55,7 +55,18 @@ async function initWebMcpForm(
       name: options.name,
       description: options.description,
       inputSchema,
-      execute: async (args: Record<string, unknown>) => {
+      annotations: {
+        ...options.annotations,
+
+        // Forms are assumed to implicitly mutate the DOM (otherwise how would a user interact with them?)
+        // and therefore are _never_ read-only.
+        readOnlyHint: false,
+
+        // Response text is currently hard-coded by the framework and trusted or derived from application
+        // errors which are considered trusted.
+        untrustedContentHint: false,
+      },
+      execute: async (args: Record<string, unknown> | unknown[]) => {
         // Populate the form with changes from the agent.
         node.value.set(args);
 

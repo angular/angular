@@ -14,7 +14,7 @@ import {
   untracked,
   ɵWritable as Writable,
 } from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 
 import {
   asyncValidatorsDroppedWithOptsWarning,
@@ -402,7 +402,7 @@ export type ɵTokenize<S extends string, D extends string> = string extends S
   ? string[] /* S must be a literal */
   : S extends `${infer T}${D}${infer U}`
     ? [T, ...ɵTokenize<U, D>]
-    : [S] /* Base case */;
+    : [S]; /* Base case */
 
 /**
  * CoerceStrArrToNumArr accepts an array of strings, and converts any numeric string to a number.
@@ -433,7 +433,7 @@ export type ɵNavigate<
         : any /* tail(K) was not an array, give up */
       : never /* head(K) does not index T, give up */
     : any /* K cannot be split, give up */
-  : any /* T is not indexable, give up */;
+  : any; /* T is not indexable, give up */
 
 /**
  * ɵWriteable removes readonly from all keys.
@@ -507,7 +507,7 @@ export abstract class AbstractControl<
   _hasRequired = signal(false);
 
   private _parent: FormGroup | FormArray | null = null;
-  private _asyncValidationSubscription: any;
+  private _asyncValidationSubscription: Subscription | undefined;
 
   /**
    * Contains the result of merging synchronous validators into a single validator function
@@ -1462,7 +1462,7 @@ export abstract class AbstractControl<
     if (this._asyncValidationSubscription) {
       this._asyncValidationSubscription.unsubscribe();
 
-      // we're cancelling the validator subscribtion, we keep if it should have emitted
+      // we're cancelling the validator subscription, we keep if it should have emitted
       // because we want to emit eventually if it was required at least once.
       const shouldHaveEmitted =
         (this._hasOwnPendingAsyncValidator?.emitEvent ||

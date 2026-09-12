@@ -403,8 +403,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * A function used by the framework to create standalone injectors.
    */
   getStandaloneInjector:
-    | ((parentInjector: EnvironmentInjector) => EnvironmentInjector | null)
-    | null;
+    ((parentInjector: EnvironmentInjector) => EnvironmentInjector | null) | null;
 
   /**
    * A function used by the framework to create the list of external runtime style URLs.
@@ -623,4 +622,4 @@ export type RawScopeInfoFromDecorator =
   | ModuleWithProviders<any>
   | (() => Type<any>)
   | (() => ModuleWithProviders<any>)
-  | any[];
+  | readonly any[];

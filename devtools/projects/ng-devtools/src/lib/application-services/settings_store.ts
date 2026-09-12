@@ -42,7 +42,9 @@ export class SettingsStore<T extends object> {
     }
 
     const initialValue =
-      storeKey in this.data ? (data[storeKey] as ValueFor<T, Key, Category>) : config.initialValue;
+      storeKey in data && data[storeKey] !== undefined
+        ? (data[storeKey] as ValueFor<T, Key, Category>)
+        : config.initialValue;
     const value = signal(initialValue);
     this.signals.set(storeKey, value);
 

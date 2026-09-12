@@ -20,12 +20,13 @@
         background-color 0.3s ease-out,
         width 0.3s ease;
 
+      &.highlighted,
       &:hover {
         background-color: color-mix(in srgb, var(--dynamic-blue-02) 70%, var(--full-contrast) 30%);
         opacity: 1;
       }
 
-      span {
+      .text {
         padding-inline: 0.5rem;
         max-width: 100%;
         display: inline-block;
@@ -34,6 +35,17 @@
         overflow: hidden;
         opacity: 1;
         color: var(--septenary-contrast);
+
+        .label {
+          font-weight: 600;
+        }
+
+        .pill {
+          background-color: color-mix(in srgb, 80% var(--dynamic-blue-02), var(--full-contrast));
+          border-radius: 0.5rem;
+          margin-left: 0.375rem;
+          padding: 0 0.375rem;
+        }
       }
     }
   }

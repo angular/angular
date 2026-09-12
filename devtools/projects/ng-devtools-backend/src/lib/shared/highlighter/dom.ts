@@ -14,6 +14,8 @@ import {
 } from './highlights';
 
 export const OVERLAY_CLASS = 'ng-devtools-highlight-overlay';
+export const OVERLAY_FADE_OUT_DUR = 100;
+
 const OVERLAY_CONTENT_MARGIN = 4;
 const MINIMAL_OVERLAY_CONTENT_SIZE = {
   width: 30 + OVERLAY_CONTENT_MARGIN * 2,
@@ -39,7 +41,6 @@ export function createOverlayWithLabels<T extends HighlightLabelDefinition>(
 } {
   const overlay = document.createElement('div');
   overlay.className = OVERLAY_CLASS;
-  overlay.style.backgroundColor = toCSSColor(...template.overlayColor, 0.35);
   overlay.style.position = 'absolute';
   overlay.style.zIndex = '2147483647';
   overlay.style.pointerEvents = 'none';
@@ -48,6 +49,21 @@ export function createOverlayWithLabels<T extends HighlightLabelDefinition>(
   overlay.style.justifyContent = 'space-between';
   overlay.style.gridTemplateColumns = 'repeat(3, 1fr)';
   overlay.style.gap = '2px';
+
+  switch (template.style) {
+    case 'fill':
+    default:
+      overlay.style.backgroundColor = toCSSColor(...template.overlayColor, 0.35);
+      break;
+    case 'outline':
+      {
+        const color = toCSSColor(...template.overlayColor, 0.5);
+        overlay.style.border = `3px solid ${color}`;
+        overlay.style.boxSizing = 'border-box';
+        overlay.style.boxShadow = `inset 0 0 10px ${color}`;
+      }
+      break;
+  }
 
   if (template.labelsType === 'static') {
     overlay.style.boxSizing = 'border-box';
@@ -100,19 +116,27 @@ export function positionOverlayElement(dimensions: DOMRect, overlayElement: HTML
   style.left = ~~left + window.scrollX + 'px';
 }
 
-export function setLabelElementVisibility(
+export function setLabelElementPosition(
   dimensions: DOMRect,
   labelElement: HTMLElement,
-  labelPosition: 'inset' | 'outset',
+  labelPosition: HighlightLabel<never>['offset'],
 ) {
-  // We display a label inside the overlay if the container is large enough.
-  if (
-    labelPosition === 'inset' &&
-    (dimensions.width <= MINIMAL_OVERLAY_CONTENT_SIZE.width ||
-      dimensions.height <= MINIMAL_OVERLAY_CONTENT_SIZE.height)
-  ) {
-    labelElement.style.display = 'none';
+  const isTooSmall =
+    dimensions.width <= MINIMAL_OVERLAY_CONTENT_SIZE.width ||
+    dimensions.height <= MINIMAL_OVERLAY_CONTENT_SIZE.height;
+
+  if (isTooSmall) {
+    if (labelPosition === 'inset') {
+      // We display a label inside the overlay if the container is large enough.
+      labelElement.style.display = 'none';
+    } else if (labelPosition === 'prefer-inset') {
+      // Convert to `outset` style.
+      labelElement.style.marginBottom = '-25px';
+    }
   } else {
+    if (labelPosition !== 'outset') {
+      labelElement.style.marginBottom = '';
+    }
     labelElement.style.display = '';
   }
 }
@@ -125,6 +149,28 @@ export function getComponentRect(el: Node): DOMRect | undefined {
     return;
   }
   return el.getBoundingClientRect();
+}
+
+/**
+ * Fades out the overlay element.
+ *
+ * Note: The element remains in the DOM.
+ *
+ * @param overlay Overlay
+ * @param delay Animation delay (in ms)
+ * @param duration Animation duration (in ms; Default: `OVERLAY_FADE_OUT_DUR`)
+ */
+export function fadeOutOverlay(
+  overlay: HTMLElement,
+  delay: number,
+  duration: number = OVERLAY_FADE_OUT_DUR,
+) {
+  overlay.animate([{opacity: 1}, {opacity: 0}], {
+    delay,
+    duration,
+    easing: 'ease-in-out',
+    fill: 'forwards',
+  });
 }
 
 function toCSSColor(red: number, green: number, blue: number, alpha = 1): string {

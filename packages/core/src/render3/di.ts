@@ -158,7 +158,7 @@ export function bloomAdd(
   let id: number | undefined;
   if (typeof type === 'string') {
     id = type.charCodeAt(0) || 0;
-  } else if (type.hasOwnProperty(NG_ELEMENT_ID)) {
+  } else if (Object.hasOwn(type, NG_ELEMENT_ID)) {
     id = (type as any)[NG_ELEMENT_ID];
   }
 
@@ -830,8 +830,8 @@ export function bloomHashBitOrFactory(
     return token.charCodeAt(0) || 0;
   }
   const tokenId: number | undefined =
-    // First check with `hasOwnProperty` so we don't get an inherited ID.
-    token.hasOwnProperty(NG_ELEMENT_ID) ? (token as any)[NG_ELEMENT_ID] : undefined;
+    // First check with `Object.hasOwn` so we don't get an inherited ID.
+    Object.hasOwn(token, NG_ELEMENT_ID) ? (token as any)[NG_ELEMENT_ID] : undefined;
   // Negative token IDs are used for special objects such as `Injector`
   if (typeof tokenId === 'number') {
     if (tokenId >= 0) {
@@ -884,10 +884,7 @@ export function getNodeInjectorTNode(
   nodeInjector: NodeInjector,
 ): TElementNode | TContainerNode | TElementContainerNode | null {
   return (nodeInjector as any)._tNode as
-    | TElementNode
-    | TContainerNode
-    | TElementContainerNode
-    | null;
+    TElementNode | TContainerNode | TElementContainerNode | null;
 }
 
 export class NodeInjector implements Injector {
@@ -1006,6 +1003,10 @@ function lookupTokenUsingEmbeddedInjector<T>(
       return nodeInjectorValue;
     }
 
+    // The injector of the node we started from has been checked at this point, so everything
+    // we look at from here on is a parent and must not be skipped by the `SkipSelf` flag.
+    flags &= ~InternalInjectFlags.SkipSelf;
+
     // Has an explicit type due to a TS bug: https://github.com/microsoft/TypeScript/issues/33191
     let parentTNode: TElementNode | TContainerNode | null = currentTNode.parent;
 
@@ -1018,11 +1019,7 @@ function lookupTokenUsingEmbeddedInjector<T>(
         const embeddedViewInjectorValue = (embeddedViewInjector as BackwardsCompatibleInjector).get(
           token,
           NOT_FOUND as T | {},
-          // The `SkipSelf` flag is intended for the current injection context (the child component).
-          // When we delegate to the embedded view injector, we are effectively traversing to a
-          // parent/fallback scope, so the "Self" has already been skipped. We must strip the
-          // flag to ensure the embedded view injector can resolve tokens from itself.
-          flags & ~InternalInjectFlags.SkipSelf,
+          flags,
         );
         if (embeddedViewInjectorValue !== NOT_FOUND) {
           return embeddedViewInjectorValue;

@@ -130,6 +130,7 @@ export function adaptTypeCheckBlockMetadata(
       isStructural: dir.isStructural,
       isStandalone: dir.isStandalone,
       isExplicitlyDeferred: dir.isExplicitlyDeferred,
+      deferredBlocks: dir.deferredBlocks,
       preserveWhitespaces: dir.preserveWhitespaces,
       ngContentSelectors: dir.ngContentSelectors,
       animationTriggerNames: dir.animationTriggerNames,
@@ -207,6 +208,8 @@ export function adaptTypeCheckBlockMetadata(
     },
     getDeferredTriggerTarget: (b, t) => meta.boundTarget.getDeferredTriggerTarget(b, t),
     isDeferred: (node) => meta.boundTarget.isDeferred(node),
+    getDeferBlocksOfNode: (node) => meta.boundTarget.getDeferBlocksOfNode(node),
+    getDeferBlocksOfPipe: (ast) => meta.boundTarget.getDeferBlocksOfPipe(ast),
     referencedDirectiveExists: (name) => meta.boundTarget.referencedDirectiveExists(name),
     getConsumerOfBinding: (binding) => {
       const consumer = meta.boundTarget.getConsumerOfBinding(binding);
@@ -223,8 +226,7 @@ export function adaptTypeCheckBlockMetadata(
     getDeferBlocks: () => meta.boundTarget.getDeferBlocks(),
     getConflictingHostDirectiveBindings: (node) =>
       meta.boundTarget.getConflictingHostDirectiveBindings(node) as
-        | ConflictingHostDirectiveBinding<TcbDirectiveMetadata>[]
-        | null,
+        ConflictingHostDirectiveBinding<TcbDirectiveMetadata>[] | null,
   };
 
   const pipes = new Map<string, TcbPipeMetadata>();
@@ -238,6 +240,7 @@ export function adaptTypeCheckBlockMetadata(
         name: pipe.name!,
         ref: extractRef(pipe.ref as Reference<ClassDeclaration>),
         isExplicitlyDeferred: pipe.isExplicitlyDeferred,
+        deferredBlocks: pipe.deferredBlocks,
       });
     }
   }

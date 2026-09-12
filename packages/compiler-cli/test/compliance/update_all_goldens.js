@@ -12,7 +12,7 @@
 import {execSync, spawnSync} from 'child_process';
 
 process.stdout.write('Gathering all partial golden update targets');
-const queryCommand = `pnpm -s bazel query --output label "kind(_write_source_file, //packages/compiler-cli/test/compliance/test_cases:*)"`;
+const queryCommand = `pnpm run -s bazel query --output label "kind(_write_source_file, //packages/compiler-cli/test/compliance/test_cases:*)"`;
 const allUpdateTargets = execSync(queryCommand, {encoding: 'utf-8', stdio: 'pipe'})
   .trim()
   .split('\n')
@@ -20,14 +20,14 @@ const allUpdateTargets = execSync(queryCommand, {encoding: 'utf-8', stdio: 'pipe
   .filter((target) => target.length > 0);
 
 if (allUpdateTargets.length === 0) {
-  process.stdout.clearLine();
-  process.stdout.cursorTo(0);
+  if (process.stdout.clearLine) process.stdout.clearLine();
+  if (process.stdout.cursorTo) process.stdout.cursorTo(0);
   console.error(`Could not find any symbol test targets using: ${queryCommand}`);
   process.exit(1);
 }
 
-process.stdout.clearLine();
-process.stdout.cursorTo(0);
+if (process.stdout.clearLine) process.stdout.clearLine();
+if (process.stdout.cursorTo) process.stdout.cursorTo(0);
 
 for (const [index, target] of allUpdateTargets.entries()) {
   const progress = `${index + 1} / ${allUpdateTargets.length}`;
@@ -36,8 +36,8 @@ for (const [index, target] of allUpdateTargets.entries()) {
     stdio: 'pipe',
     encoding: 'utf-8',
   });
-  process.stdout.clearLine();
-  process.stdout.cursorTo(0);
+  if (process.stdout.clearLine) process.stdout.clearLine();
+  if (process.stdout.cursorTo) process.stdout.cursorTo(0);
   if (commandResult.status) {
     console.error(`[${progress}] Failed run: ${target}`);
     console.group();

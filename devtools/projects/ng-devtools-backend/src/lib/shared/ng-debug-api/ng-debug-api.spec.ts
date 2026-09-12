@@ -61,6 +61,7 @@ const fakeNgGlobal = (framework: Framework): Partial<Ng> => {
 describe('ng-debug-api', () => {
   afterEach(() => {
     delete (globalThis as any).ng;
+    document.body.replaceChildren();
   });
 
   describe('ngDebugDependencyInjectionApiIsSupported', () => {
@@ -113,6 +114,23 @@ describe('ng-debug-api', () => {
       (globalThis as any).ng = fakeNgGlobal(Framework.Wiz);
 
       expect(ngDebugRoutesApiIsSupported()).toBeFalse();
+    });
+
+    it('should ignore elements where getComponent returns null (e.g. extension elements)', () => {
+      const foreignRoot = document.createElement('foreign-extension-app');
+      foreignRoot.setAttribute('ng-version', '0.0.0-PLACEHOLDER');
+      document.body.appendChild(foreignRoot);
+
+      try {
+        const fakeNg = fakeNgGlobal(Framework.Angular);
+        const originalGetComponent = fakeNg.getComponent!;
+        fakeNg.getComponent = (el) => (el === foreignRoot ? null : originalGetComponent(el));
+        (globalThis as any).ng = fakeNg;
+
+        expect(ngDebugProfilerApiIsSupported()).toBeTrue();
+      } finally {
+        foreignRoot.remove();
+      }
     });
   });
 
@@ -190,6 +208,23 @@ describe('ng-debug-api', () => {
 
       (globalThis as any).ng = fakeNgGlobal(Framework.ACX);
       expect(ngDebugSignalPropertiesInspectionApiIsSupported()).toBeFalse();
+    });
+
+    it('should ignore elements where getComponent returns null (e.g. extension elements)', () => {
+      const foreignRoot = document.createElement('foreign-extension-app');
+      foreignRoot.setAttribute('ng-version', '0.0.0-PLACEHOLDER');
+      document.body.appendChild(foreignRoot);
+
+      try {
+        const fakeNg = fakeNgGlobal(Framework.Angular);
+        const originalGetComponent = fakeNg.getComponent!;
+        fakeNg.getComponent = (el) => (el === foreignRoot ? null : originalGetComponent(el));
+        (globalThis as any).ng = fakeNg;
+
+        expect(ngDebugSignalPropertiesInspectionApiIsSupported()).toBeTrue();
+      } finally {
+        foreignRoot.remove();
+      }
     });
   });
 });

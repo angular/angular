@@ -7,15 +7,14 @@
  */
 
 import {
-  ApplicationRef,
   ChangeDetectionStrategy,
   Component,
   Directive,
   forwardRef,
   inject,
+  Input,
   input,
   model,
-  provideZonelessChangeDetection,
   resource,
   signal,
   viewChild,
@@ -25,7 +24,6 @@ import {TestBed} from '@angular/core/testing';
 import {
   AbstractControl,
   ControlValueAccessor,
-  DefaultValueAccessor,
   FormControl,
   FormsModule,
   NG_VALIDATORS,
@@ -56,14 +54,9 @@ import {
   WithOptionalFieldTree,
   transformedValue,
 } from '@angular/forms/signals';
+import {act, actAsync} from '@angular/private/testing';
 
 describe('ControlValueAccessor', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-  });
-
   @Component({
     selector: 'custom-control',
     template: `
@@ -313,7 +306,7 @@ describe('ControlValueAccessor', () => {
   });
 
   it('should support debounce', async () => {
-    const {promise, resolve} = promiseWithResolvers<void>();
+    const {promise, resolve} = Promise.withResolvers<void>();
 
     @Component({
       imports: [CustomControl, FormField],
@@ -670,6 +663,60 @@ describe('ControlValueAccessor', () => {
     expect(writeValues).toEqual([]);
   });
 
+  it('should be able to set the `name` non-signal input on a custom CVA', () => {
+    @Component({
+      selector: 'custom-control-with-name',
+      template: '',
+      providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CustomControlWithName, multi: true}],
+    })
+    class CustomControlWithName extends CustomControl {
+      @Input() name = '';
+    }
+
+    @Component({
+      imports: [CustomControlWithName, FormField],
+      template: `<custom-control-with-name [formField]="f" [name]="nameOverride()" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal('test'));
+      readonly control = viewChild.required(CustomControlWithName);
+      readonly nameOverride = signal('override');
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    expect(fixture.componentInstance.control().name).toBe('override');
+
+    act(() => fixture.componentInstance.nameOverride.set('override-changed'));
+    expect(fixture.componentInstance.control().name).toBe('override-changed');
+  });
+
+  it('should be able to set the `name` signal input on a custom CVA', () => {
+    @Component({
+      selector: 'custom-control-with-name',
+      template: '',
+      providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CustomControlWithName, multi: true}],
+    })
+    class CustomControlWithName extends CustomControl {
+      readonly name = input.required<string>();
+    }
+
+    @Component({
+      imports: [CustomControlWithName, FormField],
+      template: `<custom-control-with-name [formField]="f" [name]="nameOverride()" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal('test'));
+      readonly control = viewChild.required(CustomControlWithName);
+      readonly nameOverride = signal('override');
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    expect(fixture.componentInstance.control().name()).toBe('override');
+
+    act(() => fixture.componentInstance.nameOverride.set('override-changed'));
+    expect(fixture.componentInstance.control().name()).toBe('override-changed');
+  });
+
   describe('properties', () => {
     describe('disabled', () => {
       it('should bind to directive input', () => {
@@ -936,7 +983,7 @@ describe('ControlValueAccessor', () => {
 
     describe('pending', () => {
       it('should bind to directive input', async () => {
-        const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+        const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
 
         @Directive({selector: '[testDir]'})
         class TestDir {
@@ -1504,41 +1551,3 @@ describe('ControlValueAccessor', () => {
     });
   });
 });
-
-function act<T>(fn: () => T): T {
-  try {
-    return fn();
-  } finally {
-    TestBed.tick();
-  }
-}
-
-async function actAsync<T>(fn: () => T): Promise<T> {
-  try {
-    return fn();
-  } finally {
-    await TestBed.inject(ApplicationRef).whenStable();
-  }
-}
-
-/**
- * Replace with `Promise.withResolvers()` once it's available.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
- */
-// TODO: share this with submit.spec.ts
-function promiseWithResolvers<T = void>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {promise, resolve, reject};
-}

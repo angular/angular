@@ -7,6 +7,7 @@
  */
 
 export {createUrlTreeFromSnapshot} from './create_url_tree';
+export {nonBlocking} from './router_resource';
 export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
 export {ROUTER_OUTLET_DATA, RouterOutlet, RouterOutletContract} from './directives/router_outlet';
@@ -65,6 +66,8 @@ export {
   RunGuardsAndResolvers,
   UrlMatcher,
   UrlMatchResult,
+  ResourceContext,
+  ResourceResult,
 } from './models';
 export {ViewTransitionInfo, ViewTransitionsFeatureOptions} from './utils/view_transition';
 
@@ -72,6 +75,7 @@ export * from './models_deprecated';
 export {Navigation, NavigationExtras, UrlCreationOptions} from './navigation_transition';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
 export {
+  AutoCleanupInjectorsFeature,
   ComponentInputBindingFeature,
   DebugTracingFeature,
   DisabledInitialNavigationFeature,
@@ -91,6 +95,7 @@ export {
   withDisabledInitialNavigation,
   withEnabledBlockingInitialNavigation,
   withExperimentalAutoCleanupInjectors,
+  withAutoCleanupInjectors,
   withExperimentalPlatformNavigation,
   withHashLocation,
   withInMemoryScrolling,
@@ -98,6 +103,8 @@ export {
   withPreloading,
   withRouterConfig,
   withViewTransitions,
+  withRouterResources,
+  RouterResourcesFeature,
 } from './provide_router';
 
 export {
@@ -140,6 +147,7 @@ export {
   UrlSegmentGroup,
   UrlSerializer,
   UrlTree,
+  containsTree,
 } from './url_tree';
 export {
   mapToCanActivate,

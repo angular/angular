@@ -8,6 +8,7 @@
 
 import type {Signal, WritableSignal} from '@angular/core';
 import {isSignal} from '../../shared/utils/general';
+import {AngularDevtoolsError} from '../../shared/utils/error';
 
 /** Represents a property access operation. */
 interface PropertyAccess {
@@ -76,13 +77,13 @@ interface PropertyAccess {
  * (`receiver[prop] = newValue;`).
  */
 export function mutateNestedProp(obj: any, keyPath: string[], newValue: unknown): void {
-  if (keyPath.length === 0) throw new Error('At least one key is required.');
+  if (keyPath.length === 0) throw new AngularDevtoolsError('At least one key is required.');
 
   const nestedProps = Array.from(getNestedProps(obj, keyPath));
 
   // Check for nested signals.
   const signalCount = nestedProps.filter((prop) => isSignal(prop.value)).length;
-  if (signalCount > 1) throw new Error('Cannot mutate nested signals.');
+  if (signalCount > 1) throw new AngularDevtoolsError('Cannot mutate nested signals.');
 
   // Check for a single signal.
   const signalIndex = nestedProps.findIndex((prop) => isSignal(prop.value));
@@ -95,7 +96,7 @@ export function mutateNestedProp(obj: any, keyPath: string[], newValue: unknown)
         .slice(0, signalIndex + 1)
         .map((prop) => prop.key)
         .join('.');
-      throw new Error(`Cannot mutate a readonly signal at \`${propPath}\`.`);
+      throw new AngularDevtoolsError(`Cannot mutate a readonly signal at \`${propPath}\`.`);
     }
 
     sig.value.set(immutableUpdate(props, newValue));
@@ -107,7 +108,7 @@ export function mutateNestedProp(obj: any, keyPath: string[], newValue: unknown)
   const finalProp = nestedProps[nestedProps.length - 1];
   const descriptor = getInheritedPropertyDescriptor(finalProp.receiver, finalProp.key);
   if (descriptor && descriptor.get && !descriptor.set) {
-    throw new Error(`Cannot mutate getter property: ${finalProp.key}`);
+    throw new AngularDevtoolsError(`Cannot mutate getter property: ${finalProp.key}`);
   }
 
   finalProp.receiver[finalProp.key] = newValue;
@@ -124,15 +125,19 @@ function* getNestedProps(
 
     // Prevent Prototype Pollution
     if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
-      throw new Error(`Access to property \`${key}\` is blocked for security reasons.`);
+      throw new AngularDevtoolsError(
+        `Access to property \`${key}\` is blocked for security reasons.`,
+      );
     }
 
     if (Array.isArray(receiver) && parseInt(key) >= receiver.length) {
-      throw new Error(`Cannot access index ${key} for array of length ${receiver.length}.`);
+      throw new AngularDevtoolsError(
+        `Cannot access index ${key} for array of length ${receiver.length}.`,
+      );
     }
 
     if (!(key in receiver)) {
-      throw new Error(`Property \`${key}\` is not defined on the object.`);
+      throw new AngularDevtoolsError(`Property \`${key}\` is not defined on the object.`);
     }
 
     const value = receiver[key];
@@ -170,7 +175,9 @@ function immutableUpdate(props: PropertyAccess[], newValue: unknown): any {
       [prop.key]: immutableUpdate(remainingProps, newValue),
     };
   } else {
-    throw new Error(`Cannot immutably update type: ${prop.receiver.constructor.name}`);
+    throw new AngularDevtoolsError(
+      `Cannot immutably update type: ${prop.receiver.constructor.name}`,
+    );
   }
 }
 
@@ -210,7 +217,7 @@ function isWritableSignal<Value>(sig: Signal<Value>): sig is WritableSignal<Valu
 function assertSafeToImmutablyUpdate(obj: {}): void {
   // `new MyClass()` case.
   if (obj.constructor !== Object) {
-    throw new Error(`Cannot immutably update type: ${obj.constructor.name}`);
+    throw new AngularDevtoolsError(`Cannot immutably update type: ${obj.constructor.name}`);
   }
 
   // `{ get foo() { return 'foo'; } }` case.
@@ -220,7 +227,7 @@ function assertSafeToImmutablyUpdate(obj: {}): void {
     if (!descriptor) continue;
 
     if (descriptor.get || descriptor.set) {
-      throw new Error('Cannot immutably update object with getters or setters.');
+      throw new AngularDevtoolsError('Cannot immutably update object with getters or setters.');
     }
   }
 }

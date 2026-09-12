@@ -74,7 +74,12 @@ export interface OutOfBandDiagnosticRecorder<T> {
    * @param id the type-checking ID of the template which contains the unknown pipe.
    * @param ast the `BindingPipe` invocation of the pipe which could not be found.
    */
-  deferredPipeUsedEagerly(id: TypeCheckId, ast: BindingPipe): void;
+  deferredPipeUsedEagerly(
+    id: TypeCheckId,
+    ast: BindingPipe,
+    currentBlockName: string | null,
+    declaredBlocks: string[] | null,
+  ): void;
 
   /**
    * Reports usage of a component/directive imported via `@Component.deferredImports` outside
@@ -83,7 +88,13 @@ export interface OutOfBandDiagnosticRecorder<T> {
    * @param id the type-checking ID of the template which contains the unknown pipe.
    * @param element the element which hosts a component that was defer-loaded.
    */
-  deferredComponentUsedEagerly(id: TypeCheckId, element: Element): void;
+  deferredComponentUsedEagerly(
+    id: TypeCheckId,
+    element: Element | Template,
+    dirMeta: TcbDirectiveMetadata,
+    currentBlockName: string | null,
+    declaredBlocks: string[] | null,
+  ): void;
 
   /**
    * Reports a duplicate declaration of a template variable.

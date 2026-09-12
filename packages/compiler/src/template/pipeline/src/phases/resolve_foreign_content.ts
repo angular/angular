@@ -52,7 +52,23 @@ export function resolveForeignContent(job: CompilationJob): void {
         templateOp.handle,
         target.constIndex,
       );
-      target.props.set(op.propertyName, foreignContent);
+
+      const varXref = job.allocateXrefId();
+      const variable: ir.SemanticVariable = {
+        kind: ir.SemanticVariableKind.Identifier,
+        name: null,
+        identifier: op.propertyName,
+        local: true,
+      };
+      const varOp = ir.createVariableOp<ir.CreateOp>(
+        varXref,
+        variable,
+        foreignContent,
+        ir.VariableFlags.None,
+      );
+      ir.OpList.insertBefore<ir.CreateOp>(varOp, target);
+
+      target.props.set(op.propertyName, new ir.ReadVariableExpr(varXref));
     }
   }
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AST, Binary, TmplAstNode} from '@angular/compiler';
+import {AST, Binary, KeyedRead, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
 import {NgCompilerOptions} from '../../../../core/api';
@@ -17,6 +17,7 @@ import {
   TemplateCheckWithVisitor,
   TemplateContext,
   formatExtendedError,
+  isAccessFromUncheckedIndex,
 } from '../../api';
 
 /**
@@ -28,12 +29,22 @@ import {
 class NullishCoalescingNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE> {
   override code = ErrorCode.NULLISH_COALESCING_NOT_NULLABLE as const;
 
+  constructor(private readonly noUncheckedIndexedAccess: boolean) {
+    super();
+  }
+
   override visitNode(
     ctx: TemplateContext<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>,
     component: ts.ClassDeclaration,
     node: TmplAstNode | AST,
   ): NgTemplateDiagnostic<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE>[] {
     if (!(node instanceof Binary) || node.operation !== '??') return [];
+
+    // When `noUncheckedIndexedAccess` is disabled, an indexed access is not checked
+    // and may result in `undefined`.
+    if (!this.noUncheckedIndexedAccess && isAccessFromUncheckedIndex(node.left)) {
+      return [];
+    }
 
     const symbolLeft = ctx.templateTypeChecker.getSymbolOfNode(node.left, component);
     if (symbolLeft === null || symbolLeft.kind !== SymbolKind.Expression) {
@@ -86,6 +97,8 @@ export const factory: TemplateCheckFactory<
       return null;
     }
 
-    return new NullishCoalescingNotNullableCheck();
+    const noUncheckedIndexedAccess = !!options.noUncheckedIndexedAccess;
+
+    return new NullishCoalescingNotNullableCheck(noUncheckedIndexedAccess);
   },
 };

@@ -1,0 +1,75 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate boundary and error blocks",
+      "inputFiles": ["basic.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect boundary instructions",
+          "files": ["basic.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support let declaration of the error",
+      "inputFiles": ["error_declaration.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect boundary instructions for error declaration",
+          "files": ["error_declaration.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support retry function alias",
+      "inputFiles": ["retry_alias.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect boundary instructions for retry alias",
+          "files": ["retry_alias.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support retry implicitly",
+      "inputFiles": ["retry_implicit.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect boundary instructions",
+          "files": ["retry_implicit.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support when conditions",
+      "inputFiles": ["when_condition.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect boundary instructions for when condition",
+          "files": ["when_condition.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support multiple error blocks",
+      "inputFiles": ["multiple_error_blocks.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect boundary instructions for multiple error blocks",
+          "files": ["multiple_error_blocks.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support nested boundaries",
+      "inputFiles": ["nested.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect boundary instructions for nested boundaries",
+          "files": ["nested.js"]
+        }
+      ]
+    }
+  ]
+}

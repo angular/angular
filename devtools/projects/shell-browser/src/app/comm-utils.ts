@@ -36,3 +36,7 @@ export function getDetectAngularScriptUri() {
   const url = stripUrlQueryParamsAndFragment(window.location.href);
   return 'angular-devtools-detect-angular-' + url;
 }
+
+export function stringifyAndEscape(obj: unknown): string {
+  return JSON.stringify(JSON.stringify(obj));
+}

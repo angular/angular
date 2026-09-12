@@ -375,6 +375,7 @@ export function updateImportsForTypescriptFile(
   symbolName: string,
   declarationName: string,
   moduleSpecifier: string,
+  preferences?: ts.UserPreferences,
 ): [ts.TextChange[], string] {
   // The trait might already be imported, possibly under a different name. If so, determine the
   // local name of the imported trait.
@@ -421,9 +422,38 @@ export function updateImportsForTypescriptFile(
     // TODO: Why does the compiler insist this is null?
     span.start = lastImport!.getStart() + lastImport!.getWidth();
   }
-  const newImportDeclaration = generateImport(symbolName, importName, moduleSpecifier);
+  const newImportDeclaration = generateImport(
+    symbolName,
+    importName,
+    moduleSpecifier,
+    shouldUseSingleQuotes(file, preferences),
+  );
   const importString = '\n' + printNode(newImportDeclaration, file);
   return [[{span, newText: importString}], importName];
+}
+
+/**
+ * Whether new string literals in the given file should use single quotes, based on the
+ * user's `quotePreference`. When the preference is `auto` (or absent), the style is inferred
+ * from the first existing import in the file, mirroring TypeScript's own behavior. Defaults
+ * to double quotes when there is nothing to infer from.
+ */
+export function shouldUseSingleQuotes(
+  file: ts.SourceFile,
+  preferences: ts.UserPreferences | undefined,
+): boolean {
+  if (preferences?.quotePreference === 'single') {
+    return true;
+  }
+  if (preferences?.quotePreference === 'double') {
+    return false;
+  }
+  for (const statement of file.statements) {
+    if (ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier)) {
+      return file.text[statement.moduleSpecifier.getStart(file)] === `'`;
+    }
+  }
+  return false;
 }
 
 /**
@@ -590,13 +620,14 @@ export function generateImport(
   localName: string,
   exportedSpecifierName: string | null,
   rawModuleSpecifier: string,
+  useSingleQuotes = false,
 ): ts.ImportDeclaration {
   let propName: ts.Identifier | undefined;
   if (exportedSpecifierName !== null && exportedSpecifierName !== localName) {
     propName = ts.factory.createIdentifier(exportedSpecifierName);
   }
   const name = ts.factory.createIdentifier(localName);
-  const moduleSpec = ts.factory.createStringLiteral(rawModuleSpecifier);
+  const moduleSpec = ts.factory.createStringLiteral(rawModuleSpecifier, useSingleQuotes);
   let importClauseName: ts.Identifier | undefined;
   let importBindings: ts.NamedImportBindings | undefined;
 
@@ -692,6 +723,7 @@ export function getCodeActionToImportTheDirectiveDeclaration(
   directive: PotentialDirective | PotentialPipe,
   tsLs: ts.LanguageService,
   includeCompletionsForModuleExports?: boolean,
+  preferences?: ts.UserPreferences,
 ): ts.CodeAction[] | undefined {
   const codeActions: ts.CodeAction[] = [];
 
@@ -741,6 +773,7 @@ export function getCodeActionToImportTheDirectiveDeclaration(
         potentialImport.symbolName,
         declarationName,
         potentialImport.moduleSpecifier,
+        preferences,
       );
       importName = generatedImportName;
       fileImportChanges.push(...importChanges);
@@ -753,6 +786,7 @@ export function getCodeActionToImportTheDirectiveDeclaration(
           'forwardRef',
           declarationName,
           '@angular/core',
+          preferences,
         );
         fileImportChanges.push(...forwardRefImports);
         forwardRefName = generatedForwardRefName;

@@ -80,7 +80,7 @@ export interface AfterViewInit {
 }
 
 // @public
-export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
+export const ANIMATION_MODULE_TYPE: InjectionToken<"BrowserAnimations" | "NoopAnimations">;
 
 // @public
 export type AnimationCallbackEvent = {
@@ -115,7 +115,7 @@ export class ApplicationInitStatus {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<ApplicationInitStatus, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<ApplicationInitStatus>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -155,7 +155,7 @@ export class ApplicationRef {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<ApplicationRef, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<ApplicationRef>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public (undocumented)
@@ -250,7 +250,7 @@ export class Compiler {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<Compiler, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<Compiler>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -435,6 +435,7 @@ export function createComponent<C>(component: Type<C>, options: {
     projectableNodes?: Node[][];
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
     bindings?: Binding[];
+    onError?: (error: Error, details: ErrorDetails) => void;
 }): ComponentRef<C>;
 
 // @public
@@ -710,9 +711,21 @@ export type EnvironmentProviders = {
 };
 
 // @public
+export interface ErrorDetails {
+    readonly boundary?: {
+        readonly type: Type<unknown>;
+        readonly reset: () => void;
+    };
+    readonly caughtBy?: Function;
+    readonly declarationInstance: unknown;
+    readonly declarationType: Type<unknown>;
+}
+
+// @public
 export class ErrorHandler {
     // (undocumented)
     handleError(error: any): void;
+    onViewError?(error: Error, details: ErrorDetails): void;
 }
 
 // @public
@@ -1466,7 +1479,7 @@ export class PlatformRef {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<PlatformRef, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<PlatformRef>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1913,7 +1926,7 @@ export class Testability implements PublicTestability {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<Testability, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<Testability>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -1928,7 +1941,7 @@ export class TestabilityRegistry {
     // (undocumented)
     static ɵfac: ɵɵFactoryDeclaration<TestabilityRegistry, never>;
     // (undocumented)
-    static ɵprov: ɵɵInjectableDeclaration<TestabilityRegistry>;
+    static ɵprov: ɵɵInjectableDeclaration<any>;
 }
 
 // @public
@@ -2098,10 +2111,12 @@ export abstract class ViewContainerRef {
         projectableNodes?: Node[][];
         directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
         bindings?: Binding[];
+        onError?: (error: Error, context: ErrorDetails) => void;
     }): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, options?: {
         index?: number;
         injector?: Injector;
+        onError?: (error: Error, details: ErrorDetails) => void;
     }): EmbeddedViewRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
     abstract detach(index?: number): ViewRef | null;
@@ -2139,6 +2154,7 @@ export interface WebMcpClient {
 
 // @public
 export interface WebMcpToolDescriptor<InputSchema extends JsonSchemaForInference> {
+    annotations?: Annotations;
     description: string;
     execute: WebMcpToolExecute<InputSchema>;
     inputSchema: InputSchema;

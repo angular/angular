@@ -8,12 +8,14 @@
 import {
   AST,
   ASTWithSource,
+  BindingPipe,
   CombinedRecursiveAstVisitor,
   ImplicitReceiver,
   ParseSourceSpan,
   PropertyRead,
   ThisReceiver,
   TmplAstBoundAttribute,
+  TmplAstBoundEvent,
   TmplAstComponent,
   TmplAstDirective,
   TmplAstElement,
@@ -21,6 +23,7 @@ import {
   TmplAstNode,
   TmplAstReference,
   TmplAstTemplate,
+  TmplAstTextAttribute,
   TmplAstVariable,
   tmplAstVisitAll,
 } from '@angular/compiler';
@@ -31,6 +34,7 @@ import {
   AbsoluteSourceSpan,
   AbstractBoundTemplate,
   AttributeIdentifier,
+  BoundAttributeIdentifier,
   ComponentNodeIdentifier,
   DirectiveHostIdentifier,
   DirectiveNodeIdentifier,
@@ -38,6 +42,7 @@ import {
   IdentifierKind,
   LetDeclarationIdentifier,
   MethodIdentifier,
+  PipeIdentifier,
   PropertyIdentifier,
   ReferenceIdentifier,
   TemplateNodeIdentifier,
@@ -48,9 +53,7 @@ import {
 type ExpressionIdentifier<T = DeclarationNode> = PropertyIdentifier<T> | MethodIdentifier<T>;
 type TmplTarget = TmplAstReference | TmplAstVariable | TmplAstLetDeclaration;
 type TargetIdentifier<T = DeclarationNode> =
-  | ReferenceIdentifier<T>
-  | VariableIdentifier
-  | LetDeclarationIdentifier;
+  ReferenceIdentifier<T> | VariableIdentifier | LetDeclarationIdentifier;
 type TargetIdentifierMap<T = DeclarationNode> = Map<TmplTarget, TargetIdentifier<T>>;
 
 /**
@@ -147,7 +150,46 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     super.visitPropertyRead(ast, null);
   }
 
+  override visitPipe(ast: BindingPipe): void {
+    this.visitPipeIdentifier(ast);
+    super.visitPipe(ast, null);
+  }
+
+  private visitPipeIdentifier(ast: BindingPipe): void {
+    if (this.currentAstWithSource === null || this.currentAstWithSource.source === null) {
+      return;
+    }
+
+    const {absoluteOffset, source: expressionStr} = this.currentAstWithSource;
+    const identifierStart = ast.nameSpan.start - absoluteOffset;
+
+    if (!expressionStr.startsWith(ast.name, identifierStart)) {
+      this.errors.push(
+        new Error(
+          `Impossible state: "${ast.name}" not found in "${expressionStr}" at location ${identifierStart}`,
+        ),
+      );
+      return;
+    }
+
+    const absoluteStart = absoluteOffset + identifierStart;
+    const span = new AbsoluteSourceSpan(absoluteStart, absoluteStart + ast.name.length);
+    const target = this.boundTemplate.getPipe(ast.name);
+    const identifier: PipeIdentifier<T> = {
+      name: ast.name,
+      span,
+      kind: IdentifierKind.Pipe,
+      target: target ? {node: target.ref.node} : null,
+    };
+
+    this.identifiers.add(identifier);
+  }
+
   override visitBoundAttribute(attribute: TmplAstBoundAttribute): void {
+    const identifier = this.bindingToIdentifier(attribute, IdentifierKind.Input);
+    if (identifier !== null) {
+      this.identifiers.add(identifier);
+    }
     const previous = this.currentAstWithSource;
     this.currentAstWithSource = {
       source: attribute.valueSpan?.toString() || null,
@@ -155,6 +197,53 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     };
     this.visit(attribute.value instanceof ASTWithSource ? attribute.value.ast : attribute.value);
     this.currentAstWithSource = previous;
+  }
+
+  override visitBoundEvent(event: TmplAstBoundEvent): void {
+    const identifier = this.bindingToIdentifier(event, IdentifierKind.Output);
+    if (identifier !== null) {
+      this.identifiers.add(identifier);
+    }
+    super.visitBoundEvent(event);
+  }
+
+  override visitTextAttribute(attribute: TmplAstTextAttribute): void {
+    const identifier = this.bindingToIdentifier(attribute, IdentifierKind.Input);
+    if (identifier !== null) {
+      this.identifiers.add(identifier);
+    }
+    super.visitTextAttribute(attribute);
+  }
+
+  private bindingToIdentifier(
+    node: TmplAstBoundAttribute | TmplAstBoundEvent | TmplAstTextAttribute,
+    kind: IdentifierKind.Input | IdentifierKind.Output,
+  ): BoundAttributeIdentifier<T> | null {
+    if (!this.boundTemplate.getConsumerOfBinding) {
+      return null;
+    }
+    const consumer = this.boundTemplate.getConsumerOfBinding(node);
+    if (!consumer || consumer instanceof TmplAstElement || consumer instanceof TmplAstTemplate) {
+      return null;
+    }
+
+    const keySpan = node.keySpan ?? (node instanceof TmplAstTextAttribute ? node.sourceSpan : null);
+    if (!keySpan) {
+      return null;
+    }
+
+    const span = new AbsoluteSourceSpan(
+      keySpan.start.offset,
+      keySpan.start.offset + node.name.length,
+    );
+    return {
+      name: node.name,
+      span,
+      kind,
+      target: {
+        node: consumer.ref.node,
+      },
+    };
   }
 
   /** Creates an identifier for a template element or template node. */

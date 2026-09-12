@@ -1,46 +1,69 @@
-<p class="selected-frame">{{ selectionLabel() }} / {{ frameCount() }}</p>
-
 <button
   ng-button
   btnType="icon"
   (click)="move(-1)"
   [disabled]="disablePreviousFrameButton()"
+  class="nav-btn"
   matTooltip="Select previous frame"
   aria-label="Select previous frame"
 >
   <mat-icon>chevron_left</mat-icon>
 </button>
 
-<cdk-virtual-scroll-viewport
-  #barContainer
-  orientation="horizontal"
-  [itemSize]="itemWidth"
-  class="bar-container"
-  (mouseleave)="stopDragScrolling()"
-  (mousedown)="startDragScroll($event)"
-  (mouseup)="stopDragScrolling()"
-  (mousemove)="dragScroll($event)"
-  [class.drag-scrolling]="dragScrolling()"
->
-  <div
-    *cdkVirtualFor="let d of graphData(); let i = index; trackBy: trackByIndex"
-    [ngStyle]="d.style"
-    class="frame-bar"
-    [class.selected]="selectedFrameIndexes().has(i)"
-    (click)="handleFrameSelection(i, $event)"
-    [matTooltip]="'Time spent: ' + (d.frame.duration | number) + 'ms\nSource: ' + d.frame.source"
-    [matTooltipShowDelay]="375"
-    matTooltipClass="multiline-tooltip"
-  ></div>
-</cdk-virtual-scroll-viewport>
+<div class="frame-container">
+  <p class="x-axis-label">Change detection cycles</p>
+  <p class="y-axis-label">Time (ms)</p>
+  <p class="selected-frame">{{ selectionLabel() }} / {{ frameCount() }}</p>
+
+  <cdk-virtual-scroll-viewport
+    #barContainer
+    orientation="horizontal"
+    [itemSize]="itemWidth"
+    class="bar-container"
+    (mouseleave)="stopDragScrolling()"
+    (mousedown)="startDragScroll($event)"
+    (mouseup)="stopDragScrolling()"
+    (mousemove)="dragScroll($event)"
+    [class.drag-scrolling]="dragScrolling()"
+  >
+    <div
+      *cdkVirtualFor="let d of graphData(); let i = index; trackBy: trackByIndex"
+      [ngStyle]="d.style"
+      class="frame-bar"
+      [class.selected]="selectedFrameIndexes().has(i)"
+      (click)="handleFrameSelection(i, $event)"
+      [matTooltip]="d.tooltip"
+      [matTooltipShowDelay]="375"
+      matTooltipClass="multiline-tooltip"
+    ></div>
+  </cdk-virtual-scroll-viewport>
+
+  @let sixtyFpsLineHeightPerc = this.sixtyFpsLineHeightPerc();
+  @if (sixtyFpsLineHeightPerc !== null) {
+    <div
+      class="sixty-fps-line"
+      [style.height.%]="sixtyFpsLineHeightPerc"
+      [class.text-below-line]="sixtyFpsLineHeightPerc > 90"
+    ></div>
+  }
+</div>
 
 <button
   ng-button
   btnType="icon"
   (click)="move(1)"
   [disabled]="disableNextFrameButton()"
+  class="nav-btn"
   matTooltip="Select next frame"
   aria-label="Select next frame"
 >
   <mat-icon>chevron_right</mat-icon>
 </button>
+
+<mat-icon
+  class="frame-range-info"
+  matTooltip="You can select a range of frames by holding Shift"
+  aria-label="You can select a range of frames by holding Shift"
+>
+  info
+</mat-icon>

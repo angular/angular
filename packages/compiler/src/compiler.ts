@@ -152,6 +152,8 @@ export {
   BoundDeferredTrigger as TmplAstBoundDeferredTrigger,
   BoundEvent as TmplAstBoundEvent,
   BoundText as TmplAstBoundText,
+  BoundaryBlock as TmplAstBoundaryBlock,
+  BoundaryErrorBlock as TmplAstBoundaryErrorBlock,
   Content as TmplAstContent,
   DeferredBlock as TmplAstDeferredBlock,
   DeferredBlockError as TmplAstDeferredBlockError,
@@ -265,7 +267,6 @@ export {outputAst};
 export {CompilerFacadeImpl} from './jit_compiler_facade';
 export {FactoryTarget} from './compiler_facade_interface';
 export {QueryFlags} from './render3/view/query_generation';
-export {setEnableTemplateSourceLocations} from './render3/view/config';
 
 export * from './typecheck/api';
 export * from './typecheck/host_bindings';

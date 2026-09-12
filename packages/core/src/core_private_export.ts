@@ -96,6 +96,7 @@ export {
   withIncrementalHydration as ɵwithIncrementalHydration,
 } from './hydration/api';
 export {CACHE_ACTIVE as ɵCACHE_ACTIVE} from './hydration/cache';
+export {describeDomNode as ɵdescribeDomNode} from './hydration/error_handling';
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
 export {resetIncrementalHydrationRuntimeForTests as ɵresetIncrementalHydrationRuntimeForTests} from './hydration/incremental_runtime';
 export {
@@ -149,7 +150,10 @@ export {
   ProviderRecord as ɵProviderRecord,
   setInjectorProfilerContext as ɵsetInjectorProfilerContext,
 } from './render3/debug/injector_profiler';
-export {getComponentDef as ɵgetComponentDef} from './render3/def_getters';
+export {
+  getComponentDef as ɵgetComponentDef,
+  getDirectiveDef as ɵgetDirectiveDef,
+} from './render3/def_getters';
 export {getDocument as ɵgetDocument} from './render3/interfaces/document';
 export {
   SHARED_STYLES_HOST as ɵSHARED_STYLES_HOST,

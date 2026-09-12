@@ -310,6 +310,12 @@ export interface R3ComponentMetadata<
    * Foreign components imported by the component.
    */
   foreignImports: R3ForeignComponentMetadata[] | null;
+
+  /**
+   * Whether to generate additional code that adds the source location
+   * of elements to the DOM as an attribute.
+   */
+  enableTemplateSourceLocations?: boolean;
 }
 
 /**
@@ -364,9 +370,7 @@ export interface R3TemplateDependency {
  * A dependency that's used within a component template
  */
 export type R3TemplateDependencyMetadata =
-  | R3DirectiveDependencyMetadata
-  | R3PipeDependencyMetadata
-  | R3NgModuleDependencyMetadata;
+  R3DirectiveDependencyMetadata | R3PipeDependencyMetadata | R3NgModuleDependencyMetadata;
 
 /**
  * Information about a directive that is used in a component template. Only the stable, public

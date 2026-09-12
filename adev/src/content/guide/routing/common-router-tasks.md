@@ -56,7 +56,18 @@ internalId = linkedSignal(() => this.id() ?? getDefaultId());
 </docs-step>
 </docs-workflow>
 
-NOTE: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
+NOTE: You can bind all route data with key-value pairs to component inputs: route resources, static or resolved route data, path parameters, matrix parameters, and query parameters.
+
+### Input binding priority
+
+When multiple route sources define identical keys, the router resolves collisions in the following priority order (from highest to lowest):
+
+1. **Route resources**: Values defined in the route's `resources` map. Blocking resources bind their unwrapped value (`resource.value()`), while non-blocking resources bind the `Resource` instance.
+2. **Route data and resolvers**: Static data defined in `data` or values resolved via `resolve`.
+3. **Path parameters and matrix parameters**: Parameters from the URL path (such as `:id`) and matrix parameters.
+4. **Query parameters**: Parameters from the query string (such as `?id=123`).
+
+For example, if a route has both a path parameter `:id` and a query parameter `?id=...`, the path parameter value is bound to the component's `id` input. If the route also defines a resource named `id`, the resource value takes precedence over both.
 
 ### Disable query parameter binding
 

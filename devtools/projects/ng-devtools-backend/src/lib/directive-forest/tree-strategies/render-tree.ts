@@ -20,6 +20,7 @@ import {
   createControlFlowTreeNode,
   isControlFlowBlock,
 } from '../utils/control-flow';
+import {AngularDevtoolsError} from '../../shared/utils/error';
 
 interface TreeExtractionContext {
   blocksIterator: ControlFlowBlocksIterator;
@@ -107,7 +108,7 @@ function groupControlFlowBlocksChildren(
 ) {
   const currentBlock = ctx.blocksIterator.currentBlock;
   if (!currentBlock) {
-    throw new Error('There is no current block in the control flow block iterator.');
+    throw new AngularDevtoolsError('There is no current block in the control flow block iterator.');
   }
 
   ctx.blocksIterator.advance();

@@ -63,7 +63,7 @@ export function isFieldIncompatibility(value: unknown): value is FieldIncompatib
   return (
     (value as Partial<FieldIncompatibility>).reason !== undefined &&
     (value as Partial<FieldIncompatibility>).context !== undefined &&
-    FieldIncompatibilityReason.hasOwnProperty((value as Partial<FieldIncompatibility>).reason!)
+    Object.hasOwn(FieldIncompatibilityReason, (value as Partial<FieldIncompatibility>).reason!)
   );
 }
 

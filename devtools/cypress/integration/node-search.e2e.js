@@ -79,7 +79,9 @@ describe('Search items in component tree', () => {
   });
 
   it('should select correct node on enter', () => {
-    inputSearchText('todo{enter}');
+    inputSearchText('todo');
+    checkSearchedNodesLength('.matched-text', 4);
+    inputSearchText('{enter}');
     checkSearchedNodesLength('.selected', 1);
 
     // should show correct buttons in breadcrumbs

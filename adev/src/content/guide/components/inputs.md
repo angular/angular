@@ -288,7 +288,7 @@ Binding to an input is the same in both signal-based and decorator-based inputs:
 
 The `@Input` decorator accepts a config object that lets you change the way that input works.
 
-#### Required inputs
+#### Required inputs {#required-inputs-decorator}
 
 You can specify the `required` option to enforce that a given input must always have a value.
 
@@ -301,7 +301,7 @@ export class CustomSlider {
 
 If you try to use a component without specifying all of its required inputs, Angular reports an error at build-time.
 
-#### Input transforms
+#### Input transforms {#input-transforms-decorator}
 
 You can specify a `transform` function to change the value of an input when it's set by Angular. This transform function works identically to transform functions for signal-based inputs described above.
 
@@ -319,7 +319,7 @@ function trimString(value: string | undefined) {
 }
 ```
 
-#### Input aliases
+#### Input aliases {#input-aliases-decorator}
 
 You can specify the `alias` option to change the name of an input in templates.
 

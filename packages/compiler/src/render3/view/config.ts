@@ -13,16 +13,4 @@
  * tools enable it via a local change. Any modifications to this flag need to update the
  * internal tooling as well.
  */
-let ENABLE_TEMPLATE_SOURCE_LOCATIONS = false;
-
-/**
- * Utility function to enable source locations. Intended to be used **only** inside unit tests.
- */
-export function setEnableTemplateSourceLocations(value: boolean): void {
-  ENABLE_TEMPLATE_SOURCE_LOCATIONS = value;
-}
-
-/** Gets whether template source locations are enabled. */
-export function getTemplateSourceLocationsEnabled(): boolean {
-  return ENABLE_TEMPLATE_SOURCE_LOCATIONS;
-}
+export const ENABLE_TEMPLATE_SOURCE_LOCATIONS = false;

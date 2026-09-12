@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {PLATFORM_ID, Service, inject, signal} from '@angular/core';
+import {PLATFORM_ID, Service, computed, inject, signal} from '@angular/core';
 import {LOCAL_STORAGE} from '@angular/docs';
 
 // Keep these constants in sync with the code in index.html
@@ -26,12 +26,21 @@ export class ThemeManager {
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly theme = signal<Theme | null>(this.getThemeFromLocalStorageValue());
+  private readonly osScheme = signal<'dark' | 'light'>('light');
+  readonly resolvedTheme = computed<'dark' | 'light'>(() => {
+    const theme = this.theme();
+    if (theme === null) {
+      return 'light';
+    }
+    return theme === 'auto' ? this.osScheme() : theme;
+  });
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
+    this.osScheme.set(preferredScheme());
     this.loadThemePreference();
     this.watchPreferredColorScheme();
   }
@@ -39,7 +48,7 @@ export class ThemeManager {
   setTheme(theme: Theme): void {
     this.theme.set(theme);
     this.setThemeInLocalStorage();
-    this.setThemeBodyClasses(theme === 'auto' ? preferredScheme() : theme);
+    this.setThemeBodyClasses(this.resolvedTheme());
   }
 
   // 1. Read theme preferences stored in localStorage
@@ -49,7 +58,7 @@ export class ThemeManager {
     const useTheme = savedUserPreference ?? 'auto';
 
     this.theme.set(useTheme);
-    this.setThemeBodyClasses(useTheme === 'auto' ? preferredScheme() : useTheme);
+    this.setThemeBodyClasses(this.resolvedTheme());
   }
 
   // Set theme classes on the body element
@@ -77,8 +86,11 @@ export class ThemeManager {
 
   private watchPreferredColorScheme() {
     window.matchMedia(PREFERS_COLOR_SCHEME_DARK).addEventListener('change', (event) => {
-      const preferredScheme = event.matches ? 'dark' : 'light';
-      this.setThemeBodyClasses(preferredScheme);
+      this.osScheme.set(event.matches ? 'dark' : 'light');
+      if (this.theme() !== 'auto') {
+        return;
+      }
+      this.setThemeBodyClasses(this.resolvedTheme());
     });
   }
 }

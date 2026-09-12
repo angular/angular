@@ -35,12 +35,7 @@ import {TemplateTypeChecker} from '../../src/ngtsc/typecheck/api';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
 type TsConfigOptionsValue =
-  | string
-  | boolean
-  | number
-  | null
-  | TsConfigOptionsValue[]
-  | {[key: string]: TsConfigOptionsValue};
+  string | boolean | number | null | TsConfigOptionsValue[] | {[key: string]: TsConfigOptionsValue};
 
 export type TsConfigOptions = {
   [key: string]: TsConfigOptionsValue;
@@ -100,7 +95,6 @@ export class NgtscTestEnvironment {
         "skipLibCheck": true,
         "noImplicitAny": true,
         "noEmitOnError": true,
-        "strictNullChecks": true,
         "outDir": "built",
         "rootDir": ".",
         "allowJs": true,
@@ -229,11 +223,6 @@ export class NgtscTestEnvironment {
     compilerOptions?: TsCompilerOptions,
     files?: string[],
   ): void {
-    // TODO: all tests should have template that pass strictness
-    if (!('strictTemplates' in extraOpts)) {
-      extraOpts['strictTemplates'] = false;
-    }
-
     let tsconfig: {[key: string]: any} = {
       extends: './tsconfig-base.json',
       angularCompilerOptions: extraOpts,
@@ -273,7 +262,12 @@ export class NgtscTestEnvironment {
       reuseProgram,
       this.changedResources,
     );
+
+    if (errorSpy.calls.count() > 0) {
+      console.error('>>>', errorSpy.calls.allArgs().join('\n'));
+    }
     expect(errorSpy).not.toHaveBeenCalled();
+
     expect(exitCode).toBe(0);
     if (this.multiCompileHostExt !== null) {
       this.oldProgram = reuseProgram!.program!;

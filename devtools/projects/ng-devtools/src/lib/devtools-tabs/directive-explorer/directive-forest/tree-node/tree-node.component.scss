@@ -137,6 +137,29 @@
         color: var(--red-04);
       }
     }
+
+    .pill {
+      margin-left: 0.375rem;
+      color: white;
+      border-radius: 1.5rem;
+      padding: 1px 5px;
+      display: inline-block;
+      height: 0.625rem;
+      line-height: 0.7rem;
+      font-size: 0.625rem;
+
+      &.cycle-count {
+        background: var(--blue-02);
+      }
+
+      &.cycle-duration {
+        background: var(--green-01);
+
+        &.frame-dropped {
+          background: var(--red-03);
+        }
+      }
+    }
   }
 
   &.selected .console-reference {

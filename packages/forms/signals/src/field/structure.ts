@@ -674,7 +674,7 @@ function maybeRemoveStaleObjectFields(
   // For objects, we diff a bit differently, and use the value to check whether an old
   // property still exists on the object value.
   for (const key of prevData.byPropertyKey.keys()) {
-    if (!value.hasOwnProperty(key)) {
+    if (!Object.hasOwn(value, key)) {
       data ??= {...(prevData as MutableChildrenData)};
       data.byPropertyKey.delete(key);
     }

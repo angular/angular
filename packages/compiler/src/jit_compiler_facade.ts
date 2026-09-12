@@ -363,6 +363,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       i18nUseExternalIds: true,
       relativeTemplatePath: null,
       foreignImports: null,
+      enableTemplateSourceLocations: false,
     };
     const jitExpressionSourceMap = `ng:///${facade.name}.js`;
     return this.compileComponentFromMeta(angularCoreEnv, jitExpressionSourceMap, meta);
@@ -520,7 +521,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
   const inputsFromType: Record<string, R3InputMetadata> = {};
   const outputsFromType: Record<string, string> = {};
   for (const field in propMetadata) {
-    if (propMetadata.hasOwnProperty(field)) {
+    if (Object.hasOwn(propMetadata, field)) {
       propMetadata[field].forEach((ann) => {
         if (isInput(ann)) {
           inputsFromType[field] = {
@@ -724,6 +725,7 @@ function convertDeclareComponentFacadeToMetadata(
     hasDirectiveDependencies,
     legacyOptionalChaining: decl.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
     foreignImports: null,
+    enableTemplateSourceLocations: false,
   };
 }
 
@@ -820,7 +822,7 @@ function convertToProviderExpression(
   obj: any,
   property: string,
 ): MaybeForwardRefExpression | undefined {
-  if (obj.hasOwnProperty(property)) {
+  if (Object.hasOwn(obj, property)) {
     return createMayBeForwardRefExpression(
       new WrappedNodeExpr(obj[property]),
       ForwardRefHandling.None,
@@ -831,7 +833,7 @@ function convertToProviderExpression(
 }
 
 function wrapExpression(obj: any, property: string): WrappedNodeExpr<any> | undefined {
-  if (obj.hasOwnProperty(property)) {
+  if (Object.hasOwn(obj, property)) {
     return new WrappedNodeExpr(obj[property]);
   } else {
     return undefined;
@@ -926,7 +928,7 @@ function extractHostBindings(
 
   // Next, loop over the properties of the object, looking for @HostBinding and @HostListener.
   for (const field in propMetadata) {
-    if (propMetadata.hasOwnProperty(field)) {
+    if (Object.hasOwn(propMetadata, field)) {
       propMetadata[field].forEach((ann) => {
         if (isHostBinding(ann)) {
           // Since this is a decorator, we know that the value is a class member. Always access it

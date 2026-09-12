@@ -6,29 +6,32 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {$, browser, by, element, ExpectedConditions} from 'protractor';
-
-import {verifyNoBrowserErrors} from '../../../../test-utils';
-
-function waitForElement(selector: string) {
-  const EC = ExpectedConditions;
-  // Waits for the element with id 'abc' to be present on the dom.
-  browser.wait(EC.presenceOf($(selector)), 20000);
-}
+import * as webdriver from 'selenium-webdriver';
+import {createWebDriver, verifyNoBrowserErrors, waitForAngular} from '../../../../test-utils';
 
 describe('ngTemplateOutlet', () => {
-  const URL = '/ngTemplateOutlet';
-  afterEach(verifyNoBrowserErrors);
+  let driver: webdriver.WebDriver;
+  let baseUrl: string;
+
+  beforeAll(async () => {
+    ({driver, baseUrl} = await createWebDriver());
+  });
+
+  afterAll(async () => {
+    await driver.quit();
+  });
+
+  afterEach(async () => {
+    await verifyNoBrowserErrors(driver);
+  });
 
   describe('ng-template-outlet-example', () => {
-    it('should render', () => {
-      browser.get(URL);
-      waitForElement('ng-template-outlet-example');
-      expect(element.all(by.css('ng-template-outlet-example span')).getText()).toEqual([
-        'Hello',
-        'Hello World!',
-        'Ahoj Svet!',
-      ]);
+    it('should render', async () => {
+      await driver.get(`${baseUrl}/ngTemplateOutlet`);
+      await waitForAngular(driver);
+      const spans = await driver.findElements(webdriver.By.css('ng-template-outlet-example span'));
+      const texts = await Promise.all(spans.map((el) => el.getText()));
+      expect(texts).toEqual(['Hello', 'Hello World!', 'Ahoj Svet!']);
     });
   });
 });

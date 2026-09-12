@@ -134,10 +134,10 @@ export function ɵɵInheritDefinitionFeature(
 
 function mergeInputsWithTransforms<T>(target: WritableDef, source: DirectiveDef<any>) {
   for (const key in source.inputs) {
-    if (!source.inputs.hasOwnProperty(key)) {
+    if (!Object.hasOwn(source.inputs, key)) {
       continue;
     }
-    if (target.inputs.hasOwnProperty(key)) {
+    if (Object.hasOwn(target.inputs, key)) {
       continue;
     }
 

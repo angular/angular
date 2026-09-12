@@ -1196,5 +1196,179 @@ runInEachFileSystem(() => {
         },
       ]);
     });
+
+    it('should discover bound attribute inputs on components', () => {
+      const comp = `
+        export class MyComp {
+          myInput: string;
+        }
+      `;
+      const compDecl = util.getComponentDeclaration(comp, 'MyComp');
+      const template = '<my-comp [myInput]="foo"></my-comp>';
+      const boundTemplate = util.getBoundTemplate(template, {}, [
+        {
+          selector: 'my-comp',
+          declaration: compDecl,
+          inputs: {myInput: 'myInput'},
+        },
+      ]);
+      const refs = Array.from(getTemplateIdentifiers(boundTemplate));
+
+      expect(refs).toContain({
+        name: 'myInput',
+        kind: IdentifierKind.Input,
+        span: new AbsoluteSourceSpan(10, 17),
+        target: {
+          node: compDecl,
+        },
+      });
+    });
+
+    it('should discover bound event outputs on components', () => {
+      const comp = `
+        export class MyComp {
+          myOutput: any;
+        }
+      `;
+      const compDecl = util.getComponentDeclaration(comp, 'MyComp');
+      const template = '<my-comp (myOutput)="handle()"></my-comp>';
+      const boundTemplate = util.getBoundTemplate(template, {}, [
+        {
+          selector: 'my-comp',
+          declaration: compDecl,
+          outputs: {myOutput: 'myOutput'},
+        },
+      ]);
+      const refs = Array.from(getTemplateIdentifiers(boundTemplate));
+
+      expect(refs).toContain({
+        name: 'myOutput',
+        kind: IdentifierKind.Output,
+        span: new AbsoluteSourceSpan(10, 18),
+        target: {
+          node: compDecl,
+        },
+      });
+    });
+
+    it('should discover static text attribute inputs on components', () => {
+      const comp = `
+        export class MyComp {
+          myInput: string;
+        }
+      `;
+      const compDecl = util.getComponentDeclaration(comp, 'MyComp');
+      const template = '<my-comp myInput="staticVal"></my-comp>';
+      const boundTemplate = util.getBoundTemplate(template, {}, [
+        {
+          selector: 'my-comp',
+          declaration: compDecl,
+          inputs: {myInput: 'myInput'},
+        },
+      ]);
+      const refs = Array.from(getTemplateIdentifiers(boundTemplate));
+
+      expect(refs).toContain({
+        name: 'myInput',
+        kind: IdentifierKind.Input,
+        span: new AbsoluteSourceSpan(9, 16),
+        target: {
+          node: compDecl,
+        },
+      });
+    });
+
+    it('should discover bound attribute inputs and event outputs on directives applied to elements', () => {
+      const dir = `
+        export class MyDir {
+          dirInput: string;
+          dirOutput: any;
+        }
+      `;
+      const dirDecl = util.getComponentDeclaration(dir, 'MyDir');
+      const template = '<div myDir [dirInput]="foo" (dirOutput)="handle()"></div>';
+      const boundTemplate = util.getBoundTemplate(template, {}, [
+        {
+          selector: '[myDir]',
+          declaration: dirDecl,
+          inputs: {dirInput: 'dirInput'},
+          outputs: {dirOutput: 'dirOutput'},
+        },
+      ]);
+      const refs = Array.from(getTemplateIdentifiers(boundTemplate));
+
+      expect(refs).toContain({
+        name: 'dirInput',
+        kind: IdentifierKind.Input,
+        span: new AbsoluteSourceSpan(12, 20),
+        target: {
+          node: dirDecl,
+        },
+      });
+      expect(refs).toContain({
+        name: 'dirOutput',
+        kind: IdentifierKind.Output,
+        span: new AbsoluteSourceSpan(29, 38),
+        target: {
+          node: dirDecl,
+        },
+      });
+    });
+
+    it('should not discover input or output identifiers for native element bindings and events', () => {
+      const template =
+        '<button [disabled]="isDisabled" (click)="handleClick()" title="nativeTitle"></button>';
+      const boundTemplate = util.getBoundTemplate(template);
+      const refs = Array.from(getTemplateIdentifiers(boundTemplate));
+
+      const inputOrOutputRefs = refs.filter(
+        (ref) => ref.kind === IdentifierKind.Input || ref.kind === IdentifierKind.Output,
+      );
+      expect(inputOrOutputRefs).toEqual([]);
+    });
+
+    it('should discover pipes in template expressions', () => {
+      const pipe = `
+        export class MyPipe {
+          transform(v: any) { return v; }
+        }
+      `;
+      const pipeDecl = util.getComponentDeclaration(pipe, 'MyPipe');
+      const template = '{{ foo | myPipe }}';
+      const boundTemplate = util.getBoundTemplate(
+        template,
+        {},
+        [],
+        [
+          {
+            name: 'myPipe',
+            declaration: pipeDecl,
+          },
+        ],
+      );
+      const refs = Array.from(getTemplateIdentifiers(boundTemplate));
+
+      expect(refs).toContain({
+        name: 'myPipe',
+        kind: IdentifierKind.Pipe,
+        span: new AbsoluteSourceSpan(9, 15),
+        target: {
+          node: pipeDecl,
+        },
+      });
+    });
+
+    it('should handle unresolvable pipes gracefully', () => {
+      const template = '{{ foo | unknownPipe }}';
+      const boundTemplate = util.getBoundTemplate(template);
+      const refs = Array.from(getTemplateIdentifiers(boundTemplate));
+
+      expect(refs).toContain({
+        name: 'unknownPipe',
+        kind: IdentifierKind.Pipe,
+        span: new AbsoluteSourceSpan(9, 20),
+        target: null,
+      });
+    });
   });
 });
