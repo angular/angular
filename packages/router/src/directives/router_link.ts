@@ -8,7 +8,6 @@
 
 import {LocationStrategy} from '@angular/common';
 import {
-  Attribute,
   booleanAttribute,
   computed,
   Directive,
@@ -22,7 +21,6 @@ import {
   linkedSignal,
   OnChanges,
   OnDestroy,
-  Renderer2,
   ɵRuntimeError as RuntimeError,
   Service,
   signal,
@@ -70,6 +68,12 @@ export class ReactiveRouterState {
     this.path.set(this.serializer.serialize(new UrlTree(root)));
   }
 }
+
+// Whether `RouterLink` adds a `tabindex="0"` to non-anchor host elements. This was removed for the
+// public API (see #28345) because the element is put in the tab order without being made
+// keyboard-operable. It is retained inside Google via the marker below while callers migrate.
+// g3-only const ADD_TABINDEX_TO_NON_ANCHOR_ELEMENTS: boolean = true;
+const ADD_TABINDEX_TO_NON_ANCHOR_ELEMENTS: boolean = false; // 3p-only
 
 /**
  * @description
@@ -373,14 +377,20 @@ export class RouterLink implements OnChanges, OnDestroy {
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true});
   private readonly reactiveRouterState = inject(ReactiveRouterState);
 
+  // The value of the `tabindex` attribute as authored in the template, or `null` if not set. Only
+  // read when `ADD_TABINDEX_TO_NON_ANCHOR_ELEMENTS` is enabled (see the constructor).
+  private readonly tabIndexAttribute: string | null = null;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    @Attribute('tabindex') private readonly tabIndexAttribute: string | null | undefined,
-    private readonly renderer: Renderer2,
     private readonly el: ElementRef,
     private locationStrategy?: LocationStrategy,
   ) {
+    if (ADD_TABINDEX_TO_NON_ANCHOR_ELEMENTS) {
+      this.tabIndexAttribute = inject(new HostAttributeToken('tabindex'), {optional: true});
+    }
+
     const tagName = el.nativeElement.tagName?.toLowerCase();
     this.isAnchorElement =
       tagName === 'a' ||
@@ -388,15 +398,13 @@ export class RouterLink implements OnChanges, OnDestroy {
       !!(
         // Avoid breaking in an SSR context where customElements might not
         // be defined.
+        typeof customElements === 'object' &&
+        // observedAttributes is an optional static property/getter on a
+        // custom element. The spec states that this must be an array of
+        // strings.
         (
-          typeof customElements === 'object' &&
-          // observedAttributes is an optional static property/getter on a
-          // custom element. The spec states that this must be an array of
-          // strings.
-          (
-            customElements.get(tagName) as {observedAttributes?: string[]} | undefined
-          )?.observedAttributes?.includes?.('href')
-        )
+          customElements.get(tagName) as {observedAttributes?: string[]} | undefined
+        )?.observedAttributes?.includes?.('href')
       );
 
     if (typeof ngDevMode !== 'undefined' && ngDevMode) {
@@ -423,10 +431,19 @@ export class RouterLink implements OnChanges, OnDestroy {
    * during instantiation.
    */
   private setTabIndexIfNotOnNativeEl(newTabIndex: string | null) {
-    if (this.tabIndexAttribute != null /* both `null` and `undefined` */ || this.isAnchorElement) {
+    if (
+      !ADD_TABINDEX_TO_NON_ANCHOR_ELEMENTS ||
+      this.tabIndexAttribute !== null ||
+      this.isAnchorElement
+    ) {
       return;
     }
-    this.applyAttributeValue('tabindex', newTabIndex);
+    const nativeElement = this.el.nativeElement as HTMLElement;
+    if (newTabIndex !== null) {
+      nativeElement.setAttribute('tabindex', newTabIndex);
+    } else {
+      nativeElement.removeAttribute('tabindex');
+    }
   }
 
   /** @docs-private */
@@ -523,16 +540,6 @@ export class RouterLink implements OnChanges, OnDestroy {
 
   /** @docs-private */
   ngOnDestroy(): any {}
-
-  private applyAttributeValue(attrName: string, attrValue: string | null) {
-    const renderer = this.renderer;
-    const nativeElement = this.el.nativeElement;
-    if (attrValue !== null) {
-      renderer.setAttribute(nativeElement, attrName, attrValue);
-    } else {
-      renderer.removeAttribute(nativeElement, attrName);
-    }
-  }
 
   /** @internal */
   _urlTree = computed(
