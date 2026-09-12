@@ -25,7 +25,7 @@ export const TemplateTag: GrammarDefinition = {
       name: 'template.tag.leading-space',
     },
     propertyBinding: {
-      begin: /(\[\s*@?(?:[-_a-zA-Z0-9.$]+|\[[^\[\]]*]|\([^()]*\))*%?\s*])(=)(["'])/,
+      begin: /(\[\s*@?(?:[-_a-zA-Z0-9.$:!\/@]+|\[[^\[\]]*]|\([^()]*\))*%?\s*])(=)(["'])/,
       beginCaptures: {
         1: {
           name: 'entity.other.attribute-name.html entity.other.ng-binding-name.property.html',
@@ -108,7 +108,7 @@ export const TemplateTag: GrammarDefinition = {
       patterns: [
         {
           match:
-            /([\[\(]{1,2}|\*)(?:\s*)(@?(?:[-_a-zA-Z0-9.$]+|\[[^\[\]]*]|\([^()]*\))*%?)(?:\s*)([\]\)]{1,2})?/,
+            /([\[\(]{1,2}|\*)(?:\s*)(@?(?:[-_a-zA-Z0-9.$:!\/@]+|\[[^\[\]]*]|\([^()]*\))*%?)(?:\s*)([\]\)]{1,2})?/,
           captures: {
             1: {name: 'punctuation.definition.ng-binding-name.begin.html'},
             2: {
