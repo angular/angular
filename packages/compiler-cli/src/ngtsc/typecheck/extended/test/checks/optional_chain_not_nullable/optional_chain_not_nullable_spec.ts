@@ -30,19 +30,22 @@ runInEachFileSystem(() => {
       expect(optionalChainNotNullableFactory.create({strictNullChecks: true})).toBeDefined();
     });
 
-    it('should return a check if `strictNullChecks` is not configured but `strict` is enabled', () => {
-      expect(optionalChainNotNullableFactory.create({strict: true})).toBeDefined();
+    it('should return a check if `strictNullChecks` is not configured but `strict` is enabled by default', () => {
+      expect(optionalChainNotNullableFactory.create({})).toBeDefined();
     });
 
     it('should not return a check if `strictNullChecks` is disabled', () => {
-      expect(optionalChainNotNullableFactory.create({strictNullChecks: false})).toBeNull();
-      expect(optionalChainNotNullableFactory.create({})).toBeNull(); // Defaults disabled.
+      expect(
+        optionalChainNotNullableFactory.create({strict: false, strictNullChecks: false}),
+      ).toBeNull();
     });
 
     it('should not return a check if `strict` is enabled but `strictNullChecks` is disabled', () => {
-      expect(
-        optionalChainNotNullableFactory.create({strict: true, strictNullChecks: false}),
-      ).toBeNull();
+      expect(optionalChainNotNullableFactory.create({strictNullChecks: false})).toBeNull();
+    });
+
+    it('should not return a check if `strict` is disabled and `strictNullChecks` is not configured', () => {
+      expect(optionalChainNotNullableFactory.create({strict: false})).toBeNull();
     });
 
     it('should produce optional chain warning for property access', () => {
