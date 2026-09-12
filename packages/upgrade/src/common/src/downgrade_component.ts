@@ -92,6 +92,13 @@ export function downgradeComponent(info: {
   component: Type<any>;
   downgradedModule?: string;
   propagateDigest?: boolean;
+  /**
+   * Whether to initialize the component inputs synchronously.
+   * If set to `true`, component inputs are initialized synchronously during component creation.
+   * Otherwise, they are initialized asynchronously during the first digest cycle.
+   * (Default: false)
+   */
+  initializeInputsSynchronously?: boolean;
   /** @deprecated since v4. This parameter is no longer used */
   inputs?: string[];
   /** @deprecated since v4. This parameter is no longer used */
@@ -106,6 +113,7 @@ export function downgradeComponent(info: {
   ): IDirective {
     const unsafelyOverwriteSignalInputs =
       (info as {unsafelyOverwriteSignalInputs?: boolean}).unsafelyOverwriteSignalInputs ?? false;
+    const initializeInputsSynchronously = info.initializeInputsSynchronously ?? false;
     // When using `downgradeModule()`, we need to handle certain things specially. For example:
     // - We always need to attach the component view to the `ApplicationRef` for it to be
     //   dirty-checked.
@@ -208,6 +216,7 @@ export function downgradeComponent(info: {
             info.component,
             wrapCallback,
             unsafelyOverwriteSignalInputs,
+            initializeInputsSynchronously,
           );
 
           const projectableNodes = facade.compileContents();
