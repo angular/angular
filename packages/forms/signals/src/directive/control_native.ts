@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {
+  untracked,
   type ɵControlDirectiveHost as ControlDirectiveHost,
   type Signal,
   type WritableSignal,
@@ -31,6 +32,19 @@ import {
 } from './native';
 import {observeSelectMutations} from './select';
 
+/**
+ * Compares two control values, treating `Date`s for the same instant as equal.
+ *
+ * Date-like inputs are read through `valueAsDate`, which returns a fresh `Date` on every access, so
+ * identity comparison alone would report a change even when the input was never touched.
+ */
+function controlValuesEqual(a: unknown, b: unknown): boolean {
+  if (a instanceof Date && b instanceof Date) {
+    return a.getTime() === b.getTime();
+  }
+  return Object.is(a, b);
+}
+
 export function nativeControlCreate(
   host: ControlDirectiveHost,
   parent: FormField<unknown>,
@@ -40,6 +54,13 @@ export function nativeControlCreate(
   validityMonitor: InputValidityMonitor,
 ): () => void {
   let updateMode = false;
+  // While true, a write that leaves the value untouched must not dirty the field.
+  //
+  // A native validity change isn't necessarily a user edit: the browser runs the `:valid` /
+  // `:invalid` animation as soon as the input is rendered, which would otherwise dirty every
+  // date-like field on load (#69632). Syncs that clear a parse error are exempt, because a parse
+  // error can only exist in response to the user typing something the input couldn't parse.
+  let dirtyOnlyIfValueChanged = false;
   const input = parent.nativeFormElement;
 
   // TODO: (perf) ok to always create this?
@@ -47,7 +68,15 @@ export function nativeControlCreate(
     // Read from the model value
     () => parent.state().value(),
     // Write to the buffered "control value"
-    (rawValue: unknown) => parent.state().controlValue.set(rawValue),
+    (rawValue: unknown) => {
+      const state = parent.state();
+      if (dirtyOnlyIfValueChanged && controlValuesEqual(untracked(state.controlValue), rawValue)) {
+        return;
+      }
+      // Outside of `dirtyOnlyIfValueChanged` we intentionally write even when the value is
+      // unchanged, so that re-entering the same value still dirties the field.
+      state.controlValue.set(rawValue);
+    },
     // Our parse function doesn't care about the raw value that gets passed in,
     // It just reads the newly parsed value directly off the input element.
     (_rawValue: unknown) => getNativeControlValue(input, parent.state().value, validityMonitor),
@@ -61,12 +90,27 @@ export function nativeControlCreate(
     setNativeControlValue(input, value);
   };
   // Pass undefined as the raw value since the parse function doesn't care about it.
-  host.listenToDom('input', () => parser.setRawValue(undefined));
+  host.listenToDom('input', () => {
+    // An `input` event is the definitive signal of user interaction, so dirty the field up front.
+    // Parsing may fail — typing `e` into a number input, or an incomplete date — in which case no
+    // value reaches `controlValue` and nothing else would mark the field as edited.
+    parent.state().markAsDirty();
+    parser.setRawValue(undefined);
+  });
   host.listenToDom('blur', () => parent.state().markAsTouched());
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
-    validityMonitor.watchValidity(parent.destroyRef, input, () => parser.setRawValue(undefined));
+    validityMonitor.watchValidity(parent.destroyRef, input, () => {
+      // Resolving a parse error is always a user edit, so let those syncs dirty the field even
+      // when the parsed value is unchanged.
+      dirtyOnlyIfValueChanged = untracked(parser.errors).length === 0;
+      try {
+        parser.setRawValue(undefined);
+      } finally {
+        dirtyOnlyIfValueChanged = false;
+      }
+    });
   }
 
   parent.registerAsBinding();
