@@ -190,6 +190,24 @@ describe('DefaultDomRendererV2', () => {
     expect(child.parentNode).toBe(parent);
   });
 
+  it('should be able to insert a child when the parent is not the object `refChild.parentNode` returns', () => {
+    const realParent = document.createElement('div');
+    const refChild = document.createElement('span');
+    const newChild = document.createElement('div');
+    realParent.appendChild(refChild);
+
+    // some DOM implementations hand out more than one object for the same element
+    const parentAlias = {
+      tagName: 'DIV',
+      insertBefore: (n: Node, r: Node) => realParent.insertBefore(n, r),
+    };
+
+    renderer.insertBefore(parentAlias, newChild, refChild);
+
+    expect(newChild.parentNode).toBe(realParent);
+    expect(newChild.nextSibling).toBe(refChild);
+  });
+
   describe('when the reference node was detached outside of Angular', () => {
     it('should throw a descriptive error instead of a native NotFoundError', () => {
       const parent = document.createElement('div');
