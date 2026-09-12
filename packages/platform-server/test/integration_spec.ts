@@ -537,6 +537,32 @@ const ShadowDomEncapsulationAppStandalone = getStandaloneBootstrapFn(
 })
 class ShadowDomExampleModule {}
 
+function createExperimentalIsolatedShadowDomEncapsulationApp(standalone: boolean) {
+  @Component({
+    standalone,
+    selector: 'app',
+    template: 'Experimental isolated Shadow DOM does not work on the server',
+    encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom,
+    styles: [':host { color: red; }'],
+  })
+  class ExperimentalIsolatedShadowDomEncapsulationApp {}
+
+  return ExperimentalIsolatedShadowDomEncapsulationApp;
+}
+
+const ExperimentalIsolatedShadowDomEncapsulationApp =
+  createExperimentalIsolatedShadowDomEncapsulationApp(false);
+const ExperimentalIsolatedShadowDomEncapsulationAppStandalone = getStandaloneBootstrapFn(
+  createExperimentalIsolatedShadowDomEncapsulationApp(true),
+);
+
+@NgModule({
+  declarations: [ExperimentalIsolatedShadowDomEncapsulationApp],
+  imports: [BrowserModule, ServerModule],
+  bootstrap: [ExperimentalIsolatedShadowDomEncapsulationApp],
+})
+class ExperimentalIsolatedShadowDomExampleModule {}
+
 function createFalseAttributesComponents(standalone: boolean) {
   @Component({
     standalone,
@@ -887,6 +913,24 @@ class HiddenModule {}
               const output = await bootstrap;
               expect(output).not.toBe('');
               expect(output).toContain('color: red');
+            },
+          );
+
+          it(
+            'should error when using ViewEncapsulation.ExperimentalIsolatedShadowDom' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(
+                    ExperimentalIsolatedShadowDomEncapsulationAppStandalone,
+                    options,
+                  )
+                : renderModule(ExperimentalIsolatedShadowDomExampleModule, options);
+
+              await expectAsync(bootstrap).toBeRejectedWithError(
+                /ViewEncapsulation\.ExperimentalIsolatedShadowDom is not supported in server-side rendering/,
+              );
             },
           );
 

@@ -19,15 +19,19 @@ export interface SharedStylesHost {
    * Adds embedded styles to the DOM via HTML `style` elements.
    * @param styles An array of style content strings.
    * @param urls An array of URLs to be added as link tags.
+   * @param hostNode An optional node that should receive the provided styles in addition to
+   * the registered style hosts.
    */
-  addStyles(styles: string[], urls?: string[]): void;
+  addStyles(styles: string[], urls?: string[], hostNode?: Node): void;
 
   /**
    * Removes embedded styles from the DOM that were added as HTML `style` elements.
    * @param styles An array of style content strings.
    * @param urls An array of URLs to be removed as link tags.
+   * @param hostNode An optional node that should stop receiving the provided styles in addition to
+   * the registered style hosts.
    */
-  removeStyles(styles: string[], urls?: string[]): void;
+  removeStyles(styles: string[], urls?: string[], hostNode?: Node): void;
 
   /**
    * Adds a host node to contain styles added to the DOM and adds all existing style usage to
