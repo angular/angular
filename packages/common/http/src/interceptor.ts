@@ -16,7 +16,7 @@ import {
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 
-import type {HttpHandler} from './backend';
+import {HttpBackend, HttpHandler} from './backend';
 
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
@@ -218,6 +218,49 @@ export const REQUESTS_CONTRIBUTE_TO_STABILITY = new InjectionToken<boolean>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'REQUESTS_CONTRIBUTE_TO_STABILITY' : '',
   // Providing a factory implies that the token is provided in root by default
   {factory: () => true},
+);
+
+/**
+ * An `InjectionToken` that resolves to a `ReadonlySet<HttpInterceptorFn>` containing
+ * all functional HTTP interceptors configured for the current `HttpClient` instance.
+ *
+ * If `withRequestsMadeViaParent()` is configured on the current `HttpClient`, this set
+ * recursively includes interceptors configured in parent injectors.
+ *
+ * @publicApi
+ */
+export const HTTP_CONFIGURED_INTERCEPTOR_FNS = new InjectionToken<ReadonlySet<HttpInterceptorFn>>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'HTTP_CONFIGURED_INTERCEPTOR_FNS' : '',
+  {
+    factory: () => {
+      const localFns = inject(HTTP_INTERCEPTOR_FNS, {optional: true}) ?? [];
+      const parentHandler = inject(HttpHandler, {skipSelf: true, optional: true});
+      const backend = inject(HttpBackend, {optional: true});
+      const isDelegating = parentHandler !== null && backend === parentHandler;
+
+      const rootFns =
+        inject(
+          HTTP_ROOT_INTERCEPTOR_FNS,
+          isDelegating ? {self: true, optional: true} : {optional: true},
+        ) ?? [];
+
+      const interceptors = new Set<HttpInterceptorFn>([...localFns, ...rootFns]);
+
+      if (isDelegating) {
+        const parentSet = inject(HTTP_CONFIGURED_INTERCEPTOR_FNS, {
+          skipSelf: true,
+          optional: true,
+        });
+        if (parentSet) {
+          for (const fn of parentSet) {
+            interceptors.add(fn);
+          }
+        }
+      }
+
+      return interceptors;
+    },
+  },
 );
 
 /**

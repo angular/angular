@@ -17,6 +17,7 @@ export {HttpContext, HttpContextToken} from './src/context';
 export {FetchBackend} from './src/fetch';
 export {HttpHeaders} from './src/headers';
 export {
+  HTTP_CONFIGURED_INTERCEPTOR_FNS,
   HTTP_INTERCEPTORS,
   HttpHandlerFn,
   HttpInterceptor,
