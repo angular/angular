@@ -1391,6 +1391,231 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('strictUnclaimedEventNames', () => {
+      function writeTestComponent(
+        template: string,
+        imports: string = '[TargetCmp]',
+        extraMetadata: string = '',
+      ): void {
+        env.write(
+          'test.ts',
+          `
+          import {Component, CUSTOM_ELEMENTS_SCHEMA, Directive, EventEmitter, NO_ERRORS_SCHEMA, Output} from '@angular/core';
+
+          @Component({
+            selector: 'target-cmp',
+            template: '',
+          })
+          export class TargetCmp {
+            @Output() someOutput = new EventEmitter<string>();
+            @Output('publicName') internalProp = new EventEmitter<string>();
+          }
+
+          @Directive({
+            selector: '[some-dir]',
+          })
+          export class SomeDir {}
+
+          @Component({
+            selector: 'test',
+            template: '${template}',
+            imports: ${imports},
+            ${extraMetadata}
+          })
+          export class TestCmp {
+            handle(value: unknown) {}
+          }
+        `,
+        );
+      }
+
+      function expectNoDiagnostics(): void {
+        expect(env.driveDiagnostics().map((diag) => diag.messageText)).toEqual([]);
+      }
+
+      it('should report events matching neither an output nor a native DOM event', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (someOutptu)="handle($event)"></target-cmp>');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'someOutptu' is not emitted by any directive applied to 'target-cmp' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should report unclaimed camelCase events on elements with matched directives', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<div some-dir (myEvent)="handle($event)"></div>', '[SomeDir]');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'myEvent' is not emitted by any directive applied to 'div' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should not report outputs of matched directives', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (someOutput)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report native DOM events', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (click)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report dash-separated custom events', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (my-custom-event)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report key pseudo-events', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (keyup.ArrowDown)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report events with a target prefix', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (window:resize)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report events on elements without matched directives', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<div (myEvent)="handle($any($event))"></div>', '[]');
+
+        expectNoDiagnostics();
+      });
+
+      it('should report output typos on components even when using CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<target-cmp (someOutptu)="handle($any($event))"></target-cmp>',
+          '[TargetCmp]',
+          'schemas: [CUSTOM_ELEMENTS_SCHEMA],',
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'someOutptu' is not emitted by any directive applied to 'target-cmp' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should not report events on elements without a matched component when using CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<div some-dir (itemSelected)="handle($any($event))"><my-web-component></my-web-component></div>',
+          '[SomeDir]',
+          'schemas: [CUSTOM_ELEMENTS_SCHEMA],',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report events on customized built-in elements when using CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<button is="fancy-button" some-dir (buttonCustomEvent)="handle($any($event))"></button>',
+          '[SomeDir]',
+          'schemas: [CUSTOM_ELEMENTS_SCHEMA],',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report vendor-prefixed native events with camelCase names', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<div some-dir (webkitAnimationEnd)="handle($event)"></div>',
+          '[SomeDir]',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report any events when using NO_ERRORS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<target-cmp (someOutptu)="handle($any($event))"></target-cmp>',
+          '[TargetCmp]',
+          'schemas: [NO_ERRORS_SCHEMA],',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report unclaimed events when explicitly disabled', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: false});
+        writeTestComponent('<target-cmp (someOutptu)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report unclaimed events when not enabled', () => {
+        env.tsconfig({strictTemplates: true});
+        writeTestComponent('<target-cmp (someOutptu)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report the public name of an aliased output', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (publicName)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should report the internal property name of an aliased output', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (internalProp)="handle($event)"></target-cmp>');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'internalProp' is not emitted by any directive applied to 'target-cmp' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should report camelCase bubbling custom events listened to via event delegation', () => {
+        // Event delegation of camelCase custom events dispatched by descendants is valid DOM
+        // behavior, but it's statically indistinguishable from a misspelled output name. Not
+        // reporting it would require dropping the check entirely, so reporting it is the
+        // documented trade-off of this opt-in option: such projects should use dash-separated
+        // event names or leave the option disabled.
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<div some-dir (cardSwipe)="handle($event)"><button>Action</button></div>',
+          '[SomeDir]',
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'cardSwipe' is not emitted by any directive applied to 'div' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should not report all-lowercase unclaimed events', () => {
+        // All-lowercase names could be custom events dispatched by a descendant element, so
+        // they're intentionally not reported, even when they're likely misspelled outputs.
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (someoutput)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+    });
+
     it('should check basic usage of NgIf', () => {
       env.write(
         'test.ts',
