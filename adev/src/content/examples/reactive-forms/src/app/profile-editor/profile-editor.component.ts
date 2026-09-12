@@ -6,12 +6,17 @@ import {Validators} from '@angular/forms';
 // #enddocregion validator-imports
 import {FormArray} from '@angular/forms';
 import {JsonPipe} from '@angular/common';
+// #docregion address-editor-import
+import {AddressEditorComponent} from './address-editor/address-editor.component';
+// #enddocregion address-editor-import
 
 @Component({
   selector: 'app-profile-editor',
   templateUrl: './profile-editor.component.html',
   styleUrls: ['./profile-editor.component.css'],
-  imports: [ReactiveFormsModule, JsonPipe],
+  // #docregion address-editor-import
+  imports: [ReactiveFormsModule, JsonPipe, AddressEditorComponent],
+  // #enddocregion address-editor-import
 })
 export class ProfileEditorComponent {
   // #docregion required-validator, aliases
@@ -24,7 +29,7 @@ export class ProfileEditorComponent {
       street: [''],
       city: [''],
       state: [''],
-      zip: [''],
+      zip: ['', Validators.required],
     }),
     // #enddocregion required-validator
     aliases: this.formBuilder.array([this.formBuilder.control('')]),
