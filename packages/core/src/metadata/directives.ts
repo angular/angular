@@ -362,6 +362,33 @@ export interface Directive {
         outputs?: string[];
       }
   )[];
+
+  /**
+   * One relative path or an absolute URL for file containing a CSS stylesheet to use
+   * in this directive.
+   */
+  styleUrl?: string;
+
+  /**
+   * Relative paths or absolute URLs for files containing CSS stylesheets to use in this directive.
+   */
+  styleUrls?: string[];
+
+  /**
+   * One or more inline CSS stylesheets to use
+   * in this directive.
+   */
+  styles?: string | string[];
+
+  /**
+   * An encapsulation policy for the directive's styling.
+   * Possible values:
+   * - `ViewEncapsulation.Emulated`: Apply modified directive styles scoped to the host element.
+   * - `ViewEncapsulation.None`: Apply directive styles globally without any sort of encapsulation.
+   *
+   * Directives only support `ViewEncapsulation.Emulated` and `ViewEncapsulation.None`.
+   */
+  encapsulation?: ViewEncapsulation;
 }
 
 /**

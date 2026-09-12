@@ -66,4 +66,5 @@ Learn more about each type of directive in the following guides.
   <docs-pill href="guide/directives/attribute-directives" title="Attribute directives"/>
   <docs-pill href="guide/directives/structural-directives" title="Structural directives"/>
   <docs-pill href="guide/directives/directive-composition-api" title="Directive composition API"/>
+  <docs-pill href="guide/directives/styling" title="Styling directives"/>
 </docs-pill-row>

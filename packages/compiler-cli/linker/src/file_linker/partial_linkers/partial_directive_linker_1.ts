@@ -23,6 +23,7 @@ import {
   R3InputMetadata,
   R3PartialDeclaration,
   R3QueryMetadata,
+  ViewEncapsulation,
 } from '@angular/compiler';
 
 import semver from 'semver';
@@ -35,6 +36,7 @@ import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {
   extractForwardRef,
   getDefaultStandaloneValue,
+  parseEncapsulation,
   PLACEHOLDER_VERSION,
   wrapReference,
 } from './util';
@@ -114,6 +116,12 @@ export function toR3DirectiveMeta<TExpression>(
       ? toHostDirectivesMetadata(metaObj.getValue('hostDirectives'))
       : null,
     legacyOptionalChaining: major < 22 && version !== PLACEHOLDER_VERSION,
+    styles: metaObj.has('styles')
+      ? metaObj.getArray('styles').map((entry) => entry.getString())
+      : [],
+    encapsulation: metaObj.has('encapsulation')
+      ? parseEncapsulation(metaObj.getValue('encapsulation'))
+      : ViewEncapsulation.Emulated,
   };
 }
 

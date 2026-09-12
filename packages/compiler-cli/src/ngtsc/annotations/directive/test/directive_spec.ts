@@ -44,6 +44,7 @@ import {
   InjectableClassRegistry,
   JitDeclarationRegistry,
   NoopReferencesRegistry,
+  ResourceLoader,
 } from '../../common';
 import {DirectiveDecoratorHandler} from '../index';
 
@@ -179,10 +180,129 @@ runInEachFileSystem(() => {
       const analysis = analyzeDirective(program, 'TestDir');
       expect(analysis.isStructural).toBeTrue();
     });
+
+    it('should extract inline styles into metadata', () => {
+      const src = `
+        import {Directive} from '@angular/core';
+
+        @Directive({
+          selector: 'test-dir',
+          styles: ['div { color: red; }', 'span { color: blue; }'],
+        })
+        export class TestDir {}
+      `;
+      const {program} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Directive: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: src,
+        },
+      ]);
+
+      const analysis = analyzeDirective(program, 'TestDir');
+      expect(analysis.meta.styles).toEqual(['div { color: red; }', 'span { color: blue; }']);
+    });
+
+    it('should extract styles from styleUrls with a ResourceLoader', () => {
+      const src = `
+        import {Directive} from '@angular/core';
+
+        @Directive({
+          selector: 'test-dir',
+          styleUrls: ['./style.css'],
+        })
+        export class TestDir {}
+      `;
+      const {program} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Directive: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: src,
+        },
+      ]);
+
+      const resourceLoader: ResourceLoader = {
+        canPreload: false,
+        canPreprocess: false,
+        resolve: (url: string) => _('/style.css'),
+        load: (url: string) => 'p { color: green; }',
+        preload: () => undefined,
+        preprocessInline: async (data: string) => data,
+      };
+
+      const analysis = analyzeDirective(program, 'TestDir', false, resourceLoader);
+      expect(analysis.meta.styles).toEqual(['p { color: green; }']);
+    });
+
+    it('should extract ViewEncapsulation.None from encapsulation property', () => {
+      const src = `
+        import {Directive, ViewEncapsulation} from '@angular/core';
+
+        @Directive({
+          selector: 'test-dir',
+          styles: ['div { color: red; }'],
+          encapsulation: ViewEncapsulation.None,
+        })
+        export class TestDir {}
+      `;
+      const {program} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents:
+            'export const Directive: any; export enum ViewEncapsulation { Emulated = 0, None = 2, ShadowDom = 3 }',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: src,
+        },
+      ]);
+
+      const analysis = analyzeDirective(program, 'TestDir');
+      expect(analysis.meta.encapsulation).toBe(2 /* ViewEncapsulation.None */);
+    });
+
+    it('should throw error when encapsulation is ViewEncapsulation.ShadowDom', () => {
+      const src = `
+        import {Directive, ViewEncapsulation} from '@angular/core';
+
+        @Directive({
+          selector: 'test-dir',
+          styles: ['div { color: red; }'],
+          encapsulation: ViewEncapsulation.ShadowDom,
+        })
+        export class TestDir {}
+      `;
+      const {program} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents:
+            'export const Directive: any; export enum ViewEncapsulation { Emulated = 0, None = 2, ShadowDom = 3 }',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: src,
+        },
+      ]);
+
+      expect(() => analyzeDirective(program, 'TestDir')).toThrowError(
+        /encapsulation must be ViewEncapsulation\.Emulated or ViewEncapsulation\.None/,
+      );
+    });
   });
 
   // Helpers
-  function analyzeDirective(program: ts.Program, dirName: string, hasBaseClass: boolean = false) {
+  function analyzeDirective(
+    program: ts.Program,
+    dirName: string,
+    hasBaseClass: boolean = false,
+    resourceLoader: ResourceLoader | null = null,
+  ) {
     class TestReflectionHost extends TypeScriptReflectionHost {
       constructor(checker: ts.TypeChecker) {
         super(checker);
@@ -244,6 +364,7 @@ runInEachFileSystem(() => {
       /* typeCheckHostBindings */ true,
       /* emitDeclarationOnly */ false,
       /* legacyOptionalChaining */ false,
+      resourceLoader,
     );
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);

@@ -1582,6 +1582,9 @@ export class NgCompiler {
         typeCheckHostBindings,
         this.emitDeclarationOnly,
         this.options.legacyOptionalChaining ?? LEGACY_OPTIONAL_CHAINING_DEFAULT,
+        this.resourceManager,
+        this.incrementalCompilation.depGraph,
+        externalRuntimeStyles,
       ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null, unknown>>,
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)

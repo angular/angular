@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '../../src/core';
+import {Component, Directive} from '../../src/core';
 import {
   clearResolutionOfComponentResourcesQueue,
   isComponentResourceResolutionQueueEmpty,
   resolveComponentResources,
 } from '../../src/metadata/resource_loading';
-import {ComponentType} from '../../src/render3/interfaces/definition';
-import {compileComponent} from '../../src/render3/jit/directive';
+import {ComponentType, DirectiveType} from '../../src/render3/interfaces/definition';
+import {compileComponent, compileDirective} from '../../src/render3/jit/directive';
 
 describe('resource_loading', () => {
   afterEach(clearResolutionOfComponentResourcesQueue);
@@ -41,6 +41,17 @@ Did you run and wait for 'resolveComponentResources()'?`.trim(),
       );
     });
 
+    it('should throw an error when compiling directive that has unresolved styleUrls', () => {
+      const MyDirective: DirectiveType<any> = class MyDirective {} as any;
+      compileDirective(MyDirective, {styleUrls: ['someUrl1', 'someUrl2']});
+      expect(() => MyDirective.ɵdir).toThrowError(
+        `
+Directive 'MyDirective' is not resolved:
+ - styleUrls: ["someUrl1","someUrl2"]
+Did you run and wait for 'resolveComponentResources()'?`.trim(),
+      );
+    });
+
     it('should throw an error when compiling component that has unresolved templateUrl and styleUrls', () => {
       const MyComponent: ComponentType<any> = class MyComponent {} as any;
       compileComponent(MyComponent, {templateUrl: 'someUrl', styleUrls: ['someUrl1', 'someUrl2']});
@@ -60,8 +71,9 @@ Did you run and wait for 'resolveComponentResources()'?`.trim(),
       'test://style': Promise.resolve('style'),
       'test://style1': Promise.resolve('style1'),
       'test://style2': Promise.resolve('style2'),
+      'test://other': Promise.resolve('other'),
     };
-    let resourceFetchCount: number;
+    let resourceFetchCount = 0;
     function testResolver(url: string): Promise<string> {
       resourceFetchCount++;
       return URLS[url] || Promise.reject('NOT_FOUND: ' + url);
@@ -87,6 +99,85 @@ Did you run and wait for 'resolveComponentResources()'?`.trim(),
       expect(metadata.styleUrls).toBe(undefined);
       expect(metadata.styles).toEqual(['style1', 'style2']);
       expect(resourceFetchCount).toBe(2);
+    });
+
+    it('should resolve directive styleUrls', async () => {
+      const MyDirective: DirectiveType<any> = class MyDirective {} as any;
+      const metadata: Directive = {styleUrls: ['test://style1', 'test://style2']};
+      compileDirective(MyDirective, metadata);
+      await resolveComponentResources(testResolver);
+      expect(MyDirective.ɵdir).toBeDefined();
+      expect(metadata.styles).toEqual(['style1', 'style2']);
+      expect(resourceFetchCount).toBe(2);
+    });
+
+    it('should resolve directive styleUrl', async () => {
+      const MyDirective: DirectiveType<any> = class MyDirective {} as any;
+      const metadata: Directive = {styleUrl: 'test://style'};
+      compileDirective(MyDirective, metadata);
+      await resolveComponentResources(testResolver);
+      expect(MyDirective.ɵdir).toBeDefined();
+      expect(metadata.styleUrl).toBe(undefined);
+      expect(metadata.styles).toEqual(['style']);
+      expect(resourceFetchCount).toBe(1);
+    });
+
+    it('should resolve multiple components and directives with styleUrls', async () => {
+      const MyComponent: ComponentType<any> = class MyComponent {} as any;
+      const metadata: Component = {template: '', styleUrls: ['test://style']};
+      const OtherComponent: ComponentType<any> = class OtherComponent {} as any;
+      const otherMetadata: Component = {template: '', styleUrls: ['test://other']};
+      const MyDirective: DirectiveType<any> = class MyDirective {} as any;
+      const directiveMetadata: Directive = {styleUrls: ['test://style1']};
+      compileComponent(MyComponent, metadata);
+      compileComponent(OtherComponent, otherMetadata);
+      compileDirective(MyDirective, directiveMetadata);
+      await resolveComponentResources(testResolver);
+      expect(MyComponent.ɵcmp).toBeDefined();
+      expect(metadata.styles).toEqual(['style']);
+      expect(OtherComponent.ɵcmp).toBeDefined();
+      expect(otherMetadata.styles).toEqual(['other']);
+      expect(MyDirective.ɵdir).toBeDefined();
+      expect(directiveMetadata.styles).toEqual(['style1']);
+      expect(resourceFetchCount).toBe(3);
+    });
+
+    it('should resolve queue is empty after resolution', async () => {
+      expect(isComponentResourceResolutionQueueEmpty()).toBe(true);
+      const MyComponent: ComponentType<any> = class MyComponent {} as any;
+      const metadata: Component = {templateUrl: 'test://content'};
+      compileComponent(MyComponent, metadata);
+      expect(isComponentResourceResolutionQueueEmpty()).toBe(false);
+      const resolved = resolveComponentResources(testResolver);
+      expect(isComponentResourceResolutionQueueEmpty()).toBe(true);
+      await resolved;
+      expect(isComponentResourceResolutionQueueEmpty()).toBe(true);
+    });
+
+    it('should resolve templateUrl and preserve preexisting styles', async () => {
+      const MyComponent: ComponentType<any> = class MyComponent {} as any;
+      const metadata: Component = {templateUrl: 'test://content', styles: ['existing']};
+      compileComponent(MyComponent, metadata);
+      await resolveComponentResources(testResolver);
+      expect(MyComponent.ɵcmp).toBeDefined();
+      expect(metadata.template).toBe('content');
+      expect(metadata.styles).toEqual(['existing']);
+      expect(resourceFetchCount).toBe(1);
+    });
+
+    it('should resolve styleUrls and append to preexisting styles', async () => {
+      const MyComponent: ComponentType<any> = class MyComponent {} as any;
+      const metadata: Component = {
+        template: '',
+        styleUrls: ['test://style'],
+        styles: ['existing'],
+      };
+      compileComponent(MyComponent, metadata);
+      await resolveComponentResources(testResolver);
+      expect(MyComponent.ɵcmp).toBeDefined();
+      expect(metadata.styleUrls).toBe(undefined);
+      expect(metadata.styles).toEqual(['existing', 'style']);
+      expect(resourceFetchCount).toBe(1);
     });
 
     it('should cache multiple resolution to same URL', async () => {
@@ -177,6 +268,19 @@ Did you run and wait for 'resolveComponentResources()'?`.trim(),
 
       await expectAsync(resolveComponentResources(testResolver)).toBeRejectedWithError(
         /@Component cannot define both `styleUrl` and `styleUrls`/,
+      );
+    });
+
+    it('should throw if both styleUrls and styleUrl are passed in on directive', async () => {
+      const MyDirective: DirectiveType<any> = class MyDirective {} as any;
+      const metadata: Directive = {
+        styleUrl: 'test://style1',
+        styleUrls: ['test://style2'],
+      };
+      compileDirective(MyDirective, metadata);
+
+      await expectAsync(resolveComponentResources(testResolver)).toBeRejectedWithError(
+        /@Directive cannot define both `styleUrl` and `styleUrls`/,
       );
     });
   });

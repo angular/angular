@@ -73,7 +73,12 @@ import {
 import {NO_CHANGE} from '../tokens';
 import {INTERPOLATION_DELIMITER} from '../util/misc_utils';
 import {renderStringify} from '../util/stringify_utils';
-import {getComponentLViewByIndex, getNativeByTNode, unwrapLView} from '../util/view_utils';
+import {
+  getComponentLViewByIndex,
+  getNativeByTNode,
+  storeCleanupWithContext,
+  unwrapLView,
+} from '../util/view_utils';
 
 import {isDetachedByI18n} from '../../i18n/utils';
 import {clearElementContents, setupStaticAttributes} from '../dom_node_manipulation';
@@ -402,9 +407,16 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TDirectiveH
     getOrCreateNodeInjectorForNode(tNode, lView);
   }
 
+  const isElem = tNode.type === TNodeType.Element;
+  const native = isElem ? (getNativeByTNode(tNode, lView) as RElement) : null;
   const initialInputs = tNode.initialInputs;
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
+    if (!isComponentDef(def) && def.styles.length > 0 && native !== null) {
+      const rendererFactory = lView[ENVIRONMENT].rendererFactory;
+      const renderer = rendererFactory.createRenderer(native, def);
+      storeCleanupWithContext(tView, lView, renderer, renderer.destroy);
+    }
     const directive = getNodeInjectable(lView, tView, i, tNode);
     attachPatchData(directive, lView);
 

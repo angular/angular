@@ -1,0 +1,15 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should pass in directive styles and shim them scoped to host",
+      "inputFiles": ["directive_styles.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect directive definition",
+          "files": ["directive_styles.js"]
+        }
+      ]
+    }
+  ]
+}
