@@ -48,6 +48,7 @@ export function createBoundaryBlock(
       new t.Variable('$reset', '$reset', emptySpan, emptySpan, emptySpan),
     ];
     let expression: AST | null = null;
+    const parameters: t.BoundaryErrorParameter[] = [];
 
     for (const param of block.parameters) {
       const letMatch = param.expression.match(LET_PATTERN);
@@ -63,6 +64,7 @@ export function createBoundaryBlock(
               )
             : param.sourceSpan;
 
+        const variablesCountBefore = contextVariables.length;
         parseLetParameters(
           param.sourceSpan,
           expressionToParse,
@@ -86,6 +88,11 @@ export function createBoundaryBlock(
           '@error block',
           '$error',
         );
+        parameters.push({
+          type: letMatch !== null ? 'let' : 'alias',
+          variables: contextVariables.slice(variablesCountBefore),
+          sourceSpan: param.sourceSpan,
+        });
         continue;
       }
 
@@ -105,6 +112,11 @@ export function createBoundaryBlock(
             param.sourceSpan.start.offset + start,
           );
           expression = expressionAST.ast;
+          parameters.push({
+            type: 'when',
+            expression,
+            sourceSpan: param.sourceSpan,
+          });
         }
         continue;
       }
@@ -122,6 +134,7 @@ export function createBoundaryBlock(
         html.visitAll(visitor, block.children, block.children),
         contextVariables,
         expression,
+        parameters,
         block.nameSpan,
         block.sourceSpan,
         block.startSourceSpan,
