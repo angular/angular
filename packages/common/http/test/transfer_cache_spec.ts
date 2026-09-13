@@ -895,6 +895,34 @@ describe('TransferCache', () => {
       makeRequestAndExpectOne('/items/a|b', null, {method: 'POST', transferCache: true, body: 'c'});
     });
 
+    it('should not use TransferCache for requests with NUL in the URL', () => {
+      makeRequestAndExpectOne('/items/a#', 'seed', {
+        method: 'POST',
+        transferCache: true,
+        body: 'b\0c',
+      });
+
+      makeRequestAndExpectOne('/items/a#\0b', 'trusted', {
+        method: 'POST',
+        transferCache: true,
+        body: 'c',
+      });
+    });
+
+    it('should not cache repeated requests with NUL in the URL', () => {
+      makeRequestAndExpectOne('/items/a\0b', 'first', {
+        method: 'POST',
+        transferCache: true,
+        body: 'c',
+      });
+
+      makeRequestAndExpectOne('/items/a\0b', 'second', {
+        method: 'POST',
+        transferCache: true,
+        body: 'c',
+      });
+    });
+
     it('should cache POST with the differing body in object form', () => {
       makeRequestAndExpectOne('/test-1', null, {
         method: 'POST',

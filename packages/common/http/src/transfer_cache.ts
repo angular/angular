@@ -158,6 +158,9 @@ function canUseOrCacheRequest(req: HttpRequest<unknown>, options: CacheOptions):
   if (
     !isCacheActive ||
     requestOptions === false ||
+    // `makeCacheKey` uses NUL as a field delimiter, so URLs containing NUL cannot safely
+    // participate in the transfer cache.
+    req.url.includes('\0') ||
     // POST requests are allowed either globally or at request level
     (requestMethod === 'POST' && !includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
