@@ -81,7 +81,7 @@ export class FormFieldManager {
     liveStructures: Set<FieldNodeStructure>,
   ): void {
     liveStructures.add(structure);
-    for (const child of structure.children()) {
+    for (const child of structure.materializedChildren()) {
       this.markStructuresLive(child.structure, liveStructures);
     }
   }
