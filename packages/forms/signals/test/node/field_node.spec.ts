@@ -793,18 +793,6 @@ describe('FieldNode', () => {
     });
 
     describe('tracking', () => {
-      it('suggests field identity tracking when an array field becomes orphaned', () => {
-        const value = signal([{name: 'Alex'}]);
-        const f = form(value, {injector: TestBed.inject(Injector)});
-        const previousField = f[0];
-
-        value.set([{name: 'Alex'}]);
-
-        expect(() => previousField().value()).toThrowError(
-          /If this field is used in an @for block, track fields by identity \(for example, `track field`\)\./,
-        );
-      });
-
       it('maintains identity across value moves', () => {
         const value = signal([{name: 'Alex'}, {name: 'Kirill'}]);
         const f = form(value, {injector: TestBed.inject(Injector)});

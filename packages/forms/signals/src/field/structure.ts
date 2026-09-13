@@ -278,10 +278,7 @@ export abstract class FieldNodeStructure {
         } else {
           throw new RuntimeError(
             RuntimeErrorCode.ORPHAN_FIELD_NOT_FOUND,
-            ngDevMode &&
-              `Orphan field, can't find element in array ${getDebugName(parent)}. ` +
-                'If this field is used in an @for block, track fields by identity ' +
-                '(for example, `track field`).',
+            ngDevMode && `Orphan field, can't find element in array ${getDebugName(parent)}`,
           );
         }
       }
