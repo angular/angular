@@ -541,7 +541,7 @@ describe('TransferCache', () => {
 
       const transferState = TestBed.inject(TransferState);
       expect(JSON.parse(transferState.toJson()) as Record<string, unknown>).toEqual({
-        'd501aa2d57b63a95df74e3b0558782b71b077974e968ed303cd30b27e4b70702': {
+        '1f714be6947c17dea957abf53634001d06b80e55645090da462510f830cb2783': {
           [BODY]: 'foo',
           [HEADERS]: {},
           [STATUS]: 200,
@@ -549,7 +549,7 @@ describe('TransferCache', () => {
           [REQ_URL]: '/test-1',
           [RESPONSE_TYPE]: 'json',
         },
-        'ceddc6689dc1f2fc3a0b8c364b6e00a79b99a149f27e84da87cec03d44c150c8': {
+        '741c59135aade1b04255843ce2685e5864f8a42beea9e2371fb7036df01aa75a': {
           [BODY]: 'buzz',
           [HEADERS]: {},
           [STATUS]: 200,
@@ -893,6 +893,19 @@ describe('TransferCache', () => {
       makeRequestAndExpectOne('/items/a', null, {method: 'POST', transferCache: true, body: 'b|c'});
       makeRequestAndExpectNone('/items/a', 'POST', {transferCache: true, body: 'b|c'});
       makeRequestAndExpectOne('/items/a|b', null, {method: 'POST', transferCache: true, body: 'c'});
+    });
+
+    it('should differentiate POST requests with a NUL-shifted url/body boundary', () => {
+      makeRequestAndExpectOne('/items/a#', 'seed', {
+        method: 'POST',
+        transferCache: true,
+        body: 'b\0c',
+      });
+      makeRequestAndExpectOne('/items/a#\0b', 'trusted', {
+        method: 'POST',
+        transferCache: true,
+        body: 'c',
+      });
     });
 
     it('should cache POST with the differing body in object form', () => {

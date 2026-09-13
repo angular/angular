@@ -421,10 +421,15 @@ function makeCacheKey(
     serializedBody = '';
   }
 
-  // Joining with `|` lets a shifted field boundary (url `/a` + body `b|c` vs url `/a|b` + body `c`)
-  // collapse to the same string and thus the same hash. `\0` cannot occur in a valid url or in
-  // encoded params, so the field boundaries can't be forged by field content.
-  const key = [method, responseType, mappedRequestUrl, serializedBody, encodedParams].join('\0');
+  // Serialize the fields as a structured value so field content cannot shift boundaries between
+  // adjacent entries. Sentinel delimiters are ambiguous when the delimiter occurs in a field.
+  const key = JSON.stringify([
+    method,
+    responseType,
+    mappedRequestUrl,
+    serializedBody,
+    encodedParams,
+  ]);
   const hash = generateHash(key);
 
   return makeStateKey(hash);
