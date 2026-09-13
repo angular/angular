@@ -89,4 +89,13 @@ describe('renderable', () => {
 
     expect(api.textContent).toContain('@Component({');
   });
+
+  it('should use the member name as the id of decorator member cards', () => {
+    const component = entries.get('Component')!;
+    const html = renderEntry(component);
+    const fragment = JSDOM.fragment(html);
+    const card = fragment.querySelector('.docs-reference-member-card')!;
+
+    expect(card.getAttribute('id')).toBe('selector');
+  });
 });
