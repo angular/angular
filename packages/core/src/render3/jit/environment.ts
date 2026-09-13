@@ -114,6 +114,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵconditional': r3.ɵɵconditional,
   'ɵɵconditionalCreate': r3.ɵɵconditionalCreate,
   'ɵɵconditionalBranchCreate': r3.ɵɵconditionalBranchCreate,
+  'ɵɵisolatedCreate': r3.ɵɵisolatedCreate,
   'ɵɵboundaryCreate': r3.ɵɵboundaryCreate,
   'ɵɵboundaryUpdate': r3.ɵɵboundaryUpdate,
   'ɵɵgetBoundary': r3.ɵɵgetBoundary,

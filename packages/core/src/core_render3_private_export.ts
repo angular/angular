@@ -189,6 +189,7 @@ export {
   ɵɵinterpolate8,
   ɵɵinterpolateV,
   ɵɵinvalidFactory,
+  ɵɵisolatedCreate,
   ɵɵlistener,
   ɵɵloadQuery,
   ɵɵnamespaceHTML,

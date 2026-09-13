@@ -120,6 +120,7 @@ export {
   ɵɵconditional,
   ɵɵconditionalCreate,
   ɵɵconditionalBranchCreate,
+  ɵɵisolatedCreate,
   ɵɵboundaryCreate,
   ɵɵboundaryUpdate,
   ɵɵgetBoundary,

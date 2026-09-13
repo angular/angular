@@ -205,6 +205,9 @@ export const enum TNodeFlags {
    * This is used to bind to a `ControlValueAccessor` from `@angular/forms`.
    */
   isPassThroughControl = 1 << 12,
+
+  /** Bit #14 - This bit is set if an embedded view owns its reactive consumer. */
+  hasOwnReactiveConsumer = 1 << 13,
 }
 
 /**

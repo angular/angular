@@ -8,6 +8,7 @@
 
 import {REACTIVE_NODE, ReactiveNode} from '../../primitives/signals';
 
+import {TNodeFlags} from './interfaces/node';
 import {LView, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from './interfaces/view';
 import {getLViewParent, markAncestorsForTraversal, markViewForRefresh} from './util/view_utils';
 
@@ -100,14 +101,16 @@ export const TEMPORARY_CONSUMER_NODE: ReactiveNode = {
  * their own reactive node because root component will have a host view that executes the
  * component's host bindings. This needs to be tracked in a consumer as well.
  *
- * To get a more granular change detection than per-component, all we would just need to update the
- * condition here so that a given view gets a reactive consumer which can become dirty independently
- * from its parent component. For example embedded views for signal components could be created with
- * a new type "SignalEmbeddedView" and the condition here wouldn't even need updating in order to
- * get granular per-view change detection for signal components.
+ * To get more granular change detection than per-component, an embedded view can be marked as
+ * owning a reactive consumer. Keeping this marker orthogonal to `TViewType` preserves embedded-view
+ * construction and declaration semantics while allowing the view to become dirty independently of
+ * its parent component.
  */
 export function viewShouldHaveReactiveConsumer(tView: TView) {
-  return tView.type !== TViewType.Embedded;
+  return (
+    tView.type !== TViewType.Embedded ||
+    !!(tView.declTNode?.flags & TNodeFlags.hasOwnReactiveConsumer)
+  );
 }
 
 export function isReactiveLViewConsumer(node: ReactiveNode): node is ReactiveLViewConsumer {

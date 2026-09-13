@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="data:," />
+    <title>Isolated reactivity benchmark</title>
+  </head>
+  <body>
+    <p>
+      <button id="update-baseline">Update baseline</button>
+      <button id="update-isolated">Update isolated view</button>
+      <button id="update-component">Update extracted component</button>
+      <button id="reset-metrics">Reset metrics</button>
+      <button id="read-metrics">Read metrics</button>
+    </p>
+    <pre id="metrics"></pre>
+    <benchmark-app>Loading...</benchmark-app>
+    <script src="/app_bundle.js"></script>
+  </body>
+</html>

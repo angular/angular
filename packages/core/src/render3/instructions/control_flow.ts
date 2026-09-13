@@ -102,6 +102,45 @@ export function ɵɵconditionalCreate(
 }
 
 /**
+ * Creates an LContainer for an embedded view that owns its reactive consumer.
+ *
+ * This instruction is an internal prototype for evaluating targeted reactivity. The embedded view
+ * remains structurally an embedded view, but signal notifications can refresh it independently of
+ * its declaration component.
+ *
+ * @codeGenApi
+ */
+export function ɵɵisolatedCreate(
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): void {
+  performanceMarkFeature('NgControlFlow');
+  const lView = getLView();
+  const tView = getTView();
+  const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
+
+  declareNoDirectiveHostTemplate(
+    lView,
+    tView,
+    index,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    attrs,
+    TNodeFlags.isControlFlowStart | TNodeFlags.hasOwnReactiveConsumer,
+    localRefsIndex,
+    localRefExtractor,
+  );
+}
+
+/**
  * Creates an LContainer for an ng-template representing a branch
  * of control flow (@else, @case, @default). We use this to explicitly
  * set flags on the TNode created to identify which nodes are in
