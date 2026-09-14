@@ -40,13 +40,12 @@ describe('DirectiveForestComponent', () => {
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
   let deepLinkInstanceIdSignal = signal<number | null>(null);
 
-  beforeEach(async () => {
+  beforeEach(() => {
     deepLinkInstanceIdSignal = signal<number | null>(null);
     messageBusSpy = jasmine.createSpyObj('MessageBus', ['on', 'emit', 'once', 'destroy']);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
-    await TestBed.configureTestingModule({
-      imports: [DirectiveForestComponent],
+    TestBed.configureTestingModule({
       providers: [
         {
           provide: APP_DATA,
@@ -65,7 +64,7 @@ describe('DirectiveForestComponent', () => {
         {provide: DEEP_LINK_INSTANCE_ID, useValue: deepLinkInstanceIdSignal},
         TabUpdate,
       ],
-    }).compileComponents();
+    });
 
     fixture = TestBed.createComponent(DirectiveForestComponent);
     component = fixture.componentInstance;
