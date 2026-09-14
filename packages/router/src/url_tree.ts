@@ -530,6 +530,23 @@ function serializeQueryParams(params: {[key: string]: any}): string {
   return strParams.length ? `?${strParams.join('&')}` : '';
 }
 
+// Above V8's threshold for requiring dictionary elements.
+const SLOW_ELEMENTS_SENTINEL = 0x40000000;
+
+/**
+ * Avoids oversized V8 backing stores for numeric URL keys.
+ * Setting then deleting the sentinel keeps indexed properties in dictionary storage.
+ * Indices below 32 use little space, so leave them alone.
+ */
+function setUrlDerivedKey<T>(target: {[key: string]: T}, key: string, value: T): void {
+  // Preserve URL keys that happen to equal the sentinel.
+  if (Number(key) >= 32 && !Object.hasOwn(target, SLOW_ELEMENTS_SENTINEL)) {
+    target[SLOW_ELEMENTS_SENTINEL] = value;
+    delete target[SLOW_ELEMENTS_SENTINEL];
+  }
+  target[key] = value;
+}
+
 const SEGMENT_RE = /^[^\/()?;#]+/;
 function matchSegments(str: string): string {
   const match = str.match(SEGMENT_RE);
@@ -662,7 +679,7 @@ class UrlParser {
       }
     }
 
-    params[decode(key)] = decode(value);
+    setUrlDerivedKey(params, decode(key), decode(value));
   }
 
   // Parse a single query parameter `name[=value]`
@@ -727,10 +744,11 @@ class UrlParser {
       }
 
       const children = this.parseChildren();
-      segments[outletName ?? PRIMARY_OUTLET] =
+      const child =
         Object.keys(children).length === 1 && children[PRIMARY_OUTLET]
           ? children[PRIMARY_OUTLET]
           : new UrlSegmentGroup([], children);
+      setUrlDerivedKey(segments, outletName ?? PRIMARY_OUTLET, child);
       this.consumeOptional('//');
     }
 
@@ -787,11 +805,11 @@ export function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGro
       childCandidate.hasChildren()
     ) {
       for (const [grandChildOutlet, grandChild] of Object.entries(childCandidate.children)) {
-        newChildren[grandChildOutlet] = grandChild;
+        setUrlDerivedKey(newChildren, grandChildOutlet, grandChild);
       }
     } // don't add empty children
     else if (childCandidate.segments.length > 0 || childCandidate.hasChildren()) {
-      newChildren[childOutlet] = childCandidate;
+      setUrlDerivedKey(newChildren, childOutlet, childCandidate);
     }
   }
   const s = new UrlSegmentGroup(segmentGroup.segments, newChildren);
