@@ -157,8 +157,11 @@ export class BreakpointManager {
    * and external pages.
    */
   private isValidSender(sender: chrome.runtime.MessageSender): boolean {
+    if (!sender || typeof sender !== 'object') {
+      return false;
+    }
     // 1. Ensure the sender extension ID matches our own extension ID
-    if (sender.id !== this.runtimeApi.id) {
+    if (!sender.id || sender.id !== this.runtimeApi.id) {
       return false;
     }
     // 2. Ensure the message originates from an extension internal context (DevTools panel),
@@ -168,6 +171,10 @@ export class BreakpointManager {
     }
     // 3. Ensure the message originates from this extension's origin
     if (!sender.origin || sender.origin !== this.extensionOrigin) {
+      return false;
+    }
+    // 4. Ensure the message URL matches our extension URL
+    if (!sender.url || !sender.url.startsWith(this.extensionOrigin)) {
       return false;
     }
     return true;

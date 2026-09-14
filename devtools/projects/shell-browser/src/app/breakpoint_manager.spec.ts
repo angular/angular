@@ -81,7 +81,7 @@ describe('BreakpointManager', () => {
     it('rejects messages originating from content scripts (where sender.tab is defined)', () => {
       const sendResponse = jasmine.createSpy('sendResponse');
       const contentScriptSender: chrome.runtime.MessageSender = {
-        id: EXTENSION_ID,
+        ...validSender,
         url: 'https://example.test/angular-app',
         tab: {id: 456} as chrome.tabs.Tab,
       };
@@ -100,9 +100,8 @@ describe('BreakpointManager', () => {
     it('rejects messages from mismatched extension ID', () => {
       const sendResponse = jasmine.createSpy('sendResponse');
       const spoofedSender: chrome.runtime.MessageSender = {
+        ...validSender,
         id: 'different-extension-id',
-        url: 'chrome-extension://different-extension-id/page.html',
-        tab: undefined,
       };
       const message = {
         action: 'setSignalBreakpoint',
@@ -115,30 +114,59 @@ describe('BreakpointManager', () => {
       expect(sendResponse).not.toHaveBeenCalled();
     });
 
-    it('rejects messages with non-extension URL', () => {
+    it('rejects messages where sender.id is undefined', () => {
       const sendResponse = jasmine.createSpy('sendResponse');
-      const externalSender: chrome.runtime.MessageSender = {
-        id: EXTENSION_ID,
-        url: 'https://malicious.test',
-        tab: undefined,
+      const missingIdSender: chrome.runtime.MessageSender = {
+        ...validSender,
+        id: undefined,
       };
       const message = {
         action: 'getActiveSignalBreakpoints',
         tabId: 123,
       };
 
-      const result = runtimeMessageListeners[0](message, externalSender, sendResponse);
+      const result = runtimeMessageListeners[0](message, missingIdSender, sendResponse);
       expect(result).toBeFalse();
       expect(sendResponse).not.toHaveBeenCalled();
     });
 
-    it('rejects messages with mismatched sender.origin', () => {
+    it('rejects messages with non-extension URL even if origin matches', () => {
+      const sendResponse = jasmine.createSpy('sendResponse');
+      const externalUrlSender: chrome.runtime.MessageSender = {
+        ...validSender,
+        url: 'https://malicious.test/page.html',
+      };
+      const message = {
+        action: 'getActiveSignalBreakpoints',
+        tabId: 123,
+      };
+
+      const result = runtimeMessageListeners[0](message, externalUrlSender, sendResponse);
+      expect(result).toBeFalse();
+      expect(sendResponse).not.toHaveBeenCalled();
+    });
+
+    it('rejects messages where sender.url is undefined', () => {
+      const sendResponse = jasmine.createSpy('sendResponse');
+      const missingUrlSender: chrome.runtime.MessageSender = {
+        ...validSender,
+        url: undefined,
+      };
+      const message = {
+        action: 'getActiveSignalBreakpoints',
+        tabId: 123,
+      };
+
+      const result = runtimeMessageListeners[0](message, missingUrlSender, sendResponse);
+      expect(result).toBeFalse();
+      expect(sendResponse).not.toHaveBeenCalled();
+    });
+
+    it('rejects messages with mismatched sender.origin even if URL matches', () => {
       const sendResponse = jasmine.createSpy('sendResponse');
       const spoofedOriginSender: chrome.runtime.MessageSender = {
-        id: EXTENSION_ID,
-        url: `${EXTENSION_URL_PREFIX}app/devtools.html`,
+        ...validSender,
         origin: 'https://malicious.test',
-        tab: undefined,
       };
       const message = {
         action: 'getActiveSignalBreakpoints',
@@ -153,10 +181,8 @@ describe('BreakpointManager', () => {
     it('rejects messages where sender.origin is undefined', () => {
       const sendResponse = jasmine.createSpy('sendResponse');
       const undefinedOriginSender: chrome.runtime.MessageSender = {
-        id: EXTENSION_ID,
-        url: `${EXTENSION_URL_PREFIX}app/devtools.html`,
+        ...validSender,
         origin: undefined,
-        tab: undefined,
       };
       const message = {
         action: 'getActiveSignalBreakpoints',
@@ -164,6 +190,31 @@ describe('BreakpointManager', () => {
       };
 
       const result = runtimeMessageListeners[0](message, undefinedOriginSender, sendResponse);
+      expect(result).toBeFalse();
+      expect(sendResponse).not.toHaveBeenCalled();
+    });
+
+    it('rejects empty sender object', () => {
+      const sendResponse = jasmine.createSpy('sendResponse');
+      const emptySender: chrome.runtime.MessageSender = {};
+      const message = {
+        action: 'getActiveSignalBreakpoints',
+        tabId: 123,
+      };
+
+      const result = runtimeMessageListeners[0](message, emptySender, sendResponse);
+      expect(result).toBeFalse();
+      expect(sendResponse).not.toHaveBeenCalled();
+    });
+
+    it('rejects null or undefined sender', () => {
+      const sendResponse = jasmine.createSpy('sendResponse');
+      const message = {
+        action: 'getActiveSignalBreakpoints',
+        tabId: 123,
+      };
+
+      const result = runtimeMessageListeners[0](message, null as any, sendResponse);
       expect(result).toBeFalse();
       expect(sendResponse).not.toHaveBeenCalled();
     });
