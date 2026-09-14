@@ -4,11 +4,11 @@ Signal Forms' field state allows you to react to user interactions by providing 
 
 ## Understanding field state
 
-When you create a form with the [`form()`](api/forms/signals/form) function, it returns a **field tree** - an object structure that mirrors your form model. Each field in the tree is accessible via dot notation (like [`form.email`](api/forms/signals/form#email)).
+When you create a form with the [`form()`](api/forms/signals/form) function, it returns a **field tree** - an object structure that mirrors your form model. Each field in the tree is accessible via dot notation (like [`form.email`](api/forms/signals/FieldTree)).
 
 ### Accessing field state
 
-When you call any field in the field tree as a function (like [`form.email()`](api/forms/signals/form#email)), it returns a `FieldState` object containing reactive signals that track the field's validation, interaction, and availability state. For example, the `invalid()` signal tells you whether the field has validation errors:
+When you call any field in the field tree as a function (like [`form.email()`](api/forms/signals/FieldState)), it returns a `FieldState` object containing reactive signals that track the field's validation, interaction, and availability state. For example, the `invalid()` signal tells you whether the field has validation errors:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -804,9 +804,7 @@ A common use case is improving accessibility on form submission: when a form is 
 Given a registration form:
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class Registration {
   registrationModel = signal({username: '', email: '', password: ''});
   registrationForm = form(this.registrationModel, (schemaPath) => {
@@ -861,9 +859,7 @@ Consider a custom password input:
 ```
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class PasswordInput implements FormValueControl<string> {
   readonly value = model<string>('');
   readonly passwordCtrl = viewChild.required<ElementRef<HTMLInputElement>>('passwordCtrl');
