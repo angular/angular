@@ -35,6 +35,22 @@ describe('recognize', () => {
     expect(Object.isFrozen(child.params)).toBeTruthy();
   });
 
+  it('should preserve numeric params through matching, inheritance and snapshots', async () => {
+    const state = await recognize(
+      [{path: 'a', children: [{path: 'b', component: ComponentA}]}],
+      'a;0=parent;7=first/b;7=last?0=query&0=other',
+    );
+    const parent = state.root.firstChild!;
+    const child = parent.firstChild!;
+
+    expect(parent.params).toEqual({'0': 'parent', '7': 'first'});
+    expect(child.params).toEqual({'0': 'parent', '7': 'last'});
+    expect(child.queryParams).toEqual({'0': ['query', 'other']});
+    expect(child.paramMap.get('7')).toBe('last');
+    expect(Object.isFrozen(child.params)).toBeTrue();
+    expect(Object.isFrozen(child.queryParams)).toBeTrue();
+  });
+
   it('should freeze data object (but not original route data)', async () => {
     const someData = {a: 1};
     const s: RouterStateSnapshot = await recognize(

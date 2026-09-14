@@ -472,6 +472,112 @@ describe('url serializer', () => {
       expect(() => url.parse(`/${urlStr}`)).not.toThrow();
     });
   });
+
+  describe('numeric parameter and outlet names', () => {
+    it('should decode numeric names before handling repeated params', () => {
+      const tree = url.parse('/one;%30=first;0=last;01=named?%37=first&7=last');
+
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({
+        '0': 'last',
+        '01': 'named',
+      });
+      expect(tree.queryParams).toEqual({'7': ['first', 'last']});
+    });
+
+    it('should parse matrix params with numeric names', () => {
+      const tree = url.parse('/one;0=a;7=b');
+
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({
+        '0': 'a',
+        '7': 'b',
+      });
+      expect(url.serialize(tree)).toEqual('/one;0=a;7=b');
+    });
+
+    it('should enumerate numeric matrix param names ahead of named ones, in ascending order', () => {
+      const tree = url.parse('/one;b=1;7=2;a=3;0=4');
+
+      expect(Object.keys(tree.root.children[PRIMARY_OUTLET].segments[0].parameters)).toEqual([
+        '0',
+        '7',
+        'b',
+        'a',
+      ]);
+    });
+
+    it('should parse query params with numeric names', () => {
+      const tree = url.parse('/one?0=a&7=b');
+
+      expect(tree.queryParams).toEqual({'0': 'a', '7': 'b'});
+      expect(url.serialize(tree)).toEqual('/one?0=a&7=b');
+    });
+
+    it('should collect repeated query params with a numeric name into an array', () => {
+      const tree = url.parse('/one?7=a&7=b&7=c');
+
+      expect(tree.queryParams).toEqual({'7': ['a', 'b', 'c']});
+    });
+
+    it('should parse outlets with numeric names', () => {
+      const tree = url.parse('/one(0:two//7:three)');
+
+      expectSegment(tree.root.children['0'], 'two');
+      expectSegment(tree.root.children['7'], 'three');
+      expect(url.serialize(tree)).toEqual('/one(0:two//7:three)');
+    });
+
+    // The internal sentinel is also a valid URL key.
+    it('should keep a matrix param named with a high array index', () => {
+      const tree = url.parse('/one;1073741824=keep;5=other');
+
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({
+        '1073741824': 'keep',
+        '5': 'other',
+      });
+    });
+
+    it('should keep a query param named with a high array index', () => {
+      const tree = url.parse('/one?1073741824=keep&5=other');
+
+      expect(tree.queryParams).toEqual({'1073741824': 'keep', '5': 'other'});
+    });
+
+    it('should keep an outlet named with a high array index', () => {
+      const tree = url.parse('/one(1073741824:two//5:three)');
+
+      expectSegment(tree.root.children['1073741824'], 'two');
+      expectSegment(tree.root.children['5'], 'three');
+    });
+
+    it('should not add own keys beyond the ones named in the URL', () => {
+      const tree = url.parse('/one;0=a;7=b(5:two)?7=c');
+      const segment = tree.root.children[PRIMARY_OUTLET].segments[0];
+
+      expect(Object.getOwnPropertyNames(segment.parameters)).toEqual(['0', '7']);
+      expect(Object.getOwnPropertyNames(tree.queryParams)).toEqual(['7']);
+      expect(Object.getOwnPropertyNames(tree.root.children)).toEqual(['5', PRIMARY_OUTLET]);
+    });
+
+    it('should leave numeric matrix params writable, enumerable and configurable', () => {
+      const params = url.parse('/one;7=a').root.children[PRIMARY_OUTLET].segments[0].parameters;
+
+      expect(Object.getOwnPropertyDescriptor(params, '7')).toEqual({
+        value: 'a',
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      });
+      expect(delete params['7']).toBeTrue();
+      expect(Object.hasOwn(params, '7')).toBeFalse();
+    });
+
+    it('should expose numeric names through parameterMap and queryParamMap', () => {
+      const tree = url.parse('/one;0=a?7=b');
+
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameterMap.get('0')).toEqual('a');
+      expect(tree.queryParamMap.get('7')).toEqual('b');
+    });
+  });
 });
 
 function expectSegment(

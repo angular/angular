@@ -11,7 +11,7 @@ import {computed, ɵRuntimeError as RuntimeError, Service, Signal} from '@angula
 import {RuntimeErrorCode} from './errors';
 import type {Router} from './router';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
-import {equalArraysOrString, shallowEqual} from './utils/collection';
+import {equalArraysOrString, setUrlDerivedKey, shallowEqual} from './utils/collection';
 
 /**
  * A set of options which specify how to determine if a `UrlTree` is active, given the `UrlTree`
@@ -742,7 +742,7 @@ class UrlParser {
       }
     }
 
-    params[decode(key)] = decode(value);
+    setUrlDerivedKey(params, decode(key), decode(value));
   }
 
   // Parse a single query parameter `name[=value]`
@@ -774,7 +774,7 @@ class UrlParser {
       currentVal.push(decodedVal);
     } else {
       // Create a new value
-      params[decodedKey] = decodedVal;
+      setUrlDerivedKey(params, decodedKey, decodedVal);
     }
   }
 
@@ -811,10 +811,11 @@ class UrlParser {
       }
 
       const children = this.parseChildren(depth + 1);
-      segments[outletName ?? PRIMARY_OUTLET] =
+      const child =
         Object.keys(children).length === 1 && children[PRIMARY_OUTLET]
           ? children[PRIMARY_OUTLET]
           : new UrlSegmentGroup([], children);
+      setUrlDerivedKey(segments, outletName ?? PRIMARY_OUTLET, child);
       this.consumeOptional('//');
     }
 
@@ -872,11 +873,11 @@ export function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGro
       childCandidate.hasChildren()
     ) {
       for (const [grandChildOutlet, grandChild] of Object.entries(childCandidate.children)) {
-        newChildren[grandChildOutlet] = grandChild;
+        setUrlDerivedKey(newChildren, grandChildOutlet, grandChild);
       }
     } // don't add empty children
     else if (childCandidate.segments.length > 0 || childCandidate.hasChildren()) {
-      newChildren[childOutlet] = childCandidate;
+      setUrlDerivedKey(newChildren, childOutlet, childCandidate);
     }
   }
   const s = new UrlSegmentGroup(segmentGroup.segments, newChildren);

@@ -67,6 +67,7 @@ import {
   UrlSerializer,
   UrlTree,
 } from './url_tree';
+import {mergeUrlDerivedKeys, setUrlDerivedKey} from './utils/collection';
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
 
@@ -476,7 +477,7 @@ export class Router {
     let q: Params | null = null;
     switch (queryParamsHandling ?? this.options.defaultQueryParamsHandling) {
       case 'merge':
-        q = {...this.currentUrlTree.queryParams, ...queryParams};
+        q = mergeUrlDerivedKeys(this.currentUrlTree.queryParams, queryParams);
         break;
       case 'preserve':
         q = this.currentUrlTree.queryParams;
@@ -656,7 +657,7 @@ export class Router {
   private removeEmptyProps(params: Params): Params {
     return Object.entries(params).reduce((result: Params, [key, value]: [string, any]) => {
       if (value !== null && value !== undefined) {
-        result[key] = value;
+        setUrlDerivedKey(result, key, value);
       }
       return result;
     }, {});

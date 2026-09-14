@@ -20,7 +20,7 @@ import {
   UrlSerializer,
   UrlTree,
 } from './url_tree';
-import {last, shallowEqual} from './utils/collection';
+import {defineUrlDerivedKey, last, setUrlDerivedKey, shallowEqual} from './utils/collection';
 
 /**
  * Creates a `UrlTree` relative to an `ActivatedRouteSnapshot`.
@@ -102,7 +102,7 @@ export function createSegmentGroupFromRoute(route: ActivatedRouteSnapshot): UrlS
     const childOutlets: {[outlet: string]: UrlSegmentGroup} = {};
     for (const childSnapshot of currentRoute.children) {
       const root = createSegmentGroupFromRouteRecursive(childSnapshot);
-      childOutlets[childSnapshot.outlet] = root;
+      setUrlDerivedKey(childOutlets, childSnapshot.outlet, root);
     }
     const segmentGroup = new UrlSegmentGroup(currentRoute.url, childOutlets);
     if (currentRoute === route) {
@@ -175,7 +175,7 @@ function normalizeQueryParams(k: string, v: unknown, urlSerializer: UrlSerialize
   // It's probably really a test issue but I don't have the time to fix it...
   k ||= 'ɵ';
   const tree = new UrlTree();
-  tree.queryParams = {[k]: v};
+  defineUrlDerivedKey(tree.queryParams, k, v);
   return urlSerializer.parse(urlSerializer.serialize(tree)).queryParams[k];
 }
 
@@ -197,9 +197,10 @@ function tree(
     // etc. may only be set up to handle string arrays. We could consider changing this in the
     // future to serialize the entire array as a single value. For now, this feels safer and is
     // at least a step in the right direction.
-    qp[key] = Array.isArray(value)
+    const normalized = Array.isArray(value)
       ? value.map((v) => normalizeQueryParams(key, v, urlSerializer))
       : normalizeQueryParams(key, value, urlSerializer);
+    setUrlDerivedKey(qp, key, normalized);
   }
 
   let rootCandidate: UrlSegmentGroup;
@@ -228,11 +229,8 @@ function replaceSegment(
   // Keyed by outlet name, which can be `__proto__`, so use a null-prototype map.
   const children: {[key: string]: UrlSegmentGroup} = Object.create(null);
   Object.entries(current.children).forEach(([outletName, c]) => {
-    if (c === oldSegment) {
-      children[outletName] = newSegment;
-    } else {
-      children[outletName] = replaceSegment(c, oldSegment, newSegment);
-    }
+    const child = c === oldSegment ? newSegment : replaceSegment(c, oldSegment, newSegment);
+    setUrlDerivedKey(children, outletName, child);
   });
   return new UrlSegmentGroup(current.segments, children);
 }
@@ -468,7 +466,7 @@ function updateSegmentGroupChildren(
 
     Object.entries(segmentGroup.children).forEach(([childOutlet, child]) => {
       if (outlets[childOutlet] === undefined) {
-        children[childOutlet] = child;
+        setUrlDerivedKey(children, childOutlet, child);
       }
     });
     return new UrlSegmentGroup(segmentGroup.segments, children);

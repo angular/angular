@@ -49,6 +49,20 @@ describe('createUrlTree', () => {
   });
 
   describe('query parameters', () => {
+    it('should preserve and merge numeric params without changing the current tree', async () => {
+      await router.navigateByUrl('/a?0=first&0=second&7=keep');
+
+      const preserved = router.createUrlTree([], {queryParamsHandling: 'preserve'});
+      const merged = router.createUrlTree([], {
+        queryParamsHandling: 'merge',
+        queryParams: {'0': 'last', '7': null},
+      });
+
+      expect(preserved.queryParams).toEqual({'0': ['first', 'second'], '7': 'keep'});
+      expect(merged.queryParams).toEqual({'0': 'last'});
+      expect(router.url).toBe('/a?0=first&0=second&7=keep');
+    });
+
     it('should support parameter with multiple values', async () => {
       const p1 = serializer.parse('/');
       const t1 = await createRoot(p1, ['/'], {m: ['v1', 'v2']});
@@ -139,6 +153,17 @@ describe('createUrlTree', () => {
       const p = serializer.parse('/a/11/b(right:c)');
       const t = await createRoot(p, ['/a', 11, 'd']);
       expect(serializer.serialize(t)).toEqual('/a/11/d(right:c)');
+    });
+
+    it('should preserve secondary segments in numeric outlets', async () => {
+      router.resetConfig([
+        {path: '**', component: class {}},
+        {path: '**', outlet: '1073741824', component: class {}},
+        {path: '**', outlet: '4294967294', component: class {}},
+      ]);
+      const p = serializer.parse('/a/11/b(1073741824:c//4294967294:d)');
+      const t = await createRoot(p, ['/a', 11, 'd']);
+      expect(serializer.serialize(t)).toEqual('/a/11/d(1073741824:c//4294967294:d)');
     });
 
     it('should support updating secondary segments (absolute)', async () => {

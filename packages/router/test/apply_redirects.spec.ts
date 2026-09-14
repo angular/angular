@@ -131,6 +131,21 @@ describe('redirects', () => {
     );
   });
 
+  it('should preserve numeric outlets in redirect targets', async () => {
+    await checkRedirect(
+      [
+        {path: 'a/:id', redirectTo: '/d/a/:id/e(1073741824:c/d//4294967294:c/d)'},
+        {path: 'c/d', component: ComponentA, outlet: '1073741824'},
+        {path: 'c/d', component: ComponentA, outlet: '4294967294'},
+        {path: '**', component: ComponentC},
+      ],
+      '/a/1',
+      (t: UrlTree) => {
+        expectTreeToBe(t, '/d/a/1/e(1073741824:c/d//4294967294:c/d)');
+      },
+    );
+  });
+
   it('should redirect secondary routes', async () => {
     await checkRedirect(
       [
