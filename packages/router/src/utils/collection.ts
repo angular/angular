@@ -121,10 +121,9 @@ function preventDenseElements(target: {[key: string]: unknown}, key: string): vo
   }
 }
 
-/** Assigns a URL-derived key without sparse-index allocation in V8. */
+/** Defines a URL-derived own property without sparse-index allocation in V8. */
 export function setUrlDerivedKey<T>(target: {[key: string]: T}, key: string, value: T): void {
-  preventDenseElements(target, key);
-  target[key] = value;
+  defineUrlDerivedKey(target, key, value);
 }
 
 /** Defines a URL-derived own property without invoking inherited setters. */
