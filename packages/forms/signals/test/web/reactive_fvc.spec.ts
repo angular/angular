@@ -71,6 +71,30 @@ describe('FormControlDirective with FVC', () => {
     expect(fixture.componentInstance.ctrl.value).toBe('from-fvc');
   });
 
+  it('should update FormControl value before template (valueChange) listener fires', () => {
+    @Component({
+      template: `<my-fvc-input [formControl]="ctrl" (valueChange)="onValueChange()" />`,
+      imports: [MyFvcInput, ReactiveFormsModule],
+    })
+    class TestCmp {
+      ctrl = new FormControl('initial');
+      observedDuringValueChange: string | null | undefined;
+
+      onValueChange() {
+        this.observedDuringValueChange = this.ctrl.value;
+      }
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const component = fixture.componentInstance;
+    const fvc = fixture.debugElement.query(By.directive(MyFvcInput)).componentInstance;
+
+    act(() => fvc.value.set('from-fvc'));
+
+    expect(component.observedDuringValueChange).toBe('from-fvc');
+    expect(component.ctrl.value).toBe('from-fvc');
+  });
+
   it('should fall back to CVA when no FVC pattern is present', () => {
     @Component({
       template: `<input [formControl]="ctrl" />`,
@@ -551,6 +575,36 @@ describe('FormControlName with FVC', () => {
     act(() => fvc.value.set('from-fvc'));
 
     expect(fixture.componentInstance.form.controls.name.value).toBe('from-fvc');
+  });
+
+  it('should update FormControl value before template (valueChange) listener fires', () => {
+    @Component({
+      template: `
+        <form [formGroup]="form">
+          <my-fvc-input formControlName="name" (valueChange)="onValueChange()" />
+        </form>
+      `,
+      imports: [MyFvcInput, ReactiveFormsModule],
+    })
+    class TestCmp {
+      form = new FormGroup({
+        name: new FormControl('initial'),
+      });
+      observedDuringValueChange: string | null | undefined;
+
+      onValueChange() {
+        this.observedDuringValueChange = this.form.controls.name.value;
+      }
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const component = fixture.componentInstance;
+    const fvc = fixture.debugElement.query(By.directive(MyFvcInput)).componentInstance;
+
+    act(() => fvc.value.set('from-fvc'));
+
+    expect(component.observedDuringValueChange).toBe('from-fvc');
+    expect(component.form.controls.name.value).toBe('from-fvc');
   });
 
   it('should fall back to CVA when no FVC pattern is present', () => {
