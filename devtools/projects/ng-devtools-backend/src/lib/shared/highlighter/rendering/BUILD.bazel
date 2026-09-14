@@ -1,0 +1,38 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "rendering",
+    srcs = [
+        "operations.ts",
+        "renderer.ts",
+        "utils.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter:types",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:error",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/utils:general",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "operations.spec.ts",
+        "renderer.spec.ts",
+        "utils.spec.ts",
+    ],
+    deps = [
+        ":rendering",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter:spec-utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/shared/highlighter:types",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)
