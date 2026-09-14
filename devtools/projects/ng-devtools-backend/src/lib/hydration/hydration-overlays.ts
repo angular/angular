@@ -13,15 +13,14 @@ import {getDirectiveForestManager} from '../directive-forest/manager';
 import {getProfiler} from '../profiling/profiler';
 import {highlightElement, removeHighlightsByType} from '../shared/highlighter';
 import {
-  HighlightTemplate,
   hydrationMismatchedHighlightTemplate,
   hydrationCompletedHighlightTemplate,
   hydrationSkippedHighlightTemplate,
-  HighlightType,
-} from '../shared/highlighter/highlights';
+} from '../shared/highlighter/templates';
 import {ComponentTreeNode} from '../shared/interfaces';
 import {AngularDevtoolsError} from '../shared/utils/error';
 import {runOutsideAngular} from '../shared/utils/general';
+import {HighlightTemplate, HighlightType} from '../shared/highlighter/types';
 
 let hydrationOverlaysEnabled = false;
 let profilerSubs: Subscription | undefined;
