@@ -436,6 +436,92 @@ describe('lexer', () => {
       expectOperatorToken(lex('??=')[0], 0, 3, '??=');
     });
 
+    it('should tokenize increment/decrement operators', () => {
+      expectOperatorToken(lex('++')[0], 0, 2, '++');
+      expectOperatorToken(lex('--')[0], 0, 2, '--');
+      expectOperatorToken(lex('a++')[1], 1, 3, '++');
+      expectOperatorToken(lex('a--')[1], 1, 3, '--');
+      expectOperatorToken(lex('++a')[0], 0, 2, '++');
+      expectOperatorToken(lex('--a')[0], 0, 2, '--');
+    });
+
+    it('should tokenize increment/decrement operators used together with plus/minus', () => {
+      const triplePlus = lex('+++a');
+      expect(triplePlus.length).toBe(3);
+      expectOperatorToken(triplePlus[0], 0, 2, '++');
+      expectOperatorToken(triplePlus[1], 2, 3, '+');
+      expectIdentifierToken(triplePlus[2], 3, 4, 'a');
+
+      const tripleMinus = lex('---a');
+      expect(tripleMinus.length).toBe(3);
+      expectOperatorToken(tripleMinus[0], 0, 2, '--');
+      expectOperatorToken(tripleMinus[1], 2, 3, '-');
+      expectIdentifierToken(tripleMinus[2], 3, 4, 'a');
+
+      const minusMinus = lex('-- foo++');
+      expect(minusMinus.length).toBe(3);
+      expectOperatorToken(minusMinus[0], 0, 2, '--');
+      expectIdentifierToken(minusMinus[1], 3, 6, 'foo');
+      expectOperatorToken(minusMinus[2], 6, 8, '++');
+
+      const separatedMinuses = lex('- - foo++');
+      expect(separatedMinuses.length).toBe(4);
+      expectOperatorToken(separatedMinuses[0], 0, 1, '-');
+      expectOperatorToken(separatedMinuses[1], 2, 3, '-');
+      expectIdentifierToken(separatedMinuses[2], 4, 7, 'foo');
+      expectOperatorToken(separatedMinuses[3], 7, 9, '++');
+    });
+
+    it('should tokenize increment/decrement operators followed by other operators in an expression', () => {
+      const plusPlusPlus = lex('a+++b');
+      expect(plusPlusPlus.length).toBe(4);
+      expectIdentifierToken(plusPlusPlus[0], 0, 1, 'a');
+      expectOperatorToken(plusPlusPlus[1], 1, 3, '++');
+      expectOperatorToken(plusPlusPlus[2], 3, 4, '+');
+      expectIdentifierToken(plusPlusPlus[3], 4, 5, 'b');
+
+      const fivePluses = lex('a+++++b');
+      expect(fivePluses.length).toBe(5);
+      expectIdentifierToken(fivePluses[0], 0, 1, 'a');
+      expectOperatorToken(fivePluses[1], 1, 3, '++');
+      expectOperatorToken(fivePluses[2], 3, 5, '++');
+      expectOperatorToken(fivePluses[3], 5, 6, '+');
+      expectIdentifierToken(fivePluses[4], 6, 7, 'b');
+
+      const fiveMinuses = lex('a-----b');
+      expect(fiveMinuses.length).toBe(5);
+      expectIdentifierToken(fiveMinuses[0], 0, 1, 'a');
+      expectOperatorToken(fiveMinuses[1], 1, 3, '--');
+      expectOperatorToken(fiveMinuses[2], 3, 5, '--');
+      expectOperatorToken(fiveMinuses[3], 5, 6, '-');
+      expectIdentifierToken(fiveMinuses[4], 6, 7, 'b');
+
+      // Whitespace breaks up the parsing so the trailing `+` becomes a separate operator.
+      const separated = lex('a+++ +b');
+      expect(separated.length).toBe(5);
+      expectIdentifierToken(separated[0], 0, 1, 'a');
+      expectOperatorToken(separated[1], 1, 3, '++');
+      expectOperatorToken(separated[2], 3, 4, '+');
+      expectOperatorToken(separated[3], 5, 6, '+');
+      expectIdentifierToken(separated[4], 6, 7, 'b');
+
+      // `++`/`--` require two identical characters so that's why they aren't combined.
+      const mixed = lex('a+--b');
+      expect(mixed.length).toBe(4);
+      expectIdentifierToken(mixed[0], 0, 1, 'a');
+      expectOperatorToken(mixed[1], 1, 2, '+');
+      expectOperatorToken(mixed[2], 2, 4, '--');
+      expectIdentifierToken(mixed[3], 4, 5, 'b');
+
+      // `++` takes precedence over `+=`, leaving the `+=` to be inferred from the remaining chars.
+      const compoundAssignment = lex('a+++=b');
+      expect(compoundAssignment.length).toBe(4);
+      expectIdentifierToken(compoundAssignment[0], 0, 1, 'a');
+      expectOperatorToken(compoundAssignment[1], 1, 3, '++');
+      expectOperatorToken(compoundAssignment[2], 3, 5, '+=');
+      expectIdentifierToken(compoundAssignment[3], 5, 6, 'b');
+    });
+
     it('should tokenize a spread operator', () => {
       const tokens = lex('{...foo}');
       expect(tokens.length).toEqual(4);
