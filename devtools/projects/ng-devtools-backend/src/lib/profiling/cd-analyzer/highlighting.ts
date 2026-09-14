@@ -14,11 +14,8 @@
 import {getConfig} from '../../config/config';
 import {getDirectiveName} from '../../directive-forest/component-tree/component-tree';
 import {highlightElement, removeHighlightsByType} from '../../shared/highlighter';
-import {
-  changeDetectionHighlightTemplate,
-  Highlight,
-  HighlightType,
-} from '../../shared/highlighter/highlights';
+import {changeDetectionHighlightTemplate} from '../../shared/highlighter/templates';
+import {Highlight, HighlightType} from '../../shared/highlighter/types';
 import {ngDebugClient} from '../../shared/ng-debug-api/ng-debug-api';
 import {CdAnalyzer, getCdAnalyzer} from './analyzer';
 
