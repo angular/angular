@@ -142,7 +142,7 @@ By using `@default never;`, you explicitly declare that no remaining cases shoul
 
 NOTE: Exhaustiveness checking relies on TypeScript's type narrowing, which only works on variables. It will not work if the switch condition is a function call or a signal (for example, `@switch (state())`). To work around this, assign the signal to a `@let` variable, e.g.: `@let mySignal = this.mySignal()`.
 
-```angular-html
+```angular-ts
 @Component({
   template: `
     @switch (state) {
@@ -154,7 +154,8 @@ NOTE: Exhaustiveness checking relies on TypeScript's type narrowing, which only 
         <p>Welcome back!</p>
       }
 
-      @default never; // throws because `@case ('loading')` is missing
+      @default never;
+      <!-- throws because @case ('loading') is missing -->
     }
   `,
 })
