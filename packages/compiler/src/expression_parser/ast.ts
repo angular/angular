@@ -269,16 +269,7 @@ export class Interpolation extends AST {
 }
 
 export type AssignmentOperation =
-  | '='
-  | '+='
-  | '-='
-  | '*='
-  | '/='
-  | '%='
-  | '**='
-  | '&&='
-  | '||='
-  | '??=';
+  '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '**=' | '&&=' | '||=' | '??=';
 type BinaryOperation =
   | AssignmentOperation
   // Logical
@@ -349,34 +340,46 @@ export class Unary extends Binary {
   override right: never = null as never;
   override operation: never = null as never;
 
-  /**
-   * Creates a unary minus expression "-x", represented as `Binary` using "0 - x".
-   */
-  static createMinus(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, expr: AST): Unary {
-    return new Unary(
-      span,
-      sourceSpan,
-      '-',
-      expr,
-      '-',
-      new LiteralPrimitive(span, sourceSpan, 0),
-      expr,
-    );
+  static isUpdateOperation(op: string): op is '++' | '--' {
+    return op === '++' || op === '--';
   }
 
   /**
-   * Creates a unary plus expression "+x", represented as `Binary` using "x - 0".
+   * Creates a unary minus expression (e.g. `-x`).
+   */
+  static createMinus(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, expr: AST): Unary {
+    return new Unary(span, sourceSpan, '-', expr);
+  }
+
+  /**
+   * Creates a unary plus expression (e.g. `+x`).
    */
   static createPlus(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, expr: AST): Unary {
-    return new Unary(
-      span,
-      sourceSpan,
-      '+',
-      expr,
-      '-',
-      expr,
-      new LiteralPrimitive(span, sourceSpan, 0),
-    );
+    return new Unary(span, sourceSpan, '+', expr);
+  }
+
+  /**
+   * Creates a prefix expression (e.g. `++x` or `--y`).
+   */
+  static createPrefixUpdate(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    operator: '++' | '--',
+    expr: AST,
+  ): Unary {
+    return new Unary(span, sourceSpan, operator, expr, true);
+  }
+
+  /**
+   * Creates a postfix expression (e.g. `x++` or `y--`).
+   */
+  static createPostfixUpdate(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    operator: '++' | '--',
+    expr: AST,
+  ): Unary {
+    return new Unary(span, sourceSpan, operator, expr, false);
   }
 
   /**
@@ -386,13 +389,11 @@ export class Unary extends Binary {
   private constructor(
     span: ParseSpan,
     sourceSpan: AbsoluteSourceSpan,
-    public operator: '+' | '-',
+    public operator: '+' | '-' | '++' | '--',
     public expr: AST,
-    binaryOp: BinaryOperation,
-    binaryLeft: AST,
-    binaryRight: AST,
+    public isPrefix = true,
   ) {
-    super(span, sourceSpan, binaryOp, binaryLeft, binaryRight);
+    super(span, sourceSpan, null!, null!, null!);
   }
 
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -541,6 +542,17 @@ export class ParenthesizedExpression extends AST {
   override visit(visitor: AstVisitor, context?: any) {
     return visitor.visitParenthesizedExpression(this, context);
   }
+}
+
+/**
+ * Unwraps any parentheses and non-null assertions around the target of a write operation.
+ */
+export function unwrapWriteTarget(ast: AST): AST {
+  let current = ast;
+  while (current instanceof ParenthesizedExpression || current instanceof NonNullAssert) {
+    current = current.expression;
+  }
+  return current;
 }
 
 export class ArrowFunctionIdentifierParameter {
