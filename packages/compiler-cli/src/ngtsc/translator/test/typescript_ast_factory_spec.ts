@@ -544,6 +544,17 @@ describe('TypeScriptAstFactory', () => {
       const unaryExpr = factory.createUnaryExpression('!', expr);
       expect(generate(unaryExpr)).toEqual('!value');
     });
+
+    it('should create prefix and postfix increment/decrement expressions', () => {
+      const {
+        items: [expr1, expr2, expr3, expr4],
+        generate,
+      } = setupExpressions(`a; b; c; d;`);
+      expect(generate(factory.createUnaryExpression('++', expr1, true))).toEqual('++a');
+      expect(generate(factory.createUnaryExpression('++', expr2, false))).toEqual('b++');
+      expect(generate(factory.createUnaryExpression('--', expr3, true))).toEqual('--c');
+      expect(generate(factory.createUnaryExpression('--', expr4, false))).toEqual('d--');
+    });
   });
 
   describe('createVariableDeclaration()', () => {

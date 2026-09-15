@@ -18,6 +18,7 @@ import {
   Parameter,
   SourceMapRange,
   TemplateLiteral,
+  UnaryOperator,
   VariableDeclarationType,
 } from '../../../../src/ngtsc/translator/src/api/ast_factory';
 
@@ -287,7 +288,15 @@ export class BabelAstFactory implements AstFactory<
     return t.unaryExpression('void', expression);
   }
 
-  createUnaryExpression = t.unaryExpression;
+  createUnaryExpression(
+    operator: UnaryOperator,
+    operand: t.Expression,
+    isPrefix = true,
+  ): t.Expression {
+    return operator === '++' || operator === '--'
+      ? t.updateExpression(operator, operand as t.Identifier, isPrefix)
+      : t.unaryExpression(operator, operand);
+  }
 
   createVariableDeclaration(
     variableName: string,
