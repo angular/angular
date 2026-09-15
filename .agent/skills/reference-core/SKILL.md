@@ -31,13 +31,13 @@ The rendering engine (located in `packages/core/src/render3`) uses an **instruct
   - Directive/Component instances.
   - _Context_: `packages/core/src/render3/interfaces/view.ts`
 
-- **TView (Template View)**: An array containing the _static structure_ of a view. It is shared across all instances (`LView`s) of the same component/template. It holds:
+- **TView (Template View)**: An object describing the _static structure_ of a view; its parallel array is `TView.data`. It is shared across all instances (`LView`s) of the same component/template. It holds:
   - Property names for bindings.
   - Node relationship information.
   - Compiled directive definitions.
   - _Context_: `packages/core/src/render3/interfaces/view.ts`
 
-- **Memory Layout**: `LView` and `TView` are parallel arrays. Index `i` in `LView` corresponds to metadata at index `i` in `TView`.
+- **Memory Layout**: `LView` and `TView.data` are parallel arrays. Index `i` in `LView` corresponds to metadata at index `i` in `TView.data`.
   - `HEADER`: Fixed size, contains context (Parent, Host, etc.).
   - `DECLS`: Static nodes (elements, text, pipes).
   - `VARS`: Binding values.
@@ -69,8 +69,8 @@ DI in Angular is hierarchical and split into two systems that interact:
 
 - **Dirty Checking**: Angular checks if values bound in templates have changed.
 - **Strategies**:
-  - `Default`: Checks everything.
-  - `OnPush`: Checks only if inputs change, events fire, or signals update.
+  - `OnPush`: The default since v22. Checks when inputs change, events fire, template signals update, or the view is explicitly marked for checking.
+  - `Eager`: Checks whenever the change detection traversal reaches the component. (`Default` is the deprecated alias for `Eager`.)
 - **Signals**: The new reactivity primitive. Signals notify the scheduler when they change, potentially allowing for fine-grained updates (Zoneless).
 
 ## 5. Key Directories to Know
@@ -81,7 +81,7 @@ DI in Angular is hierarchical and split into two systems that interact:
 - `src/di`: Dependency injection system.
 - `src/change_detection`: Change detection logic.
 - `src/zone`: Zone.js integration.
-- `src/signal`: Signals implementation (if present in this version, otherwise likely in `primitives`).
+- `src/render3/reactivity`: Signals implementation (`signal`, `computed`, `effect`), built on the reactive graph in `primitives/signals`.
 
 ## 6. Conventions & Gotchas
 
