@@ -37,6 +37,8 @@ import {Context} from './context';
 const UNARY_OPERATORS = /* @__PURE__ */ new Map<o.UnaryOperator, UnaryOperator>([
   [o.UnaryOperator.Minus, '-'],
   [o.UnaryOperator.Plus, '+'],
+  [o.UnaryOperator.Increment, '++'],
+  [o.UnaryOperator.Decrement, '--'],
 ]);
 
 const BINARY_OPERATORS = /* @__PURE__ */ new Map<o.BinaryOperator, BinaryOperator>([
@@ -583,6 +585,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
       this.factory.createUnaryExpression(
         UNARY_OPERATORS.get(ast.operator)!,
         ast.expr.visitExpression(this, context),
+        ast.isPrefix,
       ),
       ast.leadingComments,
     );
