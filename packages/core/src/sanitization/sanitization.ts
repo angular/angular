@@ -261,7 +261,7 @@ export function getUrlSanitizer(tag: string, prop: string) {
  * @codeGenApi
  */
 export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string) {
-  return getUrlSanitizer(tag, prop)?.(unsafeUrl) ?? unsafeUrl;
+  return getUrlSanitizer(tag, prop)?.(unsafeUrl) ?? ɵɵsanitizeUrl(unsafeUrl);
 }
 
 export function validateAgainstEventProperties(name: string) {
