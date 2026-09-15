@@ -289,12 +289,18 @@ export interface AstFactory<TStatement, TExpression, TType> {
   createVoidExpression(expression: TExpression): TExpression;
 
   /**
-   * Prefix the `operand` with the given `operator` (e.g. `-expr`).
+   * Apply the given `operator` to the `operand` (e.g. `-expr`, `++expr` or `expr++`).
    *
-   * @param operator the text of the operator to apply (e.g. `+`, `-` or `!`).
+   * @param operator the text of the operator to apply (e.g. `+`, `-`, `!`, `++` or `--`).
    * @param operand the expression that the operator applies to.
+   * @param isPrefix whether the operator precedes the operand. Only `++` and `--` can be used as
+   *     postfix operators. Defaults to `true`.
    */
-  createUnaryExpression(operator: UnaryOperator, operand: TExpression): TExpression;
+  createUnaryExpression(
+    operator: UnaryOperator,
+    operand: TExpression,
+    isPrefix?: boolean,
+  ): TExpression;
 
   /**
    * Create an expression that declares a new variable, possibly initialized to `initializer`.
@@ -377,7 +383,7 @@ export type VariableDeclarationType = 'const' | 'let' | 'var';
 /**
  * The unary operators supported by the `AstFactory`.
  */
-export type UnaryOperator = '+' | '-' | '!';
+export type UnaryOperator = '+' | '-' | '!' | '++' | '--';
 
 /** Supported built-in types. */
 export type BuiltInType =

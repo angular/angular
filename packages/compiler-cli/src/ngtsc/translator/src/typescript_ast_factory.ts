@@ -47,6 +47,8 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
       '+': ts.SyntaxKind.PlusToken,
       '-': ts.SyntaxKind.MinusToken,
       '!': ts.SyntaxKind.ExclamationToken,
+      '++': ts.SyntaxKind.PlusPlusToken,
+      '--': ts.SyntaxKind.MinusMinusToken,
     }))();
 
   private readonly BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> =
@@ -390,8 +392,15 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createVoidExpression = ts.factory.createVoidExpression;
 
-  createUnaryExpression(operator: UnaryOperator, operand: ts.Expression): ts.Expression {
-    return ts.factory.createPrefixUnaryExpression(this.UNARY_OPERATORS[operator], operand);
+  createUnaryExpression(
+    operator: UnaryOperator,
+    operand: ts.Expression,
+    isPrefix = true,
+  ): ts.Expression {
+    const token = this.UNARY_OPERATORS[operator];
+    return isPrefix
+      ? ts.factory.createPrefixUnaryExpression(token, operand)
+      : ts.factory.createPostfixUnaryExpression(operand, token as ts.PostfixUnaryOperator);
   }
 
   createVariableDeclaration(
