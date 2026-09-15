@@ -503,13 +503,24 @@ export abstract class AbstractEmitterVisitor
       case o.UnaryOperator.Minus:
         opStr = '-';
         break;
+      case o.UnaryOperator.Increment:
+        opStr = '++';
+        break;
+      case o.UnaryOperator.Decrement:
+        opStr = '--';
+        break;
       default:
         throw new Error(`Unknown operator ${ast.operator}`);
     }
     const parens = ast !== this.lastIfCondition;
     if (parens) ctx.print(ast, `(`);
-    ctx.print(ast, opStr);
-    ast.expr.visitExpression(this, ctx);
+    if (ast.isPrefix) {
+      ctx.print(ast, opStr);
+      ast.expr.visitExpression(this, ctx);
+    } else {
+      ast.expr.visitExpression(this, ctx);
+      ctx.print(ast, opStr);
+    }
     if (parens) ctx.print(ast, `)`);
   }
 
