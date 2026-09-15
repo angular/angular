@@ -8,7 +8,7 @@ In the example application, the `Banner` component presents static title text in
 
 After a few changes, the `Banner` component presents a dynamic title by binding to the component's `title` property like this.
 
-```angular-ts {header="banner.ts"}
+```angular-ts {header: "banner.ts"}
 import {Component, signal} from '@angular/core';
 
 @Component({
