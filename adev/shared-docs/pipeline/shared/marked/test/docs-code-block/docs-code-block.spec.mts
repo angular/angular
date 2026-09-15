@@ -48,4 +48,26 @@ describe('markdown to html', () => {
     const codeBlock = markdownDocument.querySelectorAll('.docs-code')[3];
     expect(codeBlock.getAttribute('hideDollar')).toBe('true');
   });
+
+  it('should parse highlight regardless of its position in the metadata', () => {
+    const fragment = JSDOM.fragment(
+      parseMarkdown('```ts {highlight: [2], header: "foo.ts"}\na\nb\n```', rendererContext),
+    );
+    expect(fragment.querySelector('.docs-code')?.getAttribute('header')).toBe('foo.ts');
+    expect(fragment.querySelectorAll('.line.highlighted').length).toBe(1);
+  });
+
+  for (const metadata of [
+    '{header="foo.ts"}',
+    '{header: foo.ts}',
+    '{[[1],[2]]}',
+    '{highlight="[2]"}',
+    '{highlight: [1,]}',
+  ]) {
+    it(`should throw on invalid metadata ${metadata}`, () => {
+      expect(() =>
+        parseMarkdown('```ts ' + metadata + '\ncode\n```', rendererContext),
+      ).toThrowError(/Invalid code block metadata/);
+    });
+  }
 });
