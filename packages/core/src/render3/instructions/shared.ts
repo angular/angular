@@ -61,6 +61,7 @@ import {
   getCurrentTNode,
   getElementDepthCount,
   getSelectedIndex,
+  getSkippedStaticAttrName,
   increaseElementDepthCount,
   isCurrentTNodeParent,
   isInCheckNoChangesMode,
@@ -596,7 +597,11 @@ export function elementLikeStartShared(
   // It's important that this runs before we've instantiated the directives.
   const isElement = tNode.type === TNodeType.Element;
   if (isElement) {
-    setupStaticAttributes(lView[RENDERER], native as RElement, tNode);
+    // `wasLastNodeCreated()` is `false` only when this node was located in the DOM during
+    // hydration (as opposed to freshly created). Only in that case can a static attribute
+    // already be correctly set on the element from the server-rendered HTML.
+    const attrNameToSkip = wasLastNodeCreated() ? null : getSkippedStaticAttrName();
+    setupStaticAttributes(lView[RENDERER], native as RElement, tNode, attrNameToSkip);
 
     // any immediate children of a component or template container must be pre-emptively
     // monkey-patched with the component view data so that the element can be inspected
