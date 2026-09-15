@@ -61,8 +61,19 @@ class Unparser implements AstVisitor {
   }
 
   visitUnary(ast: Unary, context: any) {
-    this._expression += ast.operator;
+    const previous = this._expression;
+    this._expression = '';
     this._visit(ast.expr);
+    const inner = this._expression;
+    this._expression = previous;
+
+    if (ast.isPrefix) {
+      const lastChar = ast.operator[ast.operator.length - 1];
+      const space = (lastChar === '+' || lastChar === '-') && inner.startsWith(lastChar) ? ' ' : '';
+      this._expression += `${ast.operator}${space}${inner}`;
+    } else {
+      this._expression += `${inner}${ast.operator}`;
+    }
   }
 
   visitBinary(ast: Binary, context: any) {

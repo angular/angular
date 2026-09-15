@@ -57,6 +57,7 @@ import {
   ThisReceiver,
   TypeofExpression,
   Unary,
+  unwrapWriteTarget,
   VariableBinding,
   VoidExpression,
   type AssignmentOperation,
@@ -741,6 +742,37 @@ class _ParseAST {
     return token.type === TokenType.Operator && Binary.isAssignmentOperation(token.strValue);
   }
 
+  private validateIncrementDecrementTarget(operand: AST): boolean {
+    if (!(this.parseFlags & ParseFlags.Action)) {
+      this.error('Bindings cannot contain assignments');
+      return false;
+    }
+
+    const target = unwrapWriteTarget(operand);
+
+    if (target instanceof PropertyRead || target instanceof KeyedRead) {
+      return true;
+    } else {
+      if (target instanceof SafePropertyRead || target instanceof SafeKeyedRead) {
+        this.error(`The '?.' operator cannot be used in the assignment`);
+      } else if (target instanceof Unary) {
+        this.error(`The '${target.operator}' operator cannot be used in the assignment`);
+      } else if (target instanceof Binary) {
+        this.error(`The '${target.operation}' operator cannot be used in the assignment`);
+      } else if (target instanceof PrefixNot) {
+        this.error("The '!' operator cannot be used in the assignment");
+      } else if (target instanceof Call || target instanceof SafeCall) {
+        this.error("The '()' operator cannot be used in the assignment");
+      } else if (target instanceof LiteralPrimitive) {
+        this.error(`The '${target.value}' literal cannot be used in the assignment`);
+      } else {
+        this.error('The expression cannot be used in the assignment');
+      }
+
+      return false;
+    }
+  }
+
   private expectOperator(operator: string) {
     if (this.consumeOptionalOperator(operator)) return;
     this.error(`Missing expected operator ${operator}`);
@@ -1036,9 +1068,11 @@ class _ParseAST {
     while (this.next.type == TokenType.Operator && this.next.strValue === '**') {
       // This aligns with Javascript semantics which require any unary operator preceeding the
       // exponentiation operation to be explicitly grouped as either applying to the base or result
-      // of the exponentiation operation.
+      // of the exponentiation operation. Note that `++`/`--` are excluded, because JS classifies
+      // them as an "update expressions" and explicitly allows them on the left-hand side of `**`
+      // (e.g. `a++ ** 2` is valid, `-a ** 2` is not).
       if (
-        result instanceof Unary ||
+        (result instanceof Unary && !Unary.isUpdateOperation(result.operator)) ||
         result instanceof PrefixNot ||
         result instanceof TypeofExpression ||
         result instanceof VoidExpression
@@ -1072,6 +1106,14 @@ class _ParseAST {
           this.advance();
           result = this.parsePrefix();
           return new PrefixNot(this.span(start), this.sourceSpan(start), result);
+        case '++':
+        case '--': {
+          this.advance();
+          const operand = this.parsePrefix();
+          return this.validateIncrementDecrementTarget(operand)
+            ? Unary.createPrefixUpdate(this.span(start), this.sourceSpan(start), operator, operand)
+            : new EmptyExpr(this.span(start), this.sourceSpan(start));
+        }
       }
     } else if (this.next.isKeywordTypeof()) {
       const start = this.inputIndex;
@@ -1112,9 +1154,20 @@ class _ParseAST {
       } else if (this.next.isTemplateLiteralPart()) {
         result = this.parseTaggedTemplateLiteral(result, start);
       } else {
-        return result;
+        break;
       }
     }
+
+    if (this.next.isOperator('++') || this.next.isOperator('--')) {
+      // Note: we need to capture this here before we advance.
+      const operator = this.next.strValue as '++' | '--';
+      this.advance();
+      return this.validateIncrementDecrementTarget(result)
+        ? Unary.createPostfixUpdate(this.span(start), this.sourceSpan(start), operator, result)
+        : new EmptyExpr(this.span(start), this.sourceSpan(start));
+    }
+
+    return result;
   }
 
   private parsePrimary(): AST {
