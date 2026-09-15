@@ -69,7 +69,7 @@ DI in Angular is hierarchical and split into two systems that interact:
 
 - **Dirty Checking**: Angular checks if values bound in templates have changed.
 - **Strategies**:
-  - `OnPush`: The default since v22. Checks when inputs change, events fire, template signals update, or the view is explicitly marked for checking.
+  - `OnPush`: The default. Checks when inputs change, events fire, template signals update, or the view is explicitly marked for checking.
   - `Eager`: Checks whenever the change detection traversal reaches the component. (`Default` is the deprecated alias for `Eager`.)
 - **Signals**: The new reactivity primitive. Signals notify the scheduler when they change, potentially allowing for fine-grained updates (Zoneless).
 
