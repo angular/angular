@@ -10,7 +10,10 @@ import {Injector} from '../../di/injector';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 import {hasSkipHydrationAttrOnRElement} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
-import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
+import {
+  getProtectedAttributeName,
+  processTextNodeMarkersBeforeHydration,
+} from '../../hydration/utils';
 import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventProperties} from '../../sanitization/sanitization';
 
@@ -45,6 +48,7 @@ import {
   ENVIRONMENT,
   FLAGS,
   HEADER_OFFSET,
+  HYDRATION,
   INJECTOR,
   LView,
   LViewFlags,
@@ -596,7 +600,13 @@ export function elementLikeStartShared(
   // It's important that this runs before we've instantiated the directives.
   const isElement = tNode.type === TNodeType.Element;
   if (isElement) {
-    setupStaticAttributes(lView[RENDERER], native as RElement, tNode);
+    // `wasLastNodeCreated()` is `false` only when this node was located in the DOM during
+    // hydration (as opposed to freshly created). Only in that case can a static attribute
+    // already be correctly set on the element from the server-rendered HTML.
+    const attrNameToSkip = !wasLastNodeCreated()
+      ? getProtectedAttributeName(lView[HYDRATION], index)
+      : null;
+    setupStaticAttributes(lView[RENDERER], native as RElement, tNode, attrNameToSkip);
 
     // any immediate children of a component or template container must be pre-emptively
     // monkey-patched with the component view data so that the element can be inspected
