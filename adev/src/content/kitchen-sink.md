@@ -163,7 +163,7 @@ npm install @angular/material --save
 
 You can style standard Markdown triple backticks with attributes for enhanced presentation:
 
-```ts {header:"Awesome Title", linenums, highlight="[2]", hideCopy}
+```ts {header:"Awesome Title", linenums, highlight: [2], hideCopy}
 console.log('Hello, World!');
 console.log('Awesome Angular Docs!');
 ```
