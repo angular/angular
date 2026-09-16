@@ -1,0 +1,10 @@
+{
+  "name": "hello-world",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "main": "index.js",
+  "devDependencies": {
+    "@types/node": "^24.13.3"
+  }
+}

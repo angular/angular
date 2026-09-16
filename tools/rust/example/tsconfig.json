@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "types": ["node"],
+    "sourceMap": true,
+    "declaration": true,
+    "rootDirs": [
+      ".",
+      // Inform the IDE language service about generated code.
+      "../../../dist/bin/tools/rust/example"
+    ]
+  }
+}

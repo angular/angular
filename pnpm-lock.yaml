@@ -1397,6 +1397,12 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/compiler-cli
 
+  tools/rust/example:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.13.3
+        version: 24.13.3
+
   vscode-ng-language-service:
     dependencies:
       '@angular/language-service':
