@@ -72,9 +72,12 @@ describe('Animation', () => {
   });
 
   describe('animate.leave', () => {
+    // These durations only have to outlast the test: every spec below completes the animation by
+    // dispatching a synthetic `animationend`. Keeping them long stops the real animation from
+    // ending first and stripping the classes before the assertions run on a loaded machine.
     const styles = `
     .fade {
-      animation: fade-out 1ms;
+      animation: fade-out 250ms;
     }
     @keyframes fade-out {
       from {
@@ -177,10 +180,10 @@ describe('Animation', () => {
     it('should support string arrays', async () => {
       const multiple = `
         .slide-out {
-          animation: slide-out 2ms;
+          animation: slide-out 500ms;
         }
         .fade {
-          animation: fade-out 1ms;
+          animation: fade-out 250ms;
         }
         @keyframes slide-out {
           from {
@@ -241,10 +244,10 @@ describe('Animation', () => {
     it('should support binding strings with spaces', async () => {
       const multiple = `
         .slide-out {
-          animation: slide-out 2ms;
+          animation: slide-out 500ms;
         }
         .fade {
-          animation: fade-out 1ms;
+          animation: fade-out 250ms;
         }
         @keyframes slide-out {
           from {
@@ -307,10 +310,10 @@ describe('Animation', () => {
     it('should support multiple classes as a single string with spaces', async () => {
       const multiple = `
         .slide-out {
-          animation: slide-out 2ms;
+          animation: slide-out 500ms;
         }
         .fade {
-          animation: fade-out 1ms;
+          animation: fade-out 250ms;
         }
         @keyframes slide-out {
           from {
@@ -581,10 +584,10 @@ describe('Animation', () => {
     it('should compose class list when host binding and regular binding', async () => {
       const multiple = `
         .slide-out {
-          animation: slide-out 2ms;
+          animation: slide-out 500ms;
         }
         .fade {
-          animation: fade-out 1ms;
+          animation: fade-out 250ms;
         }
         @keyframes slide-out {
           from {
@@ -658,10 +661,10 @@ describe('Animation', () => {
     it('should compose class list when host binding on a directive and regular binding', async () => {
       const multiple = `
         .slide-out {
-          animation: slide-out 2ms;
+          animation: slide-out 500ms;
         }
         .fade {
-          animation: fade-out 1ms;
+          animation: fade-out 250ms;
         }
         @keyframes slide-out {
           from {
@@ -735,10 +738,10 @@ describe('Animation', () => {
     it('should compose class list when host binding a string and regular class strings', async () => {
       const multiple = `
         .slide-out {
-          animation: slide-out 2ms;
+          animation: slide-out 500ms;
         }
         .fade {
-          animation: fade-out 1ms;
+          animation: fade-out 250ms;
         }
         @keyframes slide-out {
           from {
@@ -935,7 +938,7 @@ describe('Animation', () => {
 
       const styles = `
       .fade {
-        animation: fade-out 1ms;
+        animation: fade-out 250ms;
       }
       @keyframes fade-out {
         from {
@@ -991,12 +994,14 @@ describe('Animation', () => {
   });
 
   describe('animate.enter', () => {
+    // See the note on the `animate.leave` styles: the durations are long on purpose so that the
+    // real animation cannot finish before the specs assert on the classes.
     const styles = `
     .slide-in {
-      animation: slide-in 1ms;
+      animation: slide-in 250ms;
     }
     .fade-in {
-      animation: fade-in 2ms;
+      animation: fade-in 500ms;
     }
     @keyframes slide-in {
       from {
@@ -1208,10 +1213,10 @@ describe('Animation', () => {
     it('should support string arrays', async () => {
       const multiple = `
       .slide-in {
-        animation: slide-in 1ms;
+        animation: slide-in 250ms;
       }
       .fade-in {
-        animation: fade-in 2ms;
+        animation: fade-in 500ms;
       }
       @keyframes slide-in {
         from {
@@ -1265,10 +1270,10 @@ describe('Animation', () => {
     it('should support binding to a string with a space', async () => {
       const multiple = `
       .slide-in {
-        animation: slide-in 1ms;
+        animation: slide-in 250ms;
       }
       .fade-in {
-        animation: fade-in 2ms;
+        animation: fade-in 500ms;
       }
       @keyframes slide-in {
         from {
@@ -1324,10 +1329,10 @@ describe('Animation', () => {
     it('should support multiple classes as a single string separated by a space', async () => {
       const multiple = `
       .slide-in {
-        animation: slide-in 1ms;
+        animation: slide-in 250ms;
       }
       .fade-in {
-        animation: fade-in 2ms;
+        animation: fade-in 500ms;
       }
       @keyframes slide-in {
         from {
