@@ -64,7 +64,7 @@ class PureFunctionConstant extends GenericKeyFn implements SharedConstantDefinit
 
     return new o.DeclareVarStmt(
       declName,
-      new o.ArrowFunctionExpr(fnParams, returnExpr),
+      new o.ArrowFunctionExpr(fnParams, returnExpr, o.DYNAMIC_TYPE),
       undefined,
       o.StmtModifier.Final,
     );
