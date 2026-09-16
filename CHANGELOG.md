@@ -1,3 +1,20 @@
+<a name="22.1.7"></a>
+# 22.1.7 (2026-09-16)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5e632b639f](https://github.com/angular/angular/commit/5e632b639f736de876823a596dd9e3a094b03e1b) | fix | wrap `@for` collection expression before appending non-null assertion |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ec48c8305c](https://github.com/angular/angular/commit/ec48c8305c40fbafbab51801f93bb4e4b6a25ea0) | fix | return null when getDirectiveMetadata is called with null or undefined |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6555c4ee1e](https://github.com/angular/angular/commit/6555c4ee1ec2aea7eb541d558981b55eb751497c) | fix | mark control as dirty before setting its value in FVC interop |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.2.0-next.7"></a>
 # 22.2.0-next.7 (2026-09-09)
 No user facing changes in this release
