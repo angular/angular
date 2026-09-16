@@ -300,7 +300,7 @@ export class StatefulInput implements FormValueControl<string> {
 
   // Read-only state - form system manages these
   disabled = input<boolean>(false);
-  disabledReasons = input<readonly DisabledReason[]>([]);
+  disabledReasons = input<readonly WithOptionalFieldTree<DisabledReason>[]>([]);
   readonly = input<boolean>(false);
   hidden = input<boolean>(false);
   invalid = input<boolean>(false);
@@ -409,8 +409,8 @@ export class NumberInput implements FormValueControl<number | null> {
   readonly value = model.required<number | null>();
 
   protected readonly rawValue = transformedValue(this.value, {
-    parse: (val: string): number => ({value: val ? Number(val) : null}),
-    format: (val: number): string => val?.toString() ?? '',
+    parse: (val: string): {value: number | null} => ({value: val ? Number(val) : null}),
+    format: (val: number | null): string => val?.toString() ?? '',
   });
 }
 ```
