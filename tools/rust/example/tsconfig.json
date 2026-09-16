@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "esnext",
-    "types": ["node"],
+    "types": ["node", "jasmine"],
     "sourceMap": true,
     "declaration": true,
     "rootDirs": [

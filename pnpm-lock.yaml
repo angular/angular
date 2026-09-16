@@ -1399,6 +1399,9 @@ importers:
 
   tools/rust/example:
     devDependencies:
+      '@types/jasmine':
+        specifier: ^6.0.0
+        version: 6.0.0
       '@types/node':
         specifier: ^24.13.3
         version: 24.13.3

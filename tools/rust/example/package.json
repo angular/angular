@@ -5,6 +5,7 @@
   "private": true,
   "main": "index.js",
   "devDependencies": {
+    "@types/jasmine": "^6.0.0",
     "@types/node": "^24.13.3"
   }
 }
