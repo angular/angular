@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {enableCdHighlighting, disableCdHighlighting} from './highlighting';
-export {enableCdDataStream, disableCdDataStream} from './data-stream';
+export {loadCdHighlighting} from './highlighting';
+export {loadCdDataStream} from './data-stream';
 export {type CdData, getCdAnalyzer} from './analyzer';

@@ -7,6 +7,7 @@ ts_project(
     srcs = ["hydration-overlays.ts"],
     deps = [
         "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/config",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:manager",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
