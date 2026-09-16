@@ -204,6 +204,7 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     functionName: string,
     parameters: Parameter<ts.TypeNode>[],
     body: ts.Statement,
+    returnType: ts.TypeNode | null,
   ): ts.Statement {
     if (!ts.isBlock(body)) {
       throw new Error(`Invalid syntax, expected a block, but got ${ts.SyntaxKind[body.kind]}.`);
@@ -214,7 +215,7 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
       functionName,
       undefined,
       parameters.map((param) => this.createParameter(param)),
-      undefined,
+      returnType ?? undefined,
       body,
     );
   }
@@ -223,6 +224,7 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     functionName: string | null,
     parameters: Parameter<ts.TypeNode>[],
     body: ts.Statement,
+    returnType: ts.TypeNode | null,
   ): ts.Expression {
     if (!ts.isBlock(body)) {
       throw new Error(`Invalid syntax, expected a block, but got ${ts.SyntaxKind[body.kind]}.`);
@@ -233,7 +235,7 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
       functionName ?? undefined,
       undefined,
       parameters.map((param) => this.createParameter(param)),
-      undefined,
+      returnType ?? undefined,
       body,
     );
   }
@@ -241,6 +243,7 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
   createArrowFunctionExpression(
     parameters: Parameter<ts.TypeNode>[],
     body: ts.Statement | ts.Expression,
+    returnType: ts.TypeNode | null,
   ): ts.Expression {
     if (ts.isStatement(body) && !ts.isBlock(body)) {
       throw new Error(`Invalid syntax, expected a block, but got ${ts.SyntaxKind[body.kind]}.`);
@@ -250,7 +253,7 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
       undefined,
       undefined,
       parameters.map((param) => this.createParameter(param)),
-      undefined,
+      returnType ?? undefined,
       undefined,
       body,
     );

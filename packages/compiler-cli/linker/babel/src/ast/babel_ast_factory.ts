@@ -145,40 +145,46 @@ export class BabelAstFactory implements AstFactory<
     functionName: string,
     parameters: Parameter<t.TSType>[],
     body: t.Statement,
+    returnType: t.TSType | null,
   ): t.Statement {
     assert(body, t.isBlockStatement, 'a block');
-    return t.functionDeclaration(
+    const fn = t.functionDeclaration(
       t.identifier(functionName),
       parameters.map((param) => this.identifierWithType(param.name, param.type)),
       body,
     );
+    return this.attachReturnType(fn, returnType);
   }
 
   createArrowFunctionExpression(
     parameters: Parameter<t.TSType>[],
     body: t.Statement | t.Expression,
+    returnType: t.TSType | null,
   ): t.Expression {
     if (t.isStatement(body)) {
       assert(body, t.isBlockStatement, 'a block');
     }
-    return t.arrowFunctionExpression(
+    const fn = t.arrowFunctionExpression(
       parameters.map((param) => this.identifierWithType(param.name, param.type)),
       body,
     );
+    return this.attachReturnType(fn, returnType);
   }
 
   createFunctionExpression(
     functionName: string | null,
     parameters: Parameter<t.TSType>[],
     body: t.Statement,
+    returnType: t.TSType | null,
   ): t.Expression {
     assert(body, t.isBlockStatement, 'a block');
     const name = functionName !== null ? t.identifier(functionName) : null;
-    return t.functionExpression(
+    const fn = t.functionExpression(
       name,
       parameters.map((param) => this.identifierWithType(param.name, param.type)),
       body,
     );
+    return this.attachReturnType(fn, returnType);
   }
 
   createIdentifier = t.identifier;
@@ -366,6 +372,16 @@ export class BabelAstFactory implements AstFactory<
 
     if (this.typesEnabled && type != null) {
       node.typeAnnotation = t.tsTypeAnnotation(type);
+    }
+
+    return node;
+  }
+
+  private attachReturnType<
+    T extends t.FunctionDeclaration | t.FunctionExpression | t.ArrowFunctionExpression,
+  >(node: T, returnType: t.TSType | null): T {
+    if (this.typesEnabled && returnType !== null) {
+      node.returnType = t.tsTypeAnnotation(returnType);
     }
 
     return node;
