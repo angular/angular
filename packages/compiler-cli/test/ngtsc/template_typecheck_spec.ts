@@ -2256,6 +2256,44 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
     });
 
+    it('should type check increment/decrement operations', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<button (click)="name++"></button>'})
+        class TestCmp {
+          name = 'frodo';
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(
+        `An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type.`,
+      );
+    });
+
+    it('should type check increment/decrement targets', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<button (click)="doesNotExist++"></button>'})
+        class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(
+        `Property 'doesNotExist' does not exist on type 'TestCmp'.`,
+      );
+    });
+
     describe('microsyntax variables', () => {
       beforeEach(() => {
         // Use the same template for both tests
@@ -8876,6 +8914,30 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
+      });
+
+      it('should not allow a let declaration value to be changed through update operators', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = 1;
+              <button (click)="value++">Click me</button>
+              <button (click)="--value">Click me</button>
+            \`,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
+        expect(diags[1].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
       });
 
       it('should not allow a let declaration value to be changed through a `this` access', () => {

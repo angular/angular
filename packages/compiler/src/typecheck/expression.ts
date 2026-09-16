@@ -76,8 +76,10 @@ class TcbExprTranslator implements AstVisitor {
   }
 
   visitUnary(ast: Unary): TcbExpr {
-    const expr = this.translate(ast.expr);
-    const node = new TcbExpr(`${ast.operator}${expr.print()}`);
+    // Note that we don't need to guard against sequences like `+ +a` collapsing into `++a`,
+    // because `wrapForTypeChecker` always parenthesizes nested unary expressions.
+    const expr = this.translate(ast.expr).print();
+    const node = new TcbExpr(ast.isPrefix ? `${ast.operator}${expr}` : `${expr}${ast.operator}`);
     return node.wrapForTypeChecker().addParseSpanInfo(ast.sourceSpan);
   }
 

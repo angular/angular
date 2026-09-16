@@ -20,6 +20,8 @@ import {
   TmplAstRecursiveVisitor,
   TmplAstVariable,
   ThisReceiver,
+  Unary,
+  unwrapWriteTarget,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -83,6 +85,20 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
     } else {
       super.visitBinary(ast, context);
     }
+  }
+
+  override visitUnary(ast: Unary, context: TmplAstNode): void {
+    if (Unary.isUpdateOperation(ast.operator)) {
+      // The target of an update operator can be wrapped in parentheses or a non-null assertion
+      // (e.g. `(value)++` or `value!++`), neither of which affect what is being written to.
+      const target = unwrapWriteTarget(ast.expr);
+
+      if (target instanceof PropertyRead) {
+        this.checkForIllegalWriteInEventBinding(target, context);
+      }
+    }
+
+    super.visitUnary(ast, context);
   }
 
   override visitPropertyRead(ast: PropertyRead, context: TmplAstNode) {

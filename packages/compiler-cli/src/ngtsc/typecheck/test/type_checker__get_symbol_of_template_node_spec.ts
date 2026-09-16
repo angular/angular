@@ -1445,6 +1445,48 @@ runInEachFileSystem(() => {
         ).toEqual('any');
       });
 
+      it('should get a symbol for update expressions', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {templateTypeChecker, program} = setup([
+          {
+            fileName,
+            templates: {
+              'Cmp': `
+                <div (a)="counter++"></div>
+                <div (b)="--counter"></div>
+                <div (c)="(counter)++"></div>
+                <div (d)="counter!++"></div>
+              `,
+            },
+            source: `export class Cmp { counter = 0; }`,
+          },
+        ]);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+        const nodes = getAstElements(templateTypeChecker, cmp);
+
+        // As with `PropertyWrite`, the symbol of an update expression is the symbol of the
+        // value being updated. The target may be wrapped in parentheses or a non-null
+        // assertion, neither of which changes what is being written to.
+        for (const node of nodes) {
+          const output = node.outputs[0];
+          const symbol = templateTypeChecker.getSymbolOfNode(output.handler, cmp)!;
+          assertExpressionSymbol(symbol);
+          expect(
+            program
+              .getTypeChecker()
+              .symbolToString(templateTypeChecker.getTsSymbolOfSymbol(symbol)!),
+          )
+            .withContext(`symbol for (${output.name})`)
+            .toEqual('counter');
+          expect(
+            program.getTypeChecker().typeToString(templateTypeChecker.getTypeOfSymbol(symbol)!),
+          )
+            .withContext(`type for (${output.name})`)
+            .toEqual('number');
+        }
+      });
+
       it('should get a symbol for Call expressions', () => {
         const fileName = absoluteFrom('/main.ts');
         const {templateTypeChecker, program} = setup([
