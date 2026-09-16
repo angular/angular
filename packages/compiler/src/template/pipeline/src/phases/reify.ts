@@ -988,5 +988,6 @@ function getArrowFunctionFactory(
       new o.FnParam(expr.currentViewName, o.DYNAMIC_TYPE),
     ],
     o.arrowFn(expr.parameters, body),
+    o.DYNAMIC_TYPE,
   );
 }
