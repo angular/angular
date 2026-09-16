@@ -150,9 +150,11 @@ function applyToElementOrContainer(
         nativeInsertBefore(renderer, parent, rNode, beforeNode || null, true);
       }
     } else if (action === WalkTNodeTreeAction.Insert && parent !== null) {
-      maybeQueueEnterAnimation(parentLView, parent, tNode, injector);
       nativeInsertBefore(renderer, parent, rNode, beforeNode || null, true);
       cancelLeavingNodes(tNode, rNode as HTMLElement, parentLView);
+      if (!reusedNodes.has(rNode as HTMLElement)) {
+        maybeQueueEnterAnimation(parentLView, parent, tNode, injector);
+      }
     } else if (action === WalkTNodeTreeAction.Detach) {
       if (parentLView?.[ANIMATIONS]?.leave?.has(tNode.index)) {
         trackLeavingNodes(tNode, rNode as HTMLElement, parentLView);
