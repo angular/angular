@@ -1614,7 +1614,7 @@ export class DeclareVarStmt extends Statement {
     leadingComments?: LeadingComment[],
   ) {
     super(modifiers, sourceSpan, leadingComments);
-    this.type = type || (value && value.type) || null;
+    this.type = type || null;
   }
   override isEquivalent(stmt: Statement): boolean {
     return (
