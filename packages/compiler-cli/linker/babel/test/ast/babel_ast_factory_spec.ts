@@ -152,9 +152,26 @@ describe('BabelAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         stmts,
+        null,
       );
       expect(generate(fn).code).toEqual(
         ['function foo(arg1, arg2: number) {', '  x = 10;', '  y = 20;', '}'].join('\n'),
+      );
+    });
+
+    it('should create a function declaration with a return type', () => {
+      const stmts = statement.ast`{x = 10; y = 20;}`;
+      const fn = factory.createFunctionDeclaration(
+        'foo',
+        [
+          {name: 'arg1', type: null},
+          {name: 'arg2', type: factory.createBuiltInType('number')},
+        ],
+        stmts,
+        factory.createBuiltInType('boolean'),
+      );
+      expect(generate(fn).code).toEqual(
+        ['function foo(arg1, arg2: number): boolean {', '  x = 10;', '  y = 20;', '}'].join('\n'),
       );
     });
   });
@@ -169,10 +186,27 @@ describe('BabelAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         stmts,
+        null,
       );
       expect(t.isStatement(fn)).toBe(false);
       expect(generate(fn).code).toEqual(
         ['function foo(arg1, arg2: number) {', '  x = 10;', '  y = 20;', '}'].join('\n'),
+      );
+    });
+
+    it('should create a function expression with a return type', () => {
+      const stmts = statement.ast`{x = 10; y = 20;}`;
+      const fn = factory.createFunctionExpression(
+        'foo',
+        [
+          {name: 'arg1', type: null},
+          {name: 'arg2', type: factory.createBuiltInType('number')},
+        ],
+        stmts,
+        factory.createBuiltInType('boolean'),
+      );
+      expect(generate(fn).code).toEqual(
+        ['function foo(arg1, arg2: number): boolean {', '  x = 10;', '  y = 20;', '}'].join('\n'),
       );
     });
 
@@ -185,6 +219,7 @@ describe('BabelAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         stmts,
+        null,
       );
       expect(generate(fn).code).toEqual(
         ['function (arg1, arg2: number) {', '  x = 10;', '  y = 20;', '}'].join('\n'),
@@ -201,13 +236,27 @@ describe('BabelAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         expr,
+        null,
       );
       expect(generate(fn).code).toEqual('(arg1, arg2: number) => arg2 + arg1');
     });
 
+    it('should create an arrow function with a return type', () => {
+      const expr = expression.ast`arg2 + arg1`;
+      const fn = factory.createArrowFunctionExpression(
+        [
+          {name: 'arg1', type: null},
+          {name: 'arg2', type: factory.createBuiltInType('number')},
+        ],
+        expr,
+        factory.createBuiltInType('number'),
+      );
+      expect(generate(fn).code).toEqual('(arg1, arg2: number): number => arg2 + arg1');
+    });
+
     it('should create an arrow function with an implicit return object literal', () => {
       const expr = expression.ast`{a: 1, b: 2}`;
-      const fn = factory.createArrowFunctionExpression([], expr);
+      const fn = factory.createArrowFunctionExpression([], expr, null);
       expect(generate(fn).code).toEqual(['() => ({', '  a: 1,', '  b: 2', '})'].join('\n'));
     });
 
@@ -219,6 +268,7 @@ describe('BabelAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         stmts,
+        null,
       );
       expect(generate(fn).code).toEqual(
         ['(arg1, arg2: number) => {', '  x = 10;', '  y = 20;', '  return x + y;', '}'].join('\n'),
