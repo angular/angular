@@ -1,0 +1,7 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+rust_library(
+    name = "rust_compiler",
+    srcs = ["src/lib.rs"],
+    edition = "2024",
+)

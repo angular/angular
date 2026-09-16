@@ -163,3 +163,17 @@ cldr_xml_data(
         "https://github.com/unicode-org/cldr/releases/download/release-%s/core.zip" % CLDR_VERSION: "d5ee2abac64158c04884a722f8ef4830ea22b6c74aac20185be2838db8eda788",
     },
 )
+
+bazel_dep(name = "rules_rust", version = "0.74.0")
+rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+rust.toolchain(edition = "2024")
+use_repo(rust, "rust_toolchains")
+register_toolchains("@rust_toolchains//:all")
+
+crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
+crate.from_cargo(
+    name = "crates",
+    cargo_lockfile = "//:Cargo.lock",
+    manifests = ["//:Cargo.toml"],
+)
+use_repo(crate, "crates")
