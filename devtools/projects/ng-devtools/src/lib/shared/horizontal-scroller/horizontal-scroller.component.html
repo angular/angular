@@ -1,0 +1,21 @@
+<button
+  class="scroll-button"
+  [class]="[!showScrollLeftButton() ? buttonHidingStrategy() : null]"
+  (click)="scroll(-this.scrollStep())"
+  aria-label="Scroll left"
+>
+  <mat-icon> chevron_left </mat-icon>
+</button>
+<div class="content" #content (scroll)="updateScrollButtonVisibility()">
+  <div class="content-inner">
+    <ng-content></ng-content>
+  </div>
+</div>
+<button
+  class="scroll-button"
+  [class]="[!showScrollRightButton() ? buttonHidingStrategy() : null]"
+  (click)="scroll(this.scrollStep())"
+  aria-label="Scroll right"
+>
+  <mat-icon> chevron_right </mat-icon>
+</button>

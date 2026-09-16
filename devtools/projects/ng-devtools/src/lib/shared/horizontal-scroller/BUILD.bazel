@@ -1,0 +1,24 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "horizontal-scroller_component_styles",
+    src = "horizontal-scroller.component.scss",
+)
+
+ng_project(
+    name = "horizontal-scroller",
+    srcs = [
+        "horizontal-scroller.component.ts",
+    ],
+    angular_assets = [
+        "horizontal-scroller.component.html",
+        ":horizontal-scroller_component_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils",
+    ],
+)
