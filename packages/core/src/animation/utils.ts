@@ -282,6 +282,24 @@ export function getClassListFromValue(value: string | AnimationClassBindingFn): 
 }
 
 /**
+ * Removes a list of CSS classes from an element using the provided renderer.
+ */
+export function removeClasses(renderer: Renderer, el: RElement, classList: string[]): void {
+  for (const item of classList) {
+    renderer.removeClass(el, item);
+  }
+}
+
+/**
+ * Adds a list of CSS classes to an element using the provided renderer.
+ */
+export function addClasses(renderer: Renderer, el: RElement, classList: string[]): void {
+  for (const item of classList) {
+    renderer.addClass(el, item);
+  }
+}
+
+/**
  * Cancels any running enter animations on a given element to prevent them from interfering
  * with leave animations.
  */
@@ -293,9 +311,7 @@ export function cancelAnimationsIfRunning(element: HTMLElement, renderer: Render
     elementData.classList.length > 0 &&
     elementHasClassList(element, elementData.classList)
   ) {
-    for (const klass of elementData.classList) {
-      renderer.removeClass(element as unknown as RElement, klass);
-    }
+    removeClasses(renderer, element, elementData.classList);
   }
   // We need to prevent any enter animation listeners from firing if they exist.
   cleanupEnterClassData(element);

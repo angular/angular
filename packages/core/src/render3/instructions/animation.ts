@@ -23,6 +23,7 @@ import {TNode} from '../interfaces/node';
 import {promiseWithResolvers} from '../../util/promise_with_resolvers';
 
 import {
+  addClasses,
   addAnimationToLView,
   areAnimationsDisabled,
   areAnimationSupported,
@@ -42,6 +43,7 @@ import {
   leaveAnimationFunctionCleanup,
   longestAnimations,
   noOpAnimationComplete,
+  removeClasses,
   trackEnterClasses,
   trackLeavingNodes,
 } from '../../animation/utils';
@@ -143,9 +145,7 @@ export function runEnterAnimation(
 
     trackEnterClasses(nativeElement, activeClasses, cleanupFns);
 
-    for (const klass of activeClasses) {
-      renderer.addClass(nativeElement, klass);
-    }
+    addClasses(renderer, nativeElement, activeClasses);
 
     // In the case that the classes added have no animations, we need to remove
     // the classes right away. This could happen because someone is intentionally
@@ -155,9 +155,7 @@ export function runEnterAnimation(
         if (hasCompleted) return;
         determineLongestAnimation(nativeElement, longestAnimations, areAnimationSupported);
         if (!longestAnimations.has(nativeElement)) {
-          for (const klass of activeClasses) {
-            renderer.removeClass(nativeElement, klass);
-          }
+          removeClasses(renderer, nativeElement, activeClasses);
           cleanupEnterClassData(nativeElement);
         }
       });
@@ -179,9 +177,7 @@ function enterAnimationEnd(
     // other elements further up. We don't want it to inadvertently
     // affect any other animations on the page.
     event.stopPropagation();
-    for (const klass of elementData.classList) {
-      renderer.removeClass(nativeElement, klass);
-    }
+    removeClasses(renderer, nativeElement, elementData.classList);
     cleanupEnterClassData(nativeElement);
   }
 }
@@ -334,6 +330,7 @@ function animateLeaveClassRunner(
 
     if (
       event.type === 'animation-fallback' ||
+      (event as CustomEvent).detail?.cancel ||
       isLongestAnimation(event as TransitionEvent | AnimationEvent, el)
     ) {
       hasCompleted = true;
@@ -346,14 +343,7 @@ function animateLeaveClassRunner(
       longestAnimations.delete(el);
       clearLeavingNodes(tNode, el);
 
-      if (Array.isArray(tNode.projection)) {
-        // in the content projection case, the element is not destroyed.
-        // So we need to remove the class at the end so that it isn't left
-        // behind for whenever the item shows up again.
-        for (const item of classList) {
-          renderer.removeClass(el, item);
-        }
-      }
+      removeClasses(renderer, el, classList);
       cleanupAfterLeaveAnimations(componentResolvers, cleanupFns);
       clearLViewNodeAnimationResolvers(lView, tNode);
     }
@@ -365,9 +355,7 @@ function animateLeaveClassRunner(
   });
   trackLeavingNodes(tNode, el);
 
-  for (const item of classList) {
-    renderer.addClass(el, item);
-  }
+  addClasses(renderer, el, classList);
 
   // Force a reflow to ensure the browser registers the class addition and triggers the transition
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -383,6 +371,7 @@ function animateLeaveClassRunner(
       const longest = longestAnimations.get(el);
       if (!longest) {
         clearLeavingNodes(tNode, el);
+        removeClasses(renderer, el, classList);
         cleanupAfterLeaveAnimations(componentResolvers, cleanupFns);
         clearLViewNodeAnimationResolvers(lView, tNode);
       } else {
