@@ -354,19 +354,24 @@ class DefaultDomRenderer2 implements Renderer2 {
   insertBefore(parent: any, newChild: any, refChild: any): void {
     if (parent) {
       const targetParent = isTemplateNode(parent) ? parent.content : parent;
-      // If something outside Angular removed or moved `refChild` (a browser extension, for
-      // example), the native call below throws a `NotFoundError` with no useful info. Catch it
-      // here so we can say what actually happened.
-      if (refChild != null && refChild.parentNode !== targetParent) {
-        throw new RuntimeError(
-          RuntimeErrorCode.INSERT_BEFORE_NODE_NOT_FOUND,
-          ngDevMode &&
-            `Angular could not insert a node before ${describeDomNode(refChild)} because it is no longer a child of ${describeDomNode(targetParent)}. ` +
-              `This can happen when code outside of Angular's control (for example, a browser extension or a script that directly manipulates the DOM) ` +
-              `has moved or removed a node that Angular is still managing.`,
-        );
+      try {
+        targetParent.insertBefore(newChild, refChild);
+      } catch (error) {
+        // When something outside Angular removed or moved `refChild` (a browser extension, for
+        // example), the native call above throws a `NotFoundError` with no useful info. It cannot
+        // be ruled out beforehand, because `parentNode` is only specified to return the parent
+        // node, not one particular object for it.
+        if (refChild != null && refChild.parentNode !== targetParent) {
+          throw new RuntimeError(
+            RuntimeErrorCode.INSERT_BEFORE_NODE_NOT_FOUND,
+            ngDevMode &&
+              `Angular could not insert a node before ${describeDomNode(refChild)} because it is no longer a child of ${describeDomNode(targetParent)}. ` +
+                `This can happen when code outside of Angular's control (for example, a browser extension or a script that directly manipulates the DOM) ` +
+                `has moved or removed a node that Angular is still managing.`,
+          );
+        }
+        throw error;
       }
-      targetParent.insertBefore(newChild, refChild);
     }
   }
 
