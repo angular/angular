@@ -1,3 +1,30 @@
+<a name="22.2.0-rc.0"></a>
+# 22.2.0-rc.0 (2026-09-16)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [14dbbf9b68](https://github.com/angular/angular/commit/14dbbf9b68474a442a295ae165543c8923eae4b8) | fix | wrap `@for` collection expression before appending non-null assertion |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [312e1d8089](https://github.com/angular/angular/commit/312e1d808902116fb8cd4e02d936260113453999) | feat | add strictUnclaimedEventNames option to catch misspelled output bindings |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cea6896a0f](https://github.com/angular/angular/commit/cea6896a0fef4fa4f37a4c7a43c7a880900eb21d) | fix | return null when getDirectiveMetadata is called with null or undefined |
+| [a8233232f5](https://github.com/angular/angular/commit/a8233232f5ade21a15a6645135accd21cf041b1e) | fix | update FakeNavigation to match WHATWG HTML spec |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [15bfc1a4be](https://github.com/angular/angular/commit/15bfc1a4befdef22188c23a4d0313140595012fd) | fix | mark control as dirty before setting its value in FVC interop |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2c6c67bee6](https://github.com/angular/angular/commit/2c6c67bee675a67eff2c2d219dcb88cc1c305190) | fix | maintain frozen state on rollback until resource loading completes |
+| [2dcdf9aae6](https://github.com/angular/angular/commit/2dcdf9aae637a247d1a9bdcf03c740d0b3036cd0) | fix | mark router_resource module-level symbols as side-effect free |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.1.7"></a>
 # 22.1.7 (2026-09-16)
 ### compiler
