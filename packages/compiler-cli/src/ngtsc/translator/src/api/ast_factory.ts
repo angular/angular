@@ -120,11 +120,13 @@ export interface AstFactory<TStatement, TExpression, TType> {
    * @param functionName the name of the function.
    * @param parameters the names of the function's parameters.
    * @param body a statement (or a block of statements) that are the body of the function.
+   * @param returnType return type annotation for the function.
    */
   createFunctionDeclaration(
     functionName: string,
     parameters: Parameter<TType>[],
     body: TStatement,
+    returnType: TType | null,
   ): TStatement;
 
   /**
@@ -134,11 +136,13 @@ export interface AstFactory<TStatement, TExpression, TType> {
    * @param functionName the name of the function.
    * @param parameters the names of the function's parameters.
    * @param body a statement (or a block of statements) that are the body of the function.
+   * @param returnType return type annotation for the function.
    */
   createFunctionExpression(
     functionName: string | null,
     parameters: Parameter<TType>[],
     body: TStatement,
+    returnType: TType | null,
   ): TExpression;
 
   /**
@@ -147,10 +151,12 @@ export interface AstFactory<TStatement, TExpression, TType> {
    *
    * @param parameters the names of the function's parameters.
    * @param body an expression or block of statements that are the body of the function.
+   * @param returnType return type annotation for the function.
    */
   createArrowFunctionExpression(
     parameters: Parameter<TType>[],
     body: TExpression | TStatement,
+    returnType: TType | null,
   ): TExpression;
 
   /**
@@ -375,13 +381,7 @@ export type UnaryOperator = '+' | '-' | '!';
 
 /** Supported built-in types. */
 export type BuiltInType =
-  | 'any'
-  | 'boolean'
-  | 'number'
-  | 'string'
-  | 'function'
-  | 'never'
-  | 'unknown';
+  'any' | 'boolean' | 'number' | 'string' | 'function' | 'never' | 'unknown';
 
 export interface Parameter<TType> {
   name: string;
@@ -479,8 +479,7 @@ export interface ObjectLiteralSpread<TExpression> {
 
 /** Possible properties in an object literal. */
 export type ObjectLiteralProperty<TExpression> =
-  | ObjectLiteralAssignment<TExpression>
-  | ObjectLiteralSpread<TExpression>;
+  ObjectLiteralAssignment<TExpression> | ObjectLiteralSpread<TExpression>;
 
 /**
  * Information used by the `AstFactory` to create a template literal string (i.e. a back-ticked
