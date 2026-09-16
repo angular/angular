@@ -110,6 +110,24 @@ Most updates to the Angular service worker are transparent to the application. T
 Occasionally, a bug fix or feature in the Angular service worker might require the invalidation of old caches.
 In this case, the service worker transparently refreshes the application from the network.
 
+#### Updating the service worker when only its response headers change
+
+Browsers only install a new service worker when the service worker script is byte-different from the installed one.
+Because `ngsw-worker.js` is usually identical across builds, changing only the response headers that the server sends with it, such as a `Content-Security-Policy`, does not update the installed service worker.
+The service worker keeps running with the headers it was installed with.
+
+To make browsers install the service worker again, register it with a versioned script URL, and change the version whenever those headers change:
+
+```ts
+provideServiceWorker('ngsw-worker.js?v=2', {
+  enabled: !isDevMode(),
+  registrationStrategy: 'registerWhenStable:30000',
+});
+```
+
+Registering a different script URL makes the browser fetch and install the service worker again, even if its content is unchanged.
+The Angular service worker resolves its caches and `ngsw.json` relative to its registration scope, not its script URL, so the query parameter doesn't affect cached content.
+
 ### Bypassing the service worker
 
 In some cases, you might want to bypass the service worker entirely and let the browser handle the request.
