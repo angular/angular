@@ -70,6 +70,8 @@ Angular supports the following operators from standard JavaScript.
 | in                            | `'model' in car`                               |
 | instanceof                    | `car instanceof Automobile`                    |
 | Assignment                    | `a = b`                                        |
+| Increment                     | `a++`, `++a`                                   |
+| Decrement                     | `a--`, `--a`                                   |
 | Addition Assignment           | `a += b`                                       |
 | Subtraction Assignment        | `a -= b`                                       |
 | Multiplication Assignment     | `a *= b`                                       |
@@ -94,9 +96,9 @@ Angular expressions additionally also support the following non-standard operato
 ### Safe navigation migration
 
 Prior to Angular 22, the optional chaining operator (`?.`) returned `null` when the left-hand side is `null` or `undefined`, whereas standard JavaScript's `?.` returns `undefined`.
-Since Angular 22, the optional chaining operator behavior in angular expressions is alligned with the standard Javascript's behavior.
+Since Angular 22, the optional chaining operator behavior in Angular expressions is aligned with the standard Javascript behavior.
 
-During the migration to v22, the `ng update` schematics added a `$safeNavigationMigration` magic function to existing expressions to preserve the previous `null`-returning behavior.
+During the migration to v22, the `ng update` schematics adds a `$safeNavigationMigration` function to existing expressions to preserve the previous behavior.
 
 ```html
 {{ $safeNavigationMigration(foo?.bar) }}
