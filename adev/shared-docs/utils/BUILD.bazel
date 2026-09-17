@@ -12,7 +12,7 @@ ts_project(
             "**/*.spec.ts",
         ],
     ),
-    visibility = ["//adev/shared-docs:__subpackages__"],
+    visibility = ["//adev:__subpackages__"],
     deps = [
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/router",
