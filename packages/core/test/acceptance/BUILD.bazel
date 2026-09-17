@@ -27,6 +27,7 @@ ts_project(
         "//packages/core/primitives/signals",
         "//packages/core/src/di/interface",
         "//packages/core/src/util",
+        "//packages/core/test/animation_utils",
         "//packages/core/test/render3:matchers",
         "//packages/core/testing",
         "//packages/localize",
