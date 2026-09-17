@@ -18,6 +18,32 @@ The `@boundary` block wraps a section of your template. If any component or dire
 }
 ```
 
+## Content projection
+
+If your component uses [content projection](guide/components/content-projection), wrapping `<ng-content>` in a `@boundary` does not catch errors from projected content. That content belongs to the view that declares it, not the receiving component's view.
+
+For example, a wrapper component with the following template does not catch errors from components projected into it:
+
+```angular-html
+@boundary {
+  <ng-content />
+} @error {
+  <p>Something went wrong!</p>
+}
+```
+
+To catch those errors, wrap the wrapper component and its projected content in a `@boundary` in the parent template:
+
+```angular-html
+@boundary {
+  <app-wrapper>
+    <app-risky-component />
+  </app-wrapper>
+} @error {
+  <p>Something went wrong!</p>
+}
+```
+
 ## Accessing the error object
 
 You can access the caught error by accessing the implicit `$error` variable:
