@@ -1680,6 +1680,12 @@ export interface I18nMessageOp extends Op<CreateOp> {
    * A list of sub-messages that are referenced by this message.
    */
   subMessages: XrefId[];
+
+  /**
+   * Whether this message needs to be extracted into a separate function.
+   * Null means that it hasn't been calculated yet.
+   */
+  requiresExtraction: boolean | null;
 }
 
 /**
@@ -1706,6 +1712,7 @@ export function createI18nMessageOp(
     postprocessingParams,
     needsPostprocessing,
     subMessages: [],
+    requiresExtraction: null,
     ...NEW_OP,
   };
 }
