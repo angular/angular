@@ -46,6 +46,17 @@ describe('URL sanitizer', () => {
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/', // Truncated.
       'data:video/webm;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
       'data:audio/opus;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/',
+      'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==',
+      'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+      'data:application/octet-stream;base64,dGVzdA==',
+      'data:text/plain,hello',
+      'data:application/pdf;base64,abc',
+      'data:application/json,{"key":"value"}',
+      'data:font/woff2;base64,abc',
+      'data:text/csv,a%2Cb%2Cc',
+      'DATA:IMAGE/PNG;base64,abc',
+      'data:TEXT/PLAIN,hello',
+      'data:text/plain;charset=utf-8,hello world',
       'unknown-scheme:abc',
     ];
     for (const url of validUrls) {
@@ -68,7 +79,30 @@ describe('URL sanitizer', () => {
       'jav\u0000ascript:alert();',
     ];
     for (const url of invalidUrls) {
-      it(`valid ${url}`, () => expect(_sanitizeUrl(url)).toMatch(/^unsafe:/));
+      it(`invalid ${url}`, () => expect(_sanitizeUrl(url)).toMatch(/^unsafe:/));
+    }
+  });
+
+  describe('vbscript URLs', () => {
+    const vbscriptUrls = ['vbscript:MsgBox("XSS")', 'VBScript:alert()', 'VBSCRIPT:MsgBox("XSS")'];
+    for (const url of vbscriptUrls) {
+      it(`blocks ${url}`, () => expect(_sanitizeUrl(url)).toMatch(/^unsafe:/));
+    }
+  });
+
+  describe('dangerous data: URLs', () => {
+    const dangerousDataUrls = [
+      'data:text/html,<script>alert(1)</script>',
+      'data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==',
+      'data:application/xhtml+xml,<script>alert(1)</script>',
+      'data:text/xml,<script>alert(1)</script>',
+      'DATA:text/html,<script>alert(1)</script>',
+      'data:,<script>alert(1)</script>',
+      'data:application/javascript,alert(1)',
+      'data:text/javascript,alert(1)',
+    ];
+    for (const url of dangerousDataUrls) {
+      it(`blocks ${url}`, () => expect(_sanitizeUrl(url)).toMatch(/^unsafe:/));
     }
   });
 });
