@@ -151,7 +151,7 @@ importers:
         version: 22.2.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.2.0-next.6(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(chokidar@5.0.0)(jiti@2.7.0)(lightningcss@1.33.0)(sass-embedded@1.103.1)(sass@1.103.1)(supports-color@10.2.2)(typescript@6.0.3)
       '@angular/build':
         specifier: 22.2.0-next.6
-        version: 22.2.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.2.0-next.6(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@10.2.2))(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(postcss@8.5.26)(supports-color@10.2.2)(terser@5.51.2)(tslib@2.8.1)(typescript@6.0.3)
+        version: 22.2.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.2.0-next.6(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@10.2.2))(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(postcss@8.5.26)(supports-color@10.2.2)(terser@5.50.0)(tslib@2.8.1)(typescript@6.0.3)
       '@angular/cli':
         specifier: 22.2.0-next.6
         version: 22.2.0-next.6(@types/node@20.19.43)(chokidar@5.0.0)
@@ -168,11 +168,11 @@ importers:
         specifier: 10.0.5
         version: 10.0.5
       jasmine:
-        specifier: 6.3.0
-        version: 6.3.0
+        specifier: 7.0.0
+        version: 7.0.0
       jasmine-core:
-        specifier: 6.3.0
-        version: 6.3.0
+        specifier: 7.0.2
+        version: 7.0.2
       puppeteer:
         specifier: 25.9.0
         version: 25.9.0
@@ -197,6 +197,7 @@ packages:
   '@angular-devkit/build-angular@22.2.0-next.6':
     resolution: {integrity: sha512-x4VXxhG0n811GpMLpzK1QR3UsKEjB/G4M10nyoEZUWAF2t/hSOp/ZuE4rweKCKrQMB+n14W6X3G4YWqptWmLIw==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0 || ^22.2.0-next.0
       '@angular/core': ^22.0.0 || ^22.2.0-next.0
@@ -1546,6 +1547,7 @@ packages:
   '@ngtools/webpack@22.2.0-next.6':
     resolution: {integrity: sha512-Gmc1y0pw/8uvraiZSZ+b86K2EYQb+aFJV/UYU0VWcYq7PUJO5Le40+JzWk27jNEvLS444tG8zGuI5NSXKoaQtQ==}
     engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    deprecated: Angular's Webpack support is deprecated. Use the esbuild and Vite-based "@angular/build" package instead.
     peerDependencies:
       '@angular/compiler-cli': ^22.0.0 || ^22.2.0-next.0
       typescript: '>=6.0 <6.1'
@@ -2829,11 +2831,11 @@ packages:
     resolution: {integrity: sha512-Vtgk7L/R2JHyyGW07spoFlB8/lpjiOLTjMdms6AFMraYt3BaJauod/NGrfnVG/y4Ix1JEuMRPDPEj2ua+zz1/Q==}
     engines: {node: '>=10'}
 
-  jasmine-core@6.3.0:
-    resolution: {integrity: sha512-eMm5qBovNjNoGOcgE/W207+wrcK5zrQv0Rg/rWGboUJUmZp0dFCpHTyjpuDAfCwRCqg7f9U2q2jtv/aUuzdCQg==}
+  jasmine-core@7.0.2:
+    resolution: {integrity: sha512-YMVijt84KPQQFm1db1AQAxTXfq0k3wU06OkepLViljURFqiRQ7EYYX2eUAshhUv9fA9t1E2N65GrdqvupA9VPQ==}
 
-  jasmine@6.3.0:
-    resolution: {integrity: sha512-u6L7yYtrtS1JALlp7f4k7Wz7o7ZKXauSKKkXc0L3qUkKrdaxYvNiMHhHp5gtTuVZZXVihXRxS7bWwDBX1wJ7EQ==}
+  jasmine@7.0.0:
+    resolution: {integrity: sha512-rnjiyg1LAhFZMoyU8ei/Wqyvti5oCzFhW7ZtkD6o+CSx3LpU9aYurPrh5BKyX3coGvmdEVYPC2HYh1rrBvZoWg==}
     hasBin: true
 
   jest-worker@27.5.1:
@@ -4255,7 +4257,7 @@ snapshots:
       '@babel/core': 8.0.1
       '@inquirer/confirm': 6.2.0(@types/node@20.19.43)
       '@parcel/watcher': 2.6.0
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@8.2.2(@types/node@20.19.43)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.51.2))
+      '@vitejs/plugin-basic-ssl': 2.3.0(vite@8.2.2(@types/node@20.19.43)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0))
       beasties: 0.4.3
       browserslist: 4.28.8
       chokidar: 5.0.0
@@ -4278,59 +4280,6 @@ snapshots:
       tslib: 2.8.1
       typescript: 6.0.3
       vite: 8.2.2(@types/node@20.19.43)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)
-      xxhash-wasm: 1.1.0
-    optionalDependencies:
-      '@angular/core': link:in-existing-linked-by-bazel
-      '@angular/platform-browser': link:in-existing-linked-by-bazel
-      '@angular/ssr': 22.2.0-next.6(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel)
-      istanbul-lib-instrument: 6.0.3(supports-color@10.2.2)
-      less: 4.9.0(supports-color@10.2.2)
-      lmdb: 3.5.6
-      postcss: 8.5.26
-    transitivePeerDependencies:
-      - '@types/node'
-      - '@vitejs/devtools'
-      - jiti
-      - kerberos
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  '@angular/build@22.2.0-next.6(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@angular/ssr@22.2.0-next.6(@angular/common@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/router@in-existing-linked-by-bazel))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@10.2.2))(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(postcss@8.5.26)(supports-color@10.2.2)(terser@5.51.2)(tslib@2.8.1)(typescript@6.0.3)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2202.0-next.6(chokidar@5.0.0)
-      '@angular/compiler': link:in-existing-linked-by-bazel
-      '@angular/compiler-cli': link:in-existing-linked-by-bazel
-      '@babel/core': 8.0.1
-      '@inquirer/confirm': 6.2.0(@types/node@20.19.43)
-      '@parcel/watcher': 2.6.0
-      '@vitejs/plugin-basic-ssl': 2.3.0(vite@8.2.2(@types/node@20.19.43)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.51.2))
-      beasties: 0.4.3
-      browserslist: 4.28.8
-      chokidar: 5.0.0
-      esbuild: 0.28.2
-      https-proxy-agent: 9.1.0(supports-color@10.2.2)
-      jsonc-parser: 3.3.1
-      listr2: 11.0.1
-      magic-string: 1.2.2
-      mrmime: 2.0.1
-      oxc-parser: 0.147.0
-      parse5-html-rewriting-stream: 8.0.1
-      picomatch: 4.0.7
-      piscina: 5.3.1
-      rolldown: 1.2.5
-      sass: 1.103.1
-      sass-embedded: 1.103.1
-      semver: 7.8.5
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.17
-      tslib: 2.8.1
-      typescript: 6.0.3
-      vite: 8.2.2(@types/node@20.19.43)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.51.2)
       xxhash-wasm: 1.1.0
     optionalDependencies:
       '@angular/core': link:in-existing-linked-by-bazel
@@ -5926,9 +5875,9 @@ snapshots:
     dependencies:
       '@types/node': 20.19.43
 
-  '@vitejs/plugin-basic-ssl@2.3.0(vite@8.2.2(@types/node@20.19.43)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.51.2))':
+  '@vitejs/plugin-basic-ssl@2.3.0(vite@8.2.2(@types/node@20.19.43)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0))':
     dependencies:
-      vite: 8.2.2(@types/node@20.19.43)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.51.2)
+      vite: 8.2.2(@types/node@20.19.43)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.50.0)
 
   '@webassemblyjs/ast@1.14.1':
     dependencies:
@@ -6755,13 +6704,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jasmine-core@6.3.0: {}
+  jasmine-core@7.0.2: {}
 
-  jasmine@6.3.0:
+  jasmine@7.0.0:
     dependencies:
       '@jasminejs/reporters': 1.1.0
       glob: 13.0.6
-      jasmine-core: 6.3.0
+      jasmine-core: 7.0.2
 
   jest-worker@27.5.1:
     dependencies:
@@ -7838,23 +7787,6 @@ snapshots:
       sass: 1.103.1
       sass-embedded: 1.103.1
       terser: 5.50.0
-
-  vite@8.2.2(@types/node@20.19.43)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass-embedded@1.103.1)(sass@1.103.1)(terser@5.51.2):
-    dependencies:
-      lightningcss: 1.33.0
-      picomatch: 4.0.5
-      postcss: 8.5.26
-      rolldown: 1.2.5
-      tinyglobby: 0.2.17
-    optionalDependencies:
-      '@types/node': 20.19.43
-      esbuild: 0.28.2
-      fsevents: 2.3.3
-      jiti: 2.7.0
-      less: 4.9.0(supports-color@10.2.2)
-      sass: 1.103.1
-      sass-embedded: 1.103.1
-      terser: 5.51.2
 
   watchpack@2.5.2:
     dependencies:
