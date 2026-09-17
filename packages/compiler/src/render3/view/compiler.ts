@@ -179,6 +179,7 @@ export function compileComponentFromMetadata(
   meta: R3ComponentMetadata<R3TemplateDependency>,
   constantPool: ConstantPool,
   bindingParser: BindingParser,
+  options: {namespaceCssVariables?: boolean} = {},
 ): R3CompiledExpression {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
@@ -269,7 +270,9 @@ export function compileComponentFromMetadata(
   let hasStyles = !!meta.externalStyles?.length;
   // e.g. `styles: [str1, str2]`
   if (meta.styles && meta.styles.length) {
-    const namespacedStyles = meta.styles.map((s) => namespaceCssVariables(s));
+    const namespacedStyles = meta.styles.map((s) =>
+      namespaceCssVariables(s, options.namespaceCssVariables !== false),
+    );
     const styleValues =
       meta.encapsulation == core.ViewEncapsulation.Emulated
         ? compileStyles(namespacedStyles, CONTENT_ATTR, HOST_ATTR)
