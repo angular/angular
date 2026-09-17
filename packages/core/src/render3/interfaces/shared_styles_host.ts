@@ -30,6 +30,22 @@ export interface SharedStylesHost {
   removeStyles(styles: string[], urls?: string[]): void;
 
   /**
+   * Replaces existing styles in the DOM by mutating their element content or href in-place.
+   * @param oldStyles An array of existing style content strings.
+   * @param newStyles An array of new style content strings.
+   * @param oldUrls An array of existing external style URLs.
+   * @param newUrls An array of new external style URLs.
+   * @param isScoped Whether the styles are scoped to a specific component class. Defaults to `true`.
+   */
+  replaceStyles?(
+    oldStyles: string[],
+    newStyles: string[],
+    oldUrls?: string[],
+    newUrls?: string[],
+    isScoped?: boolean,
+  ): void;
+
+  /**
    * Adds a host node to contain styles added to the DOM and adds all existing style usage to
    * the newly added host node.
    *

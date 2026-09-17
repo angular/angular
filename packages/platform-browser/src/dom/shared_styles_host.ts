@@ -156,6 +156,53 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
     urls?.forEach((value) => this.removeUsage(value, this.external));
   }
 
+  /**
+   * Replaces existing styles in the DOM by mutating element content or href in-place.
+   * If a style element cannot be replaced in-place, it is removed and the new style added.
+   * @param oldStyles An array of existing style content strings.
+   * @param newStyles An array of new style content strings.
+   * @param oldUrls An array of existing external style URLs.
+   * @param newUrls An array of new external style URLs.
+   * @param isScoped Whether the styles are scoped to a specific component class. Defaults to `true`.
+   */
+  replaceStyles(
+    oldStyles: string[],
+    newStyles: string[],
+    oldUrls?: string[],
+    newUrls?: string[],
+    isScoped: boolean = true,
+  ): void {
+    // In dev mode, perform in-place DOM element updates for HMR.
+    // In production builds (ngDevMode === false), the bundler dead-code eliminates
+    // the HMR code block and tree-shakes the standalone replaceStyleEntries function.
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      replaceStyleEntries(
+        oldStyles,
+        newStyles,
+        this.inline,
+        isScoped,
+        (el, val) => (el.textContent = val),
+        (val) => this.removeUsage(val, this.inline),
+        (val) => this.addUsage(val, this.inline, createStyleElement),
+      );
+
+      if (oldUrls || newUrls) {
+        replaceStyleEntries(
+          oldUrls ?? [],
+          newUrls ?? [],
+          this.external,
+          isScoped,
+          (el, val) => el.setAttribute('href', val),
+          (val) => this.removeUsage(val, this.external),
+          (val) => this.addUsage(val, this.external, createLinkElement),
+        );
+      }
+    } else {
+      this.removeStyles(oldStyles, oldUrls);
+      this.addStyles(newStyles, newUrls);
+    }
+  }
+
   protected addUsage<T extends HTMLElement>(
     value: string,
     usages: Map<string, UsageRecord<T>>,
@@ -249,5 +296,59 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
 
     // Insert the element into the DOM with the host node as parent
     return host.appendChild(element);
+  }
+}
+
+/**
+ * Helper function for in-place style replacement during HMR in dev mode.
+ * Placed at module level so bundlers can tree-shake it when ngDevMode is false.
+ */
+function replaceStyleEntries<T extends HTMLElement>(
+  oldValues: string[],
+  newValues: string[],
+  usages: Map<string, UsageRecord<T>>,
+  isScoped: boolean,
+  updater: (element: T, value: string) => void,
+  remover: (value: string) => void,
+  adder: (value: string) => void,
+): void {
+  const oldRecords = oldValues.map((val) => usages.get(val));
+  const maxLen = Math.max(oldValues.length, newValues.length);
+
+  for (let i = 0; i < maxLen; i++) {
+    const oldVal = oldValues[i];
+    const newVal = newValues[i];
+
+    if (oldVal !== undefined && newVal !== undefined) {
+      if (oldVal === newVal) {
+        continue;
+      }
+
+      const record = oldRecords[i];
+      if (record && (record.usage === 1 || isScoped)) {
+        usages.delete(oldVal);
+
+        const existingNewRecord = usages.get(newVal);
+        const isTargetInLaterOld = oldValues.slice(i + 1).includes(newVal);
+
+        if (existingNewRecord && !isTargetInLaterOld) {
+          existingNewRecord.usage += record.usage;
+          removeElements(record.elements);
+        } else {
+          for (const element of record.elements) {
+            updater(element, newVal);
+          }
+          usages.set(newVal, record);
+        }
+        continue;
+      }
+    }
+
+    if (oldVal !== undefined) {
+      remover(oldVal);
+    }
+    if (newVal !== undefined) {
+      adder(newVal);
+    }
   }
 }
