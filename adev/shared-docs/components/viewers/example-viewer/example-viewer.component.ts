@@ -26,10 +26,10 @@ import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers/index';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {IconComponent} from '../../icon/icon.component';
 
-export const CODE_LINE_NUMBER_CLASS_NAME = 'shiki-ln-number';
-export const CODE_LINE_CLASS_NAME = 'line';
-export const GAP_CODE_LINE_CLASS_NAME = 'gap';
-export const HIDDEN_CLASS_NAME = 'hidden';
+const CODE_LINE_NUMBER_CLASS_NAME = 'shiki-ln-number';
+const CODE_LINE_CLASS_NAME = 'line';
+const GAP_CODE_LINE_CLASS_NAME = 'gap';
+const HIDDEN_CLASS_NAME = 'hidden';
 
 @Component({
   selector: 'docs-example-viewer',

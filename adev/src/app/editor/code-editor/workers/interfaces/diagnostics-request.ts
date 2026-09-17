@@ -13,7 +13,7 @@ export interface DiagnosticsRequest {
   file: string;
 }
 
-export interface DiagnosticsResult {
+interface DiagnosticsResult {
   from?: number;
   to?: number;
   message: string;

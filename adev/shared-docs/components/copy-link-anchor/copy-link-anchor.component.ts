@@ -11,7 +11,7 @@ import {Component, inject, input, signal} from '@angular/core';
 import {MatTooltip} from '@angular/material/tooltip';
 import {IconComponent} from '../icon/icon.component';
 
-export const CONFIRMATION_DISPLAY_TIME_MS = 1000;
+const CONFIRMATION_DISPLAY_TIME_MS = 1000;
 
 @Component({
   selector: 'docs-copy-link-button',

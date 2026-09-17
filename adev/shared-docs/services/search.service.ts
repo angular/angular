@@ -25,9 +25,9 @@ import {
 import type {Environment, SearchResult, SearchResultItem, SnippetResult} from '../interfaces/index';
 import {ENVIRONMENT} from '../providers/index';
 
-export const SEARCH_DELAY = 200;
+const SEARCH_DELAY = 200;
 // Maximum number of facet values to return for each facet during a regular search.
-export const MAX_VALUE_PER_FACET = 5;
+const MAX_VALUE_PER_FACET = 5;
 
 export const ALGOLIA_CLIENT: InjectionToken<LiteClient> = new InjectionToken<LiteClient>(
   'Search service',
