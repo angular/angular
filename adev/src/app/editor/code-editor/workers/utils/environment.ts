@@ -10,7 +10,7 @@ import {VirtualTypeScriptEnvironment} from '@typescript/vfs';
 
 // Note: use a comment in empty files to avoid error in vfs
 // See: https://github.com/microsoft/TypeScript-Website/issues/2713
-export const EMPTY_FILE_CONTENT = '// empty file';
+const EMPTY_FILE_CONTENT = '// empty file';
 
 export function updateOrCreateFile(
   env: VirtualTypeScriptEnvironment,
@@ -28,7 +28,7 @@ export function updateFile(env: VirtualTypeScriptEnvironment, file: string, cont
   env.updateFile(normalizeFileName(file), normalizeFileContent(content));
 }
 
-export function createFile(env: VirtualTypeScriptEnvironment, file: string, content: string) {
+function createFile(env: VirtualTypeScriptEnvironment, file: string, content: string) {
   env.createFile(normalizeFileName(file), normalizeFileContent(content));
 }
 

@@ -26,13 +26,6 @@ import SIGNAL_FORMS_TUTORIAL_NAV_DATA from '../../../content/tutorials/signal-fo
 // @ts-ignore
 import API_MANIFEST_JSON from '../../../assets/manifest.json' with {type: 'json'};
 
-interface SubNavigationData {
-  docs: NavigationItem[];
-  reference: NavigationItem[];
-  tutorials: NavigationItem[];
-  footer: NavigationItem[];
-}
-
 export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   {
     label: 'Introduction',
