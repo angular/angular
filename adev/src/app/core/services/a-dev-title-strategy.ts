@@ -11,14 +11,12 @@ import {NavigationItem} from '@angular/docs';
 import {Meta, Title} from '@angular/platform-browser';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy} from '@angular/router';
 
-export const ROUTE_TITLE_PROPERTY = 'label';
-export const ROUTE_PARENT_PROPERTY = 'parent';
 export const TITLE_SUFFIX = 'Angular';
-export const TITLE_SEPARATOR = ' • ';
+const TITLE_SEPARATOR = ' • ';
 export const DEFAULT_PAGE_TITLE = 'Overview';
 
-export const TITLE_OG_META_TAG = 'og:title';
-export const TITLE_TWITTER_META_TAG = 'twitter:title';
+const TITLE_OG_META_TAG = 'og:title';
+const TITLE_TWITTER_META_TAG = 'twitter:title';
 
 export const ALL_TITLE_META_TAGS = [TITLE_OG_META_TAG, TITLE_TWITTER_META_TAG];
 

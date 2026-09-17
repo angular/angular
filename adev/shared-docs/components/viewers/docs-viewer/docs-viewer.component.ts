@@ -43,12 +43,11 @@ import {TabGroup} from '../../tab-group/tab-group.component';
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
 
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
-export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
 export const DOCS_VIEWER_SELECTOR = 'docs-viewer, main[docsViewer]';
-export const DOCS_CODE_SELECTOR = '.docs-code';
-export const DOCS_CODE_MUTLIFILE_SELECTOR = '.docs-code-multifile';
-export const DOCS_CODE_TAB_GROUP_SELECTOR = '.docs-tab-group';
-export const DOCS_CODE_TAB_SELECTOR = '.docs-tab';
+const DOCS_CODE_SELECTOR = '.docs-code';
+const DOCS_CODE_MUTLIFILE_SELECTOR = '.docs-code-multifile';
+const DOCS_CODE_TAB_GROUP_SELECTOR = '.docs-tab-group';
+const DOCS_CODE_TAB_SELECTOR = '.docs-tab';
 const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/{{BUILD_SCM_ABBREV_HASH}}';
 
 @Component({
