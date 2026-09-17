@@ -375,6 +375,44 @@ describe('Error Boundary Runtime Interception', () => {
     expect(() => fixture.detectChanges()).toThrow();
   });
 
+  it('should catch errors from projected content when the boundary wraps the receiving component', async () => {
+    @Component({
+      selector: 'throws-error',
+      template: '<div>Throws</div>',
+    })
+    class ThrowsError {
+      ngOnInit() {
+        throw new Error('Projected Error');
+      }
+    }
+
+    @Component({
+      selector: 'wrapper',
+      template: '<ng-content />',
+    })
+    class Wrapper {}
+
+    @Component({
+      template: `
+        @boundary {
+          <wrapper>
+            <throws-error />
+          </wrapper>
+        } @error {
+          <p>Fallback: {{ $error.message }}</p>
+        }
+      `,
+      imports: [Wrapper, ThrowsError],
+    })
+    class App {}
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Fallback: Projected Error');
+    expect(fixture.nativeElement.querySelectorAll('wrapper').length).toBe(0);
+  });
+
   it('should support nested boundaries and fallback cascading', async () => {
     @Component({
       selector: 'nested-throwing-cmp',

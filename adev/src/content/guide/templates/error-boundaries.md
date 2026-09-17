@@ -24,7 +24,7 @@ If your component uses [content projection](guide/components/content-projection)
 
 For example, a wrapper component with the following template does not catch errors from components projected into it:
 
-```angular-html
+```angular-html {avoid}
 @boundary {
   <ng-content />
 } @error {
@@ -34,7 +34,7 @@ For example, a wrapper component with the following template does not catch erro
 
 To catch those errors, wrap the wrapper component and its projected content in a `@boundary` in the parent template:
 
-```angular-html
+```angular-html {prefer}
 @boundary {
   <app-wrapper>
     <app-risky-component />
