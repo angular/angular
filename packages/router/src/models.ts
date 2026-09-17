@@ -39,7 +39,7 @@ export type ResourceResult = Record<string, Resource<unknown>>;
  */
 export interface ResourceContext {
   /**
-   * The matrix parameters of the route.
+   * The path and matrix parameters available to the route.
    *
    * @developerPreview 22.2
    */
