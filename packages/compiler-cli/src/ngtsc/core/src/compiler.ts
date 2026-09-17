@@ -1108,11 +1108,11 @@ export class NgCompiler {
         // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
         checkTypeOfDomEvents: strictTemplates,
         // The unclaimed event name check is heuristic (it can't account for custom events
-        // bubbling up from descendants), so enabling it by default would be breaking and it
-        // requires an explicit opt-in through `strictUnclaimedEventNames`.
-        // TODO: add the g3 sync marker here (`checkUnclaimedEventNames: strictTemplates`)
-        // once google3 has been cleaned up.
-        checkUnclaimedEventNames: false,
+        // bubbling up from descendants), so enabling it by default would be breaking, and it
+        // requires an explicit opt-in through `strictUnclaimedEventNames`. Inside google3 it
+        // is enabled by default under `strictTemplates` via the sync markers.
+        checkUnclaimedEventNames: false, // 3p-only
+        // g3-only checkUnclaimedEventNames: strictTemplates,
         checkTypeOfDomReferences: strictTemplates,
         // Non-DOM references have the correct type in View Engine so there is no strictness flag.
         checkTypeOfNonDomReferences: true,
