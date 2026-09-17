@@ -15,6 +15,7 @@ import {
   EnterNodeAnimations,
   LeaveNodeAnimations,
   AnimationClassBindingFn,
+  AnimationClassValue,
 } from './interfaces';
 import {INJECTOR, LView, ANIMATIONS, DECLARATION_VIEW} from '../render3/interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -269,8 +270,13 @@ export function getLViewLeaveAnimations(lView: LView): Map<number, LeaveNodeAnim
 /**
  * Gets the list of classes from a passed in value
  */
-export function getClassListFromValue(value: string | AnimationClassBindingFn): string[] | null {
-  const classes = typeof value === 'function' ? value() : value;
+export function getClassListFromValue(
+  value: string | AnimationClassBindingFn | AnimationClassValue,
+): string[] | null {
+  let classes: AnimationClassValue = typeof value === 'function' ? value() : value;
+  while (typeof classes === 'function') {
+    classes = classes();
+  }
   let classList: string[] | null = Array.isArray(classes) ? classes : null;
   if (typeof classes === 'string') {
     classList = classes
