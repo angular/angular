@@ -610,11 +610,11 @@ export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
 // @public
 export class RedirectCommand extends Error {
-    constructor(redirectTo: UrlTree, navigationBehaviorOptions?: NavigationBehaviorOptions | undefined);
+    constructor(redirectTo: UrlTree | `/${string}`, navigationBehaviorOptions?: NavigationBehaviorOptions | undefined);
     // (undocumented)
     readonly navigationBehaviorOptions?: NavigationBehaviorOptions | undefined;
     // (undocumented)
-    readonly redirectTo: UrlTree;
+    readonly redirectTo: UrlTree | `/${string}`;
 }
 
 // @public
