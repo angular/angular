@@ -22,8 +22,8 @@ import {InjectableClassRegistry, JitDeclarationRegistry} from '../../annotations
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {
   addDiagnosticDetails,
-  errorCodeWithGuideFromDiagnosticCode,
   ErrorCode,
+  errorCodeWithGuideFromDiagnosticCode,
   isFatalDiagnosticError,
   ngErrorCode,
 } from '../../diagnostics';
@@ -1107,12 +1107,8 @@ export class NgCompiler {
         // - error TS2531: Object is possibly 'null'.
         // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
         checkTypeOfDomEvents: strictTemplates,
-        // The unclaimed event name check is heuristic (it can't account for custom events
-        // bubbling up from descendants), so enabling it by default would be breaking and it
-        // requires an explicit opt-in through `strictUnclaimedEventNames`.
-        // TODO: add the g3 sync marker here (`checkUnclaimedEventNames: strictTemplates`)
-        // once google3 has been cleaned up.
-        checkUnclaimedEventNames: false,
+        checkUnclaimedEventNames: false, // 3p-only
+        // g3-only checkUnclaimedEventNames: strictTemplates,
         checkTypeOfDomReferences: strictTemplates,
         // Non-DOM references have the correct type in View Engine so there is no strictness flag.
         checkTypeOfNonDomReferences: true,
