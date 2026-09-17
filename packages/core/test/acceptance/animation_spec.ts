@@ -2369,6 +2369,231 @@ describe('Animation', () => {
       }
     });
 
+    it('should support function expressions, function references, and signals in [animate.enter] and [animate.leave]', async () => {
+      const styles = `
+        .enter {
+          animation: fade-in 500ms;
+        }
+        .leave {
+          animation: fade-out 500ms;
+        }
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes fade-out {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: [styles],
+        template: `
+          <div>
+            @if (show()) {
+              <div class="arrow" [animate.enter]="enterArrow" [animate.leave]="leaveArrow">
+                Arrow
+              </div>
+              <div class="fn-ref" [animate.enter]="enterFn" [animate.leave]="leaveFn">Fn Ref</div>
+              <div class="signal-ref" [animate.enter]="enterSignal" [animate.leave]="leaveSignal">
+                Signal Ref
+              </div>
+              <div
+                class="signal-call"
+                [animate.enter]="enterSignal()"
+                [animate.leave]="leaveSignal()"
+              >
+                Signal Call
+              </div>
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+        enterArrow = () => 'enter';
+        leaveArrow = () => 'leave';
+        enterFn = () => 'enter';
+        leaveFn = () => 'leave';
+        enterSignal = signal('enter');
+        leaveSignal = signal('leave');
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestComponent);
+      await fixture.whenStable();
+      await nextAnimationFrame();
+
+      // Check all elements received the enter class during entry
+      const arrowEl = fixture.debugElement.query(By.css('.arrow')).nativeElement;
+      const fnRefEl = fixture.debugElement.query(By.css('.fn-ref')).nativeElement;
+      const signalRefEl = fixture.debugElement.query(By.css('.signal-ref')).nativeElement;
+      const signalCallEl = fixture.debugElement.query(By.css('.signal-call')).nativeElement;
+
+      expect(arrowEl.classList.contains('enter')).toBeTrue();
+      expect(fnRefEl.classList.contains('enter')).toBeTrue();
+      expect(signalRefEl.classList.contains('enter')).toBeTrue();
+      expect(signalCallEl.classList.contains('enter')).toBeTrue();
+
+      // Wait for enter animations to finish
+      await timeout(550);
+      expect(arrowEl.classList.contains('enter')).toBeFalse();
+      expect(fnRefEl.classList.contains('enter')).toBeFalse();
+      expect(signalRefEl.classList.contains('enter')).toBeFalse();
+      expect(signalCallEl.classList.contains('enter')).toBeFalse();
+
+      // Trigger leave
+      fixture.componentInstance.show.set(false);
+      await fixture.whenStable();
+      await nextAnimationFrame();
+
+      expect(arrowEl.classList.contains('leave')).toBeTrue();
+      expect(fnRefEl.classList.contains('leave')).toBeTrue();
+      expect(signalRefEl.classList.contains('leave')).toBeTrue();
+      expect(signalCallEl.classList.contains('leave')).toBeTrue();
+
+      // Wait for leave animations to finish and elements to be removed
+      await timeout(550);
+      expect(fixture.debugElement.query(By.css('.arrow'))).toBeNull();
+      expect(fixture.debugElement.query(By.css('.fn-ref'))).toBeNull();
+      expect(fixture.debugElement.query(By.css('.signal-ref'))).toBeNull();
+      expect(fixture.debugElement.query(By.css('.signal-call'))).toBeNull();
+    });
+
+    it('should behave consistently between direct, nested, and bound function animations during swap and remove in @for (reproduction of #70764)', async () => {
+      const styles = `
+        .enter {
+          animation: fade-in 500ms;
+        }
+        .leave {
+          animation: fade-out 500ms;
+        }
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes fade-out {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: [styles],
+        template: `
+          <div class="blue">
+            @for (item of items; track item.name) {
+              <div class="blue-item" animate.enter="enter" animate.leave="leave">
+                {{ item.name }}
+              </div>
+            }
+          </div>
+          <div class="green">
+            @for (item of items; track item.name) {
+              @if (alwaysTrue) {
+                <div class="green-item" animate.enter="enter" animate.leave="leave">
+                  {{ item.name }}
+                </div>
+              }
+            }
+          </div>
+          <div class="red">
+            @for (item of items; track item.name) {
+              @if (alwaysTrue) {
+                <div class="red-item" [animate.enter]="enterFn" [animate.leave]="leaveFn">
+                  {{ item.name }}
+                </div>
+              }
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        items = [{name: 'a'}, {name: 'b'}, {name: 'c'}];
+        alwaysTrue = true;
+        private cd = inject(ChangeDetectorRef);
+
+        enterFn = () => 'enter';
+        leaveFn = () => 'leave';
+
+        swap() {
+          const a = this.items[0];
+          const b = this.items[1];
+          this.items[1] = a;
+          this.items[0] = b;
+          this.cd.markForCheck();
+        }
+
+        remove() {
+          this.items.pop();
+          this.cd.markForCheck();
+        }
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      await fixture.whenStable();
+      await nextAnimationFrame();
+
+      // All 3 rows should have 3 items on initial load
+      const getBlue = () => fixture.debugElement.queryAll(By.css('.blue-item'));
+      const getGreen = () => fixture.debugElement.queryAll(By.css('.green-item'));
+      const getRed = () => fixture.debugElement.queryAll(By.css('.red-item'));
+
+      expect(getBlue().length).toBe(3);
+      expect(getGreen().length).toBe(3);
+      expect(getRed().length).toBe(3);
+
+      // Verify enter class was applied to all 3 rows (including the function-bound red row)
+      expect(getBlue()[0].nativeElement.classList.contains('enter')).toBeTrue();
+      expect(getGreen()[0].nativeElement.classList.contains('enter')).toBeTrue();
+      expect(getRed()[0].nativeElement.classList.contains('enter')).toBeTrue();
+
+      // Wait for enter animations to finish
+      await timeout(550);
+      for (const el of [...getBlue(), ...getGreen(), ...getRed()]) {
+        expect(el.nativeElement.classList.contains('enter')).toBeFalse();
+      }
+
+      // Perform multiple rapid swaps
+      cmp.swap();
+      await fixture.whenStable();
+      cmp.swap();
+      await fixture.whenStable();
+      cmp.swap();
+      await fixture.whenStable();
+
+      await nextAnimationFrame();
+      await timeout(800);
+
+      // Verify all 3 rows swapped without losing elements or leaving lingering leave classes
+      expect(getBlue().map((d) => d.nativeElement.textContent.trim())).toEqual(['b', 'a', 'c']);
+      expect(getGreen().map((d) => d.nativeElement.textContent.trim())).toEqual(['b', 'a', 'c']);
+      expect(getRed().map((d) => d.nativeElement.textContent.trim())).toEqual(['b', 'a', 'c']);
+
+      for (const el of [...getBlue(), ...getGreen(), ...getRed()]) {
+        expect(el.nativeElement.classList.contains('leave')).toBeFalse();
+      }
+
+      // Now remove the last element ('c')
+      cmp.remove();
+      await fixture.whenStable();
+      await nextAnimationFrame();
+
+      // Wait for leave animations to finish
+      await timeout(600);
+
+      expect(getBlue().map((d) => d.nativeElement.textContent.trim())).toEqual(['b', 'a']);
+      expect(getGreen().map((d) => d.nativeElement.textContent.trim())).toEqual(['b', 'a']);
+      expect(getRed().map((d) => d.nativeElement.textContent.trim())).toEqual(['b', 'a']);
+    });
+
     it('should remove leave class from component with projection when leave animation completes', async () => {
       const styles = `
         .leave {
