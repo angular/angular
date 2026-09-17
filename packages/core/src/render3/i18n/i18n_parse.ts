@@ -181,7 +181,11 @@ export function i18nStartFirstCreatePass(
           // the value can change based on the locale and users aren't guaranteed to hit
           // an invalid string while they're developing.
           if (typeof icuExpression !== 'object') {
-            throw new Error(`Unable to parse ICU expression in "${message}" message.`);
+            throw new Error(
+              `Unable to parse ICU expression in "${message}" message. ` +
+                `Check that the translation preserves the ICU expression from the source message. ` +
+                `ICU expressions cannot be introduced only in a translation.`,
+            );
           }
           const icuContainerTNode = createTNodeAndAddOpCode(
             tView,
