@@ -200,6 +200,24 @@ export class EmitterVisitorContext {
     return null;
   }
 
+  addUniqueSingleLineComment(commentText: string): void {
+    const previousIndex = this._lines.length - 2;
+    const comment = `//${commentText}`;
+
+    if (
+      previousIndex >= 0 &&
+      this._lines[previousIndex].parts.length === 1 &&
+      this._lines[previousIndex].parts[0] === comment
+    ) {
+      return;
+    }
+    const line = new EmittedLine(this._currentLine.indent);
+    line.parts.push(comment);
+    line.partsLength = comment.length;
+    line.srcSpans.push(null);
+    this._lines.splice(this._lines.length - 1, 0, line);
+  }
+
   /**
    * @internal strip this from published d.ts files due to
    * https://github.com/microsoft/TypeScript/issues/36216
