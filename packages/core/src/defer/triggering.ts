@@ -498,12 +498,31 @@ export async function triggerHydrationForBlockQueue(
     replayQueuedEventsFn(hydrationQueue);
   }
 
+  // `cleanupHydratedDeferBlocks` -> `cleanupDehydratedViews` walks all LViews
+  // registered with ApplicationRef and removes dehydrated views that aren't
+  // associated with a defer block. This is only safe once the app is stable.
+  // There may still be other pending tasks that need one of those views before
+  // they get a chance to hydrate it.
+  //
+  // This block's task is removed above, but other tasks may still be pending.
+  // Wait for those before treating any remaining dehydrated views as orphaned.
+  //
+  // Don't wait if there are no other pending tasks. Calling `whenStable()`
+  // creates another subscription to the stability signal, which can move this
+  // cleanup to a later microtask than callers already waiting on
+  // `appRef.whenStable()`. Keeping this path synchronous preserves the existing
+  // behavior when the app is already stable.
+  const appRef = injector.get(ApplicationRef);
+  if (pendingTasks.hasPendingTasks) {
+    await appRef.whenStable();
+  }
+
   // Cleanup after hydration of all affected defer blocks.
   cleanupHydratedDeferBlocks(
     dehydratedBlockRegistry.get(lastBlockName),
     hydrationQueue,
     dehydratedBlockRegistry,
-    injector.get(ApplicationRef),
+    appRef,
   );
 }
 
