@@ -236,10 +236,39 @@ class HtmlAstToIvyAst implements html.Visitor {
       );
 
       if (element.name === 'ng-container') {
+        for (const attr of attributes) {
+          if (attr.name === 'class') {
+            this.reportError(
+              `"class" attribute is not supported on ng-container.`,
+              attr.sourceSpan,
+            );
+          } else if (attr.name.startsWith('aria-')) {
+            this.reportError(
+              `"${attr.name}" attribute is not supported on ng-container.`,
+              attr.sourceSpan,
+            );
+          }
+        }
+
         for (const bound of attrs.bound) {
           if (bound.type === BindingType.Attribute) {
             this.reportError(
               `Attribute bindings are not supported on ng-container. Use property bindings instead.`,
+              bound.sourceSpan,
+            );
+          } else if (
+            bound.type === BindingType.Class ||
+            (bound.type === BindingType.Property && bound.name === 'class')
+          ) {
+            this.reportError(`Class bindings are not supported on ng-container.`, bound.sourceSpan);
+          } else if (
+            bound.type === BindingType.Style ||
+            (bound.type === BindingType.Property && bound.name === 'style')
+          ) {
+            this.reportError(`Style bindings are not supported on ng-container.`, bound.sourceSpan);
+          } else if (bound.type === BindingType.Property && bound.name.startsWith('aria-')) {
+            this.reportError(
+              `"${bound.name}" attribute is not supported on ng-container.`,
               bound.sourceSpan,
             );
           }
