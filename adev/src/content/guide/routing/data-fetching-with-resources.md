@@ -69,7 +69,7 @@ TIP: If a resource depends on data from another resource, you can compose the re
 
 ### ResourceContext
 
-The `resources` function receives a `ResourceContext` providing access to route signals (such as `params`, `queryParams`, and `data`) as well as the static `snapshot`.
+The `resources` function receives a `ResourceContext` providing access to reactive route signals, including path and matrix parameters through `params`, as well as `queryParams`, `fragment`, and `data`.
 
 ### Resource implementations and async configuration
 
