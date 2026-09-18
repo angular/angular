@@ -1083,6 +1083,12 @@ export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
 export function isDevMode(): boolean;
 
 // @public
+export function isResource(value: unknown): value is Resource<unknown>;
+
+// @public
+export function isResourceRef(value: unknown): value is ResourceRef<unknown>;
+
+// @public
 export function isSignal(value: unknown): value is Signal<unknown>;
 
 // @public
