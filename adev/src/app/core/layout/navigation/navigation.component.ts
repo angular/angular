@@ -7,9 +7,13 @@
  */
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {ConnectedPosition, ConnectionPositionPair} from '@angular/cdk/overlay';
-import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
-import {Component, PLATFORM_ID, inject, signal} from '@angular/core';
+import {
+  ConnectedPosition,
+  ConnectionPositionPair,
+  ScrollStrategyOptions,
+} from '@angular/cdk/overlay';
+import {Location, isPlatformBrowser} from '@angular/common';
+import {Component, DestroyRef, PLATFORM_ID, inject, signal} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
@@ -38,7 +42,7 @@ type MenuType = 'social' | 'theme-picker' | 'version-picker';
   styleUrls: ['./navigation.component.scss', './mini-menu.scss', './nav-item.scss'],
 })
 export class Navigation {
-  private readonly document = inject(DOCUMENT);
+  private readonly scrollStrategy = inject(ScrollStrategyOptions).block();
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly navigationState = inject(NavigationState);
   private readonly router = inject(Router);
@@ -101,6 +105,7 @@ export class Navigation {
   primaryRouteChanged$ = toObservable(this.activeRouteItem);
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.scrollStrategy.disable());
     this.listenToRouteChange();
     this.preventToScrollContentWhenSecondaryNavIsOpened();
     this.closeMobileNavOnPrimaryRouteChange();
@@ -197,9 +202,10 @@ export class Navigation {
   private preventToScrollContentWhenSecondaryNavIsOpened(): void {
     this.isMobileNavigationOpened$.pipe(takeUntilDestroyed()).subscribe((opened) => {
       if (opened) {
-        this.document.body.style.overflowY = 'hidden';
+        // Keep the scrollbar present so Safari does not change responsive breakpoints.
+        this.scrollStrategy.enable();
       } else {
-        this.document.body.style.removeProperty('overflow-y');
+        this.scrollStrategy.disable();
       }
     });
   }

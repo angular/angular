@@ -65,6 +65,7 @@ $theme: mat.m2-define-light-theme(
 
 // Include material core styles.
 @include cdk.a11y-visually-hidden();
+@include cdk.overlay();
 @include mat.tabs-theme($theme);
 @include mat.button-toggle-theme($theme);
 @include mat.tooltip-theme($theme);

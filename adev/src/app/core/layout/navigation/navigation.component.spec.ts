@@ -15,7 +15,8 @@ import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {Version, signal} from '@angular/core';
 import {of} from 'rxjs';
 import {VersionManager} from '../../services/version-manager.service';
-import {Search, WINDOW} from '@angular/docs';
+import {NavigationState, Search, WINDOW} from '@angular/docs';
+import {BlockScrollStrategy, ScrollStrategyOptions} from '@angular/cdk/overlay';
 import {PAGE_PREFIX} from '../../constants/pages';
 
 describe('Navigation', () => {
@@ -36,8 +37,14 @@ describe('Navigation', () => {
 
   const fakeWindow = {};
   const fakeSearch = {};
+  let scrollStrategy: jasmine.SpyObj<BlockScrollStrategy>;
 
   beforeEach(async () => {
+    scrollStrategy = jasmine.createSpyObj<BlockScrollStrategy>('scrollStrategy', [
+      'enable',
+      'disable',
+      'attach',
+    ]);
     TestBed.configureTestingModule({
       imports: [Navigation],
       providers: [
@@ -56,9 +63,35 @@ describe('Navigation', () => {
     TestBed.overrideProvider(ThemeManager, {useValue: fakeThemeManager});
     TestBed.overrideProvider(VersionManager, {useValue: fakeVersionManager});
 
+    spyOn(TestBed.inject(ScrollStrategyOptions), 'block').and.returnValue(scrollStrategy);
+
     fixture = TestBed.createComponent(Navigation);
     component = fixture.componentInstance;
     await fixture.whenStable();
+  });
+
+  it('should block scrolling while mobile navigation is open', async () => {
+    const navigationState = TestBed.inject(NavigationState);
+    navigationState.setMobileNavigationListVisibility(true);
+    await fixture.whenStable();
+
+    expect(scrollStrategy.enable).toHaveBeenCalledTimes(1);
+    scrollStrategy.disable.calls.reset();
+
+    navigationState.setMobileNavigationListVisibility(false);
+    await fixture.whenStable();
+
+    expect(scrollStrategy.disable).toHaveBeenCalledTimes(1);
+  });
+
+  it('should unblock scrolling when destroyed with mobile navigation open', async () => {
+    TestBed.inject(NavigationState).setMobileNavigationListVisibility(true);
+    await fixture.whenStable();
+    scrollStrategy.disable.calls.reset();
+
+    fixture.destroy();
+
+    expect(scrollStrategy.disable).toHaveBeenCalledTimes(1);
   });
 
   it('should append active class to DOCS_ROUTE when DOCS_ROUTE is active', async () => {
