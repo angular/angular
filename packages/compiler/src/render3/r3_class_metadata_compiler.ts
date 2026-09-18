@@ -14,6 +14,37 @@ import {R3DeferPerComponentDependency} from './view/api';
 export type CompileClassMetadataFn = (metadata: R3ClassMetadata) => o.Expression;
 
 /**
+ * A single constructor parameter captured in the `ctorParameters` callback of `setClassMetadata`.
+ */
+export interface R3ClassMetadataCtorParameter {
+  /**
+   * An expression referring to the parameter's type in a value position, or `null` if the type
+   * cannot be referenced at runtime. A `null` type is emitted as `undefined`.
+   */
+  type: o.Expression | null;
+
+  /**
+   * An expression representing the Angular decorators that were applied on the parameter, or
+   * `null` if it has no decorators. A `null` value omits the `decorators` key entirely.
+   */
+  decorators: o.Expression | null;
+
+  /**
+   * Whether to guard `type` with a `@ts-ignore` comment.
+   *
+   * `setClassMetadata` is emitted into regular TypeScript, so a type that turns out not to exist
+   * in a value position makes the generated code fail to compile with errors such as TS2693. Only
+   * pass `false` when the reference is known to resolve to a value, which generally requires the
+   * same whole-program information that a `ts.TypeChecker` has; a producer that cannot prove it
+   * should pass `true` and let the reference fail at runtime instead of breaking the build.
+   *
+   * This is deliberately required rather than defaulted, so that every producer has to make the
+   * choice explicitly.
+   */
+  suppressTypeErrors: boolean;
+}
+
+/**
  * Metadata of a class which captures the original Angular decorators of a class. The original
  * decorators are preserved in the generated code to allow TestBed APIs to recompile the class
  * using the original decorator with a set of overrides applied.
@@ -30,10 +61,14 @@ export interface R3ClassMetadata {
   decorators: o.Expression;
 
   /**
-   * An expression representing the Angular decorators applied to constructor parameters, or `null`
-   * if there is no constructor.
+   * The Angular decorators applied to constructor parameters, or `null` if there is no
+   * constructor.
+   *
+   * Prefer the structured form, which lets the compiler decide how the parameters are emitted.
+   * An expression is still accepted for callers that only have the already-built callback, such
+   * as the linker reading a partial declaration.
    */
-  ctorParameters: o.Expression | null;
+  ctorParameters: o.Expression | R3ClassMetadataCtorParameter[] | null;
 
   /**
    * An expression representing the Angular decorators that were applied on the properties of the
@@ -54,9 +89,63 @@ function internalCompileClassMetadata(metadata: R3ClassMetadata): o.InvokeFuncti
     .callFn([
       metadata.type,
       metadata.decorators,
-      metadata.ctorParameters ?? o.literal(null),
+      compileCtorParameters(metadata.ctorParameters, /* allowSuppressions */ true),
       metadata.propDecorators ?? o.literal(null),
     ]);
+}
+
+/**
+ * Builds the `ctorParameters` callback passed to `setClassMetadata`.
+ *
+ * @param ctorParameters The parameters to emit, or an already-built expression to pass through.
+ * @param allowSuppressions Whether `@ts-ignore` may be attached to the emitted parameters. This is
+ *     only useful when the result is emitted into TypeScript; partial declarations are published
+ *     as JavaScript, so there is nothing to suppress there.
+ */
+export function compileCtorParameters(
+  ctorParameters: o.Expression | R3ClassMetadataCtorParameter[] | null,
+  allowSuppressions: boolean,
+): o.Expression {
+  if (ctorParameters === null) {
+    return o.literal(null);
+  }
+
+  // Producers that built the callback themselves get it back untouched. There is no reliable way
+  // to tell which part of an opaque expression holds a parameter type.
+  if (!Array.isArray(ctorParameters)) {
+    return ctorParameters;
+  }
+
+  const params = ctorParameters.map((param) => {
+    const typeProp = new o.LiteralMapPropertyAssignment(
+      'type',
+      param.type ?? o.literal(undefined),
+      /* quoted */ false,
+    );
+
+    // `undefined` is always valid in a value position, so it never needs to be suppressed.
+    if (allowSuppressions && param.type !== null && param.suppressTypeErrors) {
+      // The comment goes directly on the `type` property assignment rather than on the enclosing
+      // parameter literal or callback. This ensures that even if an emitter or code formatter
+      // (like Prettier or clang-format) splits the parameter object literal across multiple lines,
+      // the `@ts-ignore` is attached to `type: ...` rather than suppressing `{`.
+      //
+      // Because `LiteralMapPropertyAssignment` is built fresh on each call, this also avoids
+      // mutating caller-owned expressions (which can be shared with other emits like `ɵfac` or
+      // cached across incremental rebuilds).
+      typeProp.leadingComments = [tsIgnoreComment()];
+    }
+
+    const entries: o.LiteralMapEntry[] = [typeProp];
+
+    if (param.decorators !== null) {
+      entries.push(new o.LiteralMapPropertyAssignment('decorators', param.decorators, false));
+    }
+
+    return new o.LiteralMapExpr(entries);
+  });
+
+  return o.arrowFn([], o.literalArr(params));
 }
 
 /**

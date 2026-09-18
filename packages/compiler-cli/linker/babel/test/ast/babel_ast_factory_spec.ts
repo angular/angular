@@ -327,6 +327,20 @@ describe('BabelAstFactory', () => {
         ['{', '  prop1: 42,', '  "prop2": "moo",', '  ...foo', '}'].join('\n'),
       );
     });
+
+    it('should attach leading comments to object literal properties', () => {
+      const prop1 = expression.ast`42`;
+      const obj = factory.createObjectLiteral([
+        {
+          propertyName: 'prop1',
+          value: prop1,
+          kind: 'property',
+          quoted: false,
+          leadingComments: [leadingComment('@ts-ignore', true, true)],
+        },
+      ]);
+      expect(generate(obj).code).toEqual(['{', '  /* @ts-ignore */prop1: 42', '}'].join('\n'));
+    });
   });
 
   describe('createParenthesizedExpression()', () => {
