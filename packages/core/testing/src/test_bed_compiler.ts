@@ -126,6 +126,48 @@ interface CleanupOperation {
   originalValue: unknown;
 }
 
+const aotOverrideWarnings = new Set<Type<any>>();
+
+/**
+ * A set of component metadata keys that are unsafe to override on AOT-compiled components.
+ *
+ * Overriding any of these keys requires the component to be dynamically JIT-recompiled at runtime.
+ * In AOT mode, since decorator metadata is compiled away, the JIT compiler cannot resolve the
+ * selector or metadata of the component's imports/dependencies. This typically causes silent failures
+ * or element resolution errors (e.g. NG0304/NG0303).
+ *
+ * Provider overrides (`providers` and `viewProviders`) are safe because they do not require
+ * template recompilation and are resolved dynamically at runtime using `providersResolver`.
+ */
+const UNSAFE_AOT_OVERRIDE_KEYS = new Set<string>([
+  'template',
+  'templateUrl',
+  'imports',
+  'declarations',
+  'exports',
+  'schemas',
+  'changeDetection',
+  'styleUrls',
+  'styleUrl',
+  'styles',
+  'animations',
+  'encapsulation',
+]);
+
+function hasUnsafeOverride(override: MetadataOverride<Component>): boolean {
+  for (const key of ['add', 'remove', 'set'] as const) {
+    const value = override[key];
+    if (value && typeof value === 'object') {
+      for (const prop of Object.keys(value)) {
+        if (UNSAFE_AOT_OVERRIDE_KEYS.has(prop)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 export class TestBedCompiler {
   private originalComponentResolutionQueue: Map<Type<any>, Component> | null = null;
 
@@ -262,6 +304,22 @@ export class TestBedCompiler {
 
   overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void {
     this.verifyNoStandaloneFlagOverrides(component, override);
+
+    // In JIT mode, `ɵcmp` is defined as a getter on the class that triggers JIT compilation.
+    // To avoid executing the getter and triggering compilation before overrides are applied,
+    // we inspect the property descriptor directly. An AOT-compiled component has `ɵcmp`
+    // defined as a static value property rather than a getter.
+    const descriptor = Object.getOwnPropertyDescriptor(component, 'ɵcmp');
+    const isAotComponent = descriptor !== undefined && descriptor.get === undefined;
+    if (isAotComponent && hasUnsafeOverride(override) && !aotOverrideWarnings.has(component)) {
+      aotOverrideWarnings.add(component);
+      console.warn(
+        `[Angular] WARNING: 'TestBed.overrideComponent' was called on '${component.name}' with template/import/schema overrides in AOT mode. ` +
+          `This is not fully supported and may cause NG0304/NG0303 element resolution errors. \n` +
+          `👉 Workaround: Disable AOT compilation in the build configuration used for tests (e.g. set 'aot: false' or equivalent).`,
+      );
+    }
+
     this.resolvers.component.addOverride(component, override);
     this.pendingComponents.add(component);
 
