@@ -3055,10 +3055,73 @@ describe('R3 template transform', () => {
     );
   });
 
+  it('should report an error for class bindings on ng-container', () => {
+    const template = `<ng-container [class.foo]="true"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Class bindings are not supported on ng-container.');
+  });
+
+  it('should report an error for style bindings on ng-container', () => {
+    const template = `<ng-container [style.color]="'red'"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Style bindings are not supported on ng-container.');
+  });
+
+  it('should report an error for [class] property bindings on ng-container', () => {
+    const template = `<ng-container [class]="'my-class'"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Class bindings are not supported on ng-container.');
+  });
+
+  it('should report an error for [style] property bindings on ng-container', () => {
+    const template = `<ng-container [style]="'color: red;'"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Style bindings are not supported on ng-container.');
+  });
+
   it('should not report an error on non-attr bindings on ng-container', () => {
     const template = `<ng-container *ngIf"test" [ngTemplateOutlet]="foo"></ng-container>`;
     const errors = parse(template, {ignoreError: true}).errors;
     expect(errors.length).toBe(0);
+  });
+
+  it('should report an error for static class attribute on ng-container', () => {
+    const template = `<ng-container class="foo"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('"class" attribute is not supported on ng-container.');
+  });
+
+  it('should report an error for static aria attribute on ng-container', () => {
+    const template = `<ng-container aria-label="foo"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('"aria-label" attribute is not supported on ng-container.');
+  });
+
+  it('should report an error for aria property bindings on ng-container', () => {
+    const template = `<ng-container [aria-label]="'foo'"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('"aria-label" attribute is not supported on ng-container.');
+  });
+
+  it('should report an error for aria interpolation on ng-container', () => {
+    const template = `<ng-container aria-label="{{foo}}"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('"aria-label" attribute is not supported on ng-container.');
+  });
+
+  it('should report an error for class interpolation on ng-container', () => {
+    const template = `<ng-container class="{{foo}}"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('Class bindings are not supported on ng-container.');
   });
 
   describe('@content blocks', () => {
