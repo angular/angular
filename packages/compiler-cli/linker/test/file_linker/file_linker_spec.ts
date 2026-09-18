@@ -131,6 +131,37 @@ describe('FileLinker', () => {
       expect(compileSpy).toHaveBeenCalled();
       expect(compileSpy.calls.mostRecent().args[1].getNode('ngImport')).toBe(ngImport);
     });
+
+    it('should not namespace CSS variables in partially compiled component styles', () => {
+      const source = `
+        ɵɵngDeclareComponent({
+          minVersion: '0.0.0-PLACEHOLDER',
+          version: '0.0.0-PLACEHOLDER',
+          ngImport: core,
+          type: SomeComp,
+          template: '',
+          isInline: true,
+          styles: [':host { color: var(--brand); --global--accent: red; }'],
+        });
+      `;
+      const {fileLinker} = createFileLinker(source);
+      const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+      const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+        .expression as ts.CallExpression;
+
+      const result = fileLinker.linkPartialDeclaration(
+        'ɵɵngDeclareComponent',
+        [call.arguments[0]],
+        new MockDeclarationScope(),
+      );
+      const linkedDeclaration = ts
+        .createPrinter()
+        .printNode(ts.EmitHint.Unspecified, result, sourceFile);
+
+      expect(linkedDeclaration).toContain('color: var(--brand)');
+      expect(linkedDeclaration).toContain('--accent: red');
+      expect(linkedDeclaration).not.toContain('%NS%');
+    });
   });
 
   describe('block syntax support', () => {
