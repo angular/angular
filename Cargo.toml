@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "tools/rust/example",
+]
+resolver = "3"

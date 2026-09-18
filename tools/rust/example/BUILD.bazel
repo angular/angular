@@ -1,0 +1,72 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@rules_rust//rust:defs.bzl", "rust_shared_library")
+load("@rules_rust_wasm_bindgen//:defs.bzl", "rust_wasm_bindgen")
+load("//tools:defaults.bzl", "jasmine_test", "ts_config", "ts_project")
+
+rust_shared_library(
+    name = "hello_world_lib",
+    srcs = ["src/lib.rs"],
+    edition = "2024",
+    target_compatible_with = ["@platforms//cpu:wasm32"],
+    deps = [
+        "@crates//:wasm-bindgen",
+    ],
+)
+
+rust_wasm_bindgen(
+    name = "hello_world_wasm",
+    target = "web",
+    wasm_file = ":hello_world_lib",
+)
+
+js_library(
+    name = "hello_world_wasm_lib",
+    srcs = [":hello_world_wasm"],
+)
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+)
+
+ts_project(
+    name = "hello_world",
+    srcs = ["index.ts"],
+    tsconfig = ":tsconfig",
+    deps = [
+        ":hello_world_wasm_lib",
+        "//:node_modules/@types/node",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        ":hello_world",
+    ],
+    package = "hello-world",
+)
+
+build_test(
+    name = "build_test",
+    targets = [":npm_package"],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["test.spec.ts"],
+    deps = [
+        ":hello_world",
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [":test_lib"],
+)

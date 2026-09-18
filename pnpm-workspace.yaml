@@ -28,6 +28,7 @@ packages:
   - packages/zone.js/
   - packages/zone.js/test/typings/
   - tools/bazel/rules_angular_store/
+  - tools/rust/example/
   - vscode-ng-language-service
   - vscode-ng-language-service/server
   - vscode-ng-language-service/integration/project
