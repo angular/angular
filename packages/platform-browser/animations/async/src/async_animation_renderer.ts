@@ -28,20 +28,12 @@ import {
   ɵRuntimeError as RuntimeError,
   type ListenerOptions,
 } from '@angular/core';
-import {ɵRuntimeErrorCode as RuntimeErrorCode} from '../../../index';
+import {
+  ɵdisableThrowOnSyntheticProps as disableThrowOnSyntheticProps,
+  ɵRuntimeErrorCode as RuntimeErrorCode,
+} from '../../../index';
 
 const ANIMATION_PREFIX = '@';
-
-interface RendererWithSyntheticProps extends Renderer2 {
-  throwOnSyntheticProps: boolean;
-}
-
-function isRendererWithSyntheticProps(renderer: Renderer2): renderer is RendererWithSyntheticProps {
-  return (
-    'throwOnSyntheticProps' in renderer &&
-    typeof renderer.throwOnSyntheticProps === 'boolean'
-  );
-}
 
 @Injectable()
 export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory2 {
@@ -136,9 +128,7 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
     }
 
     // We need to prevent the DomRenderer to throw an error because of synthetic properties
-    if (isRendererWithSyntheticProps(renderer)) {
-      renderer.throwOnSyntheticProps = false;
-    }
+    disableThrowOnSyntheticProps(renderer);
 
     // Using a dynamic renderer to switch the renderer implementation once the module is loaded.
     const dynamicRenderer = new DynamicDelegationRenderer(renderer);
