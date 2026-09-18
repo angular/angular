@@ -23,6 +23,7 @@ import {
   R3InputMetadata,
   R3PartialDeclaration,
   R3QueryMetadata,
+  verifyHostBindings,
 } from '@angular/compiler';
 
 import semver from 'semver';
@@ -77,12 +78,22 @@ export function toR3DirectiveMeta<TExpression>(
     );
   }
 
+  const host = toHostMetadata(metaObj);
+  // Partial declarations are external linker inputs, so validate them before emitting host code.
+  if (metaObj.has('host')) {
+    const hostMeta = metaObj.getValue('host');
+    const errors = verifyHostBindings(host, createSourceSpan(hostMeta.getRange(), code, sourceUrl));
+    if (errors.length > 0) {
+      throw new FatalLinkerError(hostMeta.expression, errors.map((error) => error.msg).join('\n'));
+    }
+  }
+
   return {
     typeSourceSpan: createSourceSpan(typeExpr.getRange(), code, sourceUrl),
     type: wrapReference(typeExpr.getOpaque()),
     typeArgumentCount: 0,
     deps: null,
-    host: toHostMetadata(metaObj),
+    host,
     inputs: metaObj.has('inputs') ? metaObj.getObject('inputs').toLiteral(toInputMapping) : {},
     outputs: metaObj.has('outputs')
       ? metaObj.getObject('outputs').toLiteral((value) => value.getString())
