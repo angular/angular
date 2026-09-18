@@ -44,7 +44,7 @@ function MyComponent_img_5_Template(rf, ctx) {
 decls: 6,
 vars: 4,
 consts: () => {
-  __i18nMsgWithPostprocess__('{$startTagDiv}Content{$closeTagDiv}{$startTagDiv}{$startTagDiv}Content{$closeTagDiv}{$closeTagDiv}{$tagImg}{$tagImg}', [['closeTagDiv', String.raw`[\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*2:3\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*3:2\uFFFD]`], ['startTagDiv', String.raw`[\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD|\uFFFD*3:2\uFFFD\uFFFD#1:2\uFFFD|\uFFFD*2:3\uFFFD\uFFFD#1:3\uFFFD]`], ['tagImg', String.raw`[\uFFFD*4:4\uFFFD\uFFFD/*4:4\uFFFD\uFFFD#1:4\uFFFD\uFFFD/#1:4\uFFFD\uFFFD*4:4\uFFFD\uFFFD/*4:4\uFFFD|\uFFFD*5:5\uFFFD\uFFFD/*5:5\uFFFD\uFFFD#1:5\uFFFD\uFFFD/#1:5\uFFFD\uFFFD*5:5\uFFFD\uFFFD/*5:5\uFFFD]`]], {original_code: {closeTagDiv: '</div>', startTagDiv: '<div *ngIf=\"someFlag\">', tagImg: '<img *ngIf=\"someOtherFlag\" />' }}, {}, [])
+  __i18nMsgWithPostprocess__('{$startTagDiv}Content{$closeTagDiv}{$startTagDiv}{$startTagDiv}Content{$closeTagDiv}{$closeTagDiv}{$tagImg}{$tagImg}', [['closeTagDiv', String.raw`[\uFFFD/#1:1\uFFFD\uFFFD/*2:1\uFFFD|\uFFFD/#1:3\uFFFD\uFFFD/*2:3\uFFFD|\uFFFD/#1:2\uFFFD\uFFFD/*3:2\uFFFD]`], ['startTagDiv', String.raw`[\uFFFD*2:1\uFFFD\uFFFD#1:1\uFFFD|\uFFFD*3:2\uFFFD\uFFFD#1:2\uFFFD|\uFFFD*2:3\uFFFD\uFFFD#1:3\uFFFD]`], ['tagImg', String.raw`[\uFFFD*4:4\uFFFD\uFFFD#1:4\uFFFD\uFFFD/#1:4\uFFFD\uFFFD/*4:4\uFFFD|\uFFFD*5:5\uFFFD\uFFFD#1:5\uFFFD\uFFFD/#1:5\uFFFD\uFFFD/*5:5\uFFFD]`]], {original_code: {closeTagDiv: '</div>', startTagDiv: '<div *ngIf=\"someFlag\">', tagImg: '<img *ngIf=\"someOtherFlag\" />' }}, {}, [])
   return [i18n_0, [4, "ngIf"]];
 },
 template: function MyComponent_Template(rf, ctx) {

@@ -18,7 +18,7 @@ function MyComponent_div_0_Template(rf, ctx) {
   consts: () => {
 	__i18nMsg__('different scope {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ outer | uppercase }}'}}, {meaning: 'm', desc: 'd'})
 	return [
-	  ["title", $i18n_0$],
+	  ["title", $i18n_0$, 1],
 	  [__AttributeMarker.Template__, "ngFor", "ngForOf"],
 	  [__AttributeMarker.I18n__, "title"]
 	];

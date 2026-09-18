@@ -64,6 +64,7 @@ import {
   getParentFromIcuCreateOpCode,
   getRefFromIcuCreateOpCode,
   getTIcu,
+  validateI18nBindingIndex,
 } from './i18n_util';
 
 /**
@@ -112,7 +113,14 @@ export function applyI18n(tView: TView, lView: LView, index: number) {
         ? (tI18n as I18nUpdateOpCodes)
         : (tI18n as TI18n).update;
       const bindingsStartIndex = getBindingIndex() - changeMaskCounter - 1;
-      applyUpdateOpCodes(tView, lView, updateOpCodes, bindingsStartIndex, changeMask);
+      applyUpdateOpCodes(
+        tView,
+        lView,
+        updateOpCodes,
+        bindingsStartIndex,
+        changeMask,
+        changeMaskCounter,
+      );
     }
   } finally {
     // Reset changeMask & maskBit to default for the next update cycle
@@ -398,6 +406,7 @@ function applyMutableOpCodes(
  * @param bindingsStartIndex Location of the first `ɵɵi18nApply`
  * @param changeMask Each bit corresponds to a `ɵɵi18nExp` (Counting backwards from
  *     `bindingsStartIndex`)
+ * @param bindingCount Number of `ɵɵi18nExp` values available to these opcodes.
  */
 function applyUpdateOpCodes(
   tView: TView,
@@ -405,13 +414,24 @@ function applyUpdateOpCodes(
   updateOpCodes: I18nUpdateOpCodes,
   bindingsStartIndex: number,
   changeMask: number,
+  bindingCount: number,
 ) {
   for (let i = 0; i < updateOpCodes.length; i++) {
     // bit code to check if we should apply the next update
     const checkBit = updateOpCodes[i] as number;
     // Number of opCodes to skip until next set of update codes
     const skipCodes = updateOpCodes[++i] as number;
-    if (checkBit & changeMask) {
+    const hasChanged = (checkBit & changeMask) !== 0;
+    if (!hasChanged && tView.firstUpdatePass) {
+      // An invalid binding can select a bit that never changes and otherwise avoid validation.
+      for (let j = i + 1; j <= i + skipCodes; j++) {
+        const opCode = updateOpCodes[j];
+        if (typeof opCode === 'number' && opCode < 0) {
+          validateI18nBindingIndex(-1 - opCode, bindingCount);
+        }
+      }
+    }
+    if (hasChanged) {
       // The value has been updated since last checked
       let value = '';
       for (let j = i + 1; j <= i + skipCodes; j++) {
@@ -421,6 +441,8 @@ function applyUpdateOpCodes(
         } else if (typeof opCode == 'number') {
           if (opCode < 0) {
             // Negative opCode represent `i18nExp` values offset.
+            const bindingIndex = -1 - opCode;
+            validateI18nBindingIndex(bindingIndex, bindingCount);
             value += renderStringify(lView[bindingsStartIndex - opCode]);
           } else {
             const nodeIndex = opCode >>> I18nUpdateOpCode.SHIFT_REF;
@@ -468,7 +490,13 @@ function applyUpdateOpCodes(
                 applyIcuSwitchCase(tView, getTIcu(tView, nodeIndex)!, lView, value);
                 break;
               case I18nUpdateOpCode.IcuUpdate:
-                applyIcuUpdateCase(tView, getTIcu(tView, nodeIndex)!, bindingsStartIndex, lView);
+                applyIcuUpdateCase(
+                  tView,
+                  getTIcu(tView, nodeIndex)!,
+                  bindingsStartIndex,
+                  bindingCount,
+                  lView,
+                );
                 break;
             }
           }
@@ -485,7 +513,7 @@ function applyUpdateOpCodes(
         const tIcu = getTIcu(tView, nodeIndex)!;
         const currentIndex = lView[tIcu.currentCaseLViewIndex];
         if (currentIndex < 0) {
-          applyIcuUpdateCase(tView, tIcu, bindingsStartIndex, lView);
+          applyIcuUpdateCase(tView, tIcu, bindingsStartIndex, bindingCount, lView);
         }
       }
     }
@@ -499,9 +527,16 @@ function applyUpdateOpCodes(
  * @param tView Current `TView`
  * @param tIcu Current `TIcu`
  * @param bindingsStartIndex Location of the first `ɵɵi18nApply`
+ * @param bindingCount Number of `ɵɵi18nExp` values available to these opcodes.
  * @param lView Current `LView`
  */
-function applyIcuUpdateCase(tView: TView, tIcu: TIcu, bindingsStartIndex: number, lView: LView) {
+function applyIcuUpdateCase(
+  tView: TView,
+  tIcu: TIcu,
+  bindingsStartIndex: number,
+  bindingCount: number,
+  lView: LView,
+) {
   ngDevMode && assertIndexInRange(lView, tIcu.currentCaseLViewIndex);
   let activeCaseIndex = lView[tIcu.currentCaseLViewIndex];
   if (activeCaseIndex !== null) {
@@ -513,7 +548,14 @@ function applyIcuUpdateCase(tView: TView, tIcu: TIcu, bindingsStartIndex: number
       // -1 is same as all bits on, which simulates creation since it marks all bits dirty
       mask = -1;
     }
-    applyUpdateOpCodes(tView, lView, tIcu.update[activeCaseIndex], bindingsStartIndex, mask);
+    applyUpdateOpCodes(
+      tView,
+      lView,
+      tIcu.update[activeCaseIndex],
+      bindingsStartIndex,
+      mask,
+      bindingCount,
+    );
   }
 }
 
