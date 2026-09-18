@@ -9,7 +9,10 @@
 import {
   afterNextRender,
   ApplicationRef,
+  Component,
   computed,
+  createComponent,
+  EnvironmentInjector,
   PLATFORM_ID,
   provideZonelessChangeDetection,
   signal,
@@ -364,5 +367,45 @@ describe('afterRenderEffect', () => {
     counter.set(1);
     appRef.tick();
     expect(log).toEqual(['earlyRead: 1', 'earlyRead: 0', 'write: 0']);
+  });
+
+  it('runs all phases in order for a sequence registered while hooks are executing', async () => {
+    const log: string[] = [];
+    const appRef = TestBed.inject(ApplicationRef);
+    const environmentInjector = TestBed.inject(EnvironmentInjector);
+
+    @Component({template: ''})
+    class Inner {
+      constructor() {
+        afterRenderEffect({
+          earlyRead: () => {
+            log.push('inner earlyRead');
+            return 'from earlyRead';
+          },
+          write: (value) => {
+            log.push(`inner write: ${typeof value === 'function' ? value() : value}`);
+          },
+        });
+      }
+    }
+
+    // The `write` hook creates and change-detects a component that registers its own effect.
+    // This mirrors a custom element connecting during a render phase. See #61715.
+    afterNextRender(
+      {
+        write: () => {
+          const ref = createComponent(Inner, {environmentInjector});
+          appRef.attachView(ref.hostView);
+          ref.changeDetectorRef.detectChanges();
+        },
+      },
+      {injector: appRef.injector},
+    );
+
+    appRef.tick();
+    await appRef.whenStable();
+
+    // `earlyRead` must run before `write`, and pass its result to `write`.
+    expect(log).toEqual(['inner earlyRead', 'inner write: from earlyRead']);
   });
 });
