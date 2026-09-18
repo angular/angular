@@ -22,6 +22,7 @@ import {
 } from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
+import {mergeUrlDerivedKeys} from './utils/collection';
 import {getOutlet, sortByMatchingOutlets} from './utils/config';
 import {
   createPreMatchRouteSnapshot,
@@ -123,7 +124,7 @@ export class Recognizer {
     const rootSnapshot = new ActivatedRouteSnapshot(
       [],
       Object.freeze({}),
-      Object.freeze({...this.urlTree.queryParams}),
+      Object.freeze(mergeUrlDerivedKeys(this.urlTree.queryParams)),
       this.urlTree.fragment,
       Object.freeze({}),
       PRIMARY_OUTLET,
@@ -384,7 +385,7 @@ export class Recognizer {
     const snapshot = new ActivatedRouteSnapshot(
       segments,
       parameters,
-      Object.freeze({...this.urlTree.queryParams}),
+      Object.freeze(mergeUrlDerivedKeys(this.urlTree.queryParams)),
       this.urlTree.fragment,
       getData(route),
       getOutlet(route),

@@ -91,3 +91,62 @@ export function wrapIntoPromise<T>(value: T | Promise<T> | Observable<T>): Promi
   }
   return Promise.resolve(value);
 }
+
+// Above V8's slow-elements threshold.
+const SLOW_ELEMENTS_SENTINEL = 0x40000000;
+
+/**
+ * Prevents URL-derived numeric keys from producing large V8 fast-elements
+ * backing stores by first forcing indexed properties into dictionary storage.
+ *
+ * Copies need the same protection because their elements storage is independent.
+ * Named-only records keep their normal representation.
+ *
+ * This is a V8-specific memory mitigation and is not an ECMAScript guarantee.
+ *
+ * Background:
+ * https://v8.dev/blog/fast-properties#elements-or-array-indexed-properties
+ */
+function preventDenseElements(target: {[key: string]: unknown}, key: string): void {
+  // Array indices are canonical uint32 strings, excluding 2 ** 32 - 1.
+  const index = Number(key) >>> 0;
+  // Preserve a URL-supplied sentinel; its presence already requires dictionary elements.
+  if (
+    String(index) === key &&
+    index !== 0xffffffff &&
+    !Object.hasOwn(target, SLOW_ELEMENTS_SENTINEL)
+  ) {
+    Object.defineProperty(target, SLOW_ELEMENTS_SENTINEL, {value: 0, configurable: true});
+    delete target[SLOW_ELEMENTS_SENTINEL];
+  }
+}
+
+/** Defines a URL-derived own property without sparse-index allocation in V8. */
+export function setUrlDerivedKey<T>(target: {[key: string]: T}, key: string, value: T): void {
+  defineUrlDerivedKey(target, key, value);
+}
+
+/** Defines a URL-derived own property without invoking inherited setters. */
+export function defineUrlDerivedKey(
+  target: {[key: string | symbol]: unknown},
+  key: string | symbol,
+  value: unknown,
+): void {
+  if (typeof key === 'string') preventDenseElements(target, key);
+  Object.defineProperty(target, key, {value, writable: true, enumerable: true, configurable: true});
+}
+
+/** Copies URL-derived records with object-spread semantics, retaining the V8 protection. */
+export function mergeUrlDerivedKeys<T>(
+  ...sources: ({[key: string | symbol]: T} | null | undefined)[]
+): {[key: string | symbol]: T} {
+  const target: {[key: string | symbol]: T} = {};
+  for (const source of sources) {
+    const from = Object(source);
+    for (const key of Reflect.ownKeys(from)) {
+      if (!Object.prototype.propertyIsEnumerable.call(from, key)) continue;
+      defineUrlDerivedKey(target, key, from[key]);
+    }
+  }
+  return target;
+}

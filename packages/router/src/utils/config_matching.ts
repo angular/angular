@@ -16,6 +16,7 @@ import {ActivatedRouteSnapshot} from '../router_state';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
+import {mergeUrlDerivedKeys} from './collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet} from './config';
 
 export interface MatchResult {
@@ -108,7 +109,7 @@ export function match(
   });
   const parameters =
     res.consumed.length > 0
-      ? {...posParams, ...res.consumed[res.consumed.length - 1].parameters}
+      ? mergeUrlDerivedKeys(posParams, res.consumed[res.consumed.length - 1].parameters)
       : posParams;
 
   return {
@@ -173,7 +174,7 @@ function addEmptyPathsToChildrenIfNeeded(
       res[getOutlet(r)] = s;
     }
   }
-  return {...children, ...res};
+  return mergeUrlDerivedKeys(children, res);
 }
 
 function createChildrenForEmptyPaths(

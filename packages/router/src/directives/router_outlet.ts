@@ -39,6 +39,7 @@ import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {PRIMARY_OUTLET} from '../shared';
 import {ComponentInputBindingOptions} from '../router_config';
+import {mergeUrlDerivedKeys} from '../utils/collection';
 
 /**
  * An `InjectionToken` provided by the `RouterOutlet` and can be set using the `routerOutletData`
@@ -510,14 +511,9 @@ export class RoutedComponentInputBinder {
     ])
       .pipe(
         switchMap(([queryParams, params, data], index) => {
-          // Precedence when keys collide is determined by the spread order:
+          // Precedence when keys collide is determined by the merge order:
           // resources > data (including resolvers) > path params > query params
-          data = {
-            ...queryParams,
-            ...params,
-            ...data,
-            ...(activatedRoute.resources || {}),
-          };
+          data = mergeUrlDerivedKeys(queryParams, params, data, activatedRoute.resources);
           // Get the first result from the data subscription synchronously so it's available to
           // the component as soon as possible (and doesn't require a second change detection).
           if (index === 0) {

@@ -14,7 +14,7 @@ import {PartialMatchRouteSnapshot, RedirectFunction, Route} from './models';
 import {navigationCancelingError} from './navigation_canceling_error';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {wrapIntoObservable} from './utils/collection';
+import {setUrlDerivedKey, wrapIntoObservable} from './utils/collection';
 import {firstValueFrom} from './utils/first_value_from';
 
 export class NoMatch extends Error {
@@ -123,13 +123,8 @@ export class ApplyRedirects {
   createQueryParams(redirectToParams: Params, actualParams: Params): Params {
     const res: Params = {};
     Object.entries(redirectToParams).forEach(([k, v]) => {
-      const copySourceValue = typeof v === 'string' && v[0] === ':';
-      if (copySourceValue) {
-        const sourceName = v.substring(1);
-        res[k] = actualParams[sourceName];
-      } else {
-        res[k] = v;
-      }
+      const value = typeof v === 'string' && v[0] === ':' ? actualParams[v.substring(1)] : v;
+      setUrlDerivedKey(res, k, value);
     });
     return res;
   }
@@ -145,7 +140,11 @@ export class ApplyRedirects {
     // Keyed by outlet name, which can be `__proto__`, so use a null-prototype map.
     let children: {[n: string]: UrlSegmentGroup} = Object.create(null);
     Object.entries(group.children).forEach(([name, child]) => {
-      children[name] = this.createSegmentGroup(redirectTo, child, segments, posParams);
+      setUrlDerivedKey(
+        children,
+        name,
+        this.createSegmentGroup(redirectTo, child, segments, posParams),
+      );
     });
 
     return new UrlSegmentGroup(updatedSegments, children);

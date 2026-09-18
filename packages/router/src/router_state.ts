@@ -21,7 +21,7 @@ import {map} from 'rxjs/operators';
 import {Data, ResourceResult, ResolveData, Route} from './models';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET, RouteTitleKey} from './shared';
 import {equalSegments, UrlSegment} from './url_tree';
-import {shallowEqual, shallowEqualArrays} from './utils/collection';
+import {mergeUrlDerivedKeys, shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
 /**
@@ -325,7 +325,7 @@ export function getInherited(
       (!parent.component && !parent.routeConfig?.loadComponent))
   ) {
     inherited = {
-      params: {...parent.params, ...route.params},
+      params: mergeUrlDerivedKeys(parent.params, route.params),
       data: {...parent.data, ...route.data},
       resolve: {
         // Snapshots are created with data inherited from parent and guards (i.e. canActivate) can
@@ -345,7 +345,7 @@ export function getInherited(
     };
   } else {
     inherited = {
-      params: {...route.params},
+      params: mergeUrlDerivedKeys(route.params),
       data: {...route.data},
       resolve: {...route.data, ...(route._resolvedData ?? {})},
     };

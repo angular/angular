@@ -199,6 +199,25 @@ describe('router outlet name', () => {
 });
 
 describe('component input binding', () => {
+  it('should bind numeric aliases with path params overriding query params', async () => {
+    @Component({template: ''})
+    class NumericInput {
+      @Input('7') value?: string;
+    }
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{path: '**', component: NumericInput}], withComponentInputBinding()),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    const instance = await harness.navigateByUrl('/a;7=path?7=query', NumericInput);
+    expect(instance.value).toBe('path');
+
+    await harness.navigateByUrl('/a?7=query', NumericInput);
+    expect(instance.value).toBe('query');
+  });
+
   it('sets component inputs from matching query params', async () => {
     @Component({
       template: '',
