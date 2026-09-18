@@ -46,7 +46,7 @@ Start developing with the latest Angular features from our roadmap. This list re
   The team will continue to develop meaningful integrations with tools like Google AI Studio, Gemini CLI and other agentic tooling such as Agentic IDEs like Antigravity. We plan to launch solutions that stay in line with the rapidly evolving industry. Some examples include agent skills, new MCP features and AI SDKs.
   </docs-card>
   <docs-card title="Code Generation">
-  [Based on our research](https://blog.angular.dev/beyond-the-horizon-how-angular-is-embracing-ai-for-next-gen-apps-7a7ed706e1a3), code generation for Angular is already high quality with modern LLMs. We will continue our investments in improving code generation for Angular. This means we will regularly evaluate code generation quality using current models and work to improve it through system instructions, documentation, and tactical framework changes. We also will continue investments in [Web Codegen Scorer](https://github.com/angular/web-codegen-scorer), our evaluation infrastructure.
+  [Based on our research](https://blog.angular.dev/beyond-the-horizon-how-angular-is-embracing-ai-for-next-gen-apps-7a7ed706e1a3), code generation for Angular is already high quality with modern LLMs. We will continue our investments in improving code generation for Angular. This means we will regularly evaluate code generation quality using current models and work to improve it through system instructions, documentation, and tactical framework changes.
   </docs-card>
   <docs-card title="AI Powered Experiences">
   There is a new frontier for Angular developers to explore with new concepts such as Dynamic UI generation. We started with building Angular support for A2UI and are actively searching out more opportunities to support modern application experiences.
@@ -67,7 +67,7 @@ We're in the process of prototyping and exploring what this support would look l
   <docs-card title="Enhanced Ecosystem compatibility">
     Developers are mixing AI generated code with manually generated code, and want to make use of popular libraries and integrate new experiences quickly. Angular wants to integrate well into that ecosystem - developers should be able to use the tools they love and mix and match frameworks according to their requirements.
 
-As part of this project, we'll explore the requirement space of cross framework interop and our build tooling to improve our compatibility. We also want to see if we can contribute to this space by providing framework-agnostic solutions to open problems in the web ecosystem, similar to what we delivered with the [Web Codegen Scorer](https://github.com/angular/web-codegen-scorer) project.
+As part of this project, we'll explore the requirement space of cross framework interop and our build tooling to improve our compatibility.
 
   </docs-card>
 
