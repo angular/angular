@@ -21,7 +21,7 @@ import {
 import {Subscription} from 'rxjs';
 
 import {FormResetEvent, type AbstractControl} from '../model/abstract_model';
-import type {FormControl} from '../model/form_control';
+import {FormControl} from '../model/form_control';
 
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
@@ -157,6 +157,13 @@ export abstract class NgControl extends AbstractControlDirective {
     errors?: ValidationErrors | null;
   } | null = null;
 
+  /**
+   * Last value emitted by the custom control that has not been committed to the `FormControl`
+   * yet (`updateOn: 'blur' | 'submit'`). Only meaningful while `hasPendingCustomValue` is true.
+   */
+  private pendingCustomValue: unknown = undefined;
+  private hasPendingCustomValue = false;
+
   constructor(
     injector?: Injector,
     renderer?: Renderer2,
@@ -230,15 +237,38 @@ export abstract class NgControl extends AbstractControlDirective {
     // Note: We access this.control dynamically because it may not be set yet
     // (e.g., FormControlDirective's form input hasn't been bound)
     host.listenToCustomControlModel((value) => {
-      // TODO: is there a case where this input has not yet been set?
-      this.control?.markAsDirty();
-      this.control?.setValue(value, {emitModelToViewChange: false});
-      this.viewToModelUpdate(value);
+      const control = this.control;
+      if (!(control instanceof FormControl)) {
+        return;
+      }
+
+      control._pendingValue = value;
+      control._pendingChange = true;
+      control._pendingDirty = true;
+      this.pendingCustomValue = value;
+      this.hasPendingCustomValue = true;
+
+      if (control.updateOn === 'change') {
+        this.updateControlFromCustom(control);
+      }
     });
 
     // Listen to touched changes from FVC
     host.listenToCustomControlOutput('touch', () => {
-      this.control?.markAsTouched();
+      const control = this.control;
+      if (!(control instanceof FormControl)) {
+        return;
+      }
+
+      control._pendingTouched = true;
+
+      if (control.updateOn === 'blur' && control._pendingChange) {
+        this.updateControlFromCustom(control);
+      }
+
+      if (control.updateOn !== 'submit') {
+        control.markAsTouched();
+      }
     });
 
     this.customControlBindings = {};
@@ -247,18 +277,53 @@ export abstract class NgControl extends AbstractControlDirective {
     this.requiredValidatorViaDi = this._rawValidators.find((v) => v instanceof RequiredValidator);
   }
 
+  private updateControlFromCustom(control: FormControl): void {
+    const value = control._pendingValue;
+    if (control._pendingDirty) {
+      control.markAsDirty();
+    }
+    control.setValue(value, {emitModelToViewChange: false});
+    this.viewToModelUpdate(value);
+    control._pendingChange = false;
+    this.clearPendingCustomValue();
+    // The custom control is the source of `value`, so it already holds it. Cache the emitted
+    // value (not `control.value`) so a `valueChanges` subscriber that synchronously sets a
+    // different value is still propagated by `ngControlUpdate`.
+    if (this.customControlBindings) {
+      this.customControlBindings.value = value;
+    }
+  }
+
+  private clearPendingCustomValue(): void {
+    this.pendingCustomValue = undefined;
+    this.hasPendingCustomValue = false;
+  }
+
   protected ngControlUpdate(host: ControlDirectiveHost, bindRequired: boolean): void {
     if (!this.isCustomControlBased) {
       return;
     }
 
-    const control = this.control!;
-    const bindings = this.customControlBindings!;
+    const control = this.control;
+    const bindings = this.customControlBindings;
+    if (!control || !bindings) {
+      return;
+    }
 
     // Bind FormControl value -> FVC
-    if (!Object.is(bindings.value, control.value)) {
+    const valueChanged = !Object.is(bindings.value, control.value);
+    const pendingCleared =
+      this.hasPendingCustomValue && control instanceof FormControl && !control._pendingChange;
+    if (valueChanged || pendingCleared) {
       bindings.value = control.value;
-      host.setCustomControlModelInput(control.value);
+      // Skip the write when the custom control is where this value came from
+      // (e.g. a pending value committed by form submission).
+      const customControlHasValue =
+        this.hasPendingCustomValue && Object.is(this.pendingCustomValue, control.value);
+      this.clearPendingCustomValue();
+      if (!customControlHasValue) {
+        host.setCustomControlModelInput(control.value);
+      }
     }
 
     // Bind all status properties
