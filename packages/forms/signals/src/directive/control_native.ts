@@ -42,6 +42,7 @@ export function nativeControlCreate(
   document: Document,
 ): () => void {
   let updateMode = false;
+  let hasPendingValueWrite = false;
   const input = parent.nativeFormElement;
 
   // TODO: (perf) ok to always create this?
@@ -57,29 +58,41 @@ export function nativeControlCreate(
 
   parseErrorsSource.set(parser.errors);
   parent.onReset = () => {
+    hasPendingValueWrite = false;
     parser.reset();
     const value = parent.state().value();
     bindings['controlValue'] = value;
     setNativeControlValue(input, value);
   };
-
   // Use `addEventListener` so we only trigger ticks on signal changes.
   // See https://github.com/angular/angular/issues/61839.
   const nativeEl = host.nativeElement;
-  // Pass undefined as the raw value since the parse function doesn't care about it.
-  const onInput = () => parser.setRawValue(undefined);
-  nativeEl.addEventListener('input', onInput);
-  const onBlur = () => parent.state().markAsTouched();
+  const updateFromInput = () => {
+    // A newer user edit takes precedence over a deferred model update.
+    hasPendingValueWrite = false;
+    // Pass undefined as the raw value since the parse function doesn't care about it.
+    parser.setRawValue(undefined);
+  };
+  nativeEl.addEventListener('input', updateFromInput);
+  const onBlur = () => {
+    const state = parent.state();
+    state.markAsTouched();
+    if (hasPendingValueWrite) {
+      hasPendingValueWrite = false;
+      parser.reset();
+      setNativeControlValue(input, state.controlValue());
+    }
+  };
   nativeEl.addEventListener('blur', onBlur);
 
   parent.destroyRef.onDestroy(() => {
-    nativeEl.removeEventListener('input', onInput);
+    nativeEl.removeEventListener('input', updateFromInput);
     nativeEl.removeEventListener('blur', onBlur);
   });
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
-    validityMonitor.watchValidity(parent.destroyRef, input, () => parser.setRawValue(undefined));
+    validityMonitor.watchValidity(parent.destroyRef, input, updateFromInput);
   }
 
   parent.registerAsBinding();
@@ -152,6 +165,10 @@ export function nativeControlCreate(
       const isBadInput = isFocused && isInput(input) && validityMonitor.isBadInput(input);
       if (!(isFocused && (isIntermediate(input.value, controlValue) || isBadInput))) {
         setNativeControlValue(input, controlValue);
+        hasPendingValueWrite = false;
+      } else if (isBadInput) {
+        // The binding already cached this value, so blur must apply the deferred write.
+        hasPendingValueWrite = true;
       }
     }
 

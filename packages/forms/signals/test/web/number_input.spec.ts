@@ -148,6 +148,109 @@ describe('numeric inputs', () => {
       expect(input1.value).toBe('100');
     });
 
+    for (const alreadyTouched of [false, true]) {
+      it(`should apply a deferred model value on blur when touched is ${alreadyTouched}`, async () => {
+        @Component({
+          imports: [FormField],
+          template: `
+            <input id="input1" type="number" [formField]="f" />
+            <input id="input2" type="number" [formField]="f" />
+          `,
+        })
+        class TestCmp {
+          readonly data = signal<number>(5);
+          readonly f = form(this.data);
+        }
+
+        const fixture = TestBed.createComponent(TestCmp);
+        await fixture.whenStable();
+        const input1 = fixture.nativeElement.querySelector('#input1') as HTMLInputElement;
+        const input2 = fixture.nativeElement.querySelector('#input2') as HTMLInputElement;
+        input1.focus();
+        if (alreadyTouched) {
+          fixture.componentInstance.f().markAsTouched();
+          await fixture.whenStable();
+        }
+
+        validityMonitor.setInputState(input1, '', true);
+        await fixture.whenStable();
+        fixture.componentInstance.data.set(42);
+        await fixture.whenStable();
+        expect(input1.value).toBe('');
+        expect(input2.value).toBe('42');
+
+        input1.blur();
+        await fixture.whenStable();
+        expect(input1.value).toBe('42');
+        expect(fixture.componentInstance.data()).toBe(42);
+        expect(fixture.componentInstance.f().errors()).toEqual([]);
+      });
+    }
+
+    for (const validEdit of [false, true]) {
+      it(`should preserve a newer user edit on blur when valid is ${validEdit}`, async () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="number" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly data = signal<number>(5);
+          readonly f = form(this.data);
+        }
+
+        const fixture = TestBed.createComponent(TestCmp);
+        await fixture.whenStable();
+        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+        input.focus();
+        validityMonitor.setInputState(input, '', true);
+        await fixture.whenStable();
+        fixture.componentInstance.data.set(42);
+        await fixture.whenStable();
+
+        if (validEdit) {
+          validityMonitor.setInputState(input, '1.0', false);
+        } else {
+          // A further incomplete keystroke leaves Chromium's exposed value empty.
+          input.dispatchEvent(new Event('input'));
+        }
+        await fixture.whenStable();
+        input.blur();
+        await fixture.whenStable();
+
+        expect(input.value).toBe(validEdit ? '1.0' : '');
+        expect(fixture.componentInstance.data()).toBe(validEdit ? 1 : 42);
+        expect(fixture.componentInstance.f().errors()).toEqual(
+          validEdit ? [] : [jasmine.objectContaining({kind: 'parse'})],
+        );
+      });
+    }
+
+    it('should retain parse errors on blur when no model value was deferred', async () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number>(5);
+        readonly f = form(this.data);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      input.focus();
+      validityMonitor.setInputState(input, '', true);
+      await fixture.whenStable();
+
+      input.blur();
+      await fixture.whenStable();
+      expect(input.value).toBe('');
+      expect(fixture.componentInstance.data()).toBe(5);
+      expect(fixture.componentInstance.f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'parse'}),
+      ]);
+    });
+
     it('should preserve a negative decimal typed into a number input', () => {
       @Component({
         imports: [FormField],
