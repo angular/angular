@@ -1,4 +1,4 @@
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 
 @Component({
     selector: 'my-component',
@@ -9,8 +9,9 @@ import {Component, NgModule} from '@angular/core';
     standalone: false
 })
 export class MyComponent {
+  declare b: any;
 }
 
-@NgModule({declarations: [MyComponent]})
+@NgModule({declarations: [MyComponent], schemas: [NO_ERRORS_SCHEMA]})
 export class MyModule {
 }
