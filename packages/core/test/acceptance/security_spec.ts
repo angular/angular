@@ -1217,6 +1217,16 @@ describe('host binding sanitization', () => {
     await expectAsync(fixture.whenStable()).toBeRejectedWithError(resourceUrlError);
   });
 
+  it('should reject dynamic directive host bindings against QName-prefixed iframe hosts', async () => {
+    await expectHostBinding({
+      tagName: 'q:iframe',
+      attrName: 'src',
+      value: HOST_BINDING_URL,
+      expectedError: resourceUrlError,
+      namespace: 'http://www.w3.org/1999/xhtml',
+    });
+  });
+
   it('should reject security-sensitive attribute host bindings on concrete dynamic iframe hosts', async () => {
     await expectHostBinding({
       tagName: 'iframe',
