@@ -199,6 +199,7 @@ export {
   compileComponentClassMetadata,
   compileOpaqueAsyncClassMetadata,
   R3ClassMetadata,
+  R3ClassMetadataCtorParameter,
 } from './render3/r3_class_metadata_compiler';
 export {
   compileFactoryFunction,
