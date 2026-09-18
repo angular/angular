@@ -238,4 +238,79 @@ describe('render tree extraction', () => {
       }),
     );
   });
+
+  it('should extract conditional control flow blocks', () => {
+    // Represent:
+    //
+    // <app>
+    //   @if {
+    //     <if-child />
+    //   }
+    //   @switch {
+    //     <switch-child />
+    //   }
+    // </app>
+    const appNode = document.createElement('app');
+    const ifHostNode = document.createComment('if');
+    const ifChildNode = document.createElement('if-child');
+    const switchHostNode = document.createComment('switch');
+    const switchChildNode = document.createElement('switch-child');
+
+    appNode.appendChild(ifHostNode);
+    appNode.appendChild(ifChildNode);
+    appNode.appendChild(switchHostNode);
+    appNode.appendChild(switchChildNode);
+
+    componentMap.set(appNode, {});
+    componentMap.set(ifChildNode, {});
+    componentMap.set(switchChildNode, {});
+
+    controlFlowBlocksMap.set(appNode, [
+      {
+        type: ControlFlowBlockType.If,
+        hostNode: ifHostNode,
+        rootNodes: [ifChildNode],
+        branchCount: 2,
+        activeBranchIndex: 0,
+        defaultBranchIndex: 1,
+        conditionExpressions: ['showIf', null],
+      },
+      {
+        type: ControlFlowBlockType.Switch,
+        hostNode: switchHostNode,
+        rootNodes: [switchChildNode],
+        branchCount: 3,
+        activeBranchIndex: 0,
+        defaultBranchIndex: 0,
+        expression: 'selectedCase',
+        caseExpressions: [[], ['one'], ['two']],
+        hasExhaustiveCheck: true,
+      },
+    ]);
+
+    const rtree = treeStrategy.build(appNode);
+    const children = rtree[0].children;
+
+    expect(children.map((c) => c.tagName)).toEqual(['@if', '@switch']);
+    expect(children[0].controlFlowBlock).toEqual(
+      jasmine.objectContaining({
+        type: ControlFlowBlockType.If,
+        branchCount: 2,
+        activeBranchIndex: 0,
+        hasElseBlock: true,
+        conditionExpressions: ['showIf', null],
+      }),
+    );
+    expect(children[1].controlFlowBlock).toEqual(
+      jasmine.objectContaining({
+        type: ControlFlowBlockType.Switch,
+        caseCount: 3,
+        activeCaseIndex: 0,
+        defaultCaseIndex: 0,
+        expression: 'selectedCase',
+        caseExpressions: [[], ['one'], ['two']],
+        hasExhaustiveCheck: true,
+      }),
+    );
+  });
 });

@@ -1,0 +1,26 @@
+.control-flow-cases {
+  margin: 2rem 0;
+  padding: 1rem;
+  border: 1px solid #d7dce2;
+  border-radius: 8px;
+  background: #f7f9fb;
+}
+
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.75rem;
+}
+
+.case-card {
+  min-height: 8rem;
+  padding: 0.75rem;
+  border: 1px solid #d7dce2;
+  border-radius: 8px;
+  background: #fff;
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+  }
+}
