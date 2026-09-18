@@ -6,17 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {AsyncPipe} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
+import {BehaviorSubject} from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
   Directive,
   DoCheck,
   ElementRef,
+  ErrorHandler,
   EventEmitter,
   inject,
   InjectionToken,
@@ -27,6 +30,7 @@ import {
   OnInit,
   Output,
   provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   QueryList,
   SimpleChanges,
   Type,
@@ -2312,6 +2316,294 @@ describe('hot module replacement', () => {
         fixture.nativeElement,
         '<child-cmp>The text translates to <strong>двадесет</strong>!</child-cmp>',
       );
+    });
+  });
+
+  it('should render the error block of a replaced component with zone change detection', () => {
+    spyOn(TestBed.inject(ErrorHandler), 'handleError');
+
+    @Component({selector: 'risky-cmp', template: 'Primary content'})
+    class RiskyComponent {
+      constructor() {
+        throw new Error('Forced error');
+      }
+    }
+
+    const initialMetadata: Component = {
+      selector: 'boundary-host',
+      imports: [RiskyComponent],
+      template: `
+        @boundary {
+          <risky-cmp />
+        } @error (let error) {
+          <p>{{error.message}}</p>
+        }
+      `,
+    };
+
+    @Component(initialMetadata)
+    class BoundaryHost {}
+
+    @Component({imports: [BoundaryHost], template: '<boundary-host/>'})
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+    const boundaryHost = fixture.nativeElement.querySelector('boundary-host');
+    expectHTML(boundaryHost, '<p>Forced error</p>');
+
+    replaceMetadata(BoundaryHost, {
+      ...initialMetadata,
+      template: `${initialMetadata.template}<p>Edited</p>`,
+    });
+    fixture.detectChanges();
+    expectHTML(boundaryHost, '<p>Forced error</p><p>Edited</p>');
+  });
+
+  describe('zoneless change detection', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+    });
+
+    // Guards the synchronous update pass in `recreateLView`: routing it through
+    // `detectChangesInternal` would make `markForCheck` calls made during the replacement
+    // (here from an AsyncPipe in a sibling) set only the `Dirty` bit, which the zoneless
+    // targeted tick ignores, so the sibling would never be refreshed.
+    it('should refresh a sibling marked for check during replacement', async () => {
+      const value = new BehaviorSubject(0);
+
+      @Directive({selector: '[emit-on-init]'})
+      class EmitOnInit implements OnInit {
+        ngOnInit() {
+          value.next(value.value + 1);
+        }
+      }
+
+      const initialMetadata: Component = {
+        selector: 'hmr-host',
+        imports: [EmitOnInit],
+        template: '<span emit-on-init>Initial</span>',
+      };
+
+      @Component(initialMetadata)
+      class HmrHost {}
+
+      @Component({
+        selector: 'display-cmp',
+        imports: [AsyncPipe],
+        template: '{{value | async}}',
+      })
+      class DisplayCmp {
+        value = value;
+      }
+
+      @Component({
+        imports: [HmrHost, DisplayCmp],
+        template: '<hmr-host/><display-cmp/>',
+      })
+      class RootCmp {}
+
+      const fixture = TestBed.createComponent(RootCmp);
+      await fixture.whenStable();
+      expectHTML(
+        fixture.nativeElement,
+        '<hmr-host><span emit-on-init="">Initial</span></hmr-host><display-cmp>1</display-cmp>',
+      );
+
+      replaceMetadata(HmrHost, {
+        ...initialMetadata,
+        template: '<span emit-on-init>Replaced</span>',
+      });
+      await fixture.whenStable();
+
+      expect(value.value).toBe(2);
+      expectHTML(
+        fixture.nativeElement,
+        '<hmr-host><span emit-on-init="">Replaced</span></hmr-host><display-cmp>2</display-cmp>',
+      );
+    });
+  });
+
+  describe('@boundary', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+      spyOn(TestBed.inject(ErrorHandler), 'handleError');
+    });
+
+    it('should render and reset the error block after repeated replacements', async () => {
+      let shouldThrow = true;
+
+      @Component({selector: 'risky-cmp', template: 'Primary content'})
+      class RiskyComponent {
+        constructor() {
+          if (shouldThrow) {
+            throw new Error('Forced error');
+          }
+        }
+      }
+
+      const initialMetadata: Component = {
+        selector: 'boundary-host',
+        imports: [RiskyComponent],
+        template: `
+          @boundary {
+            <risky-cmp />
+          } @error (let error; retry = $reset) {
+            <p>{{error.message}}</p>
+            <button (click)="retry()">Retry</button>
+          }
+        `,
+      };
+
+      @Component(initialMetadata)
+      class BoundaryHost {}
+
+      @Component({imports: [BoundaryHost], template: '<boundary-host/>'})
+      class RootCmp {}
+
+      const fixture = TestBed.createComponent(RootCmp);
+      await fixture.whenStable();
+      const boundaryHost = fixture.nativeElement.querySelector('boundary-host');
+      expectHTML(boundaryHost, '<p>Forced error</p><button>Retry</button>');
+
+      for (const content of ['First edit', 'Second edit']) {
+        replaceMetadata(BoundaryHost, {
+          ...initialMetadata,
+          template: `${initialMetadata.template}<p>${content}</p>`,
+        });
+        await fixture.whenStable();
+
+        expectHTML(boundaryHost, `<p>Forced error</p><button>Retry</button><p>${content}</p>`);
+      }
+
+      replaceMetadata(BoundaryHost, {
+        ...initialMetadata,
+        template: `${initialMetadata.template}<p>Second edit</p>`,
+        styles: ['p { color: red; }'],
+      });
+      await fixture.whenStable();
+
+      expectHTML(boundaryHost, '<p>Forced error</p><button>Retry</button><p>Second edit</p>');
+
+      boundaryHost.querySelector('button').click();
+      await fixture.whenStable();
+
+      expectHTML(boundaryHost, '<p>Forced error</p><button>Retry</button><p>Second edit</p>');
+
+      shouldThrow = false;
+      boundaryHost.querySelector('button').click();
+      await fixture.whenStable();
+
+      expectHTML(boundaryHost, '<risky-cmp>Primary content</risky-cmp><p>Second edit</p>');
+    });
+
+    it('should render the error block after replacement with a constructor error', async () => {
+      @Component({selector: 'risky-cmp', template: ''})
+      class RiskyComponent {
+        constructor() {
+          throw new Error('Forced error');
+        }
+      }
+
+      const initialMetadata: Component = {
+        imports: [RiskyComponent],
+        template: `
+          @boundary {
+            <risky-cmp />
+          } @error (let error) {
+            <p>{{error.message}}</p>
+          }
+        `,
+      };
+
+      @Component(initialMetadata)
+      class BoundaryHost {}
+
+      const fixture = TestBed.createComponent(BoundaryHost);
+      await fixture.whenStable();
+      expectHTML(fixture.nativeElement, '<p>Forced error</p>');
+
+      replaceMetadata(BoundaryHost, {
+        ...initialMetadata,
+        template: `${initialMetadata.template}<p>Added content</p>`,
+      });
+      await fixture.whenStable();
+
+      expectHTML(fixture.nativeElement, '<p>Forced error</p><p>Added content</p>');
+    });
+
+    it('should render the error block after template and style replacements of the declaring component', async () => {
+      @Component({selector: 'risky-cmp', template: 'Primary content'})
+      class RiskyComponent {
+        constructor() {
+          throw new Error('Forced error');
+        }
+      }
+
+      const initialMetadata: Component = {
+        imports: [RiskyComponent],
+        template: `
+          @boundary {
+            <risky-cmp />
+          } @error {
+            <p>Something went wrong!</p>
+          }
+          <p>Outside of boundary</p>
+        `,
+      };
+
+      @Component(initialMetadata)
+      class BoundaryHost {}
+
+      const fixture = TestBed.createComponent(BoundaryHost);
+      await fixture.whenStable();
+      expectHTML(fixture.nativeElement, '<p>Something went wrong!</p><p>Outside of boundary</p>');
+
+      replaceMetadata(BoundaryHost, {
+        ...initialMetadata,
+        template: initialMetadata.template!.replace('Outside of boundary', 'Outside (edited)'),
+      });
+      await fixture.whenStable();
+      expectHTML(fixture.nativeElement, '<p>Something went wrong!</p><p>Outside (edited)</p>');
+
+      replaceMetadata(BoundaryHost, {...initialMetadata, styles: ['p { color: red; }']});
+      await fixture.whenStable();
+      expectHTML(fixture.nativeElement, '<p>Something went wrong!</p><p>Outside of boundary</p>');
+    });
+
+    it('should render an outer error block when a nested error block throws after replacement', async () => {
+      const initialMetadata: Component = {
+        template: `
+          @boundary {
+            @boundary {
+              {{fail('Primary error')}}
+            } @error {
+              {{fail('Fallback error')}}
+            }
+          } @error (let error) {
+            <p>{{error.message}}</p>
+          }
+        `,
+      };
+
+      @Component(initialMetadata)
+      class BoundaryHost {
+        fail(message: string): never {
+          throw new Error(message);
+        }
+      }
+
+      const fixture = TestBed.createComponent(BoundaryHost);
+      await fixture.whenStable();
+      expectHTML(fixture.nativeElement, '<p>Fallback error</p>');
+
+      replaceMetadata(BoundaryHost, {
+        ...initialMetadata,
+        template: `${initialMetadata.template}<p>Added content</p>`,
+      });
+      await fixture.whenStable();
+
+      expectHTML(fixture.nativeElement, '<p>Fallback error</p><p>Added content</p>');
     });
   });
 
