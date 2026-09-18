@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NgClass, NgFor} from '../../index';
+import {NgClass, NgFor, NG_CLASS_MERGER_STRATEGY} from '../../index';
 
 describe('binding to CSS class list', () => {
   let fixture: ComponentFixture<any> | null;
@@ -375,6 +375,45 @@ describe('binding to CSS class list', () => {
 
       cmp.objExpr = undefined;
       await waitForStableAndExpectClassName('init baz');
+    });
+  });
+
+  describe('NG_CLASS_MERGER_STRATEGY', () => {
+    it('should use the provided strategy to merge classes', async () => {
+      @Component({
+        selector: 'test-merger-cmp',
+        template: '<div class="base p-4" [ngClass]="dynamicClasses"></div>',
+        imports: [NgClass],
+        providers: [
+          {
+            provide: NG_CLASS_MERGER_STRATEGY,
+            useValue: (classes: string[]) => {
+              // Mock merger: if 'p-2' is present, remove 'p-4'
+              if (classes.includes('p-2')) {
+                return classes.filter(c => c !== 'p-4').join(' ');
+              }
+              return classes.join(' ');
+            }
+          }
+        ],
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class MergerTestComponent {
+        dynamicClasses = '';
+      }
+
+      const localFixture = TestBed.createComponent(MergerTestComponent);
+      await localFixture.whenStable();
+
+      const div = localFixture.nativeElement.firstChild;
+      expect(normalizeClassNames(div.className)).toBe('base p-4');
+
+      // Update the binding to 'p-2' which should override 'p-4' based on our mock merger
+      localFixture.componentInstance.dynamicClasses = 'p-2';
+      localFixture.changeDetectorRef.markForCheck();
+      await localFixture.whenStable();
+
+      expect(normalizeClassNames(div.className)).toBe('base p-2');
     });
   });
 

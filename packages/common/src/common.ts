@@ -53,6 +53,8 @@ export {parseCookieValue as ɵparseCookieValue} from './cookie';
 export {CommonModule} from './common_module';
 export {
   NgClass,
+  NG_CLASS_MERGER_STRATEGY,
+  NgClassMergerStrategy,
   NgFor,
   NgForOf,
   NgForOfContext,

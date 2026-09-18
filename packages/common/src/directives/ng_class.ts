@@ -11,8 +11,13 @@ import {
   ElementRef,
   Input,
   Renderer2,
+  InjectionToken,
+  inject,
   ɵstringify as stringify,
 } from '@angular/core';
+
+export type NgClassMergerStrategy = (classes: string[]) => string;
+export const NG_CLASS_MERGER_STRATEGY = new InjectionToken<NgClassMergerStrategy>('NG_CLASS_MERGER_STRATEGY');
 
 type NgClassSupportedTypes = string[] | Set<string> | {[klass: string]: any} | null | undefined;
 
@@ -81,6 +86,8 @@ export class NgClass implements DoCheck {
   private rawClass: NgClassSupportedTypes;
 
   private stateMap = new Map<string, CssClassState>();
+  private appliedClasses = new Set<string>();
+  private merger = inject(NG_CLASS_MERGER_STRATEGY, {optional: true});
 
   constructor(
     private _ngEl: ElementRef,
@@ -157,6 +164,14 @@ export class NgClass implements DoCheck {
   }
 
   private _applyStateDiff() {
+    if (this.merger) {
+      this._applyMergedStateDiff();
+    } else {
+      this._applyStandardStateDiff();
+    }
+  }
+
+  private _applyStandardStateDiff() {
     for (const stateEntry of this.stateMap) {
       const klass = stateEntry[0];
       const state = stateEntry[1];
@@ -175,6 +190,39 @@ export class NgClass implements DoCheck {
 
       state.touched = false;
     }
+  }
+
+  private _applyMergedStateDiff() {
+    const enabledClasses: string[] = [];
+    for (const stateEntry of this.stateMap) {
+      const klass = stateEntry[0];
+      const state = stateEntry[1];
+      if (state.enabled) {
+        enabledClasses.push(klass);
+      }
+      if (!state.touched) {
+        this.stateMap.delete(klass);
+      }
+      state.changed = false;
+      state.touched = false;
+    }
+
+    const mergedString = this.merger!(enabledClasses);
+    const newAppliedClasses = new Set(mergedString ? mergedString.trim().split(WS_REGEXP) : []);
+
+    for (const applied of this.appliedClasses) {
+      if (!newAppliedClasses.has(applied)) {
+        this._toggleClass(applied, false);
+      }
+    }
+
+    for (const newApplied of newAppliedClasses) {
+      if (!this.appliedClasses.has(newApplied)) {
+        this._toggleClass(newApplied, true);
+      }
+    }
+
+    this.appliedClasses = newAppliedClasses;
   }
 
   private _toggleClass(klass: string, enabled: boolean): void {
