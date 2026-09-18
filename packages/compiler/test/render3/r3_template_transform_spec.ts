@@ -2866,16 +2866,14 @@ describe('R3 template transform', () => {
     );
   });
 
-  // TODO(v23): Enable this breaking change
-  xit('should report an error for class bindings on ng-container', () => {
+  it('should report an error for class bindings on ng-container', () => {
     const template = `<ng-container [class.foo]="true"></ng-container>`;
     const errors = parse(template, {ignoreError: true}).errors;
     expect(errors.length).toBe(1);
     expect(errors[0].msg).toBe('Class bindings are not supported on ng-container.');
   });
 
-  // TODO(v23): Enable this breaking change
-  xit('should report an error for [class] property bindings on ng-container', () => {
+  it('should report an error for [class] property bindings on ng-container', () => {
     const template = `<ng-container [class]="'my-class'"></ng-container>`;
     const errors = parse(template, {ignoreError: true}).errors;
     expect(errors.length).toBe(1);
@@ -2888,8 +2886,7 @@ describe('R3 template transform', () => {
     expect(errors.length).toBe(0);
   });
 
-  // TODO(v23): Enable this breaking change
-  xit('should report an error for class interpolation on ng-container', () => {
+  it('should report an error for class interpolation on ng-container', () => {
     const template = `<ng-container class="{{foo}}"></ng-container>`;
     const errors = parse(template, {ignoreError: true}).errors;
     expect(errors.length).toBe(1);
