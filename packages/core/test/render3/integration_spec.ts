@@ -848,6 +848,138 @@ describe('sanitization', () => {
     expect(bindAttributeOutsideSvg('set', 'to', 'display')).not.toThrow();
   });
 
+  it('should allow SVG animation bindings on elements under MathML', async () => {
+    @Component({
+      template: `<math>
+        <set attributeName="href" [attr.to]="value"></set>
+        <set [attr.attributeName]="attributeName"></set>
+        <animate
+          attributeName="href"
+          [attr.to]="value"
+          [attr.from]="value"
+          [attr.values]="value"
+        ></animate>
+        <animate [attr.attributeName]="attributeName"></animate>
+        <animateMotion [attr.attributeName]="attributeName"></animateMotion>
+        <animateTransform [attr.attributeName]="attributeName"></animateTransform>
+      </math>`,
+    })
+    class TestComp {
+      readonly attributeName = 'href';
+      readonly value = UNSAFE_VALUE;
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeResolved();
+  });
+
+  it('should continue sanitizing dynamic URL bindings on MathML elements', async () => {
+    @Component({
+      template: `<math><mi [attr.href]="value"></mi></math>`,
+    })
+    class TestComp {
+      readonly value = UNSAFE_VALUE;
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await fixture.whenStable();
+
+    const miElement = fixture.nativeElement.querySelector('mi') as Element;
+    expect(miElement.getAttribute('href')).toBe(`unsafe:${UNSAFE_VALUE}`);
+  });
+
+  it('should allow MathML bindings inside an SVG foreignObject', async () => {
+    @Component({
+      template: `
+        <svg>
+          <foreignObject>
+            <math>
+              <set attributeName="href" [attr.to]="value"></set>
+              <set [attr.attributeName]="attributeName"></set>
+            </math>
+          </foreignObject>
+        </svg>
+      `,
+    })
+    class TestComp {
+      readonly value = 'target';
+      readonly attributeName = 'display';
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeResolved();
+  });
+
+  it('should allow MathML bindings inside an SVG desc', async () => {
+    @Component({
+      template: `
+        <svg>
+          <desc>
+            <math>
+              <set attributeName="href" [attr.to]="value"></set>
+              <set [attr.attributeName]="attributeName"></set>
+            </math>
+          </desc>
+        </svg>
+      `,
+    })
+    class TestComp {
+      readonly value = 'target';
+      readonly attributeName = 'display';
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeResolved();
+  });
+
+  it('should allow MathML bindings inside an SVG title', async () => {
+    @Component({
+      template: `
+        <svg>
+          <svg:title>
+            <math> <set attributeName="href" [attr.to]="value"></set> <set
+            [attr.attributeName]="attributeName"></set> </math>
+          </svg:title>
+        </svg>
+      `,
+    })
+    class TestComp {
+      readonly value = 'target';
+      readonly attributeName = 'display';
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeResolved();
+  });
+
+  it('should throw when binding to MathML content projected into a nested svg element', async () => {
+    @Component({
+      imports: [CommonModule],
+      template: `
+        <math>
+          <ng-template #content>
+            <set [attr.attributeName]="attributeName"></set>
+          </ng-template>
+        </math>
+        <svg>
+          <foreignObject>
+            <svg>
+              <ng-container [ngTemplateOutlet]="content"></ng-container>
+            </svg>
+          </foreignObject>
+        </svg>
+      `,
+    })
+    class TestComp {
+      readonly attributeName = 'display';
+    }
+
+    const fixture = TestBed.createComponent(TestComp);
+    await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+      /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <set>/,
+    );
+  });
+
   it('should not throw when binding to animate element when attributeName is not href', () => {
     @Component({
       selector: 'test-comp',

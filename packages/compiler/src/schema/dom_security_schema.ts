@@ -210,13 +210,12 @@ export function checkSecurityContext(
     }
   }
 
-  // An SVG animation element declared outside of an `<svg>` has no explicit namespace at compile
-  // time, but can still animate once it is projected into an SVG subtree.
-  if (context === undefined && (!namespace || namespace === NO_NAMESPACE)) {
-    const svgSchema = attrSchema[SVG_NAMESPACE];
-    if (svgSchema) {
-      context = svgSchema[tagLower];
-    }
+  // The namespace here is where the element was declared, not where it renders - neither an
+  // `<ng-template>` boundary nor a `:math:` prefix survives serialization. Flag these tags
+  // whichever namespace they were declared in and let `ɵɵvalidateAttribute` decide from the
+  // rendered tree. Exact tag names only, never the `*` entries.
+  if (context === undefined) {
+    context = attrSchema[SVG_NAMESPACE]?.[tagLower];
   }
 
   return context ?? SecurityContext.NONE;

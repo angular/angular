@@ -355,14 +355,14 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
 
   const lView = getLView();
   if (tNode) {
+    const element = getNativeByTNode(tNode, lView) as Element;
+
     if (resolvedTagName === 'iframe') {
-      const element = getNativeByTNode(tNode, lView) as RElement;
       enforceIframeSecurity(element as HTMLIFrameElement);
-    } else if (namespace === SVG_NAMESPACE || !namespace) {
+    } else if (namespace === SVG_NAMESPACE || !namespace || isRenderedInsideSvg(element)) {
       const config =
         SVG_ANIMATION_SENSITIVE_STATIC_VALUES[resolvedTagName]?.[attributeName.toLowerCase()];
       if (config) {
-        const element = getNativeByTNode(tNode, lView) as SVGAnimateElement;
         const attributeNameValue = getSecuritySensitiveSVGAnimationAttributeName(element, config);
 
         if (attributeNameValue) {
@@ -380,6 +380,10 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
 
         return value;
       }
+    } else {
+      // Declared in another namespace and outside an SVG parsing context: the element does not
+      // animate when the browser re-parses the markup, so the binding is inert.
+      return value;
     }
   }
 
@@ -395,8 +399,29 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
   throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
 }
 
+/**
+ * Whether an `<svg>` ancestor can put the element into an SVG parsing context after serialization.
+ * Declaration namespaces are not preserved, but SVG HTML integration points stop that context
+ * from propagating to their descendants.
+ */
+function isRenderedInsideSvg(element: Element): boolean {
+  let node: Node | null = element.parentNode;
+  while (node !== null && node.nodeType === Node.ELEMENT_NODE) {
+    const tagName = (node as Element).localName?.toLowerCase();
+    if (tagName === 'svg') {
+      return true;
+    }
+    // An inner `<svg>` takes precedence because it is encountered before this boundary.
+    if (tagName === 'foreignobject' || tagName === 'desc' || tagName === 'title') {
+      return false;
+    }
+    node = node.parentNode;
+  }
+  return false;
+}
+
 function getSecuritySensitiveSVGAnimationAttributeName(
-  element: SVGAnimateElement,
+  element: Element,
   validationConfig: ReadonlySet<string>,
 ): string | null {
   for (const attributeName of element.getAttributeNames()) {

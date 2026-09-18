@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgIf} from '@angular/common';
+import {NgComponentOutlet, NgIf, NgTemplateOutlet} from '@angular/common';
 import {DomSanitizer} from '@angular/platform-browser';
 import {
   ApplicationRef,
@@ -18,6 +18,7 @@ import {
   inject,
   inputBinding,
   Input,
+  NO_ERRORS_SCHEMA,
   provideZoneChangeDetection,
   TemplateRef,
   Type,
@@ -816,48 +817,433 @@ describe('iframe processing', () => {
 });
 
 describe('SVG animation processing', () => {
-  it('should error when `attributeName` is bound', () => {
+  const UNSAFE_VALUE = 'javascript:alert(1)';
+
+  function bindingError(attributeName: string, tagName: string): RegExp {
+    return new RegExp(
+      `NG0910: Angular has detected that the \`${attributeName}\` was applied as a binding ` +
+        `to the <${tagName}>`,
+    );
+  }
+
+  async function expectBindingToFail(
+    fixture: ComponentFixture<unknown>,
+    attributeName: string,
+    tagName: string,
+  ): Promise<void> {
+    await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+      bindingError(attributeName, tagName),
+    );
+  }
+
+  @Component({
+    selector: 'svg-wrapper',
+    imports: [NgTemplateOutlet],
+    template: `
+      <svg>
+        <a><ng-container [ngTemplateOutlet]="payload"></ng-container></a>
+      </svg>
+    `,
+  })
+  class SvgWrapper {
+    @Input({required: true}) payload!: TemplateRef<unknown>;
+  }
+
+  function renderAnimationBinding(
+    markup: string,
+    destination: 'html' | 'math' | 'svg',
+  ): ComponentFixture<unknown> {
+    const templates = {
+      html: markup,
+      math: `<math>${markup}</math>`,
+      svg: `
+        <math><ng-template #payload>${markup}</ng-template></math>
+        <svg-wrapper [payload]="payload"></svg-wrapper>
+      `,
+    };
+
+    @Component({
+      imports: [SvgWrapper],
+      schemas: [NO_ERRORS_SCHEMA],
+      template: templates[destination],
+    })
+    class TestCmp {
+      value = UNSAFE_VALUE;
+    }
+
+    return TestBed.createComponent(TestCmp);
+  }
+
+  async function expectAnimationBinding(options: {
+    markup: string;
+    destination: 'html' | 'math' | 'svg';
+    tagName: string;
+    attributeName: string;
+    selector?: string;
+    expected?: string;
+    expectedError?: RegExp;
+  }): Promise<void> {
+    const {
+      markup,
+      destination,
+      tagName,
+      attributeName,
+      selector = tagName,
+      expected,
+      expectedError,
+    } = options;
+    const fixture = renderAnimationBinding(markup, destination);
+
+    if (expectedError) {
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(expectedError);
+    } else {
+      await fixture.whenStable();
+      expect(fixture.nativeElement.querySelector(selector).getAttribute(attributeName)).toBe(
+        expected ?? null,
+      );
+    }
+  }
+
+  describe('in the HTML namespace', () => {
+    it('should reject `to` on `<set>`', async () => {
+      await expectAnimationBinding({
+        markup: `<set attributeName="href" [attr.to]="value"></set>`,
+        destination: 'html',
+        tagName: 'set',
+        attributeName: 'to',
+        expectedError: bindingError('to', 'set'),
+      });
+    });
+
+    it('should reject `attributeName` on `<set>`', async () => {
+      await expectAnimationBinding({
+        markup: `<set [attr.attributeName]="value"></set>`,
+        destination: 'html',
+        tagName: 'set',
+        attributeName: 'attributeName',
+        expectedError: bindingError('attributeName', 'set'),
+      });
+    });
+
+    it('should reject `to` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate attributeName="href" dur="5s" [attr.to]="value"></animate>`,
+        destination: 'html',
+        tagName: 'animate',
+        attributeName: 'to',
+        expectedError: bindingError('to', 'animate'),
+      });
+    });
+
+    it('should reject `values` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate attributeName="href" dur="5s" [attr.values]="value"></animate>`,
+        destination: 'html',
+        tagName: 'animate',
+        attributeName: 'values',
+        expectedError: bindingError('values', 'animate'),
+      });
+    });
+
+    it('should reject `from` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate attributeName="href" dur="5s" [attr.from]="value"></animate>`,
+        destination: 'html',
+        tagName: 'animate',
+        attributeName: 'from',
+        expectedError: bindingError('from', 'animate'),
+      });
+    });
+
+    it('should reject `attributeName` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate [attr.attributeName]="value"></animate>`,
+        destination: 'html',
+        tagName: 'animate',
+        attributeName: 'attributeName',
+        expectedError: bindingError('attributeName', 'animate'),
+      });
+    });
+
+    it('should reject `attributeName` on `<animateMotion>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animateMotion [attr.attributeName]="value"></animateMotion>`,
+        destination: 'html',
+        tagName: 'animatemotion',
+        attributeName: 'attributeName',
+        expectedError: bindingError('attributeName', 'animatemotion'),
+      });
+    });
+
+    it('should reject `attributeName` on `<animateTransform>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animateTransform [attr.attributeName]="value"></animateTransform>`,
+        destination: 'html',
+        tagName: 'animatetransform',
+        attributeName: 'attributeName',
+        expectedError: bindingError('attributeName', 'animatetransform'),
+      });
+    });
+  });
+
+  describe('under MathML', () => {
+    it('should allow `to` on `<set>`', async () => {
+      await expectAnimationBinding({
+        markup: `<set attributeName="href" [attr.to]="value"></set>`,
+        destination: 'math',
+        tagName: 'set',
+        attributeName: 'to',
+        expected: UNSAFE_VALUE,
+      });
+    });
+
+    it('should allow `attributeName` on `<set>`', async () => {
+      await expectAnimationBinding({
+        markup: `<set [attr.attributeName]="value"></set>`,
+        destination: 'math',
+        tagName: 'set',
+        attributeName: 'attributeName',
+        expected: UNSAFE_VALUE,
+      });
+    });
+
+    it('should allow `to` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate attributeName="href" dur="5s" [attr.to]="value"></animate>`,
+        destination: 'math',
+        tagName: 'animate',
+        attributeName: 'to',
+        expected: UNSAFE_VALUE,
+      });
+    });
+
+    it('should allow `values` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate attributeName="href" dur="5s" [attr.values]="value"></animate>`,
+        destination: 'math',
+        tagName: 'animate',
+        attributeName: 'values',
+        expected: UNSAFE_VALUE,
+      });
+    });
+
+    it('should allow `from` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate attributeName="href" dur="5s" [attr.from]="value"></animate>`,
+        destination: 'math',
+        tagName: 'animate',
+        attributeName: 'from',
+        expected: UNSAFE_VALUE,
+      });
+    });
+
+    it('should allow `attributeName` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate [attr.attributeName]="value"></animate>`,
+        destination: 'math',
+        tagName: 'animate',
+        attributeName: 'attributeName',
+        expected: UNSAFE_VALUE,
+      });
+    });
+
+    it('should allow `attributeName` on `<animateMotion>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animateMotion [attr.attributeName]="value"></animateMotion>`,
+        destination: 'math',
+        tagName: 'animatemotion',
+        selector: 'animateMotion',
+        attributeName: 'attributeName',
+        expected: UNSAFE_VALUE,
+      });
+    });
+
+    it('should allow `attributeName` on `<animateTransform>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animateTransform [attr.attributeName]="value"></animateTransform>`,
+        destination: 'math',
+        tagName: 'animatetransform',
+        selector: 'animateTransform',
+        attributeName: 'attributeName',
+        expected: UNSAFE_VALUE,
+      });
+    });
+  });
+
+  describe('when NgTemplateOutlet renders MathML content under SVG', () => {
+    it('should reject `to` on `<set>`', async () => {
+      await expectAnimationBinding({
+        markup: `<set attributeName="href" [attr.to]="value"></set>`,
+        destination: 'svg',
+        tagName: 'set',
+        attributeName: 'to',
+        expectedError: bindingError('to', 'set'),
+      });
+    });
+
+    it('should reject `attributeName` on `<set>`', async () => {
+      await expectAnimationBinding({
+        markup: `<set [attr.attributeName]="value"></set>`,
+        destination: 'svg',
+        tagName: 'set',
+        attributeName: 'attributeName',
+        expectedError: bindingError('attributeName', 'set'),
+      });
+    });
+
+    it('should reject `to` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate attributeName="href" dur="5s" [attr.to]="value"></animate>`,
+        destination: 'svg',
+        tagName: 'animate',
+        attributeName: 'to',
+        expectedError: bindingError('to', 'animate'),
+      });
+    });
+
+    it('should reject `values` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate attributeName="href" dur="5s" [attr.values]="value"></animate>`,
+        destination: 'svg',
+        tagName: 'animate',
+        attributeName: 'values',
+        expectedError: bindingError('values', 'animate'),
+      });
+    });
+
+    it('should reject `from` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate attributeName="href" dur="5s" [attr.from]="value"></animate>`,
+        destination: 'svg',
+        tagName: 'animate',
+        attributeName: 'from',
+        expectedError: bindingError('from', 'animate'),
+      });
+    });
+
+    it('should reject `attributeName` on `<animate>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animate [attr.attributeName]="value"></animate>`,
+        destination: 'svg',
+        tagName: 'animate',
+        attributeName: 'attributeName',
+        expectedError: bindingError('attributeName', 'animate'),
+      });
+    });
+
+    it('should reject `attributeName` on `<animateMotion>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animateMotion [attr.attributeName]="value"></animateMotion>`,
+        destination: 'svg',
+        tagName: 'animatemotion',
+        attributeName: 'attributeName',
+        expectedError: bindingError('attributeName', 'animatemotion'),
+      });
+    });
+
+    it('should reject `attributeName` on `<animateTransform>`', async () => {
+      await expectAnimationBinding({
+        markup: `<animateTransform [attr.attributeName]="value"></animateTransform>`,
+        destination: 'svg',
+        tagName: 'animatetransform',
+        attributeName: 'attributeName',
+        expectedError: bindingError('attributeName', 'animatetransform'),
+      });
+    });
+  });
+
+  it('should allow a bound animation value that cannot target a URL', async () => {
+    await expectAnimationBinding({
+      markup: `<set attributeName="display" [attr.to]="value"></set>`,
+      destination: 'html',
+      tagName: 'set',
+      attributeName: 'to',
+      expected: UNSAFE_VALUE,
+    });
+  });
+
+  it('should reject a MathML animation binding moved into SVG by content projection', async () => {
+    @Component({
+      selector: 'svg-content-wrapper',
+      template: `<svg>
+        <a><ng-content></ng-content></a>
+      </svg>`,
+    })
+    class SvgContentWrapper {}
+
+    @Component({
+      imports: [SvgContentWrapper],
+      template: `
+        <math>
+          <svg-content-wrapper>
+            <set attributeName="href" [attr.to]="value"></set>
+          </svg-content-wrapper>
+        </math>
+      `,
+    })
+    class TestCmp {
+      value = UNSAFE_VALUE;
+    }
+
+    await expectBindingToFail(TestBed.createComponent(TestCmp), 'to', 'set');
+  });
+
+  it('should reject an SVG animation host created by NgComponentOutlet', async () => {
+    @Component({
+      selector: 'set[dynamic-animation]',
+      template: '',
+      host: {
+        'attributeName': 'href',
+        '[attr.to]': 'value',
+      },
+    })
+    class DynamicSet {
+      value = UNSAFE_VALUE;
+    }
+
+    @Component({
+      imports: [NgComponentOutlet],
+      template: `
+        <svg>
+          <a><ng-container *ngComponentOutlet="componentType"></ng-container></a>
+        </svg>
+      `,
+    })
+    class TestCmp {
+      componentType = DynamicSet;
+    }
+
+    await expectBindingToFail(TestBed.createComponent(TestCmp), 'to', 'set');
+  });
+
+  it('should error when `attributeName` is bound', async () => {
     @Component({
       template: '<svg><animate [attr.attributeName]="attr"></animate></svg>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       attr = 'href';
     }
 
-    expect(() => {
-      const fixture = TestBed.createComponent(TestCmp);
-      fixture.detectChanges();
-    }).toThrowError(
-      /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
-    );
+    await expectBindingToFail(TestBed.createComponent(TestCmp), 'attributeName', 'animate');
   });
 
-  it(`should error when a directive sets a 'attributeName' as an attribute binding`, () => {
+  it(`should error when a directive sets 'attributeName' as an attribute binding`, async () => {
     @Directive({
       selector: '[dir]',
       host: {
         '[attr.attributeName]': "'href'",
       },
     })
-    class animateAttrDir {}
+    class AnimateAttrDir {}
 
     @Component({
-      imports: [animateAttrDir],
+      imports: [AnimateAttrDir],
       selector: 'my-comp',
       template: '<svg><animate dir></animate></svg>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {}
 
-    expect(() => {
-      const fixture = TestBed.createComponent(TestCmp);
-      fixture.detectChanges();
-    }).toThrowError(
-      /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
-    );
+    await expectBindingToFail(TestBed.createComponent(TestCmp), 'attributeName', 'animate');
   });
 });
 
