@@ -301,12 +301,16 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
           return ts.factory.createSpreadAssignment(prop.expression);
         }
 
-        return ts.factory.createPropertyAssignment(
+        const propNode = ts.factory.createPropertyAssignment(
           prop.quoted
             ? ts.factory.createStringLiteral(prop.propertyName)
             : ts.factory.createIdentifier(prop.propertyName),
           prop.value,
         );
+        if (prop.leadingComments) {
+          attachComments(propNode, prop.leadingComments);
+        }
+        return propNode;
       }),
     );
   }
@@ -519,7 +523,7 @@ export function createTemplateTail(cooked: string, raw: string): ts.TemplateTail
  * @param leadingComments The comments to attach to the statement.
  */
 export function attachComments(
-  statement: ts.Statement | ts.Expression,
+  statement: ts.Statement | ts.Expression | ts.ObjectLiteralElementLike,
   leadingComments: LeadingComment[],
 ): void {
   for (const comment of leadingComments) {

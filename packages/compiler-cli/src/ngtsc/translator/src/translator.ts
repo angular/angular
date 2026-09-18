@@ -524,6 +524,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
             propertyName: entry.key,
             quoted: entry.quoted,
             value: entry.value.visitExpression(this, context),
+            leadingComments: entry.leadingComments,
           } satisfies ObjectLiteralAssignment<TExpression>)
         : ({
             kind: 'spread',

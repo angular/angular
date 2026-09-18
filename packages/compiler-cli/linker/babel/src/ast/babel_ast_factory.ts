@@ -38,7 +38,10 @@ export class BabelAstFactory implements AstFactory<
     this.typesEnabled = sourcePath.endsWith('.ts') || sourcePath.endsWith('.mts');
   }
 
-  attachComments(statement: t.Statement | t.Expression, leadingComments: LeadingComment[]): void {
+  attachComments(
+    statement: t.Statement | t.Expression | t.SpreadElement | t.ObjectProperty,
+    leadingComments: LeadingComment[],
+  ): void {
     // We must process the comments in reverse because `t.addComment()` will add new ones in front.
     for (let i = leadingComments.length - 1; i >= 0; i--) {
       const comment = leadingComments[i];
@@ -222,7 +225,11 @@ export class BabelAstFactory implements AstFactory<
         const key = prop.quoted
           ? t.stringLiteral(prop.propertyName)
           : t.identifier(prop.propertyName);
-        return t.objectProperty(key, prop.value);
+        const propNode = t.objectProperty(key, prop.value);
+        if (prop.leadingComments) {
+          this.attachComments(propNode, prop.leadingComments);
+        }
+        return propNode;
       }),
     );
   }

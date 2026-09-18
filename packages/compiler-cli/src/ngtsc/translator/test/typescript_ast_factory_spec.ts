@@ -373,6 +373,23 @@ describe('TypeScriptAstFactory', () => {
       ]);
       expect(generate(obj)).toEqual('{ prop1: 42, "prop2": "moo", ...foo }');
     });
+
+    it('should attach leading comments to object literal properties', () => {
+      const {
+        items: [prop1],
+        generate,
+      } = setupExpressions('42');
+      const obj = factory.createObjectLiteral([
+        {
+          propertyName: 'prop1',
+          value: prop1,
+          kind: 'property',
+          quoted: false,
+          leadingComments: [leadingComment('@ts-ignore', true, true)],
+        },
+      ]);
+      expect(generate(obj)).toEqual('{ /* @ts-ignore */\n    prop1: 42 }');
+    });
   });
 
   describe('createParenthesizedExpression()', () => {
