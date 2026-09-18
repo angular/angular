@@ -225,6 +225,15 @@ export interface LocalTypeValueReference {
    * a type-position. See `DefaultImportTracker` for details.
    */
   defaultImportStatement: ts.ImportDeclaration | null;
+
+  /**
+   * Whether the reference was produced without confirming that the symbol has a value at runtime.
+   *
+   * This only happens in local compilation, where deciding whether a symbol is type-only can
+   * require information from other files. Code that emits the reference into a value position may
+   * have to guard it, since it can turn out not to exist.
+   */
+  valueUnverified?: boolean;
 }
 
 /**
@@ -254,6 +263,15 @@ export interface ImportedTypeValueReference {
 
   // This field can be null in local compilation mode when resolving is not possible.
   valueDeclaration: DeclarationNode | null;
+
+  /**
+   * Whether the reference was produced without confirming that the symbol has a value at runtime.
+   *
+   * This only happens in local compilation, where deciding whether a symbol is type-only can
+   * require information from other files. Code that emits the reference into a value position may
+   * have to guard it, since it can turn out not to exist.
+   */
+  valueUnverified?: boolean;
 }
 
 /**
@@ -358,9 +376,7 @@ export type UnavailableValue =
  * See the individual types for additional information.
  */
 export type TypeValueReference =
-  | LocalTypeValueReference
-  | ImportedTypeValueReference
-  | UnavailableTypeValueReference;
+  LocalTypeValueReference | ImportedTypeValueReference | UnavailableTypeValueReference;
 
 /**
  * A parameter to a constructor.

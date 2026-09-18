@@ -76,7 +76,7 @@ export class EmitterVisitorContext {
     return this._lines[this._lines.length - 1];
   }
 
-  println(from?: {sourceSpan: ParseSourceSpan | null} | null, lastPart: string = ''): void {
+  println(from?: {sourceSpan?: ParseSourceSpan | null} | null, lastPart: string = ''): void {
     this.print(from || null, lastPart, true);
   }
 
@@ -88,7 +88,11 @@ export class EmitterVisitorContext {
     return this._currentLine.indent * INDENT_WITH.length + this._currentLine.partsLength;
   }
 
-  print(from: {sourceSpan: ParseSourceSpan | null} | null, part: string, newLine: boolean = false) {
+  print(
+    from: {sourceSpan?: ParseSourceSpan | null} | null,
+    part: string,
+    newLine: boolean = false,
+  ) {
     if (part.length > 0) {
       this._currentLine.parts.push(part);
       this._currentLine.partsLength += part.length;
@@ -548,20 +552,29 @@ export abstract class AbstractEmitterVisitor
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: EmitterVisitorContext): void {
     this.printLeadingComments(ast, ctx);
     ctx.print(ast, `{`);
-    this.visitAllObjects(
-      (entry) => {
-        if (entry instanceof o.LiteralMapSpreadAssignment) {
-          ctx.print(ast, '...');
-          entry.expression.visitExpression(this, ctx);
-        } else {
-          ctx.print(ast, `${escapeIdentifier(entry.key, entry.quoted)}: `);
-          entry.value.visitExpression(this, ctx);
+    for (let i = 0; i < ast.entries.length; i++) {
+      const entry = ast.entries[i];
+      if (entry instanceof o.LiteralMapSpreadAssignment) {
+        if (i > 0) {
+          ctx.print(ast, ', ', false);
         }
-      },
-      ast.entries,
-      ctx,
-      ', ',
-    );
+        ctx.print(ast, '...');
+        entry.expression.visitExpression(this, ctx);
+      } else {
+        const hasLeadingComments =
+          this.printComments &&
+          entry.leadingComments !== undefined &&
+          entry.leadingComments.length > 0;
+        if (i > 0) {
+          ctx.print(ast, hasLeadingComments ? ',' : ', ', hasLeadingComments);
+        } else if (hasLeadingComments) {
+          ctx.println(ast);
+        }
+        this.printLeadingComments(entry, ctx);
+        ctx.print(ast, `${escapeIdentifier(entry.key, entry.quoted)}: `);
+        entry.value.visitExpression(this, ctx);
+      }
+    }
     ctx.print(ast, `}`);
   }
 
@@ -720,7 +733,7 @@ export abstract class AbstractEmitterVisitor
   }
 
   protected printLeadingComments(
-    node: o.Expression | o.Statement,
+    node: {leadingComments?: o.LeadingComment[]; sourceSpan?: ParseSourceSpan | null},
     ctx: EmitterVisitorContext,
   ): void {
     if (!this.printComments || node.leadingComments === undefined) {
