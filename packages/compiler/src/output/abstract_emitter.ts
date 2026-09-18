@@ -57,6 +57,25 @@ const BINARY_OPERATORS = new Map([
   [o.BinaryOperator.NullishCoalesceAssignment, '??='],
 ]);
 
+const NUMERIC_OPERATORS = new Set([
+  o.BinaryOperator.Bigger,
+  o.BinaryOperator.BiggerEquals,
+  o.BinaryOperator.Lower,
+  o.BinaryOperator.LowerEquals,
+  o.BinaryOperator.Minus,
+  o.BinaryOperator.Multiply,
+  o.BinaryOperator.Divide,
+  o.BinaryOperator.Modulo,
+  o.BinaryOperator.Exponentiation,
+]);
+
+const EQUALITY_OPERATORS = new Set([
+  o.BinaryOperator.Equals,
+  o.BinaryOperator.NotEquals,
+  o.BinaryOperator.Identical,
+  o.BinaryOperator.NotIdentical,
+]);
+
 export class EmitterVisitorContext {
   static createRoot(): EmitterVisitorContext {
     return new EmitterVisitorContext(0);
@@ -198,6 +217,24 @@ export class EmitterVisitorContext {
       }
     }
     return null;
+  }
+
+  addTsIgnore(): void {
+    const previousIndex = this._lines.length - 2;
+    const comment = '// @ts-ignore';
+
+    if (
+      previousIndex >= 0 &&
+      this._lines[previousIndex].parts.length === 1 &&
+      this._lines[previousIndex].parts[0] === comment
+    ) {
+      return;
+    }
+    const line = new EmittedLine(this._currentLine.indent);
+    line.parts.push(comment);
+    line.partsLength = comment.length;
+    line.srcSpans.push(null);
+    this._lines.splice(this._lines.length - 1, 0, line);
   }
 
   /**
@@ -493,6 +530,15 @@ export abstract class AbstractEmitterVisitor
 
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: EmitterVisitorContext): void {
     this.printLeadingComments(ast, ctx);
+
+    // We have some internal users who had expressions like `!a > 1` or `'str' + something ?? 'foo'`
+    // which normally get flagged by TS as errors, however due to our aggressive parenthesizing
+    // in TCBs were not being flagged. This logic adds a `ts-ignore` if we detect cases like that,
+    // because we emit expressions in runtime code (more or less) as they were written.
+    if (this.printTypes && binaryNeedsTsIgnore(ast)) {
+      ctx.addTsIgnore();
+    }
+
     const operator = BINARY_OPERATORS.get(ast.operator);
     if (!operator) {
       throw new Error(`Unknown operator ${ast.operator}`);
@@ -739,4 +785,42 @@ export function escapeIdentifier(input: string, alwaysQuote: boolean = true): st
 
   const requiresQuotes = alwaysQuote || !LEGAL_IDENTIFIER_RE.test(body);
   return requiresQuotes ? `'${body}'` : body;
+}
+
+function isNeverNullish(expression: o.Expression): boolean {
+  if (expression instanceof o.ParenthesizedExpr) {
+    return isNeverNullish(expression.expr);
+  }
+  if (expression instanceof o.BinaryOperatorExpr) {
+    return (
+      expression.operator !== o.BinaryOperator.And &&
+      expression.operator !== o.BinaryOperator.Or &&
+      expression.operator !== o.BinaryOperator.NullishCoalesce
+    );
+  }
+  return (
+    expression instanceof o.NotExpr ||
+    expression instanceof o.UnaryOperatorExpr ||
+    expression instanceof o.LiteralExpr
+  );
+}
+
+function isNonBooleanLiteral(expression: o.Expression): boolean {
+  return expression instanceof o.LiteralExpr && typeof expression.value !== 'boolean';
+}
+
+function binaryNeedsTsIgnore(expression: o.BinaryOperatorExpr): boolean {
+  if (expression.operator === o.BinaryOperator.NullishCoalesce) {
+    return isNeverNullish(expression.lhs);
+  }
+  if (NUMERIC_OPERATORS.has(expression.operator)) {
+    return expression.lhs instanceof o.NotExpr || expression.rhs instanceof o.NotExpr;
+  }
+  if (EQUALITY_OPERATORS.has(expression.operator)) {
+    return (
+      (expression.lhs instanceof o.NotExpr && isNonBooleanLiteral(expression.rhs)) ||
+      (expression.rhs instanceof o.NotExpr && isNonBooleanLiteral(expression.lhs))
+    );
+  }
+  return false;
 }
