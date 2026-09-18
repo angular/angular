@@ -154,6 +154,19 @@ export const enum DeferBlockDepsEmitMode {
 }
 
 /**
+ * Controls how deferred imports are emitted. A retryable resolver must also
+ * work for blocks without retry because per-component compilation can share
+ * one resolver across both kinds of blocks.
+ */
+export const enum DeferDependencyLoadingMode {
+  /** Emits a one-shot import. */
+  Default,
+
+  /** Retains the import for another attempt. */
+  Retryable,
+}
+
+/**
  * Specifies how a list of declaration type references should be emitted into the generated code.
  */
 export const enum DeclarationListEmitMode {
@@ -542,10 +555,12 @@ export type R3DeferResolverFunctionMetadata =
   | {
       mode: DeferBlockDepsEmitMode.PerBlock;
       dependencies: R3DeferPerBlockDependency[];
+      dependencyLoadingMode?: DeferDependencyLoadingMode;
     }
   | {
       mode: DeferBlockDepsEmitMode.PerComponent;
       dependencies: R3DeferPerComponentDependency[];
+      dependencyLoadingMode?: DeferDependencyLoadingMode;
     };
 
 /**

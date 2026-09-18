@@ -438,6 +438,41 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate a defer block with an `@error (retry N)` parameter in full compilation",
+      "inputFiles": ["deferred_with_error_retry.ts", "deferred_with_error_retry_dep.ts"],
+      "compilationModeFilter": ["full compile", "declaration-only emit", "instruction compile"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_error_retry_template.js",
+              "generated": "deferred_with_error_retry.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should preserve the static retry loader when linking partial compilation",
+      "inputFiles": [
+        "deferred_with_error_retry_linked.ts",
+        "deferred_with_error_retry_linked_dep.ts"
+      ],
+      "compilationModeFilter": ["linked compile"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_with_error_retry_linked_template.js",
+              "generated": "deferred_with_error_retry_linked.js"
+            }
+          ],
+          "failureMessage": "Incorrect linked template"
+        }
+      ]
     }
   ]
 }

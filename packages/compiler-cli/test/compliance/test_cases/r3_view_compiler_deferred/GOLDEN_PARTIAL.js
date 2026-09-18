@@ -1610,3 +1610,155 @@ export declare class MyApp extends BaseCmp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_retry_dep.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class RetryCmp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: RetryCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: RetryCmp, isStandalone: true, selector: "retry-cmp", ngImport: i0, template: 'Loaded!', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: RetryCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'retry-cmp',
+                    template: 'Loaded!',
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_retry_dep.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class RetryCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<RetryCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<RetryCmp, "retry-cmp", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_retry.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    isVisible = false;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div>
+      @defer (when isVisible) {
+        <retry-cmp />
+      } @placeholder {
+        <p>Placeholder</p>
+      } @error (retry 3) {
+        <p>Failed!</p>
+      }
+    </div>
+  `, isInline: true, deferBlockDependencies: [() => [i0.ɵɵdeferDependency(() => /* @ts-ignore */
+                import("./deferred_with_error_retry_dep"), m => m.RetryCmp)]] });
+}
+i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, resolveDeferredDeps: () => [/* @ts-ignore */
+        import("./deferred_with_error_retry_dep").then(m => m.RetryCmp)], resolveMetadata: RetryCmp => ({ decorators: [{
+                type: Component,
+                args: [{
+                        imports: [RetryCmp],
+                        template: `
+    <div>
+      @defer (when isVisible) {
+        <retry-cmp />
+      } @placeholder {
+        <p>Placeholder</p>
+      } @error (retry 3) {
+        <p>Failed!</p>
+      }
+    </div>
+  `,
+                    }]
+            }], ctorParameters: null, propDecorators: null }) });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_retry.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    isVisible: boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_retry_linked_dep.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class LinkedRetryCmp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LinkedRetryCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: LinkedRetryCmp, isStandalone: true, selector: "linked-retry-cmp", ngImport: i0, template: 'Retry dependency', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LinkedRetryCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'linked-retry-cmp',
+                    template: 'Retry dependency',
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_retry_linked_dep.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class LinkedRetryCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<LinkedRetryCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<LinkedRetryCmp, "linked-retry-cmp", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_retry_linked.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class LinkedRetryApp {
+    isVisible = false;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LinkedRetryApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: LinkedRetryApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div>
+      @defer (when isVisible) {
+        <linked-retry-cmp />
+      } @placeholder {
+        <p>Placeholder</p>
+      } @error (retry 3) {
+        <p>Failed!</p>
+      }
+    </div>
+  `, isInline: true, deferBlockDependencies: [() => [i0.ɵɵdeferDependency(() => /* @ts-ignore */
+                import("./deferred_with_error_retry_linked_dep"), m => m.LinkedRetryCmp)]] });
+}
+i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LinkedRetryApp, resolveDeferredDeps: () => [/* @ts-ignore */
+        import("./deferred_with_error_retry_linked_dep").then(m => m.LinkedRetryCmp)], resolveMetadata: LinkedRetryCmp => ({ decorators: [{
+                type: Component,
+                args: [{
+                        imports: [LinkedRetryCmp],
+                        template: `
+    <div>
+      @defer (when isVisible) {
+        <linked-retry-cmp />
+      } @placeholder {
+        <p>Placeholder</p>
+      } @error (retry 3) {
+        <p>Failed!</p>
+      }
+    </div>
+  `,
+                    }]
+            }], ctorParameters: null, propDecorators: null }) });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_with_error_retry_linked.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class LinkedRetryApp {
+    isVisible: boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<LinkedRetryApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<LinkedRetryApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

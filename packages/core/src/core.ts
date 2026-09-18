@@ -65,6 +65,11 @@ export {
   Predicate,
 } from './debug/debug_node';
 export {IdleService, provideIdleServiceWith} from './defer/idle_service';
+export {
+  DeferBlockRetryHandler,
+  DeferBlockRetryContext,
+  provideDeferBlockRetryHandler,
+} from './defer/retry_handler';
 export * from './di';
 export {DOCUMENT} from './document';
 export {ErrorDetails, ErrorHandler, provideBrowserGlobalErrorListeners} from './error_handler';
