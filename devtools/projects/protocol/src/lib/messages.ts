@@ -395,6 +395,8 @@ export interface DevtoolsConfig {
   hydrationOverlays: boolean;
   cdHighlighting: boolean;
   cdDataStream: boolean;
+  forBlocks: boolean;
+  deferBlocks: boolean;
 }
 
 export interface Events {
