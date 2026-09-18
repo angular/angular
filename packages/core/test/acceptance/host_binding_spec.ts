@@ -682,7 +682,7 @@ describe('host bindings', () => {
       expect(childElement.style.opacity).toEqual('0.5');
     });
 
-    it('should allow class-bindings to be placed on ng-container elements', () => {
+    it('should NOT allow class-bindings to be placed on ng-container elements', () => {
       @Component({
         template: `
           <ng-container [class.foo]="true" dir-that-adds-other-classes>...</ng-container>
@@ -703,9 +703,8 @@ describe('host bindings', () => {
 
       TestBed.configureTestingModule({declarations: [MyApp, DirThatAddsOtherClasses]});
       expect(() => {
-        const fixture = TestBed.createComponent(MyApp);
-        fixture.detectChanges();
-      }).not.toThrow();
+        TestBed.createComponent(MyApp);
+      }).toThrowError(/Class bindings are not supported on ng-container/);
     });
   });
 
