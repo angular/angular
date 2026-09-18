@@ -59,6 +59,8 @@ export class TestRequest {
         };
         status?: number;
         statusText?: string;
+        redirected?: boolean;
+        responseType?: ResponseType;
     }): void;
     // (undocumented)
     request: HttpRequest<any>;
