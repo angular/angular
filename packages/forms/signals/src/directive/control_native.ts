@@ -124,6 +124,9 @@ export function nativeControlCreate(
       input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
 
     if (controlValueChanged || radioValueChanged) {
+      // While the user is editing, writing the parsed value back can erase unfinished input or
+      // normalize text such as `-0` or `1.0` before the next keystroke. Preserve these intermediate
+      // strings only in the focused control so unfocused controls still receive model updates.
       const isFocused = document.activeElement === input;
       if (!(isFocused && isIntermediate(input.value, controlValue))) {
         setNativeControlValue(input, controlValue);
