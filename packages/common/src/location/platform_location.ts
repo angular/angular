@@ -164,7 +164,17 @@ export class BrowserPlatformLocation extends PlatformLocation {
   }
 
   override replaceState(state: any, title: string, url: string): void {
-    this._history.replaceState(state, title, url);
+    const targetUrl = new URL(url, this.href).href;
+
+    // Text fragment directives are not exposed through script-visible URL APIs. Passing the
+    // current visible URL back to replaceState would therefore remove a directive that is still
+    // present in the address bar. Omitting the URL has identical observable behavior for an equal
+    // target while preserving browser-owned URL data.
+    if (targetUrl === this.href) {
+      this._history.replaceState(state, title);
+    } else {
+      this._history.replaceState(state, title, url);
+    }
   }
 
   override forward(): void {

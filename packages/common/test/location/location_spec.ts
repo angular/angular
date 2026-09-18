@@ -8,6 +8,7 @@
 
 import {
   APP_BASE_HREF,
+  BrowserPlatformLocation,
   CommonModule,
   Location,
   LocationStrategy,
@@ -20,6 +21,33 @@ import {TestBed} from '@angular/core/testing';
 const baseUrl = '/base';
 
 describe('Location Class', () => {
+  describe('BrowserPlatformLocation', () => {
+    let history: jasmine.SpyObj<History>;
+    let platformLocation: BrowserPlatformLocation;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({providers: [BrowserPlatformLocation]});
+      history = jasmine.createSpyObj<History>('History', ['replaceState']);
+      platformLocation = TestBed.inject(BrowserPlatformLocation);
+      Object.defineProperty(platformLocation, '_history', {value: history});
+      Object.defineProperty(platformLocation, '_location', {
+        value: new URL('https://angular.dev/current'),
+      });
+    });
+
+    it('should not rewrite the URL when replacing the current history entry', () => {
+      platformLocation.replaceState({navigationId: 1}, '', 'https://angular.dev/current');
+
+      expect(history.replaceState).toHaveBeenCalledOnceWith({navigationId: 1}, '');
+    });
+
+    it('should rewrite the URL when replacing the history entry with another URL', () => {
+      platformLocation.replaceState({navigationId: 1}, '', '/next');
+
+      expect(history.replaceState).toHaveBeenCalledOnceWith({navigationId: 1}, '', '/next');
+    });
+  });
+
   describe('stripTrailingSlash', () => {
     it('should strip single character slash', () => {
       const input = '/';
