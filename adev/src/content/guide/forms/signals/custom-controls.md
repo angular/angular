@@ -161,7 +161,6 @@ Display validation feedback to users:
 | Property  | Purpose                                 |
 | --------- | --------------------------------------- |
 | `errors`  | Array of current validation errors      |
-| `valid`   | Whether the field is valid              |
 | `invalid` | Whether the field has validation errors |
 | `pending` | Whether async validation is in progress |
 
