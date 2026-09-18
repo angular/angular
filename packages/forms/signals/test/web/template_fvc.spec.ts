@@ -8,9 +8,11 @@
 
 import {
   ApplicationRef,
+  booleanAttribute,
   Component,
   computed,
   Directive,
+  forwardRef,
   inject,
   input,
   model,
@@ -19,7 +21,17 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {FormsModule, NgModel, Validators, ɵFORM_CONTROL_INTEGRATION} from '@angular/forms';
+import {
+  AbstractControl,
+  FormsModule,
+  NG_VALIDATORS,
+  NgForm,
+  NgModel,
+  ValidationErrors,
+  Validator,
+  Validators,
+  ɵFORM_CONTROL_INTEGRATION,
+} from '@angular/forms';
 
 @Component({
   selector: 'template-fvc-input',
@@ -450,6 +462,186 @@ describe('NgModel parseErrors binding', () => {
     // Set valid long value - no errors
     act(() => fvc.value.set('valid-long'));
     expect(fixture.componentInstance.model.control.errors).toBeNull();
+  });
+});
+
+@Component({
+  selector: 'validated-fvc-input',
+  template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+})
+class ValidatedFvcInput {
+  readonly value = model('');
+  readonly required = input(false, {transform: booleanAttribute});
+  readonly valid = input(true);
+  readonly invalid = input(false);
+  readonly errors = input<readonly any[]>([]);
+}
+
+@Component({
+  selector: 'template-self-validating-fvc-input',
+  template: '',
+  providers: [
+    {
+      provide: NG_VALIDATORS,
+      useExisting: forwardRef(() => TemplateSelfValidatingFvcInput),
+      multi: true,
+    },
+  ],
+})
+class TemplateSelfValidatingFvcInput implements Validator {
+  readonly value = model('');
+
+  validate(control: AbstractControl): ValidationErrors | null {
+    return control.value === 'bad' ? {selfValidated: true} : null;
+  }
+}
+
+@Component({
+  selector: 'template-fvc-checkbox',
+  template: '<input type="checkbox" #i [checked]="checked()" (change)="checked.set(i.checked)" />',
+})
+class TemplateFvcCheckbox {
+  readonly checked = model(false);
+  readonly invalid = input(false);
+  readonly errors = input<readonly any[]>([]);
+}
+
+@Directive({
+  selector: '[mustBeChecked]',
+  providers: [
+    {provide: NG_VALIDATORS, useExisting: forwardRef(() => MustBeCheckedValidator), multi: true},
+  ],
+})
+class MustBeCheckedValidator implements Validator {
+  validate(control: AbstractControl): ValidationErrors | null {
+    return control.value === true ? null : {mustBeChecked: true};
+  }
+}
+
+describe('NgModel with FVC and validator directives', () => {
+  it('should apply validator directives on the element to the control', async () => {
+    @Component({
+      template: `<validated-fvc-input [(ngModel)]="val" required minlength="3" #model="ngModel" />`,
+      imports: [ValidatedFvcInput, FormsModule],
+    })
+    class TestCmp {
+      val = signal('');
+      @ViewChild('model') model!: NgModel;
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(ValidatedFvcInput)).componentInstance;
+    const control = fixture.componentInstance.model.control;
+
+    expect(control.errors).toEqual({required: true});
+    expect(control.valid).toBe(false);
+    expect(fvc.invalid()).toBe(true);
+    expect(fvc.errors().map((e: {kind: string}) => e.kind)).toEqual(['required']);
+
+    act(() => fvc.value.set('ab'));
+    expect(control.errors).toEqual({minlength: {requiredLength: 3, actualLength: 2}});
+
+    act(() => fvc.value.set('abc'));
+    expect(control.errors).toBeNull();
+    expect(fvc.valid()).toBe(true);
+    expect(fvc.errors()).toEqual([]);
+  });
+
+  it('should apply NG_VALIDATORS provided by the custom control itself', async () => {
+    @Component({
+      template: `<template-self-validating-fvc-input [(ngModel)]="val" #model="ngModel" />`,
+      imports: [TemplateSelfValidatingFvcInput, FormsModule],
+    })
+    class TestCmp {
+      val = signal('');
+      @ViewChild('model') model!: NgModel;
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+    const control = fixture.componentInstance.model.control;
+    expect(control.errors).toBeNull();
+
+    await actAsync(() => fixture.componentInstance.val.set('bad'));
+    expect(control.errors).toEqual({selfValidated: true});
+  });
+
+  it('should re-validate when a bound validator input changes', async () => {
+    @Component({
+      template: `<validated-fvc-input [(ngModel)]="val" [required]="req()" #model="ngModel" />`,
+      imports: [ValidatedFvcInput, FormsModule],
+    })
+    class TestCmp {
+      val = signal('');
+      req = signal(false);
+      @ViewChild('model') model!: NgModel;
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(ValidatedFvcInput)).componentInstance;
+    const control = fixture.componentInstance.model.control;
+    expect(control.errors).toBeNull();
+
+    await actAsync(() => fixture.componentInstance.req.set(true));
+    expect(control.errors).toEqual({required: true});
+    expect(fvc.invalid()).toBe(true);
+
+    await actAsync(() => fixture.componentInstance.req.set(false));
+    expect(control.errors).toBeNull();
+    expect(fvc.invalid()).toBe(false);
+  });
+
+  it('should make the form invalid and stop doing so once the element is removed', async () => {
+    @Component({
+      template: `
+        <form #form="ngForm">
+          @if (show()) {
+            <validated-fvc-input name="field" [(ngModel)]="val" required />
+          }
+        </form>
+      `,
+      imports: [ValidatedFvcInput, FormsModule],
+    })
+    class TestCmp {
+      val = signal('');
+      show = signal(true);
+      @ViewChild('form') form!: NgForm;
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+    const form = fixture.componentInstance.form;
+
+    expect(form.controls['field'].errors).toEqual({required: true});
+    expect(form.valid).toBe(false);
+
+    await actAsync(() => fixture.componentInstance.show.set(false));
+    expect(form.controls['field']).toBeUndefined();
+    expect(form.valid).toBe(true);
+  });
+
+  it('should apply validator directives to a custom checkbox control', async () => {
+    @Component({
+      template: `<template-fvc-checkbox [(ngModel)]="val" mustBeChecked #model="ngModel" />`,
+      imports: [TemplateFvcCheckbox, MustBeCheckedValidator, FormsModule],
+    })
+    class TestCmp {
+      val = signal(false);
+      @ViewChild('model') model!: NgModel;
+    }
+
+    const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(TemplateFvcCheckbox)).componentInstance;
+    const control = fixture.componentInstance.model.control;
+
+    expect(control.errors).toEqual({mustBeChecked: true});
+    expect(control.valid).toBe(false);
+    expect(fvc.invalid()).toBe(true);
+    expect(fvc.errors().map((e: {kind: string}) => e.kind)).toEqual(['mustBeChecked']);
+
+    act(() => fvc.checked.set(true));
+    expect(fixture.componentInstance.val()).toBe(true);
+    expect(control.errors).toBeNull();
+    expect(fvc.invalid()).toBe(false);
+    expect(fvc.errors()).toEqual([]);
   });
 });
 
