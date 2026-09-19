@@ -18,6 +18,7 @@ import {
   requiredError,
   validate,
   validateAsync,
+  validatePromise,
   validateTree,
   ValidationError,
 } from '../../public_api';
@@ -237,6 +238,113 @@ describe('validation status', () => {
       expect(f().valid()).toBe(false);
       expect(f().invalid()).toBe(false);
 
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(true);
+    });
+
+    it('should support promise-based async validators', async () => {
+      const f = form(
+        signal('VALID'),
+        (p) => {
+          validatePromise(p, async ({value}) => {
+            return value() === 'VALID' ? null : [{kind: 'custom'}];
+          });
+        },
+        {injector},
+      );
+
+      await Promise.resolve();
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(true);
+      expect(f().invalid()).toBe(false);
+
+      f().value.set('INVALID');
+
+      await Promise.resolve();
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(true);
+    });
+
+    it('should support debounced promise-based async validators', async () => {
+      const f = form(
+        signal('VALID'),
+        (p) => {
+          validatePromise(p, async ({value}) => (value() === 'VALID' ? null : [{kind: 'custom'}]), {
+            debounce: 100,
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(f().pending()).toBe(false);
+
+      f().value.set('INVALID');
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(true);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(false);
+
+      await timeout(150);
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(true);
+
+      f().value.set('VALID');
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(true);
+
+      await timeout(150);
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(true);
+      expect(f().invalid()).toBe(false);
+    });
+
+    it('should pass the previous value to custom debounce functions', async () => {
+      const debounceSpy = jasmine
+        .createSpy('debounce')
+        .and.callFake(
+          (value: string | undefined, lastValue: {status: string; value?: string} | undefined) => {
+            expect(value).toBe('INVALID');
+            expect(lastValue).toEqual({status: 'resolved', value: 'VALID'});
+            return new Promise<void>((resolve) => setTimeout(resolve, 10));
+          },
+        );
+
+      const f = form(
+        signal('VALID'),
+        (p) => {
+          validatePromise(p, async ({value}) => (value() === 'VALID' ? null : [{kind: 'custom'}]), {
+            debounce: debounceSpy,
+          });
+        },
+        {injector},
+      );
+
+      await appRef.whenStable();
+      expect(debounceSpy).not.toHaveBeenCalled();
+
+      f().value.set('INVALID');
+      await appRef.whenStable();
+
+      expect(debounceSpy).toHaveBeenCalledTimes(1);
+      expect(debounceSpy.calls.mostRecent().args[1]).toEqual({status: 'resolved', value: 'VALID'});
+
+      await timeout(20);
       await appRef.whenStable();
 
       expect(f().pending()).toBe(false);
