@@ -558,6 +558,20 @@ describe('TestBed with Standalone types', () => {
     expect(hostElement.textContent).toBe('transformed original value using Overridden A token');
   });
 
+  it('should preserve default change detection when overriding components', () => {
+    @Component({
+      template: 'Original',
+    })
+    class DefaultCmp {}
+
+    const onPushBefore = (DefaultCmp as any).ɵcmp.onPush;
+    TestBed.overrideComponent(DefaultCmp, {set: {template: 'Overridden'}});
+    TestBed.createComponent(DefaultCmp);
+    const onPushAfter = (DefaultCmp as any).ɵcmp.onPush;
+
+    expect(onPushAfter).withContext('ɵcmp.OnPush after override').toBe(onPushBefore);
+  });
+
   describe('NgModules as dependencies', () => {
     @Component({
       selector: 'test-cmp',
