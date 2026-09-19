@@ -251,6 +251,45 @@ describe('numeric inputs', () => {
       ]);
     });
 
+    for (const flushBetweenKeystrokes of [false, true]) {
+      it(`should not revert the user's own edit on blur (flush: ${flushBetweenKeystrokes})`, async () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="number" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly data = signal<number | null>(null);
+          readonly f = form(this.data);
+        }
+
+        const fixture = TestBed.createComponent(TestCmp);
+        await fixture.whenStable();
+        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+        input.focus();
+
+        // Typing `1` then `e`: the browser keeps showing `1e` but reports an empty value with
+        // badInput. Whether change detection runs between the two keystrokes must not matter.
+        validityMonitor.setInputState(input, '1', false);
+        if (flushBetweenKeystrokes) {
+          await fixture.whenStable();
+        }
+        validityMonitor.setInputState(input, '', true);
+        await fixture.whenStable();
+
+        expect(input.value).toBe('');
+        expect(fixture.componentInstance.data()).toBe(1);
+
+        input.blur();
+        await fixture.whenStable();
+
+        expect(input.value).toBe('');
+        expect(fixture.componentInstance.data()).toBe(1);
+        expect(fixture.componentInstance.f().errors()).toEqual([
+          jasmine.objectContaining({kind: 'parse'}),
+        ]);
+      });
+    }
+
     it('should preserve a negative decimal typed into a number input', () => {
       @Component({
         imports: [FormField],

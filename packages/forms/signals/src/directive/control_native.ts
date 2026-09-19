@@ -43,6 +43,8 @@ export function nativeControlCreate(
 ): () => void {
   let updateMode = false;
   let hasPendingValueWrite = false;
+  // Control value produced by the most recent user edit.
+  let lastEditedValue: unknown;
   const input = parent.nativeFormElement;
 
   // TODO: (perf) ok to always create this?
@@ -69,6 +71,7 @@ export function nativeControlCreate(
     hasPendingValueWrite = false;
     // Pass undefined as the raw value since the parse function doesn't care about it.
     parser.setRawValue(undefined);
+    lastEditedValue = parent.state().controlValue();
   };
   host.listenToDom('input', updateFromInput);
   host.listenToDom('blur', () => {
@@ -147,8 +150,9 @@ export function nativeControlCreate(
       if (!(isFocused && (isIntermediate(input.value, controlValue) || isBadInput))) {
         setNativeControlValue(input, controlValue);
         hasPendingValueWrite = false;
-      } else if (isBadInput) {
-        // The binding already cached this value, so blur must apply the deferred write.
+      } else if (isBadInput && controlValue !== lastEditedValue) {
+        // Only defer a change coming from elsewhere. The user's own edit lands here too when the
+        // next keystroke turns the input bad before this effect runs.
         hasPendingValueWrite = true;
       }
     }
