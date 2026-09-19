@@ -290,13 +290,9 @@ export class AngularLanguageClient implements vscode.Disposable {
             return null;
           }
 
-          // For TypeScript files, only request Angular inlay hints when the
-          // visible range intersects supported decorator fields (e.g. inline
-          // template/style metadata). This matches the guarding strategy used
-          // by other Angular LSP features and avoids work on unsupported TS regions.
-          if (!isNotTypescriptOrSupportedDecoratorRange(document, range)) {
-            return null;
-          }
+          // For TypeScript files, we always request Angular inlay hints.
+          // The server is responsible for filtering hints that do not intersect
+          // with the requested span and unsupported TS regions.
 
           return next(document, range, token);
         },
