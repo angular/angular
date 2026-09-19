@@ -148,8 +148,6 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     OUTPUT_REF_DESTROYED = 953,
     // (undocumented)
-    PARENT_NODE_NOT_FOUND = 510,
-    // (undocumented)
     PIPE_NOT_FOUND = -302,
     // (undocumented)
     PLATFORM_ALREADY_DESTROYED = 404,

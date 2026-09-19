@@ -180,6 +180,17 @@ export interface TQueries {
    * @param tNode
    */
   embeddedTView(tNode: TNode): TQueries | null;
+
+  /**
+   * Creates a fresh `TQueries` with clones of the inherited queries.
+   *
+   * Used when an embedded `TView` is recreated after its first creation pass was
+   * interrupted. `templateCreate()` won't inherit the queries again, so they need
+   * to be restored from the old collection.
+   *
+   * @param inheritedQueryCount Number of queries inherited from the declaration view.
+   */
+  cloneForRebuild(inheritedQueryCount: number): TQueries;
 }
 
 /**
