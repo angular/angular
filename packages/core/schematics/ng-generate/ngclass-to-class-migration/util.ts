@@ -296,16 +296,22 @@ export class NgClassCollector extends RecursiveVisitor {
           attr.valueSpan.end.offset,
         );
 
-        const parseResult = tryParseStaticObjectLiteral(expr);
+        let replacement: string | null = null;
 
-        if (parseResult === null) {
-          this.skippedNgClassCount++;
-          continue;
-        }
+        // Try string or array literal first (new logic)
+        const stringOrArrayResult = tryParseStringOrArrayLiteral(expr);
+        if (stringOrArrayResult !== null) {
+          replacement = `[class]="${stringOrArrayResult}"`;
+        } else {
+          // Try object literal (existing logic)
+          const objectLiteralResult = tryParseStaticObjectLiteral(expr);
 
-        const {bindings: staticMatch, hasSpaceSeparatedKeys} = parseResult;
+          if (objectLiteralResult === null) {
+            this.skippedNgClassCount++;
+            continue;
+          }
 
-        let replacement: string;
+          const {bindings: staticMatch, hasSpaceSeparatedKeys} = objectLiteralResult;
 
         if (staticMatch.length === 0) {
           replacement = '[class]=""';
@@ -368,6 +374,68 @@ export class NgClassCollector extends RecursiveVisitor {
 
     return super.visitElement(element, config);
   }
+}
+
+/**
+ * Attempts to parse an expression as a string or array literal.
+ * Returns the expression as-is if it's a valid string or array literal, null otherwise.
+ */
+function tryParseStringOrArrayLiteral(expr: string): string | null {
+  const trimmedExpr = expr.trim();
+
+  // Empty array or empty string literal should map to empty string literal
+  if (trimmedExpr === '[]' || trimmedExpr === "''" || trimmedExpr === '""') {
+    return "''";
+  }
+
+  // String literal: check if it starts and ends with quotes
+  if ((trimmedExpr.startsWith("'") && trimmedExpr.endsWith("'")) ||
+      (trimmedExpr.startsWith('"') && trimmedExpr.endsWith('"'))) {
+    // Ensure it's a valid string literal (basic check)
+    return trimmedExpr;
+  }
+
+  // Array literal: check if it starts with [ and ends with ]
+  if (trimmedExpr.startsWith('[') && trimmedExpr.endsWith(']')) {
+    // Validate it's a proper array literal containing only string literals
+    try {
+      const sourceFile = ts.createSourceFile(
+        'temp.ts',
+        `const arr = ${trimmedExpr}`,
+        ts.ScriptTarget.Latest,
+        true,
+      );
+
+      const variableStatement = sourceFile.statements[0];
+      if (!ts.isVariableStatement(variableStatement)) {
+        return null;
+      }
+
+      const declaration = variableStatement.declarationList.declarations[0];
+      if (!declaration.initializer || !ts.isArrayLiteralExpression(declaration.initializer)) {
+        return null;
+      }
+
+      // Check that all elements are string literals (or empty)
+      const arrayExpr = declaration.initializer;
+      for (const element of arrayExpr.elements) {
+        // Skip holes in sparse arrays (e.g., [, 'foo'])
+        if (!element) {
+          continue;
+        }
+        // Only string literals are allowed; anything else (identifiers, ternaries, calls) is skipped
+        if (!ts.isStringLiteral(element)) {
+          return null;
+        }
+      }
+
+      return trimmedExpr;
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
 }
 
 function tryParseStaticObjectLiteral(expr: string): {
