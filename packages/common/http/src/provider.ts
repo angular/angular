@@ -17,7 +17,12 @@ import {
 import {HttpBackend, HttpHandler, HttpInterceptorHandler} from './backend';
 import {HttpClient} from './client';
 import {FetchBackend} from './fetch';
-import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, legacyInterceptorFnFactory} from './interceptor';
+import {
+  HTTP_INTERCEPTOR_FNS,
+  HTTP_ROOT_INTERCEPTOR_FNS,
+  HttpInterceptorFn,
+  legacyInterceptorFnFactory,
+} from './interceptor';
 import {
   jsonpCallbackContext,
   JsonpCallbackContext,
@@ -337,3 +342,46 @@ export function withXhr(): HttpFeature<HttpFeatureKind.Xhr> {
     {provide: HttpBackend, useExisting: HttpXhrBackend},
   ]);
 }
+
+/**
+ * An `InjectionToken` that resolves to a `ReadonlySet<HttpInterceptorFn>` containing
+ * all functional HTTP interceptors configured for the current `HttpClient` instance.
+ *
+ * If `withRequestsMadeViaParent()` is configured on the current `HttpClient`, this set
+ * recursively includes interceptors configured in parent injectors.
+ *
+ * @publicApi
+ */
+export const HTTP_CONFIGURED_INTERCEPTOR_FNS = new InjectionToken<ReadonlySet<HttpInterceptorFn>>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'HTTP_CONFIGURED_INTERCEPTOR_FNS' : '',
+  {
+    factory: () => {
+      const localFns = inject(HTTP_INTERCEPTOR_FNS, {optional: true}) ?? [];
+      const parentHandler = inject(HttpHandler, {skipSelf: true, optional: true});
+      const backend = inject(HttpBackend, {optional: true});
+      const isDelegating = parentHandler !== null && backend === parentHandler;
+
+      const rootFns =
+        inject(
+          HTTP_ROOT_INTERCEPTOR_FNS,
+          isDelegating ? {self: true, optional: true} : {optional: true},
+        ) ?? [];
+
+      const interceptors = new Set<HttpInterceptorFn>([...localFns, ...rootFns]);
+
+      if (isDelegating) {
+        const parentSet = inject(HTTP_CONFIGURED_INTERCEPTOR_FNS, {
+          skipSelf: true,
+          optional: true,
+        });
+        if (parentSet) {
+          for (const fn of parentSet) {
+            interceptors.add(fn);
+          }
+        }
+      }
+
+      return interceptors;
+    },
+  },
+);
