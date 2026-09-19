@@ -67,8 +67,9 @@ async function initWebMcpForm(
         untrustedContentHint: false,
       },
       execute: async (args: Record<string, unknown> | unknown[]) => {
-        // Populate the form with changes from the agent.
-        node.value.set(args);
+        // Populate the form with changes from the agent, discarding writes to any field the
+        // user could not have edited themselves.
+        node.value.set(applyAgentValue(node, args));
 
         // Trigger form submission.
         const success = await submit(formTree);
@@ -90,6 +91,48 @@ async function initWebMcpForm(
     },
     injector,
   );
+}
+
+/**
+ * Whether an agent is allowed to write to a given field.
+ *
+ * Hidden, disabled, and readonly fields cannot be edited through the UI, so an agent must not
+ * be able to edit them either. Validation is also skipped for such fields, meaning any value
+ * an agent wrote to one would reach submission without ever being validated.
+ */
+function isAgentWritable(node: FieldNode): boolean {
+  return !node.hidden() && !node.disabled() && !node.readonly();
+}
+
+/**
+ * Merges the values provided by an agent into the form's current value, preserving the current
+ * value of every field the agent is not allowed to write.
+ */
+function applyAgentValue(node: FieldNode, incoming: unknown): unknown {
+  const current = node.value();
+
+  if (!isAgentWritable(node)) return current;
+
+  // The agent left this field out, so keep whatever the application already had.
+  if (incoming === undefined) return current;
+
+  // Objects are merged key by key so that non-writable children retain their current value.
+  // Arrays are taken as-is: an agent may add or remove elements, so elements have no stable
+  // identity across the update and their individual writability cannot be matched up.
+  if (isPlainObject(current) && isPlainObject(incoming)) {
+    const merged: Record<string, unknown> = {...current};
+    for (const child of node.structure.children()) {
+      const key = child.keyInParent();
+      merged[key] = applyAgentValue(child, incoming[key]);
+    }
+    return merged;
+  }
+
+  return incoming;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /** Infers the JSON schema from a specific form field. */
@@ -126,6 +169,9 @@ function inferSchemaFromFieldNode(node: FieldNode): JsonSchemaForInference | und
     const required: string[] = [];
     const children = node.structure.children();
     for (const child of children) {
+      // Fields the user cannot edit are not offered to the agent either.
+      if (!isAgentWritable(child)) continue;
+
       const key = child.keyInParent();
       const childSchema = inferSchemaFromFieldNode(child);
       if (!childSchema) return undefined;

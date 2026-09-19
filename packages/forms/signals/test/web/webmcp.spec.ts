@@ -8,7 +8,14 @@
 
 import {ApplicationRef, Component, input, linkedSignal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, provideExperimentalWebMcpForms, required} from '@angular/forms/signals';
+import {
+  disabled,
+  form,
+  hidden,
+  provideExperimentalWebMcpForms,
+  readonly,
+  required,
+} from '@angular/forms/signals';
 import {cleanupWebMCPPolyfill, initializeWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
 import type {ChromeModelContextExtensions, ModelContext} from '@mcp-b/webmcp-types';
 import {REGISTER_WEBMCP_FORM, RegisterWebMcpForm} from '../../src/webmcp/tokens';
@@ -142,6 +149,178 @@ describe('Signal Forms WebMCP Integration', () => {
           },
         },
         required: ['name'],
+        additionalProperties: false,
+      });
+    });
+
+    it('should not expose hidden, disabled, or readonly fields in the schema', async () => {
+      const model = signal({
+        name: 'John',
+        secret: 'hidden-value',
+        plan: 'free',
+        id: 'abc-123',
+      });
+
+      TestBed.runInInjectionContext(() => {
+        form(
+          model,
+          (p) => {
+            hidden(p.secret);
+            disabled(p.plan);
+            readonly(p.id);
+          },
+          {
+            experimentalWebMcpTool: {
+              name: 'nonWritableSchemaTool',
+              description: 'A test for non-writable fields',
+            },
+          },
+        );
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      const registeredTools = await getModelContext().getTools();
+      const tool = registeredTools.find((t) => t.name === 'nonWritableSchemaTool')!;
+      expect(tool.inputSchema).toEqual({
+        type: 'object',
+        properties: {
+          name: {type: 'string'},
+        },
+        required: [],
+        additionalProperties: false,
+      });
+    });
+
+    it('should preserve the value of hidden, disabled, and readonly fields written by an agent', async () => {
+      const model = signal({
+        name: '',
+        secret: 'hidden-value',
+        plan: 'free',
+        id: 'abc-123',
+      });
+
+      TestBed.runInInjectionContext(() => {
+        form(
+          model,
+          (p) => {
+            hidden(p.secret);
+            disabled(p.plan);
+            readonly(p.id);
+          },
+          {
+            experimentalWebMcpTool: {
+              name: 'nonWritableSubmitTool',
+              description: 'A test for non-writable fields',
+            },
+            submission: {
+              action: async () => undefined,
+            },
+          },
+        );
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      // An agent may ignore the advertised schema and send these fields anyway.
+      const result = await executeTool(
+        'nonWritableSubmitTool',
+        JSON.stringify({
+          name: 'Alice',
+          secret: 'leaked',
+          plan: 'enterprise',
+          id: 'tampered',
+        }),
+      );
+
+      expect(model()).toEqual({
+        name: 'Alice',
+        secret: 'hidden-value',
+        plan: 'free',
+        id: 'abc-123',
+      });
+      expect(JSON.parse(result!)).toEqual({
+        content: [{type: 'text', text: 'Form submitted successfully.'}],
+      });
+    });
+
+    it('should preserve non-writable fields nested in an object', async () => {
+      const model = signal({
+        address: {
+          city: '',
+          country: 'US',
+        },
+      });
+
+      TestBed.runInInjectionContext(() => {
+        form(
+          model,
+          (p) => {
+            disabled(p.address.country);
+          },
+          {
+            experimentalWebMcpTool: {
+              name: 'nestedNonWritableTool',
+              description: 'A test for nested non-writable fields',
+            },
+            submission: {
+              action: async () => undefined,
+            },
+          },
+        );
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      const registeredTools = await getModelContext().getTools();
+      const tool = registeredTools.find((t) => t.name === 'nestedNonWritableTool')!;
+      expect(tool.inputSchema).toEqual({
+        type: 'object',
+        properties: {
+          address: {
+            type: 'object',
+            properties: {city: {type: 'string'}},
+            required: [],
+            additionalProperties: false,
+          },
+        },
+        required: [],
+        additionalProperties: false,
+      });
+
+      await executeTool(
+        'nestedNonWritableTool',
+        JSON.stringify({address: {city: 'Sunnyvale', country: 'FR'}}),
+      );
+
+      expect(model()).toEqual({address: {city: 'Sunnyvale', country: 'US'}});
+    });
+
+    it('should infer a schema when only a non-writable field has an uninferable type', async () => {
+      const model = signal<{name: string; metadata: string | null}>({
+        name: 'John',
+        metadata: null,
+      });
+
+      TestBed.runInInjectionContext(() => {
+        form(
+          model,
+          (p) => {
+            hidden(p.metadata);
+          },
+          {
+            experimentalWebMcpTool: {
+              name: 'uninferableHiddenTool',
+              description: 'A test for uninferable non-writable fields',
+            },
+          },
+        );
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      const registeredTools = await getModelContext().getTools();
+      const tool = registeredTools.find((t) => t.name === 'uninferableHiddenTool')!;
+      expect(tool.inputSchema).toEqual({
+        type: 'object',
+        properties: {name: {type: 'string'}},
+        required: [],
         additionalProperties: false,
       });
     });
