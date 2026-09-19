@@ -467,6 +467,7 @@ export interface ObjectLiteralAssignment<TExpression> {
    * Whether the `propertyName` should be enclosed in quotes.
    */
   quoted: boolean;
+  leadingComments?: LeadingComment[];
 }
 
 /**
