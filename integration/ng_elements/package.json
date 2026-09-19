@@ -12,10 +12,10 @@
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0",
     "typescript": "6.0.3",
-    "zone.js": "0.16.2"
+    "zone.js": "0.16.3"
   },
   "devDependencies": {
-    "@babel/core": "8.0.1",
+    "@babel/core": "8.0.6",
     "@rollup/plugin-babel": "^7.0.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@types/jasmine": "^6.0.0",
@@ -26,7 +26,7 @@
     "jasmine-core": "6.3.0",
     "jasmine-spec-reporter": "~7.0.0",
     "lite-server": "2.6.1",
-    "rollup": "4.63.0",
+    "rollup": "4.63.3",
     "selenium-webdriver": "3.5.0",
     "ts-node": "^10.9.1"
   },
@@ -37,5 +37,5 @@
     "e2e": "jasmine --config=e2e/jasmine.json 'e2e/**/*.e2e-spec.ts'"
   },
   "private": true,
-  "packageManager": "pnpm@12.3.4"
+  "packageManager": "pnpm@12.4.2"
 }
