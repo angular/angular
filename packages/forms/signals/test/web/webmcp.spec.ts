@@ -8,7 +8,15 @@
 
 import {ApplicationRef, Component, input, linkedSignal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, provideExperimentalWebMcpForms, required} from '@angular/forms/signals';
+import {
+  applyEach,
+  disabled,
+  form,
+  hidden,
+  provideExperimentalWebMcpForms,
+  readonly,
+  required,
+} from '@angular/forms/signals';
 import {cleanupWebMCPPolyfill, initializeWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
 import type {ChromeModelContextExtensions, ModelContext} from '@mcp-b/webmcp-types';
 import {REGISTER_WEBMCP_FORM, RegisterWebMcpForm} from '../../src/webmcp/tokens';
@@ -144,6 +152,175 @@ describe('Signal Forms WebMCP Integration', () => {
         required: ['name'],
         additionalProperties: false,
       });
+    });
+
+    it('should preserve the value of hidden, disabled, and readonly fields written by an agent', async () => {
+      const model = signal({
+        name: '',
+        secret: 'hidden-value',
+        plan: 'free',
+        id: 'abc-123',
+      });
+
+      TestBed.runInInjectionContext(() => {
+        form(
+          model,
+          (p) => {
+            hidden(p.secret);
+            disabled(p.plan);
+            readonly(p.id);
+          },
+          {
+            experimentalWebMcpTool: {
+              name: 'nonWritableSubmitTool',
+              description: 'A test for non-writable fields',
+            },
+            submission: {
+              action: async () => undefined,
+            },
+          },
+        );
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      // An agent may ignore the advertised schema and send these fields anyway.
+      const result = await executeTool(
+        'nonWritableSubmitTool',
+        JSON.stringify({
+          name: 'Alice',
+          secret: 'leaked',
+          plan: 'enterprise',
+          id: 'tampered',
+        }),
+      );
+
+      expect(model()).toEqual({
+        name: 'Alice',
+        secret: 'hidden-value',
+        plan: 'free',
+        id: 'abc-123',
+      });
+      expect(JSON.parse(result!)).toEqual({
+        content: [{type: 'text', text: 'Form submitted successfully.'}],
+      });
+    });
+
+    it('should preserve non-writable fields nested in an object', async () => {
+      const model = signal({
+        address: {
+          city: '',
+          country: 'US',
+        },
+      });
+
+      TestBed.runInInjectionContext(() => {
+        form(
+          model,
+          (p) => {
+            disabled(p.address.country);
+          },
+          {
+            experimentalWebMcpTool: {
+              name: 'nestedNonWritableTool',
+              description: 'A test for nested non-writable fields',
+            },
+            submission: {
+              action: async () => undefined,
+            },
+          },
+        );
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      await executeTool(
+        'nestedNonWritableTool',
+        JSON.stringify({address: {city: 'Sunnyvale', country: 'FR'}}),
+      );
+
+      expect(model()).toEqual({address: {city: 'Sunnyvale', country: 'US'}});
+    });
+
+    it('should preserve non-writable fields nested in an array element', async () => {
+      const model = signal({
+        items: [
+          {label: 'first', id: 'id-1'},
+          {label: 'second', id: 'id-2'},
+        ],
+      });
+
+      TestBed.runInInjectionContext(() => {
+        form(
+          model,
+          (p) => {
+            applyEach(p.items, (item) => {
+              readonly(item.id);
+            });
+          },
+          {
+            experimentalWebMcpTool: {
+              name: 'arrayNonWritableTool',
+              description: 'A test for non-writable fields in array elements',
+            },
+            submission: {
+              action: async () => undefined,
+            },
+          },
+        );
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      await executeTool(
+        'arrayNonWritableTool',
+        JSON.stringify({
+          items: [
+            {label: 'renamed', id: 'tampered'},
+            {label: 'also renamed', id: 'tampered too'},
+          ],
+        }),
+      );
+
+      // Compared through JSON because signal forms attaches a synthetic identity symbol to
+      // objects held in an array, which the merge deliberately carries over so that the
+      // field instance survives the update.
+      expect(JSON.parse(JSON.stringify(model()))).toEqual({
+        items: [
+          {label: 'renamed', id: 'id-1'},
+          {label: 'also renamed', id: 'id-2'},
+        ],
+      });
+    });
+
+    it('should keep the existing value when the agent sends a mismatched shape', async () => {
+      const model = signal({
+        address: {
+          city: 'Sunnyvale',
+          country: 'US',
+        },
+      });
+
+      TestBed.runInInjectionContext(() => {
+        form(
+          model,
+          (p) => {
+            disabled(p.address.country);
+          },
+          {
+            experimentalWebMcpTool: {
+              name: 'mismatchedShapeTool',
+              description: 'A test for mismatched agent payloads',
+            },
+            submission: {
+              action: async () => undefined,
+            },
+          },
+        );
+      });
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      // Replacing the object outright would drop the disabled `country` field.
+      await executeTool('mismatchedShapeTool', JSON.stringify({address: 'Paris'}));
+
+      expect(model()).toEqual({address: {city: 'Sunnyvale', country: 'US'}});
     });
 
     it('should fill out and submit the form successfully', async () => {
