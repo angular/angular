@@ -224,6 +224,12 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return withFallback(fileName, (ls) => ls.getOutliningSpans(fileName)) ?? [];
   }
 
+  function getSmartSelectionRange(fileName: string, position: number): ts.SelectionRange {
+    // The Angular language service internally falls back to the TypeScript
+    // language service for positions outside of templates.
+    return ngLS.getSmartSelectionRange(fileName, position);
+  }
+
   function getTcb(fileName: string, position: number): GetTcbResponse | undefined {
     return ngLS.getTcb(fileName, position);
   }
@@ -393,6 +399,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getComponentLocationsForTemplate,
     getSignatureHelpItems,
     getOutliningSpans,
+    getSmartSelectionRange,
     getTemplateLocationForComponent,
     getTemplateDocumentSymbols,
     hasCodeFixesForErrorCode: ngLS.hasCodeFixesForErrorCode.bind(ngLS),

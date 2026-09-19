@@ -46,6 +46,7 @@ import {getComponentsWithTemplateFile, onCodeLens, onCodeLensResolve} from './ha
 import {onCompletion, onCompletionResolve} from './handlers/completions';
 import {onDefinition, onTypeDefinition, onReferences} from './handlers/definitions';
 import {onFoldingRanges} from './handlers/folding';
+import {onSelectionRanges} from './handlers/selection_range';
 import {onHover} from './handlers/hover';
 import {onInitialize} from './handlers/initialization';
 import {onLinkedEditingRange} from './handlers/linked_editing_range';
@@ -258,6 +259,7 @@ export class Session {
     conn.onPrepareRename((p) => onPrepareRename(this, p));
     conn.onHover((p) => onHover(this, p));
     conn.onFoldingRanges((p) => onFoldingRanges(this, p));
+    conn.onSelectionRanges((p) => onSelectionRanges(this, p));
     conn.languages.onLinkedEditingRange((p) => onLinkedEditingRange(this, p));
     conn.onDocumentSymbol(async (p) => await onDocumentSymbol(this, p));
     conn.onCompletion((p) => onCompletion(this, p));
