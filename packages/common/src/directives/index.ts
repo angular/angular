@@ -8,7 +8,7 @@
 
 import {Provider} from '@angular/core';
 
-import {NgClass} from './ng_class';
+import {NgClass, NG_CLASS_MERGER_STRATEGY, NgClassMergerStrategy} from './ng_class';
 import {NgComponentOutlet} from './ng_component_outlet';
 import {NgFor, NgForOf, NgForOfContext} from './ng_for_of';
 import {NgIf, NgIfContext} from './ng_if';
@@ -19,6 +19,8 @@ import {NgTemplateOutlet} from './ng_template_outlet';
 
 export {
   NgClass,
+  NG_CLASS_MERGER_STRATEGY,
+  NgClassMergerStrategy,
   NgComponentOutlet,
   NgFor,
   NgForOf,

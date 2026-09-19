@@ -296,56 +296,63 @@ export class NgClassCollector extends RecursiveVisitor {
           attr.valueSpan.end.offset,
         );
 
-        const parseResult = tryParseStaticObjectLiteral(expr);
+        let replacement: string | null = null;
 
-        if (parseResult === null) {
-          this.skippedNgClassCount++;
-          continue;
-        }
-
-        const {bindings: staticMatch, hasSpaceSeparatedKeys} = parseResult;
-
-        let replacement: string;
-
-        if (staticMatch.length === 0) {
-          replacement = '[class]=""';
-        } else if (staticMatch.length === 1) {
-          const {key, value} = staticMatch[0];
-          // Special case: If the key is an empty string, use [class]=""
-          if (key === '') {
-            replacement = '[class]=""';
-          } else {
-            // Normal single condition: use [class.className]="condition"
-            replacement = `[class.${key}]="${value}"`;
-          }
+        // Try string or array literal first (new logic)
+        const stringOrArrayResult = tryParseStringOrArrayLiteral(expr);
+        if (stringOrArrayResult !== null) {
+          replacement = `[class]="${stringOrArrayResult}"`;
         } else {
-          // Multiple bindings. If any original key contained spaces, [class]="{...}" object
-          // syntax cannot be used because [class] does not support space-separated key names
-          // (only [ngClass] does). Either expand every binding individually, or skip.
-          if (hasSpaceSeparatedKeys) {
-            // Expanding is only safe if every binding maps to a distinct, non-empty class
-            // name that doesn't contain a dot: an empty key would produce the invalid
-            // `[class.]` binding, duplicate keys would produce multiple conflicting
-            // `[class.foo]` bindings on one element, and a dot in the class name (e.g.
-            // 'a.b') would silently bind to the wrong property since `[class.a.b]` is
-            // parsed as `[class.a]` — everything after the first dot is discarded.
-            const expandedKeys = staticMatch.map(({key}) => key);
-            const canExpand =
-              expandedKeys.every((key) => key !== '' && !key.includes('.')) &&
-              new Set(expandedKeys).size === expandedKeys.length;
+          // Try object literal (existing logic)
+          const objectLiteralResult = tryParseStaticObjectLiteral(expr);
 
-            if (config.migrateSpaceSeparatedKey && canExpand) {
-              replacement = staticMatch
-                .map(({key, value}) => `[class.${key}]="${value}"`)
-                .join(' ');
+          if (objectLiteralResult === null) {
+            this.skippedNgClassCount++;
+            continue;
+          }
+
+          const {bindings: staticMatch, hasSpaceSeparatedKeys} = objectLiteralResult;
+
+          if (staticMatch.length === 0) {
+            replacement = '[class]=""';
+          } else if (staticMatch.length === 1) {
+            const {key, value} = staticMatch[0];
+            // Special case: If the key is an empty string, use [class]=""
+            if (key === '') {
+              replacement = '[class]=""';
             } else {
-              // Cannot produce valid [class]="..." output — leave binding as-is.
-              this.skippedNgClassCount++;
-              continue;
+              // Normal single condition: use [class.className]="condition"
+              replacement = `[class.${key}]="${value}"`;
             }
           } else {
-            // All keys are single class names: [class]="{'cls1': cond1, 'cls2': cond2}" is valid.
-            replacement = `[class]="${expr}"`;
+            // Multiple bindings. If any original key contained spaces, [class]="{...}" object
+            // syntax cannot be used because [class] does not support space-separated key names
+            // (only [ngClass] does). Either expand every binding individually, or skip.
+            if (hasSpaceSeparatedKeys) {
+              // Expanding is only safe if every binding maps to a distinct, non-empty class
+              // name that doesn't contain a dot: an empty key would produce the invalid
+              // `[class.]` binding, duplicate keys would produce multiple conflicting
+              // `[class.foo]` bindings on one element, and a dot in the class name (e.g.
+              // 'a.b') would silently bind to the wrong property since `[class.a.b]` is
+              // parsed as `[class.a]` — everything after the first dot is discarded.
+              const expandedKeys = staticMatch.map(({key}) => key);
+              const canExpand =
+                expandedKeys.every((key) => key !== '' && !key.includes('.')) &&
+                new Set(expandedKeys).size === expandedKeys.length;
+
+              if (config.migrateSpaceSeparatedKey && canExpand) {
+                replacement = staticMatch
+                  .map(({key, value}) => `[class.${key}]="${value}"`)
+                  .join(' ');
+              } else {
+                // Cannot produce valid [class]="..." output — leave binding as-is.
+                this.skippedNgClassCount++;
+                continue;
+              }
+            } else {
+              // All keys are single class names: [class]="{'cls1': cond1, 'cls2': cond2}" is valid.
+              replacement = `[class]="${expr}"`;
+            }
           }
         }
 
@@ -368,6 +375,76 @@ export class NgClassCollector extends RecursiveVisitor {
 
     return super.visitElement(element, config);
   }
+}
+
+/**
+ * Attempts to parse an expression as a string or array literal.
+ * Returns the expression as-is if it's a valid string or array literal, null otherwise.
+ *
+ * Examples:
+ * - "'foo bar'" → "'foo bar'"
+ * - "['foo', 'bar']" → "['foo', 'bar']"
+ * - "''" → "''"
+ * - "[]" → "''"
+ * - "classVariable" → null (not a literal)
+ * - "getClasses()" → null (not a literal)
+ */
+function tryParseStringOrArrayLiteral(expr: string): string | null {
+  const trimmedExpr = expr.trim();
+
+  // Empty array or empty string literal should map to empty string literal
+  if (trimmedExpr === '[]' || trimmedExpr === "''" || trimmedExpr === '""') {
+    return "''";
+  }
+
+  // String literal: check if it starts and ends with quotes
+  if ((trimmedExpr.startsWith("'") && trimmedExpr.endsWith("'")) ||
+      (trimmedExpr.startsWith('"') && trimmedExpr.endsWith('"'))) {
+    // Ensure it's a valid string literal (basic check)
+    return trimmedExpr;
+  }
+
+  // Array literal: check if it starts with [ and ends with ]
+  if (trimmedExpr.startsWith('[') && trimmedExpr.endsWith(']')) {
+    // Validate it's a proper array literal containing only string literals
+    try {
+      const sourceFile = ts.createSourceFile(
+        'temp.ts',
+        `const arr = ${trimmedExpr}`,
+        ts.ScriptTarget.Latest,
+        true,
+      );
+
+      const variableStatement = sourceFile.statements[0];
+      if (!ts.isVariableStatement(variableStatement)) {
+        return null;
+      }
+
+      const declaration = variableStatement.declarationList.declarations[0];
+      if (!declaration.initializer || !ts.isArrayLiteralExpression(declaration.initializer)) {
+        return null;
+      }
+
+      // Check that all elements are string literals (or empty)
+      const arrayExpr = declaration.initializer;
+      for (const element of arrayExpr.elements) {
+        // Skip holes in sparse arrays (e.g., [, 'foo'])
+        if (!element) {
+          continue;
+        }
+        // Only string literals are allowed; anything else (identifiers, ternaries, calls) is skipped
+        if (!ts.isStringLiteral(element)) {
+          return null;
+        }
+      }
+
+      return trimmedExpr;
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
 }
 
 function tryParseStaticObjectLiteral(expr: string): {
