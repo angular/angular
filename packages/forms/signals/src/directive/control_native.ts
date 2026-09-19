@@ -143,7 +143,9 @@ export function nativeControlCreate(
 
     if (controlValueChanged || radioValueChanged) {
       // Preserve unfinished input while focused. Unfocused controls must still reflect model changes.
-      const isFocused = document.activeElement === input;
+      const isFocused =
+        document.activeElement === input ||
+        (input.getRootNode?.() as Document | ShadowRoot | undefined)?.activeElement === input;
       // Chromium hides incomplete numbers (e.g. `-` or `1e`) behind an empty value and badInput,
       // so isIntermediate cannot detect them.
       const isBadInput = isFocused && isInput(input) && validityMonitor.isBadInput(input);
