@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, signal, viewChildren, Injectable} from '@angular/core';
+import {Component, signal, viewChildren, Injectable, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormField, form} from '../../public_api';
 import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
@@ -147,6 +147,63 @@ describe('numeric inputs', () => {
 
       expect(input1.value).toBe('100');
     });
+
+    @Component({
+      imports: [FormField],
+      encapsulation: ViewEncapsulation.ShadowDom,
+      template: `<input type="number" [formField]="f" />`,
+    })
+    class ShadowNumberInput {
+      readonly data = signal<number | null>(null);
+      readonly f = form(this.data);
+    }
+
+    it('should preserve incomplete input typed before change detection in shadow DOM', async () => {
+      const fixture = TestBed.createComponent(ShadowNumberInput);
+      await fixture.whenStable();
+      const root = fixture.nativeElement.shadowRoot ?? fixture.nativeElement;
+      const input = root.querySelector('input') as HTMLInputElement;
+      input.focus();
+
+      // Typing `1e` before the next render leaves a valid model value and invalid input.
+      validityMonitor.setInputState(input, '1', false);
+      validityMonitor.setInputState(input, '', true);
+      await fixture.whenStable();
+      expect(fixture.componentInstance.data()).toBe(1);
+      expect(input.value).toBe('');
+
+      input.blur();
+      await fixture.whenStable();
+      expect(input.value).toBe('');
+      expect(fixture.componentInstance.f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'parse'}),
+      ]);
+    });
+
+    for (const modelValue of [null, 42]) {
+      it(`should defer an external ${modelValue} model value while a shadow DOM input is focused`, async () => {
+        const fixture = TestBed.createComponent(ShadowNumberInput);
+        await fixture.whenStable();
+        const input = fixture.nativeElement.shadowRoot.querySelector('input') as HTMLInputElement;
+        input.focus();
+        validityMonitor.setInputState(input, '1', false);
+        await fixture.whenStable();
+        validityMonitor.setInputState(input, '', true);
+        await fixture.whenStable();
+        const setValue = spyOnProperty(input, 'value', 'set').and.callThrough();
+        const setNumber = spyOnProperty(input, 'valueAsNumber', 'set').and.callThrough();
+
+        fixture.componentInstance.data.set(modelValue);
+        await fixture.whenStable();
+        expect(setValue).not.toHaveBeenCalled();
+        expect(setNumber).not.toHaveBeenCalled();
+
+        input.blur();
+        await fixture.whenStable();
+        expect(input.value).toBe(modelValue === null ? '' : '42');
+        expect(fixture.componentInstance.data()).toBe(modelValue);
+      });
+    }
 
     for (const alreadyTouched of [false, true]) {
       it(`should apply a deferred model value on blur when touched is ${alreadyTouched}`, async () => {
