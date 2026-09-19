@@ -139,20 +139,10 @@ export function nativeControlCreate(
       input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
 
     if (controlValueChanged || radioValueChanged) {
-      // While the user is editing, writing the parsed value back can erase unfinished input or
-      // normalize text such as `-0` or `1.0` before the next keystroke. We only skip the write for
-      // the currently focused control: focus is our signal that this specific control is the one
-      // being actively edited right now, so its raw, not-yet-committed text should win over the
-      // model until the user blurs. Any other control bound to the same field is not being edited
-      // and must keep reflecting the model value as it changes.
+      // Preserve unfinished input while focused. Unfocused controls must still reflect model changes.
       const isFocused = document.activeElement === input;
-      // On Chromium, typing a character that can't yet form a valid number into
-      // `<input type="number">` (e.g. a lone `-`, or `1e`) makes the browser reset `input.value`
-      // to `''` and set `validity.badInput`. Since `input.value` is then empty, `isIntermediate`
-      // has nothing to inspect and returns `false`, so without this check the empty value would
-      // get written back over the (still non-empty) model value, erasing the keystroke. Checking
-      // `badInput` directly, via the same monitor already used to read validity elsewhere in this
-      // directive, catches that case too.
+      // Chromium hides incomplete numbers (e.g. `-` or `1e`) behind an empty value and badInput,
+      // so isIntermediate cannot detect them.
       const isBadInput = isFocused && isInput(input) && validityMonitor.isBadInput(input);
       if (!(isFocused && (isIntermediate(input.value, controlValue) || isBadInput))) {
         setNativeControlValue(input, controlValue);
