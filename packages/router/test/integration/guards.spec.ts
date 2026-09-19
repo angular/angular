@@ -73,10 +73,11 @@ import {
   ModuleWithBlankCmpAsRoute,
   createRoot,
   advance,
+  provideTestRouter,
 } from './integration_helpers';
 import {timeout} from '@angular/private/testing';
 
-export function guardsIntegrationSuite() {
+export function guardsIntegrationSuite(browserAPI: 'history' | 'navigation') {
   describe('guards', () => {
     describe('CanActivate', () => {
       describe('guard completes before emitting a value', () => {
@@ -425,7 +426,9 @@ export function guardsIntegrationSuite() {
 
         it('replaces URL when URL is updated eagerly so back button can still work', async () => {
           TestBed.configureTestingModule({
-            providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+            providers: [
+              provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy: 'eager'})),
+            ],
           });
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
@@ -456,7 +459,9 @@ export function guardsIntegrationSuite() {
 
         it('should resolve navigateByUrl promise after redirect finishes', async () => {
           TestBed.configureTestingModule({
-            providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+            providers: [
+              provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy: 'eager'})),
+            ],
           });
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
@@ -481,7 +486,9 @@ export function guardsIntegrationSuite() {
 
         it('can redirect to 404 without changing the URL', async () => {
           TestBed.configureTestingModule({
-            providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+            providers: [
+              provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy: 'eager'})),
+            ],
           });
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
@@ -507,7 +514,9 @@ export function guardsIntegrationSuite() {
 
         it('can redirect while changing state object', async () => {
           TestBed.configureTestingModule({
-            providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+            providers: [
+              provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy: 'eager'})),
+            ],
           });
           const router = TestBed.inject(Router);
           const location = TestBed.inject(Location);
@@ -535,7 +544,7 @@ export function guardsIntegrationSuite() {
       it('can redirect to 404 without changing the URL', async () => {
         TestBed.configureTestingModule({
           providers: [
-            provideRouter([
+            provideTestRouter(browserAPI, [
               {
                 path: 'one',
                 component: RouteCmp,
@@ -562,7 +571,7 @@ export function guardsIntegrationSuite() {
 
       it('can navigate to same internal route with different browser url', async () => {
         TestBed.configureTestingModule({
-          providers: [provideRouter([{path: 'one', component: RouteCmp}])],
+          providers: [provideTestRouter(browserAPI, [{path: 'one', component: RouteCmp}])],
         });
         const location = TestBed.inject(Location);
         const router = TestBed.inject(Router);
@@ -576,7 +585,7 @@ export function guardsIntegrationSuite() {
       it('retains browserUrl through UrlTree redirects', async () => {
         TestBed.configureTestingModule({
           providers: [
-            provideRouter([
+            provideTestRouter(browserAPI, [
               {
                 path: 'one',
                 component: RouteCmp,

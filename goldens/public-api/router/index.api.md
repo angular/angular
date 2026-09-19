@@ -603,6 +603,9 @@ export abstract class PreloadingStrategy {
 export const PRIMARY_OUTLET = "primary";
 
 // @public
+export function providePlatformNavigationRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders;
+
+// @public
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders;
 
 // @public
@@ -817,7 +820,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | AutoCleanupInjectorsFeature | RouterHashLocationFeature | ExperimentalPlatformNavigationFeature | RouterResourcesFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | AutoCleanupInjectorsFeature | RouterHashLocationFeature | RouterResourcesFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -1182,9 +1185,6 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
 
 // @public @deprecated
 export function withExperimentalAutoCleanupInjectors(): AutoCleanupInjectorsFeature;
-
-// @public
-export function withExperimentalPlatformNavigation(): ExperimentalPlatformNavigationFeature;
 
 // @public
 export function withHashLocation(): RouterHashLocationFeature;
