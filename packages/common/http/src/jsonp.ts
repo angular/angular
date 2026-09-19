@@ -104,7 +104,7 @@ export class JsonpClientBackend implements HttpBackend {
 
   constructor(
     private callbackMap: JsonpCallbackContext,
-    @Inject(DOCUMENT) private document: any,
+    @Inject(DOCUMENT) private document: Document,
   ) {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       console.warn(
@@ -294,7 +294,7 @@ export class JsonpClientBackend implements HttpBackend {
     // Issue #34818
     // Changing <script>'s ownerDocument will prevent it from execution.
     // https://html.spec.whatwg.org/multipage/scripting.html#execute-the-script-block
-    foreignDocument ??= (this.document.implementation as DOMImplementation).createHTMLDocument();
+    foreignDocument ??= this.document.implementation.createHTMLDocument();
 
     foreignDocument.adoptNode(script);
   }
