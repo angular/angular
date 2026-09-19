@@ -20,7 +20,7 @@ import {patternError} from './validation_errors';
  * @param path Path of the field to validate
  * @param pattern The RegExp pattern to match, or a LogicFn that returns the RegExp pattern.
  * @param config Optional, allows providing any of the following options:
- *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.pattern(pattern)`
+ *  - `error`: Custom validation error(s) to be used instead of the default `patternError()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
