@@ -373,6 +373,108 @@ describe('ViewContainerRef', () => {
           'http://www.w3.org/1999/xhtml',
         );
       });
+
+      it('should use the HTML namespace inside a block that follows an SVG element', () => {
+        @Component({
+          selector: 'div[dynamic-html]',
+          template: 'HTML content',
+        })
+        class HtmlComp {}
+
+        @Component({
+          template: `
+            <svg></svg>
+            @if (true) {
+              <div #container></div>
+            }
+          `,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
+        }
+
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.container.createComponent(HtmlComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe(
+          'http://www.w3.org/1999/xhtml',
+        );
+      });
+
+      it('should use the HTML namespace inside a component rendered in an SVG element', () => {
+        @Component({
+          selector: 'div[dynamic-html]',
+          template: 'HTML content',
+        })
+        class HtmlComp {}
+
+        @Component({
+          selector: 'g[inner]',
+          template: `
+            @if (true) {
+              <ng-container #container></ng-container>
+            }
+          `,
+        })
+        class InnerComp {
+          @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
+        }
+
+        @Component({
+          template: '<svg><g inner></g></svg>',
+          imports: [InnerComp],
+        })
+        class TestComp {
+          @ViewChild(InnerComp) inner!: InnerComp;
+        }
+
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.inner.container.createComponent(HtmlComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe(
+          'http://www.w3.org/1999/xhtml',
+        );
+      });
+
+      it('should inherit the namespace of an element anchor across a view boundary', () => {
+        @Component({
+          selector: 'g[dynamic-group]',
+          template: '<svg:text>SVG content</svg:text>',
+        })
+        class SvgGroupComp {}
+
+        @Component({
+          template: `
+            <svg><g #anchor></g></svg>
+            <ng-template #tpl><ng-container #inner></ng-container></ng-template>
+          `,
+          // Eager, because the `inner` query only resolves once the host view is refreshed
+          // again after the embedded view is created.
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class TestComp {
+          @ViewChild('anchor', {read: ViewContainerRef}) anchor!: ViewContainerRef;
+          @ViewChild('tpl', {read: TemplateRef}) tpl!: TemplateRef<unknown>;
+          @ViewChild('inner', {read: ViewContainerRef}) inner!: ViewContainerRef;
+        }
+
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        fixture.componentInstance.anchor.createEmbeddedView(fixture.componentInstance.tpl);
+        fixture.detectChanges();
+
+        const componentRef = fixture.componentInstance.inner.createComponent(SvgGroupComp);
+        fixture.detectChanges();
+
+        expect(componentRef.location.nativeElement.namespaceURI).toBe('http://www.w3.org/2000/svg');
+      });
     });
 
     it('should apply attributes and classes to host element based on selector', () => {
