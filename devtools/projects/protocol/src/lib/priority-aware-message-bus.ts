@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MessageBus} from './message-bus';
+import {MessageBus, Parameters} from './message-bus';
 import {Events, Topic} from './messages';
 
 type ThrottleTopicDuration = {
@@ -61,15 +61,15 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
   }
 
   override on<E extends Topic>(topic: E, cb: Events[E]): () => void {
-    return this._bus.on(topic, (...args: any) => {
-      (cb as any)(...args);
+    return this._bus.on(topic, (...args: Parameters<Events[E]>) => {
+      this.invokeCallback(cb, args);
       this._afterMessage(topic);
     });
   }
 
   override once<E extends Topic>(topic: E, cb: Events[E]): void {
-    return this._bus.once(topic, (...args: any) => {
-      (cb as any)(...args);
+    return this._bus.once(topic, (...args: Parameters<Events[E]>) => {
+      this.invokeCallback(cb, args);
       this._afterMessage(topic);
     });
   }

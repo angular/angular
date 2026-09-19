@@ -25,7 +25,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
         return;
       }
       if (e.data.topic === topic) {
-        (cb as () => void).apply(null, e.data.args);
+        this.invokeCallback(cb, e.data.args);
       }
     };
     window.addEventListener('message', listener);
@@ -42,7 +42,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
         return;
       }
       if (e.data.topic === topic) {
-        (cb as any).apply(null, e.data.args);
+        this.invokeCallback(cb, e.data.args);
         window.removeEventListener('message', listener);
       }
     };

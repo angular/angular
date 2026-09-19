@@ -43,9 +43,9 @@ export class ChromeMessageBus extends MessageBus<Events> {
   }
 
   override on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
-    const listener = (msg: ChromeMessage<Events, keyof Events>): void => {
+    const listener = (msg: ChromeMessage<Events, E>): void => {
       if (msg.topic === topic) {
-        (cb as any).apply(null, msg.args);
+        this.invokeCallback(cb, msg.args);
       }
     };
     this._port.onMessage.addListener(listener);
@@ -57,9 +57,9 @@ export class ChromeMessageBus extends MessageBus<Events> {
   }
 
   override once<E extends keyof Events>(topic: E, cb: Events[E]): void {
-    const listener = (msg: ChromeMessage<Events, keyof Events>) => {
+    const listener = (msg: ChromeMessage<Events, E>) => {
       if (msg.topic === topic) {
-        (cb as any).apply(null, msg.args);
+        this.invokeCallback(cb, msg.args);
         this._port.onMessage.removeListener(listener);
       }
     };
