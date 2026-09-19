@@ -117,6 +117,10 @@ describe('type check blocks', () => {
     expect(tcb('<b (click)="a &&= b"></b>')).toContain('(((this).a)) &&= (((this).b));');
     expect(tcb('<b (click)="a ||= b"></b>')).toContain('(((this).a)) ||= (((this).b));');
     expect(tcb('<b (click)="a ??= b"></b>')).toContain('(((this).a)) ??= (((this).b));');
+    expect(tcb('<b (click)="a++"></b>')).toContain('(((this).a)++)');
+    expect(tcb('<b (click)="a--"></b>')).toContain('(((this).a)--)');
+    expect(tcb('<b (click)="++a"></b>')).toContain('(++((this).a))');
+    expect(tcb('<b (click)="--a"></b>')).toContain('(--((this).a))');
   });
 
   it('should handle exponentiation expressions', () => {
@@ -124,6 +128,12 @@ describe('type check blocks', () => {
       '(((((this).a)) * (((((this).b)) ** (((this).c))))) + (((this).d)))',
     );
     expect(tcb('{{a ** b ** c}}')).toContain('((((this).a)) ** (((((this).b)) ** (((this).c)))))');
+  });
+
+  it('should handle update expressions as operands of an exponentiation expression', () => {
+    expect(tcb('<b (click)="a++ ** 2"></b>')).toContain('(((((this).a)++)) ** (2));');
+    expect(tcb('<b (click)="++a ** 2"></b>')).toContain('(((++((this).a))) ** (2));');
+    expect(tcb('<b (click)="2 ** a--"></b>')).toContain('((2) ** ((((this).a)--)));');
   });
 
   it('should handle "in" expressions', () => {
@@ -2468,6 +2478,16 @@ describe('type check blocks', () => {
       expect(result).toContain(
         '_t2.addEventListener("click", ($event): any => { (this).doStuff(_t1); });',
       );
+    });
+
+    it('should rewrite writes to let declarations with update operators', () => {
+      const result = tcb(`
+        @let value = 1;
+        <button (click)="value++"></button>
+      `);
+
+      expect(result).toContain('const _t1 = (1);');
+      expect(result).toContain('(_t1++)');
     });
   });
 

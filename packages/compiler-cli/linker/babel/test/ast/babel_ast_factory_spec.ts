@@ -452,6 +452,25 @@ describe('BabelAstFactory', () => {
       const unaryExpr = factory.createUnaryExpression('!', expr);
       expect(generate(unaryExpr).code).toEqual('!value');
     });
+
+    it('should create prefix and postfix increment/decrement expressions', () => {
+      expect(generate(factory.createUnaryExpression('++', expression.ast`a`, true)).code).toEqual(
+        '++a',
+      );
+      expect(generate(factory.createUnaryExpression('++', expression.ast`b`, false)).code).toEqual(
+        'b++',
+      );
+      expect(generate(factory.createUnaryExpression('--', expression.ast`c`, true)).code).toEqual(
+        '--c',
+      );
+      expect(generate(factory.createUnaryExpression('--', expression.ast`d`, false)).code).toEqual(
+        'd--',
+      );
+    });
+
+    it('should default to a prefix expression', () => {
+      expect(generate(factory.createUnaryExpression('++', expression.ast`a`)).code).toEqual('++a');
+    });
   });
 
   describe('createVariableDeclaration()', () => {
