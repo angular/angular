@@ -377,11 +377,26 @@ export class BoundaryBlock extends BlockNode implements Node {
   }
 }
 
+export interface BoundaryErrorLetParameter {
+  type: 'let' | 'alias';
+  variables: Variable[];
+  sourceSpan: ParseSourceSpan;
+}
+
+export interface BoundaryErrorWhenParameter {
+  type: 'when';
+  expression: AST;
+  sourceSpan: ParseSourceSpan;
+}
+
+export type BoundaryErrorParameter = BoundaryErrorLetParameter | BoundaryErrorWhenParameter;
+
 export class BoundaryErrorBlock extends BlockNode implements Node {
   constructor(
     public children: Node[],
     public contextVariables: Variable[],
     public expression: AST | null,
+    public parameters: BoundaryErrorParameter[],
     nameSpan: ParseSourceSpan,
     sourceSpan: ParseSourceSpan,
     startSourceSpan: ParseSourceSpan,
