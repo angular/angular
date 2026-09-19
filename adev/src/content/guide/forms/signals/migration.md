@@ -309,10 +309,14 @@ const value = userControl.sourceValue();
 
 ### Disabling/Enabling control
 
-Imperative APIs for changing the enabled/disabled state (like `enable()`, `disable()`) are intentionally not supported
-in `SignalFormControl`. This is because the state of the control should be derived from the signal state and rules.
+`SignalFormControl` supports the imperative `disable()` and `enable()` methods for interoperability
+with Reactive Forms APIs, such as calling `disable()` on a parent `FormGroup`. Internally, the
+imperatively set disabled status is applied through a `disabled` rule.
 
-Attempting to call disable/enable would throw an error.
+Note that `enable()` only clears the imperatively set disabled status. If a `disabled` rule from
+the control's schema is currently active, the control remains disabled.
+
+While the imperative APIs work, prefer deriving the disabled state from the signal state and rules:
 
 ```typescript {avoid}
 import {signal, effect} from '@angular/core';
@@ -323,7 +327,7 @@ export class UserProfile {
   readonly isLoading = signal(false);
 
   constructor() {
-    // This will throw an error
+    // Avoid imperatively toggling the disabled state from an effect
     effect(() => {
       if (this.isLoading()) {
         this.emailControl.disable();

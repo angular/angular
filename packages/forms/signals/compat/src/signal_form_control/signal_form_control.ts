@@ -30,8 +30,9 @@ import {
   ValueChangeEvent,
 } from '@angular/forms';
 
-import {FormOptions} from '../../../src/api/structure';
-import {FieldState, FieldTree, SchemaFn} from '../../../src/api/types';
+import {disabled} from '../../../src/api/rules';
+import {apply, FormOptions} from '../../../src/api/structure';
+import {FieldState, FieldTree, SchemaFn, SchemaPath} from '../../../src/api/types';
 import {signalErrorsToValidationErrors} from '../../../src/compat/validation_errors';
 import {RuntimeErrorCode} from '../../../src/errors';
 import {FieldNode} from '../../../src/field/node';
@@ -89,7 +90,9 @@ export class SignalFormControl<T> extends AbstractControl {
 
   private readonly fieldState: FieldState<T>;
   private readonly initialValue: T;
+  private readonly imperativelyDisabled = signal(false);
   private pendingParentNotifications = 0;
+  private lastEmittedStatus: FormControlStatus | null = null;
   private readonly onChangeCallbacks: Array<(value?: any, emitModelEvent?: boolean) => void> = [];
   private readonly onDisabledChangeCallbacks: Array<(isDisabled: boolean) => void> = [];
   override readonly valueChanges = new EventEmitter<T>();
@@ -103,9 +106,16 @@ export class SignalFormControl<T> extends AbstractControl {
     this.initialValue = value;
     const injector = opts?.injector ?? inject(Injector);
 
-    const rawTree = schema
-      ? compatForm(this.sourceValue, schema, {injector})
-      : compatForm(this.sourceValue, {injector});
+    const wrappedSchema: SchemaFn<T> = (p) => {
+      // `SchemaPathTree<T>` cannot resolve rule support for a generic `T`. The root model is
+      // never an `AbstractControl`, so rules are always supported on the root path.
+      const rootPath = p as SchemaPath<T>;
+      if (schema) {
+        apply(rootPath, schema);
+      }
+      disabled(rootPath, {when: () => this.imperativelyDisabled()});
+    };
+    const rawTree = compatForm(this.sourceValue, wrappedSchema, {injector});
 
     this.fieldTree = wrapFieldTreeForSyncUpdates(rawTree, () =>
       this.parent?.updateValueAndValidity({sourceControl: this} as any),
@@ -132,9 +142,13 @@ export class SignalFormControl<T> extends AbstractControl {
       () => {
         const status = this.status;
         untracked(() => {
+          if (status === this.lastEmittedStatus) {
+            return;
+          }
+          this.lastEmittedStatus = status;
           this.statusChanges.emit(status);
+          this.emitControlEvent(new StatusChangeEvent(status, this));
         });
-        this.emitControlEvent(new StatusChangeEvent(status, this));
       },
       {injector},
     );
@@ -156,16 +170,18 @@ export class SignalFormControl<T> extends AbstractControl {
     effect(
       () => {
         const isTouched = this.fieldState.touched();
-        this.emitControlEvent(new TouchedChangeEvent(isTouched, this));
-        const parent = this.parent;
-        if (!parent) {
-          return;
-        }
-        if (!isTouched) {
-          parent.markAsUntouched();
-        } else {
-          parent.markAsTouched();
-        }
+        untracked(() => {
+          this.emitControlEvent(new TouchedChangeEvent(isTouched, this));
+          const parent = this.parent;
+          if (!parent) {
+            return;
+          }
+          if (!isTouched) {
+            (parent as any)._updateTouched({}, this);
+          } else {
+            parent.markAsTouched();
+          }
+        });
       },
       {injector},
     );
@@ -174,16 +190,18 @@ export class SignalFormControl<T> extends AbstractControl {
     effect(
       () => {
         const isDirty = this.fieldState.dirty();
-        this.emitControlEvent(new PristineChangeEvent(!isDirty, this));
-        const parent = this.parent;
-        if (!parent) {
-          return;
-        }
-        if (isDirty) {
-          parent.markAsDirty();
-        } else {
-          parent.markAsPristine();
-        }
+        untracked(() => {
+          this.emitControlEvent(new PristineChangeEvent(!isDirty, this));
+          const parent = this.parent;
+          if (!parent) {
+            return;
+          }
+          if (isDirty) {
+            parent.markAsDirty();
+          } else {
+            (parent as any)._updatePristine({}, this);
+          }
+        });
       },
       {injector},
     );
@@ -255,8 +273,9 @@ export class SignalFormControl<T> extends AbstractControl {
   }
 
   override reset(value?: T | FormControlState<T>, options?: ValueUpdateOptions): void {
-    if (isFormControlState(value)) {
-      throw unsupportedDisableEnableError();
+    if (isFormControlState<T>(value)) {
+      this.setDisabledState(value.disabled, options?.emitEvent);
+      value = value.value;
     }
 
     const resetValue = value ?? this.initialValue;
@@ -431,12 +450,27 @@ export class SignalFormControl<T> extends AbstractControl {
     return false;
   }
 
-  override disable(_opts?: {onlySelf?: boolean; emitEvent?: boolean}): void {
-    throw unsupportedDisableEnableError();
+  override disable(opts?: {onlySelf?: boolean; emitEvent?: boolean}): void {
+    this.setDisabledState(true, opts?.emitEvent);
+    this.propagateToParent(opts, (parent) =>
+      this.updateParentValueAndValidity(parent, opts?.emitEvent),
+    );
   }
 
-  override enable(_opts?: {onlySelf?: boolean; emitEvent?: boolean}): void {
-    throw unsupportedDisableEnableError();
+  override enable(opts?: {onlySelf?: boolean; emitEvent?: boolean}): void {
+    this.setDisabledState(false, opts?.emitEvent);
+    this.propagateToParent(opts, (parent) =>
+      this.updateParentValueAndValidity(parent, opts?.emitEvent),
+    );
+  }
+
+  private setDisabledState(isDisabled: boolean, emitEvent: boolean | undefined): void {
+    this.imperativelyDisabled.set(isDisabled);
+    if (emitEvent === false) {
+      this.lastEmittedStatus = untracked(() => this.status);
+    } else {
+      this.lastEmittedStatus = null;
+    }
   }
 
   override setValidators(_validators: any): void {
@@ -549,7 +583,7 @@ function wrapFieldTreeForSyncUpdates<T>(tree: FieldTree<T>, onUpdate: () => void
   return wrapTree(tree) as FieldTree<T>;
 }
 
-function isFormControlState(formState: unknown): formState is FormControlState<unknown> {
+function isFormControlState<T>(formState: unknown): formState is FormControlState<T> {
   return (
     typeof formState === 'object' &&
     formState !== null &&
@@ -561,13 +595,6 @@ function isFormControlState(formState: unknown): formState is FormControlState<u
 
 function unsupportedFeatureError(message: string | null): Error {
   return new RuntimeError(RuntimeErrorCode.UNSUPPORTED_FEATURE, message ?? false);
-}
-
-function unsupportedDisableEnableError(): Error {
-  return unsupportedFeatureError(
-    ngDevMode &&
-      'Imperatively changing enabled/disabled status in form control is not supported in signal forms. Instead use a "disabled" rule to derive the disabled status from a signal.',
-  );
 }
 
 function unsupportedValidatorsError(): Error {

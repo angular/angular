@@ -6,9 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector} from '@angular/core';
+import {ApplicationRef, Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {FormArray, FormControlStatus, FormGroup} from '@angular/forms';
+import {
+  AbstractControl,
+  ControlEvent,
+  FormArray,
+  FormControl,
+  FormControlStatus,
+  FormGroup,
+} from '@angular/forms';
 import {SignalFormControl} from '../../../compat/src/signal_form_control/signal_form_control';
 import {required} from '../../../public_api';
 import {SchemaFn} from '../../../src/api/types';
@@ -254,6 +261,253 @@ describe('SignalFormControl in FormGroup', () => {
 
     expect(value()).toBe(20);
     expect(form.value).toBe(20);
+  });
+
+  describe('disable and enable', () => {
+    it('should disable the group and the child when parent disable() is called', () => {
+      const child = createSignalFormControl(10);
+      const group = new FormGroup({
+        n: child,
+      });
+
+      expect(() => group.disable()).not.toThrow();
+
+      expect(group.disabled).toBe(true);
+      expect(group.status).toBe('DISABLED');
+      expect(child.disabled).toBe(true);
+      expect(child.status).toBe('DISABLED');
+    });
+
+    it('should re-enable the group and the child when parent enable() is called', () => {
+      const child = createSignalFormControl(10);
+      const group = new FormGroup({
+        n: child,
+      });
+
+      group.disable();
+      expect(child.disabled).toBe(true);
+
+      group.enable();
+
+      expect(group.disabled).toBe(false);
+      expect(group.status).toBe('VALID');
+      expect(child.disabled).toBe(false);
+      expect(child.status).toBe('VALID');
+      expect(group.value).toEqual({n: 10});
+    });
+
+    it('should exclude a disabled child from the group value but include it in getRawValue', () => {
+      const child = createSignalFormControl(10);
+      const group = new FormGroup({
+        n: child,
+        other: new FormControl(1),
+      });
+
+      child.disable();
+
+      expect(group.value).toEqual({other: 1});
+      expect(group.getRawValue()).toEqual({n: 10, other: 1});
+    });
+
+    it('should update parent status and value when the child is disabled directly', () => {
+      const child = createSignalFormControl(10);
+      const group = new FormGroup({
+        n: child,
+        other: new FormControl(1),
+      });
+
+      child.disable();
+
+      expect(group.status).toBe('VALID');
+      expect(group.value).toEqual({other: 1});
+
+      child.enable();
+
+      expect(group.status).toBe('VALID');
+      expect(group.value).toEqual({n: 10, other: 1});
+    });
+
+    it('should behave consistently for FormControl and SignalFormControl children', () => {
+      const signalChild = createSignalFormControl(10);
+      const plainChild = new FormControl(1);
+      const group = new FormGroup({
+        signal: signalChild,
+        plain: plainChild,
+      });
+
+      group.disable();
+
+      expect(signalChild.disabled).toBe(true);
+      expect(plainChild.disabled).toBe(true);
+      expect(group.status).toBe('DISABLED');
+      expect(group.value).toEqual({signal: 10, plain: 1});
+
+      group.enable();
+
+      expect(signalChild.disabled).toBe(false);
+      expect(plainChild.disabled).toBe(false);
+      expect(group.status).toBe('VALID');
+      expect(group.value).toEqual({signal: 10, plain: 1});
+    });
+
+    it('should preserve a dirty sibling and restore own dirty state when a dirty child is disabled', () => {
+      const child = createSignalFormControl(10);
+      const sibling = new FormControl(1);
+      const group = new FormGroup({
+        n: child,
+        other: sibling,
+      });
+      const appRef = TestBed.inject(ApplicationRef);
+
+      child.markAsDirty();
+      sibling.markAsDirty();
+      appRef.tick();
+
+      expect(child.dirty).toBe(true);
+      expect(sibling.dirty).toBe(true);
+      expect(group.dirty).toBe(true);
+
+      child.disable();
+      appRef.tick();
+
+      expect(sibling.dirty).toBe(true);
+      expect(group.dirty).toBe(true);
+
+      child.enable();
+      appRef.tick();
+
+      expect(child.dirty).toBe(true);
+    });
+
+    it('should preserve a touched sibling and restore own touched state when a touched child is disabled', () => {
+      const child = createSignalFormControl(10);
+      const sibling = new FormControl(1);
+      const group = new FormGroup({
+        n: child,
+        other: sibling,
+      });
+      const appRef = TestBed.inject(ApplicationRef);
+
+      child.markAsTouched();
+      sibling.markAsTouched();
+      appRef.tick();
+
+      expect(child.touched).toBe(true);
+      expect(sibling.touched).toBe(true);
+      expect(group.touched).toBe(true);
+
+      child.disable();
+      appRef.tick();
+
+      expect(sibling.touched).toBe(true);
+      expect(group.touched).toBe(true);
+
+      child.enable();
+      appRef.tick();
+
+      expect(child.touched).toBe(true);
+    });
+
+    it('should not update the parent when child.disable({onlySelf: true}) is called', () => {
+      const child = createSignalFormControl(10);
+      const group = new FormGroup({
+        n: child,
+        other: new FormControl(1),
+      });
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick();
+
+      const parentValues: unknown[] = [];
+      const parentStatuses: FormControlStatus[] = [];
+      group.valueChanges.subscribe((v) => parentValues.push(v));
+      group.statusChanges.subscribe((s) => parentStatuses.push(s));
+
+      child.disable({onlySelf: true});
+      appRef.tick();
+
+      expect(child.disabled).toBe(true);
+      expect(group.value).toEqual({n: 10, other: 1});
+      expect(parentValues).toEqual([]);
+      expect(parentStatuses).toEqual([]);
+    });
+
+    it('should not emit status or value changes when child.disable({emitEvent: false}) is called', () => {
+      const child = createSignalFormControl(10);
+      const group = new FormGroup({
+        n: child,
+        other: new FormControl(1),
+      });
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick();
+
+      const childStatuses: FormControlStatus[] = [];
+      const parentStatuses: FormControlStatus[] = [];
+      const parentValues: unknown[] = [];
+      child.statusChanges.subscribe((s) => childStatuses.push(s));
+      group.statusChanges.subscribe((s) => parentStatuses.push(s));
+      group.valueChanges.subscribe((v) => parentValues.push(v));
+
+      child.disable({emitEvent: false});
+      appRef.tick();
+
+      expect(child.disabled).toBe(true);
+      expect(childStatuses).toEqual([]);
+      expect(parentStatuses).toEqual([]);
+      expect(parentValues).toEqual([]);
+    });
+
+    it('should support disable/enable and value exclusion when nested in a FormArray', () => {
+      const child = createSignalFormControl(10);
+      const array = new FormArray<AbstractControl>([child, new FormControl(1)]);
+
+      expect(() => array.disable()).not.toThrow();
+      expect(array.status).toBe('DISABLED');
+      expect(child.disabled).toBe(true);
+
+      array.enable();
+      expect(array.status).toBe('VALID');
+      expect(child.disabled).toBe(false);
+
+      child.disable();
+      expect(array.value).toEqual([1]);
+      expect(array.getRawValue()).toEqual([10, 1]);
+    });
+
+    it('should not re-emit on a sibling SignalFormControl when another child changes dirty/touched', () => {
+      const changed = createSignalFormControl(10);
+      const sibling = createSignalFormControl(20);
+      const group = new FormGroup({
+        changed,
+        sibling,
+      });
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick();
+
+      const siblingEvents: ControlEvent[] = [];
+      const siblingStatuses: FormControlStatus[] = [];
+      sibling.events.subscribe((e) => siblingEvents.push(e));
+      sibling.statusChanges.subscribe((s) => siblingStatuses.push(s));
+
+      changed.markAsDirty();
+      changed.markAsTouched();
+      appRef.tick();
+
+      expect(siblingEvents).toEqual([]);
+      expect(siblingStatuses).toEqual([]);
+      expect(group.dirty).toBe(true);
+      expect(group.touched).toBe(true);
+
+      changed.disable();
+      appRef.tick();
+
+      expect(sibling.dirty).toBe(false);
+      expect(sibling.touched).toBe(false);
+      expect(sibling.disabled).toBe(false);
+      expect(group.dirty).toBe(false);
+      expect(group.touched).toBe(false);
+      expect(group.value).toEqual({sibling: 20});
+      expect(group.getRawValue()).toEqual({changed: 10, sibling: 20});
+    });
   });
 
   describe('integration with parent', () => {
