@@ -126,6 +126,21 @@ export interface R3DirectiveMetadata {
    * Whether null should be used instead of undefined for optional chaining.
    */
   legacyOptionalChaining: boolean;
+
+  /**
+   * A collection of styling data that will be applied and scoped to the directive host.
+   */
+  styles?: string[];
+
+  /**
+   * A collection of style paths for external stylesheets that will be applied and scoped to the directive host.
+   */
+  externalStyles?: string[];
+
+  /**
+   * An encapsulation policy for the directive's styling.
+   */
+  encapsulation?: ViewEncapsulation;
 }
 
 /**

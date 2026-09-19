@@ -39,7 +39,7 @@ import {GetSourceFileFn} from '../get_source_file';
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/src/types';
 import {toR3DirectiveMeta} from './partial_directive_linker_1';
 import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef, PLACEHOLDER_VERSION} from './util';
+import {extractForwardRef, parseEncapsulation, PLACEHOLDER_VERSION} from './util';
 
 function makeDirectiveMetadata<TExpression>(
   directiveExpr: AstObject<R3DeclareDirectiveDependencyMetadata, TExpression>,
@@ -380,26 +380,6 @@ interface TemplateInfo {
   sourceUrl: string;
   range: Range;
   isEscaped: boolean;
-}
-
-/**
- * Determines the `ViewEncapsulation` mode from the AST value's symbol name.
- */
-function parseEncapsulation<TExpression>(
-  encapsulation: AstValue<ViewEncapsulation | undefined, TExpression>,
-): ViewEncapsulation {
-  const symbolName = encapsulation.getSymbolName();
-  if (symbolName === null) {
-    throw new FatalLinkerError(
-      encapsulation.expression,
-      'Expected encapsulation to have a symbol name',
-    );
-  }
-  const enumValue = ViewEncapsulation[symbolName as keyof typeof ViewEncapsulation];
-  if (enumValue === undefined) {
-    throw new FatalLinkerError(encapsulation.expression, 'Unsupported encapsulation');
-  }
-  return enumValue;
 }
 
 /**

@@ -1,0 +1,3 @@
+styles: ["div.foo[_nghost-%COMP%] { color: red; }", "[_nghost-%COMP%] { color: blue; }"]
+…
+styles: ["div.none { color: green; }"], encapsulation: 2

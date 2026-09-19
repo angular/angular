@@ -99,4 +99,5 @@ If you apply `ngNonBindable` to a parent element, Angular disables interpolation
 <docs-pill-row>
   <docs-pill href="guide/directives/structural-directives" title="Structural directives"/>
   <docs-pill href="guide/directives/directive-composition-api" title="Directive composition API"/>
+  <docs-pill href="guide/directives/styling" title="Styling directives"/>
 </docs-pill-row>

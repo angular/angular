@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import * as core from '../../core';
 import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {
@@ -18,7 +19,7 @@ import {createDirectiveType, createHostDirectivesMappingArray} from '../view/com
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from '../view/util';
 
 import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api';
-import {toOptionalLiteralMap} from './util';
+import {toOptionalLiteralArray, toOptionalLiteralMap} from './util';
 
 /**
  * Compile a directive declaration defined by the `R3DirectiveMetadata`.
@@ -111,6 +112,17 @@ export function createDirectiveDefinitionMap(
     definitionMap.set('hostDirectives', createHostDirectives(meta.hostDirectives));
   }
 
+  if (meta.styles && meta.styles.length > 0) {
+    definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
+  }
+
+  if (meta.encapsulation !== undefined && meta.encapsulation !== core.ViewEncapsulation.Emulated) {
+    definitionMap.set(
+      'encapsulation',
+      o.importExpr(R3.ViewEncapsulation).prop(core.ViewEncapsulation[meta.encapsulation]),
+    );
+  }
+
   definitionMap.set('ngImport', o.importExpr(R3.core));
 
   return definitionMap;
@@ -154,6 +166,15 @@ function getMinimumVersionForPartialOutput(meta: R3DirectiveMetadata): string {
   // that should be parsed by linkers. Ensure a proper minimum linker version.
   if (meta.queries.some((q) => q.isSignal) || meta.viewQueries.some((q) => q.isSignal)) {
     minVersion = '17.2.0';
+  }
+
+  const isComponent = (meta as any).template !== undefined;
+  if (
+    !isComponent &&
+    ((meta.styles && meta.styles.length > 0) ||
+      (meta.encapsulation !== undefined && meta.encapsulation !== core.ViewEncapsulation.Emulated))
+  ) {
+    minVersion = '22.0.0';
   }
 
   return minVersion;

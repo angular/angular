@@ -13,6 +13,7 @@ import {
   R3DeclareDependencyMetadata,
   R3DependencyMetadata,
   R3Reference,
+  ViewEncapsulation,
 } from '@angular/compiler';
 
 import {AstObject, AstValue} from '../../ast/ast_value';
@@ -23,6 +24,26 @@ export const PLACEHOLDER_VERSION = '0.0.0-PLACEHOLDER';
 
 export function wrapReference<TExpression>(wrapped: o.WrappedNodeExpr<TExpression>): R3Reference {
   return {value: wrapped, type: wrapped};
+}
+
+/**
+ * Determines the `ViewEncapsulation` mode from the AST value's symbol name.
+ */
+export function parseEncapsulation<TExpression>(
+  encapsulation: AstValue<ViewEncapsulation | undefined, TExpression>,
+): ViewEncapsulation {
+  const symbolName = encapsulation.getSymbolName();
+  if (symbolName === null) {
+    throw new FatalLinkerError(
+      encapsulation.expression,
+      'Expected encapsulation to have a symbol name',
+    );
+  }
+  const enumValue = ViewEncapsulation[symbolName as keyof typeof ViewEncapsulation];
+  if (enumValue === undefined) {
+    throw new FatalLinkerError(encapsulation.expression, 'Unsupported encapsulation');
+  }
+  return enumValue;
 }
 
 /**

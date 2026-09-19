@@ -149,6 +149,17 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
    * Additional directives applied to the directive host.
    */
   hostDirectives?: R3DeclareHostDirectiveMetadata[];
+
+  /**
+   * CSS from inline styles and included styleUrls.
+   */
+  styles?: string[];
+
+  /**
+   * An encapsulation policy for the directive's styling.
+   * Defaults to `ViewEncapsulation.Emulated`.
+   */
+  encapsulation?: ViewEncapsulation;
 }
 
 /**
