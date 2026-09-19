@@ -152,9 +152,8 @@ export function nativeControlCreate(
       if (!(isFocused && (isIntermediate(input.value, controlValue) || isBadInput))) {
         setNativeControlValue(input, controlValue);
         hasPendingValueWrite = false;
-      } else if (isBadInput && controlValue !== lastEditedValue) {
-        // Only defer a change coming from elsewhere. The user's own edit lands here too when the
-        // next keystroke turns the input bad before this effect runs.
+      } else if (controlValue !== lastEditedValue) {
+        // Only defer external updates; the user's own edit is already displayed.
         hasPendingValueWrite = true;
       }
     }

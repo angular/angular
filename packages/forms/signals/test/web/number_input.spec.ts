@@ -520,6 +520,102 @@ describe('text input with numeric model', () => {
     expect(fixture.componentInstance.f().errors()).toEqual([]);
   });
 
+  it('should apply an external model update on blur after preserving intermediate numeric text', async () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(1);
+      readonly f = form(this.data);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.focus();
+
+    input.value = '1.';
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+    expect(input.value).toBe('1.');
+    expect(fixture.componentInstance.data()).toBe(1);
+
+    fixture.componentInstance.data.set(42);
+    await fixture.whenStable();
+    expect(input.value).toBe('1.');
+
+    input.blur();
+    await fixture.whenStable();
+    expect(input.value).toBe('42');
+    expect(fixture.componentInstance.data()).toBe(42);
+  });
+
+  it('should apply the latest external model update on blur after preserving intermediate text', async () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(1);
+      readonly f = form(this.data);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.focus();
+    input.value = '1.';
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+
+    for (const value of [42, 100]) {
+      fixture.componentInstance.data.set(value);
+      await fixture.whenStable();
+      expect(input.value).toBe('1.');
+    }
+
+    input.blur();
+    await fixture.whenStable();
+    expect(input.value).toBe('100');
+    expect(fixture.componentInstance.data()).toBe(100);
+  });
+
+  for (const validEdit of [false, true]) {
+    it(`should preserve a newer numeric text edit on blur when valid is ${validEdit}`, async () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(1);
+        readonly f = form(this.data);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      input.focus();
+      input.value = '1.';
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+      fixture.componentInstance.data.set(42);
+      await fixture.whenStable();
+
+      const editedValue = validEdit ? '2.' : '2e';
+      input.value = editedValue;
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+      input.blur();
+      await fixture.whenStable();
+      expect(input.value).toBe(editedValue);
+      expect(fixture.componentInstance.data()).toBe(validEdit ? 2 : 42);
+      expect(fixture.componentInstance.f().errors()).toEqual(
+        validEdit ? [] : [jasmine.objectContaining({kind: 'parse'})],
+      );
+    });
+  }
+
   it('should preserve a negative decimal typed into a text input with a numeric model', () => {
     @Component({
       imports: [FormField],
