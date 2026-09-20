@@ -39,10 +39,22 @@ export class SelectorlessComponentScopeReader implements ComponentScopeReader {
 
     const eligibleIdentifiers = this.getAvailableIdentifiers(node);
     const dependencies = new Map<string, DirectiveMeta | PipeMeta>();
-    const dependencyIdentifiers: ts.Identifier[] = [];
+    const dependencyIdentifiers: Array<{name: string; identifier: ts.Identifier}> = [];
     let isPoisoned = meta.isPoisoned;
 
     for (const [name, identifier] of eligibleIdentifiers) {
+      if (ts.isNamespaceImport(identifier.parent)) {
+        for (const [qualifiedName, dep] of this.getMetaFromNamespace(meta, name, identifier)) {
+          dependencies.set(qualifiedName, dep);
+          dependencyIdentifiers.push({name: qualifiedName, identifier});
+
+          if (dep.kind === MetaKind.Directive && dep.isPoisoned) {
+            isPoisoned = true;
+          }
+        }
+        continue;
+      }
+
       if (dependencies.has(name)) {
         continue;
       }
@@ -51,7 +63,7 @@ export class SelectorlessComponentScopeReader implements ComponentScopeReader {
 
       if (dep !== null) {
         dependencies.set(name, dep);
-        dependencyIdentifiers.push(identifier);
+        dependencyIdentifiers.push({name, identifier});
 
         if (dep.kind === MetaKind.Directive && dep.isPoisoned) {
           isPoisoned = true;
@@ -101,11 +113,15 @@ export class SelectorlessComponentScopeReader implements ComponentScopeReader {
           !(stmt.importClause.phaseModifier === ts.SyntaxKind.TypeKeyword)
         ) {
           const clause = stmt.importClause;
-          if (clause.namedBindings !== undefined && ts.isNamedImports(clause.namedBindings)) {
-            for (const element of clause.namedBindings.elements) {
-              if (!element.isTypeOnly) {
-                result.set(element.name.text, element.name);
+          if (clause.namedBindings !== undefined) {
+            if (ts.isNamedImports(clause.namedBindings)) {
+              for (const element of clause.namedBindings.elements) {
+                if (!element.isTypeOnly) {
+                  result.set(element.name.text, element.name);
+                }
               }
+            } else if (ts.isNamespaceImport(clause.namedBindings)) {
+              result.set(clause.namedBindings.name.text, clause.namedBindings.name);
             }
           }
           if (clause.name !== undefined) {
@@ -119,6 +135,120 @@ export class SelectorlessComponentScopeReader implements ComponentScopeReader {
     }
 
     return result;
+  }
+
+  private getMetaFromNamespace(
+    meta: DirectiveMeta,
+    localName: string,
+    node: ts.Identifier,
+  ): Map<string, DirectiveMeta | PipeMeta> {
+    const result = new Map<string, DirectiveMeta | PipeMeta>();
+    if (meta.localReferencedSymbols === null) {
+      return result;
+    }
+
+    const prefix = `${localName}.`;
+    const referencedSymbols = Array.from(meta.localReferencedSymbols).filter((name) =>
+      name.startsWith(prefix),
+    );
+    if (referencedSymbols.length === 0) {
+      return result;
+    }
+
+    const declaration = this.reflector.getDeclarationOfIdentifier(node);
+    if (declaration === null || !ts.isSourceFile(declaration.node)) {
+      return result;
+    }
+
+    for (const qualifiedName of referencedSymbols) {
+      const exportPath = qualifiedName.slice(prefix.length).split('.');
+      const dep = this.getMetaFromNamespacePath(declaration.node, exportPath);
+      if (dep !== null) {
+        result.set(qualifiedName, dep);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Resolves a qualified selectorless reference through nested module namespace exports.
+   *
+   * For example, given `import * as UI from './ui'`, the template reference
+   * `UI.Card.Header` is resolved by walking the exports of `./ui` to `Card`
+   * and then the exports of that module to `Header`.
+   */
+  private getMetaFromNamespacePath(
+    sourceFile: ts.SourceFile,
+    exportPath: string[],
+  ): DirectiveMeta | PipeMeta | null {
+    if (exportPath.length === 0 || exportPath.some((segment) => segment.length === 0)) {
+      return null;
+    }
+
+    let currentModule = sourceFile;
+
+    for (let index = 0; index < exportPath.length; index++) {
+      const exports = this.reflector.getExportsOfModule(currentModule);
+      if (exports === null) {
+        return null;
+      }
+
+      const exportName = exportPath[index]!;
+      if (this.isTypeOnlyExport(currentModule, exportName)) {
+        return null;
+      }
+
+      const exportedDeclaration = exports.get(exportName);
+      if (exportedDeclaration === undefined) {
+        return null;
+      }
+
+      const isLastSegment = index === exportPath.length - 1;
+      if (!isLastSegment) {
+        if (!ts.isSourceFile(exportedDeclaration.node)) {
+          return null;
+        }
+
+        currentModule = exportedDeclaration.node;
+        continue;
+      }
+
+      if (!this.reflector.isClass(exportedDeclaration.node)) {
+        return null;
+      }
+
+      const ref = new Reference(exportedDeclaration.node);
+      return this.metaReader.getDirectiveMetadata(ref) ?? this.metaReader.getPipeMetadata(ref);
+    }
+
+    return null;
+  }
+
+  private isTypeOnlyExport(sourceFile: ts.SourceFile, exportName: string): boolean {
+    for (const statement of sourceFile.statements) {
+      if (!ts.isExportDeclaration(statement) || statement.exportClause === undefined) {
+        continue;
+      }
+
+      if (ts.isNamespaceExport(statement.exportClause)) {
+        if (statement.exportClause.name.text === exportName) {
+          return statement.isTypeOnly;
+        }
+        continue;
+      }
+
+      if (ts.isNamedExports(statement.exportClause)) {
+        const exported = statement.exportClause.elements.find(
+          (element) => element.name.text === exportName,
+        );
+        if (exported !== undefined) {
+          return statement.isTypeOnly || exported.isTypeOnly;
+        }
+      }
+    }
+
+    return false;
   }
 
   private getMetaFromIdentifier(

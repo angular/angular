@@ -79,7 +79,7 @@ export interface StandaloneScope {
 export interface SelectorlessScope {
   kind: ComponentScopeKind.Selectorless;
   dependencies: Map<string, DirectiveMeta | PipeMeta>;
-  dependencyIdentifiers: ts.Identifier[];
+  dependencyIdentifiers: Array<{name: string; identifier: ts.Identifier}>;
   component: ClassDeclaration;
   schemas: SchemaMetadata[];
   isPoisoned: boolean;

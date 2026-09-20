@@ -857,6 +857,795 @@ runInEachFileSystem(() => {
       expect(diags.map((d) => d.messageText)).toEqual([]);
     });
 
+    it('should resolve selectorless components through namespace imports', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component, Input} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {
+            @Input() value!: string;
+          }
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({template: '<Card.Header [value]="123"/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+    });
+
+    it('should report a missing namespace member', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({template: '<Card.Missing/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        'Cannot find name "Card.Missing". Selectorless references are only supported to classes or non-type import statements.',
+      );
+    });
+
+    it('should emit selectorless components referenced through namespace imports', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({template: '<Card.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('dependencies: [i1.Header]');
+    });
+
+    it('should defer selectorless components referenced through namespace imports', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({template: '@defer {<Card.Header/>}'})
+          export class Comp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).not.toContain('import * as Card');
+      expect(cleanNewLines(jsContents)).toContain(
+        'const Comp_Defer_1_DepsFn = () => [/* @ts-ignore */ import("./card").then(m => m.Header)];',
+      );
+      expect(jsContents).toContain('ɵɵdefer(1, 0, Comp_Defer_1_DepsFn);');
+    });
+
+    it('should support multiple components from the same namespace import', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Root {}
+
+          @Component({template: ''})
+          export class Header {}
+
+          @Component({template: ''})
+          export class Body {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({
+            template: '<Card.Root><Card.Header/><Card.Body/></Card.Root>',
+          })
+          export class Comp {}
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('i1.Root');
+      expect(jsContents).toContain('i1.Header');
+      expect(jsContents).toContain('i1.Body');
+    });
+
+    it('should support an aliased namespace import', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from './card';
+
+          @Component({template: '<UI.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should type-check namespace components from an external library', () => {
+      env.write(
+        'node_modules/external/index.d.ts',
+        `
+          import * as i0 from '@angular/core';
+
+          export declare class Header {
+            value: boolean;
+            static ɵfac: i0.ɵɵFactoryDeclaration<Header, never>;
+            static ɵcmp: i0.ɵɵComponentDeclaration<Header, null, never, { "value": { "alias": "value"; "required": false; }; }, {}, never, never, true, never>;
+          }
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from 'external';
+
+          @Component({template: '<Card.Header [value]="123"/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+    });
+
+    it('should type-check outputs on namespace components', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component, EventEmitter, Output} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {
+            @Output() changed = new EventEmitter<boolean>();
+          }
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({template: '<Card.Header (changed)="handle($event)"/>'})
+          export class Comp {
+            handle(value: number) {}
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        `Argument of type 'boolean' is not assignable to parameter of type 'number'.`,
+      );
+    });
+
+    it('should ignore unrelated exports in a namespace module', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          export const CARD_VERSION = 1;
+
+          @Component({template: ''})
+          export class Header {}
+
+          export function createCard() {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({template: '<Card.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should preserve an aliased re-export name when deferring a namespace component', () => {
+      env.write(
+        'header.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write('card.ts', `export {Header as Title} from './header';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({template: '@defer {<Card.Title/>}'})
+          export class Comp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      expect(jsContents).toContain('import("./card").then(m => m.Title)');
+    });
+
+    it('should resolve components re-exported from a namespace module', () => {
+      env.write(
+        'header.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write('card.ts', `export {Header} from './header';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({template: '<Card.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should resolve components through namespace re-exports', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component, Input} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {
+            @Input() value!: string;
+          }
+        `,
+      );
+
+      env.write('ui.ts', `export * as Card from './card';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from './ui';
+
+          @Component({template: '<UI.Card.Header [value]="123"/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+    });
+
+    it('should resolve components through multiple nested namespace re-exports', () => {
+      env.write(
+        'text.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Text {}
+        `,
+      );
+
+      env.write('inputs.ts', `export * as Fields from './text';`);
+      env.write('forms.ts', `export * as Inputs from './inputs';`);
+      env.write('ui.ts', `export * as Forms from './forms';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from './ui';
+
+          @Component({template: '<UI.Forms.Inputs.Fields.Text/>'})
+          export class Comp {}
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should resolve aliased namespace re-exports', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write('ui.ts', `export * as Controls from './card';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from './ui';
+
+          @Component({template: '<UI.Controls.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should report a missing intermediate namespace member', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write('ui.ts', `export * as Card from './card';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from './ui';
+
+          @Component({template: '<UI.Missing.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        'Cannot find name "UI.Missing.Header". Selectorless references are only supported to classes or non-type import statements.',
+      );
+    });
+
+    it('should not resolve through a type-only namespace re-export', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write('ui.ts', `export type * as Card from './card';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from './ui';
+
+          @Component({template: '<UI.Card.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        'Cannot find name "UI.Card.Header". Selectorless references are only supported to classes or non-type import statements.',
+      );
+    });
+
+    it('should not resolve a type-only terminal re-export', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write('ui.ts', `export type {Header} from './card';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from './ui';
+
+          @Component({template: '<UI.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        'Cannot find name "UI.Header". Selectorless references are only supported to classes or non-type import statements.',
+      );
+    });
+
+    it('should not traverse through a class as an intermediate namespace member', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Card {}
+        `,
+      );
+
+      env.write('ui.ts', `export {Card} from './card';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from './ui';
+
+          @Component({template: '<UI.Card.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        'Cannot find name "UI.Card.Header". Selectorless references are only supported to classes or non-type import statements.',
+      );
+    });
+
+    it('should type-check nested namespace components from an external library', () => {
+      env.write(
+        'node_modules/external/card.d.ts',
+        `
+          import * as i0 from '@angular/core';
+
+          export declare class Header {
+            value: boolean;
+            static ɵfac: i0.ɵɵFactoryDeclaration<Header, never>;
+            static ɵcmp: i0.ɵɵComponentDeclaration<Header, null, never, { "value": { "alias": "value"; "required": false; }; }, {}, never, never, true, never>;
+          }
+        `,
+      );
+
+      env.write('node_modules/external/index.d.ts', `export * as Card from './card';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from 'external';
+
+          @Component({template: '<UI.Card.Header [value]="123"/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'boolean'.`);
+    });
+
+    it('should preserve the namespace path when deferring a nested namespace component', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write('ui.ts', `export * as Card from './card';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from './ui';
+
+          @Component({template: '@defer {<UI.Card.Header/>}'})
+          export class Comp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      expect(jsContents).toContain('import("./ui").then(m => m.Card.Header)');
+    });
+
+    it('should support mixed eager and deferred nested namespace members', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Body {}
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write('ui.ts', `export * as Card from './card';`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as UI from './ui';
+
+          @Component({template: '<UI.Card.Body/> @defer {<UI.Card.Header/>}'})
+          export class Comp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      expect(jsContents).toContain('Body');
+      expect(jsContents).toContain('import("./ui").then(m => m.Card.Header)');
+    });
+
+    it('should not resolve type-only namespace imports', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import type * as Card from './card';
+
+          @Component({template: '<Card.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        'Cannot find name "Card.Header". Selectorless references are only supported to classes or non-type import statements.',
+      );
+    });
+
+    it('should not resolve non-Angular exports as selectorless components', () => {
+      env.write('card.ts', `export class Header {}`);
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({template: '<Card.Header/>'})
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(
+        'Cannot find name "Card.Header". Selectorless references are only supported to classes or non-type import statements.',
+      );
+    });
+
+    it('should keep eager namespace members eager while deferring another member', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Body {}
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({
+            template: '<Card.Body/> @defer {<Card.Header/>}',
+          })
+          export class Comp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('i1.Body');
+      expect(cleanNewLines(jsContents)).toContain(
+        'const Comp_Defer_1_DepsFn = () => [/* @ts-ignore */ import("./card").then(m => m.Header)];',
+      );
+    });
+
+    it('should not defer a namespace member that is also used eagerly', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({
+            template: '<Card.Header/> @defer {<Card.Header/>}',
+          })
+          export class Comp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('i1.Header');
+      expect(jsContents).not.toContain('import("./card").then(m => m.Header)');
+    });
+
+    it('should defer multiple namespace members from the same module', () => {
+      env.write(
+        'card.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({template: ''})
+          export class Header {}
+
+          @Component({template: ''})
+          export class Body {}
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({
+            template: '@defer {<Card.Header/><Card.Body/>}',
+          })
+          export class Comp {}
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = cleanNewLines(env.getContents('test.js'));
+      expect(jsContents).toContain('import("./card").then(m => m.Header)');
+      expect(jsContents).toContain('import("./card").then(m => m.Body)');
+    });
+
     it('should be able to use default imports as selectorless dependencies', () => {
       env.write(
         'dir.ts',

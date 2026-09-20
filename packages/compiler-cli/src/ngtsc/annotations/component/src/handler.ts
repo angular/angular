@@ -2640,15 +2640,30 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
 
       // Selectorless references dependencies directly so we register through the identifiers.
       if (scope.kind === ComponentScopeKind.Selectorless) {
-        for (const identifier of scope.dependencyIdentifiers) {
-          this.registerDeferrableCandidate(
-            componentClassDecl,
-            identifier,
-            false /* isDeferredImport */,
-            allDeferredDecls,
-            eagerlyUsedDecls,
-            resolutionData,
-          );
+        for (const {name, identifier} of scope.dependencyIdentifiers) {
+          if (ts.isNamespaceImport(identifier.parent)) {
+            const dependency = scope.dependencies.get(name);
+            if (dependency !== undefined) {
+              this.registerSelectorlessNamespaceDeferrableCandidate(
+                componentClassDecl,
+                name,
+                identifier,
+                dependency,
+                allDeferredDecls,
+                eagerlyUsedDecls,
+                resolutionData,
+              );
+            }
+          } else {
+            this.registerDeferrableCandidate(
+              componentClassDecl,
+              identifier,
+              false /* isDeferredImport */,
+              allDeferredDecls,
+              eagerlyUsedDecls,
+              resolutionData,
+            );
+          }
         }
       }
     }
@@ -2660,6 +2675,57 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
         eagerlyUsedDecls.add(decl.ref.node);
       }
     }
+  }
+
+  private registerSelectorlessNamespaceDeferrableCandidate(
+    componentClassDecl: ClassDeclaration,
+    qualifiedName: string,
+    namespaceIdentifier: ts.Identifier,
+    dependency: DirectiveMeta | PipeMeta,
+    allDeferredDecls: Set<ClassDeclaration>,
+    eagerlyUsedDecls: Set<ClassDeclaration>,
+    resolutionData: ComponentResolutionData,
+  ): void {
+    const declaration = dependency.ref.node;
+    if (!allDeferredDecls.has(declaration) || eagerlyUsedDecls.has(declaration)) {
+      return;
+    }
+
+    if (!dependency.isStandalone) {
+      return;
+    }
+
+    const namespaceImport = namespaceIdentifier.parent;
+    if (!ts.isNamespaceImport(namespaceImport)) {
+      return;
+    }
+
+    const importDecl = namespaceImport.parent.parent;
+    if (
+      !ts.isImportDeclaration(importDecl) ||
+      !ts.isStringLiteral(importDecl.moduleSpecifier)
+    ) {
+      return;
+    }
+
+    const separatorIndex = qualifiedName.indexOf('.');
+    if (separatorIndex === -1 || separatorIndex === qualifiedName.length - 1) {
+      return;
+    }
+
+    const importInfo = {
+      name: qualifiedName.slice(separatorIndex + 1),
+      from: importDecl.moduleSpecifier.text,
+      node: importDecl,
+    };
+
+    resolutionData.deferrableDeclToImportDecl.set(declaration, importInfo);
+    this.deferredSymbolTracker.markAsDeferrableCandidate(
+      namespaceIdentifier,
+      importDecl,
+      componentClassDecl,
+      false /* isExplicitlyDeferred */,
+    );
   }
 
   /**

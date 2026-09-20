@@ -334,6 +334,48 @@ describe('HtmlLexer', () => {
         ]);
       });
 
+      it('should parse a qualified component tag', () => {
+        expect(tokenizeAndHumanizeParts('<Card.Header>hello</Card.Header>', options)).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'Card.Header', '', ''],
+          [TokenType.COMPONENT_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.COMPONENT_CLOSE, 'Card.Header', '', ''],
+          [TokenType.EOF],
+        ]);
+      });
+
+      it('should reject an empty segment in a qualified component tag', () => {
+        expect(tokenizeAndHumanizeErrors('<Card..Header/>', options)).toEqual([
+          ['Unexpected character "."', '0:6'],
+        ]);
+      });
+
+      it('should reject a lowercase segment in a qualified component tag', () => {
+        expect(tokenizeAndHumanizeErrors('<Card.header/>', options)).toEqual([
+          ['Unexpected character "h"', '0:6'],
+        ]);
+      });
+
+      it('should reject a trailing dot in a qualified component tag', () => {
+        expect(tokenizeAndHumanizeErrors('<Card./>', options)).toEqual([
+          ['Unexpected character "/"', '0:6'],
+        ]);
+      });
+
+      it('should reject a digit at the start of a qualified segment', () => {
+        expect(tokenizeAndHumanizeErrors('<Card.1Header/>', options)).toEqual([
+          ['Unexpected character "1"', '0:6'],
+        ]);
+      });
+
+      it('should parse multiple qualified segments', () => {
+        expect(tokenizeAndHumanizeParts('<UI.Card.Header/>', options)).toEqual([
+          [TokenType.COMPONENT_OPEN_START, 'UI.Card.Header', '', ''],
+          [TokenType.COMPONENT_OPEN_END_VOID],
+          [TokenType.EOF],
+        ]);
+      });
+
       it('should parse a component tag with a tag name', () => {
         expect(tokenizeAndHumanizeParts('<MyComp:button>hello</MyComp:button>', options)).toEqual([
           [TokenType.COMPONENT_OPEN_START, 'MyComp', '', 'button'],

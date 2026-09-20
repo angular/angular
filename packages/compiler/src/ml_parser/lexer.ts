@@ -1013,9 +1013,12 @@ class _Tokenizer {
 
   private _consumeComponentName(): string[] {
     const nameStart = this._cursor.clone();
-    while (isSelectorlessNameChar(this._cursor.peek())) {
-      this._cursor.advance();
+    this._consumeSelectorlessName();
+
+    while (this._attemptCharCode(chars.$PERIOD)) {
+      this._consumeSelectorlessName();
     }
+
     const name = this._cursor.getChars(nameStart);
     let prefix = '';
     let tagName = '';
@@ -1024,6 +1027,20 @@ class _Tokenizer {
       [prefix, tagName] = this._consumePrefixAndName(isNameEnd);
     }
     return [name, prefix, tagName];
+  }
+
+  private _consumeSelectorlessName(): void {
+    const start = this._cursor.clone();
+    if (!isSelectorlessNameStart(this._cursor.peek())) {
+      throw this._createError(
+        _unexpectedCharacterErrorMsg(this._cursor.peek()),
+        this._cursor.getSpan(start),
+      );
+    }
+
+    do {
+      this._cursor.advance();
+    } while (isSelectorlessNameChar(this._cursor.peek()));
   }
 
   private _consumeAttribute() {
