@@ -85,6 +85,9 @@ export {
   TitleCasePipe,
   KeyValuePipe,
   KeyValue,
+  RELATIVE_DATE_PIPE_DEFAULT_OPTIONS,
+  RelativeDatePipe,
+  RelativeDatePipeConfig,
 } from './pipes/index';
 export {
   PLATFORM_BROWSER_ID as ɵPLATFORM_BROWSER_ID,

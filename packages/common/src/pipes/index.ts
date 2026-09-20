@@ -20,6 +20,11 @@ import {I18nSelectPipe} from './i18n_select_pipe';
 import {JsonPipe} from './json_pipe';
 import {KeyValue, KeyValuePipe} from './keyvalue_pipe';
 import {CurrencyPipe, DecimalPipe, PercentPipe} from './number_pipe';
+import {
+  RELATIVE_DATE_PIPE_DEFAULT_OPTIONS,
+  RelativeDatePipe,
+  RelativeDatePipeConfig,
+} from './relative_date_pipe';
 import {SlicePipe} from './slice_pipe';
 
 export {
@@ -37,6 +42,9 @@ export {
   KeyValuePipe,
   LowerCasePipe,
   PercentPipe,
+  RELATIVE_DATE_PIPE_DEFAULT_OPTIONS,
+  RelativeDatePipe,
+  RelativeDatePipeConfig,
   SlicePipe,
   TitleCasePipe,
   UpperCasePipe,
@@ -59,4 +67,5 @@ export const COMMON_PIPES = [
   I18nPluralPipe,
   I18nSelectPipe,
   KeyValuePipe,
+  RelativeDatePipe,
 ];
