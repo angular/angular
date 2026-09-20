@@ -22,13 +22,27 @@ import {
   Renderer2,
   SimpleChanges,
   untracked,
+  ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
 } from '@angular/core';
 import {from, of, Subscription} from 'rxjs';
 import {mergeAll} from 'rxjs/operators';
 
-import {Event, NavigationEnd} from '../events';
+import {
+  Event,
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationSkipped,
+  NavigationStart,
+} from '../events';
 import {Router} from '../router';
-import {isActive, IsActiveMatchOptions, exactMatchOptions, subsetMatchOptions} from '../url_tree';
+import {
+  containsTree,
+  isActive,
+  IsActiveMatchOptions,
+  exactMatchOptions,
+  subsetMatchOptions,
+} from '../url_tree';
 
 import {RouterLink} from './router_link';
 
@@ -133,10 +147,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    * @see {@link isActive}
    */
   @Input() routerLinkActiveOptions:
-    | {exact: boolean}
-    | Partial<IsActiveMatchOptions>
-    | null
-    | undefined = {exact: false};
+    {exact: boolean} | Partial<IsActiveMatchOptions> | null | undefined = {exact: false};
 
   /**
    * Aria-current attribute to apply when the router link is active.
@@ -167,6 +178,8 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
   private link = inject(RouterLink, {optional: true});
 
+  private isHydrating = inject(IS_HYDRATION_DOM_REUSE_ENABLED, {optional: true}) ?? false;
+
   constructor(
     private router: Router,
     private element: ElementRef,
@@ -175,7 +188,19 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   ) {
     this.routerEventsSubscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
+        this.isHydrating = false;
         this.update();
+      } else if (this.isHydrating) {
+        if (s instanceof NavigationStart) {
+          this.update();
+        } else if (
+          s instanceof NavigationError ||
+          s instanceof NavigationSkipped ||
+          s instanceof NavigationCancel
+        ) {
+          this.update();
+          this.isHydrating = false;
+        }
       }
     });
   }
@@ -226,7 +251,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
 
   private update(): void {
-    if (!this.links || !this.router.navigated) return;
+    if (!this.links || (!this.router.lastSuccessfulNavigation() && !this.isHydrating)) return;
     if (this.routerLinkActiveOptions === null && !this._isActive) return;
 
     queueMicrotask(() => {
@@ -285,7 +310,21 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
     return (link: RouterLink) => {
       const urlTree = link.urlTree;
-      return urlTree ? untracked(isActive(urlTree, router, options)) : false;
+      if (!urlTree) return false;
+
+      if (untracked(router.lastSuccessfulNavigation)) {
+        return untracked(isActive(urlTree, router, options));
+      }
+
+      if (!this.isHydrating) {
+        return false;
+      }
+
+      // During hydration, match against the in-flight initial navigation so the
+      // server-rendered active class is not lost before the first NavigationEnd.
+      const currentNavigation = untracked(router.currentNavigation);
+      const targetUrl = currentNavigation?.finalUrl ?? currentNavigation?.extractedUrl;
+      return targetUrl ? containsTree(targetUrl, urlTree, options as IsActiveMatchOptions) : false;
     };
   }
 
