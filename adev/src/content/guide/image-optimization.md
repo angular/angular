@@ -19,7 +19,7 @@ In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enfor
 
 If you're using a background image in CSS, [start here](#how-to-migrate-your-background-image).
 
-**NOTE: Although the `NgOptimizedImage` directive was made a stable feature in Angular version 15, it has been backported and is available as a stable feature in versions 13.4.0 and 14.3.0 as well.**
+NOTE: Although the `NgOptimizedImage` directive was made a stable feature in Angular version 15, it has been backported and is available as a stable feature in versions 13.4.0 and 14.3.0 as well.
 
 ## Getting Started
 
