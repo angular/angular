@@ -14,6 +14,7 @@ import {CSS_VAR_NAMESPACE} from './dom_renderer';
  * This is useful when reading or setting CSS variables dynamically in JavaScript that
  * were transformed by the compiler during the build.
  *
+ * @see [Using namespaced properties in TypeScript](guide/components/styling#using-namespaced-properties-in-typescript)
  * @publicApi 22.1
  */
 @Service()

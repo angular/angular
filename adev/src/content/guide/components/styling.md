@@ -225,7 +225,7 @@ Prefer a style binding such as `[style.--primary-color]`, which Angular namespac
 you go through a DOM API instead, pass the name you wrote in your styles to
 [`CssVarNamespacer`](api/platform-browser/CssVarNamespacer), including the leading `--`:
 
-```angular-ts
+```angular-ts {header: "profile-photo.ts"}
 import {Component, ElementRef, inject} from '@angular/core';
 import {CssVarNamespacer} from '@angular/platform-browser';
 

@@ -88,6 +88,7 @@ export const CSS_VAR_NAMESPACE = new InjectionToken<string>(
  *
  * @param namespace The prefix string to use as a namespace. If not provided, it defaults
  *     to the `APP_ID`. An underscore is appended unconditionally.
+ * @see [Namespacing CSS custom properties](guide/components/styling#namespacing-css-custom-properties)
  * @publicApi
  */
 export function provideCssVarNamespacing(namespace?: string): EnvironmentProviders {
