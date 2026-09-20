@@ -26,7 +26,7 @@ interface BaseConfig {
 
 interface AspectRatioConfig extends BaseConfig {
   /**
-   * Breakpoint condition based on the container aspect ration.
+   * Breakpoint condition based on the container aspect ratio.
    * When true, `breakpointDirection` is applied.
    *
    * Examples: `>1.5`, `<=2`, etc.

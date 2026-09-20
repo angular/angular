@@ -134,14 +134,14 @@ export class DirectiveExplorerComponent {
 
   protected readonly externallySelectedSignalNodeId = signal<{id: string} | null>(null);
 
-  // Responsible for spliting behavior of the explorer and the props pane.
+  // Responsible for splitting behavior of the explorer and the props pane.
   protected readonly tabSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'horizontal',
     widthBreakpoint: '<500px',
     breakpointDirection: 'vertical',
   };
 
-  // Responsive for spliting behavior of the forest and the signal graph pane.
+  // Responsible for splitting behavior of the forest and the signal graph pane.
   protected readonly forestSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
     aspectRatioBreakpoint: '>=1.5',
