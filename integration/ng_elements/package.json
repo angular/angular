@@ -37,5 +37,5 @@
     "e2e": "jasmine --config=e2e/jasmine.json 'e2e/**/*.e2e-spec.ts'"
   },
   "private": true,
-  "packageManager": "pnpm@12.3.4"
+  "packageManager": "pnpm@12.5.1"
 }
