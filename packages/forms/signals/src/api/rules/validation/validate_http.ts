@@ -9,6 +9,7 @@
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
 import {DebounceTimer, ResourceSnapshot, Signal} from '@angular/core';
 import {
+  AsyncValidationProcessingMode,
   FieldContext,
   LogicFn,
   PathKind,
@@ -76,11 +77,20 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
    * A function that receives the field context and returns true if the async validation should be run.
    */
   readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
+  /**
+   * Defines when this asynchronous validator should be executed and processed.
+   * Overrides the form-level `processAsyncValidators` setting if specified.
+   *
+   * - `'whenSyncValid'`: Async validation runs only when all synchronous validation has passed.
+   * - `'always'`: Async validation runs regardless of whether synchronous validation errors are present.
+   */
+  readonly processAsyncValidators?: AsyncValidationProcessingMode;
 }
 
 /**
  * Adds async validation to the field corresponding to the given path based on an httpResource.
- * Async validation for a field only runs once all synchronous validation is passing.
+ * By default, async validation for a field only runs once all synchronous validation is passing,
+ * unless `processAsyncValidators` is configured to `'always'` (either on the validator or the form).
  *
  * @param path A path indicating the field to bind the async validation logic to.
  * @param opts The http validation options.
@@ -106,5 +116,6 @@ export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKi
     onSuccess: opts.onSuccess,
     onError: opts.onError,
     when: opts.when,
+    processAsyncValidators: opts.processAsyncValidators,
   });
 }

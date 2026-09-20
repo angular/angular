@@ -193,6 +193,19 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
   ValidationResult<E> | 'pending';
 
 /**
+ * Modes for controlling when asynchronous validators should be processed.
+ *
+ * - `'whenSyncValid'` (default): Async validation runs only when all synchronous validation has passed.
+ * - `'always'`: Async validation runs regardless of whether synchronous validation errors are present.
+ *
+ * @see [Async validation](guide/forms/signals/validation#async-validation)
+ *
+ * @category validation
+ * @publicApi 22.0
+ */
+export type AsyncValidationProcessingMode = 'whenSyncValid' | 'always';
+
+/**
  * A field accessor function that returns the state of the field.
  *
  * @template TValue The type of the value stored in the field.

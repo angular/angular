@@ -41,6 +41,9 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(path: SchemaPat
 export function applyWhenValue<TValue>(path: SchemaPath<TValue>, predicate: (value: TValue) => boolean, schema: NoInfer<SchemaOrSchemaFn<TValue>>): void;
 
 // @public
+export type AsyncValidationProcessingMode = 'whenSyncValid' | 'always';
+
+// @public
 export type AsyncValidationResult<E extends ValidationError = ValidationError> = ValidationResult<E> | 'pending';
 
 // @public
@@ -50,6 +53,7 @@ export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind exten
     readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
     readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
+    readonly processAsyncValidators?: AsyncValidationProcessingMode;
     readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
 
@@ -216,6 +220,7 @@ export interface FormOptions<TModel> {
     };
     injector?: Injector;
     name?: string;
+    processAsyncValidators?: AsyncValidationProcessingMode;
     submission?: FormSubmitOptions<TModel, unknown>;
 }
 
@@ -287,6 +292,7 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
     readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
     readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly options?: HttpResourceOptions<TResult, unknown>;
+    readonly processAsyncValidators?: AsyncValidationProcessingMode;
     readonly request: ((ctx: FieldContext<TValue, TPathKind>) => string | undefined) | ((ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined);
     readonly when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }
@@ -709,6 +715,11 @@ export function standardSchemaError(issue: StandardSchemaV1.Issue, options: With
 export function standardSchemaError(issue: StandardSchemaV1.Issue, options?: ValidationErrorOptions): WithoutFieldTree<StandardSchemaValidationError>;
 
 // @public
+export interface StandardSchemaOptions {
+    readonly processAsyncValidators?: AsyncValidationProcessingMode;
+}
+
+// @public
 export class StandardSchemaValidationError extends BaseNgValidationError {
     constructor(issue: StandardSchemaV1.Issue, options?: ValidationErrorOptions);
     // (undocumented)
@@ -760,7 +771,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, opts: HttpValidatorOptions<TValue, TResult, TPathKind>): void;
 
 // @public
-export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProperties<TSchema>>(path: SchemaPath<TModel> & SchemaPathTree<TModel>, schema: StandardSchemaV1<TSchema> | LogicFn<TModel, StandardSchemaV1<unknown> | undefined>): void;
+export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProperties<TSchema>>(path: SchemaPath<TModel> & SchemaPathTree<TModel>, schema: StandardSchemaV1<TSchema> | LogicFn<TModel, StandardSchemaV1<unknown> | undefined>, options?: StandardSchemaOptions): void;
 
 // @public
 export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: NoInfer<TreeValidator<TValue, TPathKind>>): void;

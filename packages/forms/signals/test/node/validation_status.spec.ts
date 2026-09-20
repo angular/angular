@@ -660,6 +660,123 @@ describe('validation status', () => {
       expect(f().valid()).withContext('valid').toBe(false);
       expect(f().invalid()).withContext('invalid').toBe(true);
     });
+
+    it('should run async validator even when sync errors are present when processAsyncValidators is "always" on validator', async () => {
+      let res: Resource<unknown>;
+      const asyncPromise = Promise.resolve<ValidationError[]>([{kind: 'asyncError'}]);
+
+      const f = form(
+        signal('TEST'),
+        (p) => {
+          validate(p, () => [{kind: 'syncError'}]);
+          validateAsync(p, {
+            params: () => [],
+            factory: (params) =>
+              (res = resource({
+                params,
+                loader: () => asyncPromise,
+              })),
+            onSuccess: (results) => results,
+            onError: () => null,
+            processAsyncValidators: 'always',
+          });
+        },
+        {injector},
+      );
+
+      // Initially, the sync error is present and the async validator is pending
+      expect(f().pending()).withContext('pending').toBe(true);
+      expect(f().valid()).withContext('valid').toBe(false);
+      expect(f().invalid()).withContext('invalid').toBe(true);
+      expect(f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'syncError'}),
+      ]);
+
+      await asyncPromise;
+      await TestBed.tick();
+      await TestBed.tick();
+
+      expect(f().pending()).withContext('pending').toBe(false);
+      expect(f().valid()).withContext('valid').toBe(false);
+      expect(f().invalid()).withContext('invalid').toBe(true);
+      expect(f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'syncError'}),
+        jasmine.objectContaining({kind: 'asyncError'}),
+      ]);
+    });
+
+    it('should run async validator even when sync errors are present when processAsyncValidators is "always" on form', async () => {
+      let res: Resource<unknown>;
+      const asyncPromise = Promise.resolve<ValidationError[]>([{kind: 'asyncError'}]);
+
+      const f = form(
+        signal('TEST'),
+        (p) => {
+          validate(p, () => [{kind: 'syncError'}]);
+          validateAsync(p, {
+            params: () => [],
+            factory: (params) =>
+              (res = resource({
+                params,
+                loader: () => asyncPromise,
+              })),
+            onSuccess: (results) => results,
+            onError: () => null,
+          });
+        },
+        {injector, processAsyncValidators: 'always'},
+      );
+
+      expect(f().pending()).withContext('pending').toBe(true);
+      expect(f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'syncError'}),
+      ]);
+
+      await asyncPromise;
+      await TestBed.tick();
+      await TestBed.tick();
+
+      expect(f().pending()).withContext('pending').toBe(false);
+      expect(f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'syncError'}),
+        jasmine.objectContaining({kind: 'asyncError'}),
+      ]);
+    });
+
+    it('should allow validator-level processAsyncValidators to override form-level "always"', async () => {
+      let res: Resource<unknown>;
+      let loaderCalled = false;
+      const asyncPromise = Promise.resolve<ValidationError[]>([{kind: 'asyncError'}]);
+
+      const f = form(
+        signal('TEST'),
+        (p) => {
+          validate(p, () => [{kind: 'syncError'}]);
+          validateAsync(p, {
+            params: () => [],
+            factory: (params) =>
+              (res = resource({
+                params,
+                loader: () => {
+                  loaderCalled = true;
+                  return asyncPromise;
+                },
+              })),
+            onSuccess: (results) => results,
+            onError: () => null,
+            processAsyncValidators: 'whenSyncValid',
+          });
+        },
+        {injector, processAsyncValidators: 'always'},
+      );
+
+      // Since validator-level override is 'whenSyncValid', it should not run due to sync error
+      expect(f().pending()).withContext('pending').toBe(false);
+      expect(loaderCalled).toBe(false);
+      expect(f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'syncError'}),
+      ]);
+    });
   });
 
   describe('NgValidationError', () => {

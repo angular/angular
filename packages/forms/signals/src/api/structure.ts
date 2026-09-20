@@ -27,6 +27,7 @@ import {normalizeFormArgs} from '../util/normalize_form_args';
 import {isArray} from '../util/type_guards';
 import type {ValidationError} from './rules';
 import type {
+  AsyncValidationProcessingMode,
   FieldState,
   FieldTree,
   FormSubmitOptions,
@@ -73,6 +74,14 @@ export interface FormOptions<TModel> {
 
   /** Options that define how to handle form submission. */
   submission?: FormSubmitOptions<TModel, unknown>;
+
+  /**
+   * Defines when asynchronous validators should be executed and processed.
+   *
+   * - `'whenSyncValid'` (default): Async validation runs only when all synchronous validation has passed.
+   * - `'always'`: Async validation runs regardless of whether synchronous validation errors are present.
+   */
+  processAsyncValidators?: AsyncValidationProcessingMode;
 }
 
 /**
@@ -216,6 +225,7 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
     injector,
     options?.name,
     options?.submission as FormSubmitOptions<unknown, unknown> | undefined,
+    options?.processAsyncValidators ?? 'whenSyncValid',
   );
   const adapter = options?.adapter ?? new BasicFieldAdapter();
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
