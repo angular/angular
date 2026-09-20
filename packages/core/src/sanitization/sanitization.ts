@@ -29,7 +29,12 @@ import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './by
 import {_sanitizeHtml} from './html_sanitizer';
 import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
-import {checkSecurityContext, SecurityContext, SVG_NAMESPACE} from './dom_security_schema';
+import {
+  checkSecurityContext,
+  MATH_ML_NAMESPACE,
+  SecurityContext,
+  SVG_NAMESPACE,
+} from './dom_security_schema';
 import {_sanitizeUrl} from './url_sanitizer';
 import {splitNsName} from '../render3/util/tags';
 
@@ -359,7 +364,7 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
 
     if (resolvedTagName === 'iframe') {
       enforceIframeSecurity(element as HTMLIFrameElement);
-    } else if (namespace === SVG_NAMESPACE || !namespace || isRenderedInsideSvg(element)) {
+    } else if (namespace === SVG_NAMESPACE || !namespace || isParsedIntoSvg(element)) {
       const config =
         SVG_ANIMATION_SENSITIVE_STATIC_VALUES[resolvedTagName]?.[attributeName.toLowerCase()];
       if (config) {
@@ -381,8 +386,7 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
         return value;
       }
     } else {
-      // Declared in another namespace and outside an SVG parsing context: the element does not
-      // animate when the browser re-parses the markup, so the binding is inert.
+      // No SVG parsing context was detected for this non-SVG declaration namespace.
       return value;
     }
   }
@@ -399,25 +403,92 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
   throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
 }
 
+/** SVG HTML integration points, whose child start tags are processed using HTML rules. */
+const SVG_HTML_INTEGRATION_POINTS = new Set(['foreignobject', 'desc', 'title']);
+
 /**
- * Whether an `<svg>` ancestor can put the element into an SVG parsing context after serialization.
- * Declaration namespaces are not preserved, but SVG HTML integration points stop that context
- * from propagating to their descendants.
+ * MathML text integration points, whose child start tags use HTML rules except for `mglyph`
+ * and `malignmark`.
  */
-function isRenderedInsideSvg(element: Element): boolean {
-  let node: Node | null = element.parentNode;
-  while (node !== null && node.nodeType === Node.ELEMENT_NODE) {
-    const tagName = (node as Element).localName?.toLowerCase();
-    if (tagName === 'svg') {
-      return true;
-    }
-    // An inner `<svg>` takes precedence because it is encountered before this boundary.
-    if (tagName === 'foreignobject' || tagName === 'desc' || tagName === 'title') {
-      return false;
-    }
-    node = node.parentNode;
+const MATHML_HTML_INTEGRATION_POINTS = new Set(['mi', 'mo', 'mn', 'ms', 'mtext']);
+
+/** `encoding` values that make a MathML `<annotation-xml>` an HTML integration point. */
+const HTML_ANNOTATION_XML_ENCODINGS = new Set(['text/html', 'application/xhtml+xml']);
+
+/**
+ * Estimates whether `element` would be parsed in an SVG context after its DOM tree is
+ * serialized as HTML and reparsed.
+ *
+ * Projection preserves the element's live `namespaceURI`, but HTML serialization does not
+ * preserve DOM namespace assignments. The browser derives namespaces from the surrounding
+ * markup instead, so checking `namespaceURI` alone is insufficient.
+ *
+ * Replays ancestor namespace transitions, including SVG and MathML integration points.
+ * This is a partial model: it omits HTML parser recovery, such as foreign-content breakout
+ * tags, and can therefore disagree with browser reparsing.
+ *
+ * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
+ */
+function isParsedIntoSvg(element: Element): boolean {
+  const ancestors: Element[] = [];
+  for (
+    let node: Node | null = element.parentNode;
+    node?.nodeType === Node.ELEMENT_NODE;
+    node = node.parentNode
+  ) {
+    ancestors.push(node as Element);
   }
-  return false;
+
+  // Replay namespace transitions from the outermost ancestor toward the element.
+  let namespace: string | null = null;
+  for (let i = ancestors.length - 1; i >= 0; i--) {
+    const child = i === 0 ? element : ancestors[i - 1];
+    namespace = getChildNamespace(ancestors[i], namespace, child.localName.toLowerCase());
+  }
+
+  return namespace === SVG_NAMESPACE;
+}
+
+/**
+ * Returns the parsing context passed from `element` to its child start tag.
+ * `namespace` is the context in which `element` is processed; `null` means HTML parsing rules.
+ * `childTagName` is lowercase and determines the MathML text-integration exceptions.
+ * This is not necessarily the child's final namespace, which also depends on its own tag.
+ */
+function getChildNamespace(
+  element: Element,
+  namespace: string | null,
+  childTagName: string,
+): string | null {
+  const tagName = element.localName.toLowerCase();
+
+  // Under HTML rules, `<svg>` and `<math>` start foreign-content subtrees.
+  if (namespace === null) {
+    if (tagName === 'svg') return SVG_NAMESPACE;
+    if (tagName === 'math') return MATH_ML_NAMESPACE;
+    return null;
+  }
+
+  // SVG HTML integration points switch child start tags back to HTML parsing rules.
+  if (namespace === SVG_NAMESPACE) {
+    return SVG_HTML_INTEGRATION_POINTS.has(tagName) ? null : SVG_NAMESPACE;
+  }
+
+  // MathML text integration points keep `mglyph` and `malignmark` in MathML.
+  if (
+    (MATHML_HTML_INTEGRATION_POINTS.has(tagName) &&
+      childTagName !== 'mglyph' &&
+      childTagName !== 'malignmark') ||
+    (tagName === 'annotation-xml' &&
+      HTML_ANNOTATION_XML_ENCODINGS.has(element.getAttribute('encoding')?.toLowerCase() ?? ''))
+  ) {
+    return null;
+  }
+
+  // MathML `<annotation-xml>` also allows a direct `<svg>` child to start an SVG subtree.
+  return tagName === 'svg' && element.parentElement?.localName.toLowerCase() === 'annotation-xml'
+    ? SVG_NAMESPACE
+    : MATH_ML_NAMESPACE;
 }
 
 function getSecuritySensitiveSVGAnimationAttributeName(

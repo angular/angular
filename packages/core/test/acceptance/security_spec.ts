@@ -1162,15 +1162,42 @@ describe('SVG animation processing', () => {
     });
   });
 
-  it('should reject a MathML animation binding moved into SVG by content projection', async () => {
-    @Component({
-      selector: 'svg-content-wrapper',
-      template: `<svg>
-        <a><ng-content></ng-content></a>
-      </svg>`,
-    })
-    class SvgContentWrapper {}
+  @Component({
+    selector: 'svg-content-wrapper',
+    template: `<svg>
+      <a><ng-content></ng-content></a>
+    </svg>`,
+  })
+  class SvgContentWrapper {}
 
+  it('should reject a MathML animation binding moved into SVG by content projection', async () => {
+    // `<mtext>` processes this wrapper's start tag using HTML rules, allowing its `<svg>` to
+    // open an SVG subtree when reparsed. The projected `<set>` retains its live MathML namespace,
+    // but would be parsed as an SVG animation element after serialization.
+    @Component({
+      imports: [SvgContentWrapper],
+      template: `
+        <math>
+          <mtext>
+            <svg-content-wrapper>
+              <set attributeName="href" [attr.to]="value"></set>
+            </svg-content-wrapper>
+          </mtext>
+        </math>
+      `,
+    })
+    class TestCmp {
+      value = UNSAFE_VALUE;
+    }
+
+    await expectBindingToFail(TestBed.createComponent(TestCmp), 'to', 'set');
+  });
+
+  it('should allow a MathML animation binding projected into an svg nested in MathML', async () => {
+    // The same shape as the test above, without the `<mtext>`. An `<svg>` start tag inside
+    // MathML content inherits the surrounding namespace, so the whole subtree is parsed back as
+    // MathML. The browser builds a `MathMLElement` here, not an `SVGSetElement`, so there is no
+    // animation to run and the value stays inert.
     @Component({
       imports: [SvgContentWrapper],
       template: `
@@ -1185,7 +1212,10 @@ describe('SVG animation processing', () => {
       value = UNSAFE_VALUE;
     }
 
-    await expectBindingToFail(TestBed.createComponent(TestCmp), 'to', 'set');
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('set').getAttribute('to')).toBe(UNSAFE_VALUE);
   });
 
   it('should reject an SVG animation host created by NgComponentOutlet', async () => {
