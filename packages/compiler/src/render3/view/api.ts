@@ -307,6 +307,13 @@ export interface R3ComponentMetadata<
   rawImports?: o.Expression;
 
   /**
+   * Qualified standalone imports as written in the component decorator.
+   *
+   * Used by local compilation to preserve consumer-local component aliases at runtime.
+   */
+  qualifiedImports?: Array<{name: string; type: o.Expression}> | null;
+
+  /**
    * Foreign components imported by the component.
    */
   foreignImports: R3ForeignComponentMetadata[] | null;
@@ -403,6 +410,11 @@ export interface R3DirectiveDependencyMetadata extends R3TemplateDependency {
    * If true then this directive is actually a component; otherwise it is not.
    */
   isComponent: boolean;
+
+  /**
+   * Qualified element names under which this component is referenced by its consumer.
+   */
+  qualifiedNames?: string[] | null;
 }
 
 export interface R3PipeDependencyMetadata extends R3TemplateDependency {
@@ -576,6 +588,16 @@ export interface R3DeferPerBlockDependency {
    * Whether the symbol is the default export.
    */
   isDefaultImport: boolean;
+
+  /**
+   * Property path used to access this symbol from the imported module.
+   */
+  symbolPath?: string[] | null;
+
+  /**
+   * Qualified element names under which this dependency is referenced by the consumer.
+   */
+  qualifiedNames?: string[] | null;
 }
 
 /**
@@ -596,4 +618,14 @@ export interface R3DeferPerComponentDependency {
    * Whether the symbol is the default export.
    */
   isDefaultImport: boolean;
+
+  /**
+   * Property path used to access this symbol from the imported module.
+   */
+  symbolPath?: string[] | null;
+
+  /**
+   * Qualified element names under which this dependency is referenced by the consumer.
+   */
+  qualifiedNames?: string[] | null;
 }

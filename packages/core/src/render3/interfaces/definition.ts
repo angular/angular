@@ -560,7 +560,12 @@ export type DirectiveTypeList = (DirectiveType<any> | ComponentType<any> | Type<
 
 export type DependencyType = DirectiveType<any> | ComponentType<any> | PipeType<any> | Type<any>;
 
-export type DependencyTypeList = Array<DependencyType>;
+export interface QualifiedDependencyType {
+  type: DependencyType;
+  qualifiedNames: string[];
+}
+
+export type DependencyTypeList = Array<DependencyType | QualifiedDependencyType>;
 
 export type TypeOrFactory<T> = T | (() => T);
 

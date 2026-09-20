@@ -46,6 +46,7 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
       // initialization.
       const dependencies = new Set<DirectiveMeta | PipeMeta | NgModuleMeta>([clazzMeta]);
       const deferredDependencies = new Set<DirectiveMeta | PipeMeta>();
+      const qualifiedDependencies = new Map<string, DirectiveMeta>();
       const seen = new Set<ClassDeclaration>([clazz]);
       let isPoisoned = clazzMeta.isPoisoned;
 
@@ -103,6 +104,13 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
         }
       }
 
+      for (const qualifiedImport of clazzMeta.qualifiedImports ?? []) {
+        const dirMeta = this.metaReader.getDirectiveMetadata(qualifiedImport.ref);
+        if (dirMeta !== null && dirMeta.isComponent) {
+          qualifiedDependencies.set(qualifiedImport.name, {...dirMeta, ref: qualifiedImport.ref});
+        }
+      }
+
       if (clazzMeta.deferredImports !== null) {
         const refToBlocks = new Map<ClassDeclaration, Set<string>>();
         if (clazzMeta.deferredImportsByBlock != null) {
@@ -144,6 +152,7 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
         component: clazz,
         dependencies: Array.from(dependencies),
         deferredDependencies: Array.from(deferredDependencies),
+        qualifiedDependencies,
         isPoisoned,
         schemas: clazzMeta.schemas ?? [],
       });

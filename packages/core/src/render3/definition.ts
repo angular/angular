@@ -31,6 +31,7 @@ import type {
   HostBindingsFunction,
   InputTransformFunction,
   PipeDef,
+  QualifiedDependencyType,
   TypeOrFactory,
   ViewQueriesFunction,
 } from './interfaces/definition';
@@ -663,14 +664,48 @@ export function extractDefListOrFactory<T>(
     const result: T[] = [];
 
     for (const dep of resolvedDependencies) {
-      const definition = defExtractor(dep);
+      const qualifiedDep = isQualifiedDependency(dep) ? dep : null;
+      const definition = defExtractor((qualifiedDep?.type ?? dep) as Type<unknown>);
       if (definition !== null) {
-        result.push(definition);
+        result.push(
+          qualifiedDep === null
+            ? definition
+            : applyQualifiedNamesToDependencyDef(definition, qualifiedDep.qualifiedNames),
+        );
       }
     }
 
     return result;
   };
+}
+
+export function isQualifiedDependency(
+  value: DependencyTypeList[number],
+): value is QualifiedDependencyType {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'type' in value &&
+    'qualifiedNames' in value &&
+    Array.isArray(value.qualifiedNames)
+  );
+}
+
+export function applyQualifiedNamesToDependencyDef<T>(definition: T, qualifiedNames: string[]): T {
+  if (
+    qualifiedNames.length === 0 ||
+    typeof definition !== 'object' ||
+    definition === null ||
+    !('selectors' in definition)
+  ) {
+    return definition;
+  }
+
+  const directiveDef = definition as DirectiveDef<unknown>;
+  return {
+    ...directiveDef,
+    selectors: [...qualifiedNames.map((name) => [name]), ...directiveDef.selectors],
+  } as T;
 }
 
 /**

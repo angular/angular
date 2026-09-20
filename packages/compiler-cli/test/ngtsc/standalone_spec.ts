@@ -1223,5 +1223,326 @@ runInEachFileSystem(() => {
       expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.NON_STANDALONE_NOT_ALLOWED));
       expect(diags[0].messageText).toContain('pipe');
     });
+
+    describe('qualified standalone component imports', () => {
+      it('should compile a component referenced through a namespace import', () => {
+        env.write(
+          'card.ts',
+          `
+            import {Component, EventEmitter, Input, Output} from '@angular/core';
+
+            @Component({selector: 'card-header', template: ''})
+            export class Header {
+              @Input() value!: string;
+              @Output() changed = new EventEmitter<number>();
+            }
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import * as Card from './card';
+
+            @Component({
+              selector: 'test-cmp',
+              imports: [Card.Header],
+              template: '<Card.Header [value]="value" (changed)="accept($event)" />',
+            })
+            export class TestCmp {
+              value = '';
+              accept(value: number) {}
+            }
+          `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js').replace(/\s+/g, ' ');
+        expect(jsCode).toContain('qualifiedNames: ["Card.Header"]');
+        expect(jsCode).toContain('"Card.Header"');
+      });
+
+      it('should type-check inputs of a qualified component reference', () => {
+        env.write(
+          'card.ts',
+          `
+            import {Component, Input} from '@angular/core';
+
+            @Component({selector: 'card-header', template: ''})
+            export class Header {
+              @Input() value!: string;
+            }
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import * as Card from './card';
+
+            @Component({
+              imports: [Card.Header],
+              template: '<Card.Header [value]="123" />',
+            })
+            export class TestCmp {}
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+      });
+
+      it('should type-check outputs of a qualified component reference', () => {
+        env.write(
+          'card.ts',
+          `
+            import {Component, EventEmitter, Output} from '@angular/core';
+
+            @Component({selector: 'card-header', template: ''})
+            export class Header {
+              @Output() changed = new EventEmitter<number>();
+            }
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import * as Card from './card';
+
+            @Component({
+              imports: [Card.Header],
+              template: '<Card.Header (changed)="accept($event)" />',
+            })
+            export class TestCmp {
+              accept(value: string) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toContain(
+          "Argument of type 'number' is not assignable to parameter of type 'string'",
+        );
+      });
+
+      it('should support nested namespace paths', () => {
+        env.write(
+          'card.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({selector: 'card-header', template: ''})
+            export class Header {}
+          `,
+        );
+        env.write('ui.ts', `export * as Card from './card';`);
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import * as UI from './ui';
+
+            @Component({
+              imports: [UI.Card.Header],
+              template: '<UI.Card.Header />',
+            })
+            export class TestCmp {}
+          `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js').replace(/\s+/g, ' ');
+        expect(jsCode).toContain('qualifiedNames: ["UI.Card.Header"]');
+      });
+
+      it('should support multiple qualified names for the same component', () => {
+        env.write(
+          'card.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({selector: 'card-header', template: ''})
+            export class Header {}
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import * as Primary from './card';
+            import * as Secondary from './card';
+
+            @Component({
+              imports: [Primary.Header, Secondary.Header],
+              template: '<Primary.Header /><Secondary.Header />',
+            })
+            export class TestCmp {}
+          `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js').replace(/\s+/g, ' ');
+        expect(jsCode).toContain('"Primary.Header"');
+        expect(jsCode).toContain('"Secondary.Header"');
+      });
+
+      it('should keep the original component selector available', () => {
+        env.write(
+          'card.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({selector: 'card-header', template: ''})
+            export class Header {}
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import * as Card from './card';
+
+            @Component({
+              imports: [Card.Header],
+              template: '<card-header /><Card.Header />',
+            })
+            export class TestCmp {}
+          `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+      });
+
+      it('should require the qualified component to be present in imports', () => {
+        env.write(
+          'card.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({selector: 'card-header', template: ''})
+            export class Header {}
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import * as Card from './card';
+
+            @Component({template: '<Card.Header />'})
+            export class TestCmp {}
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBeGreaterThan(0);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toContain(
+          'Card.Header',
+        );
+      });
+
+      it('should not create qualified element aliases for directives', () => {
+        env.write(
+          'card.ts',
+          `
+            import {Directive} from '@angular/core';
+
+            @Directive({selector: '[cardHeader]'})
+            export class Header {}
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import * as Card from './card';
+
+            @Component({
+              imports: [Card.Header],
+              template: '<Card.Header />',
+            })
+            export class TestCmp {}
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBeGreaterThan(0);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')).toContain(
+          'Card.Header',
+        );
+      });
+
+      it('should preserve the qualified name for an implicitly deferred component', () => {
+        env.write(
+          'card.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({selector: 'card-header', template: ''})
+            export class Header {}
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import * as Card from './card';
+
+            @Component({
+              imports: [Card.Header],
+              template: '@defer {<Card.Header />}',
+            })
+            export class TestCmp {}
+          `,
+        );
+
+        expect(env.driveDiagnostics()).toEqual([]);
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js').replace(/\s+/g, ' ');
+        expect(jsCode).toContain('import("./card")');
+        expect(jsCode).toContain('qualifiedNames: ["Card.Header"]');
+      });
+
+      it('should emit qualified names in partial declarations for the linker', () => {
+        env.tsconfig({strictTemplates: true, compilationMode: 'partial'});
+        env.write(
+          'card.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({selector: 'card-header', template: ''})
+            export class Header {}
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import * as Card from './card';
+
+            @Component({
+              imports: [Card.Header],
+              template: '<Card.Header />',
+            })
+            export class TestCmp {}
+          `,
+        );
+
+        env.driveMain();
+
+        const jsCode = env.getContents('test.js').replace(/\s+/g, ' ');
+        expect(jsCode).toContain('qualifiedNames: ["Card.Header"]');
+      });
+    });
   });
 });

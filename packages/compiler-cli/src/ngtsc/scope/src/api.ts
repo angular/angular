@@ -71,6 +71,7 @@ export interface StandaloneScope {
   kind: ComponentScopeKind.Standalone;
   dependencies: Array<DirectiveMeta | PipeMeta | NgModuleMeta>;
   deferredDependencies: Array<DirectiveMeta | PipeMeta>;
+  qualifiedDependencies?: Map<string, DirectiveMeta>;
   component: ClassDeclaration;
   schemas: SchemaMetadata[];
   isPoisoned: boolean;
