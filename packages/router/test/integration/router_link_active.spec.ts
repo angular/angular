@@ -5,10 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Component, NgZone} from '@angular/core';
+import {
+  Component,
+  NgZone,
+  ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
+} from '@angular/core';
 import {Location} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
-import {Router, provideRouter} from '../../src';
+import {Router, UrlTree, provideRouter} from '../../src';
 import {By} from '@angular/platform-browser';
 import {
   RootCmp,
@@ -84,6 +88,115 @@ export function routerLinkActiveIntegrationSuite() {
       await advance(f);
 
       expect(link.className).toEqual('active');
+    });
+
+    it('should not set the class while the initial navigation is blocked on a guard', async () => {
+      let unblockGuard!: () => void;
+      const guardBlocked = new Promise<boolean>((resolve) => {
+        unblockGuard = () => resolve(true);
+      });
+
+      @Component({
+        template:
+          '<router-outlet></router-outlet><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ></a>',
+        standalone: false,
+      })
+      class RootCmpWithLink {}
+
+      TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+      const router: Router = TestBed.inject(Router);
+      router.resetConfig([{path: '', component: BlankCmp, canActivate: [() => guardBlocked]}]);
+
+      const f = TestBed.createComponent(RootCmpWithLink);
+      await advance(f);
+
+      const link = f.nativeElement.querySelector('a');
+      router.initialNavigation();
+      await advance(f);
+      expect(link.className).toEqual('');
+
+      unblockGuard();
+      await advance(f);
+      expect(link.className).toEqual('active');
+    });
+
+    describe('during hydration', () => {
+      @Component({
+        template:
+          '<router-outlet></router-outlet><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ></a>',
+        standalone: false,
+      })
+      class RootCmpWithLink {}
+
+      let resolveGuard!: (result: boolean | UrlTree) => void;
+      let rejectGuard!: (error: Error) => void;
+
+      beforeEach(() => {
+        const guardBlocked = new Promise<boolean | UrlTree>((resolve, reject) => {
+          resolveGuard = resolve;
+          rejectGuard = reject;
+        });
+        TestBed.configureTestingModule({
+          declarations: [RootCmpWithLink],
+          providers: [{provide: IS_HYDRATION_DOM_REUSE_ENABLED, useValue: true}],
+        });
+        TestBed.inject(Router).resetConfig([
+          {path: '', component: BlankCmp, canActivate: [() => guardBlocked]},
+          {path: 'other', component: BlankCmp},
+        ]);
+      });
+
+      async function startInitialNavigation() {
+        const f = TestBed.createComponent(RootCmpWithLink);
+        await advance(f);
+        TestBed.inject(Router).initialNavigation();
+        await advance(f);
+        return {f, link: f.nativeElement.querySelector('a') as HTMLElement};
+      }
+
+      it('should set the class on NavigationStart while the initial navigation is pending', async () => {
+        const {f, link} = await startInitialNavigation();
+        expect(link.className).toEqual('active');
+
+        resolveGuard(true);
+        await advance(f);
+        expect(link.className).toEqual('active');
+      });
+
+      it('should remove the class when the initial navigation is rejected', async () => {
+        const {f, link} = await startInitialNavigation();
+        expect(link.className).toEqual('active');
+
+        resolveGuard(false);
+        await advance(f);
+        expect(link.className).toEqual('');
+      });
+
+      it('should remove the class when the initial navigation redirects', async () => {
+        const {f, link} = await startInitialNavigation();
+        expect(link.className).toEqual('active');
+
+        resolveGuard(TestBed.inject(Router).parseUrl('/other'));
+        await advance(f);
+        expect(link.className).toEqual('');
+      });
+
+      it('should remove the class when the initial navigation errors', async () => {
+        const f = TestBed.createComponent(RootCmpWithLink);
+        await advance(f);
+        const link = f.nativeElement.querySelector('a');
+        // `initialNavigation()` reports errors to the application error handler, so catch
+        // the rejection from an equivalent first navigation instead.
+        TestBed.inject(Router)
+          .navigateByUrl('/')
+          .catch(() => {});
+        await advance(f);
+        expect(link.className).toEqual('active');
+
+        rejectGuard(new Error('guard failed'));
+        await advance(f);
+        expect(link.className).toEqual('');
+      });
     });
 
     it('should set the class on a parent element when the link is active', async () => {
