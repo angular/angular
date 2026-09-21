@@ -270,6 +270,7 @@
       "collectNativeNodes",
       "collectNativeNodesInLContainer",
       "collectNestedViewAnimations",
+      "computation",
       "computeStaticStyling",
       "concatStringsWithSpace",
       "config",

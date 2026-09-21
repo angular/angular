@@ -436,6 +436,7 @@
       "composeAsync",
       "composeAsyncValidators",
       "composeValidators",
+      "computation",
       "computeStaticStyling",
       "computed",
       "concatStringsWithSpace",

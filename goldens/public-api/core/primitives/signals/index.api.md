@@ -139,6 +139,7 @@ export type ReactiveHookFn = (node: ReactiveNode) => void;
 
 // @public
 export interface ReactiveNode {
+    computationId: number;
     consumerAllowSignalWrites: boolean;
     // (undocumented)
     readonly consumerIsAlwaysLive: boolean;

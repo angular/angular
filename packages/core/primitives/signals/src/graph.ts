@@ -25,6 +25,12 @@ export type Version = number & {__brand: 'Version'};
  */
 let epoch: Version = 1 as Version;
 
+/**
+ * Counter identifying a single consumer computation, incremented every time a consumer begins
+ * one. Used to tell links observed in the current computation from links left by an earlier one.
+ */
+let computation = 0;
+
 export type ReactiveHookFn = (node: ReactiveNode) => void;
 
 /**
@@ -70,6 +76,7 @@ export const REACTIVE_NODE: ReactiveNode = {
   consumers: undefined,
   consumersTail: undefined,
   recomputing: false,
+  computationId: 0,
   consumerAllowSignalWrites: false,
   consumerIsAlwaysLive: false,
   kind: 'unknown',
@@ -84,11 +91,14 @@ interface ReactiveLink {
   consumer: ReactiveNode;
 
   /**
-   * Stores the epoch that holds when this link was observed, allowing subsequent observations of the same producer to
-   * realize that there's an existing link, avoiding the creation of a new, redundant link. A value of `null` indicates
-   * that the link cannot be assumed to be valid based on the epoch counter.
+   * The consumer computation this link was last observed in, so that a later read of the same
+   * producer in that computation finds the existing link instead of creating a redundant one.
+   *
+   * This counts computations rather than writes: a link observed earlier in the computation that
+   * is still running stays recognizable even when producers are written in between, which happens
+   * whenever a consumer writes signals as it runs (a view writing its child inputs, say).
    */
-  knownValidAtEpoch: Version | null;
+  observedInComputation: number;
   lastReadVersion: number;
   prevConsumer: ReactiveLink | undefined;
   nextConsumer: ReactiveLink | undefined;
@@ -146,6 +156,14 @@ export interface ReactiveNode {
    * Whether this node is currently rebuilding its producer list.
    */
   recomputing: boolean;
+
+  /**
+   * Identifies the computation this consumer is currently running, or last ran.
+   *
+   * Links observed during that computation carry the same number, which is how a repeated read of
+   * a producer is recognized as one it already holds a link to.
+   */
+  computationId: number;
 
   /**
    * Producers which are dependencies of this consumer.
@@ -248,7 +266,7 @@ export function producerAccessed(node: ReactiveNode): void {
       // last read version, update the tail of the producers list of this rerun, and return.
       activeConsumer.producersTail = nextProducerLink;
       nextProducerLink.lastReadVersion = node.version;
-      nextProducerLink.knownValidAtEpoch = epoch;
+      nextProducerLink.observedInComputation = activeConsumer.computationId;
       return;
     }
   }
@@ -260,7 +278,7 @@ export function producerAccessed(node: ReactiveNode): void {
   if (
     prevConsumerLink !== undefined &&
     prevConsumerLink.consumer === activeConsumer &&
-    (!isRecomputing || prevConsumerLink.knownValidAtEpoch === epoch)
+    (!isRecomputing || prevConsumerLink.observedInComputation === activeConsumer.computationId)
   ) {
     return;
   }
@@ -278,7 +296,7 @@ export function producerAccessed(node: ReactiveNode): void {
     // the link is actually inserted. Setting it eagerly would create a dangling
     // reference into the consumer list that prevents GC of removed entries.
     prevConsumer: undefined,
-    knownValidAtEpoch: epoch,
+    observedInComputation: activeConsumer.computationId,
     lastReadVersion: node.version,
     nextConsumer: undefined,
   };
@@ -401,17 +419,10 @@ export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNo
  * `consumerBeforeComputation` instead of calling this directly.
  */
 export function resetConsumerBeforeComputation(node: ReactiveNode): void {
-  // Clear link validity state before running a computation, such that links that were captured in a prior computation
-  // (which may have happened in the same epoch) are not mistakenly considered valid. This is only necessary if any of
-  // the links has `knownValidAtEpoch` equal to the current epoch, for which the producer that was accessed last is used
-  // as proxy: any earlier producers cannot exceed its epoch.
-  if (node.producersTail?.knownValidAtEpoch === epoch) {
-    let producer = node.producers;
-    while (producer !== undefined) {
-      producer.knownValidAtEpoch = null;
-      producer = producer.nextProducer;
-    }
-  }
+  // Begin a new computation. Links captured in a prior computation carry that computation's
+  // number, so they are not mistaken for links observed in this one and no longer have to be
+  // cleared one by one here.
+  node.computationId = ++computation;
 
   node.producersTail = undefined;
   node.recomputing = true;

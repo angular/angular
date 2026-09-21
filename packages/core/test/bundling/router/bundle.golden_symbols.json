@@ -466,6 +466,7 @@
       "combineLatest",
       "combineLatestInit",
       "compare",
+      "computation",
       "computeNavigation",
       "computeStaticStyling",
       "computed",
