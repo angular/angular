@@ -140,6 +140,10 @@ export function provideHttpClient(
       useValue: xsrfInterceptorFn,
       multi: true,
     },
+    {
+      provide: HTTP_CONFIGURED_INTERCEPTOR_FNS,
+      useFactory: configuredInterceptorFnsFactory,
+    },
   ];
 
   for (const feature of features) {
@@ -355,33 +359,35 @@ export function withXhr(): HttpFeature<HttpFeatureKind.Xhr> {
 export const HTTP_CONFIGURED_INTERCEPTOR_FNS = new InjectionToken<ReadonlySet<HttpInterceptorFn>>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'HTTP_CONFIGURED_INTERCEPTOR_FNS' : '',
   {
-    factory: () => {
-      const localFns = inject(HTTP_INTERCEPTOR_FNS, {optional: true}) ?? [];
-      const parentHandler = inject(HttpHandler, {skipSelf: true, optional: true});
-      const backend = inject(HttpBackend, {optional: true});
-      const isDelegating = parentHandler !== null && backend === parentHandler;
-
-      const rootFns =
-        inject(
-          HTTP_ROOT_INTERCEPTOR_FNS,
-          isDelegating ? {self: true, optional: true} : {optional: true},
-        ) ?? [];
-
-      const interceptors = new Set<HttpInterceptorFn>([...localFns, ...rootFns]);
-
-      if (isDelegating) {
-        const parentSet = inject(HTTP_CONFIGURED_INTERCEPTOR_FNS, {
-          skipSelf: true,
-          optional: true,
-        });
-        if (parentSet) {
-          for (const fn of parentSet) {
-            interceptors.add(fn);
-          }
-        }
-      }
-
-      return interceptors;
-    },
+    factory: configuredInterceptorFnsFactory,
   },
 );
+
+function configuredInterceptorFnsFactory(): ReadonlySet<HttpInterceptorFn> {
+  const localFns = inject(HTTP_INTERCEPTOR_FNS, {optional: true}) ?? [];
+  const parentHandler = inject(HttpHandler, {skipSelf: true, optional: true});
+  const backend = inject(HttpBackend, {optional: true});
+  const isDelegating = parentHandler !== null && backend === parentHandler;
+
+  const rootFns =
+    inject(
+      HTTP_ROOT_INTERCEPTOR_FNS,
+      isDelegating ? {self: true, optional: true} : {optional: true},
+    ) ?? [];
+
+  const interceptors = new Set<HttpInterceptorFn>([...localFns, ...rootFns]);
+
+  if (isDelegating) {
+    const parentSet = inject(HTTP_CONFIGURED_INTERCEPTOR_FNS, {
+      skipSelf: true,
+      optional: true,
+    });
+    if (parentSet) {
+      for (const fn of parentSet) {
+        interceptors.add(fn);
+      }
+    }
+  }
+
+  return interceptors;
+}

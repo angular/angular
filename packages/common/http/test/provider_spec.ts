@@ -1049,4 +1049,38 @@ describe('HTTP_CONFIGURED_INTERCEPTOR_FNS', () => {
     const set = TestBed.inject(HTTP_CONFIGURED_INTERCEPTOR_FNS);
     expect(set).toBeInstanceOf(Set);
   });
+
+  it('resolves local interceptors from a child environment injector', () => {
+    const childInterceptor: HttpInterceptorFn = (req, next) => next(req);
+
+    // Create an EnvironmentInjector with an HttpClient and a custom interceptor
+    const childInjector = createEnvironmentInjector(
+      [provideHttpClient(withInterceptors([childInterceptor]))],
+      TestBed.inject(EnvironmentInjector), // Parent is the root testing injector
+    );
+
+    // When we request HTTP_CONFIGURED_INTERCEPTOR_FNS, it should contain our childInterceptor
+    const childSet = childInjector.get(HTTP_CONFIGURED_INTERCEPTOR_FNS);
+    expect(childSet.has(childInterceptor))
+      .withContext('The interceptor should be resolved from the child injector')
+      .toBeTrue();
+  });
+
+  it('resolves local interceptors even when HTTP_CONFIGURED_INTERCEPTOR_FNS was previously accessed at root', () => {
+    const childInterceptor: HttpInterceptorFn = (req, next) => next(req);
+
+    // Access the token at root first so it is evaluated and cached at the root level
+    const rootSet = TestBed.inject(HTTP_CONFIGURED_INTERCEPTOR_FNS);
+    expect(rootSet.has(childInterceptor)).toBeFalse();
+
+    const childInjector = createEnvironmentInjector(
+      [provideHttpClient(withInterceptors([childInterceptor]))],
+      TestBed.inject(EnvironmentInjector),
+    );
+
+    const childSet = childInjector.get(HTTP_CONFIGURED_INTERCEPTOR_FNS);
+    expect(childSet.has(childInterceptor))
+      .withContext('The child interceptor should be resolved without being shadowed by root cache')
+      .toBeTrue();
+  });
 });
