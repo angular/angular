@@ -66,7 +66,7 @@ function initCdHighlighting(cdAnalyzer: CdAnalyzer) {
 
       const newHighlight = highlightElement(element, changeDetectionHighlightTemplate, {
         'component-name': [getDirectiveName(cmp)],
-        'cycles-count': [data.cdPassDurations.length],
+        'cycles-count': [data.cdCount],
       });
 
       if (newHighlight) {
