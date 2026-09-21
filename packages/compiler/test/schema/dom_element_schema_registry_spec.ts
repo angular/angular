@@ -40,6 +40,19 @@ describe('DOMElementSchema', () => {
     expect(registry.hasElement('time', [])).toBeTruthy();
   });
 
+  it('should detect capability elements', () => {
+    expect(registry.hasElement('camera', [])).toBeTruthy();
+    expect(registry.hasElement('microphone', [])).toBeTruthy();
+    expect(registry.hasElement('usermedia', [])).toBeTruthy();
+
+    expect(registry.allKnownEventsOfElement('camera')).toContain('track');
+    expect(registry.allKnownEventsOfElement('microphone')).toContain('track');
+    expect(registry.allKnownEventsOfElement('usermedia')).toContain('stream');
+
+    expect(registry.hasProperty('camera', 'track', [])).toBeFalsy();
+    expect(registry.hasProperty('usermedia', 'stream', [])).toBeFalsy();
+  });
+
   it('should detect properties on regular elements', () => {
     expect(registry.hasProperty('div', 'id', [])).toBeTruthy();
     expect(registry.hasProperty('div', 'title', [])).toBeTruthy();
