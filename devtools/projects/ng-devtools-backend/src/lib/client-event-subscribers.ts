@@ -268,7 +268,7 @@ const getNestedPropertiesCallback =
     let data = current.instance;
     for (const prop of propPath) {
       data = unwrapSignal(data[prop]);
-      if (!data) {
+      if (data === null || data === undefined) {
         log.error('Cannot access the properties', propPath, 'of', node);
       }
     }
