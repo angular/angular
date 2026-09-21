@@ -69,21 +69,20 @@ class TestComponent {
   readonly split = viewChild.required(SplitComponent);
   readonly host = viewChild.required<ElementRef>('host');
 
-  readonly config: ResponsiveSplitConfig = {
-    defaultDirection: 'horizontal',
-    aspectRatioBreakpoint: 1.5,
-    breakpointDirection: 'vertical',
-  };
+  config!: ResponsiveSplitConfig;
 }
 
 async function initTestComponent(
+  config: ResponsiveSplitConfig,
   width: number,
   height: number,
 ): Promise<{host: DebugElement; split: SplitComponent}> {
+  TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     providers: [{provide: WINDOW, useValue: {...window, ResizeObserver: ResizeObserverMockImpl}}],
   });
   const fixture = TestBed.createComponent(TestComponent);
+  fixture.componentInstance.config = config;
   await fixture.whenStable();
 
   const host = fixture.debugElement.query(By.css('as-split'));
@@ -110,27 +109,97 @@ describe('responsive-split', () => {
     jasmine.clock().install();
   });
 
-  it('should use horizontal direction (ratio == 1)', async () => {
-    const {split} = await initTestComponent(200, 200);
+  describe('aspectRatioBreakpoint', () => {
+    const config: ResponsiveSplitConfig = {
+      defaultDirection: 'horizontal',
+      aspectRatioBreakpoint: '>=1.5',
+      breakpointDirection: 'vertical',
+    };
 
-    expect(split.direction()).toEqual('horizontal');
+    it('should use horizontal direction (ratio == 1)', async () => {
+      const {split} = await initTestComponent(config, 200, 200);
+
+      expect(split.direction()).toEqual('horizontal');
+    });
+
+    it('should use horizontal direction (ratio == 1.49)', async () => {
+      const {split} = await initTestComponent(config, 299, 200);
+
+      expect(split.direction()).toEqual('horizontal');
+    });
+
+    it('should use vertical direction (ratio == 1.5)', async () => {
+      const {split} = await initTestComponent(config, 350, 200);
+
+      expect(split.direction()).toEqual('vertical');
+    });
+
+    it('should use vertical direction (ratio == 2)', async () => {
+      const {split} = await initTestComponent(config, 400, 200);
+
+      expect(split.direction()).toEqual('vertical');
+    });
   });
 
-  it('should use horizontal direction (ratio == 1.49)', async () => {
-    const {split} = await initTestComponent(299, 200);
+  describe('widthBreakpoint', () => {
+    const config: ResponsiveSplitConfig = {
+      defaultDirection: 'horizontal',
+      widthBreakpoint: '<500px',
+      breakpointDirection: 'vertical',
+    };
 
-    expect(split.direction()).toEqual('horizontal');
+    it('should use horizontal direction (width == 600)', async () => {
+      const {split} = await initTestComponent(config, 600, 200);
+
+      expect(split.direction()).toEqual('horizontal');
+    });
+
+    it('should use horizontal direction (width == 500)', async () => {
+      const {split} = await initTestComponent(config, 500, 200);
+
+      expect(split.direction()).toEqual('horizontal');
+    });
+
+    it('should use vertical direction (width == 499)', async () => {
+      const {split} = await initTestComponent(config, 499, 200);
+
+      expect(split.direction()).toEqual('vertical');
+    });
+
+    it('should use vertical direction (width == 300)', async () => {
+      const {split} = await initTestComponent(config, 300, 200);
+
+      expect(split.direction()).toEqual('vertical');
+    });
   });
 
-  it('should use vertical direction (ratio == 1.5)', async () => {
-    const {split} = await initTestComponent(350, 200);
+  describe('Breakpoint operators', () => {
+    it('should support the `>` operator (aspect ratio)', async () => {
+      const config: ResponsiveSplitConfig = {
+        defaultDirection: 'horizontal',
+        aspectRatioBreakpoint: '>2',
+        breakpointDirection: 'vertical',
+      };
 
-    expect(split.direction()).toEqual('vertical');
-  });
+      const atBoundary = await initTestComponent(config, 400, 200); // ratio == 2
+      expect(atBoundary.split.direction()).toEqual('horizontal');
 
-  it('should use vertical direction (ratio == 2)', async () => {
-    const {split} = await initTestComponent(400, 200);
+      const pastBoundary = await initTestComponent(config, 420, 200); // ratio == 2.1
+      expect(pastBoundary.split.direction()).toEqual('vertical');
+    });
 
-    expect(split.direction()).toEqual('vertical');
+    it('should support the `<=` operator (width)', async () => {
+      const config: ResponsiveSplitConfig = {
+        defaultDirection: 'horizontal',
+        widthBreakpoint: '<=300',
+        breakpointDirection: 'vertical',
+      };
+
+      const atBoundary = await initTestComponent(config, 300, 200);
+      expect(atBoundary.split.direction()).toEqual('vertical');
+
+      const pastBoundary = await initTestComponent(config, 301, 200);
+      expect(pastBoundary.split.direction()).toEqual('horizontal');
+    });
   });
 });
