@@ -637,8 +637,7 @@ describe('Router resources integration', () => {
       await nav1;
       await harness.fixture.whenStable();
 
-      const resourceRef = (router.routerState.root.firstChild as ActivatedRouteInternal)
-        ?.resources?.['data'] as any;
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'] as any;
       expect(resourceRef.value()).toBe('loaded-1');
       expect(resourceRef.isLoading()).toBe(false);
 
