@@ -47,7 +47,7 @@ This table describes the file layout under `node_modules/@angular/core` annotate
 | `fesm2022/` <br /> &nbsp;&nbsp;─ `core.mjs` <br /> &nbsp;&nbsp;─ `core.mjs.map` <br /> &nbsp;&nbsp;─ `testing.mjs` <br /> &nbsp;&nbsp;─ `testing.mjs.map` | Code for all entrypoints in flattened \(FESM\) ES2022 format, along with source maps.                                                                                                                          |
 | `types/` <br /> &nbsp;&nbsp;─ `core.d.ts` <br /> &nbsp;&nbsp;─ `testing.d.ts`                                                                             | Bundled TypeScript type definitions for all public entrypoints.                                                                                                                                                |
 
-## `package.json`
+### `package.json`
 
 The primary `package.json` contains important package metadata, including the following:
 
@@ -133,7 +133,7 @@ The last function of `package.json` is to declare whether the package has [side 
 
 Most Angular packages should not depend on top-level side effects, and thus should include this declaration.
 
-## Entrypoints and code splitting
+### Entrypoints and code splitting
 
 Packages in the Angular Package Format contain one primary entrypoint and zero or more secondary entrypoints \(for example, `@angular/common/http`\).
 Entrypoints serve several functions.
@@ -158,11 +158,11 @@ Not all libraries require such granularity.
 Most libraries with a single logical purpose should be published as a single entrypoint.
 `@angular/core` for example uses a single entrypoint for the runtime, because the Angular runtime is generally used as a single entity.
 
-### Resolution of secondary entry points
+#### Resolution of secondary entry points
 
 Secondary entrypoints can be resolved via the `"exports"` field of the `package.json` for the package.
 
-## README.md
+### README.md
 
 The README file in the Markdown format that is used to display description of a package on npm and GitHub.
 
@@ -174,7 +174,11 @@ the main [Angular](https://github.com/angular/angular) repo.Please file issues a
 against that repo. License: MIT
 ```
 
-## Partial compilation
+## Library Compilation and Package Optimizations
+
+This section describes the compilation process for libraries and optimizations that apply to the npm package before publishing the artifact to a registry.
+
+### Partial compilation
 
 Libraries in the Angular Package Format must be published in "partial compilation" mode.
 This is a compilation mode for `ngc` which produces compiled Angular code that is not tied to a specific Angular runtime version, in contrast to the full compilation used for applications, where the Angular compiler and runtime versions must match exactly.
@@ -193,8 +197,6 @@ To partially compile Angular code, use the `compilationMode` flag in the `angula
 Partially compiled library code is then converted to fully compiled code during the application build process by the Angular CLI.
 
 If your build pipeline does not use the Angular CLI then refer to the [Consuming partial ivy code outside the Angular CLI](tools/libraries/creating-libraries#consuming-partial-ivy-code-outside-the-angular-cli) guide.
-
-## Optimizations
 
 ### Flattening of ES modules
 
@@ -268,9 +270,12 @@ This is because the tslib version is tied to the TypeScript version used to comp
 
 ## Examples
 
+The npm packages of the Angular framework are a good reference point for APF-compliant library packages.
+Browse the file layout and npm package on UNPKG:
+
 <docs-pill-row>
-  <docs-pill href="https://app.unpkg.com/@angular/core@21.0.6" title="@angular/core package"/>
-  <docs-pill href="https://app.unpkg.com/@angular/material@21.0.3" title="@angular/material package"/>
+  <docs-pill href="https://app.unpkg.com/@angular/core@22.1.7" title="@angular/core package"/>
+  <docs-pill href="https://app.unpkg.com/@angular/material@22.1.7" title="@angular/material package"/>
 </docs-pill-row>
 
 ## Definition of terms
