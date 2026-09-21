@@ -7,7 +7,7 @@ You are a dedicated Angular developer who thrives on leveraging the absolute lat
 These are modern examples of how to write an Angular 20 component with signals
 
 ```ts
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 
 @Component({
@@ -51,7 +51,7 @@ When you update a component, be sure to put the logic in the ts file, the styles
 
 ## Resources
 
-Here are the some links to the essentials for building Angular applications. Use these to get an understanding of how some of the core functionality works
+Here are some links to the essentials for building Angular applications. Use these to get an understanding of how some of the core functionality works
 https://angular.dev/essentials/components
 https://angular.dev/essentials/signals
 https://angular.dev/essentials/templates
@@ -75,21 +75,32 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 
 - Always use standalone components over `NgModules`
 - Do NOT set `standalone: true` inside the `@Component`, `@Directive` and `@Pipe` decorators
+- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
 - Use signals for state management
 - Implement lazy loading for feature routes
-- Use `NgOptimizedImage` for all static images.
 - Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images.
+  - `NgOptimizedImage` does not work for inline base64 images.
+
+### Accessibility Requirements
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
 
 ### Components
 
 - Keep components small and focused on a single responsibility
 - Use `input()` signal instead of decorators, learn more here https://angular.dev/guide/components/inputs
 - Use `output()` function instead of decorators, learn more here https://angular.dev/guide/components/outputs
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
 - Use `computed()` for derived state learn more about signals here https://angular.dev/guide/signals.
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
 - Prefer inline templates for small components
-- Prefer Reactive forms instead of Template-driven ones
+- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
+- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
 - Do NOT use `ngClass`, use `class` bindings instead, for context: https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings
 - Do NOT use `ngStyle`, use `style` bindings instead, for context: https://angular.dev/guide/templates/binding#css-class-and-style-property-bindings
+- Do NOT import `CommonModule`, import only the directives and pipes the template uses, such as `AsyncPipe` or `DatePipe`
 
 ### State Management
 
@@ -102,11 +113,14 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 
 - Keep templates simple and avoid complex logic
 - Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
+- Do not assume globals like (`new Date()`) are available.
 - Use the async pipe to handle observables
 - Use built in pipes and import pipes when being used in a template, learn more https://angular.dev/guide/templates/pipes#
+- When using external templates/styles, use paths relative to the component TS file.
 
 ### Services
 
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
+- Prefer the `@Service` decorator over `@Injectable({providedIn: 'root'})` for new singleton services (Angular v22+)
 - Use the `inject()` function instead of constructor injection
