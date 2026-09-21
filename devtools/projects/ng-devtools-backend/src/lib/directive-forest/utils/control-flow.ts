@@ -108,16 +108,15 @@ export class ControlFlowBlocksIterator<
 }
 
 export function blocksFilter(block: ControlFlowBlockInternal, config: DevtoolsConfig) {
-  let cond: boolean = true;
-
-  if (!config.forBlocks) {
-    cond &&= block.type !== ControlFlowBlockTypeInternal.For;
-  }
-  if (!config.deferBlocks) {
-    cond &&= block.type !== ControlFlowBlockTypeInternal.Defer;
+  if (!config.forBlocks && block.type === ControlFlowBlockTypeInternal.For) {
+    return false;
   }
 
-  return cond;
+  if (!config.deferBlocks && block.type === ControlFlowBlockTypeInternal.Defer) {
+    return false;
+  }
+
+  return true;
 }
 
 function groupTriggers(triggers: string[]) {
