@@ -38,6 +38,21 @@ export function getHTMLVirtualContent(sf: ts.SourceFile): string {
       content.slice(0, region.getStart(sf) + 1) +
       documentText.slice(region.getStart(sf) + 1, region.getEnd() - 1) +
       content.slice(region.getEnd() - 1);
+
+    // Template literals may contain `${...}` substitutions, which are not part of the template
+    // text. Blank them out (preserving line breaks) so the HTML language service only sees the
+    // static parts of the template.
+    if (ts.isTemplateExpression(region)) {
+      let substitutionStart = region.head.end - 2; // position of the `${`
+      for (const span of region.templateSpans) {
+        const substitutionEnd = span.literal.getStart(sf) + 1; // position after the `}`
+        content =
+          content.slice(0, substitutionStart) +
+          documentText.slice(substitutionStart, substitutionEnd).replace(/[^\n]/g, ' ') +
+          content.slice(substitutionEnd);
+        substitutionStart = span.literal.end - 2;
+      }
+    }
   }
   return content;
 }
@@ -95,7 +110,12 @@ function isAssignmentToPropertyWithName(node: ts.Node, propertyName: 'styles' | 
 }
 
 function isInlineTemplateNode(node: ts.Node) {
-  return ts.isStringLiteralLike(node) ? isAssignmentToPropertyWithName(node, 'template') : false;
+  // Unlike styles, templates are also matched when written as a template literal with
+  // `${...}` substitutions. The substitutions themselves are blanked out when the virtual
+  // document is constructed.
+  return ts.isStringLiteralLike(node) || ts.isTemplateExpression(node)
+    ? isAssignmentToPropertyWithName(node, 'template')
+    : false;
 }
 
 /**

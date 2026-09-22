@@ -39,6 +39,27 @@ describe('server embedded support', () => {
     );
   });
 
+  it('handles template literals with substitutions', () => {
+    assertEmbeddedHTMLContent(
+      '@Component({template: `<p>${abc}</p>`}) export class MyCmp',
+      '                       <p>      </p>                      ',
+    );
+  });
+
+  it('handles template literals with multiple substitutions', () => {
+    assertEmbeddedHTMLContent(
+      '@Component({template: `<p>${a}b${c}</p>`})',
+      '                       <p>    b    </p>   ',
+    );
+  });
+
+  it('preserves line breaks inside template literal substitutions', () => {
+    assertEmbeddedHTMLContent(
+      '@Component({template: `<p>${a +\nb}</p>`})',
+      '                       <p>     \n  </p>   ',
+    );
+  });
+
   it('works as expected for CRLF', () => {
     assertEmbeddedHTMLContent(
       `@Component({template: 'abc123'})\r\nexport class MyComponent {}`,
