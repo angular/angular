@@ -29,6 +29,7 @@ import {ControlContainer} from '../control_container';
 import type {Form} from '../form_interface';
 import {RuntimeErrorCode} from '../../errors';
 import {formControlNameExample} from '../error_examples';
+import {missingControlForPathError} from '../reactive_errors';
 import {
   CALL_SET_DISABLED_STATE,
   cleanUpControl,
@@ -198,7 +199,13 @@ export abstract class AbstractFormDirective
    * @param dir The `FormControlName` directive instance.
    */
   addControl(dir: FormControlName): FormControl {
-    const ctrl = this.form.get(dir.path) as FormControl;
+    const ctrl = this.form.get(dir.path) as FormControl | null;
+    if (!ctrl) {
+      throw new RuntimeError(
+        RuntimeErrorCode.FORM_CONTROL_NAME_MISSING_CONTROL,
+        ngDevMode && missingControlForPathError(this.form, dir.path),
+      );
+    }
     dir._setupWithForm(ctrl, this.callSetDisabledState);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
