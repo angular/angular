@@ -1809,8 +1809,8 @@ export abstract class AbstractControl<
 }
 
 export function hasOwnControl(
-  controls: {[key: string]: AbstractControl<any>},
+  controls: {[key: string]: AbstractControl<any>} | AbstractControl<any>[],
   name: string | number | symbol,
 ): boolean {
-  return Object.hasOwn(controls, name);
+  return Object.hasOwn(controls, name) && !(Array.isArray(controls) && name === 'length');
 }

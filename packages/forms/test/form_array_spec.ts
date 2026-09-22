@@ -1031,6 +1031,27 @@ import {asyncValidator} from './util';
 
         expect(g.get(['array', 0])!.value).toEqual('111');
       });
+
+      it('should return null for names that are not indexes of the array', () => {
+        const a = new FormArray([new FormControl('111')]);
+
+        expect(a.get('filter')).toBeNull();
+        expect(a.get('length')).toBeNull();
+        expect(a.get(['push'])).toBeNull();
+      });
+
+      it('should return null for a path that uses a non-index name on an array', () => {
+        const g = new FormGroup({'array': new FormArray([new FormControl('111')])});
+
+        expect(g.get('array.filter')).toBeNull();
+      });
+
+      it('should return elements for numeric string and negative indexes', () => {
+        const a = new FormArray([new FormControl('111'), new FormControl('222')]);
+
+        expect(a.get('1')!.value).toEqual('222');
+        expect(a.get([-1])!.value).toEqual('222');
+      });
     });
 
     describe('validator', () => {

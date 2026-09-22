@@ -16,6 +16,7 @@ import {
   assertAllValuesPresent,
   assertControlPresent,
   FormResetEvent,
+  hasOwnControl,
   pickAsyncValidators,
   pickValidators,
   ɵRawValue,
@@ -559,7 +560,8 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
 
   /** @internal */
   override _find(name: string | number): AbstractControl | null {
-    return this.at(name as number) ?? null;
+    const index = this._adjustIndex(name as number);
+    return hasOwnControl(this.controls, index) ? this.controls[index] : null;
   }
 }
 

@@ -556,6 +556,15 @@ describe('Form Directives', () => {
       expect(formArrayDir.hasError('required')).toBe(formModel.hasError('required'));
       expect(formArrayDir.getError('required')).toBe(formModel.getError('required'));
     });
+
+    it('should throw a missing control error for a control name that is not an array index', () => {
+      const dir = new FormControlName(formArrayDir, null!, null!, [defaultAccessor], null);
+      dir.name = 'filter';
+
+      expect(() => formArrayDir.formDirective!.addControl(dir)).toThrowError(
+        new RegExp(`Cannot find control with path: 'array -> filter'`),
+      );
+    });
   });
 
   describe('FormControlDirective', () => {
