@@ -114,6 +114,82 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should expand a hostDirectives model into its input and output pair', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, Component, model} from '@angular/core';
+
+        @Directive({selector: '[dir-a]'})
+        export class HostDir {
+          value = model(0);
+          disabled = model(false);
+        }
+
+        @Component({
+          selector: 'my-comp',
+          template: '',
+          hostDirectives: [{directive: HostDir, models: ['value: alias', 'disabled']}],
+          standalone: false,
+        })
+        export class MyComp {}
+      `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      expect(jsContents).toContain(
+        'features: [i0.ɵɵHostDirectivesFeature([{ directive: HostDir, ' +
+          'inputs: ["value", "alias", "disabled", "disabled"], ' +
+          'outputs: ["valueChange", "aliasChange", "disabledChange", "disabledChange"] }])]',
+      );
+      expect(dtsContents).toContain(
+        '[{ directive: typeof HostDir; ' +
+          'inputs: { "value": "alias"; "disabled": "disabled"; }; ' +
+          'outputs: { "valueChange": "aliasChange"; "disabledChange": "disabledChange"; }; }]',
+      );
+    });
+
+    it('should merge hostDirectives models with explicitly declared inputs and outputs', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, Component, Input, Output, EventEmitter, model} from '@angular/core';
+
+        @Directive({selector: '[dir-a]'})
+        export class HostDir {
+          @Input() color = '';
+          @Output() opened = new EventEmitter();
+          value = model(0);
+        }
+
+        @Component({
+          selector: 'my-comp',
+          template: '',
+          hostDirectives: [{
+            directive: HostDir,
+            inputs: ['color: colorAlias'],
+            outputs: ['opened'],
+            models: ['value'],
+          }],
+          standalone: false,
+        })
+        export class MyComp {}
+      `,
+      );
+
+      env.driveMain();
+
+      expect(env.getContents('test.js')).toContain(
+        'features: [i0.ɵɵHostDirectivesFeature([{ directive: HostDir, ' +
+          'inputs: ["color", "colorAlias", "value", "value"], ' +
+          'outputs: ["opened", "opened", "valueChange", "valueChange"] }])]',
+      );
+    });
+
     it('should generate a hostDirectives definition that has aliased inputs and outputs', () => {
       env.write(
         'test.ts',
@@ -1024,6 +1100,62 @@ runInEachFileSystem(() => {
         const messages = env.driveDiagnostics().map(extractMessage);
         expect(messages).toEqual([
           'Directive HostDir does not have an input with a public name of doesNotExist.',
+        ]);
+      });
+
+      it('should produce a diagnostic if a host directive model does not exist', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, model} from '@angular/core';
+
+          @Directive({standalone: true})
+          class HostDir {
+            foo = model(0);
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{
+              directive: HostDir,
+              models: ['doesNotExist'],
+            }],
+            standalone: false,
+          })
+          class Dir {}
+        `,
+        );
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toEqual([
+          'Directive HostDir does not have an input with a public name of doesNotExist.',
+          'Directive HostDir does not have an output with a public name of doesNotExistChange.',
+        ]);
+      });
+
+      it('should produce a diagnostic if a host directive model is not a model', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({standalone: true})
+          class HostDir {
+            @Input() foo: any;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            hostDirectives: [{directive: HostDir, models: ['foo']}],
+            standalone: false,
+          })
+          class Dir {}
+        `,
+        );
+
+        const messages = env.driveDiagnostics().map(extractMessage);
+        expect(messages).toEqual([
+          'Directive HostDir does not have an output with a public name of fooChange.',
         ]);
       });
 

@@ -11,6 +11,7 @@ import {
   Component,
   Directive,
   EventEmitter,
+  inject,
   Input,
   model,
   OnChanges,
@@ -652,5 +653,157 @@ describe('model inputs', () => {
     fixture.detectChanges();
 
     expect(host.dir.value[SIGNAL].debugName).toBe('TEST_DEBUG_NAME');
+  });
+  describe('in host directives', () => {
+    it('should expose both halves of a model through the `models` shorthand', async () => {
+      @Directive({selector: '[host-dir]'})
+      class HostDir {
+        value = model(0);
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, models: ['value']}],
+      })
+      class Dir {
+        hostDir = inject(HostDir);
+      }
+
+      @Component({
+        template: '<div dir [(value)]="value"></div>',
+        imports: [Dir],
+      })
+      class App {
+        @ViewChild(Dir) dir!: Dir;
+        value = signal(1);
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+      const host = fixture.componentInstance;
+
+      // Initial value.
+      expect(host.dir.hostDir.value()).toBe(1);
+
+      // Changing the value from within the host directive.
+      host.dir.hostDir.value.set(2);
+      await fixture.whenStable();
+      expect(host.value()).toBe(2);
+
+      // Changing the value from the outside.
+      host.value.set(3);
+      await fixture.whenStable();
+      expect(host.dir.hostDir.value()).toBe(3);
+    });
+
+    it('should expose a model through the `models` shorthand under an alias', async () => {
+      @Directive({selector: '[host-dir]'})
+      class HostDir {
+        value = model(0);
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, models: ['value: alias']}],
+      })
+      class Dir {
+        hostDir = inject(HostDir);
+      }
+
+      @Component({
+        template: '<div dir [(alias)]="value"></div>',
+        imports: [Dir],
+      })
+      class App {
+        @ViewChild(Dir) dir!: Dir;
+        value = signal(1);
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+      const host = fixture.componentInstance;
+
+      expect(host.dir.hostDir.value()).toBe(1);
+
+      host.dir.hostDir.value.set(2);
+      await fixture.whenStable();
+      expect(host.value()).toBe(2);
+
+      host.value.set(3);
+      await fixture.whenStable();
+      expect(host.dir.hostDir.value()).toBe(3);
+    });
+
+    it('should support binding only to the output half of an exposed model', async () => {
+      const events: number[] = [];
+
+      @Directive({selector: '[host-dir]'})
+      class HostDir {
+        value = model(0);
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [{directive: HostDir, models: ['value: alias']}],
+      })
+      class Dir {
+        hostDir = inject(HostDir);
+      }
+
+      @Component({
+        template: '<div dir (aliasChange)="events.push($event)"></div>',
+        imports: [Dir],
+      })
+      class App {
+        @ViewChild(Dir) dir!: Dir;
+        events = events;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+      expect(events).toEqual([]);
+
+      fixture.componentInstance.dir.hostDir.value.set(5);
+      await fixture.whenStable();
+      expect(events).toEqual([5]);
+    });
+
+    it('should expose models alongside explicitly declared inputs and outputs', async () => {
+      @Directive({selector: '[host-dir]'})
+      class HostDir {
+        @Input() color?: string;
+        value = model(0);
+      }
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [
+          {directive: HostDir, inputs: ['color: buttonColor'], models: ['value: alias']},
+        ],
+      })
+      class Dir {
+        hostDir = inject(HostDir);
+      }
+
+      @Component({
+        template: '<div dir buttonColor="red" [(alias)]="value"></div>',
+        imports: [Dir],
+      })
+      class App {
+        @ViewChild(Dir) dir!: Dir;
+        value = signal(1);
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+      const host = fixture.componentInstance;
+
+      expect(host.dir.hostDir.color).toBe('red');
+      expect(host.dir.hostDir.value()).toBe(1);
+
+      host.value.set(2);
+      await fixture.whenStable();
+      expect(host.dir.hostDir.value()).toBe(2);
+    });
   });
 });

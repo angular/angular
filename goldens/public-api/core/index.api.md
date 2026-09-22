@@ -608,6 +608,7 @@ export interface Directive {
         directive: Type<unknown>;
         inputs?: string[];
         outputs?: string[];
+        models?: string[];
     })[];
     inputs?: ({
         name: string;

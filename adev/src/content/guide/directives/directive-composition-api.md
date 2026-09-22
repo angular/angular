@@ -74,6 +74,33 @@ export class AdminMenu {}
 <admin-menu id="top-menu" (closed)="logMenuClosed()"></admin-menu>
 ```
 
+## Exposing model bindings
+
+If a host directive uses [`model`](api/core/model), expose its two-way binding with the `models`
+property. This exposes both the model input and its corresponding `Change` output:
+
+```ts
+@Directive({selector: '[menuBehavior]'})
+export class MenuBehavior {
+  readonly selected = model(false);
+}
+
+@Component({
+  selector: 'custom-menu',
+  hostDirectives: [{directive: MenuBehavior, models: ['selected: active']}],
+})
+export class CustomMenu {}
+```
+
+The example exposes `active` and `activeChange`, so consumers can use two-way binding:
+
+```angular-html
+<custom-menu [(active)]="isActive" />
+```
+
+Without an alias, use `models: ['selected']`. The property must be declared with `model()` or
+`model.required()`.
+
 ## Adding directives to another directive
 
 You can also add `hostDirectives` to other directives, in addition to components. This enables the transitive aggregation of multiple behaviors.

@@ -553,10 +553,12 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
           : {
               directive: wrapReference(hostDirective.directive),
               isForwardReference: false,
-              inputs: hostDirective.inputs ? parseMappingStringArray(hostDirective.inputs) : null,
-              outputs: hostDirective.outputs
-                ? parseMappingStringArray(hostDirective.outputs)
-                : null,
+              inputs: mergeHostDirectiveModels(hostDirective.inputs, hostDirective.models, ''),
+              outputs: mergeHostDirectiveModels(
+                hostDirective.outputs,
+                hostDirective.models,
+                'Change',
+              ),
             };
       })
     : null;
@@ -1057,6 +1059,30 @@ function parseMappingStringArray(values: string[]): Record<string, string> {
     results[fieldName] = alias;
     return results;
   }, {});
+}
+
+/**
+ * Merges the bindings that a host directive exposes through `models` into its `inputs` or
+ * `outputs` mapping. Model inputs keep the declared names, whereas their outputs get a `Change`
+ * suffix (e.g. `value`/`valueChange`).
+ */
+function mergeHostDirectiveModels(
+  values: string[] | undefined,
+  models: string[] | undefined,
+  suffix: '' | 'Change',
+): Record<string, string> | null {
+  if (!models?.length) {
+    return values ? parseMappingStringArray(values) : null;
+  }
+
+  const result = values ? parseMappingStringArray(values) : {};
+
+  for (const model of models) {
+    const [alias, fieldName] = parseMappingString(model);
+    result[fieldName + suffix] = alias + suffix;
+  }
+
+  return result;
 }
 
 function parseMappingString(value: string): [alias: string, fieldName: string] {

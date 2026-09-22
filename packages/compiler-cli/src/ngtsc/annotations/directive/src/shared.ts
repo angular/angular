@@ -2178,25 +2178,62 @@ function extractHostDirectives(
       throw new Error('Impossible state');
     }
 
+    // Models are a shorthand for exposing the input and the output half of a `model()` under a
+    // single alias. They're expanded into the equivalent `inputs`/`outputs` mappings here so that
+    // the rest of the pipeline (emit, type checking and the runtime) only has to deal with plain
+    // inputs and outputs.
+    const models = parseHostDirectivesMapping(
+      'models',
+      value,
+      nameForErrors('model'),
+      rawHostDirectives,
+    );
+
     const meta: HostDirectiveMeta = {
       directive,
       isForwardReference: hostReference instanceof Reference && hostReference.synthetic,
-      inputs: parseHostDirectivesMapping(
-        'inputs',
-        value,
-        nameForErrors('input'),
-        rawHostDirectives,
+      inputs: mergeHostDirectiveModelMapping(
+        parseHostDirectivesMapping('inputs', value, nameForErrors('input'), rawHostDirectives),
+        models,
+        '',
       ),
-      outputs: parseHostDirectivesMapping(
-        'outputs',
-        value,
-        nameForErrors('output'),
-        rawHostDirectives,
+      outputs: mergeHostDirectiveModelMapping(
+        parseHostDirectivesMapping('outputs', value, nameForErrors('output'), rawHostDirectives),
+        models,
+        'Change',
       ),
     };
 
     return meta;
   });
+}
+
+/**
+ * Merges the bindings that a host directive exposes through `models` into its `inputs` or
+ * `outputs` mapping.
+ * @param mapping Mapping that was declared explicitly through `inputs` or `outputs`.
+ * @param models Mapping that was declared through `models`.
+ * @param suffix Suffix to append to both halves of the model mapping. Model inputs keep the
+ *   declared names, whereas their outputs get a `Change` suffix (e.g. `value`/`valueChange`).
+ */
+function mergeHostDirectiveModelMapping(
+  mapping: {[bindingPropertyName: string]: string} | null,
+  models: {[bindingPropertyName: string]: string} | null,
+  suffix: '' | 'Change',
+): {[bindingPropertyName: string]: string} | null {
+  if (models === null) {
+    return mapping;
+  }
+
+  const result: {[bindingPropertyName: string]: string} = {...mapping};
+
+  for (const publicName in models) {
+    if (Object.hasOwn(models, publicName)) {
+      result[publicName + suffix] = models[publicName] + suffix;
+    }
+  }
+
+  return result;
 }
 
 /**
@@ -2207,7 +2244,7 @@ function extractHostDirectives(
  * @param sourceExpression Expression that the host directive is referenced in.
  */
 function parseHostDirectivesMapping(
-  field: 'inputs' | 'outputs',
+  field: 'inputs' | 'outputs' | 'models',
   resolvedValue: ResolvedValue,
   nameForErrors: string,
   sourceExpression: ts.Expression,
