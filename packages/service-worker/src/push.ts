@@ -24,16 +24,14 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * You can inject a `SwPush` instance into any component or service
  * as a dependency.
  *
- * <code-example path="service-worker/push/service_worker_component.ts" region="inject-sw-push"
- * header="app.component.ts"></code-example>
+ * {@example service-worker/push/service_worker_component.ts region='inject-sw-push'}
  *
  * To subscribe, call `SwPush.requestSubscription()`, which asks the user for permission.
  * The call returns a `Promise` with a new
  * [`PushSubscription`](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
  * instance.
  *
- * <code-example path="service-worker/push/service_worker_component.ts" region="subscribe-to-push"
- * header="app.component.ts"></code-example>
+ * {@example service-worker/push/service_worker_component.ts region='subscribe-to-push'}
  *
  * A request is rejected if the user denies permission, or if the browser
  * blocks or does not support the Push API or ServiceWorkers.
@@ -78,8 +76,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * An application can subscribe to `SwPush.notificationClicks` observable to be notified when a user
  * clicks on a notification. For example:
  *
- * <code-example path="service-worker/push/service_worker_component.ts" region="subscribe-to-notification-clicks"
- * header="app.component.ts"></code-example>
+ * {@example service-worker/push/service_worker_component.ts region='subscribe-to-notification-clicks'}
  *
  * You can read more on handling notification clicks in the [Service worker notifications
  * guide](ecosystem/service-workers/push-notifications).
