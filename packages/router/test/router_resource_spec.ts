@@ -12,6 +12,7 @@ import {
   EnvironmentProviders,
   EnvironmentInjector,
   inject,
+  Input,
   resource,
   Resource,
   ResourceSnapshot,
@@ -29,6 +30,7 @@ import {
   withNavigationErrorHandler,
   RedirectCommand,
   withRouterResources,
+  withComponentInputBinding,
   nonBlocking,
   ActivatedRoute,
   ResourceResult,
@@ -52,6 +54,12 @@ async function setupRouter(routes: Route[], ...features: RouterFeatures[]) {
 
 @Component({template: ''})
 class TargetCmp {}
+
+@Component({template: ''})
+class InputBindingCmp {
+  @Input() user: any;
+  @Input() extra: any;
+}
 
 describe('Router resources integration', () => {
   useAutoTick();
@@ -434,7 +442,6 @@ describe('Router resources integration', () => {
 
       // 1. Initial navigation succeeds
       await harness.navigateByUrl('/test/1');
-      await harness.fixture.whenStable();
       expect(router.url).toBe('/test/1');
 
       const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
@@ -449,39 +456,81 @@ describe('Router resources integration', () => {
       // 3. Retry the identical route with same parameters using onSameUrlNavigation: 'reload'
       shouldError = false;
       await router.navigateByUrl('/test/1', {onSameUrlNavigation: 'reload'});
-      await harness.fixture.whenStable();
 
       expect(router.url).toBe('/test/1'); // Succeeded!
       expect(resourceRef?.status()).toBe('resolved');
       expect(resourceRef?.value()).toBe('1');
     });
 
-    it('should block navigation when a resource has a defaultValue until loading is complete', async () => {
-      const loaderDeferred = promiseWithResolvers<string>();
+    it('should block navigation when reloading an existing resource that already has a value', async () => {
+      let loaderPromise = promiseWithResolvers<string>();
 
       const {harness, router} = await setupRouter([
         {
-          path: 'test',
+          path: 'test/:id',
           component: TargetCmp,
-          resources: () => ({
-            user: resource({
-              defaultValue: 'default-user',
-              loader: async () => loaderDeferred.promise,
+          resources: (ctx) => ({
+            data: resource({
+              params: () => ctx.params()['id'],
+              loader: async () => loaderPromise.promise,
             }),
           }),
         },
       ]);
 
-      const nav = harness.navigateByUrl('/test');
+      // 1. Initial load
+      loaderPromise.resolve('val-1');
+      await harness.navigateByUrl('/test/1');
+      expect(router.url).toBe('/test/1');
+
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'] as any;
+      expect(resourceRef.value()).toBe('val-1');
+
+      // 2. Navigate to /test/2: resets loaderPromise
+      loaderPromise = promiseWithResolvers<string>();
+      const nav = harness.navigateByUrl('/test/2');
+      await timeout();
+
+      // Navigation is blocked on loading even though resource previously had a value
+      expect(router.url).toBe('/test/1');
+
+      loaderPromise.resolve('val-2');
+      await nav;
+
+      expect(router.url).toBe('/test/2');
+      expect(resourceRef.value()).toBe('val-2');
+    });
+
+    it('should block navigation when a resource has a defaultValue until loading is complete', async () => {
+      const loaderDeferred = promiseWithResolvers<string>();
+
+      const {harness, router} = await setupRouter(
+        [
+          {
+            path: 'test',
+            component: InputBindingCmp,
+            resources: () => ({
+              user: resource({
+                defaultValue: 'default-user',
+                loader: async () => loaderDeferred.promise,
+              }),
+            }),
+          },
+        ],
+        withComponentInputBinding(),
+      );
+
+      const nav = harness.navigateByUrl('/test', InputBindingCmp);
       await timeout();
 
       // Navigation is blocked on loading even though the resource has a defaultValue
       expect(router.url).not.toBe('/test');
 
       loaderDeferred.resolve('loaded-user');
-      await nav;
+      const cmp = await nav;
 
       expect(router.url).toBe('/test');
+      expect(cmp.user).toBe('loaded-user');
 
       const resourceRef = router.routerState.root.firstChild?.resources?.['user'];
       expect(resourceRef?.value()).toBe('loaded-user');
