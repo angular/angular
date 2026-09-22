@@ -46,7 +46,10 @@ export class RouterConfigLoader {
   onLoadStartListener?: (r: Route) => void;
   onLoadEndListener?: (r: Route) => void;
   private readonly compiler = inject(Compiler);
+  // TODO(v23): Run loadComponent and loadChildren in root environment injector in 3p as well.
+  // g3-only private readonly environmentInjector = inject(EnvironmentInjector);
 
+  // TODO(v23): Remove unused `injector` parameter once `loadComponent` uses `this.environmentInjector` in 3p.
   async loadComponent(injector: EnvironmentInjector, route: Route): Promise<Type<unknown>> {
     if (this.componentLoaders.get(route)) {
       return this.componentLoaders.get(route)!;
@@ -60,7 +63,8 @@ export class RouterConfigLoader {
     const loader = (async () => {
       try {
         const loaded = await wrapIntoPromise(
-          runInInjectionContext(injector, () => route.loadComponent!()),
+          // g3-only runInInjectionContext(this.environmentInjector, () => route.loadComponent!()),
+          runInInjectionContext(injector, () => route.loadComponent!()), // 3p-only
         );
         const component = await maybeResolveResources(maybeUnwrapDefaultExport(loaded));
 
@@ -96,6 +100,7 @@ export class RouterConfigLoader {
           this.compiler,
           parentInjector,
           this.onLoadEndListener,
+          // g3-only this.environmentInjector,
         );
         route._loadedRoutes = result.routes;
         route._loadedInjector = result.injector;
@@ -123,9 +128,12 @@ export async function loadChildren(
   compiler: Compiler,
   parentInjector: Injector,
   onLoadEndListener?: (r: Route) => void,
+  // TODO(v23): Update `@angular/build` route extractor to pass `environmentInjector` and make it required.
+  // g3-only environmentInjector?: EnvironmentInjector,
 ): Promise<LoadedRouterConfig> {
   const loaded = await wrapIntoPromise(
-    runInInjectionContext(parentInjector, () => route.loadChildren!()),
+    // g3-only runInInjectionContext(environmentInjector ?? parentInjector, () => route.loadChildren!()),
+    runInInjectionContext(parentInjector, () => route.loadChildren!()), // 3p-only
   );
   const t = await maybeResolveResources(maybeUnwrapDefaultExport(loaded));
 
