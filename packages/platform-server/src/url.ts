@@ -123,6 +123,61 @@ export function resolveUrl(
 }
 
 /**
+ * Validates the effective hostname of a URL that parses without a base.
+ *
+ * Relative URLs return `null` because they inherit the document origin. When an
+ * origin is provided, the returned object uses the same resolution as the consumer.
+ */
+export function validateAllowedHosts(
+  url: string | undefined,
+  allowedHosts: Readonly<string>[] | undefined,
+  origin?: string | URL,
+): URL | null {
+  if (typeof url !== 'string') {
+    return null;
+  }
+
+  const parsedUrl = resolveUrl(url);
+  if (parsedUrl === null) {
+    return null;
+  }
+
+  const resolvedUrl = origin === undefined ? parsedUrl : resolveUrl(url, origin);
+  if (!isHostAllowed(resolvedUrl.hostname, new Set(allowedHosts))) {
+    throw new RuntimeError(
+      RuntimeErrorCode.HOST_NOT_ALLOWED,
+      typeof ngDevMode === 'undefined' || ngDevMode
+        ? `Host ${url} is not allowed. You can configure \`allowedHosts\` option.`
+        : url,
+    );
+  }
+
+  return resolvedUrl;
+}
+
+/**
+ * Checks if the hostname is allowed.
+ */
+export function isHostAllowed(hostname: string, allowedHosts: ReadonlySet<string>): boolean {
+  if (allowedHosts.has('*') || allowedHosts.has(hostname)) {
+    return true;
+  }
+
+  for (const allowedHost of allowedHosts) {
+    if (!allowedHost.startsWith('*.')) {
+      continue;
+    }
+
+    const domain = allowedHost.slice(1);
+    if (hostname.endsWith(domain)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
  * Throws a suspicious URL error indicating a security bypass attempt.
  */
 function throwSuspiciousUrlError(urlStr: string): never {

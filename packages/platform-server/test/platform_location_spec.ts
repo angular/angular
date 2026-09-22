@@ -39,6 +39,7 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
           useValue: {
             document: '<app></app>',
             url: 'http://test.com/deep/path?query#hash',
+            allowedHosts: ['test.com'],
           },
         },
       ]);
@@ -49,6 +50,99 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
       expect(location.hash).toBe('#hash');
     });
 
+    it('rejects an absolute INITIAL_CONFIG URL without allowed hosts', () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: 'http://untrusted.example/deep/path',
+          },
+        },
+      ]);
+
+      expect(() => platform.injector.get(PlatformLocation)).toThrowError(/NG05706/);
+      platform.destroy();
+    });
+
+    it('rejects disallowed initial request authority variants', () => {
+      const urls = [
+        'HTTP://untrusted.example/deep/path',
+        String.raw`http:\\untrusted.example\deep\path`,
+        'http:///untrusted.example/deep/path',
+        'http://trusted.example@untrusted.example/deep/path',
+      ];
+
+      for (const url of urls) {
+        const platform = platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {
+              document: '<app></app>',
+              url,
+              allowedHosts: ['trusted.example'],
+            },
+          },
+        ]);
+
+        expect(() => platform.injector.get(PlatformLocation))
+          .withContext(`URL: ${url}`)
+          .toThrowError(/NG05706/);
+        platform.destroy();
+      }
+    });
+
+    it('accepts explicit policies for authority-bearing initial request URLs', () => {
+      const cases = [
+        {url: 'http://trusted.example/deep/path', allowedHosts: ['trusted.example']},
+        {url: 'http://arbitrary.example/deep/path', allowedHosts: ['*']},
+      ];
+
+      for (const {url, allowedHosts} of cases) {
+        const platform = platformServer([
+          {
+            provide: INITIAL_CONFIG,
+            useValue: {document: '<app></app>', url, allowedHosts},
+          },
+        ]);
+
+        expect(platform.injector.get(PlatformLocation).hostname).toBe(new URL(url).hostname);
+        platform.destroy();
+      }
+    });
+
+    it('allows relative initial request URLs to inherit the document origin', () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: '/deep/path'},
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      expect(location.hostname).toBe('localhost');
+      expect(location.pathname).toBe('/deep/path');
+      platform.destroy();
+    });
+
+    it('validates a scheme URL without authority against its effective document origin', () => {
+      const platform = platformServer([
+        {
+          provide: INITIAL_CONFIG,
+          useValue: {
+            document: '<app></app>',
+            url: 'http:deep/path',
+            allowedHosts: ['localhost'],
+          },
+        },
+      ]);
+
+      const location = platform.injector.get(PlatformLocation);
+      expect(location.hostname).toBe('localhost');
+      expect(location.pathname).toBe('/deep/path');
+      platform.destroy();
+    });
+
     it('parses component pieces of a URL', async () => {
       const platform = platformServer([
         {
@@ -56,6 +150,7 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
           useValue: {
             document: '<app></app>',
             url: 'http://test.com:80/deep/path?query#hash',
+            allowedHosts: ['test.com'],
           },
         },
       ]);
@@ -76,6 +171,7 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
           useValue: {
             document: '<app></app>',
             url: 'http://test.com/deep/path',
+            allowedHosts: ['test.com'],
           },
         },
       ]);
@@ -105,6 +201,7 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
           useValue: {
             document: '<app></app>',
             url: 'http://test.com/deep/path?query#hash',
+            allowedHosts: ['test.com'],
           },
         },
       ]);
@@ -172,6 +269,7 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
           useValue: {
             document: '<html><head></head><body></body></html>',
             url: 'http://test.com/deep/path',
+            allowedHosts: ['test.com'],
           },
         },
       ]);
@@ -190,6 +288,7 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
           useValue: {
             document: '<html><head></head><body></body></html>',
             url: 'http://test.com/deep/path',
+            allowedHosts: ['test.com'],
           },
         },
       ]);
@@ -208,6 +307,7 @@ import {INITIAL_CONFIG, platformServer} from '@angular/platform-server';
           useValue: {
             document: '<html><head></head><body></body></html>',
             url: 'http://test.com/deep/path',
+            allowedHosts: ['test.com'],
           },
         },
       ]);

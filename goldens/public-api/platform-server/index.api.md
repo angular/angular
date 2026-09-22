@@ -24,6 +24,7 @@ export const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 
 // @public
 export interface PlatformConfig {
+    allowedHosts?: Readonly<string>[];
     document?: string;
     url?: string;
 }

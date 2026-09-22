@@ -1460,7 +1460,11 @@ class HiddenModule {}
         const platform = platformServer([
           {
             provide: INITIAL_CONFIG,
-            useValue: {document: '<app></app>', url: 'http://localhost:4000/base'},
+            useValue: {
+              document: '<app></app>',
+              url: 'http://localhost:4000/base',
+              allowedHosts: ['localhost'],
+            },
           },
         ]);
         await platform.bootstrapModule(HttpClientExampleModule).then((ref) => {
@@ -1546,6 +1550,7 @@ class HiddenModule {}
               useValue: {
                 document: '<app></app>',
                 url: 'http://localhost:4000/foo',
+                allowedHosts: ['localhost'],
               },
             },
           ]);
@@ -1710,6 +1715,7 @@ class HiddenModule {}
               useValue: {
                 document: '<app></app>',
                 url: 'http://localhost:4000/foo/',
+                allowedHosts: ['localhost'],
               },
             },
           ]);

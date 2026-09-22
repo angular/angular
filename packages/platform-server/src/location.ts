@@ -17,7 +17,7 @@ import {inject, Injectable, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 
 import {INITIAL_CONFIG} from './tokens';
-import {resolveUrl} from './url';
+import {resolveUrl, validateAllowedHosts} from './url';
 
 /**
  * Server-side implementation of URL state. Implements `pathname`, `search`, and `hash`
@@ -42,10 +42,9 @@ export class ServerPlatformLocation implements PlatformLocation {
       return;
     }
     if (config.url) {
-      const {protocol, hostname, port, pathname, search, hash, href, origin} = resolveUrl(
-        config.url,
-        this.origin,
-      );
+      const {protocol, hostname, port, pathname, search, hash, href, origin} =
+        validateAllowedHosts(config.url, config.allowedHosts, this.origin) ??
+        resolveUrl(config.url, this.origin);
       this.protocol = protocol;
       this.hostname = hostname;
       this.port = port;

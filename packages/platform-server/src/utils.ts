@@ -22,16 +22,16 @@ import {
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵstartMeasuring as startMeasuring,
   ɵstopMeasuring as stopMeasuring,
-  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {BootstrapContext} from '@angular/platform-browser';
 
-import {RuntimeErrorCode} from './errors';
 import {platformServer} from './server';
 import {PlatformState} from './platform_state';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformConfig} from './tokens';
 import {createScript} from './transfer_state';
-import {resolveUrl} from './url';
+import {validateAllowedHosts} from './url';
+
+export {isHostAllowed} from './url';
 
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
@@ -56,7 +56,7 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
   const extraProviders = options.platformProviders ?? [];
   const measuringLabel = 'createServerPlatform';
   startMeasuring(measuringLabel);
-  const {document, url} = options;
+  const {document, url, allowedHosts} = options;
 
   const platform = platformServer([
     {
@@ -64,6 +64,7 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
       useValue: {
         document,
         url,
+        allowedHosts,
       },
     },
     extraProviders,
@@ -291,7 +292,7 @@ export async function renderModule<T>(
 ): Promise<string> {
   const {document, url, extraProviders: platformProviders, allowedHosts} = options;
   validateAllowedHosts(url, allowedHosts);
-  const platformRef = createServerPlatform({document, url, platformProviders});
+  const platformRef = createServerPlatform({document, url, platformProviders, allowedHosts});
   try {
     const moduleRef = await platformRef.bootstrapModule(moduleType);
     const applicationRef = moduleRef.injector.get(ApplicationRef);
@@ -377,49 +378,4 @@ export async function renderApplication(
     await asyncDestroyPlatform(platformRef);
     stopMeasuring(renderAppLabel);
   }
-}
-
-function validateAllowedHosts(url: string | undefined, allowedHosts: string[] | undefined) {
-  if (typeof url === 'string') {
-    const parsedUrl = resolveUrl(url);
-    if (parsedUrl !== null) {
-      const hostname = parsedUrl.hostname;
-      const allowedHostsSet: ReadonlySet<string> = new Set(allowedHosts);
-      if (!isHostAllowed(hostname, allowedHostsSet)) {
-        throw new RuntimeError(
-          RuntimeErrorCode.HOST_NOT_ALLOWED,
-          typeof ngDevMode === 'undefined' || ngDevMode
-            ? `Host ${url} is not allowed. You can configure \`allowedHosts\` option.`
-            : url,
-        );
-      }
-    }
-  }
-}
-
-/**
- * Checks if the hostname is allowed.
- * @param hostname - The hostname to check.
- * @param allowedHosts - A set of allowed hostnames.
- * @returns `true` if the hostname is allowed, `false` otherwise.
- * @note Used also in `@angular/ssr`.
- * @private
- */
-export function isHostAllowed(hostname: string, allowedHosts: ReadonlySet<string>): boolean {
-  if (allowedHosts.has('*') || allowedHosts.has(hostname)) {
-    return true;
-  }
-
-  for (const allowedHost of allowedHosts) {
-    if (!allowedHost.startsWith('*.')) {
-      continue;
-    }
-
-    const domain = allowedHost.slice(1);
-    if (hostname.endsWith(domain)) {
-      return true;
-    }
-  }
-
-  return false;
 }

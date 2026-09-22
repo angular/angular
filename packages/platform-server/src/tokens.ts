@@ -24,6 +24,17 @@ export interface PlatformConfig {
    * the platform's location. `protocol`, `hostname`, and `port`.
    */
   url?: string;
+  /**
+   * The hostnames that are allowed for the current application state URL.
+   * Supports exact hostnames, wildcard subdomains such as `*.example.com`,
+   * and `*` to allow any hostname. Absolute URLs are rejected when this
+   * option is omitted or empty.
+   *
+   * Matching is case-sensitive and uses the URL's effective hostname. Relative
+   * URLs inherit the document origin without an allow-list check, so callers must
+   * trust the origin of a supplied `Document`. Ports are ignored.
+   */
+  allowedHosts?: Readonly<string>[];
 }
 
 /**

@@ -6,16 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, destroyPlatform, NgModule} from '@angular/core';
+import {PlatformLocation} from '@angular/common';
+import {Component, destroyPlatform, inject, NgModule} from '@angular/core';
 import {renderApplication, renderModule, ServerModule} from '@angular/platform-server';
+import domino from '../third_party/domino/bundled-domino';
 import {isHostAllowed} from '../src/utils';
 
 @Component({
   selector: 'app',
-  template: 'works!',
+  template: 'works! {{ platformLocation.pathname }} ({{ platformLocation.hostname }})',
   standalone: false,
 })
-class MockComponent {}
+class MockComponent {
+  protected readonly platformLocation = inject(PlatformLocation);
+}
 
 @NgModule({
   declarations: [MockComponent],
@@ -118,8 +122,6 @@ describe('allowedHosts validation in renderApplication', () => {
 });
 
 describe('allowedHosts validation in renderModule', () => {
-  class MockModule {}
-
   beforeEach(() => {
     destroyPlatform();
   });
@@ -138,16 +140,58 @@ describe('allowedHosts validation in renderModule', () => {
     ).toBeRejectedWithError(/Host http:\/\/evil.com\/deep\/path is not allowed/);
   });
 
-  it('should not throw a host validation error if host is allowed', async () => {
-    try {
-      await renderModule(MockModule, {
-        document: '<app></app>',
-        url: 'http://test.com/deep/path',
-        allowedHosts: ['test.com', '*.example.com'],
-      });
-    } catch (error: any) {
-      expect(error.message).not.toContain('is not allowed');
-    }
+  it('should render when host is allowed', async () => {
+    const html = await renderModule(MockNgModule, {
+      document: '<app></app>',
+      url: 'http://test.com/deep/path',
+      allowedHosts: ['test.com', '*.example.com'],
+    });
+
+    expect(html).toContain('works! /deep/path (test.com)');
+  });
+
+  it('should render when all hosts are explicitly allowed', async () => {
+    const html = await renderModule(MockNgModule, {
+      document: '<app></app>',
+      url: 'http://arbitrary.example/deep/path',
+      allowedHosts: ['*'],
+    });
+
+    expect(html).toContain('works! /deep/path (arbitrary.example)');
+  });
+
+  it('should inherit a supplied document origin for relative request URLs', async () => {
+    const document = domino.createWindow('<app></app>', 'http://internal.example/').document;
+    const html = await renderModule(MockNgModule, {
+      document,
+      url: '/deep/path',
+      allowedHosts: ['app.example.com'],
+    });
+
+    expect(html).toContain('works! /deep/path (internal.example)');
+  });
+
+  it('should reject a scheme URL whose effective document host is not allowed', async () => {
+    const document = domino.createWindow('<app></app>', 'http://internal.example/').document;
+
+    await expectAsync(
+      renderModule(MockNgModule, {
+        document,
+        url: 'http:app.example.com/deep/path',
+        allowedHosts: ['app.example.com'],
+      }),
+    ).toBeRejectedWithError(/NG05706/);
+  });
+
+  it('should render a scheme URL when its parsed and effective hosts are allowed', async () => {
+    const document = domino.createWindow('<app></app>', 'http://internal.example/').document;
+    const html = await renderModule(MockNgModule, {
+      document,
+      url: 'http:internal.example/deep/path',
+      allowedHosts: ['internal.example'],
+    });
+
+    expect(html).toContain('works! /internal.example/deep/path (internal.example)');
   });
 
   it('should throw an error for malformed absolute URLs (SSRF bypass attempt)', async () => {
