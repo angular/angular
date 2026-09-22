@@ -335,9 +335,9 @@ You can add images using the semantic Markdown image:
 ![Lazy loaded image](assets/images/kitchen-sink/rhubarb.jpg {loading: 'lazy'})
 ![Combined attributes](assets/images/kitchen-sink/rhubarb.jpg#small {loading: 'lazy', decoding: 'async', fetchpriority: 'low'})
 
-Embedded videos are created with `docs-video` and just need a `src` and `alt`:
+Embedded videos are created with `docs-video` and just need a `src` and `title`:
 
-<docs-video src="https://www.youtube.com/embed/O47uUnJjbJc" alt=""/>
+<docs-video src="https://www.youtube.com/embed/O47uUnJjbJc" title="Expression changed after checked"/>
 
 ## Charts & Graphs
 
