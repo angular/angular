@@ -36,4 +36,15 @@ describe('markdown to html', () => {
 
     expect(facadeEl.querySelector('.docs-video-play-button')).toBeTruthy();
   });
+
+  it('should name the video in the facade label', () => {
+    const facadeEl = markdownDocument.querySelector('.docs-video-facade')!;
+
+    expect(facadeEl.getAttribute('aria-label')).toBe(
+      'Play video: Expression Changed After Checked Video',
+    );
+    expect(facadeEl.getAttribute('data-video-title')).toBe(
+      'Expression Changed After Checked Video',
+    );
+  });
 });
