@@ -143,8 +143,7 @@ export function ngswCommChannelFactory(): NgswCommChannel {
  * You can use this token to define a provider that generates the registration options at runtime,
  * for example via a function call:
  *
- * {@example service-worker/registration-options/module.ts region="registration-options"
- *     header="app.module.ts"}
+ * {@example service-worker/registration-options/module.ts region="registration-options"}
  *
  * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
  *
