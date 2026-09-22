@@ -1032,6 +1032,46 @@ describe('resource', () => {
     expect(echoResource.error()).toEqual(undefined);
   });
 
+  it('should not reload when a signal read in params changes but params returns the same value', async () => {
+    const routeParams = signal<{id: string; tab: string}>({id: '1', tab: 'overview'});
+    let loadCount = 0;
+
+    const userResource = resource({
+      params: () => routeParams().id,
+      loader: async ({params: id}) => {
+        loadCount++;
+        return `user-${id}-${loadCount}`;
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    await timeout();
+    expect(loadCount).toBe(1);
+    expect(userResource.value()).toBe('user-1-1');
+
+    // Updating `routeParams` with a new object that has the same `id` should not re-run the loader
+    routeParams.set({id: '1', tab: 'orders'});
+    await timeout();
+    expect(loadCount).toBe(1);
+    expect(userResource.value()).toBe('user-1-1');
+
+    // Even after a manual reload(), a subsequent signal update with the same `id` should not trigger another reload
+    userResource.reload();
+    await timeout();
+    expect(loadCount).toBe(2);
+    expect(userResource.value()).toBe('user-1-2');
+
+    routeParams.set({id: '1', tab: 'settings'});
+    await timeout();
+    expect(loadCount).toBe(2);
+    expect(userResource.value()).toBe('user-1-2');
+
+    routeParams.set({id: '2', tab: 'settings'});
+    await timeout();
+    expect(loadCount).toBe(3);
+    expect(userResource.value()).toBe('user-2-3');
+  });
+
   describe('types', () => {
     it('should narrow hasValue() when the value can be undefined', () => {
       const result: ResourceRef<number | undefined> = resource({
