@@ -36,7 +36,9 @@ import {
   CACHE_OPTIONS,
   HEADERS,
   HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+  REDIRECTED,
   RESPONSE_TYPE,
+  RESPONSE_URL,
   STATUS,
   STATUS_TEXT,
   REQ_URL,
@@ -1360,6 +1362,123 @@ describe('TransferCache', () => {
         });
       });
     });
+  });
+
+  it('should preserve redirect provenance when replaying a transferred response', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{provide: CACHE_OPTIONS, useValue: {isCacheActive: true}}],
+    });
+
+    const requestUrl = 'https://app.example/api/runtime-config';
+    const finalUrl = 'https://attacker.example/runtime-config.json';
+    const attackerBody = {apiBaseUrl: 'https://attacker.example/api'};
+    const request = new HttpRequest('GET', requestUrl);
+
+    const previousNgServerMode = globalThis['ngServerMode'];
+    let backendCalls = 0;
+
+    try {
+      globalThis['ngServerMode'] = true;
+
+      let serverResponse: HttpResponse<unknown> | undefined;
+
+      TestBed.runInInjectionContext(() => {
+        transferCacheInterceptorFn(request, () => {
+          backendCalls++;
+          return of(
+            new HttpResponse({
+              body: attackerBody,
+              url: finalUrl,
+              redirected: true,
+            }),
+          );
+        }).subscribe((event) => {
+          if (event instanceof HttpResponse) {
+            serverResponse = event;
+          }
+        });
+      });
+
+      expect(serverResponse).toBeDefined();
+      expect(serverResponse!.url).toBe(finalUrl);
+      expect(serverResponse!.redirected).toBeTrue();
+      expect(backendCalls).toBe(1);
+
+      globalThis['ngServerMode'] = false;
+
+      let cachedResponse: HttpResponse<unknown> | undefined;
+
+      TestBed.runInInjectionContext(() => {
+        transferCacheInterceptorFn(request, () => {
+          backendCalls++;
+          return of(
+            new HttpResponse({
+              body: {apiBaseUrl: 'https://trusted.example/api'},
+              url: requestUrl,
+              redirected: false,
+            }),
+          );
+        }).subscribe((event) => {
+          if (event instanceof HttpResponse) {
+            cachedResponse = event;
+          }
+        });
+      });
+
+      // The browser-side request is fulfilled from TransferCache.
+      expect(backendCalls).toBe(1);
+
+      // The transferred body and its redirect provenance must describe the
+      // same response that was observed during SSR.
+      expect(cachedResponse).toBeDefined();
+      expect(cachedResponse!.body).toEqual(attackerBody);
+      expect(cachedResponse!.url).toBe(finalUrl);
+      expect(cachedResponse!.redirected).toBeTrue();
+    } finally {
+      globalThis['ngServerMode'] = previousNgServerMode;
+      TestBed.resetTestingModule();
+    }
+  });
+
+  it('should not serialize redirect provenance for non-redirected responses', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{provide: CACHE_OPTIONS, useValue: {isCacheActive: true}}],
+    });
+
+    const requestUrl = 'https://app.example/api/data';
+    const request = new HttpRequest('GET', requestUrl);
+    const previousNgServerMode = globalThis['ngServerMode'];
+
+    try {
+      globalThis['ngServerMode'] = true;
+
+      TestBed.runInInjectionContext(() => {
+        transferCacheInterceptorFn(request, () =>
+          of(
+            new HttpResponse({
+              body: {value: 'public-data'},
+              url: requestUrl,
+              redirected: false,
+            }),
+          ),
+        ).subscribe();
+      });
+
+      const serializedState = JSON.parse(TestBed.inject(TransferState).toJson()) as Record<
+        string,
+        Record<string, unknown>
+      >;
+      const entries = Object.values(serializedState);
+
+      expect(entries.length).toBe(1);
+      expect(Object.prototype.hasOwnProperty.call(entries[0], REDIRECTED)).toBeFalse();
+      expect(Object.prototype.hasOwnProperty.call(entries[0], RESPONSE_URL)).toBeFalse();
+    } finally {
+      globalThis['ngServerMode'] = previousNgServerMode;
+      TestBed.resetTestingModule();
+    }
   });
 
   describe('generateHash', () => {
