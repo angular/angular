@@ -40,6 +40,7 @@
 | `NG0956`  | [Tracking expression caused re-creation of the DOM structure](errors/NG0956)         |
 | `NG0991`  | [Resource completed before producing a value](errors/NG0991)                         |
 | `NG01002` | [Missing Control Value](errors/NG01002)                                              |
+| `NG01055` | [Missing control for `formControlName`](errors/NG01055)                              |
 | `NG01101` | [Wrong Async Validator Return Type](errors/NG01101)                                  |
 | `NG01203` | [Missing value accessor](errors/NG01203)                                             |
 | `NG01902` | [Orphan field in signal forms](errors/NG01902)                                       |

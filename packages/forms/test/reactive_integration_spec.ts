@@ -4281,6 +4281,47 @@ describe('reactive forms integration tests', () => {
       }
     });
 
+    it('reports a coded error, not a raw TypeError, when formControlName has no matching control in production mode', async () => {
+      @Component({
+        selector: 'app-missing-control-repro',
+        standalone: true,
+        imports: [ReactiveFormsModule],
+        template: `
+          <form [formGroup]="form">
+            <ng-container formGroupName="options">
+              @for (id of visibleIds; track id) {
+                <input [formControlName]="id" />
+              }
+            </ng-container>
+          </form>
+        `,
+      })
+      class MissingControlRepro {
+        // The template thinks both ids are visible...
+        visibleIds = [1, 2];
+        // ...but the form group was only ever given a control for id 1.
+        form = new FormGroup({
+          options: new FormGroup({
+            1: new FormControl(''),
+          }),
+        });
+      }
+
+      const _global: {ngDevMode: any} = global as any;
+      const originalNgDevMode = _global.ngDevMode;
+      try {
+        _global.ngDevMode = false;
+        TestBed.configureTestingModule({imports: [MissingControlRepro]});
+        const fixture = TestBed.createComponent(MissingControlRepro);
+        const error = await getRenderError(fixture);
+        expect(error instanceof TypeError).toBe(false);
+        // FORM_CONTROL_NAME_MISSING_CONTROL
+        expect((error as any).code).toBe(-1055);
+      } finally {
+        _global.ngDevMode = originalNgDevMode;
+      }
+    });
+
     it('should throw if formControlName is used without a control container', async () => {
       TestBed.overrideComponent(FormGroupComp, {
         set: {
