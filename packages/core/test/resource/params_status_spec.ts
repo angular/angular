@@ -118,4 +118,57 @@ describe('resource with ResourceParamsStatus', () => {
     expect(res.value()).toBe('foo');
     expect(loadCount).toBe(1);
   });
+
+  it('should propagate a different error thrown from params', async () => {
+    const s = signal<string | Error>('foo');
+    const res = await actAsync(() =>
+      resource({
+        params: throwStatusAndErrors(s),
+        loader: async ({params}) => params as string,
+        injector: TestBed.inject(Injector),
+      }),
+    );
+
+    await actAsync(() => s.set(new Error('first')));
+    expect(res.status()).toBe('error');
+    expect(res.error()).toEqual(new Error('first'));
+
+    await actAsync(() => s.set(new Error('second')));
+    expect(res.status()).toBe('error');
+    expect(res.error()).toEqual(new Error('second'));
+  });
+
+  it('should keep the status when an unrelated signal re-runs params that throws the same status', async () => {
+    const unrelated = signal(0);
+    const s = signal<string | ResourceParamsStatus>(ResourceParamsStatus.LOADING);
+    let paramsCount = 0;
+    let loadCount = 0;
+    const res = await actAsync(() =>
+      resource({
+        params: () => {
+          paramsCount++;
+          unrelated();
+          return throwStatusAndErrors(s)();
+        },
+        loader: async ({params}) => {
+          loadCount++;
+          return params;
+        },
+        injector: TestBed.inject(Injector),
+      }),
+    );
+
+    expect(res.status()).toBe('loading');
+    expect(paramsCount).toBe(1);
+
+    await actAsync(() => unrelated.set(1));
+
+    expect(paramsCount).toBe(2);
+    expect(res.status()).toBe('loading');
+    expect(loadCount).toBe(0);
+
+    await actAsync(() => s.set('foo'));
+    expect(res.status()).toBe('resolved');
+    expect(loadCount).toBe(1);
+  });
 });

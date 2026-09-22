@@ -166,17 +166,25 @@ export class ActivatedRoute {
   // ===== Resource integration ======
   // =================================
 
+  /** @internal */
+  _ownResources?: ResourceResult;
+  /** @internal */
+  _ownRawResourcesSignal?: WritableSignal<ResourceResult | undefined>;
+  /** @internal */
+  _resourceContextSignal?: Signal<ResourceResult>;
+
   // Note for framework developers: Unlike `data` and `params`, the `resources` property
   // is assigned once when the route is first initialized and its reference remains stable
   // for the entire lifetime of the `ActivatedRoute` instance. Do NOT replace or swap this
   // reference during pending navigations or route reuse, as doing so breaks reactivity
   // for components subscribed to the underlying resource signals.
   /**
-   * A map of resources for this route.
+   * A map of resources for this route, including resources inherited from ancestor routes.
    *
    * @developerPreview 22.2
    */
   resources?: ResourceResult;
+
   /** @internal */
   _localInjector?: EnvironmentInjector;
   /** @internal */
@@ -397,8 +405,10 @@ export class ActivatedRouteSnapshot {
   _queryParamMap?: ParamMap;
   /** @internal */
   readonly _environmentInjector: EnvironmentInjector;
+
   /**
-   * The result of running the route's resources function.
+   * The result of running the route's resources function, including resources
+   * inherited from ancestor routes.
    * @developerPreview 22.2
    */
   resources?: ResourceResult;

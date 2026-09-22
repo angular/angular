@@ -246,25 +246,35 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
     this.transferState = injector.get(TransferState, undefined, {optional: true}) ?? undefined;
 
-    this.extRequest = linkedSignal<WrappedRequest>(
+    const requestSource = computed(
       () => {
         try {
           setInParamsFunction(true);
-          return {request: request(paramsContext), reload: 0};
+          return {request: request(paramsContext)};
         } catch (error) {
           rethrowFatalErrors(error);
           if (error === ResourceParamsStatus.IDLE) {
-            return {status: 'idle', reload: 0};
+            return {status: 'idle' as const};
           } else if (error === ResourceParamsStatus.LOADING) {
-            return {status: 'loading', reload: 0};
+            return {status: 'loading' as const};
           }
-          return {error: error as Error, reload: 0};
+          return {error: error as Error};
         } finally {
           setInParamsFunction(false);
         }
       },
-      ngDevMode ? createDebugNameObject(debugName, 'extRequest') : undefined,
+      {
+        equal: (a, b) =>
+          Object.is(a.request, b.request) && a.status === b.status && Object.is(a.error, b.error),
+        ...(ngDevMode ? createDebugNameObject(debugName, 'requestSource') : undefined),
+      },
     );
+
+    this.extRequest = linkedSignal({
+      source: requestSource,
+      computation: (source) => ({...source, reload: 0}),
+      ...(ngDevMode ? createDebugNameObject(debugName, 'extRequest') : undefined),
+    });
 
     // The main resource state is managed in a `linkedSignal`, which allows the resource to change
     // state instantaneously when the request signal changes.
