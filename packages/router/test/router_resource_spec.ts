@@ -128,7 +128,6 @@ describe('Router resources integration', () => {
       ]);
 
       await harness.navigateByUrl('/test');
-      await harness.fixture.whenStable();
 
       const route = router.routerState.root.firstChild;
       const resourceRef = route?.resources?.['data'];
@@ -163,7 +162,6 @@ describe('Router resources integration', () => {
       // 2. Now resolve the blocking resource loader
       loaderDeferred.resolve('resolved data');
       await navPromise;
-      await harness.fixture.whenStable();
 
       expect(router.url).toBe('/test');
       const route = router.routerState.root.firstChild;
@@ -313,7 +311,6 @@ describe('Router resources integration', () => {
       ]);
 
       await harness.navigateByUrl('/parent/componentless/child');
-      await harness.fixture.whenStable();
       await timeout(20);
 
       const parentRoute = router.routerState.root.firstChild!;
@@ -534,7 +531,6 @@ describe('Router resources integration', () => {
 
       // Navigate without query params -> params() is undefined -> resource is idle
       await harness.navigateByUrl('/search');
-      await harness.fixture.whenStable();
 
       expect(router.url).toBe('/search');
       const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
@@ -562,8 +558,7 @@ describe('Router resources integration', () => {
       ]);
 
       await harness.navigateByUrl('/test');
-      await harness.fixture.whenStable();
-      const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
+      const resourceRef = router.routerState.root.firstChild?.resources?.['data'] as any;
 
       await timeout(20);
       expect(resourceRef?.value()).toEqual({name: 'user 123'});
@@ -601,7 +596,6 @@ describe('Router resources integration', () => {
       // Fail next navigation
       canActivate = false;
       await harness.navigateByUrl('/test/2');
-      await harness.fixture.whenStable();
 
       // The navigation is cancelled so the resource should retain the old value without loading flicker.
       expect(resourceRef?.value()).toBe('1');
@@ -740,7 +734,6 @@ describe('Router resources integration', () => {
 
       p3.resolve('loaded-3');
       await nav3;
-      await harness.fixture.whenStable();
 
       const resourceRef = router.routerState.root.firstChild?.resources?.['data'];
       expect(resourceRef?.value()).toBe('loaded-3');
@@ -878,7 +871,6 @@ describe('Router resources integration', () => {
       expect(resourceRef?.value()).toBeUndefined();
 
       await nav;
-      await harness.fixture.whenStable();
 
       expect(resourceRef?.isLoading()).toBe(false);
       expect(resourceRef?.value()).toBe('rx loaded 123');
@@ -973,7 +965,6 @@ describe('Router resources integration', () => {
         // Resolve user
         resolveUser({id: 'u1', teamId: 't42'});
         await nav;
-        await harness.fixture.whenStable();
 
         expect(router.url).toBe('/user-team');
         const resources = router.routerState.root.firstChild?.resources;
@@ -1036,7 +1027,6 @@ describe('Router resources integration', () => {
         // Resolve child
         resolveChild({role: 'admin', permissions: ['read', 'write']});
         await nav;
-        await harness.fixture.whenStable();
 
         expect(router.url).toBe('/user/1/details');
         const parentRoute = router.routerState.root.firstChild!;
@@ -1063,7 +1053,7 @@ describe('Router resources integration', () => {
           }
         }
 
-        const {harness, router} = await setupRouter([
+        const {harness} = await setupRouter([
           {
             path: 'user',
             component: UserProfileCmp,
@@ -1076,14 +1066,13 @@ describe('Router resources integration', () => {
         ]);
 
         const instance = await harness.navigateByUrl('/user', UserProfileCmp);
-        await harness.fixture.whenStable();
 
         expect(fetchCount).toBe(1);
         expect(instance.userResource?.value()).toBe('User #1');
 
         const reloaded = instance.refreshUser();
         expect(reloaded).toBe(true);
-        await harness.fixture.whenStable();
+        await timeout();
 
         expect(fetchCount).toBe(2);
         expect(instance.userResource?.value()).toBe('User #2');
@@ -1136,7 +1125,6 @@ describe('Router resources integration', () => {
         ]);
 
         await harness.navigateByUrl('/custom');
-        await harness.fixture.whenStable();
 
         const route = router.routerState.root.firstChild!;
         expect(route.resources?.['custom']?.reload()).toBe(false);
