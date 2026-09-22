@@ -44,6 +44,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     DUPLICATE_NG_MODULE_ID = 921,
     // (undocumented)
+    EVENT_REPLAY_CONTRACT_ALREADY_CONSUMED = 511,
+    // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
