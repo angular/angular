@@ -274,7 +274,7 @@ The npm packages of the Angular framework are a good reference point for APF-com
 Browse the file layout and npm package on UNPKG:
 
 <docs-pill-row>
-  <docs-pill href="https://app.unpkg.com/@angular/core@22.1.7" title="@angular/core package"/>
+  <docs-pill href="https://app.unpkg.com/@angular/core@latest" title="@angular/core package"/>
   <docs-pill href="https://app.unpkg.com/@angular/material@22.1.7" title="@angular/material package"/>
 </docs-pill-row>
 
