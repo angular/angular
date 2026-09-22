@@ -264,7 +264,7 @@ export type StaticProvider =
   | any[];
 
 /**
- * Configures the `Injector` to return an instance of `Type` when `Type' is used as the token.
+ * Configures the `Injector` to return an instance of `Type` when `Type` is used as the token.
  *
  * Create an instance by invoking the `new` operator and supplying additional arguments.
  * This form is a short form of `TypeProvider`;
