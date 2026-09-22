@@ -252,7 +252,7 @@ More info: [webpack docs on side effects](https://github.com/webpack/webpack/tre
 ES2022 Language level is now the default language level that is consumed by Angular CLI and other tooling.
 The Angular CLI down-levels the bundle to a language level that is supported by all targeted browsers at application build time.
 
-### d.ts bundling / type definition flattening
+### Flattening of Type Definitions (`.d.ts` bundling)
 
 As of APF v8, it is recommended to bundle TypeScript definitions.
 Bundling of type definitions can significantly speed up compilations for users, especially if there are many individual `.ts` source files in your library.
@@ -275,7 +275,7 @@ Browse the file layout and npm package on UNPKG:
 
 <docs-pill-row>
   <docs-pill href="https://app.unpkg.com/@angular/core@latest" title="@angular/core package"/>
-  <docs-pill href="https://app.unpkg.com/@angular/material@22.1.7" title="@angular/material package"/>
+  <docs-pill href="https://app.unpkg.com/@angular/material@latest" title="@angular/material package"/>
 </docs-pill-row>
 
 ## Definition of terms
