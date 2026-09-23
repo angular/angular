@@ -527,8 +527,8 @@ importers:
         specifier: 9.0.0
         version: 9.0.0
       emoji-regex:
-        specifier: 10.6.0
-        version: 10.6.0
+        specifier: 11.0.0
+        version: 11.0.0
       fflate:
         specifier: 0.8.3
         version: 0.8.3
@@ -651,8 +651,8 @@ importers:
         specifier: ~9.0.0
         version: 9.0.0
       emoji-regex:
-        specifier: ~10.6.0
-        version: 10.6.0
+        specifier: ~11.0.0
+        version: 11.0.0
       fflate:
         specifier: ^0.8.2
         version: 0.8.3
@@ -6591,6 +6591,9 @@ packages:
 
   emoji-regex@10.6.0:
     resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
+
+  emoji-regex@11.0.0:
+    resolution: {integrity: sha512-2qQtc7syPcJmvF7BfKxBvwgvhzDth6u3q23+Jr4JOQUcmMGgmj7B4/ePZ2DmOhrrb77S8kMNHq2kilVASysfqA==}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -17214,6 +17217,8 @@ snapshots:
   emittery@0.13.1: {}
 
   emoji-regex@10.6.0: {}
+
+  emoji-regex@11.0.0: {}
 
   emoji-regex@8.0.0: {}
 
