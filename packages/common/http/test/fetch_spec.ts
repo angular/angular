@@ -271,6 +271,15 @@ describe('FetchBackend', () => {
     expect(res.error).toBe('simple text error');
   });
 
+  it('emits an HttpJsonParseError when a json success response cannot be parsed', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'not json');
+    const events = await promise;
+    const res = events[1] as any as HttpErrorResponse;
+    expect(res.error.error instanceof SyntaxError).toBeTrue();
+    expect(res.error.text).toBe('not json');
+  });
+
   it('handles a json error response with XSSI prefix', async () => {
     const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
     fetchMock.mockFlush(

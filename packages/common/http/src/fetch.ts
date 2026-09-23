@@ -28,6 +28,7 @@ import {
   HttpEvent,
   HttpEventType,
   HttpHeaderResponse,
+  HttpJsonParseError,
   HttpResponse,
 } from './response';
 
@@ -357,7 +358,7 @@ export class FetchBackend implements HttpBackend {
           if (status < 200 || status >= 300) {
             return text;
           }
-          throw e;
+          throw {error: e, text} as HttpJsonParseError;
         }
       case 'text':
         return getTextDecoder(contentType).decode(binContent);
