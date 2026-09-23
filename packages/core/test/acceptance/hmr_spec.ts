@@ -30,7 +30,6 @@ import {
   OnInit,
   Output,
   provideZoneChangeDetection,
-  provideZonelessChangeDetection,
   QueryList,
   signal,
   SimpleChanges,
@@ -53,117 +52,118 @@ import {angularCoreEnv} from '../../src/render3/jit/environment';
 import {getComponentLView} from '../../src/render3/util/discovery_utils';
 
 describe('hot module replacement', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
+  describe('with zone change detection', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideZoneChangeDetection()],
+      });
     });
-  });
-  it('should recreate a single usage of a basic component', () => {
-    let instance!: ChildCmp;
-    const initialMetadata: Component = {
-      selector: 'child-cmp',
-      template: 'Hello <strong>{{state}}</strong>',
-      changeDetection: ChangeDetectionStrategy.Eager,
-    };
+    it('should recreate a single usage of a basic component', () => {
+      let instance!: ChildCmp;
+      const initialMetadata: Component = {
+        selector: 'child-cmp',
+        template: 'Hello <strong>{{state}}</strong>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      };
 
-    @Component(initialMetadata)
-    class ChildCmp {
-      state = 0;
+      @Component(initialMetadata)
+      class ChildCmp {
+        state = 0;
 
-      constructor() {
-        instance = this;
+        constructor() {
+          instance = this;
+        }
       }
-    }
 
-    @Component({
-      imports: [ChildCmp],
-      template: '<child-cmp/>',
+      @Component({
+        imports: [ChildCmp],
+        template: '<child-cmp/>',
 
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class RootCmp {}
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {}
 
-    const fixture = TestBed.createComponent(RootCmp);
-    fixture.detectChanges();
-    markNodesAsCreatedInitially(fixture.nativeElement);
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+      markNodesAsCreatedInitially(fixture.nativeElement);
 
-    expectHTML(
-      fixture.nativeElement,
-      `
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp>
           Hello <strong>0</strong>
         </child-cmp>
       `,
-    );
+      );
 
-    instance.state = 1;
-    fixture.detectChanges();
-    expectHTML(
-      fixture.nativeElement,
-      `
+      instance.state = 1;
+      fixture.detectChanges();
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp>
           Hello <strong>1</strong>
         </child-cmp>
       `,
-    );
+      );
 
-    replaceMetadata(ChildCmp, {
-      ...initialMetadata,
-      template: `Changed <strong>{{state}}</strong>!`,
-      changeDetection: ChangeDetectionStrategy.Eager,
-    });
-    fixture.detectChanges();
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: `Changed <strong>{{state}}</strong>!`,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      });
+      fixture.detectChanges();
 
-    const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
-    verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-    verifyNodesWereRecreated(recreatedNodes);
+      const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+      verifyNodesWereRecreated(recreatedNodes);
 
-    expectHTML(
-      fixture.nativeElement,
-      `
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp>
           Changed <strong>1</strong>!
         </child-cmp>
       `,
-    );
-  });
+      );
+    });
 
-  it('should recreate multiple usages of a complex component', () => {
-    const initialMetadata: Component = {
-      selector: 'child-cmp',
-      template: '<span>ChildCmp (orig)</span><h1>{{ text }}</h1>',
-      changeDetection: ChangeDetectionStrategy.Eager,
-    };
+    it('should recreate multiple usages of a complex component', () => {
+      const initialMetadata: Component = {
+        selector: 'child-cmp',
+        template: '<span>ChildCmp (orig)</span><h1>{{ text }}</h1>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      };
 
-    @Component(initialMetadata)
-    class ChildCmp {
-      @Input() text = '[empty]';
-    }
+      @Component(initialMetadata)
+      class ChildCmp {
+        @Input() text = '[empty]';
+      }
 
-    @Component({
-      imports: [ChildCmp],
-      template: `
-        <i>Unrelated node #1</i>
-        <child-cmp text="A" />
-        <u>Unrelated node #2</u>
-        <child-cmp text="B" />
-        <b>Unrelated node #3</b>
-        <main>
-          <child-cmp text="C" />
-        </main>
-      `,
+      @Component({
+        imports: [ChildCmp],
+        template: `
+          <i>Unrelated node #1</i>
+          <child-cmp text="A" />
+          <u>Unrelated node #2</u>
+          <child-cmp text="B" />
+          <b>Unrelated node #3</b>
+          <main>
+            <child-cmp text="C" />
+          </main>
+        `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class RootCmp {}
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {}
 
-    const fixture = TestBed.createComponent(RootCmp);
-    fixture.detectChanges();
-    markNodesAsCreatedInitially(fixture.nativeElement);
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+      markNodesAsCreatedInitially(fixture.nativeElement);
 
-    expectHTML(
-      fixture.nativeElement,
-      `
+      expectHTML(
+        fixture.nativeElement,
+        `
         <i>Unrelated node #1</i>
         <child-cmp text="A">
           <span>ChildCmp (orig)</span><h1>A</h1>
@@ -179,26 +179,26 @@ describe('hot module replacement', () => {
           </child-cmp>
         </main>
       `,
-    );
+      );
 
-    replaceMetadata(ChildCmp, {
-      ...initialMetadata,
-      template: `
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: `
         <p title="extra attr">ChildCmp (hmr)</p>
         <h2>{{ text }}</h2>
         <div>Extra node!</div>
       `,
-      changeDetection: ChangeDetectionStrategy.Eager,
-    });
-    fixture.detectChanges();
+        changeDetection: ChangeDetectionStrategy.Eager,
+      });
+      fixture.detectChanges();
 
-    const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
-    verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-    verifyNodesWereRecreated(recreatedNodes);
+      const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+      verifyNodesWereRecreated(recreatedNodes);
 
-    expectHTML(
-      fixture.nativeElement,
-      `
+      expectHTML(
+        fixture.nativeElement,
+        `
         <i>Unrelated node #1</i>
         <child-cmp text="A">
           <p title="extra attr">ChildCmp (hmr)</p>
@@ -220,186 +220,186 @@ describe('hot module replacement', () => {
           </child-cmp>
         </main>
       `,
-    );
-  });
+      );
+    });
 
-  it('should not recreate sub-classes of a component being replaced', () => {
-    const initialMetadata: Component = {
-      selector: 'child-cmp',
-      template: 'Base class',
-      changeDetection: ChangeDetectionStrategy.Eager,
-    };
+    it('should not recreate sub-classes of a component being replaced', () => {
+      const initialMetadata: Component = {
+        selector: 'child-cmp',
+        template: 'Base class',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      };
 
-    @Component(initialMetadata)
-    class ChildCmp {}
+      @Component(initialMetadata)
+      class ChildCmp {}
 
-    @Component({
-      selector: 'child-sub-cmp',
-      template: 'Sub class',
+      @Component({
+        selector: 'child-sub-cmp',
+        template: 'Sub class',
 
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class ChildSubCmp extends ChildCmp {}
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class ChildSubCmp extends ChildCmp {}
 
-    @Component({
-      imports: [ChildCmp, ChildSubCmp],
-      template: `<child-cmp />|<child-sub-cmp />`,
+      @Component({
+        imports: [ChildCmp, ChildSubCmp],
+        template: `<child-cmp />|<child-sub-cmp />`,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class RootCmp {}
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {}
 
-    const fixture = TestBed.createComponent(RootCmp);
-    fixture.detectChanges();
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
 
-    expectHTML(
-      fixture.nativeElement,
-      `
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp>Base class</child-cmp>|
         <child-sub-cmp>Sub class</child-sub-cmp>
       `,
-    );
+      );
 
-    replaceMetadata(ChildCmp, {
-      ...initialMetadata,
-      template: `Replaced!`,
-      changeDetection: ChangeDetectionStrategy.Eager,
-    });
-    fixture.detectChanges();
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: `Replaced!`,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      });
+      fixture.detectChanges();
 
-    expectHTML(
-      fixture.nativeElement,
-      `
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp>Replaced!</child-cmp>|
         <child-sub-cmp>Sub class</child-sub-cmp>
       `,
-    );
-  });
-
-  it('should replace a component using shadow DOM encapsulation', () => {
-    // Domino doesn't support shadow DOM.
-    if (isNode) {
-      return;
-    }
-
-    let instance!: ChildCmp;
-    const initialMetadata: Component = {
-      encapsulation: ViewEncapsulation.ShadowDom,
-      selector: 'child-cmp',
-      template: 'Hello <strong>{{state}}</strong>',
-      styles: `strong {color: red;}`,
-      changeDetection: ChangeDetectionStrategy.Eager,
-    };
-
-    @Component(initialMetadata)
-    class ChildCmp {
-      state = 0;
-
-      constructor() {
-        instance = this;
-      }
-    }
-
-    @Component({
-      imports: [ChildCmp],
-      template: '<child-cmp/>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class RootCmp {}
-
-    const fixture = TestBed.createComponent(RootCmp);
-    fixture.detectChanges();
-    const getShadowRoot = () => fixture.nativeElement.querySelector('child-cmp').shadowRoot;
-
-    markNodesAsCreatedInitially(getShadowRoot());
-    expectHTML(getShadowRoot(), `<style>strong {color: red;}</style>Hello <strong>0</strong>`);
-
-    instance.state = 1;
-    fixture.detectChanges();
-    expectHTML(getShadowRoot(), `<style>strong {color: red;}</style>Hello <strong>1</strong>`);
-
-    replaceMetadata(ChildCmp, {
-      ...initialMetadata,
-      template: `Changed <strong>{{state}}</strong>!`,
-      styles: `strong {background: pink;}`,
-      changeDetection: ChangeDetectionStrategy.Eager,
+      );
     });
-    fixture.detectChanges();
 
-    verifyNodesWereRecreated([
-      fixture.nativeElement.querySelector('child-cmp'),
-      ...childrenOf(getShadowRoot()),
-    ]);
+    it('should replace a component using shadow DOM encapsulation', () => {
+      // Domino doesn't support shadow DOM.
+      if (isNode) {
+        return;
+      }
 
-    expectHTML(
-      getShadowRoot(),
-      `<style>strong {background: pink;}</style>Changed <strong>1</strong>!`,
-    );
-  });
+      let instance!: ChildCmp;
+      const initialMetadata: Component = {
+        encapsulation: ViewEncapsulation.ShadowDom,
+        selector: 'child-cmp',
+        template: 'Hello <strong>{{state}}</strong>',
+        styles: `strong {color: red;}`,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      };
 
-  it('should continue binding inputs to a component that is replaced', () => {
-    const initialMetadata: Component = {
-      selector: 'child-cmp',
-      template: '<span>{{staticValue}}</span><strong>{{dynamicValue}}</strong>',
-      changeDetection: ChangeDetectionStrategy.Eager,
-    };
+      @Component(initialMetadata)
+      class ChildCmp {
+        state = 0;
 
-    @Component(initialMetadata)
-    class ChildCmp {
-      @Input() staticValue = '0';
-      @Input() dynamicValue = '0';
-    }
+        constructor() {
+          instance = this;
+        }
+      }
 
-    @Component({
-      imports: [ChildCmp],
-      template: `<child-cmp staticValue="1" [dynamicValue]="dynamicValue" />`,
+      @Component({
+        imports: [ChildCmp],
+        template: '<child-cmp/>',
 
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class RootCmp {
-      dynamicValue = '1';
-    }
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {}
 
-    const fixture = TestBed.createComponent(RootCmp);
-    fixture.detectChanges();
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+      const getShadowRoot = () => fixture.nativeElement.querySelector('child-cmp').shadowRoot;
 
-    expectHTML(
-      fixture.nativeElement,
-      `
+      markNodesAsCreatedInitially(getShadowRoot());
+      expectHTML(getShadowRoot(), `<style>strong {color: red;}</style>Hello <strong>0</strong>`);
+
+      instance.state = 1;
+      fixture.detectChanges();
+      expectHTML(getShadowRoot(), `<style>strong {color: red;}</style>Hello <strong>1</strong>`);
+
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: `Changed <strong>{{state}}</strong>!`,
+        styles: `strong {background: pink;}`,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      });
+      fixture.detectChanges();
+
+      verifyNodesWereRecreated([
+        fixture.nativeElement.querySelector('child-cmp'),
+        ...childrenOf(getShadowRoot()),
+      ]);
+
+      expectHTML(
+        getShadowRoot(),
+        `<style>strong {background: pink;}</style>Changed <strong>1</strong>!`,
+      );
+    });
+
+    it('should continue binding inputs to a component that is replaced', () => {
+      const initialMetadata: Component = {
+        selector: 'child-cmp',
+        template: '<span>{{staticValue}}</span><strong>{{dynamicValue}}</strong>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      };
+
+      @Component(initialMetadata)
+      class ChildCmp {
+        @Input() staticValue = '0';
+        @Input() dynamicValue = '0';
+      }
+
+      @Component({
+        imports: [ChildCmp],
+        template: `<child-cmp staticValue="1" [dynamicValue]="dynamicValue" />`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        dynamicValue = '1';
+      }
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp staticvalue="1">
           <span>1</span>
           <strong>1</strong>
         </child-cmp>
       `,
-    );
+      );
 
-    fixture.componentInstance.dynamicValue = '2';
-    fixture.detectChanges();
-    expectHTML(
-      fixture.nativeElement,
-      `
+      fixture.componentInstance.dynamicValue = '2';
+      fixture.detectChanges();
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp staticvalue="1">
           <span>1</span>
           <strong>2</strong>
         </child-cmp>
       `,
-    );
+      );
 
-    replaceMetadata(ChildCmp, {
-      ...initialMetadata,
-      template: `
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: `
         <main>
           <span>{{staticValue}}</span>
           <strong>{{dynamicValue}}</strong>
         </main>
       `,
-      changeDetection: ChangeDetectionStrategy.Eager,
-    });
-    fixture.detectChanges();
-    expectHTML(
-      fixture.nativeElement,
-      `
+        changeDetection: ChangeDetectionStrategy.Eager,
+      });
+      fixture.detectChanges();
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp staticvalue="1">
           <main>
             <span>1</span>
@@ -407,13 +407,13 @@ describe('hot module replacement', () => {
           </main>
         </child-cmp>
       `,
-    );
+      );
 
-    fixture.componentInstance.dynamicValue = '3';
-    fixture.detectChanges();
-    expectHTML(
-      fixture.nativeElement,
-      `
+      fixture.componentInstance.dynamicValue = '3';
+      fixture.detectChanges();
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp staticvalue="1">
           <main>
             <span>1</span>
@@ -421,47 +421,47 @@ describe('hot module replacement', () => {
           </main>
         </child-cmp>
       `,
-    );
-  });
+      );
+    });
 
-  it('should recreate a component used inside @for', () => {
-    const initialMetadata: Component = {
-      selector: 'child-cmp',
-      template: 'Hello <strong>{{value}}</strong>',
-      changeDetection: ChangeDetectionStrategy.Eager,
-    };
+    it('should recreate a component used inside @for', () => {
+      const initialMetadata: Component = {
+        selector: 'child-cmp',
+        template: 'Hello <strong>{{value}}</strong>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      };
 
-    @Component(initialMetadata)
-    class ChildCmp {
-      @Input() value = '[empty]';
-    }
+      @Component(initialMetadata)
+      class ChildCmp {
+        @Input() value = '[empty]';
+      }
 
-    @Component({
-      imports: [ChildCmp],
-      template: `
-        @for (current of items; track current.id) {
-          <child-cmp [value]="current.name" />
-          <hr />
-        }
-      `,
+      @Component({
+        imports: [ChildCmp],
+        template: `
+          @for (current of items; track current.id) {
+            <child-cmp [value]="current.name" />
+            <hr />
+          }
+        `,
 
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class RootCmp {
-      items = [
-        {name: 'A', id: 1},
-        {name: 'B', id: 2},
-        {name: 'C', id: 3},
-      ];
-    }
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        items = [
+          {name: 'A', id: 1},
+          {name: 'B', id: 2},
+          {name: 'C', id: 3},
+        ];
+      }
 
-    const fixture = TestBed.createComponent(RootCmp);
-    fixture.detectChanges();
-    markNodesAsCreatedInitially(fixture.nativeElement);
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+      markNodesAsCreatedInitially(fixture.nativeElement);
 
-    expectHTML(
-      fixture.nativeElement,
-      `
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp>Hello <strong>A</strong></child-cmp>
         <hr>
         <child-cmp>Hello <strong>B</strong></child-cmp>
@@ -469,22 +469,22 @@ describe('hot module replacement', () => {
         <child-cmp>Hello <strong>C</strong></child-cmp>
         <hr>
       `,
-    );
+      );
 
-    replaceMetadata(ChildCmp, {
-      ...initialMetadata,
-      template: `Changed <strong>{{value}}</strong>!`,
-      changeDetection: ChangeDetectionStrategy.Eager,
-    });
-    fixture.detectChanges();
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: `Changed <strong>{{value}}</strong>!`,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      });
+      fixture.detectChanges();
 
-    let recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
-    verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-    verifyNodesWereRecreated(recreatedNodes);
+      let recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+      verifyNodesWereRecreated(recreatedNodes);
 
-    expectHTML(
-      fixture.nativeElement,
-      `
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp>Changed <strong>A</strong>!</child-cmp>
         <hr>
         <child-cmp>Changed <strong>B</strong>!</child-cmp>
@@ -492,155 +492,40 @@ describe('hot module replacement', () => {
         <child-cmp>Changed <strong>C</strong>!</child-cmp>
         <hr>
       `,
-    );
+      );
 
-    fixture.componentInstance.items.pop();
-    fixture.detectChanges();
+      fixture.componentInstance.items.pop();
+      fixture.detectChanges();
 
-    expectHTML(
-      fixture.nativeElement,
-      `
+      expectHTML(
+        fixture.nativeElement,
+        `
         <child-cmp>Changed <strong>A</strong>!</child-cmp>
         <hr>
         <child-cmp>Changed <strong>B</strong>!</child-cmp>
         <hr>
       `,
-    );
-    recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
-    verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-    verifyNodesWereRecreated(recreatedNodes);
-  });
-
-  it('should be able to replace a component that injects ViewContainerRef', () => {
-    const initialMetadata: Component = {
-      selector: 'child-cmp',
-      template: 'Hello <strong>world</strong>',
-      changeDetection: ChangeDetectionStrategy.Eager,
-    };
-
-    @Component(initialMetadata)
-    class ChildCmp {
-      vcr = inject(ViewContainerRef);
-    }
-
-    @Component({
-      imports: [ChildCmp],
-      template: '<child-cmp/>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class RootCmp {}
-
-    const fixture = TestBed.createComponent(RootCmp);
-    fixture.detectChanges();
-    markNodesAsCreatedInitially(fixture.nativeElement);
-
-    expectHTML(
-      fixture.nativeElement,
-      `
-        <child-cmp>
-          Hello <strong>world</strong>
-        </child-cmp>
-      `,
-    );
-
-    replaceMetadata(ChildCmp, {
-      ...initialMetadata,
-      template: `Hello <i>Bob</i>!`,
-      changeDetection: ChangeDetectionStrategy.Eager,
+      );
+      recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+      verifyNodesWereRecreated(recreatedNodes);
     });
-    fixture.detectChanges();
 
-    const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
-    verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-    verifyNodesWereRecreated(recreatedNodes);
-
-    expectHTML(
-      fixture.nativeElement,
-      `
-        <child-cmp>
-          Hello <i>Bob</i>!
-        </child-cmp>
-      `,
-    );
-  });
-
-  it('should carry over dependencies defined by setComponentScope', () => {
-    // In some cases the AoT compiler produces a `setComponentScope` for non-standalone
-    // components. We simulate it here by declaring two components that are not standalone
-    // and manually calling `setComponentScope`.
-    @Component({
-      selector: 'child-cmp',
-      template: 'hello',
-      standalone: false,
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class ChildCmp {}
-
-    @Component({
-      template: 'Initial <child-cmp/>',
-      standalone: false,
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class RootCmp {}
-
-    ɵɵsetComponentScope(RootCmp as ComponentType<RootCmp>, [ChildCmp], []);
-
-    const fixture = TestBed.createComponent(RootCmp);
-    fixture.detectChanges();
-    markNodesAsCreatedInitially(fixture.nativeElement);
-    expectHTML(fixture.nativeElement, 'Initial <child-cmp>hello</child-cmp>');
-
-    replaceMetadata(RootCmp, {
-      standalone: false,
-      template: 'Changed <child-cmp/>',
-      changeDetection: ChangeDetectionStrategy.Eager,
-    });
-    fixture.detectChanges();
-
-    const recreatedNodes = childrenOf(fixture.nativeElement);
-    verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-    verifyNodesWereRecreated(recreatedNodes);
-
-    expectHTML(fixture.nativeElement, 'Changed <child-cmp>hello</child-cmp>');
-  });
-
-  describe('queries', () => {
-    it('should update ViewChildren query results', async () => {
-      @Component({
-        selector: 'child-cmp',
-        template: '<span>ChildCmp {{ text }}</span>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class ChildCmp {
-        @Input() text = '[empty]';
-      }
-
-      let instance!: ParentCmp;
+    it('should be able to replace a component that injects ViewContainerRef', () => {
       const initialMetadata: Component = {
-        selector: 'parent-cmp',
-        imports: [ChildCmp],
-        template: `
-          <child-cmp text="A"/>
-          <child-cmp text="B"/>
-        `,
-
+        selector: 'child-cmp',
+        template: 'Hello <strong>world</strong>',
         changeDetection: ChangeDetectionStrategy.Eager,
       };
 
       @Component(initialMetadata)
-      class ParentCmp {
-        @ViewChildren(ChildCmp) childCmps!: QueryList<ChildCmp>;
-
-        constructor() {
-          instance = this;
-        }
+      class ChildCmp {
+        vcr = inject(ViewContainerRef);
       }
 
       @Component({
-        imports: [ParentCmp],
-        template: `<parent-cmp />`,
+        imports: [ChildCmp],
+        template: '<child-cmp/>',
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -648,32 +533,147 @@ describe('hot module replacement', () => {
 
       const fixture = TestBed.createComponent(RootCmp);
       fixture.detectChanges();
+      markNodesAsCreatedInitially(fixture.nativeElement);
 
-      const initialComps = instance.childCmps.toArray().slice();
-      expect(initialComps.length).toBe(2);
+      expectHTML(
+        fixture.nativeElement,
+        `
+        <child-cmp>
+          Hello <strong>world</strong>
+        </child-cmp>
+      `,
+      );
 
-      replaceMetadata(ParentCmp, {
+      replaceMetadata(ChildCmp, {
         ...initialMetadata,
-        template: `
+        template: `Hello <i>Bob</i>!`,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      });
+      fixture.detectChanges();
+
+      const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+      verifyNodesWereRecreated(recreatedNodes);
+
+      expectHTML(
+        fixture.nativeElement,
+        `
+        <child-cmp>
+          Hello <i>Bob</i>!
+        </child-cmp>
+      `,
+      );
+    });
+
+    it('should carry over dependencies defined by setComponentScope', () => {
+      // In some cases the AoT compiler produces a `setComponentScope` for non-standalone
+      // components. We simulate it here by declaring two components that are not standalone
+      // and manually calling `setComponentScope`.
+      @Component({
+        selector: 'child-cmp',
+        template: 'hello',
+        standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class ChildCmp {}
+
+      @Component({
+        template: 'Initial <child-cmp/>',
+        standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {}
+
+      ɵɵsetComponentScope(RootCmp as ComponentType<RootCmp>, [ChildCmp], []);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+      markNodesAsCreatedInitially(fixture.nativeElement);
+      expectHTML(fixture.nativeElement, 'Initial <child-cmp>hello</child-cmp>');
+
+      replaceMetadata(RootCmp, {
+        standalone: false,
+        template: 'Changed <child-cmp/>',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      });
+      fixture.detectChanges();
+
+      const recreatedNodes = childrenOf(fixture.nativeElement);
+      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+      verifyNodesWereRecreated(recreatedNodes);
+
+      expectHTML(fixture.nativeElement, 'Changed <child-cmp>hello</child-cmp>');
+    });
+
+    describe('queries', () => {
+      it('should update ViewChildren query results', async () => {
+        @Component({
+          selector: 'child-cmp',
+          template: '<span>ChildCmp {{ text }}</span>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class ChildCmp {
+          @Input() text = '[empty]';
+        }
+
+        let instance!: ParentCmp;
+        const initialMetadata: Component = {
+          selector: 'parent-cmp',
+          imports: [ChildCmp],
+          template: `
+          <child-cmp text="A"/>
+          <child-cmp text="B"/>
+        `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ParentCmp {
+          @ViewChildren(ChildCmp) childCmps!: QueryList<ChildCmp>;
+
+          constructor() {
+            instance = this;
+          }
+        }
+
+        @Component({
+          imports: [ParentCmp],
+          template: `<parent-cmp />`,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+
+        const initialComps = instance.childCmps.toArray().slice();
+        expect(initialComps.length).toBe(2);
+
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `
           <child-cmp text="A"/>
           <child-cmp text="B"/>
           <child-cmp text="C"/>
           <child-cmp text="D"/>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        expect(instance.childCmps.length).toBe(4);
+        expect(instance.childCmps.toArray().every((c) => !initialComps.includes(c))).toBe(true);
       });
-      fixture.detectChanges();
 
-      expect(instance.childCmps.length).toBe(4);
-      expect(instance.childCmps.toArray().every((c) => !initialComps.includes(c))).toBe(true);
-    });
-
-    it('should update ViewChild when the string points to a different element', async () => {
-      let instance!: ParentCmp;
-      const initialMetadata: Component = {
-        selector: 'parent-cmp',
-        template: `
+      it('should update ViewChild when the string points to a different element', async () => {
+        let instance!: ParentCmp;
+        const initialMetadata: Component = {
+          selector: 'parent-cmp',
+          template: `
           <div>
             <span>
               <strong #ref></strong>
@@ -681,33 +681,33 @@ describe('hot module replacement', () => {
           </div>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
 
-      @Component(initialMetadata)
-      class ParentCmp {
-        @ViewChild('ref') ref!: ElementRef<HTMLElement>;
+        @Component(initialMetadata)
+        class ParentCmp {
+          @ViewChild('ref') ref!: ElementRef<HTMLElement>;
 
-        constructor() {
-          instance = this;
+          constructor() {
+            instance = this;
+          }
         }
-      }
 
-      @Component({
-        imports: [ParentCmp],
-        template: `<parent-cmp />`,
+        @Component({
+          imports: [ParentCmp],
+          template: `<parent-cmp />`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
 
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expect(instance.ref.nativeElement.tagName).toBe('STRONG');
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expect(instance.ref.nativeElement.tagName).toBe('STRONG');
 
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: `
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `
           <div>
             <span>
               <strong></strong>
@@ -719,184 +719,184 @@ describe('hot module replacement', () => {
           </main>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        expect(instance.ref.nativeElement.tagName).toBe('SPAN');
       });
-      fixture.detectChanges();
 
-      expect(instance.ref.nativeElement.tagName).toBe('SPAN');
-    });
+      it('should update ViewChild when the injection token points to a different directive', async () => {
+        const token = new InjectionToken<DirA | DirB>('token');
 
-    it('should update ViewChild when the injection token points to a different directive', async () => {
-      const token = new InjectionToken<DirA | DirB>('token');
+        @Directive({
+          selector: '[dir-a]',
+          providers: [{provide: token, useExisting: DirA}],
+        })
+        class DirA {}
 
-      @Directive({
-        selector: '[dir-a]',
-        providers: [{provide: token, useExisting: DirA}],
-      })
-      class DirA {}
+        @Directive({
+          selector: '[dir-b]',
+          providers: [{provide: token, useExisting: DirB}],
+        })
+        class DirB {}
 
-      @Directive({
-        selector: '[dir-b]',
-        providers: [{provide: token, useExisting: DirB}],
-      })
-      class DirB {}
+        let instance!: ParentCmp;
+        const initialMetadata: Component = {
+          selector: 'parent-cmp',
+          imports: [DirA, DirB],
+          template: `<div #ref dir-a></div>`,
 
-      let instance!: ParentCmp;
-      const initialMetadata: Component = {
-        selector: 'parent-cmp',
-        imports: [DirA, DirB],
-        template: `<div #ref dir-a></div>`,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
+        @Component(initialMetadata)
+        class ParentCmp {
+          @ViewChild('ref', {read: token}) ref!: DirA | DirB;
 
-      @Component(initialMetadata)
-      class ParentCmp {
-        @ViewChild('ref', {read: token}) ref!: DirA | DirB;
-
-        constructor() {
-          instance = this;
+          constructor() {
+            instance = this;
+          }
         }
-      }
 
-      @Component({
-        imports: [ParentCmp],
-        template: `<parent-cmp />`,
+        @Component({
+          imports: [ParentCmp],
+          template: `<parent-cmp />`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
 
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expect(instance.ref).toBeInstanceOf(DirA);
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expect(instance.ref).toBeInstanceOf(DirA);
 
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: `
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `
           <section>
             <div #ref dir-b></div>
           </section>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        expect(instance.ref).toBeInstanceOf(DirB);
       });
-      fixture.detectChanges();
 
-      expect(instance.ref).toBeInstanceOf(DirB);
-    });
+      it('should update ViewChild when the injection token stops pointing to anything', async () => {
+        const token = new InjectionToken<Dir>('token');
 
-    it('should update ViewChild when the injection token stops pointing to anything', async () => {
-      const token = new InjectionToken<Dir>('token');
+        @Directive({
+          selector: '[dir]',
+          providers: [{provide: token, useExisting: Dir}],
+        })
+        class Dir {}
 
-      @Directive({
-        selector: '[dir]',
-        providers: [{provide: token, useExisting: Dir}],
-      })
-      class Dir {}
+        let instance!: ParentCmp;
+        const initialMetadata: Component = {
+          selector: 'parent-cmp',
+          imports: [Dir],
+          template: `<div #ref dir></div>`,
 
-      let instance!: ParentCmp;
-      const initialMetadata: Component = {
-        selector: 'parent-cmp',
-        imports: [Dir],
-        template: `<div #ref dir></div>`,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
+        @Component(initialMetadata)
+        class ParentCmp {
+          @ViewChild('ref', {read: token}) ref!: Dir;
 
-      @Component(initialMetadata)
-      class ParentCmp {
-        @ViewChild('ref', {read: token}) ref!: Dir;
-
-        constructor() {
-          instance = this;
+          constructor() {
+            instance = this;
+          }
         }
-      }
 
-      @Component({
-        imports: [ParentCmp],
-        template: `<parent-cmp />`,
+        @Component({
+          imports: [ParentCmp],
+          template: `<parent-cmp />`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
 
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expect(instance.ref).toBeInstanceOf(Dir);
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expect(instance.ref).toBeInstanceOf(Dir);
 
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: `<div #ref></div>`,
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `<div #ref></div>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        expect(instance.ref).toBeFalsy();
       });
-      fixture.detectChanges();
-
-      expect(instance.ref).toBeFalsy();
     });
-  });
 
-  describe('content projection', () => {
-    it('should work with content projection', () => {
-      const initialMetadata: Component = {
-        selector: 'parent-cmp',
-        template: `<ng-content/>`,
+    describe('content projection', () => {
+      it('should work with content projection', () => {
+        const initialMetadata: Component = {
+          selector: 'parent-cmp',
+          template: `<ng-content/>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
 
-      @Component(initialMetadata)
-      class ParentCmp {}
+        @Component(initialMetadata)
+        class ParentCmp {}
 
-      @Component({
-        imports: [ParentCmp],
-        template: `
+        @Component({
+          imports: [ParentCmp],
+          template: `
+            <parent-cmp>
+              <h1>Projected H1</h1>
+              <h2>Projected H2</h2>
+            </parent-cmp>
+          `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+
+        markNodesAsCreatedInitially(fixture.nativeElement);
+        expectHTML(
+          fixture.nativeElement,
+          `
           <parent-cmp>
             <h1>Projected H1</h1>
             <h2>Projected H2</h2>
           </parent-cmp>
         `,
+        );
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-
-      markNodesAsCreatedInitially(fixture.nativeElement);
-      expectHTML(
-        fixture.nativeElement,
-        `
-          <parent-cmp>
-            <h1>Projected H1</h1>
-            <h2>Projected H2</h2>
-          </parent-cmp>
-        `,
-      );
-
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: `
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `
           <section>
             <ng-content/>
           </section>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
 
-      // <h1> and <h2> nodes were not re-created, since they
-      // belong to a parent component, which wasn't HMR'ed.
-      verifyNodesRemainUntouched(fixture.nativeElement.querySelector('h1'));
-      verifyNodesRemainUntouched(fixture.nativeElement.querySelector('h2'));
-      verifyNodesWereRecreated(fixture.nativeElement.querySelectorAll('section'));
+        // <h1> and <h2> nodes were not re-created, since they
+        // belong to a parent component, which wasn't HMR'ed.
+        verifyNodesRemainUntouched(fixture.nativeElement.querySelector('h1'));
+        verifyNodesRemainUntouched(fixture.nativeElement.querySelector('h2'));
+        verifyNodesWereRecreated(fixture.nativeElement.querySelectorAll('section'));
 
-      expectHTML(
-        fixture.nativeElement,
-        `
+        expectHTML(
+          fixture.nativeElement,
+          `
           <parent-cmp>
             <section>
               <h1>Projected H1</h1>
@@ -904,1580 +904,1634 @@ describe('hot module replacement', () => {
             </section>
           </parent-cmp>
         `,
-      );
-    });
+        );
+      });
 
-    it('should handle elements moving around into different slots', () => {
-      // Start off with a single catch-all slot.
-      const initialMetadata: Component = {
-        selector: 'parent-cmp',
-        template: `<ng-content/>`,
+      it('should handle elements moving around into different slots', () => {
+        // Start off with a single catch-all slot.
+        const initialMetadata: Component = {
+          selector: 'parent-cmp',
+          template: `<ng-content/>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
 
-      @Component(initialMetadata)
-      class ParentCmp {}
+        @Component(initialMetadata)
+        class ParentCmp {}
 
-      @Component({
-        imports: [ParentCmp],
-        template: `
+        @Component({
+          imports: [ParentCmp],
+          template: `
+            <parent-cmp>
+              <div one="1">one</div>
+              <div two="2">two</div>
+            </parent-cmp>
+          `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        markNodesAsCreatedInitially(fixture.nativeElement);
+        expectHTML(
+          fixture.nativeElement,
+          `
           <parent-cmp>
             <div one="1">one</div>
             <div two="2">two</div>
           </parent-cmp>
         `,
+        );
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      markNodesAsCreatedInitially(fixture.nativeElement);
-      expectHTML(
-        fixture.nativeElement,
-        `
-          <parent-cmp>
-            <div one="1">one</div>
-            <div two="2">two</div>
-          </parent-cmp>
-        `,
-      );
-
-      // Swap out the catch-all slot with two specific slots.
-      // Note that we also changed the order of `one` and `two`.
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: `
+        // Swap out the catch-all slot with two specific slots.
+        // Note that we also changed the order of `one` and `two`.
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `
           <section><ng-content select="[two]"/></section>
           <main><ng-content select="[one]"/></main>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
 
-      verifyNodesRemainUntouched(fixture.nativeElement.querySelector('[one]'));
-      verifyNodesRemainUntouched(fixture.nativeElement.querySelector('[two]'));
-      verifyNodesWereRecreated(fixture.nativeElement.querySelectorAll('section, main'));
-      expectHTML(
-        fixture.nativeElement,
-        `
+        verifyNodesRemainUntouched(fixture.nativeElement.querySelector('[one]'));
+        verifyNodesRemainUntouched(fixture.nativeElement.querySelector('[two]'));
+        verifyNodesWereRecreated(fixture.nativeElement.querySelectorAll('section, main'));
+        expectHTML(
+          fixture.nativeElement,
+          `
           <parent-cmp>
             <section><div two="2">two</div></section>
             <main><div one="1">one</div></main>
           </parent-cmp>
         `,
-      );
+        );
 
-      // Swap with a slot that matches nothing.
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: `<ng-content select="does-not-match"/>`,
+        // Swap with a slot that matches nothing.
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `<ng-content select="does-not-match"/>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, '<parent-cmp></parent-cmp>');
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, '<parent-cmp></parent-cmp>');
 
-      // Swap with a slot that only one of the nodes matches.
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: `<span><ng-content select="[one]"/></span>`,
+        // Swap with a slot that only one of the nodes matches.
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `<span><ng-content select="[one]"/></span>`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
 
-      expectHTML(
-        fixture.nativeElement,
-        `
+        expectHTML(
+          fixture.nativeElement,
+          `
         <parent-cmp>
           <span><div one="1">one</div></span>
         </parent-cmp>
       `,
-      );
-      verifyNodesRemainUntouched(fixture.nativeElement.querySelector('[one]'));
-      verifyNodesWereRecreated(fixture.nativeElement.querySelectorAll('span'));
-    });
+        );
+        verifyNodesRemainUntouched(fixture.nativeElement.querySelector('[one]'));
+        verifyNodesWereRecreated(fixture.nativeElement.querySelectorAll('span'));
+      });
 
-    it('should handle default content for ng-content', () => {
-      const initialMetadata: Component = {
-        selector: 'parent-cmp',
-        template: `
+      it('should handle default content for ng-content', () => {
+        const initialMetadata: Component = {
+          selector: 'parent-cmp',
+          template: `
           <ng-content select="will-not-match">
             <div class="default-content">Default content</div>
           </ng-content>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
 
-      @Component(initialMetadata)
-      class ParentCmp {}
+        @Component(initialMetadata)
+        class ParentCmp {}
 
-      @Component({
-        imports: [ParentCmp],
-        template: `
-          <parent-cmp>
-            <span>Some content</span>
-          </parent-cmp>
-        `,
+        @Component({
+          imports: [ParentCmp],
+          template: `
+            <parent-cmp>
+              <span>Some content</span>
+            </parent-cmp>
+          `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
 
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
 
-      expectHTML(
-        fixture.nativeElement,
-        `
+        expectHTML(
+          fixture.nativeElement,
+          `
           <parent-cmp>
             <div class="default-content">Default content</div>
           </parent-cmp>
         `,
-      );
+        );
 
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: `
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `
           <ng-content>
             <div class="default-content">Default content</div>
           </ng-content>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        `
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          `
           <parent-cmp>
             <span>Some content</span>
           </parent-cmp>
         `,
-      );
+        );
+      });
     });
-  });
 
-  describe('lifecycle hooks', () => {
-    it('should only invoke the init/destroy hooks inside the content when replacing the template', () => {
-      @Component({
-        template: '',
-        selector: 'child-cmp',
+    describe('lifecycle hooks', () => {
+      it('should only invoke the init/destroy hooks inside the content when replacing the template', () => {
+        @Component({
+          template: '',
+          selector: 'child-cmp',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class ChildCmp implements OnInit, OnDestroy {
-        @Input() text = '[empty]';
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class ChildCmp implements OnInit, OnDestroy {
+          @Input() text = '[empty]';
 
-        ngOnInit() {
-          logs.push(`ChildCmp ${this.text} init`);
+          ngOnInit() {
+            logs.push(`ChildCmp ${this.text} init`);
+          }
+
+          ngOnDestroy() {
+            logs.push(`ChildCmp ${this.text} destroy`);
+          }
         }
 
-        ngOnDestroy() {
-          logs.push(`ChildCmp ${this.text} destroy`);
-        }
-      }
-
-      const initialMetadata: Component = {
-        template: `
+        const initialMetadata: Component = {
+          template: `
           <child-cmp text="A"/>
           <child-cmp text="B"/>
         `,
-        imports: [ChildCmp],
-        selector: 'parent-cmp',
+          imports: [ChildCmp],
+          selector: 'parent-cmp',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-      let logs: string[] = [];
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+        let logs: string[] = [];
 
-      @Component(initialMetadata)
-      class ParentCmp implements OnInit, OnDestroy {
-        @Input() text = '[empty]';
+        @Component(initialMetadata)
+        class ParentCmp implements OnInit, OnDestroy {
+          @Input() text = '[empty]';
 
-        ngOnInit() {
-          logs.push(`ParentCmp ${this.text} init`);
+          ngOnInit() {
+            logs.push(`ParentCmp ${this.text} init`);
+          }
+
+          ngOnDestroy() {
+            logs.push(`ParentCmp ${this.text} destroy`);
+          }
         }
 
-        ngOnDestroy() {
-          logs.push(`ParentCmp ${this.text} destroy`);
-        }
-      }
+        @Component({
+          // Note that we test two of the same component one after the other
+          // specifically because during testing it was a problematic pattern.
+          template: `
+            <parent-cmp text="A" />
+            <parent-cmp text="B" />
+          `,
+          imports: [ParentCmp],
 
-      @Component({
-        // Note that we test two of the same component one after the other
-        // specifically because during testing it was a problematic pattern.
-        template: `
-          <parent-cmp text="A" />
-          <parent-cmp text="B" />
-        `,
-        imports: [ParentCmp],
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
 
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
+        expect(logs).toEqual([
+          'ParentCmp A init',
+          'ParentCmp B init',
+          'ChildCmp A init',
+          'ChildCmp B init',
+          'ChildCmp A init',
+          'ChildCmp B init',
+        ]);
 
-      expect(logs).toEqual([
-        'ParentCmp A init',
-        'ParentCmp B init',
-        'ChildCmp A init',
-        'ChildCmp B init',
-        'ChildCmp A init',
-        'ChildCmp B init',
-      ]);
-
-      logs = [];
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: `
+        logs = [];
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `
           <child-cmp text="C"/>
           <child-cmp text="D"/>
           <child-cmp text="E"/>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        expect(logs).toEqual([
+          'ChildCmp A destroy',
+          'ChildCmp B destroy',
+          'ChildCmp C init',
+          'ChildCmp D init',
+          'ChildCmp E init',
+          'ChildCmp A destroy',
+          'ChildCmp B destroy',
+          'ChildCmp C init',
+          'ChildCmp D init',
+          'ChildCmp E init',
+        ]);
+
+        logs = [];
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: '',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expect(logs).toEqual([
+          'ChildCmp C destroy',
+          'ChildCmp D destroy',
+          'ChildCmp E destroy',
+          'ChildCmp C destroy',
+          'ChildCmp D destroy',
+          'ChildCmp E destroy',
+        ]);
       });
-      fixture.detectChanges();
 
-      expect(logs).toEqual([
-        'ChildCmp A destroy',
-        'ChildCmp B destroy',
-        'ChildCmp C init',
-        'ChildCmp D init',
-        'ChildCmp E init',
-        'ChildCmp A destroy',
-        'ChildCmp B destroy',
-        'ChildCmp C init',
-        'ChildCmp D init',
-        'ChildCmp E init',
-      ]);
+      it('should invoke checked hooks both on the host and the content being replaced', () => {
+        @Component({
+          template: '',
+          selector: 'child-cmp',
 
-      logs = [];
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: '',
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class ChildCmp implements DoCheck {
+          @Input() text = '[empty]';
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expect(logs).toEqual([
-        'ChildCmp C destroy',
-        'ChildCmp D destroy',
-        'ChildCmp E destroy',
-        'ChildCmp C destroy',
-        'ChildCmp D destroy',
-        'ChildCmp E destroy',
-      ]);
-    });
-
-    it('should invoke checked hooks both on the host and the content being replaced', () => {
-      @Component({
-        template: '',
-        selector: 'child-cmp',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class ChildCmp implements DoCheck {
-        @Input() text = '[empty]';
-
-        ngDoCheck() {
-          logs.push(`ChildCmp ${this.text} checked`);
+          ngDoCheck() {
+            logs.push(`ChildCmp ${this.text} checked`);
+          }
         }
-      }
 
-      const initialMetadata: Component = {
-        template: `<child-cmp text="A"/>`,
-        imports: [ChildCmp],
-        selector: 'parent-cmp',
+        const initialMetadata: Component = {
+          template: `<child-cmp text="A"/>`,
+          imports: [ChildCmp],
+          selector: 'parent-cmp',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-      let logs: string[] = [];
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+        let logs: string[] = [];
 
-      @Component(initialMetadata)
-      class ParentCmp implements DoCheck {
-        ngDoCheck() {
-          logs.push(`ParentCmp checked`);
+        @Component(initialMetadata)
+        class ParentCmp implements DoCheck {
+          ngDoCheck() {
+            logs.push(`ParentCmp checked`);
+          }
         }
-      }
 
-      @Component({
-        template: `<parent-cmp />`,
-        imports: [ParentCmp],
+        @Component({
+          template: `<parent-cmp />`,
+          imports: [ParentCmp],
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
 
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expect(logs).toEqual(['ParentCmp checked', 'ChildCmp A checked']);
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expect(logs).toEqual(['ParentCmp checked', 'ChildCmp A checked']);
 
-      fixture.detectChanges();
-      expect(logs).toEqual([
-        'ParentCmp checked',
-        'ChildCmp A checked',
-        'ParentCmp checked',
-        'ChildCmp A checked',
-      ]);
+        fixture.detectChanges();
+        expect(logs).toEqual([
+          'ParentCmp checked',
+          'ChildCmp A checked',
+          'ParentCmp checked',
+          'ChildCmp A checked',
+        ]);
 
-      logs = [];
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: '',
+        logs = [];
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: '',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expect(logs).toEqual(['ParentCmp checked']);
-      fixture.detectChanges();
-      expect(logs).toEqual(['ParentCmp checked', 'ParentCmp checked']);
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expect(logs).toEqual(['ParentCmp checked']);
+        fixture.detectChanges();
+        expect(logs).toEqual(['ParentCmp checked', 'ParentCmp checked']);
 
-      logs = [];
-      replaceMetadata(ParentCmp, {
-        ...initialMetadata,
-        template: `
+        logs = [];
+        replaceMetadata(ParentCmp, {
+          ...initialMetadata,
+          template: `
           <child-cmp text="A"/>
           <child-cmp text="B"/>
         `,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expect(logs).toEqual([
+          'ChildCmp A checked',
+          'ChildCmp B checked',
+          'ParentCmp checked',
+          'ChildCmp A checked',
+          'ChildCmp B checked',
+        ]);
+        fixture.detectChanges();
+        expect(logs).toEqual([
+          'ChildCmp A checked',
+          'ChildCmp B checked',
+          'ParentCmp checked',
+          'ChildCmp A checked',
+          'ChildCmp B checked',
+          'ParentCmp checked',
+          'ChildCmp A checked',
+          'ChildCmp B checked',
+        ]);
       });
-      fixture.detectChanges();
-      expect(logs).toEqual([
-        'ChildCmp A checked',
-        'ChildCmp B checked',
-        'ParentCmp checked',
-        'ChildCmp A checked',
-        'ChildCmp B checked',
-      ]);
-      fixture.detectChanges();
-      expect(logs).toEqual([
-        'ChildCmp A checked',
-        'ChildCmp B checked',
-        'ParentCmp checked',
-        'ChildCmp A checked',
-        'ChildCmp B checked',
-        'ParentCmp checked',
-        'ChildCmp A checked',
-        'ChildCmp B checked',
-      ]);
+
+      it('should dispatch ngOnChanges on a replaced component', () => {
+        const values: string[] = [];
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp implements OnChanges {
+          @Input() value = 0;
+
+          ngOnChanges(changes: SimpleChanges) {
+            const change = changes['value'];
+            values.push(
+              `${change.previousValue} - ${change.currentValue} - ${change.isFirstChange()}`,
+            );
+          }
+        }
+
+        @Component({
+          imports: [ChildCmp],
+          template: `<child-cmp [value]="value" />`,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {
+          value = 1;
+        }
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expect(values).toEqual(['undefined - 1 - true']);
+
+        fixture.componentInstance.value++;
+        fixture.detectChanges();
+        expect(values).toEqual(['undefined - 1 - true', '1 - 2 - false']);
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: 'Changed',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        fixture.componentInstance.value++;
+        fixture.detectChanges();
+        expect(values).toEqual(['undefined - 1 - true', '1 - 2 - false', '2 - 3 - false']);
+
+        fixture.componentInstance.value++;
+        fixture.detectChanges();
+        expect(values).toEqual([
+          'undefined - 1 - true',
+          '1 - 2 - false',
+          '2 - 3 - false',
+          '3 - 4 - false',
+        ]);
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: 'Changed!!!',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        fixture.componentInstance.value++;
+        fixture.detectChanges();
+        expect(values).toEqual([
+          'undefined - 1 - true',
+          '1 - 2 - false',
+          '2 - 3 - false',
+          '3 - 4 - false',
+          '4 - 5 - false',
+        ]);
+      });
     });
 
-    it('should dispatch ngOnChanges on a replaced component', () => {
-      const values: string[] = [];
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '',
+    describe('event listeners', () => {
+      it('should continue emitting to output after component has been replaced', () => {
+        let count = 0;
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<button (click)="clicked()"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
 
-      @Component(initialMetadata)
-      class ChildCmp implements OnChanges {
-        @Input() value = 0;
+        @Component(initialMetadata)
+        class ChildCmp {
+          @Output() changed = new EventEmitter();
 
-        ngOnChanges(changes: SimpleChanges) {
-          const change = changes['value'];
-          values.push(
-            `${change.previousValue} - ${change.currentValue} - ${change.isFirstChange()}`,
-          );
+          clicked() {
+            this.changed.emit();
+          }
         }
-      }
 
-      @Component({
-        imports: [ChildCmp],
-        template: `<child-cmp [value]="value" />`,
+        @Component({
+          imports: [ChildCmp],
+          template: `<child-cmp (changed)="onChange()" />`,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {
-        value = 1;
-      }
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {
+          onChange() {
+            count++;
+          }
+        }
 
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expect(values).toEqual(['undefined - 1 - true']);
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        markNodesAsCreatedInitially(fixture.nativeElement);
+        expect(count).toBe(0);
 
-      fixture.componentInstance.value++;
-      fixture.detectChanges();
-      expect(values).toEqual(['undefined - 1 - true', '1 - 2 - false']);
+        fixture.nativeElement.querySelector('button').click();
+        fixture.detectChanges();
+        expect(count).toBe(1);
 
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: 'Changed',
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: '<button class="replacement" (click)="clicked()"></button>',
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+        verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+        verifyNodesWereRecreated(recreatedNodes);
+
+        fixture.nativeElement.querySelector('.replacement').click();
+        fixture.detectChanges();
+        expect(count).toBe(2);
       });
-      fixture.detectChanges();
 
-      fixture.componentInstance.value++;
-      fixture.detectChanges();
-      expect(values).toEqual(['undefined - 1 - true', '1 - 2 - false', '2 - 3 - false']);
+      it('should stop emitting if replaced with an element that no longer has the listener', () => {
+        let count = 0;
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<button (click)="clicked()"></button>',
 
-      fixture.componentInstance.value++;
-      fixture.detectChanges();
-      expect(values).toEqual([
-        'undefined - 1 - true',
-        '1 - 2 - false',
-        '2 - 3 - false',
-        '3 - 4 - false',
-      ]);
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
 
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: 'Changed!!!',
+        @Component(initialMetadata)
+        class ChildCmp {
+          @Output() changed = new EventEmitter();
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+          clicked() {
+            this.changed.emit();
+          }
+        }
+
+        @Component({
+          imports: [ChildCmp],
+          template: `<child-cmp (changed)="onChange()" />`,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {
+          onChange() {
+            count++;
+          }
+        }
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        markNodesAsCreatedInitially(fixture.nativeElement);
+        expect(count).toBe(0);
+
+        fixture.nativeElement.querySelector('button').click();
+        fixture.detectChanges();
+        expect(count).toBe(1);
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: '<button (click)="clicked()"></button>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+        verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+        verifyNodesWereRecreated(recreatedNodes);
+
+        fixture.nativeElement.querySelector('button').click();
+        fixture.detectChanges();
+        expect(count).toBe(2);
       });
-      fixture.detectChanges();
-      fixture.componentInstance.value++;
-      fixture.detectChanges();
-      expect(values).toEqual([
-        'undefined - 1 - true',
-        '1 - 2 - false',
-        '2 - 3 - false',
-        '3 - 4 - false',
-        '4 - 5 - false',
-      ]);
-    });
-  });
 
-  describe('event listeners', () => {
-    it('should continue emitting to output after component has been replaced', () => {
-      let count = 0;
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<button (click)="clicked()"></button>',
+      it('should bind events inside the NgZone after a replacement', () => {
+        const calls: {name: string; inZone: boolean}[] = [];
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {
-        @Output() changed = new EventEmitter();
-
-        clicked() {
-          this.changed.emit();
+        @Component({
+          template: `<button (click)="clicked()"></button>`,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class App {
+          clicked() {}
         }
-      }
 
-      @Component({
-        imports: [ChildCmp],
-        template: `<child-cmp (changed)="onChange()" />`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {
-        onChange() {
-          count++;
-        }
-      }
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      markNodesAsCreatedInitially(fixture.nativeElement);
-      expect(count).toBe(0);
-
-      fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
-      expect(count).toBe(1);
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: '<button class="replacement" (click)="clicked()"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-
-      const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
-      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-      verifyNodesWereRecreated(recreatedNodes);
-
-      fixture.nativeElement.querySelector('.replacement').click();
-      fixture.detectChanges();
-      expect(count).toBe(2);
-    });
-
-    it('should stop emitting if replaced with an element that no longer has the listener', () => {
-      let count = 0;
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<button (click)="clicked()"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {
-        @Output() changed = new EventEmitter();
-
-        clicked() {
-          this.changed.emit();
-        }
-      }
-
-      @Component({
-        imports: [ChildCmp],
-        template: `<child-cmp (changed)="onChange()" />`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {
-        onChange() {
-          count++;
-        }
-      }
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      markNodesAsCreatedInitially(fixture.nativeElement);
-      expect(count).toBe(0);
-
-      fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
-      expect(count).toBe(1);
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: '<button (click)="clicked()"></button>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-
-      const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
-      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-      verifyNodesWereRecreated(recreatedNodes);
-
-      fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
-      expect(count).toBe(2);
-    });
-
-    it('should bind events inside the NgZone after a replacement', () => {
-      const calls: {name: string; inZone: boolean}[] = [];
-
-      @Component({
-        template: `<button (click)="clicked()"></button>`,
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class App {
-        clicked() {}
-      }
-
-      TestBed.configureTestingModule({
-        providers: [
-          {
-            // Note: TestBed brings things into the zone even if they aren't which makes this
-            // test hard to write. We have to intercept the listener being bound at the renderer
-            // level in order to get a true sense if it'll be bound inside or outside the zone.
-            // We do so with a custom event manager.
-            provide: EVENT_MANAGER_PLUGINS,
-            multi: true,
-            useValue: {
-              supports: () => true,
-              addEventListener: (_: unknown, name: string) => {
-                calls.push({name, inZone: NgZone.isInAngularZone()});
-                return () => {};
+        TestBed.configureTestingModule({
+          providers: [
+            {
+              // Note: TestBed brings things into the zone even if they aren't which makes this
+              // test hard to write. We have to intercept the listener being bound at the renderer
+              // level in order to get a true sense if it'll be bound inside or outside the zone.
+              // We do so with a custom event manager.
+              provide: EVENT_MANAGER_PLUGINS,
+              multi: true,
+              useValue: {
+                supports: () => true,
+                addEventListener: (_: unknown, name: string) => {
+                  calls.push({name, inZone: NgZone.isInAngularZone()});
+                  return () => {};
+                },
               },
             },
+          ],
+        });
+
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        expect(calls).toEqual([{name: 'click', inZone: true}]);
+
+        replaceMetadata(App, {
+          template: '<button class="foo" (click)="clicked()"></button>',
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        expect(calls).toEqual([
+          {name: 'click', inZone: true},
+          {name: 'click', inZone: true},
+        ]);
+      });
+    });
+
+    describe('directives', () => {
+      it('should not destroy template-matched directives on a component being replaced', () => {
+        const initLog: string[] = [];
+        let destroyCount = 0;
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp implements OnDestroy {
+          constructor() {
+            initLog.push('ChildCmp init');
+          }
+
+          ngOnDestroy() {
+            destroyCount++;
+          }
+        }
+
+        @Directive({selector: '[dir-a]'})
+        class DirA implements OnDestroy {
+          constructor() {
+            initLog.push('DirA init');
+          }
+
+          ngOnDestroy() {
+            destroyCount++;
+          }
+        }
+
+        @Directive({selector: '[dir-b]'})
+        class DirB implements OnDestroy {
+          constructor() {
+            initLog.push('DirB init');
+          }
+
+          ngOnDestroy() {
+            destroyCount++;
+          }
+        }
+
+        @Component({
+          imports: [ChildCmp, DirA, DirB],
+          template: `<child-cmp dir-a dir-b />`,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        markNodesAsCreatedInitially(fixture.nativeElement);
+        expect(initLog).toEqual(['ChildCmp init', 'DirA init', 'DirB init']);
+        expect(destroyCount).toBe(0);
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: 'Hello!',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expect(initLog).toEqual(['ChildCmp init', 'DirA init', 'DirB init']);
+        expect(destroyCount).toBe(0);
+      });
+
+      it('should not destroy host directives on a component being replaced', () => {
+        const initLog: string[] = [];
+        let destroyCount = 0;
+
+        @Directive({selector: '[dir-a]'})
+        class DirA implements OnDestroy {
+          constructor() {
+            initLog.push('DirA init');
+          }
+
+          ngOnDestroy() {
+            destroyCount++;
+          }
+        }
+
+        @Directive({selector: '[dir-b]'})
+        class DirB implements OnDestroy {
+          constructor() {
+            initLog.push('DirB init');
+          }
+
+          ngOnDestroy() {
+            destroyCount++;
+          }
+        }
+
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '',
+          hostDirectives: [DirA, DirB],
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp implements OnDestroy {
+          constructor() {
+            initLog.push('ChildCmp init');
+          }
+
+          ngOnDestroy() {
+            destroyCount++;
+          }
+        }
+
+        @Component({
+          imports: [ChildCmp],
+          template: '<child-cmp/>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        markNodesAsCreatedInitially(fixture.nativeElement);
+        expect(initLog).toEqual(['DirA init', 'DirB init', 'ChildCmp init']);
+        expect(destroyCount).toBe(0);
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: 'Hello!',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expect(initLog).toEqual(['DirA init', 'DirB init', 'ChildCmp init']);
+        expect(destroyCount).toBe(0);
+      });
+    });
+
+    describe('dependency injection', () => {
+      it('should be able to inject a component that is replaced', () => {
+        let instance!: ChildCmp;
+        const injectedInstances: [unknown, ChildCmp][] = [];
+
+        @Directive({selector: '[dir-a]'})
+        class DirA {
+          constructor() {
+            injectedInstances.push([this, inject(ChildCmp)]);
+          }
+        }
+
+        @Directive({selector: '[dir-b]'})
+        class DirB {
+          constructor() {
+            injectedInstances.push([this, inject(ChildCmp)]);
+          }
+        }
+
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<div dir-a></div>',
+          imports: [DirA, DirB],
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {
+          constructor() {
+            instance = this;
+          }
+        }
+
+        @Component({
+          imports: [ChildCmp],
+          template: '<child-cmp/>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expect(instance).toBeInstanceOf(ChildCmp);
+        expect(injectedInstances).toEqual([[jasmine.any(DirA), instance]]);
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: '<div dir-b></div>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        expect(injectedInstances).toEqual([
+          [jasmine.any(DirA), instance],
+          [jasmine.any(DirB), instance],
+        ]);
+      });
+
+      it('should be able to inject a token coming from a component that is replaced', () => {
+        const token = new InjectionToken<string>('TEST_TOKEN');
+        const injectedValues: [unknown, string][] = [];
+
+        @Directive({selector: '[dir-a]'})
+        class DirA {
+          constructor() {
+            injectedValues.push([this, inject(token)]);
+          }
+        }
+
+        @Directive({selector: '[dir-b]'})
+        class DirB {
+          constructor() {
+            injectedValues.push([this, inject(token)]);
+          }
+        }
+
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<div dir-a></div>',
+          imports: [DirA, DirB],
+          providers: [{provide: token, useValue: 'provided value'}],
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {}
+
+        @Component({
+          imports: [ChildCmp],
+          template: '<child-cmp/>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expect(injectedValues).toEqual([[jasmine.any(DirA), 'provided value']]);
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: '<div dir-b></div>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        expect(injectedValues).toEqual([
+          [jasmine.any(DirA), 'provided value'],
+          [jasmine.any(DirB), 'provided value'],
+        ]);
+      });
+
+      it('should be able to access the viewProviders of a component that is being replaced', () => {
+        const token = new InjectionToken<string>('TEST_TOKEN');
+        const injectedValues: [unknown, string][] = [];
+
+        @Directive({selector: '[dir-a]'})
+        class DirA {
+          constructor() {
+            injectedValues.push([this, inject(token)]);
+          }
+        }
+
+        @Directive({selector: '[dir-b]'})
+        class DirB {
+          constructor() {
+            injectedValues.push([this, inject(token)]);
+          }
+        }
+
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<div dir-a></div>',
+          imports: [DirA, DirB],
+          viewProviders: [{provide: token, useValue: 'provided value'}],
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {}
+
+        @Component({
+          imports: [ChildCmp],
+          template: '<child-cmp/>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expect(injectedValues).toEqual([[jasmine.any(DirA), 'provided value']]);
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: '<div dir-b></div>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        expect(injectedValues).toEqual([
+          [jasmine.any(DirA), 'provided value'],
+          [jasmine.any(DirB), 'provided value'],
+        ]);
+      });
+    });
+
+    describe('host bindings', () => {
+      it('should maintain attribute host bindings on a replaced component', () => {
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: 'Hello',
+          host: {
+            '[attr.bar]': 'state',
           },
-        ],
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {
+          @Input() state = 0;
+        }
+
+        @Component({
+          imports: [ChildCmp],
+          template: `<child-cmp [state]="state" [attr.foo]="'The state is ' + state" />`,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {
+          state = 0;
+        }
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+
+        expectHTML(
+          fixture.nativeElement,
+          `<child-cmp foo="The state is 0" bar="0">Hello</child-cmp>`,
+        );
+
+        fixture.componentInstance.state = 1;
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          `<child-cmp foo="The state is 1" bar="1">Hello</child-cmp>`,
+        );
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: `Changed`,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          `<child-cmp foo="The state is 1" bar="1">Changed</child-cmp>`,
+        );
+
+        fixture.componentInstance.state = 2;
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          `<child-cmp foo="The state is 2" bar="2">Changed</child-cmp>`,
+        );
       });
 
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(calls).toEqual([{name: 'click', inZone: true}]);
+      it('should maintain class host bindings on a replaced component', () => {
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: 'Hello',
+          host: {
+            '[class.bar]': 'state',
+          },
 
-      replaceMetadata(App, {
-        template: '<button class="foo" (click)="clicked()"></button>',
-        changeDetection: ChangeDetectionStrategy.Eager,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {
+          @Input() state = false;
+        }
+
+        @Component({
+          imports: [ChildCmp],
+          template: `<child-cmp class="static" [state]="state" [class.foo]="state" />`,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {
+          state = false;
+        }
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, `<child-cmp class="static">Hello</child-cmp>`);
+
+        fixture.componentInstance.state = true;
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, `<child-cmp class="static foo bar">Hello</child-cmp>`);
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: `Changed`,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, `<child-cmp class="static foo bar">Changed</child-cmp>`);
+
+        fixture.componentInstance.state = false;
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, `<child-cmp class="static">Changed</child-cmp>`);
       });
-      fixture.detectChanges();
 
-      expect(calls).toEqual([
-        {name: 'click', inZone: true},
-        {name: 'click', inZone: true},
-      ]);
-    });
-  });
+      it('should maintain style host bindings on a replaced component', () => {
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: 'Hello',
+          host: {
+            '[style.height]': 'state ? "5px" : "20px"',
+          },
 
-  describe('directives', () => {
-    it('should not destroy template-matched directives on a component being replaced', () => {
-      const initLog: string[] = [];
-      let destroyCount = 0;
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '',
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp implements OnDestroy {
-        constructor() {
-          initLog.push('ChildCmp init');
+        @Component(initialMetadata)
+        class ChildCmp {
+          @Input() state = false;
         }
 
-        ngOnDestroy() {
-          destroyCount++;
-        }
-      }
+        @Component({
+          imports: [ChildCmp],
+          template: `<child-cmp
+            style="opacity: 0.5;"
+            [state]="state"
+            [style.width]="state ? '3px' : '12px'"
+          />`,
 
-      @Directive({selector: '[dir-a]'})
-      class DirA implements OnDestroy {
-        constructor() {
-          initLog.push('DirA init');
-        }
-
-        ngOnDestroy() {
-          destroyCount++;
-        }
-      }
-
-      @Directive({selector: '[dir-b]'})
-      class DirB implements OnDestroy {
-        constructor() {
-          initLog.push('DirB init');
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {
+          state = false;
         }
 
-        ngOnDestroy() {
-          destroyCount++;
-        }
-      }
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          `<child-cmp style="opacity: 0.5; width: 12px; height: 20px;">Hello</child-cmp>`,
+        );
 
-      @Component({
-        imports: [ChildCmp, DirA, DirB],
-        template: `<child-cmp dir-a dir-b />`,
+        fixture.componentInstance.state = true;
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          `<child-cmp style="opacity: 0.5; width: 3px; height: 5px;">Hello</child-cmp>`,
+        );
 
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: `Changed`,
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          `<child-cmp style="opacity: 0.5; width: 3px; height: 5px;">Changed</child-cmp>`,
+        );
 
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      markNodesAsCreatedInitially(fixture.nativeElement);
-      expect(initLog).toEqual(['ChildCmp init', 'DirA init', 'DirB init']);
-      expect(destroyCount).toBe(0);
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: 'Hello!',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        fixture.componentInstance.state = false;
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          `<child-cmp style="opacity: 0.5; width: 12px; height: 20px;">Changed</child-cmp>`,
+        );
       });
-      fixture.detectChanges();
-      expect(initLog).toEqual(['ChildCmp init', 'DirA init', 'DirB init']);
-      expect(destroyCount).toBe(0);
-    });
-
-    it('should not destroy host directives on a component being replaced', () => {
-      const initLog: string[] = [];
-      let destroyCount = 0;
-
-      @Directive({selector: '[dir-a]'})
-      class DirA implements OnDestroy {
-        constructor() {
-          initLog.push('DirA init');
-        }
-
-        ngOnDestroy() {
-          destroyCount++;
-        }
-      }
-
-      @Directive({selector: '[dir-b]'})
-      class DirB implements OnDestroy {
-        constructor() {
-          initLog.push('DirB init');
-        }
-
-        ngOnDestroy() {
-          destroyCount++;
-        }
-      }
-
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '',
-        hostDirectives: [DirA, DirB],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp implements OnDestroy {
-        constructor() {
-          initLog.push('ChildCmp init');
-        }
-
-        ngOnDestroy() {
-          destroyCount++;
-        }
-      }
-
-      @Component({
-        imports: [ChildCmp],
-        template: '<child-cmp/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      markNodesAsCreatedInitially(fixture.nativeElement);
-      expect(initLog).toEqual(['DirA init', 'DirB init', 'ChildCmp init']);
-      expect(destroyCount).toBe(0);
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: 'Hello!',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expect(initLog).toEqual(['DirA init', 'DirB init', 'ChildCmp init']);
-      expect(destroyCount).toBe(0);
-    });
-  });
-
-  describe('dependency injection', () => {
-    it('should be able to inject a component that is replaced', () => {
-      let instance!: ChildCmp;
-      const injectedInstances: [unknown, ChildCmp][] = [];
-
-      @Directive({selector: '[dir-a]'})
-      class DirA {
-        constructor() {
-          injectedInstances.push([this, inject(ChildCmp)]);
-        }
-      }
-
-      @Directive({selector: '[dir-b]'})
-      class DirB {
-        constructor() {
-          injectedInstances.push([this, inject(ChildCmp)]);
-        }
-      }
-
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<div dir-a></div>',
-        imports: [DirA, DirB],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {
-        constructor() {
-          instance = this;
-        }
-      }
-
-      @Component({
-        imports: [ChildCmp],
-        template: '<child-cmp/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expect(instance).toBeInstanceOf(ChildCmp);
-      expect(injectedInstances).toEqual([[jasmine.any(DirA), instance]]);
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: '<div dir-b></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-
-      expect(injectedInstances).toEqual([
-        [jasmine.any(DirA), instance],
-        [jasmine.any(DirB), instance],
-      ]);
     });
 
-    it('should be able to inject a token coming from a component that is replaced', () => {
-      const token = new InjectionToken<string>('TEST_TOKEN');
-      const injectedValues: [unknown, string][] = [];
+    describe('i18n', () => {
+      afterEach(() => {
+        clearTranslations();
+      });
 
-      @Directive({selector: '[dir-a]'})
-      class DirA {
+      it('should replace components that use i18n within their template', () => {
+        loadTranslations({
+          [computeMsgId('hello')]: 'здравей',
+          [computeMsgId('goodbye')]: 'довиждане',
+        });
+
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<span i18n>hello</span>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {}
+
+        @Component({
+          imports: [ChildCmp],
+          template: '<child-cmp/>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, '<child-cmp><span>здравей</span></child-cmp>');
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: '<strong i18n>goodbye</strong>!',
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, '<child-cmp><strong>довиждане</strong>!</child-cmp>');
+      });
+
+      it('should replace components that use i18n in their projected content', () => {
+        loadTranslations({[computeMsgId('hello')]: 'здравей'});
+
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<ng-content/>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {}
+
+        @Component({
+          imports: [ChildCmp],
+          template: `<child-cmp i18n>hello</child-cmp>`,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        markNodesAsCreatedInitially(fixture.nativeElement);
+        expectHTML(fixture.nativeElement, '<child-cmp>здравей</child-cmp>');
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: 'Hello translates to <strong><ng-content/></strong>!',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+        verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+        verifyNodesWereRecreated(recreatedNodes);
+        expectHTML(
+          fixture.nativeElement,
+          '<child-cmp>Hello translates to <strong>здравей</strong>!</child-cmp>',
+        );
+      });
+
+      it('should replace components that use i18n with interpolations', () => {
+        loadTranslations({
+          [computeMsgId('hello')]: 'здравей',
+          [computeMsgId('Hello {$INTERPOLATION}!')]: 'Здравей {$INTERPOLATION}!',
+        });
+
+        let instance!: ChildCmp;
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<span i18n>Hello {{name}}!</span>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {
+          name = 'Frodo';
+
+          constructor() {
+            instance = this;
+          }
+        }
+
+        @Component({
+          imports: [ChildCmp],
+          template: '<child-cmp/>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, '<child-cmp><span>Здравей Frodo!</span></child-cmp>');
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: '<strong i18n>hello</strong>',
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, '<child-cmp><strong>здравей</strong></child-cmp>');
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: '<main><section i18n>Hello {{name}}!</section></main>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          '<child-cmp><main><section>Здравей Frodo!</section></main></child-cmp>',
+        );
+
+        instance.name = 'Bilbo';
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          '<child-cmp><main><section>Здравей Bilbo!</section></main></child-cmp>',
+        );
+      });
+
+      it('should replace components that use i18n with interpolations in their projected content', () => {
+        loadTranslations({
+          [computeMsgId('Hello {$INTERPOLATION}!')]: 'Здравей {$INTERPOLATION}!',
+        });
+
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<ng-content/>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {}
+
+        @Component({
+          imports: [ChildCmp],
+          template: '<child-cmp i18n>Hello {{name}}!</child-cmp>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {
+          name = 'Frodo';
+        }
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        markNodesAsCreatedInitially(fixture.nativeElement);
+        expectHTML(fixture.nativeElement, '<child-cmp>Здравей Frodo!</child-cmp>');
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: 'The text translates to <strong><ng-content/></strong>!',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          '<child-cmp>The text translates to <strong>Здравей Frodo!</strong>!</child-cmp>',
+        );
+
+        const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+        verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+        verifyNodesWereRecreated(recreatedNodes);
+
+        fixture.componentInstance.name = 'Bilbo';
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          '<child-cmp>The text translates to <strong>Здравей Bilbo!</strong>!</child-cmp>',
+        );
+      });
+
+      it('should replace components that use i18n with ICUs', () => {
+        loadTranslations({
+          [computeMsgId('hello')]: 'здравей',
+          [computeMsgId('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}')]:
+            '{VAR_SELECT, select, 10 {десет} 20 {двадесет} other {друго}}',
+        });
+
+        let instance!: ChildCmp;
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<span i18n>{count, select, 10 {ten} 20 {twenty} other {other}}</span>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {
+          count = 10;
+
+          constructor() {
+            instance = this;
+          }
+        }
+
+        @Component({
+          imports: [ChildCmp],
+          template: '<child-cmp/>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {}
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, '<child-cmp><span>десет</span></child-cmp>');
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: '<strong i18n>hello</strong>',
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(fixture.nativeElement, '<child-cmp><strong>здравей</strong></child-cmp>');
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template:
+            '<main><section i18n>{count, select, 10 {ten} 20 {twenty} other {other}}</section></main>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          '<child-cmp><main><section>десет</section></main></child-cmp>',
+        );
+
+        instance.count = 20;
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          '<child-cmp><main><section>двадесет</section></main></child-cmp>',
+        );
+      });
+
+      it('should replace components that use i18n with ICUs in their projected content', () => {
+        loadTranslations({
+          [computeMsgId('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}')]:
+            '{VAR_SELECT, select, 10 {десет} 20 {двадесет} other {друго}}',
+        });
+
+        const initialMetadata: Component = {
+          selector: 'child-cmp',
+          template: '<ng-content/>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        };
+
+        @Component(initialMetadata)
+        class ChildCmp {}
+
+        @Component({
+          imports: [ChildCmp],
+          template:
+            '<child-cmp i18n>{count, select, 10 {ten} 20 {twenty} other {other}}</child-cmp>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        })
+        class RootCmp {
+          count = 10;
+        }
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+        markNodesAsCreatedInitially(fixture.nativeElement);
+        expectHTML(fixture.nativeElement, '<child-cmp>десет</child-cmp>');
+
+        replaceMetadata(ChildCmp, {
+          ...initialMetadata,
+          template: 'The text translates to <strong><ng-content/></strong>!',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
+        });
+        fixture.detectChanges();
+
+        const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
+        verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
+        verifyNodesWereRecreated(recreatedNodes);
+        expectHTML(
+          fixture.nativeElement,
+          '<child-cmp>The text translates to <strong>десет</strong>!</child-cmp>',
+        );
+
+        fixture.componentInstance.count = 20;
+        fixture.detectChanges();
+        expectHTML(
+          fixture.nativeElement,
+          '<child-cmp>The text translates to <strong>двадесет</strong>!</child-cmp>',
+        );
+      });
+    });
+
+    it('should render the error block of a replaced component', () => {
+      spyOn(TestBed.inject(ErrorHandler), 'handleError');
+
+      @Component({selector: 'risky-cmp', template: 'Primary content'})
+      class RiskyComponent {
         constructor() {
-          injectedValues.push([this, inject(token)]);
+          throw new Error('Forced error');
         }
       }
-
-      @Directive({selector: '[dir-b]'})
-      class DirB {
-        constructor() {
-          injectedValues.push([this, inject(token)]);
-        }
-      }
-
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<div dir-a></div>',
-        imports: [DirA, DirB],
-        providers: [{provide: token, useValue: 'provided value'}],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {}
-
-      @Component({
-        imports: [ChildCmp],
-        template: '<child-cmp/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expect(injectedValues).toEqual([[jasmine.any(DirA), 'provided value']]);
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: '<div dir-b></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-
-      expect(injectedValues).toEqual([
-        [jasmine.any(DirA), 'provided value'],
-        [jasmine.any(DirB), 'provided value'],
-      ]);
-    });
-
-    it('should be able to access the viewProviders of a component that is being replaced', () => {
-      const token = new InjectionToken<string>('TEST_TOKEN');
-      const injectedValues: [unknown, string][] = [];
-
-      @Directive({selector: '[dir-a]'})
-      class DirA {
-        constructor() {
-          injectedValues.push([this, inject(token)]);
-        }
-      }
-
-      @Directive({selector: '[dir-b]'})
-      class DirB {
-        constructor() {
-          injectedValues.push([this, inject(token)]);
-        }
-      }
-
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<div dir-a></div>',
-        imports: [DirA, DirB],
-        viewProviders: [{provide: token, useValue: 'provided value'}],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {}
-
-      @Component({
-        imports: [ChildCmp],
-        template: '<child-cmp/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expect(injectedValues).toEqual([[jasmine.any(DirA), 'provided value']]);
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: '<div dir-b></div>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-
-      expect(injectedValues).toEqual([
-        [jasmine.any(DirA), 'provided value'],
-        [jasmine.any(DirB), 'provided value'],
-      ]);
-    });
-  });
-
-  describe('host bindings', () => {
-    it('should maintain attribute host bindings on a replaced component', () => {
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: 'Hello',
-        host: {
-          '[attr.bar]': 'state',
-        },
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {
-        @Input() state = 0;
-      }
-
-      @Component({
-        imports: [ChildCmp],
-        template: `<child-cmp [state]="state" [attr.foo]="'The state is ' + state" />`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {
-        state = 0;
-      }
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-
-      expectHTML(
-        fixture.nativeElement,
-        `<child-cmp foo="The state is 0" bar="0">Hello</child-cmp>`,
-      );
-
-      fixture.componentInstance.state = 1;
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        `<child-cmp foo="The state is 1" bar="1">Hello</child-cmp>`,
-      );
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: `Changed`,
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        `<child-cmp foo="The state is 1" bar="1">Changed</child-cmp>`,
-      );
-
-      fixture.componentInstance.state = 2;
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        `<child-cmp foo="The state is 2" bar="2">Changed</child-cmp>`,
-      );
-    });
-
-    it('should maintain class host bindings on a replaced component', () => {
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: 'Hello',
-        host: {
-          '[class.bar]': 'state',
-        },
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {
-        @Input() state = false;
-      }
-
-      @Component({
-        imports: [ChildCmp],
-        template: `<child-cmp class="static" [state]="state" [class.foo]="state" />`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {
-        state = false;
-      }
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, `<child-cmp class="static">Hello</child-cmp>`);
-
-      fixture.componentInstance.state = true;
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, `<child-cmp class="static foo bar">Hello</child-cmp>`);
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: `Changed`,
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, `<child-cmp class="static foo bar">Changed</child-cmp>`);
-
-      fixture.componentInstance.state = false;
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, `<child-cmp class="static">Changed</child-cmp>`);
-    });
-
-    it('should maintain style host bindings on a replaced component', () => {
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: 'Hello',
-        host: {
-          '[style.height]': 'state ? "5px" : "20px"',
-        },
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {
-        @Input() state = false;
-      }
-
-      @Component({
-        imports: [ChildCmp],
-        template: `<child-cmp
-          style="opacity: 0.5;"
-          [state]="state"
-          [style.width]="state ? '3px' : '12px'"
-        />`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {
-        state = false;
-      }
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        `<child-cmp style="opacity: 0.5; width: 12px; height: 20px;">Hello</child-cmp>`,
-      );
-
-      fixture.componentInstance.state = true;
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        `<child-cmp style="opacity: 0.5; width: 3px; height: 5px;">Hello</child-cmp>`,
-      );
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: `Changed`,
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        `<child-cmp style="opacity: 0.5; width: 3px; height: 5px;">Changed</child-cmp>`,
-      );
-
-      fixture.componentInstance.state = false;
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        `<child-cmp style="opacity: 0.5; width: 12px; height: 20px;">Changed</child-cmp>`,
-      );
-    });
-  });
-
-  describe('i18n', () => {
-    afterEach(() => {
-      clearTranslations();
-    });
-
-    it('should replace components that use i18n within their template', () => {
-      loadTranslations({
-        [computeMsgId('hello')]: 'здравей',
-        [computeMsgId('goodbye')]: 'довиждане',
-      });
 
       const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<span i18n>hello</span>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {}
-
-      @Component({
-        imports: [ChildCmp],
-        template: '<child-cmp/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, '<child-cmp><span>здравей</span></child-cmp>');
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: '<strong i18n>goodbye</strong>!',
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, '<child-cmp><strong>довиждане</strong>!</child-cmp>');
-    });
-
-    it('should replace components that use i18n in their projected content', () => {
-      loadTranslations({[computeMsgId('hello')]: 'здравей'});
-
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<ng-content/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {}
-
-      @Component({
-        imports: [ChildCmp],
-        template: `<child-cmp i18n>hello</child-cmp>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      markNodesAsCreatedInitially(fixture.nativeElement);
-      expectHTML(fixture.nativeElement, '<child-cmp>здравей</child-cmp>');
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: 'Hello translates to <strong><ng-content/></strong>!',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-
-      const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
-      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-      verifyNodesWereRecreated(recreatedNodes);
-      expectHTML(
-        fixture.nativeElement,
-        '<child-cmp>Hello translates to <strong>здравей</strong>!</child-cmp>',
-      );
-    });
-
-    it('should replace components that use i18n with interpolations', () => {
-      loadTranslations({
-        [computeMsgId('hello')]: 'здравей',
-        [computeMsgId('Hello {$INTERPOLATION}!')]: 'Здравей {$INTERPOLATION}!',
-      });
-
-      let instance!: ChildCmp;
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<span i18n>Hello {{name}}!</span>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {
-        name = 'Frodo';
-
-        constructor() {
-          instance = this;
-        }
-      }
-
-      @Component({
-        imports: [ChildCmp],
-        template: '<child-cmp/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, '<child-cmp><span>Здравей Frodo!</span></child-cmp>');
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: '<strong i18n>hello</strong>',
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, '<child-cmp><strong>здравей</strong></child-cmp>');
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: '<main><section i18n>Hello {{name}}!</section></main>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        '<child-cmp><main><section>Здравей Frodo!</section></main></child-cmp>',
-      );
-
-      instance.name = 'Bilbo';
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        '<child-cmp><main><section>Здравей Bilbo!</section></main></child-cmp>',
-      );
-    });
-
-    it('should replace components that use i18n with interpolations in their projected content', () => {
-      loadTranslations({
-        [computeMsgId('Hello {$INTERPOLATION}!')]: 'Здравей {$INTERPOLATION}!',
-      });
-
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<ng-content/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {}
-
-      @Component({
-        imports: [ChildCmp],
-        template: '<child-cmp i18n>Hello {{name}}!</child-cmp>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {
-        name = 'Frodo';
-      }
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      markNodesAsCreatedInitially(fixture.nativeElement);
-      expectHTML(fixture.nativeElement, '<child-cmp>Здравей Frodo!</child-cmp>');
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: 'The text translates to <strong><ng-content/></strong>!',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        '<child-cmp>The text translates to <strong>Здравей Frodo!</strong>!</child-cmp>',
-      );
-
-      const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
-      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-      verifyNodesWereRecreated(recreatedNodes);
-
-      fixture.componentInstance.name = 'Bilbo';
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        '<child-cmp>The text translates to <strong>Здравей Bilbo!</strong>!</child-cmp>',
-      );
-    });
-
-    it('should replace components that use i18n with ICUs', () => {
-      loadTranslations({
-        [computeMsgId('hello')]: 'здравей',
-        [computeMsgId('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}')]:
-          '{VAR_SELECT, select, 10 {десет} 20 {двадесет} other {друго}}',
-      });
-
-      let instance!: ChildCmp;
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<span i18n>{count, select, 10 {ten} 20 {twenty} other {other}}</span>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {
-        count = 10;
-
-        constructor() {
-          instance = this;
-        }
-      }
-
-      @Component({
-        imports: [ChildCmp],
-        template: '<child-cmp/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, '<child-cmp><span>десет</span></child-cmp>');
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: '<strong i18n>hello</strong>',
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(fixture.nativeElement, '<child-cmp><strong>здравей</strong></child-cmp>');
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template:
-          '<main><section i18n>{count, select, 10 {ten} 20 {twenty} other {other}}</section></main>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        '<child-cmp><main><section>десет</section></main></child-cmp>',
-      );
-
-      instance.count = 20;
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        '<child-cmp><main><section>двадесет</section></main></child-cmp>',
-      );
-    });
-
-    it('should replace components that use i18n with ICUs in their projected content', () => {
-      loadTranslations({
-        [computeMsgId('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}')]:
-          '{VAR_SELECT, select, 10 {десет} 20 {двадесет} other {друго}}',
-      });
-
-      const initialMetadata: Component = {
-        selector: 'child-cmp',
-        template: '<ng-content/>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      };
-
-      @Component(initialMetadata)
-      class ChildCmp {}
-
-      @Component({
-        imports: [ChildCmp],
-        template: '<child-cmp i18n>{count, select, 10 {ten} 20 {twenty} other {other}}</child-cmp>',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class RootCmp {
-        count = 10;
-      }
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-      markNodesAsCreatedInitially(fixture.nativeElement);
-      expectHTML(fixture.nativeElement, '<child-cmp>десет</child-cmp>');
-
-      replaceMetadata(ChildCmp, {
-        ...initialMetadata,
-        template: 'The text translates to <strong><ng-content/></strong>!',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      });
-      fixture.detectChanges();
-
-      const recreatedNodes = childrenOf(...fixture.nativeElement.querySelectorAll('child-cmp'));
-      verifyNodesRemainUntouched(fixture.nativeElement, recreatedNodes);
-      verifyNodesWereRecreated(recreatedNodes);
-      expectHTML(
-        fixture.nativeElement,
-        '<child-cmp>The text translates to <strong>десет</strong>!</child-cmp>',
-      );
-
-      fixture.componentInstance.count = 20;
-      fixture.detectChanges();
-      expectHTML(
-        fixture.nativeElement,
-        '<child-cmp>The text translates to <strong>двадесет</strong>!</child-cmp>',
-      );
-    });
-  });
-
-  it('should render the error block of a replaced component with zone change detection', () => {
-    spyOn(TestBed.inject(ErrorHandler), 'handleError');
-
-    @Component({selector: 'risky-cmp', template: 'Primary content'})
-    class RiskyComponent {
-      constructor() {
-        throw new Error('Forced error');
-      }
-    }
-
-    const initialMetadata: Component = {
-      selector: 'boundary-host',
-      imports: [RiskyComponent],
-      template: `
+        selector: 'boundary-host',
+        imports: [RiskyComponent],
+        template: `
         @boundary {
           <risky-cmp />
         } @error (let error) {
           <p>{{error.message}}</p>
         }
       `,
+      };
+
+      @Component(initialMetadata)
+      class BoundaryHost {}
+
+      @Component({imports: [BoundaryHost], template: '<boundary-host/>'})
+      class RootCmp {}
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+      const boundaryHost = fixture.nativeElement.querySelector('boundary-host');
+      expectHTML(boundaryHost, '<p>Forced error</p>');
+
+      replaceMetadata(BoundaryHost, {
+        ...initialMetadata,
+        template: `${initialMetadata.template}<p>Edited</p>`,
+      });
+      fixture.detectChanges();
+      expectHTML(boundaryHost, '<p>Forced error</p><p>Edited</p>');
+    });
+
+    it('should clean up dehydrated views from LContainers during HMR', () => {
+      const initialMetadata: Component = {
+        selector: 'child-cmp',
+        template: '@if (true) { <div>Initial</div> }',
+      };
+
+      @Component(initialMetadata)
+      class ChildCmp {}
+
+      @Component({
+        imports: [ChildCmp],
+        template: '<child-cmp/>',
+      })
+      class RootCmp {}
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      const childEl = fixture.nativeElement.querySelector('child-cmp')!;
+      expectHTML(fixture.nativeElement, '<child-cmp><div>Initial</div></child-cmp>');
+
+      // Simulate SSR dehydrated views by injecting fake dehydrated DOM nodes
+      // into the LContainer's DEHYDRATED_VIEWS slot. During SSR hydration,
+      // Angular stores references to server-rendered DOM in this slot.
+      const childLView = getComponentLView(childEl);
+      const tView = childLView[TVIEW];
+
+      // Create fake dehydrated DOM content that simulates SSR remnants.
+      // Insert before existing content so the node has a nextSibling,
+      // which removeDehydratedView validates in dev mode.
+      const dehydratedNode = document.createElement('div');
+      dehydratedNode.textContent = 'SSR ghost';
+      childEl.insertBefore(dehydratedNode, childEl.firstChild);
+
+      // Find the LContainer created by the @if and inject dehydrated views.
+      for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
+        if (isLContainer(childLView[i])) {
+          childLView[i][DEHYDRATED_VIEWS] = [
+            {firstChild: dehydratedNode, data: {[NUM_ROOT_NODES]: 1}},
+          ];
+          break;
+        }
+      }
+
+      // Verify the dehydrated node is present in the DOM.
+      expect(childEl.innerHTML).toContain('SSR ghost');
+
+      // Trigger HMR replacement.
+      replaceMetadata(ChildCmp, {
+        ...initialMetadata,
+        template: '@if (true) { <div>Replaced</div> }',
+      });
+      fixture.detectChanges();
+
+      // After HMR, dehydrated DOM nodes should have been cleaned up — no duplication.
+      expect(childEl.innerHTML).not.toContain('SSR ghost');
+      expectHTML(fixture.nativeElement, '<child-cmp><div>Replaced</div></child-cmp>');
+    });
+  });
+
+  // Guards the synchronous update pass in `recreateLView`: routing it through
+  // `detectChangesInternal` would make `markForCheck` calls made during the replacement
+  // (here from an AsyncPipe in a sibling) set only the `Dirty` bit, which the zoneless
+  // targeted tick ignores, so the sibling would never be refreshed.
+  it('should refresh a sibling marked for check during replacement', async () => {
+    const value = new BehaviorSubject(0);
+
+    @Directive({selector: '[emit-on-init]'})
+    class EmitOnInit implements OnInit {
+      ngOnInit() {
+        value.next(value.value + 1);
+      }
+    }
+
+    const initialMetadata: Component = {
+      selector: 'hmr-host',
+      imports: [EmitOnInit],
+      template: '<span emit-on-init>Initial</span>',
     };
 
     @Component(initialMetadata)
-    class BoundaryHost {}
+    class HmrHost {}
 
-    @Component({imports: [BoundaryHost], template: '<boundary-host/>'})
+    @Component({
+      selector: 'display-cmp',
+      imports: [AsyncPipe],
+      template: '{{value | async}}',
+    })
+    class DisplayCmp {
+      value = value;
+    }
+
+    @Component({
+      imports: [HmrHost, DisplayCmp],
+      template: '<hmr-host/><display-cmp/>',
+    })
     class RootCmp {}
 
     const fixture = TestBed.createComponent(RootCmp);
-    fixture.detectChanges();
-    const boundaryHost = fixture.nativeElement.querySelector('boundary-host');
-    expectHTML(boundaryHost, '<p>Forced error</p>');
+    await fixture.whenStable();
+    expectHTML(
+      fixture.nativeElement,
+      '<hmr-host><span emit-on-init="">Initial</span></hmr-host><display-cmp>1</display-cmp>',
+    );
 
-    replaceMetadata(BoundaryHost, {
+    replaceMetadata(HmrHost, {
       ...initialMetadata,
-      template: `${initialMetadata.template}<p>Edited</p>`,
+      template: '<span emit-on-init>Replaced</span>',
     });
-    fixture.detectChanges();
-    expectHTML(boundaryHost, '<p>Forced error</p><p>Edited</p>');
+    await fixture.whenStable();
+
+    expect(value.value).toBe(2);
+    expectHTML(
+      fixture.nativeElement,
+      '<hmr-host><span emit-on-init="">Replaced</span></hmr-host><display-cmp>2</display-cmp>',
+    );
   });
 
-  describe('zoneless change detection', () => {
-    beforeEach(() => {
-      TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+  it('should refresh a sibling reading a signal written during replacement', async () => {
+    const value = signal(0);
+
+    @Directive({selector: '[emit-on-init]'})
+    class EmitOnInit implements OnInit {
+      ngOnInit() {
+        value.update((current) => current + 1);
+      }
+    }
+
+    const initialMetadata: Component = {
+      selector: 'hmr-host',
+      imports: [EmitOnInit],
+      template: '<span emit-on-init>Initial</span>',
+    };
+
+    @Component(initialMetadata)
+    class HmrHost {}
+
+    @Component({selector: 'display-cmp', template: '{{value()}}'})
+    class DisplayCmp {
+      value = value;
+    }
+
+    @Component({
+      imports: [HmrHost, DisplayCmp],
+      template: '<hmr-host/><display-cmp/>',
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    await fixture.whenStable();
+    expectHTML(
+      fixture.nativeElement,
+      '<hmr-host><span emit-on-init="">Initial</span></hmr-host><display-cmp>1</display-cmp>',
+    );
+
+    replaceMetadata(HmrHost, {
+      ...initialMetadata,
+      template: '<span emit-on-init>Replaced</span>',
     });
+    await fixture.whenStable();
 
-    // Guards the synchronous update pass in `recreateLView`: routing it through
-    // `detectChangesInternal` would make `markForCheck` calls made during the replacement
-    // (here from an AsyncPipe in a sibling) set only the `Dirty` bit, which the zoneless
-    // targeted tick ignores, so the sibling would never be refreshed.
-    it('should refresh a sibling marked for check during replacement', async () => {
-      const value = new BehaviorSubject(0);
-
-      @Directive({selector: '[emit-on-init]'})
-      class EmitOnInit implements OnInit {
-        ngOnInit() {
-          value.next(value.value + 1);
-        }
-      }
-
-      const initialMetadata: Component = {
-        selector: 'hmr-host',
-        imports: [EmitOnInit],
-        template: '<span emit-on-init>Initial</span>',
-      };
-
-      @Component(initialMetadata)
-      class HmrHost {}
-
-      @Component({
-        selector: 'display-cmp',
-        imports: [AsyncPipe],
-        template: '{{value | async}}',
-      })
-      class DisplayCmp {
-        value = value;
-      }
-
-      @Component({
-        imports: [HmrHost, DisplayCmp],
-        template: '<hmr-host/><display-cmp/>',
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      await fixture.whenStable();
-      expectHTML(
-        fixture.nativeElement,
-        '<hmr-host><span emit-on-init="">Initial</span></hmr-host><display-cmp>1</display-cmp>',
-      );
-
-      replaceMetadata(HmrHost, {
-        ...initialMetadata,
-        template: '<span emit-on-init>Replaced</span>',
-      });
-      await fixture.whenStable();
-
-      expect(value.value).toBe(2);
-      expectHTML(
-        fixture.nativeElement,
-        '<hmr-host><span emit-on-init="">Replaced</span></hmr-host><display-cmp>2</display-cmp>',
-      );
-    });
-
-    it('should refresh a sibling reading a signal written during replacement', async () => {
-      const value = signal(0);
-
-      @Directive({selector: '[emit-on-init]'})
-      class EmitOnInit implements OnInit {
-        ngOnInit() {
-          value.update((current) => current + 1);
-        }
-      }
-
-      const initialMetadata: Component = {
-        selector: 'hmr-host',
-        imports: [EmitOnInit],
-        template: '<span emit-on-init>Initial</span>',
-      };
-
-      @Component(initialMetadata)
-      class HmrHost {}
-
-      @Component({selector: 'display-cmp', template: '{{value()}}'})
-      class DisplayCmp {
-        value = value;
-      }
-
-      @Component({
-        imports: [HmrHost, DisplayCmp],
-        template: '<hmr-host/><display-cmp/>',
-      })
-      class RootCmp {}
-
-      const fixture = TestBed.createComponent(RootCmp);
-      await fixture.whenStable();
-      expectHTML(
-        fixture.nativeElement,
-        '<hmr-host><span emit-on-init="">Initial</span></hmr-host><display-cmp>1</display-cmp>',
-      );
-
-      replaceMetadata(HmrHost, {
-        ...initialMetadata,
-        template: '<span emit-on-init>Replaced</span>',
-      });
-      await fixture.whenStable();
-
-      expect(value()).toBe(2);
-      expectHTML(
-        fixture.nativeElement,
-        '<hmr-host><span emit-on-init="">Replaced</span></hmr-host><display-cmp>2</display-cmp>',
-      );
-    });
+    expect(value()).toBe(2);
+    expectHTML(
+      fixture.nativeElement,
+      '<hmr-host><span emit-on-init="">Replaced</span></hmr-host><display-cmp>2</display-cmp>',
+    );
   });
 
   describe('@boundary', () => {
     beforeEach(() => {
-      TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
       spyOn(TestBed.inject(ErrorHandler), 'handleError');
     });
 
@@ -2656,65 +2710,6 @@ describe('hot module replacement', () => {
 
       expectHTML(fixture.nativeElement, '<p>Fallback error</p><p>Added content</p>');
     });
-  });
-
-  it('should clean up dehydrated views from LContainers during HMR', () => {
-    const initialMetadata: Component = {
-      selector: 'child-cmp',
-      template: '@if (true) { <div>Initial</div> }',
-    };
-
-    @Component(initialMetadata)
-    class ChildCmp {}
-
-    @Component({
-      imports: [ChildCmp],
-      template: '<child-cmp/>',
-    })
-    class RootCmp {}
-
-    const fixture = TestBed.createComponent(RootCmp);
-    fixture.detectChanges();
-
-    const childEl = fixture.nativeElement.querySelector('child-cmp')!;
-    expectHTML(fixture.nativeElement, '<child-cmp><div>Initial</div></child-cmp>');
-
-    // Simulate SSR dehydrated views by injecting fake dehydrated DOM nodes
-    // into the LContainer's DEHYDRATED_VIEWS slot. During SSR hydration,
-    // Angular stores references to server-rendered DOM in this slot.
-    const childLView = getComponentLView(childEl);
-    const tView = childLView[TVIEW];
-
-    // Create fake dehydrated DOM content that simulates SSR remnants.
-    // Insert before existing content so the node has a nextSibling,
-    // which removeDehydratedView validates in dev mode.
-    const dehydratedNode = document.createElement('div');
-    dehydratedNode.textContent = 'SSR ghost';
-    childEl.insertBefore(dehydratedNode, childEl.firstChild);
-
-    // Find the LContainer created by the @if and inject dehydrated views.
-    for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
-      if (isLContainer(childLView[i])) {
-        childLView[i][DEHYDRATED_VIEWS] = [
-          {firstChild: dehydratedNode, data: {[NUM_ROOT_NODES]: 1}},
-        ];
-        break;
-      }
-    }
-
-    // Verify the dehydrated node is present in the DOM.
-    expect(childEl.innerHTML).toContain('SSR ghost');
-
-    // Trigger HMR replacement.
-    replaceMetadata(ChildCmp, {
-      ...initialMetadata,
-      template: '@if (true) { <div>Replaced</div> }',
-    });
-    fixture.detectChanges();
-
-    // After HMR, dehydrated DOM nodes should have been cleaned up — no duplication.
-    expect(childEl.innerHTML).not.toContain('SSR ghost');
-    expectHTML(fixture.nativeElement, '<child-cmp><div>Replaced</div></child-cmp>');
   });
 
   // Testing utilities
