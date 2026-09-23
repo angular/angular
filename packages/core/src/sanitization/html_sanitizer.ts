@@ -322,6 +322,9 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
 
       unsafeHtml = parsedHtml;
       parsedHtml = inertBodyElement!.innerHTML;
+      // Discard the serialized tree before the next parse allocates another one.
+      clearInertBodyElement(inertBodyElement!);
+      inertBodyElement = null;
       inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
     } while (unsafeHtml !== parsedHtml);
 
@@ -337,11 +340,15 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
   } finally {
     // In case anything goes wrong, clear out inertElement to reset the entire DOM structure.
     if (inertBodyElement) {
-      const parent = getTemplateContent(inertBodyElement) || inertBodyElement;
-      while (parent.firstChild) {
-        parent.firstChild.remove();
-      }
+      clearInertBodyElement(inertBodyElement);
     }
+  }
+}
+
+function clearInertBodyElement(inertBodyElement: HTMLElement): void {
+  const parent = getTemplateContent(inertBodyElement) || inertBodyElement;
+  while (parent.firstChild) {
+    parent.firstChild.remove();
   }
 }
 
