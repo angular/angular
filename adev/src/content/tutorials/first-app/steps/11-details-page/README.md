@@ -92,7 +92,7 @@ To access the data you will add a call to the `HousingService`.
 
 1. Copy the following styles into the `src/app/details/details.css` file:
 
-   <docs-code header="Add styles for the Details" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.css" visibleLines="[1,71]"/>
+   <docs-code header="Add styles for the Details" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.css" visibleLines="[1,72]"/>
 
    and save your changes
 
