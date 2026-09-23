@@ -1,3 +1,12 @@
+<a name="20.3.32"></a>
+# 20.3.32 (2026-09-23)
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ddfe21072b](https://github.com/angular/angular/commit/ddfe21072ba32ca4cd9d7d3c6b7df66af81d58c4) | fix | avoid dense elements allocation for numeric URL keys |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.1.8"></a>
 # 22.1.8 (2026-09-23)
 ### common
