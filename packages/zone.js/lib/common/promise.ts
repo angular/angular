@@ -63,7 +63,7 @@ export function patchPromise(Zone: ZoneType): void {
             throw uncaughtPromiseError;
           });
         } catch (error) {
-          handleUnhandledRejection(error);
+          handleUnhandledRejection(error, uncaughtPromiseError);
         }
       }
     };
@@ -72,12 +72,16 @@ export function patchPromise(Zone: ZoneType): void {
       'unhandledPromiseRejectionHandler',
     );
 
-    function handleUnhandledRejection(this: unknown, e: any) {
+    function handleUnhandledRejection(
+      this: unknown,
+      e: any,
+      uncaughtPromiseError: UncaughtPromiseError,
+    ) {
       api.onUnhandledError(e);
       try {
         const handler = (Zone as any)[UNHANDLED_PROMISE_REJECTION_HANDLER_SYMBOL];
         if (typeof handler === 'function') {
-          handler.call(this, e);
+          handler.call(this, uncaughtPromiseError);
         }
       } catch (err) {}
     }

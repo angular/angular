@@ -134,4 +134,21 @@ describe('disable wrap uncaught promise rejection', () => {
       });
     });
   });
+
+  it('should dispatch the unhandledrejection event with the original rejection', async () => {
+    const error = new Error('unhandled');
+    await jasmine.spyOnGlobalErrorsAsync(async () => {
+      const event = await new Promise<PromiseRejectionEvent>((resolve) => {
+        const listener = (evt: PromiseRejectionEvent) => {
+          window.removeEventListener('unhandledrejection', listener);
+          resolve(evt);
+        };
+        window.addEventListener('unhandledrejection', listener);
+        Zone.root.run(() => {
+          Promise.reject(error);
+        });
+      });
+      expect(event.reason).toBe(error);
+    });
+  });
 });
