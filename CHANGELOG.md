@@ -1,3 +1,50 @@
+<a name="22.2.0"></a>
+# 22.2.0 (2026-09-23)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [48a0fd6e8a](https://github.com/angular/angular/commit/48a0fd6e8a8d14bdc1d901ee5615f4b0ab698fe8) | feat | allow template to access private props |
+| [a4f1a94948](https://github.com/angular/angular/commit/a4f1a949486d20ce2bf9add427eea6629228b28b) | fix | do not encapsulate nested selectors if parent contains ::ng-deep |
+| [d0d7f57e08](https://github.com/angular/angular/commit/d0d7f57e0810a24ba16dbb1f2ab9f079a096fa3d) | fix | scope nested CSS rules |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [312e1d8089](https://github.com/angular/angular/commit/312e1d808902116fb8cd4e02d936260113453999) | feat | add strictUnclaimedEventNames option to catch misspelled output bindings |
+| [7d9f55da11](https://github.com/angular/angular/commit/7d9f55da11319da8f273d9edcd38ff2983bdbb0c) | feat | scope type-checking of keyed defer blocks |
+| [2e2c426e76](https://github.com/angular/angular/commit/2e2c426e7609de551dafb6360e6373333a278c4e) | fix | deduplicate deferred imports across multiple blocks |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f6afb807c1](https://github.com/angular/angular/commit/f6afb807c1e62d26b8b665f2b4a9a52c2433a673) | feat | add ErrorBoundary programmatic APIs ([#70463](https://github.com/angular/angular/pull/70463)) |
+| [05c4d5a835](https://github.com/angular/angular/commit/05c4d5a8354228100b51176f295ed5dee4f3febc) | feat | add utility for testing directives |
+| [bd9b45b5cc](https://github.com/angular/angular/commit/bd9b45b5cc1dd904cc4a5de45f6de8e1564b70b6) | feat | allow reading `Injector` from a view or content query |
+| [91a2bf8425](https://github.com/angular/angular/commit/91a2bf84250f9b0a28a8a68e1eded6e9506bc5e9) | feat | support annotations in WebMCP tool declarations |
+| [af2c7e386d](https://github.com/angular/angular/commit/af2c7e386d8c88fe6c27b148bb84ee0e26662e5b) | fix | cancel leave animations in nested views during list reordering |
+| [de5889ec4f](https://github.com/angular/angular/commit/de5889ec4fab2b337e394eb994c8d428272d5ec9) | fix | support function and signal bindings in animate.enter and animate.leave |
+| [a8233232f5](https://github.com/angular/angular/commit/a8233232f5ade21a15a6645135accd21cf041b1e) | fix | update FakeNavigation to match WHATWG HTML spec |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d5e8b1ef7a](https://github.com/angular/angular/commit/d5e8b1ef7a02c84d4fd70a6b4d748ead9ff815bf) | feat | allow permanent hidden fields in signal forms |
+| [6e299da8cf](https://github.com/angular/angular/commit/6e299da8cfc7df49029d5d8bb7d5739560e1aaa4) | feat | hard-code `readOnlyHint` and `untrustedContentHint` for WebMCP implicit signal forms |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f4a5650ed9](https://github.com/angular/angular/commit/f4a5650ed9c71a8ee1dbd3003e13900464827757) | feat | add support for `@boundary` blocks ([#70463](https://github.com/angular/angular/pull/70463)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2720362818](https://github.com/angular/angular/commit/2720362818cdeb2a940171e4ab6f21cf78c6a302) | feat | add containsTree as public API |
+| [b65dea4f03](https://github.com/angular/angular/commit/b65dea4f03e5fc01093a718c990c72ae9165c43f) | feat | allow throwing RedirectCommand to trigger redirects |
+| [3064f3f1dc](https://github.com/angular/angular/commit/3064f3f1dccd78177bf3b86f8ea231102884f0d7) | feat | expose router resources in public API |
+| [7137a41223](https://github.com/angular/angular/commit/7137a41223079b4b172aeccb5031347fcc947b79) | feat | stabilize auto cleanup injectors feature |
+| [094bce9e3d](https://github.com/angular/angular/commit/094bce9e3defe7e9fd56f951641f3bb74248d06a) | fix | determine blocking state solely by resource loading status |
+| [6f5a4a06c2](https://github.com/angular/angular/commit/6f5a4a06c2e7c565e584c72910c2d8fa7ba9cb2f) | fix | expose reload method on ActivatedRoute resources |
+| [2c6c67bee6](https://github.com/angular/angular/commit/2c6c67bee675a67eff2c2d219dcb88cc1c305190) | fix | maintain frozen state on rollback until resource loading completes |
+| [2dcdf9aae6](https://github.com/angular/angular/commit/2dcdf9aae637a247d1a9bdcf03c740d0b3036cd0) | fix | mark router_resource module-level symbols as side-effect free |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.24"></a>
 # 21.2.24 (2026-09-23)
 ### router
@@ -55,33 +102,6 @@
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="22.2.0-rc.0"></a>
-# 22.2.0-rc.0 (2026-09-16)
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [14dbbf9b68](https://github.com/angular/angular/commit/14dbbf9b68474a442a295ae165543c8923eae4b8) | fix | wrap `@for` collection expression before appending non-null assertion |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [312e1d8089](https://github.com/angular/angular/commit/312e1d808902116fb8cd4e02d936260113453999) | feat | add strictUnclaimedEventNames option to catch misspelled output bindings |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [cea6896a0f](https://github.com/angular/angular/commit/cea6896a0fef4fa4f37a4c7a43c7a880900eb21d) | fix | return null when getDirectiveMetadata is called with null or undefined |
-| [a8233232f5](https://github.com/angular/angular/commit/a8233232f5ade21a15a6645135accd21cf041b1e) | fix | update FakeNavigation to match WHATWG HTML spec |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [15bfc1a4be](https://github.com/angular/angular/commit/15bfc1a4befdef22188c23a4d0313140595012fd) | fix | mark control as dirty before setting its value in FVC interop |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2c6c67bee6](https://github.com/angular/angular/commit/2c6c67bee675a67eff2c2d219dcb88cc1c305190) | fix | maintain frozen state on rollback until resource loading completes |
-| [2dcdf9aae6](https://github.com/angular/angular/commit/2dcdf9aae637a247d1a9bdcf03c740d0b3036cd0) | fix | mark router_resource module-level symbols as side-effect free |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="22.1.7"></a>
 # 22.1.7 (2026-09-16)
 ### compiler
@@ -96,45 +116,6 @@
 | Commit | Type | Description |
 | -- | -- | -- |
 | [6555c4ee1e](https://github.com/angular/angular/commit/6555c4ee1ec2aea7eb541d558981b55eb751497c) | fix | mark control as dirty before setting its value in FVC interop |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="22.2.0-next.7"></a>
-# 22.2.0-next.7 (2026-09-09)
-No user facing changes in this release
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="22.2.0-next.6"></a>
-# 22.2.0-next.6 (2026-09-09)
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [9b80d4ce9e](https://github.com/angular/angular/commit/9b80d4ce9e00d50d471c1a1a98ab67ec53fbce5f) | fix | namespace `@property` declarations |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f0a271c7bd](https://github.com/angular/angular/commit/f0a271c7bd4be000c52592034573cda9866f26bb) | fix | do not flag callable objects with zero parameters in uninvoked track function check |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f6afb807c1](https://github.com/angular/angular/commit/f6afb807c1e62d26b8b665f2b4a9a52c2433a673) | feat | add ErrorBoundary programmatic APIs ([#70463](https://github.com/angular/angular/pull/70463)) |
-| [bd9b45b5cc](https://github.com/angular/angular/commit/bd9b45b5cc1dd904cc4a5de45f6de8e1564b70b6) | feat | allow reading `Injector` from a view or content query |
-| [70756b506c](https://github.com/angular/angular/commit/70756b506c508faa908fe8917e1f6937bcd6df77) | fix | apply SkipSelf to only the starting node in embedded views |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f4a5650ed9](https://github.com/angular/angular/commit/f4a5650ed9c71a8ee1dbd3003e13900464827757) | feat | add support for `@boundary` blocks ([#70463](https://github.com/angular/angular/pull/70463)) |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [bc3a6cda5d](https://github.com/angular/angular/commit/bc3a6cda5d7c4ef9207ee6c6adbcd55b7bd7dcab) | fix | avoid sourcemap corruption during domino path substitution |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3064f3f1dc](https://github.com/angular/angular/commit/3064f3f1dccd78177bf3b86f8ea231102884f0d7) | feat | expose router resources in public API |
-| [094bce9e3d](https://github.com/angular/angular/commit/094bce9e3defe7e9fd56f951641f3bb74248d06a) | fix | determine blocking state solely by resource loading status |
-| [8227e5cf6d](https://github.com/angular/angular/commit/8227e5cf6d157d6e472f963da68a804813ad26ed) | fix | keep detached route subtree contexts isolated and intact |
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -181,41 +162,6 @@ No user facing changes in this release
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="22.2.0-next.5"></a>
-# 22.2.0-next.5 (2026-09-02)
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [faafd18a4c](https://github.com/angular/angular/commit/faafd18a4c0c5db161e5d7056e9abfb8675904cb) | fix | check uninvoked signal aliases in extended diagnostic |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [05c4d5a835](https://github.com/angular/angular/commit/05c4d5a8354228100b51176f295ed5dee4f3febc) | feat | add utility for testing directives |
-| [91a2bf8425](https://github.com/angular/angular/commit/91a2bf84250f9b0a28a8a68e1eded6e9506bc5e9) | feat | support annotations in WebMCP tool declarations |
-| [0904f90b13](https://github.com/angular/angular/commit/0904f90b13ac2a1bad22a2b43fb232957dba44c3) | fix | cancel stale debounce timers to prevent timer leaks |
-| [58d536bc83](https://github.com/angular/angular/commit/58d536bc8362f3942c929e58be551d871b00cea7) | fix | don&apos;t fail NgModule checks for a pipe that extends a base class |
-| [7168bed663](https://github.com/angular/angular/commit/7168bed663ba2a53f087a68a251e8ccfd938eb97) | fix | validate SVG animation attributes outside the SVG namespace |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6e299da8cf](https://github.com/angular/angular/commit/6e299da8cfc7df49029d5d8bb7d5739560e1aaa4) | feat | hard-code `readOnlyHint` and `untrustedContentHint` for WebMCP implicit signal forms |
-| [38861ac41b](https://github.com/angular/angular/commit/38861ac41bb373870e961f41626de6b6b31120f1) | fix | avoid writing to `name` input on ControlValueAccessor |
-### migrations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [f72600eadd](https://github.com/angular/angular/commit/f72600eaddfa6a299526e922eb9ad5356be821a6) | fix | skip tsconfig files of non-Angular projects |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b3bb36ad87](https://github.com/angular/angular/commit/b3bb36ad87334f7a86908c1b2b4353c1cc514c2e) | fix | resolve HTTP(S) URLs without authority as relative during SSR |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7137a41223](https://github.com/angular/angular/commit/7137a41223079b4b172aeccb5031347fcc947b79) | feat | stabilize auto cleanup injectors feature |
-| [af26a8c521](https://github.com/angular/angular/commit/af26a8c52178a0e972c2841051db44f9d04ac371) | fix | avoid view transitions when the user agent provides one |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="22.1.5"></a>
 # 22.1.5 (2026-09-02)
 ### compiler-cli
@@ -244,52 +190,6 @@ No user facing changes in this release
 | Commit | Type | Description |
 | -- | -- | -- |
 | [4340a63c52](https://github.com/angular/angular/commit/4340a63c52fca4d08ef258a3c053f50932eab27e) | fix | avoid view transitions when the user agent provides one |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="22.2.0-next.4"></a>
-# 22.2.0-next.4 (2026-08-26)
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [862a0c8ab3](https://github.com/angular/angular/commit/862a0c8ab3403242eeac3b2fb80f7cf63cf0c892) | fix | avoid prototype member collisions |
-| [7596548e9b](https://github.com/angular/angular/commit/7596548e9b836a5d12e966bf296a4dbba044b78f) | fix | use locale NaN symbol in number formatting |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [58b0cb4735](https://github.com/angular/angular/commit/58b0cb47358861de0a512711addb8e29f984a57e) | fix | scope animations declared in minified nested rules |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7d9f55da11](https://github.com/angular/angular/commit/7d9f55da11319da8f273d9edcd38ff2983bdbb0c) | feat | scope type-checking of keyed defer blocks |
-| [2e2c426e76](https://github.com/angular/angular/commit/2e2c426e7609de551dafb6360e6373333a278c4e) | fix | deduplicate deferred imports across multiple blocks |
-| [a46292af26](https://github.com/angular/angular/commit/a46292af260f241da2f9f4e4cbb7d40b14a678f1) | fix | default template diagnostic related message source file to template |
-| [e9ba39d671](https://github.com/angular/angular/commit/e9ba39d671a3645ef5ca8233c96bacc94f02d155) | fix | Produce correct tcb expression for optional chaining |
-| [74b294cd51](https://github.com/angular/angular/commit/74b294cd51b0f73e3a71e0cd13a176b1d0f3a89f) | fix | retain metadata for strict standalone errors |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7ba082e08e](https://github.com/angular/angular/commit/7ba082e08e59eadec4594ad80661d5c1ec08cb2a) | fix | avoid prototype member collisions |
-| [915a03ae85](https://github.com/angular/angular/commit/915a03ae856a595bd5fa0f364928869db8daec19) | fix | explicitly reject foreign components in JIT mode |
-| [2ab5ff56de](https://github.com/angular/angular/commit/2ab5ff56ded8c6246c0035d9df62a0c7fc9e1308) | fix | preserve namespace for dynamic component hosts |
-| [168a324cce](https://github.com/angular/angular/commit/168a324cce0f133ed92953374c2510a75868b790) | fix | prevent TransferState prototype pollution |
-| [83f7695b2e](https://github.com/angular/angular/commit/83f7695b2e4e1cab347f7817da4ae4262dade415) | fix | throw coded RuntimeErrors instead of crashing when hydration/rendering can&apos;t find an expected DOM node |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1e35de536d](https://github.com/angular/angular/commit/1e35de536d8332dfcbb3d89d01ca84b50aa56bd2) | fix | use dot-access for readonly rule configuration |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0f0d52e9c1](https://github.com/angular/angular/commit/0f0d52e9c1154f8db9a4a8d9d0ff73f0afdc7031) | fix | honor quote style preference when generating imports |
-### migrations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [bdc09e8183](https://github.com/angular/angular/commit/bdc09e8183a3280d25bfc93b4d5ae4452cc551ec) | fix | preserve registerLocaleData calls in standalone bootstrap migration |
-### platform-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3e924cc8db](https://github.com/angular/angular/commit/3e924cc8dbbb57f23b262cb8f0d7e2bd0673034c) | fix | avoid stripping unicode whitespace during url resolution |
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -354,58 +254,6 @@ No user facing changes in this release
 | -- | -- | -- |
 | [9339a7a2de](https://github.com/angular/angular/commit/9339a7a2de437ed93f9cc3da7f32d0100412d599) | fix | avoid stripping unicode whitespace during url resolution |
 | [89b20568df](https://github.com/angular/angular/commit/89b20568dfaee1ec8e0b3bcf1872acdddd2f4fef) | fix | update domino to latest version |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="22.2.0-next.3"></a>
-# 22.2.0-next.3 (2026-08-19)
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c73a001fbf](https://github.com/angular/angular/commit/c73a001fbf766b350fab4e64244cfaee23fdc8bc) | fix | detect object trigger values with Object.hasOwn |
-### common
-| Commit | Type | Description |
-| -- | -- | -- |
-| [46d2cb7ff0](https://github.com/angular/angular/commit/46d2cb7ff049dc4549080f64dceb1541b3a87cee) | fix | preserve literal key union in KeyValuePipe.transform() |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [48a0fd6e8a](https://github.com/angular/angular/commit/48a0fd6e8a8d14bdc1d901ee5615f4b0ab698fe8) | feat | allow template to access private props |
-
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [dc65e3656f](https://github.com/angular/angular/commit/dc65e3656ff56fc6c5c03cf59991a6e8760b5279) | fix | accept readonly arrays for setClassMetadata decorators |
-| [eee9ef4d09](https://github.com/angular/angular/commit/eee9ef4d09c091e9066ed6074a19c0eee0e84da2) | fix | allow readonly arrays in RawScopeInfoFromDecorator |
-| [0ddbc47e7f](https://github.com/angular/angular/commit/0ddbc47e7f6a4eced3a1a986b260747dc37ee9c9) | fix | expose debuggableFn for non-computed signal graph nodes |
-| [c2b14b7ab4](https://github.com/angular/angular/commit/c2b14b7ab44003d6fd1154300c5cc483644d80e6) | fix | prevent orphaned requestIdleCallback handle from re-entrant scheduling |
-| [732e505018](https://github.com/angular/angular/commit/732e5050180190df24768ace7aa3e785ca0dcc0a) | fix | replace all hasOwnProperty usages with Object.hasOwn |
-| [c658d73210](https://github.com/angular/angular/commit/c658d73210d1a2e808cfe659dddd48e8389086c7) | fix | stop running further effects once one destroys the view mid-flush |
-| [c6e4a36be1](https://github.com/angular/angular/commit/c6e4a36be1246e0fbe06d591a69ac79cd74348d2) | fix | throw a descriptive error instead of crashing when a hydration node is missing |
-| [4560f4fdcd](https://github.com/angular/angular/commit/4560f4fdcda4d55c9234f71fda2e73938cb55ed6) | fix | throw NG0500 instead of a raw TypeError on element hydration mismatch |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c819880b91](https://github.com/angular/angular/commit/c819880b91bf5ff1c5aa71afd314ae7cae241065) | fix | report forbidden 2way bindings on when `FormField` is applied |
-| [38d093232c](https://github.com/angular/angular/commit/38d093232c6d2fad99f2e361e9f6e31923507658) | fix | warn in dev mode when ngModel cannot reach parent NgForm across component boundary |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1a006a8f97](https://github.com/angular/angular/commit/1a006a8f9794240a950c388387bd8b9a671801da) | fix | cancel oversized fetch response bodies |
-### language-server
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3f8d9d6ea6](https://github.com/angular/angular/commit/3f8d9d6ea6a0a0e7edbc12baf08b1f6db8c0f6b8) | fix | recover project for external templates in solution-style workspaces |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6f9a6bea50](https://github.com/angular/angular/commit/6f9a6bea50944fff894eb5629075b13f8c3090d7) | fix | disallow event handler attributes in Meta |
-| [1cb3d606bf](https://github.com/angular/angular/commit/1cb3d606bf5bb01ec9c9e9289703a79f64c76e89) | fix | throw a descriptive error when insertBefore reference node is missing |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [2720362818](https://github.com/angular/angular/commit/2720362818cdeb2a940171e4ab6f21cf78c6a302) | feat | add containsTree as public API |
-| [f1a4c85212](https://github.com/angular/angular/commit/f1a4c8521296d7414a1eab84352ca7db966f35e2) | fix | pass correct component to canDeactivate for named outlets in componentless parent routes |
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -510,42 +358,6 @@ No user facing changes in this release
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="22.2.0-next.2"></a>
-# 22.2.0-next.2 (2026-08-13)
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a4f1a94948](https://github.com/angular/angular/commit/a4f1a949486d20ce2bf9add427eea6629228b28b) | fix | do not encapsulate nested selectors if parent contains ::ng-deep |
-| [d7b03f5523](https://github.com/angular/angular/commit/d7b03f5523d220c7935426d23ff5f103c96b00d9) | fix | Generate correct expression for optional chaning. |
-| [107f6fa49d](https://github.com/angular/angular/commit/107f6fa49d00ec250b94a8d5f484bae2fc3d71c9) | fix | remove namespaced MathML script elements |
-| [d0d7f57e08](https://github.com/angular/angular/commit/d0d7f57e0810a24ba16dbb1f2ab9f079a096fa3d) | fix | scope nested CSS rules |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [e8aa222e7d](https://github.com/angular/angular/commit/e8aa222e7d98d2e54c5604107a929a11cb1ef62d) | fix | correctly resolve symbol for SafePropertyRead in chained optional navigation |
-| [8d6c925392](https://github.com/angular/angular/commit/8d6c925392c7230fbe6b39abdad05381672631b1) | fix | record class extends clause references in DeferredSymbolTracker |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [8925a4ee49](https://github.com/angular/angular/commit/8925a4ee491aebaf6a1a74880c73dfb20e0a4ba1) | fix | ensure i18n_util hasOwnProperty checks are safe for property renaming |
-| [565dbb2fe5](https://github.com/angular/angular/commit/565dbb2fe5406f2a86d43a5b3c6993434b7124a7) | fix | incorrect loop in defer blocks |
-| [9f8e32616b](https://github.com/angular/angular/commit/9f8e32616b79892785051fab1c3120a770f5f682) | fix | reject prefixed SVG script hosts |
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [9e37a58e14](https://github.com/angular/angular/commit/9e37a58e14bd7955d40255e42e20aa84fcde02f4) | fix | keep radio inputs in sync when values change |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [09bc90003e](https://github.com/angular/angular/commit/09bc90003ed6e9f6c166e885503728af49d1af67) | fix | always decode JSON responses as UTF-8 |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b65dea4f03](https://github.com/angular/angular/commit/b65dea4f03e5fc01093a718c990c72ae9165c43f) | feat | allow throwing RedirectCommand to trigger redirects |
-| [435f8b2b8b](https://github.com/angular/angular/commit/435f8b2b8b67277fc69888911251d14b32705828) | fix | limit protocol-relative URL handling to serialization |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="20.3.28"></a>
 # 20.3.28 (2026-08-13)
 ### core
@@ -576,23 +388,6 @@ No user facing changes in this release
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="22.2.0-next.1"></a>
-# 22.2.0-next.1 (2026-08-07)
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [cfe2cda110](https://github.com/angular/angular/commit/cfe2cda1100bb84e2ecf954687126c4d30212d07) | fix | initialize hydration triggers after late runtime activation |
-| [e43eb96341](https://github.com/angular/angular/commit/e43eb96341b692525743a1f3aa1380ce21a9dd02) | fix | warn when style property bindings receive invalid values |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [ef4dfead83](https://github.com/angular/angular/commit/ef4dfead83ea8b3843b98a17ac572f2a380b1c46) | fix | avoid aborting completed requests in FetchBackend |
-| [6a0789dc7f](https://github.com/angular/angular/commit/6a0789dc7f0ac9d1249c4d9f315e83424867169b) | fix | respect content-type charset in fetch backend text decoder |
-| [bb78286e5e](https://github.com/angular/angular/commit/bb78286e5e729d1e1fcfd2733d88351a38083ef5) | fix | run root interceptors in the terminal request chain |
-| [280d09b160](https://github.com/angular/angular/commit/280d09b16011e4f53f9e696fd95964943c6dcbfa) | fix | strip RFC 6265 DQUOTE characters and handle URIError in parseCookieValue |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="22.1.1"></a>
 # 22.1.1 (2026-08-06)
 ### core
@@ -607,15 +402,6 @@ No user facing changes in this release
 | [688a0a7118](https://github.com/angular/angular/commit/688a0a7118215bcab10004a3bf2667773fefdf74) | fix | respect content-type charset in fetch backend text decoder |
 | [a13b968451](https://github.com/angular/angular/commit/a13b9684510dfd04e18f3e1d6686d556c051f34e) | fix | run root interceptors in the terminal request chain |
 | [32af9b525e](https://github.com/angular/angular/commit/32af9b525efe005998a9cd02aebfcc08e6793cf2) | fix | strip RFC 6265 DQUOTE characters and handle URIError in parseCookieValue |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="22.2.0-next.0"></a>
-# 22.2.0-next.0 (2026-07-29)
-### forms
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d5e8b1ef7a](https://github.com/angular/angular/commit/d5e8b1ef7a02c84d4fd70a6b4d748ead9ff815bf) | feat | allow permanent hidden fields in signal forms |
 
 <!-- CHANGELOG SPLIT MARKER -->
 
