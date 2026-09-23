@@ -129,7 +129,7 @@ let moduleUid = 0;
  *   {@link PlatformRef#bootstrapModuleFactory `bootstrapModuleFactory()`} to bootstrap the
  *   downgraded modules, each one is considered a "root" module. As a consequence, a new instance
  *   will be created for every injectable provided in `"root"` (via
- *   {@link /api/core/Injectable#providedIn providedIn}
+ *   {@link /api/core/Injectable providedIn}
  *   If this is not your intention, you can have a shared module (that will act as act as the "root"
  *   module) and create all downgraded modules using that module's injector:
  *
@@ -245,7 +245,7 @@ export function downgradeModule<T>(
  *   {@link PlatformRef#bootstrapModuleFactory `bootstrapModuleFactory()`} to bootstrap the
  *   downgraded modules, each one is considered a "root" module. As a consequence, a new instance
  *   will be created for every injectable provided in `"root"` (via
- *   {@link /api/core/Injectable#providedIn providedIn}
+ *   {@link /api/core/Injectable providedIn}
  *   If this is not your intention, you can have a shared module (that will act as act as the "root"
  *   module) and create all downgraded modules using that module's injector:
  *
@@ -362,7 +362,7 @@ export function downgradeModule<T>(moduleOrBootstrapFn: NgModuleFactory<T>): str
  *   {@link PlatformRef#bootstrapModuleFactory `bootstrapModuleFactory()`} to bootstrap the
  *   downgraded modules, each one is considered a "root" module. As a consequence, a new instance
  *   will be created for every injectable provided in `"root"` (via
- *   {@link /api/core/Injectable#providedIn providedIn}
+ *   {@link /api/core/Injectable providedIn}
  *   If this is not your intention, you can have a shared module (that will act as act as the "root"
  *   module) and create all downgraded modules using that module's injector:
  *
