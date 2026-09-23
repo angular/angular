@@ -147,7 +147,10 @@ export function cleanUpControl(
   }
 }
 
-function registerOnValidatorChange<V>(validators: (V | Validator)[], onChange: () => void): void {
+export function registerOnValidatorChange<V>(
+  validators: (V | Validator)[],
+  onChange: () => void,
+): void {
   validators.forEach((validator: V | Validator) => {
     if ((<Validator>validator).registerOnValidatorChange)
       (<Validator>validator).registerOnValidatorChange!(onChange);

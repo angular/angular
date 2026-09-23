@@ -2525,6 +2525,45 @@ describe('template-driven forms integration tests', () => {
       expect(registerOnValidatorChangeFired).toBe(1);
       expect(registerOnAsyncValidatorChangeFired).toBe(1);
     });
+
+    it('should call registerOnValidatorChange for validators on the form element', async () => {
+      @Directive({
+        selector: '[ng-toggle-validator]',
+        providers: [
+          {provide: NG_VALIDATORS, useExisting: forwardRef(() => ToggleValidator), multi: true},
+        ],
+        standalone: false,
+      })
+      class ToggleValidator implements Validator {
+        invalid = false;
+        onChange = () => {};
+
+        validate(c: AbstractControl) {
+          return this.invalid ? {toggle: true} : null;
+        }
+
+        registerOnValidatorChange(fn: () => void) {
+          this.onChange = fn;
+        }
+      }
+
+      @Component({
+        template: '<form ng-toggle-validator></form>',
+        standalone: false,
+      })
+      class App {}
+
+      const fixture = initTest(App, ToggleValidator);
+      await fixture.whenStable();
+      const formEl = fixture.debugElement.children[0];
+      const form = formEl.injector.get(NgForm).form;
+      const validator = formEl.injector.get(ToggleValidator);
+      expect(form.valid).toBeTrue();
+
+      validator.invalid = true;
+      validator.onChange();
+      expect(form.errors).toEqual({toggle: true});
+    });
   });
 
   describe('IME events', () => {

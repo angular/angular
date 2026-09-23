@@ -39,6 +39,7 @@ import type {NgModel} from './ng_model';
 import type {NgModelGroup} from './ng_model_group';
 import {
   CALL_SET_DISABLED_STATE,
+  registerOnValidatorChange,
   SetDisabledStateOption,
   setUpFormContainer,
   syncPendingControls,
@@ -177,6 +178,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       composeValidators(validators),
       composeAsyncValidators(asyncValidators),
     );
+    const onValidatorChange = () => this.form.updateValueAndValidity();
+    registerOnValidatorChange<ValidatorFn>(validators ?? [], onValidatorChange);
+    registerOnValidatorChange<AsyncValidatorFn>(asyncValidators ?? [], onValidatorChange);
   }
 
   /** @docs-private */
