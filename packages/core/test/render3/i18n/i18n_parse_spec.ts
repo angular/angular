@@ -327,6 +327,37 @@ describe('i18n_parse', () => {
       });
     });
 
+    // These element/attribute pairs are in VALID_ATTRS but have no entry in the DOM security
+    // schema, so `i18nResolveSanitizer` resolves no context for them. Without the fail-closed
+    // check the translator's value is written verbatim; `video[poster]`, `source[src]` and
+    // `track[src]` are then fetched by the browser with no user interaction.
+    const uriAttrsWithoutSchemaEntry: [string, string][] = [
+      ['audio', '<audio src="https://evil.test/a"></audio>'],
+      ['source', '<source src="https://evil.test/b">'],
+      ['track', '<track src="https://evil.test/c">'],
+      ['video', '<video poster="https://evil.test/d"></video>'],
+      ['img', '<img longdesc="https://evil.test/e">'],
+      ['blockquote', '<blockquote cite="https://evil.test/f"></blockquote>'],
+      ['div', '<div itemtype="https://evil.test/g"></div>'],
+    ];
+
+    for (const [tag, markup] of uriAttrsWithoutSchemaEntry) {
+      it(`should block a URI attribute on <${tag}> that has no security context in the DOM schema`, () => {
+        const tI18n = toT18n(`{\uFFFD0\uFFFD, select, A {${markup}} }`);
+
+        fixture.apply(() => {
+          applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
+        });
+
+        fixture.apply(() => {
+          ɵɵi18nExp('A');
+          ɵɵi18nApply(0);
+          expect(fixture.host.innerHTML).toContain('unsafe:blocked');
+          expect(fixture.host.innerHTML).not.toContain('evil.test');
+        });
+      });
+    }
+
     it('should ignore unknown attributes', () => {
       const tI18n = toT18n(`{�0�, select, A {<div unknown="unknown"></div>} }`);
 

@@ -10,7 +10,12 @@ import '../../util/ng_i18n_closure_mode';
 
 import {XSS_SECURITY_URL} from '../../error_details_base_url';
 import {checkSecurityContext, SecurityContext} from '../../sanitization/dom_security_schema';
-import {getTemplateContent, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer';
+import {
+  getTemplateContent,
+  URI_ATTRS,
+  VALID_ATTRS,
+  VALID_ELEMENTS,
+} from '../../sanitization/html_sanitizer';
 import {getInertBodyHelper} from '../../sanitization/inert_body';
 import {
   ɵɵsanitizeHtml as _sanitizeHtml,
@@ -841,7 +846,10 @@ function walkIcuTree(
             } else if (VALID_ATTRS[lowerAttrName]) {
               let val = attr.value;
               const sanitizer = i18nResolveSanitizer(lowerAttrName, tagNameWithNamespace);
-              if (sanitizer) {
+              // A URI-bearing attribute with no security context resolved means the DOM security
+              // schema has no entry for this element/attribute pair. Translators are not allowed to
+              // create URIs, so treat the absence of a schema entry as "block", not as "allow".
+              if (sanitizer || URI_ATTRS[lowerAttrName]) {
                 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                   console.warn(
                     `WARNING: ignoring unsafe attribute ` +

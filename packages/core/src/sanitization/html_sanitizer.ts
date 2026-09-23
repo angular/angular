@@ -76,7 +76,7 @@ export const VALID_ELEMENTS: BooleanRecord = merge(
 );
 
 // Attributes that have href and hence need to be sanitized
-const URI_ATTRS: BooleanRecord = tagSet(
+export const URI_ATTRS: BooleanRecord = tagSet(
   'background,cite,href,itemtype,longdesc,poster,src,xlink:href',
 );
 
