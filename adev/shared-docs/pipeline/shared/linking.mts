@@ -46,7 +46,10 @@ export function shouldLinkSymbol(symbol: string): boolean {
 }
 
 // symbolName -> symbol info with moduleName and optional targetSymbol for aliases
-export type ApiEntries = Record<string, {moduleName: string; targetSymbol?: string}>;
+export type ApiEntries = Record<
+  string,
+  {moduleName: string; targetSymbol?: string; entryType?: string}
+>;
 
 /**
  * Extracts the symbol name and property name from a symbol string.
@@ -73,11 +76,19 @@ export function extractFromSymbol(symbol: string): {propName: string | null; sym
     [symbolName, propName] = symbolName.split('.');
   }
 
-  return {propName: propName ?? null, symbolName: symbolName};
+  return {propName: propName?.replace(/[(<!].*$/, '') ?? null, symbolName: symbolName};
 }
 
 export function getSymbolUrl(symbol: string, apiEntries: ApiEntries): string | undefined {
-  if (hasMoreThanOneDot(symbol) || !shouldLinkSymbol(symbol)) {
+  if (!shouldLinkSymbol(symbol)) {
+    return undefined;
+  }
+
+  return resolveSymbolUrl(symbol, apiEntries);
+}
+
+export function resolveSymbolUrl(symbol: string, apiEntries: ApiEntries): string | undefined {
+  if (hasMoreThanOneDot(symbol)) {
     return undefined;
   }
 
@@ -88,10 +99,16 @@ export function getSymbolUrl(symbol: string, apiEntries: ApiEntries): string | u
   }
 
   const apiEntry = apiEntries[symbolName];
+  if (propName && apiEntry.entryType === 'function') {
+    return undefined;
+  }
+
   const moduleName = apiEntry.moduleName;
   const targetSymbol = apiEntry.targetSymbol ?? symbolName;
+  const fragment =
+    propName && apiEntry.entryType !== 'initializer_api_function' ? `#${propName}` : '';
 
-  return `/api/${moduleName}/${targetSymbol}${propName ? `#${propName}` : ''}`;
+  return `/api/${moduleName}/${targetSymbol}${fragment}`;
 }
 
 function hasMoreThanOneDot(str: string) {

@@ -62,4 +62,41 @@ describe('getSymbolUrl', () => {
     expect(getSymbolUrl('unknownSelector', apiEntries)).toBeUndefined();
     expect(getSymbolUrl('ngUnknownDirective', apiEntries)).toBeUndefined();
   });
+
+  it('should only keep the member name in the fragment', () => {
+    const apiEntries = {
+      By: {moduleName: 'platform-browser'},
+      TestBed: {moduleName: 'core/testing'},
+      DebugElement: {moduleName: 'core'},
+    };
+
+    expect(getSymbolUrl(`By.css('h2:not([highlight])')`, apiEntries)).toBe(
+      '/api/platform-browser/By#css',
+    );
+    expect(getSymbolUrl('TestBed.createComponent<T>', apiEntries)).toBe(
+      '/api/core/testing/TestBed#createComponent',
+    );
+    expect(getSymbolUrl('DebugElement.query(predicate)!', apiEntries)).toBe(
+      '/api/core/DebugElement#query',
+    );
+  });
+
+  it('should not link a property of a plain function', () => {
+    const apiEntries = {
+      state: {moduleName: 'animations', entryType: 'function'},
+      schema: {moduleName: 'forms/signals', entryType: 'function'},
+    };
+
+    expect(getSymbolUrl('state.metadata(HELP)', apiEntries)).toBeUndefined();
+    expect(getSymbolUrl('schema.json', apiEntries)).toBeUndefined();
+    expect(getSymbolUrl('schema', apiEntries)).toBe('/api/forms/signals/schema');
+  });
+
+  it('should link a property of an initializer API function to its page', () => {
+    const apiEntries = {
+      model: {moduleName: 'core', entryType: 'initializer_api_function'},
+    };
+
+    expect(getSymbolUrl('model.required', apiEntries)).toBe('/api/core/model');
+  });
 });

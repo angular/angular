@@ -32,6 +32,7 @@ import {
   getSymbolMembers,
   getSymbolsAsApiEntries,
   getSymbolUrl,
+  resolveSymbolUrl,
   unknownSymbolMessage,
 } from '../symbol-context.mjs';
 import {getAnchorsForRoute, hasDefinedRoutes, isKnownRoute} from '../defined-routes-context.mjs';
@@ -343,13 +344,18 @@ function parseAtLink(link: string): {label: string; url: string} | undefined {
     };
   }
 
-  let url = getSymbolUrl(rawSymbol);
+  let url = resolveSymbolUrl(rawSymbol);
   const label = description ?? rawSymbol;
 
   if (!url) {
     const currentSymbol = getCurrentSymbol();
     // 2nd attempt, try to get the module name in the context of the current symbol
-    url = getSymbolUrl(`${currentSymbol}.${rawSymbol}`);
+    const members = currentSymbol ? getSymbolMembers(currentSymbol) : undefined;
+    // Normalize the same way `extractFromSymbol` does, so a member written with a call, generics
+    // or a non-null assertion is still recognized as a member.
+    if (!members || members.has(rawSymbol.replace(/[(<!].*$/, ''))) {
+      url = resolveSymbolUrl(`${currentSymbol}.${rawSymbol}`);
+    }
 
     if (!url || !currentSymbol) {
       throw unknownSymbolMessage(link, rawSymbol);

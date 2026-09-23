@@ -54,7 +54,7 @@ export interface ExtractFilter {
 }
 
 /**
- * Utility to unwrap a {@link FieldTree} into its underlying raw value.
+ * Utility to unwrap a {@link /api/forms/signals/FieldTree FieldTree} into its underlying raw value.
  *
  * This function is recursive, so if the field tree represents an object or an array,
  * the result will be an object or an array of the raw values of its children.
@@ -67,7 +67,7 @@ export interface ExtractFilter {
  */
 export function extractValue<T>(field: FieldTree<T>): RawValue<T>;
 /**
- * Utility to unwrap a {@link FieldTree} into its underlying raw value.
+ * Utility to unwrap a {@link /api/forms/signals/FieldTree FieldTree} into its underlying raw value.
  *
  * This function is recursive, so if the field tree represents an object or an array,
  * the result will be an object or an array of the raw values of its children.
