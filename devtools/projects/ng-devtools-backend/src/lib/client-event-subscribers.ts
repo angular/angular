@@ -155,6 +155,9 @@ export const subscribeToClientEvents = (
         .changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
+
+    getConfig().onChange('deferBlocks', () => messageBus.emit('componentTreeDirty'));
+    getConfig().onChange('forBlocks', () => messageBus.emit('componentTreeDirty'));
   }
 };
 

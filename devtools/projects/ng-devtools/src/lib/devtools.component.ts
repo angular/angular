@@ -124,6 +124,8 @@ export class DevToolsComponent implements OnDestroy {
             hydrationOverlays: this.settings.showHydrationOverlays(),
             cdHighlighting: this.settings.highlightChangeDetection(),
             cdDataStream: this.settings.showCdInExplorer(),
+            deferBlocks: this.settings.showDeferBlocks(),
+            forBlocks: this.settings.showForBlocks(),
           },
         ]);
       },
