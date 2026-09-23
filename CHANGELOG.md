@@ -1,3 +1,42 @@
+<a name="22.1.8"></a>
+# 22.1.8 (2026-09-23)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [850db9d999](https://github.com/angular/angular/commit/850db9d9997d026542eb4626aff3e2bf02ab9290) | fix | remove abort listener on the abort path too in httpResource |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4e5f4c38a7](https://github.com/angular/angular/commit/4e5f4c38a7eae17262d32f26c06f62d0e5203df8) | fix | add return type to pure functions |
+| [02e83dc288](https://github.com/angular/angular/commit/02e83dc28846c735744ab8769690dba0b62b5db2) | fix | avoid hitting TypeScript limits if template has many translations |
+| [024ebe668c](https://github.com/angular/angular/commit/024ebe668c27668e3cc48023ba48ef24468bdfbb) | fix | do not copy expression type into output AST variables |
+| [b3c5824bd6](https://github.com/angular/angular/commit/b3c5824bd643f06e28fc298779fc31c3095ed092) | fix | guard unverified ctor parameter types in class metadata |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fe671d9024](https://github.com/angular/angular/commit/fe671d9024d737b0304cc66366450e6fa0560cd9) | fix | output function return types in linker |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d7d5401cd5](https://github.com/angular/angular/commit/d7d5401cd5e8ce23d8bb3f0e7ae08323b307d0d5) | fix | don&apos;t use plain objects as maps for jsaction data |
+| [c3e8f29b3f](https://github.com/angular/angular/commit/c3e8f29b3f898ee5377b0110683fe9dc2808c116) | fix | ensure references are cleared from idle scheduler |
+| [9b854f6e76](https://github.com/angular/angular/commit/9b854f6e760b6b6a710f43ca9edafe9f79aed538) | fix | loosen return types for arrow functions in generated code |
+| [cfa8967683](https://github.com/angular/angular/commit/cfa896768301bf74c2e09e35d9a03cc6d2d2a885) | fix | wait for app stability before cleaning up dehydrated views |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [78c7ab3926](https://github.com/angular/angular/commit/78c7ab392627d87d76df3e28df5cda2449d93a68) | fix | create controls before listeners |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [330083f250](https://github.com/angular/angular/commit/330083f250fe3be6b415be1ea7d6905e7511b5b9) | fix | preserve Unicode whitespace in ServerXhr URLs |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2cab6f5964](https://github.com/angular/angular/commit/2cab6f59649af47dd86e2fc7dd0dd269209c58bc) | fix | avoid dense elements allocation for numeric URL keys |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.1.7"></a>
 # 22.1.7 (2026-09-16)
 ### compiler
