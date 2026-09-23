@@ -359,7 +359,7 @@ export class Recognizer {
       route.redirectTo!,
       positionalParamSegments,
       createPreMatchRouteSnapshot(currentSnapshot),
-      injector,
+      this.injector,
     );
 
     const newSegments = await this.applyRedirects.lineralizeSegments(route, newTree);

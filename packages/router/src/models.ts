@@ -674,8 +674,9 @@ export interface Route {
    * Absolute if the URL begins with a slash (/) or the function returns a `UrlTree`, otherwise
    * relative to the path URL.
    *
-   * The `RedirectFunction` is run in an injection context so it can call `inject` to get any
-   * required dependencies.
+   * The `RedirectFunction` runs in the injection context of the injector the `Router` was created
+   * in, not in the injection context of the route or its ancestors, so it can call `inject` to get
+   * dependencies from the root injector without waiting on ancestor route configurations.
    *
    * When not present, router does not redirect.
    *

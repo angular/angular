@@ -6,10 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EnvironmentInjector, inject, Injectable, Type} from '@angular/core';
+import {
+  EnvironmentInjector,
+  inject,
+  Injectable,
+  InjectionToken,
+  Injector,
+  provideEnvironmentInitializer,
+  runInInjectionContext,
+  Type,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-import {Route, Routes} from '../src/models';
+import {RedirectCommand, Route, Routes} from '../src/models';
 import {recognize} from '../src/recognize';
 import {Router} from '../src/router';
 import {RouterConfigLoader} from '../src/router_config_loader';
@@ -1687,6 +1696,109 @@ describe('redirects', () => {
         '/a/b',
         (t: UrlTree) => {
           expectTreeToBe(t, '/c;a1=1,a2=2/d/e?qp=123');
+        },
+      );
+    });
+
+    it('runs in the root environment injector, not the parent route injector', async () => {
+      const ROOT_TOKEN = new InjectionToken<string>('ROOT_TOKEN', {
+        providedIn: 'root',
+        factory: () => 'root-val',
+      });
+      const PARENT_TOKEN = new InjectionToken<string>('PARENT_TOKEN');
+
+      await checkRedirect(
+        [
+          {
+            path: 'parent',
+            providers: [
+              {provide: ROOT_TOKEN, useValue: 'parent-override'},
+              {provide: PARENT_TOKEN, useValue: 'parent-only'},
+            ],
+            children: [
+              {
+                path: 'old',
+                redirectTo: () => {
+                  expect(inject(ROOT_TOKEN)).toBe('root-val');
+                  expect(inject(PARENT_TOKEN, {optional: true})).toBeNull();
+                  return '/target';
+                },
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/parent/old',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/target');
+        },
+      );
+    });
+
+    it('can access parent route providers when redirecting via canMatch or provideEnvironmentInitializer', async () => {
+      const PARENT_TOKEN = new InjectionToken<string>('PARENT_TOKEN');
+      let parentInjector: Injector;
+
+      await checkRedirect(
+        [
+          {
+            path: 'parent',
+            providers: [
+              {provide: PARENT_TOKEN, useValue: 'from-parent'},
+              provideEnvironmentInitializer(() => {
+                parentInjector = inject(Injector);
+              }),
+            ],
+            children: [
+              {
+                path: 'via-can-match',
+                children: [],
+                canMatch: [
+                  () => new RedirectCommand(createUrlTree(`/target?val=${inject(PARENT_TOKEN)}`)),
+                ],
+              },
+              {
+                path: 'via-initializer',
+                redirectTo: () =>
+                  runInInjectionContext(
+                    parentInjector,
+                    () => `/target?val=${inject(PARENT_TOKEN)}`,
+                  ),
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/parent/via-initializer',
+        (t: UrlTree) => {
+          expectTreeToBe(t, '/target?val=from-parent');
+        },
+      );
+
+      await checkRedirect(
+        [
+          {
+            path: 'parent',
+            providers: [{provide: PARENT_TOKEN, useValue: 'from-parent'}],
+            children: [
+              {
+                path: 'via-can-match',
+                children: [],
+                canMatch: [
+                  () => new RedirectCommand(createUrlTree(`/target?val=${inject(PARENT_TOKEN)}`)),
+                ],
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/parent/via-can-match',
+        () => {
+          throw new Error('Expected redirect from canMatch');
+        },
+        'always',
+        (e: any) => {
+          expectTreeToBe(e.url, '/target?val=from-parent');
         },
       );
     });
