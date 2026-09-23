@@ -153,6 +153,12 @@ describe('DatePipe', () => {
       expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual('Jan 10, 2017');
     });
 
+    it('should preserve the first day of the common era when formatting in UTC', () => {
+      expect(pipe.transform('0001-01-01T00:00:00Z', 'MM/dd/yyyy GGG HH:mm:ss', 'UTC')).toBe(
+        '01/01/0001 AD 00:00:00',
+      );
+    });
+
     it('should support an empty string for the timezone', () => {
       expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '')).toEqual('Jan 11, 2017');
     });

@@ -408,6 +408,59 @@ describe('Format date', () => {
       );
     });
 
+    // Historical local timezone offsets can include seconds, which getTimezoneOffset omits.
+    // https://github.com/angular/angular/issues/29874
+    it('should preserve historical dates when formatting in UTC', () => {
+      const format = 'yyyy-MM-dd HH:mm:ss.SSS G';
+      expect(formatDate('0001-01-01T00:00:00Z', format, 'en', 'UTC')).toBe(
+        '0001-01-01 00:00:00.000 AD',
+      );
+      expect(formatDate('0000-01-01T00:00:00Z', format, 'en', 'UTC')).toBe(
+        '0001-01-01 00:00:00.000 BC',
+      );
+      expect(formatDate('0099-12-31T23:59:12.345Z', format, 'en', 'UTC')).toBe(
+        '0099-12-31 23:59:12.345 AD',
+      );
+    });
+
+    it('should apply timezone offsets across the start of the common era', () => {
+      const format = 'yyyy-MM-dd HH:mm:ss.SSS G';
+      expect(formatDate('0000-12-31T23:30:12.345Z', format, 'en', '+0100')).toBe(
+        '0001-01-01 00:30:12.345 AD',
+      );
+      expect(formatDate('0001-01-01T00:30:12.345Z', format, 'en', '-0100')).toBe(
+        '0001-12-31 23:30:12.345 BC',
+      );
+    });
+
+    it('should apply fixed timezone offsets across winter and summer dates', () => {
+      const format = 'yyyy-MM-dd HH:mm:ss.SSS';
+      expect(formatDate('2026-01-01T12:30:12.345Z', format, 'en', '+0545')).toBe(
+        '2026-01-01 18:15:12.345',
+      );
+      expect(formatDate('2026-07-01T12:30:12.345Z', format, 'en', '-0330')).toBe(
+        '2026-07-01 09:00:12.345',
+      );
+    });
+
+    it('should use local time for historical dates when the timezone is absent or invalid', () => {
+      const date = new Date(0);
+      date.setFullYear(1, 0, 1);
+      date.setHours(12, 34, 56, 789);
+      for (const timezone of [undefined, '', 'invalid-timezone']) {
+        expect(formatDate(date, 'yyyy-MM-dd HH:mm:ss.SSS G', 'en', timezone)).toBe(
+          '0001-01-01 12:34:56.789 AD',
+        );
+      }
+    });
+
+    it('should preserve the input date when applying a timezone', () => {
+      const date = new Date('0001-01-01T00:00:00Z');
+      const time = date.getTime();
+      expect(formatDate(date, 'yyyy-MM-dd HH:mm:ss', 'en', 'UTC')).toBe('0001-01-01 00:00:00');
+      expect(date.getTime()).toBe(time);
+    });
+
     // The following test is disabled because backwards compatibility requires that date-only ISO
     // strings are parsed with the local timezone.
 

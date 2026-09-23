@@ -119,7 +119,7 @@ export function formatDate(
   let dateTimezoneOffset = date.getTimezoneOffset();
   if (timezone) {
     dateTimezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
-    date = convertTimezoneToLocal(date, timezone, true);
+    date = convertTimezoneToLocal(date, timezone);
   }
 
   let text = '';
@@ -896,17 +896,39 @@ function timezoneToOffset(timezone: string, fallback: number): number {
   return isNaN(requestedTimezoneOffset) ? fallback : requestedTimezoneOffset;
 }
 
-function addDateMinutes(date: Date, minutes: number) {
+function addDateMinutes(date: Date, minutes: number): Date {
   date = new Date(date.getTime());
   date.setMinutes(date.getMinutes() + minutes);
   return date;
 }
 
-function convertTimezoneToLocal(date: Date, timezone: string, reverse: boolean): Date {
-  const reverseValue = reverse ? -1 : 1;
-  const dateTimezoneOffset = date.getTimezoneOffset();
-  const timezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
-  return addDateMinutes(date, reverseValue * (timezoneOffset - dateTimezoneOffset));
+function convertTimezoneToLocal(date: Date, timezone: string): Date {
+  const timezoneOffset = timezoneToOffset(timezone, NaN);
+  if (isNaN(timezoneOffset)) {
+    return date;
+  }
+
+  // Keep the existing conversion for whole-minute local offsets. It preserves
+  // the current behavior across local daylight-saving transitions.
+  if (date.getSeconds() === date.getUTCSeconds()) {
+    return addDateMinutes(date, date.getTimezoneOffset() - timezoneOffset);
+  }
+
+  // Copy the requested timezone's wall-clock fields instead of subtracting the local offset.
+  // Historical local offsets can include seconds, which getTimezoneOffset() truncates.
+  const shiftedDate = new Date(date.getTime() - timezoneOffset * 60000);
+  const localDate = createDate(
+    shiftedDate.getUTCFullYear(),
+    shiftedDate.getUTCMonth(),
+    shiftedDate.getUTCDate(),
+  );
+  localDate.setHours(
+    shiftedDate.getUTCHours(),
+    shiftedDate.getUTCMinutes(),
+    shiftedDate.getUTCSeconds(),
+    shiftedDate.getUTCMilliseconds(),
+  );
+  return localDate;
 }
 
 /**
