@@ -19,6 +19,8 @@ class DevtoolsConfigState {
     cdDataStream: false,
     deferBlocks: false,
     forBlocks: false,
+    ifBlocks: false,
+    switchBlocks: false,
   };
   private readonly listeners = new Map<keyof DevtoolsConfig, ((v: any) => void)[]>();
 

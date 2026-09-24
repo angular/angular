@@ -158,6 +158,14 @@ export function blocksFilter(block: ControlFlowBlockInternal, config: DevtoolsCo
     return false;
   }
 
+  if (!config.ifBlocks && block.type === ControlFlowBlockTypeInternal.If) {
+    return false;
+  }
+
+  if (!config.switchBlocks && block.type === ControlFlowBlockTypeInternal.Switch) {
+    return false;
+  }
+
   return true;
 }
 

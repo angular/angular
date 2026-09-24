@@ -31,7 +31,7 @@ describe('render tree extraction', () => {
     controlFlowBlocksMap = new Map();
 
     // Control flow blocks are filtered out by default.
-    getConfig().set({deferBlocks: true, forBlocks: true});
+    getConfig().set({deferBlocks: true, forBlocks: true, ifBlocks: true, switchBlocks: true});
 
     (window as any).ng = {
       getDirectiveMetadata(dir: any): DirectiveDebugMetadata | null {
@@ -51,7 +51,7 @@ describe('render tree extraction', () => {
 
   afterEach(() => {
     delete (window as any).ng;
-    getConfig().set({deferBlocks: false, forBlocks: false});
+    getConfig().set({deferBlocks: false, forBlocks: false, ifBlocks: false, switchBlocks: false});
   });
 
   it('should detect Angular Ivy apps', () => {
@@ -280,6 +280,54 @@ describe('render tree extraction', () => {
 
     // The child component is a direct descendant of the app root.
     expect(rtree[0].children.map((c) => c.tagName)).toEqual(['child']);
+  });
+
+  it('should skip conditional blocks that are disabled in the config', () => {
+    // Represent:
+    //
+    // <app>
+    //   @if (...) {
+    //     <if-child />
+    //   }
+    //   @switch (...) {
+    //     <switch-child />
+    //   }
+    // </app>
+
+    const appNode = document.createElement('app');
+    const ifHostNode = document.createComment('if');
+    const ifChildNode = document.createElement('if-child');
+    const switchHostNode = document.createComment('switch');
+    const switchChildNode = document.createElement('switch-child');
+
+    appNode.appendChild(ifHostNode);
+    appNode.appendChild(ifChildNode);
+    appNode.appendChild(switchHostNode);
+    appNode.appendChild(switchChildNode);
+
+    componentMap.set(appNode, {});
+    componentMap.set(ifChildNode, {});
+    componentMap.set(switchChildNode, {});
+
+    controlFlowBlocksMap.set(appNode, [
+      {
+        type: ControlFlowBlockType.If,
+        hostNode: ifHostNode,
+        rootNodes: [ifChildNode],
+      },
+      {
+        type: ControlFlowBlockType.Switch,
+        hostNode: switchHostNode,
+        rootNodes: [switchChildNode],
+      },
+    ]);
+
+    getConfig().set({ifBlocks: false, switchBlocks: false});
+
+    const rtree = treeStrategy.build(appNode);
+
+    // The child components are direct descendants of the app root.
+    expect(rtree[0].children.map((c) => c.tagName)).toEqual(['if-child', 'switch-child']);
   });
 
   it('should extract conditional control flow blocks', () => {
