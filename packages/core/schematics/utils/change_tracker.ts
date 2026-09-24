@@ -187,6 +187,16 @@ export class ChangeTracker {
     const changes = this._changes.get(file);
 
     if (changes) {
+      const isDuplicate = changes.some(
+        (current) =>
+          current.start === change.start &&
+          current.removeLength === change.removeLength &&
+          current.text === change.text,
+      );
+      if (isDuplicate) {
+        return;
+      }
+
       // Insert the changes in reverse so that they're applied in reverse order.
       // This ensures that the offsets of subsequent changes aren't affected by
       // previous changes changing the file's text.
