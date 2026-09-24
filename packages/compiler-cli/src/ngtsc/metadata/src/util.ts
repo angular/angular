@@ -9,6 +9,7 @@
 import ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
+import {PartialEvaluator} from '../../partial_evaluator';
 import {
   ClassDeclaration,
   ClassMember,
@@ -360,6 +361,24 @@ export function isHostDirectiveMetaForGlobalMode(
   hostDirectiveMeta: HostDirectiveMeta,
 ): hostDirectiveMeta is HostDirectiveMetaForGlobalMode {
   return hostDirectiveMeta.directive instanceof Reference;
+}
+
+export function readBaseClass(
+  node: ClassDeclaration,
+  reflector: ReflectionHost,
+  evaluator: PartialEvaluator,
+): Reference<ClassDeclaration> | 'dynamic' | null {
+  const baseExpression = reflector.getBaseClassExpression(node);
+  if (baseExpression !== null) {
+    const baseClass = evaluator.evaluate(baseExpression);
+    if (baseClass instanceof Reference && reflector.isClass(baseClass.node)) {
+      return baseClass as Reference<ClassDeclaration>;
+    } else {
+      return 'dynamic';
+    }
+  }
+
+  return null;
 }
 
 /** Extracts foreign component names from foreignImports and creates a SelectorlessMatcher. */

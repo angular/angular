@@ -717,6 +717,10 @@ export class StaticInterpreter {
       return this.visitType(node.type, context);
     } else if (ts.isTypeOperatorNode(node) && node.operator === ts.SyntaxKind.ReadonlyKeyword) {
       return this.visitType(node.type, context);
+    } else if (ts.isParenthesizedTypeNode(node)) {
+      return this.visitType(node.type, context);
+    } else if (ts.isIntersectionTypeNode(node)) {
+      return this.visitIntersectionType(node, context);
     } else if (ts.isTypeQueryNode(node)) {
       return this.visitTypeQuery(node, context);
     } else if (ts.isTypeReferenceNode(node)) {
@@ -725,6 +729,19 @@ export class StaticInterpreter {
       return this.visitImportType(node, context);
     }
 
+    return DynamicValue.fromDynamicType(node);
+  }
+
+  private visitIntersectionType(node: ts.IntersectionTypeNode, context: Context): ResolvedValue {
+    for (const member of node.types) {
+      const result = this.visitType(member, context);
+      if (
+        !(result instanceof DynamicValue) &&
+        !(result instanceof Reference && ts.isVariableDeclaration(result.node))
+      ) {
+        return result;
+      }
+    }
     return DynamicValue.fromDynamicType(node);
   }
 
