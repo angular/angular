@@ -298,10 +298,9 @@ function resolveElement(tagName: string): [namespace: string | null | undefined,
 
   if (tagName === TNodeName.DynamicHost && tNode?.type === TNodeType.Element) {
     const element = getNativeByTNode(tNode, getLView()) as RElement;
+    const localName = 'localName' in element ? element.localName : undefined;
     const elementName =
-      'localName' in element && typeof element.localName === 'string'
-        ? element.localName
-        : element.tagName;
+      typeof localName === 'string' && localName.length > 0 ? localName : element.tagName;
     if (elementName) {
       tagName = elementName.toLowerCase();
     }
