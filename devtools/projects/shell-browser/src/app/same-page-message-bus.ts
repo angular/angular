@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Events, MessageBus, Parameters} from '../../../protocol';
+import {Events, invokeCallback, MessageBus, Parameters} from '../../../protocol';
 
 type AnyEventCallback<Ev> = <E extends keyof Ev>(topic: E, args: Parameters<Ev[E]>) => void;
 
@@ -59,7 +59,7 @@ export class SamePageMessageBus extends MessageBus<Events> {
         return;
       }
       if (e.data.topic === topic) {
-        (cb as any).apply(null, e.data.args);
+        invokeCallback(cb, e.data.args);
       }
     };
     window.addEventListener('message', listener);
@@ -76,7 +76,7 @@ export class SamePageMessageBus extends MessageBus<Events> {
         return;
       }
       if (e.data.topic === topic) {
-        (cb as any).apply(null, e.data.args);
+        invokeCallback(cb, e.data.args);
       }
       window.removeEventListener('message', listener);
     };
