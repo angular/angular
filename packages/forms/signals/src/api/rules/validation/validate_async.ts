@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DebounceTimer, Resource, Signal, computed, debounced, ɵchain} from '@angular/core';
+import {
+  DebounceTimer,
+  Resource,
+  Signal,
+  computed,
+  debounced,
+  resourceFromSnapshots,
+} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
@@ -136,8 +143,29 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
     (_state, params) => {
       if (opts.debounce !== undefined) {
         const debouncedResource = debounced(() => params(), opts.debounce);
-        const wrappedParams = computed(() => ɵchain(debouncedResource));
-        return opts.factory(wrappedParams);
+        // Keep the last settled value instead of passing the loading sentinel to factories.
+        const wrappedParams = computed(() =>
+          debouncedResource.hasValue() ? debouncedResource.value() : undefined,
+        );
+        const resource = opts.factory(wrappedParams);
+        const snapshot = computed(() => {
+          const debounceStatus = debouncedResource.status();
+          if (debounceStatus === 'error') {
+            return {status: 'error' as const, error: debouncedResource.error()!};
+          }
+
+          const resourceSnapshot = resource.snapshot();
+          // Preserve the pending status while the factory resource continues using settled params.
+          if (debouncedResource.isLoading()) {
+            return {
+              status: 'loading' as const,
+              value: resourceSnapshot.status === 'error' ? undefined : resourceSnapshot.value,
+            };
+          }
+
+          return resourceSnapshot;
+        });
+        return resourceFromSnapshots(snapshot);
       }
       return opts.factory(params);
     },
