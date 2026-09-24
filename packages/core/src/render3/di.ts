@@ -60,6 +60,7 @@ import {
   INJECTOR,
   LView,
   LViewFlags,
+  PARENT,
   T_HOST,
   TData,
   TVIEW,
@@ -555,6 +556,12 @@ function lookupTokenUsingNodeInjector<T>(
     let parentLocation = NO_PARENT_INJECTOR;
     let hostTElementNode: TNode | null =
       flags & InternalInjectFlags.Host ? lView[DECLARATION_COMPONENT_VIEW][T_HOST] : null;
+    // TNodes are shared by all instances of a component (e.g. a recursive one),
+    // so the LView is needed to tell which instance's host element we are on.
+    const hostLView =
+      flags & InternalInjectFlags.Host
+        ? (lView[DECLARATION_COMPONENT_VIEW][PARENT] as LView | null)
+        : null;
 
     // If we should skip this injector, or if there is no injector on this node, start by
     // searching the parent injector.
@@ -593,6 +600,7 @@ function lookupTokenUsingNodeInjector<T>(
           previousTView,
           flags,
           hostTElementNode,
+          hostLView,
         );
         if (instance !== NOT_FOUND) {
           return instance;
@@ -603,7 +611,8 @@ function lookupTokenUsingNodeInjector<T>(
         parentLocation !== NO_PARENT_INJECTOR &&
         shouldSearchParent(
           flags,
-          lView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] === hostTElementNode,
+          lView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] === hostTElementNode &&
+            lView === hostLView,
         ) &&
         bloomHasToken(bloomHash, injectorIndex, lView)
       ) {
@@ -631,6 +640,7 @@ function searchTokensOnInjector<T>(
   previousTView: TView | null,
   flags: InternalInjectFlags,
   hostTElementNode: TNode | null,
+  hostLView: LView | null,
 ) {
   const currentTView = lView[TVIEW];
   const tNode = currentTView.data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
@@ -656,7 +666,8 @@ function searchTokensOnInjector<T>(
 
   // This special case happens when there is a @host on the inject and when we are searching
   // on the host element node.
-  const isHostSpecialCase = flags & InternalInjectFlags.Host && hostTElementNode === tNode;
+  const isHostSpecialCase =
+    flags & InternalInjectFlags.Host && hostTElementNode === tNode && hostLView === lView;
 
   const injectableIdx = locateDirectiveOrProvider(
     tNode,

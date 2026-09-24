@@ -54,6 +54,7 @@ import {
   PipeTransform,
   Provider,
   provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   runInInjectionContext,
   Self,
   SkipSelf,
@@ -2883,6 +2884,76 @@ describe('di', () => {
               '<div group=""><my-comp><input control=""></my-comp></div>',
             );
             expect(controlContainers).toEqual([injectedControlContainer!]);
+          });
+
+          it('should find a directive on a parent element in every level of a recursive component', async () => {
+            @Directive({selector: '[wrapper]'})
+            class Wrapper {}
+
+            const found: boolean[] = [];
+
+            @Component({
+              selector: 'tree-node',
+              imports: [Wrapper],
+              template: `
+                @if (depth < 4) {
+                  <div wrapper><tree-node [depth]="depth + 1" /></div>
+                }
+              `,
+            })
+            class TreeNode {
+              @Input() depth = 1;
+              wrapper = inject(Wrapper, {host: true, optional: true});
+
+              ngOnInit() {
+                found.push(this.wrapper !== null);
+              }
+            }
+
+            @Component({imports: [TreeNode], template: '<tree-node />'})
+            class App {}
+
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+            const fixture = TestBed.createComponent(App);
+            await fixture.whenStable();
+
+            expect(found).toEqual([false, true, true, true]);
+          });
+
+          it('should find a directive on the host element in every level of a recursive component', async () => {
+            @Directive({selector: '[marker]'})
+            class Marker {}
+
+            const found: boolean[] = [];
+
+            @Component({
+              selector: 'tree-node',
+              imports: [Marker],
+              template: `
+                @if (depth < 4) {
+                  <tree-node marker [depth]="depth + 1" />
+                }
+              `,
+            })
+            class TreeNode {
+              @Input() depth = 1;
+              marker = inject(Marker, {host: true, optional: true});
+
+              ngOnInit() {
+                found.push(this.marker !== null);
+              }
+            }
+
+            @Component({imports: [TreeNode, Marker], template: '<tree-node marker />'})
+            class App {}
+
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+            const fixture = TestBed.createComponent(App);
+            await fixture.whenStable();
+
+            expect(found).toEqual([true, true, true, true]);
           });
         });
       });
