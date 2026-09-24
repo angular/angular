@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   release:
-    uses: angular/dev-infra/.github/workflows/reusable-release.yml@1ffbb25411fe6b89191f6ae2d1ac27ed42babb4b # main
+    uses: angular/dev-infra/.github/workflows/reusable-release.yml@a948cdfda182b725e3abad445b2e6264508db3ed # main
     secrets:
       wombot-token: ${{ secrets.WOMBOT_TOKEN }}
       angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}

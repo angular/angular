@@ -46,7 +46,7 @@ jobs:
           npx -y firebase-tools@15.15.0 target:clear --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs
           npx -y firebase-tools@15.15.0 target:apply --config adev/firebase.json --project ${{env.PREVIEW_PROJECT}} hosting angular-docs ${{env.PREVIEW_SITE}}
 
-      - uses: angular/dev-infra/github-actions/previews/upload-artifacts-to-firebase@1ffbb25411fe6b89191f6ae2d1ac27ed42babb4b # main
+      - uses: angular/dev-infra/github-actions/previews/upload-artifacts-to-firebase@a948cdfda182b725e3abad445b2e6264508db3ed # main
         with:
           github-token: '${{secrets.GITHUB_TOKEN}}'
           workflow-artifact-name: 'adev-preview'
