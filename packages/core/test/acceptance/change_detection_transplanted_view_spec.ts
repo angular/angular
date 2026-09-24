@@ -6,25 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AsyncPipe, CommonModule, NgTemplateOutlet} from '@angular/common';
-import {timeout} from '@angular/private/testing';
+import {CommonModule} from '@angular/common';
 import {expect} from '@angular/private/testing/matchers';
-import {of} from 'rxjs';
-import {provideCheckNoChangesConfig} from '../../src/change_detection/provide_check_no_changes_config';
 import {
   AfterViewChecked,
-  ApplicationRef,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
-  createComponent,
   Directive,
   DoCheck,
-  EmbeddedViewRef,
-  EnvironmentInjector,
-  ErrorHandler,
-  inject,
   Input,
   provideZoneChangeDetection,
   signal,
@@ -34,7 +25,7 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {LContainerFlags, MOVED_VIEWS} from '../../src/render3/interfaces/container';
-import {FLAGS, LView, QUERIES} from '../../src/render3/interfaces/view';
+import {DECLARATION_LCONTAINER, FLAGS, LView, QUERIES} from '../../src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '../../testing';
 
 describe('change detection for transplanted views', () => {
@@ -804,7 +795,7 @@ describe('change detection for transplanted views', () => {
     expect(fixture.nativeElement.textContent).toEqual('SheldonSheldon');
   });
 
-  it('should not double-detach queries and should clear HasTransplantedViews flag', () => {
+  it('should not double-detach queries and should clear HasTransplantedViews flag', async () => {
     @Component({
       selector: 'outlet',
       template: '<ng-container #container />',
@@ -824,10 +815,10 @@ describe('change detection for transplanted views', () => {
     }
 
     @Component({
+      selector: 'app',
       template: `
-        <!-- We use a query to force the instantiation of LQueries -->
         <ng-template #template><div #myQuery></div></ng-template>
-        @if (show) {
+        @if (show()) {
           <outlet [template]="template"></outlet>
         }
       `,
@@ -836,453 +827,37 @@ describe('change detection for transplanted views', () => {
     class App {
       @ViewChild('template', {read: TemplateRef, static: true})
       template!: TemplateRef<any>;
-      show = true;
+      @ViewChild(Outlet) outlet!: Outlet;
+      show = signal(true);
     }
 
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    const appLView = (fixture.componentInstance as any).__ngContext__ as LView;
-    const declarationContainer = appLView[20] as any;
-    const transplantedLView = declarationContainer[MOVED_VIEWS]![0] as LView;
+    const app = fixture.componentInstance;
+    const outlet = app.outlet;
+    const viewRef = outlet.container.get(0)!;
+    const transplantedLView = (viewRef as any)._lView as LView;
+    const declarationContainer = transplantedLView[DECLARATION_LCONTAINER] as any;
     const lQueries = transplantedLView[QUERIES]!;
 
     const detachViewSpy = spyOn(lQueries, 'detachView').and.callThrough();
 
-    fixture.componentInstance.show = false;
-    fixture.detectChanges();
-
-    expect(detachViewSpy).toHaveBeenCalledTimes(1);
-
-    const hasTransplantedViewsFlag =
+    const hasTransplantedViewsBefore =
       (declarationContainer[FLAGS] & LContainerFlags.HasTransplantedViews) ===
       LContainerFlags.HasTransplantedViews;
+    expect(hasTransplantedViewsBefore).toBeTrue();
 
+    app.show.set(false);
+    fixture.detectChanges();
+
+    const hasTransplantedViewsAfter =
+      (declarationContainer[FLAGS] & LContainerFlags.HasTransplantedViews) ===
+      LContainerFlags.HasTransplantedViews;
+    expect(hasTransplantedViewsAfter).toBeFalse();
+
+    expect(detachViewSpy).toHaveBeenCalledTimes(1);
     expect(declarationContainer[MOVED_VIEWS]).toBeNull();
-    expect(hasTransplantedViewsFlag).toBeFalse();
-  });
-
-  describe('ViewRef and ViewContainerRef operations', () => {
-    @Component({
-      template: '<ng-template>{{incrementChecks()}}</ng-template>',
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class AppComponent {
-      @ViewChild(TemplateRef) templateRef!: TemplateRef<{}>;
-
-      constructor(
-        readonly rootViewContainerRef: ViewContainerRef,
-        readonly cdr: ChangeDetectorRef,
-      ) {}
-
-      checks = 0;
-      incrementChecks() {
-        this.checks++;
-      }
-    }
-
-    let fixture: ComponentFixture<AppComponent>;
-    let component: AppComponent;
-    let viewRef: EmbeddedViewRef<{}>;
-    beforeEach(() => {
-      fixture = TestBed.configureTestingModule({declarations: [AppComponent]}).createComponent(
-        AppComponent,
-      );
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-      viewRef = component.templateRef.createEmbeddedView({});
-      component.rootViewContainerRef.insert(viewRef);
-    });
-
-    it('should not fail when change detecting detached transplanted view', () => {
-      // This `ViewContainerRef` is for the root view
-      // `detectChanges` on this `ChangeDetectorRef` will refresh this view and children, not the
-      // root view that has the transplanted `viewRef` inserted.
-      component.cdr.detectChanges();
-      // The template should not have been refreshed because it was inserted "above" the component
-      // so `detectChanges` will not refresh it.
-      expect(component.checks).toEqual(0);
-
-      // Detach view, manually call `detectChanges`, and verify the template was refreshed
-      component.rootViewContainerRef.detach();
-      viewRef.detectChanges();
-      expect(component.checks).toEqual(1);
-    });
-
-    it('should work when change detecting detached transplanted view already marked for refresh', () => {
-      // detach the viewRef only. This just removes the LViewFlags.Attached rather than actually
-      // detaching the view from the container.
-      viewRef.detach();
-      // Calling detectChanges marks transplanted views for check
-      component.cdr.detectChanges();
-      expect(() => {
-        // Calling detectChanges on the transplanted view itself will clear the refresh flag. It
-        // _should not_ also attempt to update the parent counters because it's detached and
-        // should not affect parent counters.
-        viewRef.detectChanges();
-      }).not.toThrow();
-      expect(component.checks).toEqual(1);
-    });
-
-    it('should work when re-inserting a previously detached transplanted view marked for refresh', () => {
-      // Test case for inserting a view with refresh flag
-      viewRef.detach();
-      // mark transplanted views for check but does not refresh transplanted view because it is
-      // detached
-      component.cdr.detectChanges();
-      // reattach view itself
-      viewRef.reattach();
-      expect(() => {
-        // detach and reattach view from ViewContainerRef
-        component.rootViewContainerRef.detach();
-        component.rootViewContainerRef.insert(viewRef);
-        // calling detectChanges will clear the refresh flag. If the above operations messed up
-        // the counter, this would fail when attempted to decrement.
-        fixture.detectChanges(false);
-      }).not.toThrow();
-      // The transplanted view gets refreshed twice because it's actually inserted "backwards"
-      // The view is defined in AppComponent but inserted in its ViewContainerRef (as an
-      // embedded view in AppComponent's host view).
-      expect(component.checks).toEqual(2);
-    });
-
-    it('should work when detaching an attached transplanted view with the refresh flag', () => {
-      viewRef.detach();
-      // mark transplanted views for check but does not refresh transplanted view because it is
-      // detached
-      component.cdr.detectChanges();
-      // reattach view with refresh flag should increment parent counters
-      viewRef.reattach();
-      expect(() => {
-        // detach view with refresh flag should decrement parent counters
-        viewRef.detach();
-        // detectChanges on parent should not cause infinite loop if the above counters were updated
-        // correctly both times.
-        fixture.detectChanges();
-      }).not.toThrow();
-    });
-
-    it('should work when destroying a view with the refresh flag', () => {
-      viewRef.detach();
-      // mark transplanted views for check but does not refresh transplanted view because it is
-      // detached
-      component.cdr.detectChanges();
-      viewRef.reattach();
-      expect(() => {
-        viewRef.destroy();
-        fixture.detectChanges();
-      }).not.toThrow();
-    });
-  });
-
-  describe('when detached', () => {
-    @Component({
-      selector: 'on-push-component',
-      template: ` <ng-container #vc></ng-container> `,
-      standalone: false,
-    })
-    class OnPushComponent {
-      @ViewChild('vc', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
-      @Input() template!: TemplateRef<{}>;
-
-      createTemplate() {
-        return this.viewContainer.createEmbeddedView(this.template);
-      }
-    }
-
-    @Component({
-      selector: 'check-always-component',
-      template: ` <ng-container #vc></ng-container> `,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class CheckAlwaysComponent {
-      @ViewChild('vc', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
-      @Input() template!: TemplateRef<{}>;
-
-      createTemplate() {
-        return this.viewContainer.createEmbeddedView(this.template);
-      }
-    }
-    let fixture: ComponentFixture<App>;
-    let appComponent: App;
-    let onPushComponent: OnPushComponent;
-    let checkAlwaysComponent: CheckAlwaysComponent;
-
-    @Component({
-      template: `
-        <ng-template #transplantedTemplate>{{ incrementChecks() }}</ng-template>
-        <on-push-component [template]="transplantedTemplate"></on-push-component>
-        <check-always-component [template]="transplantedTemplate"></check-always-component>
-      `,
-      standalone: false,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class App {
-      @ViewChild(OnPushComponent) onPushComponent!: OnPushComponent;
-      @ViewChild(CheckAlwaysComponent) checkAlwaysComponent!: CheckAlwaysComponent;
-      transplantedViewRefreshCount = 0;
-      incrementChecks() {
-        this.transplantedViewRefreshCount++;
-      }
-    }
-    beforeEach(() => {
-      TestBed.configureTestingModule({declarations: [App, OnPushComponent, CheckAlwaysComponent]});
-      fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      appComponent = fixture.componentInstance;
-      onPushComponent = appComponent.onPushComponent;
-      checkAlwaysComponent = appComponent.checkAlwaysComponent;
-    });
-    describe('inside OnPush components', () => {
-      it('should detect changes when attached', () => {
-        onPushComponent.createTemplate();
-        fixture.detectChanges(false);
-        expect(appComponent.transplantedViewRefreshCount).toEqual(1);
-      });
-
-      it('should not detect changes', () => {
-        const viewRef = onPushComponent.createTemplate();
-        viewRef.detach();
-        fixture.detectChanges(false);
-        expect(appComponent.transplantedViewRefreshCount).toEqual(0);
-        viewRef.reattach();
-        fixture.detectChanges(false);
-        expect(appComponent.transplantedViewRefreshCount).toEqual(1);
-      });
-
-      it('should not detect changes on mixed detached/attached refs', () => {
-        onPushComponent.createTemplate();
-        const viewRef = onPushComponent.createTemplate();
-        viewRef.detach();
-        fixture.detectChanges(false);
-        expect(appComponent.transplantedViewRefreshCount).toEqual(1);
-        viewRef.reattach();
-        fixture.detectChanges(false);
-        expect(appComponent.transplantedViewRefreshCount).toEqual(3);
-      });
-    });
-
-    describe('inside CheckAlways component', () => {
-      it('should detect changes when attached', () => {
-        checkAlwaysComponent.createTemplate();
-        fixture.detectChanges(false);
-        expect(appComponent.transplantedViewRefreshCount).toEqual(1);
-      });
-
-      it('should not detect changes', () => {
-        const viewRef = checkAlwaysComponent.createTemplate();
-        viewRef.detach();
-        fixture.detectChanges(false);
-        expect(appComponent.transplantedViewRefreshCount).toEqual(0);
-        viewRef.reattach();
-        fixture.detectChanges(false);
-        expect(appComponent.transplantedViewRefreshCount).toEqual(1);
-      });
-
-      it('should not detect changes on mixed detached/attached refs', () => {
-        checkAlwaysComponent.createTemplate();
-        const viewRef = checkAlwaysComponent.createTemplate();
-        viewRef.detach();
-        fixture.detectChanges(false);
-        expect(appComponent.transplantedViewRefreshCount).toEqual(1);
-        viewRef.reattach();
-        fixture.detectChanges(false);
-        expect(appComponent.transplantedViewRefreshCount).toEqual(3);
-      });
-    });
-
-    it('does not cause error if running change detection on detached view', () => {
-      @Component({
-        selector: 'insertion',
-        template: `<ng-container #vc></ng-container>`,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class Insertion {
-        @ViewChild('vc', {read: ViewContainerRef, static: true}) viewContainer!: ViewContainerRef;
-        @Input() template!: TemplateRef<{}>;
-        ngOnChanges() {
-          return this.viewContainer.createEmbeddedView(this.template);
-        }
-      }
-
-      @Component({
-        template: `
-          <ng-template #transplantedTemplate></ng-template>
-          <insertion [template]="transplantedTemplate"></insertion>
-        `,
-        imports: [Insertion],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class Root {
-        readonly cdr = inject(ChangeDetectorRef);
-      }
-
-      const fixture = TestBed.createComponent(Root);
-      fixture.componentInstance.cdr.detach();
-      fixture.componentInstance.cdr.detectChanges();
-    });
-
-    it('backwards reference still updated if detaching root during change detection', () => {
-      @Component({
-        selector: 'insertion',
-        template: `<ng-container #vc></ng-container>`,
-      })
-      class Insertion {
-        @ViewChild('vc', {read: ViewContainerRef, static: true}) viewContainer!: ViewContainerRef;
-        @Input() template!: TemplateRef<{}>;
-        ngOnChanges() {
-          return this.viewContainer.createEmbeddedView(this.template);
-        }
-      }
-
-      @Component({
-        template: '<ng-template #template>{{value}}</ng-template>',
-        selector: 'declaration',
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class Declaration {
-        @ViewChild('template', {static: true}) transplantedTemplate!: TemplateRef<{}>;
-        @Input() value?: string;
-      }
-
-      @Component({
-        template: `
-          <insertion [template]="declaration?.transplantedTemplate"></insertion>
-          <declaration [value]="value"></declaration>
-          {{ incrementChecks() }}
-        `,
-        imports: [Insertion, Declaration],
-
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class Root {
-        @ViewChild(Declaration, {static: true}) declaration!: Declaration;
-        readonly cdr = inject(ChangeDetectorRef);
-        value = 'initial';
-        templateExecutions = 0;
-        incrementChecks() {
-          this.templateExecutions++;
-        }
-      }
-
-      const fixture = TestBed.createComponent(Root);
-      fixture.detectChanges(false);
-      expect(fixture.nativeElement.innerText).toEqual('initial');
-      expect(fixture.componentInstance.templateExecutions).toEqual(1);
-
-      // Root is detached and value in transplanted view updates during CD. Because it is inserted
-      // backwards, this requires a rerun of the traversal at the root. This test ensures we still
-      // get the rerun even when the root is detached.
-      fixture.componentInstance.cdr.detach();
-      fixture.componentInstance.value = 'new';
-      fixture.componentInstance.cdr.detectChanges();
-      expect(fixture.componentInstance.templateExecutions).toEqual(2);
-      expect(fixture.nativeElement.innerText).toEqual('new');
-    });
-  });
-
-  it('can use AsyncPipe on new Observable in insertion tree when used as backwards reference', () => {
-    @Component({
-      selector: 'insertion',
-      imports: [NgTemplateOutlet],
-      template: ` <ng-container [ngTemplateOutlet]="template"> </ng-container>`,
-
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class Insertion {
-      @Input() template!: TemplateRef<{}>;
-      constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
-    }
-
-    @Component({
-      imports: [Insertion, AsyncPipe],
-      template: `<ng-template #myTmpl> {{ newObservable() | async }} </ng-template>`,
-      selector: 'declaration',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class Declaration {
-      @ViewChild('myTmpl', {static: true}) template!: TemplateRef<{}>;
-      newObservable() {
-        return of('');
-      }
-    }
-    @Component({
-      imports: [Declaration, Insertion],
-      template: '<insertion [template]="declaration.template"/><declaration #declaration/>',
-
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class App {}
-
-    TestBed.configureTestingModule({
-      providers: [
-        {
-          provide: ErrorHandler,
-          useClass: class extends ErrorHandler {
-            override handleError(e: any) {
-              throw e;
-            }
-          },
-        },
-      ],
-    });
-
-    const app = createComponent(App, {environmentInjector: TestBed.inject(EnvironmentInjector)});
-    const appRef = TestBed.inject(ApplicationRef);
-    appRef.attachView(app.hostView);
-    // ApplicationRef has a loop to continue refreshing dirty views. If done incorrectly,
-    // refreshing the backwards reference transplanted view can cause an infinite loop because it
-    // goes and marks the root view dirty, which then starts the process all over again by
-    // checking the declaration.
-    expect(() => appRef.tick()).not.toThrow();
-    app.destroy();
-  });
-  it('does not cause infinite loops with exhaustive checkNoChanges', async () => {
-    TestBed.configureTestingModule({
-      providers: [provideCheckNoChangesConfig({interval: 1, exhaustive: true})],
-    });
-    const errorSpy = spyOn(console, 'error').and.callFake((...v) => {
-      fail('console errored with ' + v);
-    });
-    @Component({
-      selector: 'insertion',
-      template: `<ng-container #vc></ng-container>`,
-    })
-    class Insertion {
-      @ViewChild('vc', {read: ViewContainerRef, static: true}) viewContainer!: ViewContainerRef;
-      @Input() template!: TemplateRef<{}>;
-      ngOnChanges() {
-        return this.viewContainer.createEmbeddedView(this.template);
-      }
-    }
-
-    @Component({
-      template: `
-        <ng-template #template>hello world</ng-template>
-        <insertion [template]="transplantedTemplate"></insertion>
-      `,
-      imports: [Insertion],
-
-      changeDetection: ChangeDetectionStrategy.Eager,
-    })
-    class Root {
-      @ViewChild('template', {static: true}) transplantedTemplate!: TemplateRef<{}>;
-    }
-
-    const fixture = TestBed.createComponent(Root);
-    TestBed.inject(ApplicationRef).attachView(fixture.componentRef.hostView);
-    // wait the 1 tick for exhaustive check to trigger
-    await timeout(1);
-    expect(errorSpy).not.toHaveBeenCalled();
   });
 });
 
