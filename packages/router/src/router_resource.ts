@@ -185,16 +185,20 @@ function createTransactionalSnapshot<T>(
 export function createResourceOutletBindingEffects(
   componentRef: ComponentRef<unknown>,
   route: ActivatedRoute,
+  isErrorComponentActive?: boolean,
 ): {createdEffects: EffectRef[]; handledKeys: string[]} {
   const createdEffects: EffectRef[] = [];
   const handledKeys: string[] = [];
-  const mirror = route.component ? reflectComponentType(route.component) : null;
+  const mirror = reflectComponentType(componentRef.componentType);
   const resources = route.resources;
   if (!mirror || !resources) {
     return {createdEffects, handledKeys};
   }
 
   for (const {templateName} of mirror.inputs) {
+    if (isErrorComponentActive && templateName === 'error') {
+      continue;
+    }
     const resource = resources[templateName];
     if (!resource || !(resource as InternalRouterResource)[BLOCKING_SYMBOL]) {
       continue;
