@@ -28,10 +28,10 @@ import {patternError} from './validation_errors';
  * @category validation
  * @publicApi 22.0
  */
-export function pattern<TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
-  pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>,
-  config?: BaseValidatorConfig<string, TPathKind>,
+export function pattern<TValue extends string | null, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  pattern: RegExp | LogicFn<TValue | undefined, RegExp | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
   const PATTERN_MEMO = metadata(path, createMetadataKey<RegExp | undefined>(), (ctx) => {
     if (config?.when && !config.when(ctx)) {
@@ -41,14 +41,15 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   });
   metadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
   validate(path, (ctx) => {
-    if (isEmpty(ctx.value())) {
+    const value = ctx.value();
+    if (value == null || isEmpty(value)) {
       return undefined;
     }
     const pattern = ctx.state.metadata(PATTERN_MEMO)!();
     if (pattern === undefined) {
       return undefined;
     }
-    if (!pattern.test(ctx.value())) {
+    if (!pattern.test(value)) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
