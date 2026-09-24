@@ -468,6 +468,35 @@ describe('getSignalGraph', () => {
     expect(getFrameworkDIDebugData().resolverToEffects.get(injector)?.length).toBe(0);
   });
 
+  it('should use the debugName of afterRenderEffect for each phase', async () => {
+    @Component({template: ''})
+    class App {
+      constructor() {
+        afterRenderEffect(
+          {
+            earlyRead: () => {},
+            write: () => {},
+            mixedReadWrite: () => {},
+            read: () => {},
+          },
+          {debugName: 'myRenderEffect'},
+        );
+      }
+    }
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    const {nodes} = getSignalGraph(fixture.componentRef.injector);
+    const labels = nodes.filter((n) => n.kind === 'afterRenderEffectPhase').map((n) => n.label);
+
+    expect(labels.sort()).toEqual([
+      'myRenderEffect - EarlyRead phase',
+      'myRenderEffect - MixedReadWrite phase',
+      'myRenderEffect - Read phase',
+      'myRenderEffect - Write phase',
+    ]);
+  });
+
   describe('debuggableFn', () => {
     it('should expose the computation of a computed', async () => {
       const computation = () => 1;
