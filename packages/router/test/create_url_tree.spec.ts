@@ -633,6 +633,57 @@ describe('defaultQueryParamsHandling', () => {
   });
 });
 
+describe('query param names taken from the URL', () => {
+  async function navigateTo(url: string): Promise<Router> {
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{path: '**', component: class {}}])],
+    });
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl(url);
+    return router;
+  }
+
+  it('keeps numeric names when merging', async () => {
+    const router = await navigateTo('/initial?32=a&1e3=b');
+
+    const tree = router.createUrlTree(['new'], {
+      queryParams: {'c': 'x'},
+      queryParamsHandling: 'merge',
+    });
+
+    expect(tree.queryParams).toEqual({'32': 'a', '1e3': 'b', 'c': 'x'});
+  });
+
+  it('keeps numeric names when merging nothing', async () => {
+    const router = await navigateTo('/initial?32=a&1e3=b');
+
+    const tree = router.createUrlTree(['new'], {queryParamsHandling: 'merge'});
+
+    expect(tree.queryParams).toEqual({'32': 'a', '1e3': 'b'});
+  });
+
+  it('still drops merged params set to null or undefined', async () => {
+    const router = await navigateTo('/initial?32=a&keep=b');
+
+    const tree = router.createUrlTree(['new'], {
+      queryParams: {'32': null, 'gone': undefined},
+      queryParamsHandling: 'merge',
+    });
+
+    expect(tree.queryParams).toEqual({'keep': 'b'});
+  });
+
+  it('does not lose a name that matches the internal sentinel when preserving', async () => {
+    // Numeric names are copied in ascending order, so a name that matches the sentinel is only
+    // at risk once a larger index is written after it.
+    const router = await navigateTo('/initial?1073741824=keep&4294967294=other');
+
+    const tree = router.createUrlTree(['new'], {queryParamsHandling: 'preserve'});
+
+    expect(tree.queryParams).toEqual({'1073741824': 'keep', '4294967294': 'other'});
+  });
+});
+
 async function createRoot(
   tree: UrlTree,
   commands: readonly any[],

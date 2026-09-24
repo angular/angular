@@ -14,6 +14,7 @@ import {Params, PRIMARY_OUTLET} from './shared';
 import {
   createRoot,
   DefaultUrlSerializer,
+  setUrlDerivedKey,
   squashSegmentGroup,
   UrlSegment,
   UrlSegmentGroup,
@@ -187,6 +188,9 @@ function tree(
   fragment: string | null,
   urlSerializer: UrlSerializer,
 ): UrlTree {
+  // This map is rebuilt for every created `UrlTree`, so a page holds one copy per `RouterLink`.
+  // Names taken from the URL can be integer-like, which would give each copy a dense elements
+  // store sized by the largest name, so write them through the guard.
   const qp: Params = {};
   for (const [key, value] of Object.entries(queryParams ?? {})) {
     // This retains old behavior where each item in the array was stringified individually This
@@ -197,9 +201,13 @@ function tree(
     // etc. may only be set up to handle string arrays. We could consider changing this in the
     // future to serialize the entire array as a single value. For now, this feels safer and is
     // at least a step in the right direction.
-    qp[key] = Array.isArray(value)
-      ? value.map((v) => normalizeQueryParams(key, v, urlSerializer))
-      : normalizeQueryParams(key, value, urlSerializer);
+    setUrlDerivedKey(
+      qp,
+      key,
+      Array.isArray(value)
+        ? value.map((v) => normalizeQueryParams(key, v, urlSerializer))
+        : normalizeQueryParams(key, value, urlSerializer),
+    );
   }
 
   let rootCandidate: UrlSegmentGroup;

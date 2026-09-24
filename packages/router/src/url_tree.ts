@@ -608,7 +608,7 @@ const SLOW_ELEMENTS_SENTINEL = 0x40000000;
  * Setting then deleting the sentinel keeps indexed properties in dictionary storage.
  * Indices below 32 use little space, so leave them alone.
  */
-function setUrlDerivedKey<T>(target: {[key: string]: T}, key: string, value: T): void {
+export function setUrlDerivedKey<T>(target: {[key: string]: T}, key: string, value: T): void {
   // Preserve URL keys that happen to equal the sentinel.
   if (Number(key) >= 32 && !Object.hasOwn(target, SLOW_ELEMENTS_SENTINEL)) {
     target[SLOW_ELEMENTS_SENTINEL] = value;
