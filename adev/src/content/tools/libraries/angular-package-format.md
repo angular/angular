@@ -162,6 +162,8 @@ Most libraries with a single logical purpose should be published as a single ent
 
 Secondary entrypoints can be resolved via the `"exports"` field of the `package.json` for the package.
 
+To learn how to configure secondary entry points in a library, see [Entry points](tools/libraries/creating-libraries#entry-points).
+
 ### README.md
 
 The README file in the Markdown format that is used to display description of a package on npm and GitHub.
