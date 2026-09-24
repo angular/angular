@@ -100,21 +100,22 @@ Consumers import the primary entry point by the package name:
 import {ThemeService} from 'my-lib';
 ```
 
-A secondary entry point is a folder inside the library that has an `ng-package.json` of its own.
-The path of that folder relative to the library root becomes the subpath that consumers import, so a `button` folder makes `my-lib/button` importable:
+A secondary entry point is a directory inside the library with its own `ng-package.json` file.
+The path of that directory relative to the library root defines the import subpath.
+For example, a `button` directory makes `my-lib/button` available to consumers:
 
 ```ts
 import {ButtonComponent} from 'my-lib/button';
 ```
 
-Angular is published this way.
-`@angular/core` and `@angular/core/testing` are two entry points of one package.
+Angular packages use this same structure.
+For example, `@angular/core` is the primary entry point and `@angular/core/testing` is a secondary entry point of the same package.
 
 HELPFUL: For an architectural overview of how entry points enable code splitting and define chunk boundaries in the Angular Package Format, see [Entrypoints and code splitting](tools/libraries/angular-package-format#entrypoints-and-code-splitting).
 
 ### Adding a secondary entry point
 
-Create a folder inside the library with its own `ng-package.json` and public API file:
+Create a directory inside the library with its own `ng-package.json` and public API file:
 
 ```text
 projects/my-lib/
@@ -143,35 +144,24 @@ The secondary `ng-package.json` configures only the entry point itself:
 
 IMPORTANT: A secondary `ng-package.json` accepts only the `lib` options. Package-wide options such as `dest` and `assets` belong in the `ng-package.json` at the library root and apply to every entry point.
 
-Nothing else registers the entry point.
-The build finds every `ng-package.json` under the library root and derives the subpath from the folder path, so `button/` becomes `my-lib/button` and `testing/harness/` would become `my-lib/testing/harness`.
+You do not need to register the secondary entry point anywhere else.
+During the build, `ng-packagr` automatically discovers every `ng-package.json` under the library root and derives the import subpath from its directory path (for example, `button/` becomes `my-lib/button` and `testing/harness/` becomes `my-lib/testing/harness`).
 
-To import a secondary entry point from an application in the same workspace, extend the path mapping in the workspace `tsconfig.json`.
-`ng generate library` maps the package name only, which does not cover subpaths:
+To import a secondary entry point from an application in the same workspace, add a wildcard path mapping in the workspace `tsconfig.json`.
+By default, `ng generate library` maps only the package root, which does not cover subpaths:
 
 ```json {header: 'tsconfig.json'}
-"compilerOptions": {
-  "paths": {
-    "my-lib": ["./dist/my-lib"],
-    "my-lib/*": ["./dist/my-lib/*"]
+{
+  "compilerOptions": {
+    "paths": {
+      "my-lib": ["./dist/my-lib"],
+      "my-lib/*": ["./dist/my-lib/*"]
+    }
   }
 }
 ```
 
-### Importing one entry point from another
-
-Inside the library, one entry point can use another.
-Import it through its public path, exactly as a consumer would:
-
-```ts {header: 'projects/my-lib/button/src/button.ts'}
-import {ThemeService} from 'my-lib';
-```
-
-Do not cross an entry point boundary with a relative path.
-Each entry point compiles with its own root directory — the folder that holds its entry file — so a relative import that climbs out of that folder fails the build with a `TS6059` error.
-
-The build resolves these public paths within the library and builds entry points in dependency order.
-Dependencies between entry points must be acyclic; a cycle is an error.
+IMPORTANT: When importing code from another entry point in the same library, always use its package import path (for example, `import {ThemeService} from 'my-lib'`) instead of a relative path. `ng-packagr` builds each entry point separately in dependency order, so relative imports across entry points and circular dependencies between entry points will fail the build.
 
 ## Refactoring parts of an application into a library
 
