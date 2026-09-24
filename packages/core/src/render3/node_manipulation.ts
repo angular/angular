@@ -305,7 +305,9 @@ export function detachMovedView(declarationContainer: LContainer, lView: LView) 
     );
   const movedViews = declarationContainer[MOVED_VIEWS]!;
   const declarationViewIndex = movedViews.indexOf(lView);
-  movedViews.splice(declarationViewIndex, 1);
+  if (declarationViewIndex !== -1) {
+    movedViews.splice(declarationViewIndex, 1);
+  }
 }
 
 /**

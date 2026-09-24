@@ -756,6 +756,56 @@ describe('change detection for transplanted views', () => {
     );
   });
 
+  it('keeps refreshing other transplanted views when an insertion container is cleared on destroy', () => {
+    @Component({
+      selector: 'outlet',
+      template: '<ng-container #container />',
+      standalone: false,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+    })
+    class Outlet {
+      @Input() template!: TemplateRef<{}>;
+      @ViewChild('container', {read: ViewContainerRef, static: true})
+      container!: ViewContainerRef;
+
+      ngOnInit() {
+        this.container.createEmbeddedView(this.template);
+      }
+
+      ngOnDestroy() {
+        this.container.clear();
+      }
+    }
+
+    @Component({
+      template: `
+        <ng-template #template>{{ name }}</ng-template>
+        @for (item of items; track item) {
+          <outlet [template]="template"></outlet>
+        }
+      `,
+      standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class App {
+      items = [1, 2, 3];
+      name = 'Penny';
+    }
+
+    const fixture = TestBed.configureTestingModule({
+      declarations: [App, Outlet],
+    }).createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toEqual('PennyPennyPenny');
+
+    fixture.componentInstance.items = [1, 2];
+    fixture.detectChanges();
+    fixture.componentInstance.name = 'Sheldon';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toEqual('SheldonSheldon');
+  });
+
   describe('ViewRef and ViewContainerRef operations', () => {
     @Component({
       template: '<ng-template>{{incrementChecks()}}</ng-template>',
