@@ -35742,16 +35742,25 @@ _{{app_name}}_yargs_completions()
     _default
   fi
 }
-if [[ "'\${zsh_eval_context[-1]}" == "loadautofunc" ]]; then
+if [[ "\${zsh_eval_context[-1]}" == "loadautofunc" ]]; then
   _{{app_name}}_yargs_completions "$@"
 else
   compdef _{{app_name}}_yargs_completions {{app_name}}
 fi
 ###-end-{{app_name}}-completions-###
 `;
+var completionFishTemplate = `###-begin-{{app_name}}-completions-###
+#
+# yargs command completion script
+#
+# Installation: {{app_path}} {{completion_command}} > ~/.config/fish/completions/{{app_name}}.fish
+#
+complete -f -c {{app_name}} -a '({{app_path}} --get-yargs-completions (commandline -o)[2..-1])'
+###-end-{{app_name}}-completions-###
+`;
 var Completion = class {
   constructor(yargs, usage2, command2, shim3) {
-    var _a2, _b2, _c2;
+    var _a2, _b2, _c2, _d, _e;
     this.yargs = yargs;
     this.usage = usage2;
     this.command = command2;
@@ -35761,6 +35770,7 @@ var Completion = class {
     this.customCompletionFunction = null;
     this.indexAfterLastReset = 0;
     this.zshShell = (_c2 = ((_a2 = this.shim.getEnv("SHELL")) === null || _a2 === void 0 ? void 0 : _a2.includes("zsh")) || ((_b2 = this.shim.getEnv("ZSH_NAME")) === null || _b2 === void 0 ? void 0 : _b2.includes("zsh"))) !== null && _c2 !== void 0 ? _c2 : false;
+    this.fishShell = (_e = (_d = this.shim.getEnv("SHELL")) === null || _d === void 0 ? void 0 : _d.includes("fish")) !== null && _e !== void 0 ? _e : false;
   }
   defaultCompletion(args, argv, current, done) {
     const handlers = this.command.getCommandHandlers();
@@ -35788,11 +35798,13 @@ var Completion = class {
       this.usage.getCommands().forEach((usageCommand) => {
         const commandName = parseCommand(usageCommand[0]).cmd;
         if (args.indexOf(commandName) === -1) {
-          if (!this.zshShell) {
-            completions.push(commandName);
-          } else {
-            const desc = usageCommand[1] || "";
+          const desc = usageCommand[1] || "";
+          if (this.fishShell) {
+            completions.push(commandName + "	" + desc);
+          } else if (this.zshShell) {
             completions.push(commandName.replace(/:/g, "\\:") + ":" + desc);
+          } else {
+            completions.push(commandName);
           }
         }
       });
@@ -35815,7 +35827,11 @@ var Completion = class {
     if (this.previousArgHasChoices(args)) {
       const choices = this.getPreviousArgChoices(args);
       if (choices && choices.length > 0) {
-        completions.push(...choices.map((c) => c.replace(/:/g, "\\:")));
+        if (this.fishShell) {
+          completions.push(...choices);
+        } else {
+          completions.push(...choices.map((c) => c.replace(/:/g, "\\:")));
+        }
       }
     }
   }
@@ -35832,7 +35848,11 @@ var Completion = class {
     const choices = this.yargs.getOptions().choices[positionalKey] || [];
     for (const choice of choices) {
       if (choice.startsWith(current)) {
-        completions.push(choice.replace(/:/g, "\\:"));
+        if (this.fishShell) {
+          completions.push(choice);
+        } else {
+          completions.push(choice.replace(/:/g, "\\:"));
+        }
       }
     }
   }
@@ -35885,7 +35905,7 @@ var Completion = class {
   completeOptionKey(key, completions, current, negable) {
     var _a2, _b2, _c2, _d;
     let keyWithDesc = key;
-    if (this.zshShell) {
+    if (this.zshShell || this.fishShell) {
       const descs = this.usage.getDescriptions();
       const aliasKey = (_b2 = (_a2 = this === null || this === void 0 ? void 0 : this.aliases) === null || _a2 === void 0 ? void 0 : _a2[key]) === null || _b2 === void 0 ? void 0 : _b2.find((alias) => {
         const desc2 = descs[alias];
@@ -35893,7 +35913,12 @@ var Completion = class {
       });
       const descFromAlias = aliasKey ? descs[aliasKey] : void 0;
       const desc = (_d = (_c2 = descs[key]) !== null && _c2 !== void 0 ? _c2 : descFromAlias) !== null && _d !== void 0 ? _d : "";
-      keyWithDesc = `${key.replace(/:/g, "\\:")}:${desc.replace("__yargsString__:", "").replace(/(\r\n|\n|\r)/gm, " ")}`;
+      const cleanedDesc = desc.replace("__yargsString__:", "").replace(/(\r\n|\n|\r)/gm, " ");
+      if (this.fishShell) {
+        keyWithDesc = `${key}	${cleanedDesc}`;
+      } else {
+        keyWithDesc = `${key.replace(/:/g, "\\:")}:${cleanedDesc}`;
+      }
     }
     const startsByTwoDashes = (s) => /^--/.test(s);
     const isShortOption = (s) => /^[^0-9]$/.test(s);
@@ -35936,7 +35961,14 @@ var Completion = class {
     return isPromise(argv) ? argv.then(completionFunction) : completionFunction(argv);
   }
   generateCompletionScript($0, cmd) {
-    let script = this.zshShell ? completionZshTemplate : completionShTemplate;
+    let script;
+    if (this.zshShell) {
+      script = completionZshTemplate;
+    } else if (this.fishShell) {
+      script = completionFishTemplate;
+    } else {
+      script = completionShTemplate;
+    }
     const name = this.shim.path.basename($0);
     if ($0.match(/\.js$/))
       $0 = `./${$0}`;
@@ -65341,7 +65373,7 @@ content-type/dist/index.js:
 @octokit/graphql/dist-bundle/index.js:
   (* v8 ignore if -- @preserve *)
 
-@angular/ng-dev/bundles/chunk-3TPHGSIP.mjs:
+@angular/ng-dev/bundles/chunk-IN4UPURP.mjs:
   (*! Bundled license information:
   
   yargs-parser/build/lib/string-utils.js:
@@ -65382,7 +65414,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-4PNYOBOC.mjs:
+@angular/ng-dev/bundles/chunk-332UMTLR.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
