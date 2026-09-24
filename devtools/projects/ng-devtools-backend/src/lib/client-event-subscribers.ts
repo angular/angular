@@ -158,6 +158,8 @@ export const subscribeToClientEvents = (
 
     getConfig().onChange('deferBlocks', () => messageBus.emit('componentTreeDirty'));
     getConfig().onChange('forBlocks', () => messageBus.emit('componentTreeDirty'));
+    getConfig().onChange('ifBlocks', () => messageBus.emit('componentTreeDirty'));
+    getConfig().onChange('switchBlocks', () => messageBus.emit('componentTreeDirty'));
   }
 };
 

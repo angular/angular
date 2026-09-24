@@ -44,6 +44,8 @@ describe('applyMigrations', () => {
       'show_cd_in_explorer@components': undefined as any,
       'show_defer_blocks@components': undefined as any,
       'show_for_blocks@components': undefined as any,
+      'show_if_blocks@components': undefined as any,
+      'show_switch_blocks@components': undefined as any,
     } satisfies SettingsDataV2);
   });
 });

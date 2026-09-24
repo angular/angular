@@ -417,6 +417,8 @@ export interface DevtoolsConfig {
   cdDataStream: boolean;
   forBlocks: boolean;
   deferBlocks: boolean;
+  ifBlocks: boolean;
+  switchBlocks: boolean;
 }
 
 export interface Events {
