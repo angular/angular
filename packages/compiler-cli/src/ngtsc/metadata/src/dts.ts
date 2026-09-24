@@ -387,12 +387,96 @@ function readBaseClass(
           isNamedClassDeclaration(symbol.valueDeclaration)
         ) {
           return new Reference(symbol.valueDeclaration);
-        } else {
-          return 'dynamic';
+        } else if (
+          symbol.valueDeclaration !== undefined &&
+          ts.isVariableDeclaration(symbol.valueDeclaration)
+        ) {
+          const baseClassDecl = resolveBaseClassFromVariable(symbol.valueDeclaration, checker);
+          if (baseClassDecl !== null) {
+            return new Reference(baseClassDecl);
+          }
         }
+        return 'dynamic';
       }
     }
   }
+  return null;
+}
+
+function resolveBaseClassFromVariable(
+  varDecl: ts.VariableDeclaration,
+  checker: ts.TypeChecker,
+): ClassDeclaration | null {
+  if (varDecl.type !== undefined) {
+    const fromAst = resolveBaseClassFromTypeNode(varDecl.type, checker);
+    if (fromAst !== null) {
+      return fromAst;
+    }
+  }
+
+  const type = checker.getTypeAtLocation(varDecl);
+  return resolveBaseClassFromType(type, checker);
+}
+
+function resolveBaseClassFromTypeNode(
+  typeNode: ts.TypeNode,
+  checker: ts.TypeChecker,
+): ClassDeclaration | null {
+  if (ts.isTypeQueryNode(typeNode)) {
+    let sym = checker.getSymbolAtLocation(typeNode.exprName);
+    if (sym !== undefined && sym.flags & ts.SymbolFlags.Alias) {
+      sym = checker.getAliasedSymbol(sym);
+    }
+    if (sym?.valueDeclaration !== undefined && isNamedClassDeclaration(sym.valueDeclaration)) {
+      return sym.valueDeclaration;
+    }
+  } else if (ts.isIntersectionTypeNode(typeNode)) {
+    for (const member of typeNode.types) {
+      const result = resolveBaseClassFromTypeNode(member, checker);
+      if (result !== null) {
+        return result;
+      }
+    }
+  } else if (ts.isParenthesizedTypeNode(typeNode)) {
+    return resolveBaseClassFromTypeNode(typeNode.type, checker);
+  }
+  return null;
+}
+
+function resolveBaseClassFromType(type: ts.Type, checker: ts.TypeChecker): ClassDeclaration | null {
+  if (type.isIntersection()) {
+    for (const subType of type.types) {
+      const result = resolveBaseClassFromType(subType, checker);
+      if (result !== null) {
+        return result;
+      }
+    }
+    return null;
+  }
+
+  let sym = type.getSymbol() ?? type.aliasSymbol;
+  if (sym !== undefined && sym.flags & ts.SymbolFlags.Alias) {
+    sym = checker.getAliasedSymbol(sym);
+  }
+  if (sym?.valueDeclaration !== undefined && isNamedClassDeclaration(sym.valueDeclaration)) {
+    return sym.valueDeclaration;
+  }
+
+  const constructSignatures = type.getConstructSignatures();
+  if (constructSignatures.length > 0) {
+    const returnType = constructSignatures[0].getReturnType();
+    let returnSym = returnType.getSymbol() ?? returnType.aliasSymbol;
+    if (returnSym !== undefined && returnSym.flags & ts.SymbolFlags.Alias) {
+      returnSym = checker.getAliasedSymbol(returnSym);
+    }
+    if (
+      returnSym?.valueDeclaration !== undefined &&
+      isNamedClassDeclaration(returnSym.valueDeclaration)
+    ) {
+      return returnSym.valueDeclaration;
+    }
+  }
+
   return null;
 }
 

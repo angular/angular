@@ -12,6 +12,7 @@ import {OwningModule, Reference} from '../../imports';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {loadAngularCore, makeProgram} from '../../testing';
 import {DtsMetadataReader} from '../src/dts';
+import {flattenInheritedDirectiveMetadata} from '../src/inheritance';
 import {isHostDirectiveMetaForGlobalMode} from '../src/util';
 
 runInEachFileSystem(() => {
@@ -374,5 +375,102 @@ runInEachFileSystem(() => {
     const withoutOwningModule = dtsReader.getNgModuleMetadata(new Reference(clazz))!;
     expect(withoutOwningModule.exports.length).toBe(1);
     expect(withoutOwningModule.isPoisoned).toBe(true);
+  });
+
+  it('should resolve base class defined via intermediate variable declaration', () => {
+    const mainPath = absoluteFrom('/main.d.ts');
+    const {program} = makeProgram(
+      [
+        {
+          name: mainPath,
+          contents: `
+            import * as i0 from '@angular/core';
+
+            export declare class BaseDir {
+              static ɵdir: i0.ɵɵDirectiveDeclaration<BaseDir, "[base]", never, {"baseInput": "baseInput"}, {}, never>
+            }
+
+            declare const BaseDir_base: typeof BaseDir;
+
+            export declare class ChildDir extends BaseDir_base {
+              static ɵdir: i0.ɵɵDirectiveDeclaration<ChildDir, "[child]", never, {}, {}, never>
+            }
+          `,
+        },
+      ],
+      {
+        skipLibCheck: true,
+        lib: ['es6', 'dom'],
+      },
+    );
+
+    const sf = getSourceFileOrError(program, mainPath);
+    const baseClazz = sf.statements[1];
+    const childClazz = sf.statements[3];
+    if (!isNamedClassDeclaration(baseClazz) || !isNamedClassDeclaration(childClazz)) {
+      return fail('Expected class declarations');
+    }
+
+    const typeChecker = program.getTypeChecker();
+    const dtsReader = new DtsMetadataReader(typeChecker, new TypeScriptReflectionHost(typeChecker));
+
+    const meta = dtsReader.getDirectiveMetadata(new Reference(childClazz))!;
+    expect(meta.baseClass).toBeInstanceOf(Reference);
+    expect((meta.baseClass as Reference<any>).node).toBe(baseClazz);
+
+    const flattened = flattenInheritedDirectiveMetadata(dtsReader, new Reference(childClazz))!;
+    expect(flattened.baseClass).toBeNull();
+    expect(flattened.inputs.getByBindingPropertyName('baseInput')).not.toBeNull();
+  });
+
+  it('should resolve base class defined via intersection with mixin', () => {
+    const mainPath = absoluteFrom('/main.d.ts');
+    const {program} = makeProgram(
+      [
+        {
+          name: mainPath,
+          contents: `
+            import * as i0 from '@angular/core';
+
+            export declare class BaseDir {
+              static ɵdir: i0.ɵɵDirectiveDeclaration<BaseDir, "[base]", never, {"baseInput": "baseInput"}, {}, never>
+            }
+
+            export interface CanDisable {
+              disabled: boolean;
+            }
+            export type Constructor<T> = new (...args: any[]) => T;
+
+            declare const BaseDirWithMixin: typeof BaseDir & Constructor<CanDisable>;
+
+            export declare class ChildDir extends BaseDirWithMixin {
+              static ɵdir: i0.ɵɵDirectiveDeclaration<ChildDir, "[child]", never, {}, {}, never>
+            }
+          `,
+        },
+      ],
+      {
+        skipLibCheck: true,
+        lib: ['es6', 'dom'],
+      },
+    );
+
+    const sf = getSourceFileOrError(program, mainPath);
+    const baseClazz = sf.statements[1];
+    const childClazz = sf.statements[5];
+    if (!isNamedClassDeclaration(baseClazz) || !isNamedClassDeclaration(childClazz)) {
+      return fail('Expected class declarations');
+    }
+
+    const typeChecker = program.getTypeChecker();
+    const dtsReader = new DtsMetadataReader(typeChecker, new TypeScriptReflectionHost(typeChecker));
+
+    const meta = dtsReader.getDirectiveMetadata(new Reference(childClazz))!;
+    expect(meta.baseClass).toBeInstanceOf(Reference);
+    expect((meta.baseClass as Reference<any>).node).toBe(baseClazz);
+
+    const flattened = flattenInheritedDirectiveMetadata(dtsReader, new Reference(childClazz))!;
+    expect(flattened.baseClass).toBeNull();
+    expect(flattened.inputs.getByBindingPropertyName('baseInput')).not.toBeNull();
   });
 });
