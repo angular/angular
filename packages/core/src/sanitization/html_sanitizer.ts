@@ -84,7 +84,7 @@ const HTML_ATTRS = tagSet(
   'abbr,accesskey,align,alt,autoplay,axis,bgcolor,border,cellpadding,cellspacing,class,clear,color,cols,colspan,' +
     'compact,controls,coords,datetime,default,dir,download,face,headers,height,hidden,hreflang,hspace,' +
     'ismap,itemscope,itemprop,kind,label,lang,language,loop,media,muted,nohref,nowrap,open,preload,rel,rev,role,rows,rowspan,rules,' +
-    'scope,scrolling,shape,size,sizes,span,srclang,srcset,start,summary,tabindex,target,title,translate,type,usemap,' +
+    'scope,scrolling,shape,size,sizes,span,srclang,srcset,start,style,summary,tabindex,target,title,translate,type,usemap,' +
     'valign,value,vspace,width',
 );
 
