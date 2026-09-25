@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, Directive, inject, input, model, Self, signal} from '@angular/core';
+import {
+  Component,
+  computed,
+  Directive,
+  inject,
+  input,
+  model,
+  output,
+  Self,
+  signal,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {
@@ -18,13 +28,16 @@ import {
   ɵFORM_CONTROL_INTEGRATION,
   ControlValueAccessor,
 } from '@angular/forms';
+import {FormValueControl} from '@angular/forms/signals';
 
 @Component({
   selector: 'my-fvc-input',
-  template: '<input #i [value]="value()" (input)="value.set(i.value)" [disabled]="disabled()" />',
+  template:
+    '<input #i [value]="value()" (input)="value.set(i.value)" (blur)="touch.emit()" [disabled]="disabled()" />',
 })
-class MyFvcInput {
+class MyFvcInput implements FormValueControl<string> {
   readonly value = model('');
+  readonly touch = output<void>();
   readonly disabled = input(false);
   readonly touched = input(false);
   readonly dirty = input(false);
@@ -834,6 +847,110 @@ describe('FormControlName with FVC', () => {
         fixture.componentInstance.form.controls.name.updateValueAndValidity();
       });
       expect(fvc.required()).toBe(true);
+    });
+  });
+
+  describe('updateOn options', () => {
+    it('should not update value or validity based on custom control input until blur', () => {
+      @Component({
+        template: `<my-fvc-input [formControl]="ctrl" />`,
+        imports: [MyFvcInput, ReactiveFormsModule],
+      })
+      class TestCmp {
+        ctrl = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const fvc = fixture.debugElement.query(By.directive(MyFvcInput)).componentInstance;
+
+      act(() => fvc.value.set('Nancy'));
+
+      expect(fixture.componentInstance.ctrl.value).toBe('');
+      expect(fixture.componentInstance.ctrl.valid).toBe(false);
+
+      act(() => fvc.touch.emit());
+
+      expect(fixture.componentInstance.ctrl.value).toBe('Nancy');
+      expect(fixture.componentInstance.ctrl.valid).toBe(true);
+    });
+
+    it('should not update custom control value or validity until submit', () => {
+      @Component({
+        template: `
+          <form [formGroup]="form" (submit)="$event.preventDefault()">
+            <my-fvc-input formControlName="login" />
+          </form>
+        `,
+        imports: [MyFvcInput, ReactiveFormsModule],
+      })
+      class TestCmp {
+        form = new FormGroup({
+          login: new FormControl('', {validators: Validators.required, updateOn: 'submit'}),
+        });
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const fvc = fixture.debugElement.query(By.directive(MyFvcInput)).componentInstance;
+
+      act(() => fvc.value.set('Nancy'));
+
+      expect(fixture.componentInstance.form.value).toEqual({login: ''});
+      expect(fixture.componentInstance.form.valid).toBe(false);
+
+      const form = fixture.nativeElement.querySelector('form');
+      act(() => {
+        form?.dispatchEvent(new Event('submit', {cancelable: true}));
+      });
+
+      expect(fixture.componentInstance.form.value).toEqual({login: 'Nancy'});
+      expect(fixture.componentInstance.form.valid).toBe(true);
+    });
+
+    it('should reset custom control view value when control is reset with pending changes', () => {
+      @Component({
+        template: `<my-fvc-input [formControl]="ctrl" />`,
+        imports: [MyFvcInput, ReactiveFormsModule],
+      })
+      class TestCmp {
+        ctrl = new FormControl('initial', {updateOn: 'blur'});
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const fvc = fixture.debugElement.query(By.directive(MyFvcInput)).componentInstance;
+
+      expect(fvc.value()).toBe('initial');
+
+      act(() => fvc.value.set('modified'));
+      expect(fixture.componentInstance.ctrl.value).toBe('initial');
+
+      act(() => fixture.componentInstance.ctrl.reset('reset-value'));
+      expect(fixture.componentInstance.ctrl.value).toBe('reset-value');
+      expect(fvc.value()).toBe('reset-value');
+    });
+
+    it('should reset custom control view value when a pending undefined value is discarded', () => {
+      @Component({selector: 'my-optional-fvc-input', template: ''})
+      class MyOptionalFvcInput implements FormValueControl<string | undefined> {
+        readonly value = model<string | undefined>();
+        readonly touch = output<void>();
+      }
+
+      @Component({
+        template: `<my-optional-fvc-input [formControl]="ctrl" />`,
+        imports: [MyOptionalFvcInput, ReactiveFormsModule],
+      })
+      class TestCmp {
+        ctrl = new FormControl<string | undefined>('initial', {updateOn: 'blur'});
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const fvc = fixture.debugElement.query(By.directive(MyOptionalFvcInput)).componentInstance;
+
+      act(() => fvc.value.set(undefined));
+      expect(fixture.componentInstance.ctrl.value).toBe('initial');
+
+      act(() => fixture.componentInstance.ctrl.reset('initial'));
+      expect(fvc.value()).toBe('initial');
     });
   });
 });
