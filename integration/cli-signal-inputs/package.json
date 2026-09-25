@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "e2e": "ng build --configuration production && concurrently \"serve dist/browser -l 4210 --no-clipboard --single\" \"jasmine --config=e2e/jasmine.json 'e2e/src/**/*.e2e-spec.ts'\" --kill-others --success first"
   },
-  "packageManager": "pnpm@11.27.1",
+  "packageManager": "pnpm@12.6.0",
   "private": true,
   "dependencies": {
     "@angular/animations": "link:./in-existing-linked-by-bazel",
