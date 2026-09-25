@@ -155,6 +155,7 @@ export {
   getDirectiveDef as ɵgetDirectiveDef,
 } from './render3/def_getters';
 export {getDocument as ɵgetDocument} from './render3/interfaces/document';
+export {unwrapListener as ɵunwrapListener} from './render3/view/listeners';
 export {
   SHARED_STYLES_HOST as ɵSHARED_STYLES_HOST,
   SharedStylesHost as ɵSharedStylesHost,
