@@ -7,6 +7,10 @@
  */
 
 import {AsyncPipe, CommonModule, NgTemplateOutlet} from '@angular/common';
+import {timeout} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
+import {of} from 'rxjs';
+import {provideCheckNoChangesConfig} from '../../src/change_detection/provide_check_no_changes_config';
 import {
   AfterViewChecked,
   ApplicationRef,
@@ -29,11 +33,9 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '../../src/core';
-import {provideCheckNoChangesConfig} from '../../src/change_detection/provide_check_no_changes_config';
+import {LContainerFlags, MOVED_VIEWS} from '../../src/render3/interfaces/container';
+import {FLAGS, LView, QUERIES} from '../../src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '../../testing';
-import {expect} from '@angular/private/testing/matchers';
-import {timeout} from '@angular/private/testing';
-import {of} from 'rxjs';
 
 describe('change detection for transplanted views', () => {
   beforeEach(() => {
@@ -754,6 +756,110 @@ describe('change detection for transplanted views', () => {
       'SheldonSheldonSheldon',
       'Expected transplanted view to be refreshed even when insertion is not dirty',
     );
+  });
+
+  it('keeps refreshing other transplanted views when an insertion container is cleared on destroy', () => {
+    @Component({
+      selector: 'outlet',
+      template: '<ng-container #container />',
+      changeDetection: ChangeDetectionStrategy.OnPush,
+    })
+    class Outlet {
+      @Input() template!: TemplateRef<{}>;
+      @ViewChild('container', {read: ViewContainerRef, static: true})
+      container!: ViewContainerRef;
+
+      ngOnInit() {
+        this.container.createEmbeddedView(this.template);
+      }
+
+      ngOnDestroy() {
+        this.container.clear();
+      }
+    }
+
+    @Component({
+      template: `
+        <ng-template #template>{{ name }}</ng-template>
+        @for (item of items; track item) {
+          <outlet [template]="template"></outlet>
+        }
+      `,
+      imports: [Outlet],
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
+    class App {
+      items = [1, 2, 3];
+      name = 'Penny';
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toEqual('PennyPennyPenny');
+
+    fixture.componentInstance.items = [1, 2];
+    fixture.detectChanges();
+    fixture.componentInstance.name = 'Sheldon';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toEqual('SheldonSheldon');
+  });
+
+  it('should not double-detach queries and should clear HasTransplantedViews flag', () => {
+    @Component({
+      selector: 'outlet',
+      template: '<ng-container #container />',
+    })
+    class Outlet {
+      @Input() template!: TemplateRef<{}>;
+      @ViewChild('container', {read: ViewContainerRef, static: true})
+      container!: ViewContainerRef;
+
+      ngOnInit() {
+        this.container.createEmbeddedView(this.template);
+      }
+
+      ngOnDestroy() {
+        this.container.clear();
+      }
+    }
+
+    @Component({
+      template: `
+        <!-- We use a query to force the instantiation of LQueries -->
+        <ng-template #template><div #myQuery></div></ng-template>
+        @if (show) {
+          <outlet [template]="template"></outlet>
+        }
+      `,
+      imports: [Outlet],
+    })
+    class App {
+      @ViewChild('template', {read: TemplateRef, static: true})
+      template!: TemplateRef<any>;
+      show = true;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const appLView = (fixture.componentInstance as any).__ngContext__ as LView;
+    const declarationContainer = appLView[20] as any;
+    const transplantedLView = declarationContainer[MOVED_VIEWS]![0] as LView;
+    const lQueries = transplantedLView[QUERIES]!;
+
+    const detachViewSpy = spyOn(lQueries, 'detachView').and.callThrough();
+
+    fixture.componentInstance.show = false;
+    fixture.detectChanges();
+
+    expect(detachViewSpy).toHaveBeenCalledTimes(1);
+
+    const hasTransplantedViewsFlag =
+      (declarationContainer[FLAGS] & LContainerFlags.HasTransplantedViews) ===
+      LContainerFlags.HasTransplantedViews;
+
+    expect(declarationContainer[MOVED_VIEWS]).toBeNull();
+    expect(hasTransplantedViewsFlag).toBeFalse();
   });
 
   describe('ViewRef and ViewContainerRef operations', () => {
