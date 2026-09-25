@@ -307,14 +307,13 @@ export function ɵɵdeferHydrateWhen(rawValue: unknown) {
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
-  // TODO(incremental-hydration): audit all defer instructions to reduce unnecessary work by
-  // moving function calls inside their relevant control flow blocks
   const bindingIndex = nextBindingIndex();
-  const tView = getTView();
-  const hydrateTriggers = getHydrateTriggers(tView, tNode);
-  hydrateTriggers.set(DeferBlockTrigger.When, null);
 
   if (bindingUpdated(lView, bindingIndex, rawValue)) {
+    const tView = getTView();
+    const hydrateTriggers = getHydrateTriggers(tView, tNode);
+    hydrateTriggers.set(DeferBlockTrigger.When, null);
+
     if (typeof ngServerMode !== 'undefined' && ngServerMode) {
       // We are on the server and SSR for defer blocks is enabled.
       triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
