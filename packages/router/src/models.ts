@@ -653,6 +653,13 @@ export interface Route {
   component?: Type<any>;
 
   /**
+   * The component to instantiate when an error occurs in this route.
+   *
+   * Requires the error boundary feature to be enabled with `withErrorBoundaries`.
+   */
+  errorComponent?: Type<any>;
+
+  /**
    * An object specifying a lazy-loaded component.
    *
    * @see [Injection context lazy loading](guide/routing/loading-strategies)

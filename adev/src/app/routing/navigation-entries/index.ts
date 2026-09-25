@@ -257,12 +257,6 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/templates/defer',
           },
           {
-            label: 'Error boundaries with @boundary',
-            path: 'guide/templates/error-boundaries',
-            contentPath: 'guide/templates/error-boundaries',
-            status: 'new',
-          },
-          {
             label: 'Expression syntax',
             path: 'guide/templates/expression-syntax',
             contentPath: 'guide/templates/expression-syntax',
@@ -409,6 +403,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Data fetching with resources',
             path: 'guide/routing/data-fetching-with-resources',
             contentPath: 'guide/routing/data-fetching-with-resources',
+            status: 'new',
+          },
+          {
+            label: 'Error boundaries',
+            path: 'guide/routing/error-boundaries',
+            contentPath: 'guide/routing/error-boundaries',
             status: 'new',
           },
           {

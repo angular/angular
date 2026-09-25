@@ -11,6 +11,7 @@ import { DefaultExport } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { EnvironmentInjector } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
+import { ErrorDetails } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
@@ -269,6 +270,15 @@ export type DisabledInitialNavigationFeature = RouterFeature<RouterFeatureKind.D
 
 // @public
 export type EnabledBlockingInitialNavigationFeature = RouterFeature<RouterFeatureKind.EnabledBlockingInitialNavigationFeature>;
+
+// @public
+export type ErrorBoundariesFeature = RouterFeature<RouterFeatureKind.ErrorBoundariesFeature>;
+
+// @public
+export interface ErrorBoundaryOptions {
+    defaultErrorComponent?: Type<any>;
+    onError?: (error: Error, details?: ErrorDetails) => void;
+}
 
 // @public
 type Event_2 = NavigationStart | NavigationEnd | NavigationCancel | NavigationError | RoutesRecognized | GuardsCheckStart | GuardsCheckEnd | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd | Scroll | ResolveStart | ResolveEnd | NavigationSkipped;
@@ -689,6 +699,7 @@ export interface Route {
     children?: Routes;
     component?: Type<any>;
     data?: Data;
+    errorComponent?: Type<any>;
     loadChildren?: LoadChildren;
     loadComponent?: () => Type<unknown> | Observable<Type<unknown> | DefaultExport<Type<unknown>>> | Promise<Type<unknown> | DefaultExport<Type<unknown>>>;
     matcher?: UrlMatcher;
@@ -818,7 +829,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | AutoCleanupInjectorsFeature | RouterHashLocationFeature | ExperimentalPlatformNavigationFeature | RouterResourcesFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | AutoCleanupInjectorsFeature | RouterHashLocationFeature | ExperimentalPlatformNavigationFeature | RouterResourcesFeature | ErrorBoundariesFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -1180,6 +1191,9 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
 
 // @public
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature;
+
+// @public
+export function withErrorBoundaries(options?: ErrorBoundaryOptions): ErrorBoundariesFeature;
 
 // @public @deprecated
 export function withExperimentalAutoCleanupInjectors(): AutoCleanupInjectorsFeature;
