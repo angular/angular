@@ -148,6 +148,11 @@ export class BreakpointManager {
     if (source.tabId !== undefined) {
       this.activeBreakpoints.delete(source.tabId);
       this.scriptMap.delete(source.tabId);
+      this.runtimeApi
+        .sendMessage?.({action: 'signalBreakpointsCleared', tabId: source.tabId})
+        ?.catch(() => {
+          // Ignore error when no DevTools panel listener is open.
+        });
     }
   };
 
@@ -325,12 +330,12 @@ export class BreakpointManager {
     const target = {tabId};
     const tabBps = this.activeBreakpoints.get(tabId);
     if (!tabBps) {
-      throw new Error('No active breakpoints for this tab');
+      return;
     }
     const posKey = serializePosition(position);
     const entry = tabBps.get(posKey);
     if (!entry) {
-      throw new Error('No active breakpoint found for this signal');
+      return;
     }
 
     try {

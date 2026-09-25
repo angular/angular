@@ -9,6 +9,7 @@
 import {
   Component,
   computed,
+  DestroyRef,
   inject,
   input,
   linkedSignal,
@@ -54,8 +55,18 @@ export class SignalGraphPaneComponent {
   private readonly appOperations = inject(ApplicationOperations);
   private readonly frameManager = inject(FrameManager);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly close = output<void>();
+
+  constructor() {
+    const unsubscribe = this.appOperations.onSignalBreakpointsCleared?.(() => {
+      this.activeBreakpoints.value.set(new Set());
+    });
+    if (unsubscribe) {
+      this.destroyRef.onDestroy(unsubscribe);
+    }
+  }
 
   // Source for selected node ID.
   // Use only for triggering behavior dependent on external node ID changes.

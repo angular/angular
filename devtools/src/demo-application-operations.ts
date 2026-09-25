@@ -52,6 +52,10 @@ export class DemoApplicationOperations extends ApplicationOperations {
     return Promise.resolve([]);
   }
 
+  override onSignalBreakpointsCleared(callback: () => void): () => void {
+    return () => {};
+  }
+
   override viewSourceFromRouter(name: string, type: string): void {
     console.warn(
       'viewSourceFromRouter() is not implemented because the demo app runs in an Iframe',

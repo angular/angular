@@ -23,6 +23,9 @@ export abstract class ApplicationOperations {
 
   /** Fetches all active signal breakpoints for the inspected tab/frame. */
   abstract getActiveSignalBreakpoints(target: Frame): Promise<SignalNodePosition[]>;
+
+  /** Registers a listener invoked when all signal breakpoints for the tab are cleared (e.g. on debugger detach). @returns An unsubscribe function. */
+  abstract onSignalBreakpointsCleared(callback: () => void): () => void;
   abstract viewSourceFromRouter(name: string, type: string, target: Frame): void;
   abstract setStorageItems(items: {[key: string]: unknown}): Promise<void>;
   abstract getStorageItems(items: string[]): Promise<{[key: string]: unknown}>;
