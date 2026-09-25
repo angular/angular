@@ -21,6 +21,7 @@ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵdeclareLet(1);
       $r3$.ɵɵtext(2);
       $r3$.ɵɵconditionalCreate(3, MyApp_Conditional_3_Template, 1, 1);
+      (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵɵconditionalMetadata(3, "if", 1, null, "true", ["true"]);
     }
     if (rf & 2) {
       $r3$.ɵɵtextInterpolate1(" ", ctx.value, " ");
