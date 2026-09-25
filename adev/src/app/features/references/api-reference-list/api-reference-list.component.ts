@@ -163,9 +163,7 @@ export default class ApiReferenceList {
         queryParams: params,
         replaceUrl: true,
         preserveFragment: true,
-        info: {
-          disableScrolling: true,
-        },
+        scroll: 'manual',
       });
     });
   }
