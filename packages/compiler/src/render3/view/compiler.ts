@@ -21,6 +21,7 @@ import {R3CompiledExpression, tsIgnoreComment, typeWithParameters} from '../util
 import {
   DeclarationListEmitMode,
   DeferBlockDepsEmitMode,
+  DeferDependencyLoadingMode,
   R3ComponentMetadata,
   R3DeferResolverFunctionMetadata,
   R3DirectiveMetadata,
@@ -750,6 +751,7 @@ export function compileDeferResolverFunction(
   meta: R3DeferResolverFunctionMetadata,
 ): o.ArrowFunctionExpr {
   const depExpressions: o.Expression[] = [];
+  const dependencyLoadingMode = meta.dependencyLoadingMode ?? DeferDependencyLoadingMode.Default;
 
   if (meta.mode === DeferBlockDepsEmitMode.PerBlock) {
     for (const dep of meta.dependencies) {
@@ -761,15 +763,7 @@ export function compileDeferResolverFunction(
           o.variable('m').prop(dep.isDefaultImport ? 'default' : dep.symbolName),
         );
 
-        // Dynamic import, e.g. `import('./a').then(...)`.
-        const importExpr = new o.DynamicImportExpr(dep.importPath!)
-          .prop('then')
-          .callFn([innerFn], undefined, undefined, [
-            // Necessary, because we might not generate extensions for the path
-            // and TS may try to enforce it based on the compiler options.
-            tsIgnoreComment(),
-          ]);
-        depExpressions.push(importExpr);
+        depExpressions.push(createDeferDependency(dep.importPath!, innerFn, dependencyLoadingMode));
       } else {
         // Non-deferrable symbol, just use a reference to the type. Note that it's important to
         // go through `typeReference`, rather than `symbolName` in order to preserve the
@@ -785,17 +779,29 @@ export function compileDeferResolverFunction(
         o.variable('m').prop(isDefaultImport ? 'default' : symbolName),
       );
 
-      // Dynamic import, e.g. `import('./a').then(...)`.
-      const importExpr = new o.DynamicImportExpr(importPath)
-        .prop('then')
-        .callFn([innerFn], undefined, undefined, [
-          // Necessary, because we might not generate extensions for the path
-          // and TS may try to enforce it based on the compiler options.
-          tsIgnoreComment(),
-        ]);
-      depExpressions.push(importExpr);
+      depExpressions.push(createDeferDependency(importPath, innerFn, dependencyLoadingMode));
     }
   }
 
   return o.arrowFn([], o.literalArr(depExpressions));
+}
+
+function createDeferDependency(
+  importPath: string,
+  resolve: o.ArrowFunctionExpr,
+  loadingMode: DeferDependencyLoadingMode,
+): o.Expression {
+  if (loadingMode === DeferDependencyLoadingMode.Default) {
+    // Dynamic import, e.g. `import('./a').then(...)`.
+    return new o.DynamicImportExpr(importPath)
+      .prop('then')
+      .callFn([resolve], undefined, undefined, [
+        // Necessary, because we might not generate extensions for the path
+        // and TS may try to enforce it based on the compiler options.
+        tsIgnoreComment(),
+      ]);
+  }
+
+  const importExpr = new o.DynamicImportExpr(importPath, null, undefined, [tsIgnoreComment()]);
+  return o.importExpr(R3.deferDependency).callFn([o.arrowFn([], importExpr), resolve]);
 }
