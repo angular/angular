@@ -20,7 +20,7 @@ let cdAnalyzerUnsubscriber: (() => void) | undefined;
 let cdAnalyzerDispose: (() => void) | undefined;
 
 export function loadCdDataStream(messageBus: MessageBus<Events>): () => void {
-  return getConfig().onChange('cdDataStream', (enabled) => {
+  return getConfig().onValue('cdDataStream', (enabled) => {
     if (enabled) {
       const {analyzer, disposeFn} = getCdAnalyzer();
       cdAnalyzerDispose = disposeFn;
