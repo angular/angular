@@ -51,6 +51,7 @@ import {
   GuardResult,
   NavigationBehaviorOptions,
   QueryParamsHandling,
+  QueryParamsHandlingFn,
   RedirectCommand,
   Route,
 } from './models';
@@ -164,6 +165,7 @@ export interface UrlCreationOptions {
    * One of:
    * * `preserve` : Preserve current parameters.
    * * `merge` : Merge new with current parameters.
+   * * A {@link QueryParamsHandlingFn} : Compute new parameters from the current ones.
    *
    * The "preserve" option discards any new query params:
    * ```ts
@@ -180,8 +182,17 @@ export interface UrlCreationOptions {
    * In case of a key collision between current parameters and those in the `queryParams` object,
    * the new value is used.
    *
+   * A function receives the current params and returns the parameters to preserve.
+   * Any `queryParams` provided for the navigation are merged on top:
+   * ```ts
+   * // from /search?q=shoes&page=2 to /view2?q=shoes&otherKey=2
+   * router.navigate(['/view2'], {
+   *   queryParams: {otherKey: 2},
+   *   queryParamsHandling: (current) => ({q: current['q']}),
+   * });
+   * ```
    */
-  queryParamsHandling?: QueryParamsHandling | null;
+  queryParamsHandling?: QueryParamsHandling | QueryParamsHandlingFn | null;
 
   /**
    * When true, preserves the URL fragment for the next navigation

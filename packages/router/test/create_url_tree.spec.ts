@@ -11,7 +11,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {createUrlTreeFromSnapshot} from '../src/create_url_tree';
-import {QueryParamsHandling, Routes} from '../src/models';
+import {QueryParamsHandling, QueryParamsHandlingFn, Routes} from '../src/models';
 import {Router} from '../src/router';
 import {RouterModule} from '../src/router_module';
 import {ActivatedRoute, ActivatedRouteSnapshot} from '../src/router_state';
@@ -98,6 +98,32 @@ describe('createUrlTree', () => {
         b: '5',
       });
       expect(serializer.serialize(t)).toEqual('/a/c/c2?z=1&a=2&m=3&m=4&b=5');
+    });
+
+    it('should compute query params with a queryParamsHandling function', async () => {
+      await router.navigateByUrl('/a/c?q=shoes&page=2');
+      const t = router.createUrlTree(['/b'], {
+        queryParams: {sort: 'price'},
+        queryParamsHandling: (current) => ({q: current['q']}),
+      });
+      expect(serializer.serialize(t)).toEqual('/b?q=shoes&sort=price');
+    });
+
+    it('should merge queryParams on top of queryParamsHandling function result', async () => {
+      await router.navigateByUrl('/a/c?q=shoes&page=2');
+      const t = router.createUrlTree(['/b'], {
+        queryParams: {page: 3},
+        queryParamsHandling: (current) => ({q: current['q'], page: current['page']}),
+      });
+      expect(serializer.serialize(t)).toEqual('/b?q=shoes&page=3');
+    });
+
+    it('should remove empty values returned by a queryParamsHandling function', async () => {
+      await router.navigateByUrl('/a/c?q=shoes&page=2');
+      const t = router.createUrlTree(['/b'], {
+        queryParamsHandling: (current) => ({...current, page: null, sort: undefined}),
+      });
+      expect(serializer.serialize(t)).toEqual('/b?q=shoes');
     });
   });
 
@@ -595,7 +621,9 @@ describe('createUrlTree', () => {
 });
 
 describe('defaultQueryParamsHandling', () => {
-  async function setupRouter(defaultQueryParamsHandling: QueryParamsHandling): Promise<Router> {
+  async function setupRouter(
+    defaultQueryParamsHandling: QueryParamsHandling | QueryParamsHandlingFn,
+  ): Promise<Router> {
     TestBed.configureTestingModule({
       providers: [
         provideRouter(
@@ -627,6 +655,15 @@ describe('defaultQueryParamsHandling', () => {
   it('can override the default by providing a new option', async () => {
     const router = await setupRouter('preserve');
     await router.navigate(['new'], {queryParams: {'b': 2}, queryParamsHandling: 'merge'});
+    expect(router.url).toEqual('/new?a=1&b=2');
+    await router.navigate(['replace'], {queryParamsHandling: 'replace'});
+    expect(router.url).toEqual('/replace');
+  });
+
+  it('can use a function as the default', async () => {
+    const router = await setupRouter((current) => ({a: current['a']}));
+    await router.navigateByUrl('/initial?a=1&c=3');
+    await router.navigate(['new'], {queryParams: {'b': 2}});
     expect(router.url).toEqual('/new?a=1&b=2');
     await router.navigate(['replace'], {queryParamsHandling: 'replace'});
     expect(router.url).toEqual('/replace');

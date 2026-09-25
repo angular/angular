@@ -125,6 +125,19 @@ provideRouter(routes, withRouterConfig({defaultQueryParamsHandling: 'merge'}));
 
 This is especially helpful for search and filter pages to automatically retain existing filters when additional parameters are provided.
 
+`'merge'` keeps every current query parameter, including ones that the new page doesn't use. To keep only specific query parameters, use a function instead. The function receives the current query parameters and returns the parameters to preserve. Any `queryParams` passed to the navigation merge on top:
+
+```ts
+provideRouter(
+  routes,
+  withRouterConfig({
+    defaultQueryParamsHandling: (current) => ({lang: current['lang']}),
+  }),
+);
+```
+
+In this example, every navigation keeps the `lang` query parameter, while any `queryParams` provided for a navigation merge on top and can override `lang`. Parameters with a `null` or `undefined` value are removed, so navigations from URLs without `lang` don't add it.
+
 ### Configure trailing slash handling
 
 By default, the `Location` service strips trailing slashes from URLs on read.

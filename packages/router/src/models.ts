@@ -326,11 +326,45 @@ export type LoadChildren = LoadChildrenCallback;
  * - `"replace"` : Replace current parameters with new parameters. This is the default behavior.
  * - `""` : For legacy reasons, the same as `'replace'`.
  *
+ * To keep only some of the current parameters, use a {@link QueryParamsHandlingFn} instead.
+ *
  * @see {@link UrlCreationOptions#queryParamsHandling}
  * @see {@link RouterLink}
  * @publicApi
  */
 export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
+
+/**
+ * A function that determines which query parameters to preserve from the current URL.
+ *
+ * Parameters returned by this function are merged with any `queryParams` provided for the new URL,
+ * with `queryParams` taking precedence in case of key collisions.
+ *
+ * Parameters with a `null` or `undefined` value in the result are removed from the URL.
+ *
+ * @param current The query parameters of the current URL.
+ * @returns The query parameters to preserve from the current URL.
+ *
+ * @usageNotes
+ *
+ * The following function keeps the `q` parameter of the current URL:
+ *
+ * ```ts
+ * const keepQuery: QueryParamsHandlingFn = (current) => ({q: current['q']});
+ *
+ * // From /search?q=shoes&page=2, navigates to /products/1?q=shoes&tab=reviews
+ * router.navigate(['/products', 1], {queryParams: {tab: 'reviews'}, queryParamsHandling: keepQuery});
+ * ```
+ *
+ * A `RouterLink` that uses a `QueryParamsHandlingFn` updates its `href` when the query parameters
+ * of the current URL change, and when a signal read by the function changes.
+ *
+ * @see {@link UrlCreationOptions#queryParamsHandling}
+ * @see {@link RouterConfigOptions#defaultQueryParamsHandling}
+ * @see {@link RouterLink}
+ * @publicApi 22.3
+ */
+export type QueryParamsHandlingFn = (current: Readonly<Params>) => Params;
 
 /**
  * The type for the function that can be used to handle redirects when the path matches a `Route` config.
