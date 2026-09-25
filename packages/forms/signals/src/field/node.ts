@@ -117,8 +117,7 @@ export class FieldNode implements FieldState<unknown> {
    * first focusable binding in the DOM for any descendant node of this one.
    */
   private getBindingForFocus():
-    | (FormField<unknown> & {focus: (options?: FocusOptions) => void})
-    | undefined {
+    (FormField<unknown> & {focus: (options?: FocusOptions) => void}) | undefined {
     // First try to focus one of our own bindings.
     const own = this.formFieldBindings()
       .filter(
@@ -214,6 +213,10 @@ export class FieldNode implements FieldState<unknown> {
 
   get readonly(): Signal<boolean> {
     return this.nodeState.readonly;
+  }
+
+  get forceValidate(): Signal<boolean> {
+    return this.nodeState.forceValidate;
   }
 
   get formFieldBindings(): Signal<readonly FormField<unknown>[]> {
