@@ -26,6 +26,7 @@ import {
   getNativeControlValue,
   inputRequiresValidityTracking,
   isInput,
+  parseDecimalNumber,
   setNativeControlValue,
   setNativeDomProperty,
 } from './native';
@@ -38,8 +39,12 @@ export function nativeControlCreate(
     Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
   >,
   validityMonitor: InputValidityMonitor,
+  document: Document,
 ): () => void {
   let updateMode = false;
+  let hasPendingValueWrite = false;
+  // Control value produced by the most recent user edit.
+  let lastEditedValue: unknown;
   const input = parent.nativeFormElement;
 
   // TODO: (perf) ok to always create this?
@@ -55,18 +60,33 @@ export function nativeControlCreate(
 
   parseErrorsSource.set(parser.errors);
   parent.onReset = () => {
+    hasPendingValueWrite = false;
     parser.reset();
     const value = parent.state().value();
     bindings['controlValue'] = value;
     setNativeControlValue(input, value);
   };
-  // Pass undefined as the raw value since the parse function doesn't care about it.
-  host.listenToDom('input', () => parser.setRawValue(undefined));
-  host.listenToDom('blur', () => parent.state().markAsTouched());
+  const updateFromInput = () => {
+    // A newer user edit takes precedence over a deferred model update.
+    hasPendingValueWrite = false;
+    // Pass undefined as the raw value since the parse function doesn't care about it.
+    parser.setRawValue(undefined);
+    lastEditedValue = parent.state().controlValue();
+  };
+  host.listenToDom('input', updateFromInput);
+  host.listenToDom('blur', () => {
+    const state = parent.state();
+    state.markAsTouched();
+    if (hasPendingValueWrite) {
+      hasPendingValueWrite = false;
+      parser.reset();
+      setNativeControlValue(input, state.controlValue());
+    }
+  });
 
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
-    validityMonitor.watchValidity(parent.destroyRef, input, () => parser.setRawValue(undefined));
+    validityMonitor.watchValidity(parent.destroyRef, input, updateFromInput);
   }
 
   parent.registerAsBinding();
@@ -122,9 +142,41 @@ export function nativeControlCreate(
       input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
 
     if (controlValueChanged || radioValueChanged) {
-      setNativeControlValue(input, controlValue);
+      // Preserve unfinished input while focused. Unfocused controls must still reflect model changes.
+      const isFocused =
+        document.activeElement === input ||
+        (input.getRootNode?.() as Document | ShadowRoot | undefined)?.activeElement === input;
+      // Chromium hides incomplete numbers (e.g. `-` or `1e`) behind an empty value and badInput,
+      // so isIntermediate cannot detect them.
+      const isBadInput = isFocused && isInput(input) && validityMonitor.isBadInput(input);
+      if (!(isFocused && (isIntermediate(input.value, controlValue) || isBadInput))) {
+        setNativeControlValue(input, controlValue);
+        hasPendingValueWrite = false;
+      } else if (controlValue !== lastEditedValue) {
+        // Only defer external updates; the user's own edit is already displayed.
+        hasPendingValueWrite = true;
+      }
     }
 
     updateMode = true;
   };
+}
+
+function isIntermediate(inputValue: string, controlValue: unknown): boolean {
+  // These heuristics describe an in-progress decimal number (a lone sign, a trailing decimal
+  // point, or a value that parses to the same number the model already has). A plain string
+  // model can legitimately hold text that happens to end in "." (e.g. "draft."), so restrict
+  // them to non-string models to avoid blocking external string updates while focused.
+  if (typeof controlValue === 'string') return false;
+  if (inputValue === '-' || inputValue === '.' || inputValue === '-.') return true;
+  if (inputValue.endsWith('.')) return true;
+  // An exponent marker and optional sign are unfinished until an exponent digit is entered.
+  if (/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)[eE][+-]?$/.test(inputValue)) return true;
+  if (typeof controlValue === 'number' && !Number.isNaN(controlValue)) {
+    const parsed = parseDecimalNumber(inputValue);
+    if (parsed === controlValue && inputValue !== String(controlValue)) {
+      return true;
+    }
+  }
+  return false;
 }

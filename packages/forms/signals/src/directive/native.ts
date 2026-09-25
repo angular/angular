@@ -84,8 +84,8 @@ export function getNativeControlValue(
       if (element.value === '') {
         return {value: null};
       }
-      const parsed = Number(element.value);
-      if (Number.isNaN(parsed)) {
+      const parsed = parseDecimalNumber(element.value);
+      if (parsed === undefined) {
         return {error: new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>};
       }
       return {value: parsed};
@@ -94,6 +94,20 @@ export function getNativeControlValue(
 
   // Default to reading the value as a string.
   return {value: element.value};
+}
+
+/**
+ * Strictly parses a decimal number from a string, rejecting the other numeric literal forms
+ * that `Number()` accepts on its own (hex, binary, octal, etc). `parseFloat` doesn't consume
+ * those non-decimal prefixes, while `Number` rejects trailing garbage, so requiring both to
+ * agree keeps decimal input permissive without accepting other JavaScript numeric literal forms.
+ */
+export function parseDecimalNumber(value: string): number | undefined {
+  const parsed = Number(value);
+  if (Number.isNaN(parsed) || !Object.is(parsed, parseFloat(value))) {
+    return undefined;
+  }
+  return parsed;
 }
 
 /**

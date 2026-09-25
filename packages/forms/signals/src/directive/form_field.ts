@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {
   afterRenderEffect,
   computed,
@@ -166,6 +167,7 @@ export class FormField<T> {
 
   private readonly config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
   private readonly validityMonitor = inject(InputValidityMonitor);
+  private readonly document = inject(DOCUMENT);
 
   /** @internal */
   readonly parseErrorsSource = signal<
@@ -394,6 +396,7 @@ export class FormField<T> {
         this as FormField<unknown>,
         this.parseErrorsSource,
         this.validityMonitor,
+        this.document,
       );
     } else {
       throw new RuntimeError(
