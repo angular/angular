@@ -69,6 +69,17 @@ class DevtoolsConfigState {
       }
     };
   }
+
+  /** Emit the current value of a property and then listen for changes. */
+  onValue<T extends keyof DevtoolsConfig = keyof DevtoolsConfig>(
+    prop: T,
+    cb: (value: DevtoolsConfig[T]) => void,
+  ): () => void {
+    const unsubscribe = this.onChange(prop, cb);
+    cb(this.config[prop]);
+
+    return unsubscribe;
+  }
 }
 
 /** Get DevTools backend configuration. */
