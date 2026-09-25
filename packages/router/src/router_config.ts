@@ -136,6 +136,28 @@ export interface RouterConfigOptions {
    * if an error occurs.
    */
   resolveNavigationPromiseOnError?: boolean;
+
+  /**
+   * Upper bounds on URL complexity to protect against resource exhaustion during parsing.
+   * Only applies when using the default URL serializer (`DefaultUrlSerializer`).
+   * If a URL exceeds any limit, a `RuntimeError` with `RuntimeErrorCode.UNPARSABLE_URL` is thrown.
+   */
+  urlParsingLimits?: {
+    /**
+     * Maximum number of path segments allowed (default: 100).
+     */
+    maxSegments?: number;
+
+    /**
+     * Maximum number of auxiliary named outlets allowed (default: 50).
+     */
+    maxOutlets?: number;
+
+    /**
+     * Maximum number of parameters (query + matrix across all segments) allowed (default: 1000).
+     */
+    maxParams?: number;
+  };
 }
 
 /**
