@@ -359,7 +359,12 @@ function i18nStartFirstCreatePassProcessTextNode(
 /**
  * See `i18nAttributes` above.
  */
-export function i18nAttributesFirstPass(tView: TView, index: number, values: string[]) {
+export function i18nAttributesFirstPass(
+  tView: TView,
+  index: number,
+  values: string[],
+  exactDomPropertyNames?: readonly string[],
+) {
   const previousElement = getCurrentTNode()!;
   const previousElementIndex = previousElement.index;
   const updateOpCodes: I18nUpdateOpCodes = [] as any;
@@ -399,6 +404,9 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
           i18nResolveSanitizer(attrName, tagName),
         );
       }
+    }
+    if (exactDomPropertyNames !== undefined) {
+      updateOpCodes.exactDomPropertyNames = exactDomPropertyNames;
     }
     tView.data[index] = updateOpCodes;
   }

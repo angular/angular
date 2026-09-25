@@ -134,6 +134,58 @@ runInEachFileSystem(() => {
       expect(hmrContents).toContain('ɵhmr0.ɵsetClassDebugInfo(Cmp,');
     });
 
+    it('should preserve exact manifest property names in HMR update code', () => {
+      enableHmr({customElementsManifests: ['./custom-elements.json']});
+      env.write(
+        'custom-elements.json',
+        JSON.stringify({
+          schemaVersion: '1.0.0',
+          modules: [
+            {
+              kind: 'javascript-module',
+              path: 'my-button.js',
+              declarations: [
+                {
+                  kind: 'class',
+                  name: 'MyButton',
+                  customElement: true,
+                  tagName: 'my-button',
+                  members: [{kind: 'field', name: 'readonly', type: {text: 'boolean'}}],
+                },
+              ],
+              exports: [
+                {
+                  kind: 'custom-element-definition',
+                  name: 'my-button',
+                  declaration: {name: 'MyButton'},
+                },
+              ],
+            },
+          ],
+        }),
+      );
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'cmp',
+            template: '<my-button [readonly]="value"></my-button>',
+          })
+          export class Cmp { value = true; }
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+      expect(jsContents).toContain('ɵɵdomProperty("readonly", ctx.value)');
+      expect(hmrContents).toContain('ɵɵdomProperty("readonly", ctx.value)');
+      expect(hmrContents).not.toContain('ɵɵdomProperty("readOnly", ctx.value)');
+    });
+
     it('should generate an HMR initializer and update function for a class that depends on multiple namespaces', () => {
       enableHmr();
       env.write(
