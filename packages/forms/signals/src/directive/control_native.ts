@@ -170,6 +170,8 @@ function isIntermediate(inputValue: string, controlValue: unknown): boolean {
   if (typeof controlValue === 'string') return false;
   if (inputValue === '-' || inputValue === '.' || inputValue === '-.') return true;
   if (inputValue.endsWith('.')) return true;
+  // An exponent marker and optional sign are unfinished until an exponent digit is entered.
+  if (/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)[eE][+-]?$/.test(inputValue)) return true;
   if (typeof controlValue === 'number' && !Number.isNaN(controlValue)) {
     const parsed = parseDecimalNumber(inputValue);
     if (parsed === controlValue && inputValue !== String(controlValue)) {

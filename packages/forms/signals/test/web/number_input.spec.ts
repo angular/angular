@@ -658,6 +658,70 @@ describe('text input with numeric model', () => {
     expect(input.value).toBe('-0.5');
   });
 
+  for (const incompleteValue of ['1e', '1e-', '1e+', '-1.5E+']) {
+    it(`should defer an external model update while editing ${incompleteValue}`, async () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(1);
+        readonly f = form(this.data);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      input.focus();
+      input.value = incompleteValue;
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+
+      expect(input.value).toBe(incompleteValue);
+      expect(fixture.componentInstance.data()).toBe(1);
+
+      fixture.componentInstance.data.set(1000);
+      await fixture.whenStable();
+
+      expect(input.value).toBe(incompleteValue);
+
+      input.blur();
+      await fixture.whenStable();
+
+      expect(input.value).toBe('1000');
+      expect(fixture.componentInstance.data()).toBe(1000);
+    });
+  }
+
+  it('should apply external model updates to malformed numeric text ending in an exponent marker', async () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(1);
+      readonly f = form(this.data);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.focus();
+
+    for (const malformedValue of ['e', '1ee', '1e2e', '0x1e']) {
+      input.value = malformedValue;
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+      fixture.componentInstance.data.set(1000);
+      await fixture.whenStable();
+
+      expect(input.value).toBe('1000');
+
+      fixture.componentInstance.data.set(1);
+      await fixture.whenStable();
+    }
+  });
+
   it('should preserve scientific notation and a leading plus while typing into a text input with a numeric model', () => {
     // `parseDecimalNumber` already accepts complete scientific notation and an explicit leading
     // `+` (`Number` and `parseFloat` agree on them), so once a full literal like `1e2` or `+1` is
