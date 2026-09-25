@@ -332,8 +332,10 @@ function getInjectFn(target: FactoryTarget): o.ExternalReference {
   switch (target) {
     case FactoryTarget.Component:
     case FactoryTarget.Directive:
-    case FactoryTarget.Pipe:
       return R3.directiveInject;
+    // Pipe factories can run in either a node or an environment injector, so defer to the
+    // current inject implementation.
+    case FactoryTarget.Pipe:
     case FactoryTarget.NgModule:
     case FactoryTarget.Injectable:
     default:
