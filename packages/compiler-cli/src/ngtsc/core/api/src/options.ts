@@ -120,6 +120,11 @@ export interface InternalOptions {
    * import e.g. `Component` relatively and should be detected by the compiler.
    */
   _isAngularCoreCompilation?: boolean;
+
+  /**
+   * Whether to validate unknown element tags even when matched by attribute directives.
+   */
+  strictUnknownElementEventualValidation?: boolean;
 }
 
 /**
