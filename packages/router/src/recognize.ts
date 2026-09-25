@@ -143,6 +143,18 @@ export class Recognizer {
       return {children, rootSnapshot};
     } catch (e: any) {
       if (e instanceof AbsoluteRedirect) {
+        // Count at the actual root-restart boundary so redirects returned from functions are
+        // subject to the same limit as static redirects.
+        this.absoluteRedirectCount++;
+        if (this.absoluteRedirectCount > MAX_ALLOWED_REDIRECTS) {
+          if (ngDevMode) {
+            throw new RuntimeError(
+              RuntimeErrorCode.INFINITE_REDIRECT,
+              `Detected possible infinite redirect when redirecting from '${this.urlTree}' to '${e.urlTree}'.`,
+            );
+          }
+          this.allowRedirects = false;
+        }
         this.urlTree = e.urlTree;
         return this.match(e.urlTree.root);
       }
@@ -334,22 +346,6 @@ export class Recognizer {
       match(segmentGroup, route, segments);
     if (!matched) throw new NoMatch(segmentGroup);
 
-    // TODO(atscott): Move all of this under an if(ngDevMode) as a breaking change and allow stack
-    // size exceeded in production
-    if (typeof route.redirectTo === 'string' && route.redirectTo[0] === '/') {
-      this.absoluteRedirectCount++;
-      if (this.absoluteRedirectCount > MAX_ALLOWED_REDIRECTS) {
-        if (ngDevMode) {
-          throw new RuntimeError(
-            RuntimeErrorCode.INFINITE_REDIRECT,
-            `Detected possible infinite redirect when redirecting from '${this.urlTree}' to '${route.redirectTo}'.\n` +
-              `This is currently a dev mode only error but will become a` +
-              ` call stack size exceeded error in production in a future major version.`,
-          );
-        }
-        this.allowRedirects = false;
-      }
-    }
     const currentSnapshot = this.createSnapshot(injector, route, segments, parameters, parentRoute);
     if (this.abortSignal.aborted) {
       throw new Error(this.abortSignal.reason);
