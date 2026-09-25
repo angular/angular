@@ -464,6 +464,15 @@ describe('parser', () => {
       it('should report incorrect ternary operator syntax', () => {
         expectActionError('true?1', 'Conditional expression true?1 requires all 3 expressions');
       });
+
+      it('should hint about quote escaping when ternary fails with adjacent quotes', () => {
+        // Simulates: {{ filter ? ' your filter: \'' + filter + '\'' : '' }} in an inline template.
+        // TypeScript consumes the backslash, so Angular receives the input below with '''.
+        expectActionError(
+          "filter ? ' your filter: '' + filter + ''' : ''",
+          'quotes that were not escaped correctly',
+        );
+      });
     });
 
     describe('assignment', () => {
