@@ -1144,7 +1144,57 @@ describe('recognize', () => {
       await expectAsync(recognizer('foo/bar')).toBeRejected();
     });
   });
+
+  describe('snapshot creation', () => {
+    it('shares one queryParams object across every snapshot', async () => {
+      const s = await recognize(
+        [{path: 'a', children: [{path: '', children: [{path: '', component: ComponentA}]}]}],
+        'a/(x:/()//y:/()//z:/())?p=1&q=2',
+      );
+      const snapshots = collectSnapshots(s.root);
+      expect(snapshots.length).toBeGreaterThan(1);
+      for (const snapshot of snapshots) {
+        expect(snapshot.queryParams).toBe(s.root.queryParams);
+      }
+      expect(s.root.queryParams).toEqual({p: '1', q: '2'});
+      expect(Object.isFrozen(s.root.queryParams)).toBeTrue();
+    });
+
+    it('shares the parent params with a route that adds none of its own', async () => {
+      const s = await recognize(
+        [
+          {
+            path: 'a',
+            children: [
+              {path: '', component: ComponentA},
+              {path: '', outlet: 'modal', component: ComponentB},
+            ],
+          },
+        ],
+        'a;x=1/(modal:/())',
+      );
+      const a = s.root.firstChild!;
+      expect(a.params).toEqual({x: '1'});
+      // An empty path route matches once for every outlet the URL names.
+      expect(a.children.length).toBe(2);
+      for (const child of a.children) {
+        expect(child.params).toBe(a.params);
+        expect(Object.isFrozen(child.params)).toBeTrue();
+      }
+    });
+  });
 });
+
+function collectSnapshots(
+  snapshot: ActivatedRouteSnapshot,
+  into: ActivatedRouteSnapshot[] = [],
+): ActivatedRouteSnapshot[] {
+  into.push(snapshot);
+  for (const child of snapshot.children) {
+    collectSnapshots(child, into);
+  }
+  return into;
+}
 
 async function recognize(
   config: Routes,

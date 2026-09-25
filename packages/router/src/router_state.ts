@@ -325,8 +325,12 @@ export function getInherited(
       (!parent.component && !parent.routeConfig?.loadComponent))
   ) {
     inherited = {
-      params: {...parent.params, ...route.params},
-      data: {...parent.data, ...route.data},
+      // Reuse the parent's frozen params when the route adds none of its own.
+      params:
+        Object.keys(route.params).length === 0
+          ? parent.params
+          : Object.freeze({...parent.params, ...route.params}),
+      data: Object.freeze({...parent.data, ...route.data}),
       resolve: {
         // Snapshots are created with data inherited from parent and guards (i.e. canActivate) can
         // change data because it's not frozen...
@@ -345,8 +349,8 @@ export function getInherited(
     };
   } else {
     inherited = {
-      params: {...route.params},
-      data: {...route.data},
+      params: Object.freeze({...route.params}),
+      data: Object.freeze({...route.data}),
       resolve: {...route.data, ...(route._resolvedData ?? {})},
     };
   }
