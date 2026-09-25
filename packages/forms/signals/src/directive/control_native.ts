@@ -163,6 +163,11 @@ export function nativeControlCreate(
 }
 
 function isIntermediate(inputValue: string, controlValue: unknown): boolean {
+  // These heuristics describe an in-progress decimal number (a lone sign, a trailing decimal
+  // point, or a value that parses to the same number the model already has). A plain string
+  // model can legitimately hold text that happens to end in "." (e.g. "draft."), so restrict
+  // them to non-string models to avoid blocking external string updates while focused.
+  if (typeof controlValue === 'string') return false;
   if (inputValue === '-' || inputValue === '.' || inputValue === '-.') return true;
   if (inputValue.endsWith('.')) return true;
   if (typeof controlValue === 'number' && !Number.isNaN(controlValue)) {

@@ -873,6 +873,39 @@ describe('text input with numeric model', () => {
   });
 });
 
+describe('text input with non-numeric model', () => {
+  it('should not treat punctuation in a string text input as an intermediate numeric value', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal('draft.');
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    input.focus();
+    expect(input.value).toBe('draft.');
+
+    // The control value ends in "." and the model isn't numeric, so this must not be mistaken
+    // for an in-progress decimal (e.g. "1.") and deferred until blur.
+    act(() => {
+      fixture.componentInstance.data.set('server replacement');
+    });
+
+    expect(input.value).toBe('server replacement');
+
+    input.blur();
+
+    // Verify that blur doesn't leave DOM/model divergence.
+    expect(input.value).toBe('server replacement');
+    expect(fixture.componentInstance.data()).toBe('server replacement');
+  });
+});
+
 function act<T>(fn: () => T): T {
   try {
     return fn();
