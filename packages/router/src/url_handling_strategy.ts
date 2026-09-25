@@ -48,13 +48,13 @@ export abstract class UrlHandlingStrategy {
  */
 @Service()
 export class DefaultUrlHandlingStrategy implements UrlHandlingStrategy {
-  shouldProcessUrl(url: UrlTree): boolean {
+  shouldProcessUrl(): boolean {
     return true;
   }
   extract(url: UrlTree): UrlTree {
     return url;
   }
-  merge(newUrlPart: UrlTree, wholeUrl: UrlTree): UrlTree {
+  merge(newUrlPart: UrlTree): UrlTree {
     return newUrlPart;
   }
 }
