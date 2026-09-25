@@ -82,9 +82,10 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
   override visitBinary(ast: Binary, context: TmplAstNode): void {
     if (Binary.isAssignmentOperation(ast.operation) && ast.left instanceof PropertyRead) {
       this.checkForIllegalWriteInEventBinding(ast.left, context);
-    } else {
-      super.visitBinary(ast, context);
     }
+
+    // Always recurse since the right-hand side may contain other writes (e.g. `prop = y++`).
+    super.visitBinary(ast, context);
   }
 
   override visitUnary(ast: Unary, context: TmplAstNode): void {

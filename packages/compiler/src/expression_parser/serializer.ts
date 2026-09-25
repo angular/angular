@@ -18,8 +18,7 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
     const inner = ast.expr.visit(this, context);
 
     if (ast.isPrefix) {
-      const lastChar = ast.operator[ast.operator.length - 1];
-      const space = (lastChar === '+' || lastChar === '-') && inner.startsWith(lastChar) ? ' ' : '';
+      const space = inner.startsWith(ast.operator[0]) ? ' ' : '';
       return `${ast.operator}${space}${inner}`;
     }
 
