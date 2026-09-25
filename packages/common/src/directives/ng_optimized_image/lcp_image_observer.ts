@@ -29,6 +29,23 @@ interface ObservedImageState {
 }
 
 /**
+ * These soft navigation entry types are not yet included in TypeScript's DOM typings.
+ *
+ * WebIDL definitions:
+ * - https://wicg.github.io/soft-navigations/#sec-interaction-contentful-paint-interface
+ * - https://wicg.github.io/soft-navigations/#performancesoftnavigation
+ */
+interface InteractionContentfulPaintEntry extends PerformanceEntry {
+  readonly interactionId: number;
+  readonly largestContentfulPaint: LargestContentfulPaint;
+}
+
+interface PerformanceSoftNavigationEntry extends PerformanceEntry {
+  readonly interactionId: number;
+  getLargestInteractionContentfulPaint(): InteractionContentfulPaintEntry | null;
+}
+
+/**
  * Observer that detects whether an image with `NgOptimizedImage`
  * is treated as a Largest Contentful Paint (LCP) element. If so,
  * asserts that the image has the `priority` attribute.
@@ -45,6 +62,7 @@ export class LCPImageObserver implements OnDestroy {
 
   private window: Window | null = inject(DOCUMENT).defaultView;
   private observer: PerformanceObserver | null = null;
+  private currentSoftNavigationInteractionId: number | null = null;
 
   constructor() {
     assertDevMode('LCP checker');
@@ -65,32 +83,77 @@ export class LCPImageObserver implements OnDestroy {
     const observer = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
       if (entries.length === 0) return;
-      // We use the latest entry produced by the `PerformanceObserver` as the best
-      // signal on which element is actually an LCP one. As an example, the first image to load on
-      // a page, by virtue of being the only thing on the page so far, is often a LCP candidate
-      // and gets reported by PerformanceObserver, but isn't necessarily the LCP element.
-      const lcpElement = entries[entries.length - 1];
 
-      // Cast to `any` due to missing `element` on the `LargestContentfulPaint` type of entry.
-      // See https://developer.mozilla.org/en-US/docs/Web/API/LargestContentfulPaint
-      const imgSrc = (lcpElement as any).element?.src ?? '';
+      // Entries of different types may be delivered out of order, so process them by end time.
+      // See https://github.com/w3c/performance-timeline/issues/224.
+      entries.sort((a, b) => a.startTime + a.duration - (b.startTime + b.duration));
 
-      // Exclude `data:` and `blob:` URLs, since they are not supported by the directive.
-      if (imgSrc.startsWith('data:') || imgSrc.startsWith('blob:')) return;
+      let latestInitialLcp: LargestContentfulPaint | null = null;
 
-      const img = this.images.get(imgSrc);
-      if (!img) return;
-      if (!img.priority && !img.alreadyWarnedPriority) {
-        img.alreadyWarnedPriority = true;
-        logMissingPriorityError(imgSrc);
+      for (const entry of entries) {
+        if (entry.entryType === 'largest-contentful-paint') {
+          // We use the latest entry produced by the `PerformanceObserver` as the best
+          // signal on which element is actually an LCP one. As an example, the first image to load
+          // on a page, by virtue of being the only thing on the page so far, is often a LCP candidate
+          // and gets reported by PerformanceObserver, but isn't necessarily the LCP element.
+          latestInitialLcp = entry as LargestContentfulPaint;
+        } else if (entry.entryType === 'soft-navigation') {
+          this.processSoftNavigationEntry(entry as PerformanceSoftNavigationEntry);
+        } else if (entry.entryType === 'interaction-contentful-paint') {
+          this.processInteractionContentfulPaintEntry(entry as InteractionContentfulPaintEntry);
+        }
       }
-      if (img.modified && !img.alreadyWarnedModified) {
-        img.alreadyWarnedModified = true;
-        logModifiedWarning(imgSrc);
+
+      if (latestInitialLcp) {
+        this.processLcpEntry(latestInitialLcp);
       }
     });
     observer.observe({type: 'largest-contentful-paint', buffered: true});
+
+    if (
+      PerformanceObserver.supportedEntryTypes.includes('soft-navigation') &&
+      PerformanceObserver.supportedEntryTypes.includes('interaction-contentful-paint')
+    ) {
+      observer.observe({type: 'soft-navigation', buffered: true});
+      // The soft navigation getter recovers earlier candidates; only future ICP updates are needed.
+      observer.observe({type: 'interaction-contentful-paint'});
+    }
+
     return observer;
+  }
+
+  private processSoftNavigationEntry(entry: PerformanceSoftNavigationEntry): void {
+    this.currentSoftNavigationInteractionId = entry.interactionId;
+
+    // The largest candidate may have been emitted before the soft navigation was detected.
+    const largestInteractionContentfulPaint = entry.getLargestInteractionContentfulPaint();
+    if (largestInteractionContentfulPaint) {
+      this.processLcpEntry(largestInteractionContentfulPaint.largestContentfulPaint);
+    }
+  }
+
+  private processInteractionContentfulPaintEntry(entry: InteractionContentfulPaintEntry): void {
+    // Interaction contentful paints are emitted for all interactions, not only soft navigations.
+    if (entry.interactionId !== this.currentSoftNavigationInteractionId) return;
+    this.processLcpEntry(entry.largestContentfulPaint);
+  }
+
+  private processLcpEntry(entry: LargestContentfulPaint): void {
+    const imgSrc = entry.element instanceof HTMLImageElement ? entry.element.src : '';
+
+    // Exclude `data:` and `blob:` URLs, since they are not supported by the directive.
+    if (imgSrc.startsWith('data:') || imgSrc.startsWith('blob:')) return;
+
+    const img = this.images.get(imgSrc);
+    if (!img) return;
+    if (!img.priority && !img.alreadyWarnedPriority) {
+      img.alreadyWarnedPriority = true;
+      logMissingPriorityError(imgSrc);
+    }
+    if (img.modified && !img.alreadyWarnedModified) {
+      img.alreadyWarnedModified = true;
+      logModifiedWarning(imgSrc);
+    }
   }
 
   registerImage(rewrittenSrc: string, isPriority: boolean) {
