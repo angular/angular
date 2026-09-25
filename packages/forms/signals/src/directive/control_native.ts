@@ -172,7 +172,7 @@ function isIntermediate(inputValue: string, controlValue: unknown): boolean {
   if (inputValue.endsWith('.')) return true;
   if (typeof controlValue === 'number' && !Number.isNaN(controlValue)) {
     const parsed = parseDecimalNumber(inputValue);
-    if (parsed !== undefined && parsed === controlValue && inputValue !== String(controlValue)) {
+    if (parsed === controlValue && inputValue !== String(controlValue)) {
       return true;
     }
   }
