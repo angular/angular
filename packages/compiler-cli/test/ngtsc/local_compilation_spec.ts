@@ -872,6 +872,72 @@ runInEachFileSystem(() => {
 
         expect(jsContents).not.toContain('i0.ɵɵgetComponentDepsFactory');
       });
+      it('should preserve qualified component imports in the runtime dependency factory', () => {
+        env.write(
+          'card.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'card-header', template: ''})
+          export class Header {}
+          `,
+        );
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import * as Card from './card';
+
+          @Component({
+            imports: [Card.Header],
+            selector: 'test-main',
+            template: '<Card.Header />',
+          })
+          export class MainComponent {}
+          `,
+        );
+
+        env.driveMain();
+        const jsContents = cleanNewLines(env.getContents('test.js'));
+
+        expect(jsContents).toContain(
+          'dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent, [Card.Header], [{ type: Card.Header, qualifiedNames: ["Card.Header"] }])',
+        );
+      });
+
+      it('should preserve nested qualified component import paths', () => {
+        env.write(
+          'card.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({selector: 'card-header', template: ''})
+          export class Header {}
+          `,
+        );
+        env.write('ui.ts', `export * as Card from './card';`);
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+          import * as UI from './ui';
+
+          @Component({
+            imports: [UI.Card.Header],
+            selector: 'test-main',
+            template: '<UI.Card.Header />',
+          })
+          export class MainComponent {}
+          `,
+        );
+
+        env.driveMain();
+        const jsContents = cleanNewLines(env.getContents('test.js'));
+
+        expect(jsContents).toContain(
+          'dependencies: i0.ɵɵgetComponentDepsFactory(MainComponent, [UI.Card.Header], [{ type: UI.Card.Header, qualifiedNames: ["UI.Card.Header"] }])',
+        );
+      });
     });
 
     describe('component fields', () => {

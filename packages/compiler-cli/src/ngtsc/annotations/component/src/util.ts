@@ -81,9 +81,15 @@ export const legacyAnimationTriggerResolver: ForeignFunctionResolver = (
   return res;
 };
 
+export interface QualifiedComponentImport {
+  name: string;
+  ref: Reference<ClassDeclaration>;
+}
+
 export interface FlattenedImports {
   imports: Reference<ClassDeclaration>[];
   importsByBlock: Map<string, Reference<ClassDeclaration>[]> | null;
+  qualifiedImports: QualifiedComponentImport[];
   diagnostics: ts.Diagnostic[];
 }
 
@@ -93,6 +99,7 @@ export function validateAndFlattenComponentImports(
   isDeferred: boolean,
 ): FlattenedImports {
   const flattened: Reference<ClassDeclaration>[] = [];
+  const qualifiedImports: QualifiedComponentImport[] = [];
   const diagnostics: ts.Diagnostic[] = [];
   let importsByBlock: Map<string, Reference<ClassDeclaration>[]> | null = null;
 
@@ -117,10 +124,14 @@ export function validateAndFlattenComponentImports(
           }
         }
 
-        const {imports: blockImports, diagnostics: blockDiagnostics} =
-          validateAndFlattenComponentImports(blockValue, propExpr, false);
+        const {
+          imports: blockImports,
+          qualifiedImports: blockQualifiedImports,
+          diagnostics: blockDiagnostics,
+        } = validateAndFlattenComponentImports(blockValue, propExpr, false);
 
         diagnostics.push(...blockDiagnostics);
+        qualifiedImports.push(...blockQualifiedImports);
         for (const blockImport of blockImports) {
           if (!flattened.some((existing) => existing.node === blockImport.node)) {
             flattened.push(blockImport);
@@ -128,12 +139,13 @@ export function validateAndFlattenComponentImports(
         }
         importsByBlock.set(blockName, blockImports);
       }
-      return {imports: flattened, importsByBlock, diagnostics};
+      return {imports: flattened, importsByBlock, qualifiedImports, diagnostics};
     } else {
       const error = createValueHasWrongTypeError(expr, imports, errorMessage).toDiagnostic();
       return {
         imports: [],
         importsByBlock: null,
+        qualifiedImports: [],
         diagnostics: [error],
       };
     }
@@ -144,6 +156,7 @@ export function validateAndFlattenComponentImports(
     return {
       imports: [],
       importsByBlock: null,
+      qualifiedImports: [],
       diagnostics: [error],
     };
   }
@@ -160,13 +173,23 @@ export function validateAndFlattenComponentImports(
     }
 
     if (Array.isArray(ref)) {
-      const {imports: childImports, diagnostics: childDiagnostics} =
-        validateAndFlattenComponentImports(ref, refExpr, isDeferred);
+      const {
+        imports: childImports,
+        qualifiedImports: childQualifiedImports,
+        diagnostics: childDiagnostics,
+      } = validateAndFlattenComponentImports(ref, refExpr, isDeferred);
       flattened.push(...childImports);
+      qualifiedImports.push(...childQualifiedImports);
       diagnostics.push(...childDiagnostics);
     } else if (ref instanceof Reference) {
       if (isNamedClassDeclaration(ref.node)) {
-        flattened.push(ref as Reference<ClassDeclaration>);
+        const classRef = ref as Reference<ClassDeclaration>;
+        flattened.push(classRef);
+
+        const qualifiedName = getQualifiedImportName(refExpr);
+        if (qualifiedName !== null) {
+          qualifiedImports.push({name: qualifiedName, ref: classRef});
+        }
       } else {
         diagnostics.push(
           createValueHasWrongTypeError(
@@ -207,7 +230,53 @@ export function validateAndFlattenComponentImports(
     }
   }
 
-  return {imports: flattened, importsByBlock, diagnostics};
+  return {imports: flattened, importsByBlock, qualifiedImports, diagnostics};
+}
+
+export function extractQualifiedComponentImportsFromAst(
+  expr: ts.Expression,
+): Array<{name: string; expression: ts.Expression}> {
+  const result: Array<{name: string; expression: ts.Expression}> = [];
+
+  const visit = (node: ts.Expression): void => {
+    if (ts.isArrayLiteralExpression(node)) {
+      for (const element of node.elements) {
+        if (ts.isSpreadElement(element)) {
+          if (ts.isArrayLiteralExpression(element.expression)) {
+            visit(element.expression);
+          }
+        } else {
+          visit(element);
+        }
+      }
+      return;
+    }
+
+    const name = getQualifiedImportName(node);
+    if (name !== null) {
+      result.push({name, expression: node});
+    }
+  };
+
+  visit(expr);
+  return result;
+}
+
+function getQualifiedImportName(expr: ts.Expression): string | null {
+  const parts: string[] = [];
+  let current: ts.Expression = expr;
+
+  while (ts.isPropertyAccessExpression(current)) {
+    parts.unshift(current.name.text);
+    current = current.expression;
+  }
+
+  if (!ts.isIdentifier(current) || parts.length === 0) {
+    return null;
+  }
+
+  parts.unshift(current.text);
+  return parts.join('.');
 }
 
 export function extractForeignImportsFromAst(expr: ts.Expression): {

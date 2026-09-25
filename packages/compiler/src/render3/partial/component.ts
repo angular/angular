@@ -223,6 +223,10 @@ function compileUsedDependenciesMetadata(
         dirMeta.set('inputs', toOptionalLiteralArray(decl.inputs, o.literal));
         dirMeta.set('outputs', toOptionalLiteralArray(decl.outputs, o.literal));
         dirMeta.set('exportAs', toOptionalLiteralArray(decl.exportAs, o.literal));
+        dirMeta.set(
+          'qualifiedNames',
+          toOptionalLiteralArray(decl.qualifiedNames ?? null, o.literal),
+        );
         return dirMeta.toLiteralMap();
       case R3TemplateDependencyKind.Pipe:
         const pipeMeta = new DefinitionMap<R3DeclarePipeDependencyMetadata>();

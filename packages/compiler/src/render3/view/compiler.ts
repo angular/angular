@@ -22,6 +22,8 @@ import {
   DeclarationListEmitMode,
   DeferBlockDepsEmitMode,
   R3ComponentMetadata,
+  R3DeferPerBlockDependency,
+  R3DeferPerComponentDependency,
   R3DeferResolverFunctionMetadata,
   R3DirectiveMetadata,
   R3HostMetadata,
@@ -250,7 +252,11 @@ export function compileComponentFromMetadata(
     definitionMap.set(
       'dependencies',
       compileDeclarationList(
-        o.literalArr(meta.declarations.map((decl) => decl.type)),
+        o.literalArr(
+          meta.declarations.map((decl) =>
+            compileDependencyExpression(decl, meta.declarationListEmitMode),
+          ),
+        ),
         meta.declarationListEmitMode,
       ),
     );
@@ -258,6 +264,22 @@ export function compileComponentFromMetadata(
     const args = [meta.type.value];
     if (meta.rawImports) {
       args.push(meta.rawImports);
+    }
+    if (meta.qualifiedImports !== null && meta.qualifiedImports !== undefined) {
+      args.push(
+        o.literalArr(
+          meta.qualifiedImports.map(({name, type}) =>
+            o.literalMap([
+              {key: 'type', value: type, quoted: false},
+              {
+                key: 'qualifiedNames',
+                value: o.literalArr([o.literal(name)]),
+                quoted: false,
+              },
+            ]),
+          ),
+        ),
+      );
     }
     definitionMap.set('dependencies', o.importExpr(R3.getComponentDepsFactory).callFn(args));
   }
@@ -350,6 +372,34 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
  * Compiles the array literal of declarations into an expression according to the provided emit
  * mode.
  */
+function compileDependencyExpression(
+  dependency: R3TemplateDependencyMetadata,
+  mode: DeclarationListEmitMode,
+): o.Expression {
+  const type =
+    mode === DeclarationListEmitMode.ClosureResolved
+      ? o.importExpr(R3.resolveForwardRef).callFn([dependency.type])
+      : dependency.type;
+
+  if (
+    dependency.kind === R3TemplateDependencyKind.Directive &&
+    dependency.qualifiedNames !== null &&
+    dependency.qualifiedNames !== undefined &&
+    dependency.qualifiedNames.length > 0
+  ) {
+    return o.literalMap([
+      {key: 'type', value: type, quoted: false},
+      {
+        key: 'qualifiedNames',
+        value: o.literalArr(dependency.qualifiedNames.map((name) => o.literal(name))),
+        quoted: false,
+      },
+    ]);
+  }
+
+  return type;
+}
+
 function compileDeclarationList(
   list: o.LiteralArrayExpr,
   mode: DeclarationListEmitMode,
@@ -362,9 +412,8 @@ function compileDeclarationList(
       // directives: function () { return [MyDir]; }
       return o.arrowFn([], list);
     case DeclarationListEmitMode.ClosureResolved:
-      // directives: function () { return [MyDir].map(ng.resolveForwardRef); }
-      const resolvedList = list.prop('map').callFn([o.importExpr(R3.resolveForwardRef)]);
-      return o.arrowFn([], resolvedList);
+      // Individual dependency types have already been resolved by compileDependencyExpression.
+      return o.arrowFn([], list);
     case DeclarationListEmitMode.RuntimeResolved:
       throw new Error(`Unsupported with an array of pre-resolved dependencies`);
   }
@@ -746,6 +795,43 @@ export function createHostDirectivesMappingArray(
 /**
  * Compiles the dependency resolver function for a defer block.
  */
+function compileDeferredDependencyValue(
+  module: o.Expression,
+  dependency: R3DeferPerBlockDependency | R3DeferPerComponentDependency,
+): o.Expression {
+  const path =
+    dependency.symbolPath !== null &&
+    dependency.symbolPath !== undefined &&
+    dependency.symbolPath.length > 0
+      ? dependency.symbolPath
+      : [dependency.isDefaultImport ? 'default' : dependency.symbolName];
+
+  let value = module;
+  for (const segment of path) {
+    value = value.prop(segment);
+  }
+
+  return wrapQualifiedDependency(value, dependency.qualifiedNames);
+}
+
+function wrapQualifiedDependency(
+  type: o.Expression,
+  qualifiedNames: string[] | null | undefined,
+): o.Expression {
+  if (qualifiedNames === null || qualifiedNames === undefined || qualifiedNames.length === 0) {
+    return type;
+  }
+
+  return o.literalMap([
+    {key: 'type', value: type, quoted: false},
+    {
+      key: 'qualifiedNames',
+      value: o.literalArr(qualifiedNames.map((name) => o.literal(name))),
+      quoted: false,
+    },
+  ]);
+}
+
 export function compileDeferResolverFunction(
   meta: R3DeferResolverFunctionMetadata,
 ): o.ArrowFunctionExpr {
@@ -756,9 +842,8 @@ export function compileDeferResolverFunction(
       if (dep.isDeferrable) {
         // Callback function, e.g. `m () => m.MyCmp;`.
         const innerFn = o.arrowFn(
-          // Default imports are always accessed through the `default` property.
           [new o.FnParam('m', o.DYNAMIC_TYPE)],
-          o.variable('m').prop(dep.isDefaultImport ? 'default' : dep.symbolName),
+          compileDeferredDependencyValue(o.variable('m'), dep),
         );
 
         // Dynamic import, e.g. `import('./a').then(...)`.
@@ -774,19 +859,19 @@ export function compileDeferResolverFunction(
         // Non-deferrable symbol, just use a reference to the type. Note that it's important to
         // go through `typeReference`, rather than `symbolName` in order to preserve the
         // original reference within the source file.
-        depExpressions.push(dep.typeReference);
+        depExpressions.push(wrapQualifiedDependency(dep.typeReference, dep.qualifiedNames));
       }
     }
   } else {
-    for (const {symbolName, importPath, isDefaultImport} of meta.dependencies) {
+    for (const dep of meta.dependencies) {
       // Callback function, e.g. `m () => m.MyCmp;`.
       const innerFn = o.arrowFn(
         [new o.FnParam('m', o.DYNAMIC_TYPE)],
-        o.variable('m').prop(isDefaultImport ? 'default' : symbolName),
+        compileDeferredDependencyValue(o.variable('m'), dep),
       );
 
       // Dynamic import, e.g. `import('./a').then(...)`.
-      const importExpr = new o.DynamicImportExpr(importPath)
+      const importExpr = new o.DynamicImportExpr(dep.importPath)
         .prop('then')
         .callFn([innerFn], undefined, undefined, [
           // Necessary, because we might not generate extensions for the path
