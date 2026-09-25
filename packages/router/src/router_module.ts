@@ -67,7 +67,11 @@ export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
 // change in a major version.
 export const ROUTER_PROVIDERS: Provider[] = [
   Location,
-  {provide: UrlSerializer, useClass: DefaultUrlSerializer},
+  {
+    provide: UrlSerializer,
+    useFactory: () =>
+      new DefaultUrlSerializer(inject(ROUTER_CONFIGURATION, {optional: true})?.urlParsingLimits),
+  },
   Router,
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute},

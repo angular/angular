@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {TestBed} from '@angular/core/testing';
+
+import {provideRouter, withRouterConfig} from '../src/provide_router';
 import {PRIMARY_OUTLET} from '../src/shared';
 import {
   DefaultUrlSerializer,
@@ -14,6 +17,7 @@ import {
   encodeUriSegment,
   serializePath,
   UrlSegmentGroup,
+  UrlSerializer,
 } from '../src/url_tree';
 
 describe('url serializer', () => {
@@ -470,6 +474,88 @@ describe('url serializer', () => {
         urlStr = `p/(${urlStr})`;
       }
       expect(() => url.parse(`/${urlStr}`)).not.toThrow();
+    });
+  });
+
+  describe('url parsing limits', () => {
+    it('should throw when the URL has too many segments by default (100)', () => {
+      const segments = Array(101).fill('a').join('/');
+      expect(() => url.parse(`/${segments}`)).toThrowError(/URL has too many segments/);
+
+      const validSegments = Array(100).fill('a').join('/');
+      expect(() => url.parse(`/${validSegments}`)).not.toThrow();
+    });
+
+    it('should throw when the URL has too many outlets by default (50)', () => {
+      const outlets = Array.from({length: 51}, (_, i) => `o${i}:a`).join('//');
+      expect(() => url.parse(`/p/(${outlets})`)).toThrowError(/URL has too many outlets/);
+
+      const validOutlets = Array.from({length: 50}, (_, i) => `o${i}:a`).join('//');
+      expect(() => url.parse(`/p/(${validOutlets})`)).not.toThrow();
+    });
+
+    it('should throw when the URL has too many parameters by default (1000)', () => {
+      const queryParams = Array.from({length: 1001}, (_, i) => `p${i}=v`).join('&');
+      expect(() => url.parse(`/path?${queryParams}`)).toThrowError(/URL has too many parameters/);
+
+      const validQueryParams = Array.from({length: 1000}, (_, i) => `p${i}=v`).join('&');
+      expect(() => url.parse(`/path?${validQueryParams}`)).not.toThrow();
+
+      const matrixParams = Array.from({length: 1001}, (_, i) => `p${i}=v`).join(';');
+      expect(() => url.parse(`/path;${matrixParams}`)).toThrowError(/URL has too many parameters/);
+    });
+
+    it('should allow customizing limits via constructor', () => {
+      const custom = new DefaultUrlSerializer({
+        maxSegments: 5,
+        maxOutlets: 2,
+        maxParams: 3,
+      });
+
+      expect(() => custom.parse('/1/2/3/4/5/6')).toThrowError(/URL has too many segments/);
+      expect(() => custom.parse('/1/2/3/4/5')).not.toThrow();
+
+      expect(() => custom.parse('/p/(a:1//b:2//c:3)')).toThrowError(/URL has too many outlets/);
+      expect(() => custom.parse('/p/(a:1//b:2)')).not.toThrow();
+
+      expect(() => custom.parse('/p?a=1&b=2&c=3&d=4')).toThrowError(/URL has too many parameters/);
+      expect(() => custom.parse('/p?a=1&b=2&c=3')).not.toThrow();
+    });
+
+    it('should allow disabling limits with Infinity', () => {
+      const unlimited = new DefaultUrlSerializer({
+        maxSegments: Infinity,
+        maxOutlets: Infinity,
+        maxParams: Infinity,
+      });
+
+      const longPath = Array(150).fill('a').join('/');
+      expect(() => unlimited.parse(`/${longPath}`)).not.toThrow();
+
+      const manyOutlets = Array.from({length: 80}, (_, i) => `o${i}:a`).join('//');
+      expect(() => unlimited.parse(`/p/(${manyOutlets})`)).not.toThrow();
+
+      const manyParams = Array.from({length: 1200}, (_, i) => `p${i}=v`).join('&');
+      expect(() => unlimited.parse(`/path?${manyParams}`)).not.toThrow();
+    });
+
+    it('should respect limits configured via withRouterConfig in DI', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            [],
+            withRouterConfig({
+              urlParsingLimits: {
+                maxSegments: 3,
+              },
+            }),
+          ),
+        ],
+      });
+      const serializer = TestBed.inject(UrlSerializer);
+
+      expect(() => serializer.parse('/1/2/3/4')).toThrowError(/URL has too many segments/);
+      expect(() => serializer.parse('/1/2/3')).not.toThrow();
     });
   });
 

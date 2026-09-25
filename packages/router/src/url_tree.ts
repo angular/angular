@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, ɵRuntimeError as RuntimeError, Service, Signal} from '@angular/core';
+import {computed, inject, ɵRuntimeError as RuntimeError, Service, Signal} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
+import {ROUTER_CONFIGURATION} from './router_config';
 import type {Router} from './router';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 import {equalArraysOrString, shallowEqual} from './utils/collection';
@@ -424,6 +425,16 @@ export function mapChildrenIntoArray<T>(
   return res;
 }
 
+const DEFAULT_MAX_SEGMENTS = 100;
+const DEFAULT_MAX_OUTLETS = 50;
+const DEFAULT_MAX_PARAMS = 1000;
+
+interface InternalUrlParsingLimits {
+  maxSegments: number;
+  maxOutlets: number;
+  maxParams: number;
+}
+
 /**
  * @description
  *
@@ -436,7 +447,10 @@ export function mapChildrenIntoArray<T>(
  *
  * @publicApi
  */
-@Service({factory: () => new DefaultUrlSerializer()})
+@Service({
+  factory: () =>
+    new DefaultUrlSerializer(inject(ROUTER_CONFIGURATION, {optional: true})?.urlParsingLimits),
+})
 export abstract class UrlSerializer {
   /** Parse a url into a `UrlTree` */
   abstract parse(url: string): UrlTree;
@@ -464,9 +478,19 @@ export abstract class UrlSerializer {
  * @publicApi
  */
 export class DefaultUrlSerializer implements UrlSerializer {
+  private readonly limits: InternalUrlParsingLimits;
+
+  constructor(limits?: {maxSegments?: number; maxOutlets?: number; maxParams?: number}) {
+    this.limits = {
+      maxSegments: limits?.maxSegments ?? DEFAULT_MAX_SEGMENTS,
+      maxOutlets: limits?.maxOutlets ?? DEFAULT_MAX_OUTLETS,
+      maxParams: limits?.maxParams ?? DEFAULT_MAX_PARAMS,
+    };
+  }
+
   /** Parses a url into a `UrlTree` */
   parse(url: string): UrlTree {
-    const p = new UrlParser(url);
+    const p = new UrlParser(url, this.limits);
     return new UrlTree(p.parseRootSegment(), p.parseQueryParams(), p.parseFragment());
   }
 
@@ -645,8 +669,14 @@ function matchUrlQueryParamValue(str: string): string {
 
 class UrlParser {
   private remaining: string;
+  private segmentCount = 0;
+  private outletCount = 0;
+  private paramCount = 0;
 
-  constructor(private url: string) {
+  constructor(
+    private url: string,
+    private limits: InternalUrlParsingLimits,
+  ) {
     this.remaining = url;
   }
 
@@ -723,6 +753,12 @@ class UrlParser {
   // parse a segment with its matrix parameters
   // ie `name;k1=v1;k2`
   private parseSegment(): UrlSegment {
+    if (++this.segmentCount > this.limits.maxSegments) {
+      throw new RuntimeError(
+        RuntimeErrorCode.UNPARSABLE_URL,
+        (typeof ngDevMode === 'undefined' || ngDevMode) && 'URL has too many segments',
+      );
+    }
     const path = matchSegments(this.remaining);
     if (path === '' && this.peekStartsWith(';')) {
       throw new RuntimeError(
@@ -749,6 +785,12 @@ class UrlParser {
     if (!key) {
       return;
     }
+    if (++this.paramCount > this.limits.maxParams) {
+      throw new RuntimeError(
+        RuntimeErrorCode.UNPARSABLE_URL,
+        (typeof ngDevMode === 'undefined' || ngDevMode) && 'URL has too many parameters',
+      );
+    }
     this.capture(key);
     let value = '';
     if (this.consumeOptional('=')) {
@@ -767,6 +809,12 @@ class UrlParser {
     const key = matchQueryParams(this.remaining);
     if (!key) {
       return;
+    }
+    if (++this.paramCount > this.limits.maxParams) {
+      throw new RuntimeError(
+        RuntimeErrorCode.UNPARSABLE_URL,
+        (typeof ngDevMode === 'undefined' || ngDevMode) && 'URL has too many parameters',
+      );
     }
     this.capture(key);
     let value = '';
@@ -825,6 +873,13 @@ class UrlParser {
         this.capture(':');
       } else if (allowPrimary) {
         outletName = PRIMARY_OUTLET;
+      }
+
+      if (outletName !== PRIMARY_OUTLET && ++this.outletCount > this.limits.maxOutlets) {
+        throw new RuntimeError(
+          RuntimeErrorCode.UNPARSABLE_URL,
+          (typeof ngDevMode === 'undefined' || ngDevMode) && 'URL has too many outlets',
+        );
       }
 
       const children = this.parseChildren(depth + 1);
