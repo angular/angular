@@ -530,6 +530,30 @@ export function guardsIntegrationSuite() {
           expect(location.path()).toEqual('/redirected');
           expect(location.getState()).toEqual(jasmine.objectContaining({test: 1}));
         });
+
+        it('can redirect with string URL', async () => {
+          TestBed.configureTestingModule({
+            providers: [provideRouter([])],
+          });
+          const router = TestBed.inject(Router);
+          const location = TestBed.inject(Location);
+          router.resetConfig([
+            {path: '', component: SimpleCmp},
+            {
+              path: 'one',
+              component: RouteCmp,
+              canActivate: [() => new RedirectCommand('/redirected')],
+            },
+            {path: 'redirected', component: SimpleCmp},
+          ]);
+          const fixture = await createRoot(router, RootCmp);
+          router.navigateByUrl('/one');
+
+          await advance(fixture);
+
+          expect(location.path()).toEqual('/redirected');
+          expect(router.url.toString()).toEqual('/redirected');
+        });
       });
 
       it('can redirect to 404 without changing the URL', async () => {
