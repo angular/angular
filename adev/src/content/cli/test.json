@@ -114,6 +114,11 @@
       "description": "Specifies a file path for the test report, applying only to the first reporter. To configure output files for multiple reporters, use the tuple format `['reporter-name', { outputFile: '...' }]` within the `reporters` option. When not provided, output is written to the console."
     },
     {
+      "name": "polyfills",
+      "type": "array",
+      "description": "A list of polyfills to include in the build. Can be a full path for a file, relative to the current workspace or module specifier. Example: 'zone.js'. If not specified, polyfills will be inherited from the build target."
+    },
+    {
       "name": "progress",
       "type": "boolean",
       "description": "Shows build progress information in the console. Defaults to the `progress` setting of the specified `buildTarget`."
