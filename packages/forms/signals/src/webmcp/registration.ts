@@ -67,8 +67,9 @@ async function initWebMcpForm(
         untrustedContentHint: false,
       },
       execute: async (args: Record<string, unknown> | unknown[]) => {
-        // Populate the form with changes from the agent.
-        node.value.set(args);
+        // Populate the form with changes from the agent, discarding writes to any field the
+        // user could not have edited themselves.
+        node.value.set(applyAgentValue(node, args));
 
         // Trigger form submission.
         const success = await submit(formTree);
@@ -90,6 +91,59 @@ async function initWebMcpForm(
     },
     injector,
   );
+}
+
+/**
+ * Whether an agent is allowed to write to a given field.
+ *
+ * Hidden, disabled, and readonly fields cannot be edited through the UI, so an agent must not
+ * be able to edit them either. Validation is also skipped for such fields, meaning any value
+ * an agent wrote to one would reach submission without ever being validated.
+ */
+function isAgentWritable(node: FieldNode): boolean {
+  return !node.hidden() && !node.disabled() && !node.readonly();
+}
+
+/**
+ * Merges the values provided by an agent into the form's current value, preserving the current
+ * value of every field the agent is not allowed to write.
+ */
+function applyAgentValue(node: FieldNode, incoming: unknown): unknown {
+  const current = node.value();
+
+  if (!isAgentWritable(node)) return current;
+
+  // The agent left this field out, so keep whatever the application already had.
+  if (incoming === undefined) return current;
+
+  // Objects are merged key by key so that non-writable children retain their current value.
+  if (isPlainObject(current) && isPlainObject(incoming)) {
+    const merged: Record<string, unknown> = {...current};
+    for (const child of node.structure.children()) {
+      const key = child.keyInParent();
+      merged[key] = applyAgentValue(child, incoming[key]);
+    }
+    return merged;
+  }
+
+  // Array elements are matched up by index, which is how the field tree itself tracks them.
+  // Elements the agent appends have no existing field whose state needs preserving.
+  if (Array.isArray(current) && Array.isArray(incoming)) {
+    return incoming.map((item, index) => {
+      const child = node.structure.getChild(String(index));
+      return child ? applyAgentValue(child, item) : item;
+    });
+  }
+
+  // The agent sent a value whose shape doesn't match the field. Reject it rather than let it
+  // replace a subtree which may contain fields the agent is not allowed to write.
+  if (isPlainObject(current) || Array.isArray(current)) return current;
+
+  return incoming;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /** Infers the JSON schema from a specific form field. */
