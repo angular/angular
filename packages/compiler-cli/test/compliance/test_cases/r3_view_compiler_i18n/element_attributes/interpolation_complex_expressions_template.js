@@ -3,7 +3,7 @@ vars: 1,
 consts: () => {
   __i18nMsg__('{$interpolation} title', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{valueA.getRawValue()?.getTitle()}}'}}, {})
   return [
-	["title", $i18n_0$],
+	["title", $i18n_0$, 1],
     [__AttributeMarker.I18n__, "title"]
   ];
 },

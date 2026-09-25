@@ -3,7 +3,7 @@ consts: () => {
 	__i18nMsg__('{$interpolation}{$startHeadingLevel1}{$closeHeadingLevel1}', [['closeHeadingLevel1', String.raw`\uFFFD/#2\uFFFD`], ['interpolation', String.raw`\uFFFD0\uFFFD`], ['startHeadingLevel1', String.raw`\uFFFD#2\uFFFD`]], {original_code: { 'closeHeadingLevel1': '</h1>', 'interpolation': '{{ text }}', 'startHeadingLevel1': '<h1 i18n-title title=\"{{ attr }}\">' }}, {})
 	return [
 	  $i18n_0$,
-	  ["title", $i18n_1$],
+	  ["title", $i18n_1$, 1],
 	  [__AttributeMarker.I18n__, "title"]
 	];
   },

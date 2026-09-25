@@ -53,6 +53,12 @@ describe('utils', () => {
         'a{$ph1}b{$ph2}c',
       );
     });
+
+    it('should reject the reserved i18n marker in translated literals', () => {
+      expect(() => makeParsedTranslation(['before � after'])).toThrowError(
+        /reserved U\+FFFD character/,
+      );
+    });
   });
 
   describe('parseTranslation', () => {
@@ -108,6 +114,10 @@ describe('utils', () => {
       expect(translation.messageParts.raw).toEqual(['', '', '']);
       expect(translation.placeholderNames).toEqual(['one', 'two']);
     });
+
+    it('should reject the reserved i18n marker in translated literals', () => {
+      expect(() => parseTranslation('before �0� after')).toThrowError(/reserved U\+FFFD character/);
+    });
   });
 
   describe('translate', () => {
@@ -146,6 +156,23 @@ describe('utils', () => {
           parts`abc${1 + 2}:hasOwnProperty:def`,
         ),
       ).toEqual(parts`abc${3}def`);
+    });
+
+    it('should allow reserved markers that come from source substitutions', () => {
+      expect(doTranslate({'abc{$PH}': 'ABC{$PH}'}, parts`abc${'�0�'}`)).toEqual(parts`ABC${'�0�'}`);
+    });
+
+    it('should reject reserved markers in manually constructed translated literals', () => {
+      const translations: Record<string, ParsedTranslation> = {
+        [computeMsgId('abc', '')]: {
+          text: '�',
+          messageParts: makeTemplateObject(['�'], ['�']),
+          placeholderNames: [],
+        },
+      };
+      expect(() => translate(translations, parts`abc`[0], [])).toThrowError(
+        /reserved U\+FFFD character/,
+      );
     });
 
     it('(with identity translations) should render template literals as-is', () => {

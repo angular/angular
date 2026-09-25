@@ -22,7 +22,7 @@ function MyComponent_img_1_Template(rf, ctx) {
   consts: () => {
 	__i18nMsg__('App logo #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ id }}'}}, {})
 	return [
-	  ["title", $i18n_0$],
+	  ["title", $i18n_0$, 1],
 	  ["src", "logo.png"],
 	  ["src", "logo.png", __AttributeMarker.Template__, "ngIf"],
 	  ["src", "logo.png", __AttributeMarker.Bindings__, "title",

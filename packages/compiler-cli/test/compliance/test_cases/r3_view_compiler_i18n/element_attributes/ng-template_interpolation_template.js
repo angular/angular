@@ -1,7 +1,7 @@
 consts: () => {
 	__i18nMsg__('Hello {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ name }}'}}, {})
 	return [
-	   ["title", $i18n_0$],
+	   ["title", $i18n_0$, 1],
 	   [__AttributeMarker.Bindings__, "title"]
 	];
   },
@@ -15,4 +15,3 @@ consts: () => {
 	  $r3$.ɵɵi18nApply(1);
 	}
   }
-  
