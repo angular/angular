@@ -752,25 +752,17 @@ class _ParseAST {
 
     if (target instanceof PropertyRead || target instanceof KeyedRead) {
       return true;
-    } else {
+    }
+
+    if (!(target instanceof EmptyExpr)) {
       if (target instanceof SafePropertyRead || target instanceof SafeKeyedRead) {
         this.error(`The '?.' operator cannot be used in the assignment`);
-      } else if (target instanceof Unary) {
-        this.error(`The '${target.operator}' operator cannot be used in the assignment`);
-      } else if (target instanceof Binary) {
-        this.error(`The '${target.operation}' operator cannot be used in the assignment`);
-      } else if (target instanceof PrefixNot) {
-        this.error("The '!' operator cannot be used in the assignment");
-      } else if (target instanceof Call || target instanceof SafeCall) {
-        this.error("The '()' operator cannot be used in the assignment");
-      } else if (target instanceof LiteralPrimitive) {
-        this.error(`The '${target.value}' literal cannot be used in the assignment`);
       } else {
         this.error('The expression cannot be used in the assignment');
       }
-
-      return false;
     }
+
+    return false;
   }
 
   private expectOperator(operator: string) {

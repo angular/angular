@@ -96,7 +96,7 @@ Angular expressions additionally also support the following non-standard operato
 ### Safe navigation migration
 
 Prior to Angular 22, the optional chaining operator (`?.`) returned `null` when the left-hand side is `null` or `undefined`, whereas standard JavaScript's `?.` returns `undefined`.
-Since Angular 22, the optional chaining operator behavior in Angular expressions is aligned with the standard Javascript behavior.
+Since Angular 22, the optional chaining operator behavior in Angular expressions is aligned with the standard JavaScript behavior.
 
 During the migration to v22, the `ng update` schematics adds a `$safeNavigationMigration` function to existing expressions to preserve the previous behavior.
 

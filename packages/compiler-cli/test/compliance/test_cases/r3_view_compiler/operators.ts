@@ -31,6 +31,10 @@ export class Bar {}
     <button (click)="number &&= 1"></button>
     <button (click)="number ||= 1"></button>
     <button (click)="number ??= 1"></button>
+    <button (click)="number++"></button>
+    <button (click)="number--"></button>
+    <button (click)="++number"></button>
+    <button (click)="--number"></button>
   `,
   imports: [IdentityPipe],
 })

@@ -2496,6 +2496,65 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should detect an illegal write to a template variable through update operators', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          template: \`
+            <div *ngIf="x as y">
+              <button (click)="y++">Increment</button>
+              <button (click)="--y">Decrement</button>
+            </div>
+          \`,
+          imports: [CommonModule]
+        })
+        export class TestCmp {
+          x!: number;
+        }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(2);
+      expect(diags.map((d) => getSourceCodeForDiagnostic(d))).toEqual(['y++', '--y']);
+      expect(diags.map((d) => d.messageText)).toEqual([
+        `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+        `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+      ]);
+    });
+
+    it('should detect an illegal write to a template variable through an update operator on the right-hand side of an assignment', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          template: \`
+            <div *ngIf="x as y">
+              <button (click)="prop = y++">Increment</button>
+            </div>
+          \`,
+          imports: [CommonModule]
+        })
+        export class TestCmp {
+          x!: number;
+          prop = 0;
+        }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('prop = y++');
+      expect(diags[0].messageText).toBe(
+        `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+      );
+    });
+
     describe('foreign component template semantics', () => {
       const foreignSetupCode = `
         // We must redeclare foreignImports and ForeignComponent to test them since they are marked @internal.
@@ -8938,6 +8997,31 @@ suppress
         expect(diags.length).toBe(2);
         expect(diags[0].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
         expect(diags[1].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
+      });
+
+      it('should not allow update operators to be used on a readonly signal', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal} from '@angular/core';
+
+          @Component({
+            template: \`
+              <button (click)="count++">Click me</button>
+              <button (click)="--count">Click me</button>
+            \`,
+          })
+          export class Main {
+            readonly count = signal(0);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => d.messageText)).toEqual([
+          `Cannot assign to 'count' because it is a read-only property.`,
+          `Cannot assign to 'count' because it is a read-only property.`,
+        ]);
       });
 
       it('should not allow a let declaration value to be changed through a `this` access', () => {
