@@ -9,10 +9,12 @@
 import {
   booleanAttribute,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   computed,
   Directive,
   ElementRef,
+  ErrorHandler,
   EventEmitter,
   inject,
   Injector,
@@ -6300,6 +6302,54 @@ describe('field directive', () => {
       const textarea = fixture.nativeElement.querySelector('textarea');
       expect(input.classList.contains('multiline')).toBe(false);
       expect(textarea.classList.contains('multiline')).toBe(true);
+    });
+
+    it('should not apply classes to orphaned fields in a detached view', () => {
+      const errors: unknown[] = [];
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: ErrorHandler, useValue: {handleError: (e: unknown) => errors.push(e)}},
+          provideSignalFormsConfig({
+            classes: NG_STATUS_CLASSES,
+          }),
+        ],
+      });
+
+      @Component({
+        selector: 'test-rows',
+        imports: [FormField],
+        template: `
+          @for (item of f.items; track item) {
+            <input [formField]="item.name" />
+          }
+        `,
+      })
+      class TestRows {
+        readonly changeDetectorRef = inject(ChangeDetectorRef);
+        readonly model = signal({items: [{name: 'a'}, {name: 'b'}]});
+        readonly f = form(this.model);
+      }
+
+      @Component({
+        imports: [TestRows],
+        template: `<test-rows />`,
+      })
+      class TestCmp {
+        readonly rows = viewChild.required(TestRows);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const rows = fixture.componentInstance.rows();
+      rows.changeDetectorRef.detach();
+
+      act(() => rows.model.set({items: [{name: 'c'}, {name: 'd'}]}));
+      expect(errors).toEqual([]);
+
+      rows.changeDetectorRef.reattach();
+      act(() => rows.changeDetectorRef.markForCheck());
+      const inputs = fixture.nativeElement.querySelectorAll('input');
+      expect(inputs[0].value).toBe('c');
+      expect(inputs[0].classList.contains('ng-valid')).toBe(true);
     });
   });
 

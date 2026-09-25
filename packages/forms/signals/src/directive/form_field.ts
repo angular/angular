@@ -263,6 +263,9 @@ export class FormField<T> {
     afterRenderEffect(
       {
         write: () => {
+          if ((this.state() as unknown as FieldNode).structure.isOrphaned()) {
+            return;
+          }
           for (const [className, computation] of classes) {
             const active = computation();
             if (bindingUpdated(bindings, className, active)) {
