@@ -194,7 +194,20 @@ export class RouterLink implements OnChanges, OnDestroy {
     if (!this.isAnchorElement) {
       return this.hrefAttributeValue;
     }
-    return this.computeHref(this._urlTree());
+    // Track path changes. It's knowing which segments we actually depend on is somewhat difficult
+    this.reactiveRouterState.path();
+    if (this._preserveFragment()) {
+      this.reactiveRouterState.fragment();
+    }
+    const shouldTrackParams = (handling: QueryParamsHandling | undefined | null) =>
+      handling === 'preserve' || handling === 'merge';
+    if (
+      shouldTrackParams(this._queryParamsHandling()) ||
+      shouldTrackParams(this.options?.defaultQueryParamsHandling)
+    ) {
+      this.reactiveRouterState.queryParams();
+    }
+    return this.computeHref(this.createUrlTree());
   });
   /**
    * Represents an `href` attribute value applied to a host element,
@@ -474,7 +487,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     altKey: boolean,
     metaKey: boolean,
   ): boolean {
-    const urlTree = this._urlTree();
+    const urlTree = this.urlTree;
 
     if (urlTree === null) {
       return true;
@@ -521,45 +534,27 @@ export class RouterLink implements OnChanges, OnDestroy {
     }
   }
 
-  /** @internal */
-  _urlTree = computed(
-    () => {
-      // Track path changes. It's knowing which segments we actually depend on is somewhat difficult
-      this.reactiveRouterState.path();
-      if (this._preserveFragment()) {
-        this.reactiveRouterState.fragment();
-      }
-      const shouldTrackParams = (handling: QueryParamsHandling | undefined | null) =>
-        handling === 'preserve' || handling === 'merge';
-      if (
-        shouldTrackParams(this._queryParamsHandling()) ||
-        shouldTrackParams(this.options?.defaultQueryParamsHandling)
-      ) {
-        this.reactiveRouterState.queryParams();
-      }
-
-      const routerLinkInput = this.routerLinkInput();
-      if (routerLinkInput === null || !this.router.createUrlTree) {
-        return null;
-      } else if (isUrlTree(routerLinkInput)) {
-        return routerLinkInput;
-      }
-      return this.router.createUrlTree(routerLinkInput, {
-        // If the `relativeTo` input is not defined, we want to use `this.route`
-        // by default.
-        // Otherwise, we should use the value provided by the user in the input.
-        relativeTo: this._relativeTo() !== undefined ? this._relativeTo() : this.route,
-        queryParams: this._queryParams(),
-        fragment: this._fragment(),
-        queryParamsHandling: this._queryParamsHandling(),
-        preserveFragment: this._preserveFragment(),
-      });
-    },
-    {equal: (a, b) => this.computeHref(a) === this.computeHref(b)},
-  );
+  private createUrlTree(): UrlTree | null {
+    const routerLinkInput = this.routerLinkInput();
+    if (routerLinkInput === null || !this.router.createUrlTree) {
+      return null;
+    } else if (isUrlTree(routerLinkInput)) {
+      return routerLinkInput;
+    }
+    return this.router.createUrlTree(routerLinkInput, {
+      // If the `relativeTo` input is not defined, we want to use `this.route`
+      // by default.
+      // Otherwise, we should use the value provided by the user in the input.
+      relativeTo: this._relativeTo() !== undefined ? this._relativeTo() : this.route,
+      queryParams: this._queryParams(),
+      fragment: this._fragment(),
+      queryParamsHandling: this._queryParamsHandling(),
+      preserveFragment: this._preserveFragment(),
+    });
+  }
 
   get urlTree(): UrlTree | null {
-    return untracked(this._urlTree);
+    return untracked(() => this.createUrlTree());
   }
 
   private computeHref(urlTree: UrlTree | null): string | null {
