@@ -6,11 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject, Injectable, InjectionToken, NgModule} from '@angular/core';
+import {
+  Component,
+  inject,
+  Injectable,
+  InjectionToken,
+  Injector,
+  NgModule,
+  provideEnvironmentInitializer,
+  runInInjectionContext,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {timeout} from '@angular/private/testing';
-import {Router, RouterModule} from '../index';
+import {Route, Router, RouterModule} from '../index';
 
 @Component({template: '<div>simple standalone</div>'})
 export class SimpleStandaloneComponent {}
@@ -432,15 +441,21 @@ describe('standalone in Router API', () => {
   });
 
   describe('injection context for loadComponent/loadChildren', () => {
-    it('should allow loadComponent to inject route-level providers', async () => {
+    it('should run loadComponent in root environment injector, not route injector', async () => {
       @Injectable()
       class RouteService {
         value = 'route-service';
+      }
+      @Injectable({providedIn: 'root'})
+      class RootService {
+        value = 'root-service';
       }
       @Component({
         template: ``,
       })
       class Cmp {}
+      let injectedRouteService: RouteService | null = null;
+      let injectedRootService: RootService | null = null;
       TestBed.configureTestingModule({
         imports: [
           RouterModule.forRoot([
@@ -448,7 +463,8 @@ describe('standalone in Router API', () => {
               path: 'with-provider',
               providers: [RouteService],
               loadComponent: () => {
-                expect(inject(RouteService).value).toBe('route-service');
+                injectedRouteService = inject(RouteService, {optional: true});
+                injectedRootService = inject(RootService);
                 return Cmp;
               },
             },
@@ -457,13 +473,21 @@ describe('standalone in Router API', () => {
       });
       await TestBed.inject(Router).navigateByUrl('/with-provider');
       expect(TestBed.inject(Router).url).toContain('with-provider');
+      expect(injectedRouteService).toBeNull();
+      expect((injectedRootService as RootService | null)?.value).toBe('root-service');
     });
 
-    it('should allow loadChildren to inject route-level providers', async () => {
+    it('should run loadChildren in root environment injector, not route injector', async () => {
       @Injectable()
       class RouteService {
         value = 'route-service';
       }
+      @Injectable({providedIn: 'root'})
+      class RootService {
+        value = 'root-service';
+      }
+      let injectedRouteService: RouteService | null = null;
+      let injectedRootService: RootService | null = null;
       TestBed.configureTestingModule({
         imports: [
           RouterModule.forRoot([
@@ -471,7 +495,8 @@ describe('standalone in Router API', () => {
               path: 'with-provider',
               providers: [RouteService],
               loadChildren: () => {
-                expect(inject(RouteService).value).toEqual('route-service');
+                injectedRouteService = inject(RouteService, {optional: true});
+                injectedRootService = inject(RootService);
                 return [];
               },
             },
@@ -480,16 +505,17 @@ describe('standalone in Router API', () => {
       });
       await TestBed.inject(Router).navigateByUrl('/with-provider');
       expect(TestBed.inject(Router).url).toContain('with-provider');
+      expect(injectedRouteService).toBeNull();
+      expect((injectedRootService as RootService | null)?.value).toBe('root-service');
     });
 
-    it('should use the injector for the route, not its parent, in loadComponent', async () => {
+    it('should use the root injector, not parent route injector, in loadComponent', async () => {
       const TOKEN = new InjectionToken<string>('token');
       @Component({
         template: ``,
       })
-      class Cmp {
-        constructor(public service: any) {}
-      }
+      class Cmp {}
+      let injectedToken: string | null = null;
       TestBed.configureTestingModule({
         imports: [
           RouterModule.forRoot([
@@ -501,7 +527,7 @@ describe('standalone in Router API', () => {
                   path: 'child',
                   providers: [{provide: TOKEN, useValue: 'child'}],
                   loadComponent: () => {
-                    expect(inject(TOKEN)).toBe('child');
+                    injectedToken = inject(TOKEN, {optional: true});
                     return Cmp;
                   },
                 },
@@ -512,14 +538,16 @@ describe('standalone in Router API', () => {
       });
       await TestBed.inject(Router).navigateByUrl('/parent/child');
       expect(TestBed.inject(Router).url).toContain('parent/child');
+      expect(injectedToken).toBeNull();
     });
 
-    it('should use the injector for the route, not its parent, in loadChildren', async () => {
+    it('should use the root injector, not parent route injector, in loadChildren', async () => {
       const TOKEN = new InjectionToken<string>('token');
       @Component({
         template: ``,
       })
       class Cmp {}
+      let injectedToken: string | null = null;
       TestBed.configureTestingModule({
         imports: [
           RouterModule.forRoot([
@@ -531,7 +559,7 @@ describe('standalone in Router API', () => {
                   path: 'child',
                   providers: [{provide: TOKEN, useValue: 'child'}],
                   loadChildren: () => {
-                    expect(inject(TOKEN)).toBe('child');
+                    injectedToken = inject(TOKEN, {optional: true});
                     return [{path: '', component: Cmp}];
                   },
                 },
@@ -542,6 +570,53 @@ describe('standalone in Router API', () => {
       });
       await TestBed.inject(Router).navigateByUrl('/parent/child');
       expect(TestBed.inject(Router).url).toContain('parent/child');
+      expect(injectedToken).toBeNull();
+    });
+
+    it('can access route providers in loadComponent by explicitly using provideEnvironmentInitializer and runInInjectionContext', async () => {
+      @Injectable()
+      class RouteService {
+        value = 'route-service';
+      }
+      @Component({
+        template: ``,
+      })
+      class Cmp {}
+
+      function loadComponentInInjectionContext({
+        path,
+        loadComponent,
+      }: Pick<Route, 'path'> & Required<Pick<Route, 'loadComponent'>>): Route {
+        let injector: Injector;
+        return {
+          path,
+          providers: [
+            RouteService,
+            provideEnvironmentInitializer(() => {
+              injector = inject(Injector);
+            }),
+          ],
+          loadComponent: () => runInInjectionContext(injector, loadComponent),
+        };
+      }
+
+      let injectedValue: string | null = null;
+      TestBed.configureTestingModule({
+        imports: [
+          RouterModule.forRoot([
+            loadComponentInInjectionContext({
+              path: 'with-provider',
+              loadComponent: () => {
+                injectedValue = inject(RouteService).value;
+                return Cmp;
+              },
+            }),
+          ]),
+        ],
+      });
+      await TestBed.inject(Router).navigateByUrl('/with-provider');
+      expect(TestBed.inject(Router).url).toContain('with-provider');
+      expect(injectedValue as string | null).toBe('route-service');
     });
   });
 });

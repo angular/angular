@@ -729,13 +729,10 @@ export class NavigationTransitions {
               if (route.routeConfig?._loadedComponent) {
                 route.component = route.routeConfig?._loadedComponent;
               } else if (route.routeConfig?.loadComponent) {
-                const injector = route._environmentInjector;
                 loaders.push(
-                  this.configLoader
-                    .loadComponent(injector, route.routeConfig)
-                    .then((loadedComponent) => {
-                      route.component = loadedComponent;
-                    }),
+                  this.configLoader.loadComponent(route.routeConfig).then((loadedComponent) => {
+                    route.component = loadedComponent;
+                  }),
                 );
               }
               for (const child of route.children) {
