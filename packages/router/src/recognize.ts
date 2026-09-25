@@ -72,6 +72,9 @@ export class Recognizer {
   private absoluteRedirectCount = 0;
   allowRedirects = true;
 
+  /** Shared by every snapshot: query params belong to the URL, not to any one route. */
+  private queryParams: Params;
+
   constructor(
     private injector: EnvironmentInjector,
     private configLoader: RouterConfigLoader,
@@ -83,6 +86,7 @@ export class Recognizer {
     private readonly abortSignal: AbortSignal,
   ) {
     this.applyRedirects = new ApplyRedirects(this.urlSerializer, this.urlTree);
+    this.queryParams = Object.freeze({...this.urlTree.queryParams});
   }
 
   private noMatchError(e: NoMatch): RuntimeError<RuntimeErrorCode.NO_MATCH> {
@@ -123,7 +127,7 @@ export class Recognizer {
     const rootSnapshot = new ActivatedRouteSnapshot(
       [],
       Object.freeze({}),
-      Object.freeze({...this.urlTree.queryParams}),
+      this.queryParams,
       this.urlTree.fragment,
       Object.freeze({}),
       PRIMARY_OUTLET,
@@ -144,6 +148,7 @@ export class Recognizer {
     } catch (e: any) {
       if (e instanceof AbsoluteRedirect) {
         this.urlTree = e.urlTree;
+        this.queryParams = Object.freeze({...this.urlTree.queryParams});
         return this.match(e.urlTree.root);
       }
       if (e instanceof NoMatch) {
@@ -384,7 +389,7 @@ export class Recognizer {
     const snapshot = new ActivatedRouteSnapshot(
       segments,
       parameters,
-      Object.freeze({...this.urlTree.queryParams}),
+      this.queryParams,
       this.urlTree.fragment,
       getData(route),
       getOutlet(route),
@@ -394,8 +399,8 @@ export class Recognizer {
       injector,
     );
     const inherited = getInherited(snapshot, parentRoute, this.paramsInheritanceStrategy);
-    snapshot.params = Object.freeze(inherited.params);
-    snapshot.data = Object.freeze(inherited.data);
+    snapshot.params = inherited.params;
+    snapshot.data = inherited.data;
     return snapshot;
   }
 
