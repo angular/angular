@@ -33,7 +33,7 @@ import {
   ParamsInheritanceStrategy,
   RouterStateSnapshot,
 } from './router_state';
-import {PRIMARY_OUTLET} from './shared';
+import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {getOutlet, sortByMatchingOutlets} from './utils/config';
 import {
@@ -80,6 +80,9 @@ export class Recognizer {
   private absoluteRedirectCount = 0;
   allowRedirects = true;
 
+  /** Shared by every snapshot: query params belong to the URL, not to any one route. */
+  private queryParams: Params;
+
   constructor(
     private injector: EnvironmentInjector,
     private configLoader: RouterConfigLoader,
@@ -90,6 +93,7 @@ export class Recognizer {
     private readonly urlSerializer: UrlSerializer,
   ) {
     this.applyRedirects = new ApplyRedirects(this.urlSerializer, this.urlTree);
+    this.queryParams = Object.freeze({...this.urlTree.queryParams});
   }
 
   private noMatchError(e: NoMatch): RuntimeError<RuntimeErrorCode.NO_MATCH> {
@@ -133,7 +137,7 @@ export class Recognizer {
     const rootSnapshot = new ActivatedRouteSnapshot(
       [],
       Object.freeze({}),
-      Object.freeze({...this.urlTree.queryParams}),
+      this.queryParams,
       this.urlTree.fragment,
       Object.freeze({}),
       PRIMARY_OUTLET,
@@ -154,6 +158,7 @@ export class Recognizer {
       catchError((e: any) => {
         if (e instanceof AbsoluteRedirect) {
           this.urlTree = e.urlTree;
+          this.queryParams = Object.freeze({...this.urlTree.queryParams});
           return this.match(e.urlTree.root);
         }
         if (e instanceof NoMatch) {
@@ -371,7 +376,7 @@ export class Recognizer {
     const currentSnapshot = new ActivatedRouteSnapshot(
       segments,
       parameters,
-      Object.freeze({...this.urlTree.queryParams}),
+      this.queryParams,
       this.urlTree.fragment,
       getData(route),
       getOutlet(route),
@@ -380,8 +385,8 @@ export class Recognizer {
       getResolve(route),
     );
     const inherited = getInherited(currentSnapshot, parentRoute, this.paramsInheritanceStrategy);
-    currentSnapshot.params = Object.freeze(inherited.params);
-    currentSnapshot.data = Object.freeze(inherited.data);
+    currentSnapshot.params = inherited.params;
+    currentSnapshot.data = inherited.data;
     const newTree$: Observable<UrlTree> = this.applyRedirects.applyRedirectCommands(
       consumedSegments,
       route.redirectTo!,
@@ -438,7 +443,7 @@ export class Recognizer {
             const snapshot = new ActivatedRouteSnapshot(
               consumedSegments,
               parameters,
-              Object.freeze({...this.urlTree.queryParams}),
+              this.queryParams,
               this.urlTree.fragment,
               getData(route),
               getOutlet(route),
@@ -447,8 +452,8 @@ export class Recognizer {
               getResolve(route),
             );
             const inherited = getInherited(snapshot, parentRoute, this.paramsInheritanceStrategy);
-            snapshot.params = Object.freeze(inherited.params);
-            snapshot.data = Object.freeze(inherited.data);
+            snapshot.params = inherited.params;
+            snapshot.data = inherited.data;
 
             const {segmentGroup, slicedSegments} = split(
               rawSegment,
