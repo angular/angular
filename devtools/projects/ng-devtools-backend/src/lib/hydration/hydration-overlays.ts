@@ -27,7 +27,7 @@ let hydrationOverlaysEnabled = false;
 let profilerSubs: Subscription | undefined;
 
 export function loadHydrationOverlays(): () => void {
-  return getConfig().onChange('hydrationOverlays', (enabled) => {
+  return getConfig().onValue('hydrationOverlays', (enabled) => {
     if (enabled) {
       enableHydrationOverlays();
     } else {

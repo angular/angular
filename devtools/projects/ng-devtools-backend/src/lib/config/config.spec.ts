@@ -18,6 +18,12 @@ describe('config', () => {
     return unsubscribe;
   }
 
+  function listenOnValue(...args: Parameters<typeof config.onValue>) {
+    const unsubscribe = config.onValue(...args);
+    unsubscribers.push(unsubscribe);
+    return unsubscribe;
+  }
+
   beforeEach(() => {
     for (const unsubscribe of unsubscribers) {
       unsubscribe();
@@ -123,6 +129,60 @@ describe('config', () => {
     it('should stop notifying a listener after unsubscribing', () => {
       const spy = jasmine.createSpy('listener');
       const unsubscribe = listenOnChange('performanceTrack', spy);
+
+      config.set({performanceTrack: true});
+      unsubscribe();
+      config.set({performanceTrack: false});
+
+      expect(spy).toHaveBeenCalledOnceWith(true);
+    });
+  });
+
+  describe('onValue', () => {
+    it('should notify the listener with the default value on subscription', () => {
+      const spy = jasmine.createSpy('listener');
+      listenOnValue('performanceTrack', spy);
+
+      expect(spy).toHaveBeenCalledOnceWith(false);
+    });
+
+    it('should notify the listener with the current value on subscription', () => {
+      config.set({cdDataStream: true});
+
+      const spy = jasmine.createSpy('listener');
+      listenOnValue('cdDataStream', spy);
+
+      expect(spy).toHaveBeenCalledOnceWith(true);
+    });
+
+    it('should notify the listener on every change', () => {
+      const spy = jasmine.createSpy('listener');
+      listenOnValue('cdHighlighting', spy);
+
+      config.set({cdHighlighting: true});
+      config.set({cdHighlighting: false});
+
+      expect(spy).toHaveBeenCalledTimes(3);
+      expect(spy.calls.argsFor(0)).toEqual([false]);
+      expect(spy.calls.argsFor(1)).toEqual([true]);
+      expect(spy.calls.argsFor(2)).toEqual([false]);
+    });
+
+    it('should NOT notify the listener when the value is unchanged', () => {
+      const spy = jasmine.createSpy('listener');
+      listenOnValue('performanceTrack', spy);
+      spy.calls.reset();
+
+      // Assuming the default is `false`.
+      config.set({performanceTrack: false});
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should stop notifying a listener after unsubscribing', () => {
+      const spy = jasmine.createSpy('listener');
+      const unsubscribe = listenOnValue('performanceTrack', spy);
+      spy.calls.reset();
 
       config.set({performanceTrack: true});
       unsubscribe();
