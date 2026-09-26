@@ -9,7 +9,14 @@
 import {Component, inject, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Router, RouterLink, RouterModule, provideRouter} from '../index';
+import {
+  QueryParamsHandlingFn,
+  Router,
+  RouterLink,
+  RouterModule,
+  provideRouter,
+  withRouterConfig,
+} from '../index';
 import {RouterTestingHarness} from '../testing';
 
 describe('RouterLink', () => {
@@ -328,5 +335,99 @@ describe('RouterLink', () => {
     expect(anchor.getAttribute('href')).toBe('/initial/child');
     await harness.navigateByUrl('/different');
     expect(anchor.getAttribute('href')).toBe('/different/child');
+  });
+
+  describe('with a queryParamsHandling function', () => {
+    it('updates when the current query params change', async () => {
+      @Component({
+        template: `
+          <a routerLink="/product" [queryParamsHandling]="(current) => ({q: current['q']})">
+            link
+          </a>
+        `,
+        imports: [RouterLink],
+      })
+      class WithLink {}
+      TestBed.configureTestingModule({
+        providers: [provideRouter([{path: '**', component: WithLink}])],
+      });
+
+      const harness = await RouterTestingHarness.create('/search?q=shoes&page=2');
+      const anchor = harness.fixture.nativeElement.querySelector('a');
+      expect(anchor.getAttribute('href')).toBe('/product?q=shoes');
+      await harness.navigateByUrl('/search?q=boots&page=3');
+      expect(anchor.getAttribute('href')).toBe('/product?q=boots');
+      await harness.navigateByUrl('/search?page=4');
+      expect(anchor.getAttribute('href')).toBe('/product');
+    });
+
+    it('updates when the current query params change with a default function', async () => {
+      @Component({
+        template: `<a routerLink="/product">link</a>`,
+        imports: [RouterLink],
+      })
+      class WithLink {}
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            [{path: '**', component: WithLink}],
+            withRouterConfig({
+              defaultQueryParamsHandling: (current) => ({lang: current['lang']}),
+            }),
+          ),
+        ],
+      });
+
+      const harness = await RouterTestingHarness.create('/search?lang=fr&q=shoes');
+      const anchor = harness.fixture.nativeElement.querySelector('a');
+      expect(anchor.getAttribute('href')).toBe('/product?lang=fr');
+      await harness.navigateByUrl('/search?lang=de&q=shoes');
+      expect(anchor.getAttribute('href')).toBe('/product?lang=de');
+    });
+
+    it('merges queryParams input on top of queryParamsHandling function result', async () => {
+      @Component({
+        template: `
+          <a
+            routerLink="/product"
+            [queryParams]="{tab: 'reviews'}"
+            [queryParamsHandling]="(current) => ({q: current['q']})"
+          >
+            link
+          </a>
+        `,
+        imports: [RouterLink],
+      })
+      class WithLink {}
+      TestBed.configureTestingModule({
+        providers: [provideRouter([{path: '**', component: WithLink}])],
+      });
+
+      const harness = await RouterTestingHarness.create('/search?q=shoes&page=2');
+      const anchor = harness.fixture.nativeElement.querySelector('a');
+      expect(anchor.getAttribute('href')).toBe('/product?q=shoes&tab=reviews');
+    });
+
+    it('updates when a signal read by the function changes', async () => {
+      @Component({
+        template: `<a routerLink="/search" [queryParamsHandling]="keepQuery">link</a>`,
+        imports: [RouterLink],
+      })
+      class WithLink {
+        page = signal(1);
+        keepQuery: QueryParamsHandlingFn = (current) => ({q: current['q'], page: this.page()});
+      }
+      TestBed.configureTestingModule({
+        providers: [provideRouter([{path: '**', component: WithLink}])],
+      });
+
+      const harness = await RouterTestingHarness.create();
+      const component = await harness.navigateByUrl('/search?q=shoes', WithLink);
+      const anchor = harness.fixture.nativeElement.querySelector('a');
+      expect(anchor.getAttribute('href')).toBe('/search?q=shoes&page=1');
+      component.page.set(2);
+      await harness.fixture.whenStable();
+      expect(anchor.getAttribute('href')).toBe('/search?q=shoes&page=2');
+    });
   });
 });
