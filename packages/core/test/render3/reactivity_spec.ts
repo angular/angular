@@ -865,6 +865,59 @@ describe('reactivity', () => {
       expect(() => fixture.detectChanges()).toThrowError(/NG0600.*template/);
     });
 
+    it('should name the component and the signal when writing within a template', async () => {
+      @Component({
+        selector: 'write-in-template',
+        template: '@if (true) {{{write()}}}',
+      })
+      class WriteInTemplate {
+        sig = signal(0, {debugName: 'count'});
+        write() {
+          this.sig.set(1);
+        }
+      }
+
+      const fixture = TestBed.createComponent(WriteInTemplate);
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+        /^NG0600: Writing to signals is not allowed while Angular renders the template \(eg\. interpolations\)\. Template location: 'WriteInTemplate' component\. Signal: 'count'\. Find more at/,
+      );
+    });
+
+    it('should name the signal when writing within computed', async () => {
+      @Component({
+        selector: 'write-in-computed',
+        template: '{{comp()}}',
+      })
+      class WriteInComputed {
+        sig = signal(0, {debugName: 'count'});
+        comp = computed(() => this.sig.set(1));
+      }
+
+      const fixture = TestBed.createComponent(WriteInComputed);
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+        /^NG0600: Writing to signals is not allowed in a `computed`\. Signal: 'count'\. Find more at/,
+      );
+    });
+
+    it('should keep the message short when the signal has no debugName', async () => {
+      @Component({
+        selector: 'write-in-computed',
+        template: '{{comp()}}',
+      })
+      class WriteInComputed {
+        sig = signal(0);
+        comp = computed(() => this.sig.set(1));
+      }
+
+      const fixture = TestBed.createComponent(WriteInComputed);
+
+      await expectAsync(fixture.whenStable()).toBeRejectedWithError(
+        /^NG0600: Writing to signals is not allowed in a `computed`\. Find more at/,
+      );
+    });
+
     describe('effects created in components should first run after ngOnInit', () => {
       it('when created during bootstrapping', () => {
         let log: string[] = [];
