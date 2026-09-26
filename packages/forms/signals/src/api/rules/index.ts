@@ -7,6 +7,7 @@
  */
 
 export * from './disabled';
+export * from './equality';
 export * from './hidden';
 export * from './metadata';
 export * from './readonly';
