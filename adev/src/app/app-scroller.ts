@@ -65,13 +65,7 @@ export class AppScroller {
           this.canScroll = true;
           this._lastScrollEvent = e;
         }),
-        filter(() => {
-          const info = this.router.lastSuccessfulNavigation()?.extras.info as Record<
-            'disableScrolling',
-            boolean
-          >;
-          return !info?.['disableScrolling'];
-        }),
+        filter((e) => e.scrollBehavior !== 'manual'),
         switchMap((e) => {
           return firstValueFrom(
             this.appRef.isStable.pipe(
