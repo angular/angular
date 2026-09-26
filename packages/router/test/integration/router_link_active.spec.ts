@@ -20,9 +20,10 @@ import {
   ROUTER_DIRECTIVES,
   createRoot,
   advance,
+  provideTestRouter,
 } from './integration_helpers';
 
-export function routerLinkActiveIntegrationSuite() {
+export function routerLinkActiveIntegrationSuite(browserAPI: 'history' | 'navigation') {
   describe('routerLinkActive', () => {
     it('should set the class when the link is active (a tag)', async () => {
       const router: Router = TestBed.inject(Router);
@@ -213,7 +214,7 @@ export function routerLinkActiveIntegrationSuite() {
 
       TestBed.configureTestingModule({
         imports: [...ROUTER_DIRECTIVES],
-        providers: [provideRouter([{path: '', component: SimpleComponent}])],
+        providers: [provideTestRouter(browserAPI, [{path: '', component: SimpleComponent}])],
         declarations: [LinkComponent, SimpleComponent],
       });
 

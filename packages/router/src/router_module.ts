@@ -47,6 +47,8 @@ import {RouterConfigLoader, ROUTES} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
+import {HistoryStateManager} from './statemanager/history_state_manager';
+import {StateManager} from './statemanager/state_manager';
 import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 
 /**
@@ -148,6 +150,7 @@ export class RouterModule {
             }
           : [],
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
+        {provide: StateManager, useExisting: HistoryStateManager},
         config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
         provideRouterScroller(),
         config?.preloadingStrategy ? withPreloading(config.preloadingStrategy).ɵproviders : [],

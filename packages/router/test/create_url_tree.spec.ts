@@ -24,6 +24,9 @@ describe('createUrlTree', () => {
   const serializer = new DefaultUrlSerializer();
   let router: Router;
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideRouter([])],
+    });
     router = TestBed.inject(Router);
     router.resetConfig([
       {
