@@ -62,6 +62,7 @@ import {
   exactMatchOptions,
   IsActiveMatchOptions,
   isUrlTree,
+  normalizeUrlTree,
   subsetMatchOptions,
   UrlSegmentGroup,
   UrlSerializer,
@@ -645,12 +646,8 @@ export class Router {
     } else {
       options = {...subsetMatchOptions, ...matchOptions};
     }
-    if (isUrlTree(url)) {
-      return containsTree(this.currentUrlTree, url, options);
-    }
-
-    const urlTree = this.parseUrl(url);
-    return containsTree(this.currentUrlTree, urlTree, options);
+    const urlTree = isUrlTree(url) ? normalizeUrlTree(url, this) : this.parseUrl(url);
+    return containsTree(normalizeUrlTree(this.currentUrlTree, this), urlTree, options);
   }
 
   private removeEmptyProps(params: Params): Params {

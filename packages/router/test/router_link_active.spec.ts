@@ -112,4 +112,59 @@ describe('RouterLinkActive', () => {
     await fixture.whenStable();
     expect(Array.from(fixture.nativeElement.querySelector('a').classList)).toContain('active');
   });
+
+  describe('single-item array query params', () => {
+    // `{tag: ['x']}` and `{tag: 'x'}` both serialize to `/abc?tag=x`, so both links must have the
+    // same active state no matter how the router got to that URL.
+    @Component({
+      imports: [RouterLinkActive, RouterLink],
+      template: `
+        <a
+          id="array-link"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          routerLink="/abc"
+          [queryParams]="{tag: ['x']}"
+        ></a>
+        <a
+          id="string-link"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          routerLink="/abc"
+          [queryParams]="{tag: 'x'}"
+        ></a>
+      `,
+    })
+    class MyCmp {}
+
+    function isLinkActive(fixture: {nativeElement: HTMLElement}, id: string): boolean {
+      return fixture.nativeElement.querySelector(`#${id}`)!.classList.contains('active');
+    }
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({providers: [provideRouter([{path: '**', children: []}])]});
+    });
+
+    it('marks both links active after navigating by string', async () => {
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.autoDetectChanges();
+      // Navigating by string is what happens on a page reload or a popstate navigation: the query
+      // param is parsed as `'x'`.
+      await TestBed.inject(Router).navigateByUrl('/abc?tag=x');
+      await fixture.whenStable();
+      expect(isLinkActive(fixture, 'array-link')).toBe(true);
+      expect(isLinkActive(fixture, 'string-link')).toBe(true);
+    });
+
+    it('marks both links active after navigating with a single-item array', async () => {
+      const fixture = TestBed.createComponent(MyCmp);
+      fixture.autoDetectChanges();
+      const router = TestBed.inject(Router);
+      // This is what happens when clicking the array link: the resulting URL keeps `['x']`.
+      await router.navigateByUrl(router.createUrlTree(['/abc'], {queryParams: {tag: ['x']}}));
+      await fixture.whenStable();
+      expect(isLinkActive(fixture, 'array-link')).toBe(true);
+      expect(isLinkActive(fixture, 'string-link')).toBe(true);
+    });
+  });
 });

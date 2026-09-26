@@ -121,14 +121,44 @@ export function isActive(
   router: Router,
   matchOptions?: Partial<IsActiveMatchOptions>,
 ): Signal<boolean> {
-  const urlTree = url instanceof UrlTree ? url : router.parseUrl(url);
-  return computed(() =>
-    containsTree(
-      router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(),
+  const urlTree = url instanceof UrlTree ? normalizeUrlTree(url, router) : router.parseUrl(url);
+  return computed(() => {
+    const finalUrl = router.lastSuccessfulNavigation()?.finalUrl;
+    return containsTree(
+      finalUrl ? normalizeCurrentUrl(finalUrl, router) : new UrlTree(),
       urlTree,
       matchOptions,
-    ),
-  );
+    );
+  });
+}
+
+/**
+ * The router's current URL is shared by every `isActive` check, so its normalized form is cached
+ * to round-trip it once per navigation rather than once per link.
+ */
+const normalizedCurrentUrls = new WeakMap<UrlTree, UrlTree>();
+
+function normalizeCurrentUrl(finalUrl: UrlTree, router: Router): UrlTree {
+  let normalized = normalizedCurrentUrls.get(finalUrl);
+  if (normalized === undefined) {
+    normalized = normalizeUrlTree(finalUrl, router);
+    normalizedCurrentUrls.set(finalUrl, normalized);
+  }
+  return normalized;
+}
+
+/**
+ * Returns the `UrlTree` the router gets when parsing the serialized form of `tree`.
+ *
+ * A `UrlTree` created in code can hold values that don't survive a round-trip through the
+ * `UrlSerializer`. For example, the default serializer writes `{tag: ['x']}` as `?tag=x`, which is
+ * parsed back as `{tag: 'x'}`, and it drops empty arrays entirely. Comparing normalized trees makes
+ * the result depend on the URL itself rather than on how the router got there (clicking a link,
+ * reloading the page or a popstate navigation), while still respecting custom serializers that do
+ * keep those values apart.
+ */
+export function normalizeUrlTree(tree: UrlTree, router: Router): UrlTree {
+  return router.parseUrl(router.serializeUrl(tree));
 }
 
 /**
