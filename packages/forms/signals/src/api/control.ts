@@ -19,7 +19,11 @@ import type {DisabledReason} from './types';
  * @category control
  * @publicApi 22.0
  */
-export interface FormUiControl<TValue> {
+export interface FormUiControl<
+  TValue,
+  TMinMax = NonNullable<TValue> | undefined,
+  TLength = number | undefined,
+> {
   /**
    * An input to receive the errors for the field. If implemented, the `Field` directive will
    * automatically bind errors from the bound field to this input.
@@ -83,37 +87,28 @@ export interface FormUiControl<TValue> {
    * An input to receive the min value for the field. If implemented, the `Field` directive will
    * automatically bind the min value from the bound field to this input.
    */
-  readonly min?:
-    | InputSignal<NonNullable<TValue> | undefined>
-    | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
+  readonly min?: InputSignal<TMinMax> | InputSignalWithTransform<TMinMax, unknown>;
   /**
    * An input to receive the min length for the field. If implemented, the `Field` directive will
    * automatically bind the min length from the bound field to this input.
    */
-  readonly minLength?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+  readonly minLength?: InputSignal<TLength> | InputSignalWithTransform<TLength, unknown>;
   /**
    * An input to receive the max value for the field. If implemented, the `Field` directive will
    * automatically bind the max value from the bound field to this input.
    */
-  readonly max?:
-    | InputSignal<NonNullable<TValue> | undefined>
-    | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
+  readonly max?: InputSignal<TMinMax> | InputSignalWithTransform<TMinMax, unknown>;
   /**
    * An input to receive the max length for the field. If implemented, the `Field` directive will
    * automatically bind the max length from the bound field to this input.
    */
-  readonly maxLength?:
-    | InputSignal<number | undefined>
-    | InputSignalWithTransform<number | undefined, unknown>;
+  readonly maxLength?: InputSignal<TLength> | InputSignalWithTransform<TLength, unknown>;
   /**
    * An input to receive the value patterns for the field. If implemented, the `Field` directive
    * will automatically bind the value patterns from the bound field to this input.
    */
   readonly pattern?:
-    | InputSignal<readonly RegExp[]>
-    | InputSignalWithTransform<readonly RegExp[], unknown>;
+    InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
   /**
    * An output to emit when the user finishes interacting with the control, marking the field as
    * touched. Emit this in response to the native `blur` event (when focus leaves the control), not
@@ -157,7 +152,11 @@ type FormUiControlImplementsFormFieldBindingOptions = Check<
  * @category control
  * @publicApi 22.0
  */
-export interface FormValueControl<TValue> extends FormUiControl<TValue> {
+export interface FormValueControl<
+  TValue,
+  TMinMax = NonNullable<TValue> | undefined,
+  TLength = number | undefined,
+> extends FormUiControl<TValue, TMinMax, TLength> {
   /**
    * The value is the only required property in this contract. A component that wants to integrate
    * with the `Field` directive via this contract, *must* provide a `model()` that will be kept in

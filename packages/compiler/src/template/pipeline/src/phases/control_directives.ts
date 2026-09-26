@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CUSTOM_CONTROL_CONSTRAINT_INPUTS} from '../../../../render3/signal_forms_constraints';
 import * as ir from '../../ir';
 import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
@@ -23,6 +24,24 @@ export function specializeControlProperties(job: ComponentCompilationJob): void 
 }
 
 function processView(view: ViewCompilationUnit): void {
+  const explicitConstraintsByTarget = new Map<ir.XrefId, Set<string>>();
+  for (const op of view.update) {
+    if (
+      op.kind === ir.OpKind.Property ||
+      op.kind === ir.OpKind.TwoWayProperty ||
+      (op.kind === ir.OpKind.Attribute && op.isTextAttribute)
+    ) {
+      if (CUSTOM_CONTROL_CONSTRAINT_INPUTS.has(op.name)) {
+        let bindings = explicitConstraintsByTarget.get(op.target);
+        if (bindings === undefined) {
+          bindings = new Set();
+          explicitConstraintsByTarget.set(op.target, bindings);
+        }
+        bindings.add(op.name);
+      }
+    }
+  }
+
   for (const op of view.update) {
     // Handle Property ops, TwoWayProperty ops (for [(ngModel)]), and Attribute ops (for static formControlName="name")
     if (
@@ -35,7 +54,7 @@ function processView(view: ViewCompilationUnit): void {
 
     const eligibleOps = ELIGIBLE_CONTROL_PROPERTIES.get(op.name);
     if (eligibleOps !== undefined && eligibleOps.has(op.kind)) {
-      addControlInstruction(view, op);
+      addControlInstruction(view, op, [...(explicitConstraintsByTarget.get(op.target) ?? [])]);
     }
   }
 }
@@ -64,6 +83,7 @@ function findCreateInstruction(view: ViewCompilationUnit, target: ir.XrefId): ir
 function addControlInstruction(
   view: ViewCompilationUnit,
   propertyOp: ir.PropertyOp | ir.TwoWayPropertyOp | ir.AttributeOp,
+  explicitConstraintBindings: readonly string[],
 ): void {
   const targetCreateOp = findCreateInstruction(view, propertyOp.target);
   if (targetCreateOp === null) {
@@ -73,7 +93,10 @@ function addControlInstruction(
     return;
   }
 
-  const controlCreateOp = ir.createControlCreateOp(propertyOp.sourceSpan);
+  const controlCreateOp = ir.createControlCreateOp(
+    propertyOp.sourceSpan,
+    propertyOp.name === 'formField' ? explicitConstraintBindings : [],
+  );
   ir.OpList.insertAfter<ir.CreateOp>(controlCreateOp, targetCreateOp);
   ir.OpList.insertAfter<ir.UpdateOp>(
     ir.createControlOp(propertyOp.target, propertyOp.sourceSpan),
