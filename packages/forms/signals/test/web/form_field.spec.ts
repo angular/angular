@@ -5662,6 +5662,34 @@ describe('field directive', () => {
       expect(field().value()).toEqual(new Date('2024-01-01T00:00:00.000Z'));
     });
 
+    // An invalid `Date` has a `NaN` timestamp, and `NaN === NaN` is false, so comparing instants
+    // alone reports a change on every sync and dirties the field on load. See #69632.
+    it('should not be dirty when the initial validity animation fires on an invalid Date model', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="date" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal<Date | null>(new Date('invalid')));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const field = fix.componentInstance.f;
+
+      expect(field().dirty()).toBe(false);
+
+      act(() => {
+        input.dispatchEvent(
+          new AnimationEvent('animationstart', {animationName: 'ng-invalid', bubbles: true}),
+        );
+      });
+
+      expect(field().dirty()).toBe(false);
+      // The model keeps the value the app supplied; the sync must not silently null it out.
+      expect(Number.isNaN((field().value() as Date).getTime())).toBe(true);
+    });
+
     // The initial `:valid` / `:invalid` animation fires for every input type we track validity on,
     // not just `date`, so none of them may dirty their field on load. See #69632.
     //
