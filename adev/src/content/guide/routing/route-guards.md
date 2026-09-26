@@ -115,6 +115,8 @@ export const unsavedChangesGuard: CanDeactivateFn<Form> = (
 };
 ```
 
+The router runs `CanDeactivate` when the user navigates away from the route. When a navigation stays on the same route, for example when it only changes query parameters, the router only runs it again as configured by [`runGuardsAndResolvers`](api/router/RunGuardsAndResolvers), even if a custom [route reuse strategy](guide/routing/customizing-route-behavior#route-reuse-strategy) recreates the component.
+
 For more information, check out the [API docs for CanDeactivateFn](api/router/CanDeactivateFn).
 
 ### CanMatch

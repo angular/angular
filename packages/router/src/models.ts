@@ -362,6 +362,12 @@ export type RedirectFunction = (
  * - `pathParamsOrQueryParamsChange` : Rerun guards and resolvers when the path params
  * change or query params have changed. This does not include matrix parameters.
  *
+ * A route is activated or deactivated when the matched route configuration changes, not when its
+ * component is recreated. If a `RouteReuseStrategy` recreates the component of a route that stays
+ * the same, for example when only query parameters change, this policy still decides whether the
+ * `canActivate`, `canActivateChild` and `canDeactivate` guards and the resolvers run. It doesn't
+ * affect `canMatch` guards, which run whenever the router matches the route.
+ *
  * @see {@link Route#runGuardsAndResolvers}
  * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior)
  * @publicApi
@@ -793,6 +799,12 @@ export interface Route {
    * - `paramsOrQueryParamsChange` : Run when path, matrix, or query parameters change.
    * - `pathParamsOrQueryParamsChange` : Rerun guards and resolvers when the path params
    * change or query params have changed. This does not include matrix parameters.
+   *
+   * A route is activated or deactivated when the matched route configuration changes, not when its
+   * component is recreated. If a `RouteReuseStrategy` recreates the component of a route that stays
+   * the same, for example when only query parameters change, this policy still decides whether the
+   * `canActivate`, `canActivateChild` and `canDeactivate` guards and the resolvers run. It doesn't
+   * affect `canMatch` guards, which run whenever the router matches the route.
    *
    * @see {@link RunGuardsAndResolvers}
    * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior)
