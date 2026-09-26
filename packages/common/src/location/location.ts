@@ -216,7 +216,7 @@ export class Location implements OnDestroy {
    * moves forward two pages and `location.historyGo(-2)` moves back two pages. When we try to go
    * beyond what's stored in the history session, we stay in the current page. Same behaviour occurs
    * when `relativePosition` equals 0.
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/History_API#Moving_to_a_specific_point_in_history
+   * @see [Moving to a specific point in history](https://developer.mozilla.org/en-US/docs/Web/API/History_API#Moving_to_a_specific_point_in_history)
    */
   historyGo(relativePosition: number = 0): void {
     this._locationStrategy.historyGo?.(relativePosition);

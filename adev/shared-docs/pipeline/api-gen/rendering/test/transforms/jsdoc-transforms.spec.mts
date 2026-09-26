@@ -215,6 +215,23 @@ describe('jsdoc transforms', () => {
       expect(entryFn).toThrowError(/Forbidden relative link: cli\/build ng build/);
     });
 
+    it('should throw on a bare absolute @see link', () => {
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: 'https://developer.mozilla.org/en-US/docs/Web/API/History_API',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(
+        /Invalid @see tag: "https:\/\/developer\.mozilla\.org\/en-US\/docs\/Web\/API\/History_API"/,
+      );
+    });
+
     it('should throw on a miscased absolute @link to a known API symbol', () => {
       setSymbols({RouterModule: 'router'});
 
