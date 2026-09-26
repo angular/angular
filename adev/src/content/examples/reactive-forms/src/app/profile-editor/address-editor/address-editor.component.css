@@ -1,0 +1,16 @@
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+legend {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+label {
+  display: block;
+  margin: 0.5em 0;
+  font-weight: bold;
+}
