@@ -34,6 +34,7 @@ import {
   provideZoneChangeDetection,
   QueryList,
   ɵRuntimeError as RuntimeError,
+  signal,
   Type,
   ViewChild,
   ViewChildren,
@@ -828,6 +829,83 @@ describe('@defer', () => {
         globalThis.requestIdleCallback = nativeRequestIdleCallback;
         globalThis.cancelIdleCallback = nativeCancelIdleCallback;
       }
+    });
+
+    it('should cancel an `on idle` request registered while another idle callback was running', () => {
+      @Component({
+        selector: 'cmp-a',
+        template: 'A',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class CmpA {}
+
+      @Component({
+        selector: 'cmp-b',
+        template: 'B',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class CmpB {}
+
+      @Component({
+        selector: 'root-app',
+        imports: [CmpA, CmpB],
+        template: `
+          @defer (on idle) {
+            <cmp-a />
+          }
+          @if (showB()) {
+            @defer (on idle) {
+              <cmp-b />
+            }
+          }
+        `,
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class RootCmp {
+        showB = signal(false);
+      }
+
+      @Injectable({providedIn: 'root'})
+      class CustomIdleService implements IdleService {
+        private nextId = 0;
+        readonly pending = new Map<number, (deadline?: IdleDeadline) => void>();
+
+        requestOnIdle(callback: (deadline?: IdleDeadline) => void): number {
+          const id = ++this.nextId;
+          this.pending.set(id, callback);
+          return id;
+        }
+
+        cancelOnIdle(id: number): void {
+          this.pending.delete(id);
+        }
+
+        trigger(): void {
+          const callbacks = [...this.pending.values()];
+          this.pending.clear();
+          callbacks.forEach((callback) => callback());
+        }
+      }
+
+      TestBed.configureTestingModule({
+        providers: [...COMMON_PROVIDERS, provideIdleServiceWith(CustomIdleService)],
+      });
+
+      const fixture = TestBed.createComponent(RootCmp);
+      // Attach the view to `ApplicationRef` so that the tick inside the idle callback refreshes it.
+      fixture.autoDetectChanges();
+
+      const idleService = TestBed.inject(CustomIdleService);
+      expect(idleService.pending.size).toBe(1);
+
+      // Make the `@if` pending so that the tick inside the idle callback renders it.
+      // Its block then requests a new idle callback while the first one is still running.
+      fixture.componentInstance.showB.set(true);
+      idleService.trigger();
+      expect(idleService.pending.size).toBe(1);
+
+      fixture.destroy();
+      expect(idleService.pending.size).toBe(0);
     });
   });
 
@@ -5648,5 +5726,62 @@ describe('IdleScheduler', () => {
     expect(cbA).toHaveBeenCalledTimes(1);
     expect(cbB).toHaveBeenCalledTimes(1);
     expect(ricCount).toBe(1);
+  });
+
+  it('should cancel a bucket that was created while another bucket with the same key was draining', () => {
+    let capturedCbs: Array<(deadline: any) => void> = [];
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCbs.push(cb);
+      return 100 + ricCount;
+    });
+    const cancelOnIdleSpy = spyOn(customIdleService, 'cancelOnIdle');
+
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      // Emulates a trigger cleanup emptying the current bucket, followed by
+      // a new idle-triggered block being registered within the same drain.
+      scheduler.remove(cbA);
+      scheduler.add(cbB);
+    });
+
+    scheduler.add(cbA);
+    capturedCbs[0]({didTimeout: false, timeRemaining: () => 10});
+
+    expect(cbA).toHaveBeenCalledTimes(1);
+    expect(cbB).toHaveBeenCalledTimes(0);
+    expect(ricCount).toBe(2);
+
+    cancelOnIdleSpy.calls.reset();
+    scheduler.remove(cbB);
+    expect(cancelOnIdleSpy).toHaveBeenCalledOnceWith(102);
+  });
+
+  it('should cancel a bucket created during another bucket drain on destroy', () => {
+    let capturedCbs: Array<(deadline: any) => void> = [];
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCbs.push(cb);
+      return 100 + ricCount;
+    });
+    const cancelOnIdleSpy = spyOn(customIdleService, 'cancelOnIdle');
+
+    const cbB = jasmine.createSpy('cbB');
+    const cbA = jasmine.createSpy('cbA').and.callFake(() => {
+      scheduler.remove(cbA);
+      scheduler.add(cbB);
+    });
+
+    scheduler.add(cbA);
+    capturedCbs[0]({didTimeout: false, timeRemaining: () => 10});
+    expect(ricCount).toBe(2);
+
+    cancelOnIdleSpy.calls.reset();
+    scheduler.ngOnDestroy();
+    expect(cancelOnIdleSpy).toHaveBeenCalledOnceWith(102);
   });
 });
