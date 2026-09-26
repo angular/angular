@@ -150,7 +150,6 @@ When serving your Angular application, the server should include a randomly-gene
 You must provide this nonce to Angular so that the framework can render `<style>` elements.
 You can set the nonce for Angular in one of the following ways:
 
-1. Set the `autoCsp` option to `true` in the [workspace configuration](reference/configs/workspace-config#extra-build-and-test-options).
 1. Set the `ngCspNonce` attribute on the root application element as `<app ngCspNonce="randomNonceGoesHere"></app>`. Use this approach if you have access to server-side templating that can add the nonce both to the header and the `index.html` when constructing the response.
 1. Provide the nonce using the `CSP_NONCE` injection token. Use this approach if you have access to the nonce at runtime and you want to be able to cache the `index.html`.
 
@@ -180,18 +179,65 @@ To maintain the "one-time-use" integrity of a nonce, it should ideally be genera
 
 </docs-callout>
 
-NOTE: If you want to [inline the critical CSS](/tools/cli/build#critical-css-inlining) of your application, you can not use the `CSP_NONCE` token, and should prefer the `autoCsp` option or set the `ngCspNonce` attribute on the root application element.
+NOTE: If you want to [inline the critical CSS](/tools/cli/build#critical-css-inlining) of your application, you can not use the `CSP_NONCE` token, and should prefer the `security.autoCsp` option in the [workspace configuration](reference/configs/workspace-config#extra-build-and-test-options) or set the `ngCspNonce` attribute on the root application element.
 
 If you cannot generate nonces in your project, you can allow inline styles by adding `'unsafe-inline'` to the `style-src` section of the CSP header.
 
-| Sections                                         | Details                                                                                                                                                                                                         |
-| :----------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `default-src 'self';`                            | Allows the page to load all its required resources from the same origin.                                                                                                                                        |
-| `style-src 'self' 'nonce-randomNonceGoesHere';`  | Allows the page to load global styles from the same origin \(`'self'`\) and styles inserted by Angular with the `nonce-randomNonceGoesHere`.                                                                    |
-| `script-src 'self' 'nonce-randomNonceGoesHere';` | Allows the page to load JavaScript from the same origin \(`'self'`\) and scripts inserted by the Angular CLI with the `nonce-randomNonceGoesHere`. This is only required if you're using critical CSS inlining. |
+| Sections                                         | Details                                                                                                                                                                                                                                                                    |
+| :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default-src 'self';`                            | Allows the page to load all its required resources from the same origin.                                                                                                                                                                                                   |
+| `style-src 'self' 'nonce-randomNonceGoesHere';`  | Allows the page to load global styles from the same origin \(`'self'`\) and styles inserted by Angular with the `nonce-randomNonceGoesHere`.                                                                                                                               |
+| `script-src 'self' 'nonce-randomNonceGoesHere';` | Allows the page to load JavaScript from the same origin \(`'self'`\) and scripts inserted by the Angular CLI with the `nonce-randomNonceGoesHere`. Required only when you enable critical CSS inlining or subresource integrity, which add inline scripts to `index.html`. |
 
 Angular itself requires only these settings to function correctly.
 As your project grows, you may need to expand your CSP settings to accommodate extra features specific to your application.
+
+#### Static hosting without per-response nonces
+
+If your hosting environment or CDN can replace a placeholder token in cached HTML at the edge (for example, using SSI, ESI, or an edge function), you can build `index.html` with a placeholder in `ngCspNonce` (such as `<app ngCspNonce="__CSP_NONCE__"></app>`) and replace it with a unique nonce on each response.
+
+If you deploy your application to a static host that serves `index.html` unchanged without edge transformation, do not hard-code a static nonce. Instead, use one of the following approaches:
+
+##### Hash inline scripts with `autoCsp`
+
+Set the `security.autoCsp` option to `true` in the [workspace configuration](reference/configs/workspace-config#extra-build-and-test-options).
+At build time, the Angular CLI computes a hash of every inline script in `index.html`, including the scripts added by critical CSS inlining and subresource integrity.
+The CLI replaces the `<script src>` elements with a hashed loader script and adds a `<meta>` tag at the start of `<head>`:
+
+```txt
+script-src 'strict-dynamic' 'sha256-...' https: 'unsafe-inline'; object-src 'none'; base-uri 'self';
+```
+
+Because hashes depend only on the content of the scripts, `index.html` remains valid for every visitor and can be cached.
+Browsers that support hashes and `'strict-dynamic'` ignore the `https:` and `'unsafe-inline'` fallback sources.
+
+The policy generated by `autoCsp` has the following limitations:
+
+- It only covers scripts. You must configure `style-src` separately.
+- Browsers ignore some directives, such as `frame-ancestors`, `report-uri`, and `sandbox`, when they appear in a `<meta>` tag. Send these directives in a `Content-Security-Policy` HTTP header.
+- When a page has multiple policies, the browser enforces all of them. If you also send a CSP header, omit both `script-src` and `default-src` from the header so they do not block the hashed inline scripts.
+- You cannot use `autoCsp` with server-side rendering.
+
+##### Avoid inline scripts
+
+The Angular CLI only adds inline scripts to `index.html` for critical CSS inlining and subresource integrity.
+If you set `optimization.styles.inlineCritical` to `false` and leave `subresourceIntegrity` disabled, `index.html` does not contain inline scripts. You can then configure a `Content-Security-Policy` header with `script-src 'self'`.
+
+NOTE: Disabling critical CSS inlining can slow down the initial render of your application, and disabling subresource integrity removes script integrity checks.
+
+##### Configure styles for static hosting
+
+Angular inserts `<style>` elements for component styles at runtime, and critical CSS inlining adds a `<style>` element to `index.html`.
+Neither `autoCsp` nor disabling inline scripts covers these styles. Without a per-response nonce, allow them by adding `'unsafe-inline'` to `style-src`.
+For example, if your build avoids inline scripts, configure your host to send the following header:
+
+```txt
+default-src 'self'; style-src 'self' 'unsafe-inline';
+```
+
+If you use `autoCsp`, send `style-src 'self' 'unsafe-inline'` in the HTTP header without `default-src` or `script-src`.
+
+Your application code and third-party libraries might require additional directives in both cases.
 
 ### Enforcing Trusted Types
 
