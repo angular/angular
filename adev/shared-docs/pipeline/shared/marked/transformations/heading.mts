@@ -7,7 +7,7 @@
  */
 
 import {Tokens} from 'marked';
-import {AdevDocsRenderer} from '../renderer.mjs';
+import {AdevDocsRenderer, RendererContext} from '../renderer.mjs';
 import {getIdFromHeading} from '../../heading.mjs';
 
 export function headingRender(
@@ -21,7 +21,7 @@ export function headingRender(
     return `
     <header class="docs-header">
       <docs-breadcrumb></docs-breadcrumb>
-      ${getPageTitle(parsedText, this.context.markdownFilePath)}
+      ${getPageTitle(parsedText, this.context)}
     </header>
     `;
   }
@@ -40,20 +40,24 @@ export function headingRender(
   `;
 }
 
-// TODO(josephperrott): Set edit content url based on the owner, repo and branch.
-
-/** The base url for editing the a file in the repository. */
-const GITHUB_EDIT_CONTENT_URL = 'https://github.com/angular/angular/edit/main';
+/** The default base url for editing a file in the repository. */
+const DEFAULT_EDIT_CONTENT_URL = 'https://github.com/angular/angular/edit/main';
 
 /** Get the page title with edit button to modify the page source. */
-export function getPageTitle(text: string, filePath?: string): string {
+export function getPageTitle(
+  text: string,
+  {
+    markdownFilePath: filePath,
+    editContentUrl = DEFAULT_EDIT_CONTENT_URL,
+  }: Pick<RendererContext, 'markdownFilePath' | 'editContentUrl'>,
+): string {
   return `
   <!-- Page title -->
   <div class="docs-page-title">
     <h1 tabindex="-1">${text}</h1>
     ${
       filePath
-        ? `<a class="docs-github-links" target="_blank" href="${GITHUB_EDIT_CONTENT_URL}/${filePath}" title="Edit this page" aria-label="Edit this page">
+        ? `<a class="docs-github-links" target="_blank" href="${editContentUrl}/${filePath}" title="Edit this page" aria-label="Edit this page">
       <!-- Pencil -->
       <docs-icon role="presentation">edit</docs-icon>
     </a>`

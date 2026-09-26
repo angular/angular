@@ -27,6 +27,9 @@ def _generate_guides(ctx):
     else:
         args.add("")
 
+    # Pass the base url used for the "Edit this page" links.
+    args.add(ctx.attr.edit_content_url)
+
     # Determine the set of html output files. For each input markdown file, produce an html
     # file with the same name (replacing the markdown extension with `.html`).
     html_outputs = []
@@ -95,6 +98,10 @@ generate_guides = rule(
         "defined_routes": attr.label(
             doc = """List of defined routes.""",
             allow_single_file = [".json"],
+        ),
+        "edit_content_url": attr.string(
+            doc = """Base url for editing the markdown sources, e.g. `https://github.com/<owner>/<repo>/edit/<branch>`.
+            The markdown file path is appended to it. Defaults to the angular/angular repository.""",
         ),
         "mermaid_blocks": attr.bool(
             doc = """Whether to transform mermaid blocks.""",
