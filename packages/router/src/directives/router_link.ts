@@ -34,7 +34,7 @@ import {Subject} from 'rxjs';
 
 import {RuntimeErrorCode} from '../errors';
 import {NavigationEnd} from '../events';
-import {QueryParamsHandling} from '../models';
+import {NavigationBehaviorOptions, QueryParamsHandling} from '../models';
 import {Router} from '../router';
 import {ROUTER_CONFIGURATION} from '../router_config';
 import {ActivatedRoute} from '../router_state';
@@ -168,6 +168,16 @@ export class ReactiveRouterState {
  *   const navigation = router.currentNavigation();
  *   tracingService.trace({id: navigation.extras.state.tracingId});
  * });
+ * ```
+ *
+ * ### Controlling scrolling
+ *
+ * When scroll restoration is enabled with `withInMemoryScrolling`, every navigation scrolls, even
+ * one that only changes a query param. Set `scroll` to `'manual'` to opt a link out, for example
+ * for tabs further down the page:
+ *
+ * ```html
+ * <a routerLink="/products/42" [queryParams]="{tab: 'reviews'}" scroll="manual">Reviews</a>
  * ```
  *
  * ### RouterLink compatible custom elements
@@ -376,6 +386,14 @@ export class RouterLink implements OnChanges, OnDestroy {
   browserUrl = input<UrlTree | string | undefined>(undefined);
 
   /**
+   * Passed to {@link Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#scroll}
+   * @see {@link Router#navigateByUrl}
+   */
+  readonly scroll = input<NavigationBehaviorOptions['scroll']>(undefined);
+
+  /**
    * Whether a host element is an `<a>`/`<area>` tag or a compatible custom
    * element.
    */
@@ -511,6 +529,7 @@ export class RouterLink implements OnChanges, OnDestroy {
     }
 
     const browserUrl = this.browserUrl();
+    const scroll = this.scroll();
     const extras = {
       skipLocationChange: this.skipLocationChange,
       replaceUrl: this.replaceUrl,
@@ -519,6 +538,8 @@ export class RouterLink implements OnChanges, OnDestroy {
       // TODO: Remove conditional spread once all consumers handle `browserUrl`.
       // Having this property always set broke some tests in G3.
       ...(browserUrl !== undefined && {browserUrl}),
+      // Same for `scroll`, so the extras are unchanged when the input isn't used.
+      ...(scroll !== undefined && {scroll}),
     };
     // navigateByUrl is mocked frequently in tests... Reduce breakages when
     // adding `catch`
