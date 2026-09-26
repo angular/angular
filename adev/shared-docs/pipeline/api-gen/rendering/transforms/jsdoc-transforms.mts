@@ -253,8 +253,12 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
     .filter((tag) => tag.name === JS_DOC_SEE_TAG)
     .map((tag) => tag.comment)
     .map((comment): LinkEntryRenderable | undefined => {
-      // TODO: Throw when the comment is an absolute link.
-      // With TS 5.9 this is not possible as the ts api that extracts comments from tags strips the "http" part of links.
+      if (isExternalLink(comment.trim())) {
+        throw new Error(
+          `Invalid @see tag: "${comment}". Absolute links must be written as a ` +
+            `markdown link with a label, e.g. @see [Label](${comment.trim()})`,
+        );
+      }
 
       const markdownLinkMatch = comment.match(markdownLinkRule);
 
