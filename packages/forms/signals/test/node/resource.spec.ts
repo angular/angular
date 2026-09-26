@@ -12,6 +12,7 @@ import {
   assertNotInReactiveContext,
   Injector,
   resource,
+  resourceFromSnapshots,
   signal,
   type Signal,
 } from '@angular/core';
@@ -439,6 +440,87 @@ describe('resources', () => {
     await appRef.whenStable();
 
     expect(usernameForm().valid()).toBe(false);
+  });
+
+  it('should not expose the debounce loading marker to a custom resource', async () => {
+    let factoryParams: Signal<string | undefined> | undefined;
+    const usernameForm = form(
+      signal('initial-user'),
+      (p) => {
+        validateAsync(p, {
+          params: ({value}) => value(),
+          debounce: 50,
+          factory: (params) => {
+            factoryParams = params;
+            return resourceFromSnapshots(() => ({status: 'resolved', value: params()}));
+          },
+          onSuccess: () => undefined,
+          onError: () => null,
+        });
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    await timeout(80);
+    TestBed.tick();
+    await appRef.whenStable();
+    expect(usernameForm().pending()).toBe(false);
+    expect(factoryParams!()).toBe('initial-user');
+
+    usernameForm().value.set('latest-user');
+    TestBed.tick();
+
+    expect(() => usernameForm().pending()).not.toThrow();
+    expect(usernameForm().pending()).toBe(true);
+    expect(factoryParams!()).toBe('initial-user');
+
+    await timeout(80);
+    TestBed.tick();
+    await appRef.whenStable();
+    expect(usernameForm().pending()).toBe(false);
+    expect(factoryParams!()).toBe('latest-user');
+  });
+
+  it('should propagate debounce source errors through a custom resource', async () => {
+    const usernameForm = form(
+      signal('initial-user'),
+      (p) => {
+        validateAsync(p, {
+          params: ({value}) => {
+            const username = value();
+            if (username === 'error') {
+              throw new Error('Could not derive username params');
+            }
+            return username;
+          },
+          debounce: 50,
+          factory: (params) => resourceFromSnapshots(() => ({status: 'resolved', value: params()})),
+          onSuccess: () => undefined,
+          onError: (error) => ({
+            kind: 'paramsError',
+            message: error instanceof Error ? error.message : String(error),
+          }),
+        });
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    await timeout(80);
+    TestBed.tick();
+    await appRef.whenStable();
+
+    usernameForm().value.set('error');
+    TestBed.tick();
+    await appRef.whenStable();
+
+    expect(usernameForm().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'paramsError',
+        message: 'Could not derive username params',
+      }),
+    ]);
   });
 
   describe('reloadValidation', () => {

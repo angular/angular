@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DebounceTimer, Resource, Signal, computed, debounced, ɵchain} from '@angular/core';
+import {
+  DebounceTimer,
+  Resource,
+  Signal,
+  computed,
+  debounced,
+  resourceFromSnapshots,
+} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
@@ -136,8 +143,22 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
     (_state, params) => {
       if (opts.debounce !== undefined) {
         const debouncedResource = debounced(() => params(), opts.debounce);
-        const wrappedParams = computed(() => ɵchain(debouncedResource));
-        return opts.factory(wrappedParams);
+        const wrappedParams = computed<TParams | undefined>(() => {
+          const snap = debouncedResource.snapshot();
+          return snap.status === 'error' ? undefined : snap.value;
+        });
+        const factoryResource = opts.factory(wrappedParams);
+        return resourceFromSnapshots<TResult | undefined>(() => {
+          const snap = debouncedResource.snapshot();
+          if (snap.status === 'resolved' || snap.status === 'local')
+            return factoryResource.snapshot();
+          if (snap.status === 'error') return {status: 'error' as const, error: snap.error};
+          const fSnap = factoryResource.snapshot();
+          return {
+            status: 'loading' as const,
+            value: fSnap.status === 'error' ? undefined : fSnap.value,
+          };
+        });
       }
       return opts.factory(params);
     },
