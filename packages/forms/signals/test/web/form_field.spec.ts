@@ -2393,6 +2393,79 @@ describe('field directive', () => {
     });
 
     describe('max', () => {
+      it('should preserve explicitly bound component-owned constraint inputs', () => {
+        @Component({selector: 'range-control', template: ''})
+        class RangeControl implements FormValueControl<
+          readonly number[],
+          number,
+          {days: number} | null
+        > {
+          readonly value = model.required<readonly number[]>();
+          readonly min = input(0);
+          readonly max = input(100);
+          readonly minLength = input<{days: number} | null>(null);
+          readonly maxLength = input<number | undefined>(undefined);
+          readonly required = input(false);
+        }
+
+        @Component({
+          imports: [FormField, RangeControl],
+          template: `<range-control
+            [formField]="field"
+            [min]="5"
+            [max]="limit()"
+            [minLength]="{days: 3}"
+          />`,
+        })
+        class TestCmp {
+          readonly length = signal(1);
+          readonly limit = signal(95);
+          readonly field = form(signal<readonly number[]>([20, 80]), (p) => {
+            minLength(p, this.length);
+            maxLength(p, this.length);
+            required(p);
+          });
+          readonly control = viewChild.required(RangeControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const control = fixture.componentInstance.control();
+
+        expect(control.value()).toEqual([20, 80]);
+        expect(control.min()).toBe(5);
+        expect(control.max()).toBe(95);
+        expect(control.minLength()).toEqual({days: 3});
+        expect(control.maxLength()).toBe(1);
+        expect(control.required()).toBe(true);
+
+        act(() => fixture.componentInstance.length.set(2));
+        expect(control.minLength()).toEqual({days: 3});
+        expect(control.maxLength()).toBe(2);
+
+        act(() => fixture.componentInstance.limit.set(90));
+        expect(control.max()).toBe(90);
+      });
+
+      it('should preserve a static constraint input on a custom control', () => {
+        @Component({selector: 'range-control', template: ''})
+        class RangeControl implements FormValueControl<number, string> {
+          readonly value = model.required<number>();
+          readonly max = input('');
+        }
+
+        @Component({
+          imports: [FormField, RangeControl],
+          template: '<range-control [formField]="field" max="95" />',
+        })
+        class TestCmp {
+          readonly field = form(signal(50));
+          readonly control = viewChild.required(RangeControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        expect(fixture.componentInstance.control().max()).toBe('95');
+      });
+
       it('should bind to native control', () => {
         @Component({
           imports: [FormField],
@@ -2821,6 +2894,43 @@ describe('field directive', () => {
     });
 
     describe('min', () => {
+      it('should validate against the schema without overwriting an explicit custom input', () => {
+        @Component({selector: 'scale-control', template: ''})
+        class ScaleControl implements FormValueControl<number> {
+          readonly value = model.required<number>();
+          readonly min = input(0);
+          readonly invalid = input(false);
+        }
+
+        @Component({
+          imports: [FormField, ScaleControl],
+          template: '<scale-control [formField]="field" [min]="scaleMin()" />',
+        })
+        class TestCmp {
+          readonly scaleMin = signal(5);
+          readonly validationMin = signal(30);
+          readonly field = form(signal(20), (p) => {
+            min(p, this.validationMin);
+          });
+          readonly control = viewChild.required(ScaleControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.control().min()).toBe(5);
+        expect(component.field().invalid()).toBe(true);
+        expect(component.control().invalid()).toBe(true);
+
+        act(() => component.validationMin.set(10));
+        expect(component.control().min()).toBe(5);
+        expect(component.field().invalid()).toBe(false);
+        expect(component.control().invalid()).toBe(false);
+
+        act(() => component.scaleMin.set(7));
+        expect(component.control().min()).toBe(7);
+        expect(component.field().invalid()).toBe(false);
+      });
+
       it('should bind to native control', () => {
         @Component({
           imports: [FormField],

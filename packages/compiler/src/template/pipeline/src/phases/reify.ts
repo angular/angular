@@ -657,7 +657,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace(op, ng.attachSourceLocation(op.templatePath, locationsLiteral));
         break;
       case ir.OpKind.ControlCreate:
-        ir.OpList.replace(op, ng.controlCreate(op.sourceSpan));
+        ir.OpList.replace(op, ng.controlCreate(op.explicitConstraintBindings, op.sourceSpan));
         break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.

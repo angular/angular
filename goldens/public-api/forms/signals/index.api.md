@@ -248,7 +248,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
 }
 
 // @public
-export interface FormUiControl<TValue> {
+export interface FormUiControl<TValue, TMinMax = NonNullable<TValue> | undefined, TLength = number | undefined> {
     readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabledReasons?: InputSignal<readonly WithOptionalFieldTree<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalFieldTree<DisabledReason>[], unknown>;
@@ -256,10 +256,10 @@ export interface FormUiControl<TValue> {
     focus?(options?: FocusOptions): void;
     readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly max?: InputSignal<NonNullable<TValue> | undefined> | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
-    readonly maxLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly min?: InputSignal<NonNullable<TValue> | undefined> | InputSignalWithTransform<NonNullable<TValue> | undefined, unknown>;
-    readonly minLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
+    readonly max?: InputSignal<TMinMax> | InputSignalWithTransform<TMinMax, unknown>;
+    readonly maxLength?: InputSignal<TLength> | InputSignalWithTransform<TLength, unknown>;
+    readonly min?: InputSignal<TMinMax> | InputSignalWithTransform<TMinMax, unknown>;
+    readonly minLength?: InputSignal<TLength> | InputSignalWithTransform<TLength, unknown>;
     readonly name?: InputSignal<string> | InputSignalWithTransform<string, unknown>;
     readonly pattern?: InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
     readonly pending?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
@@ -271,7 +271,7 @@ export interface FormUiControl<TValue> {
 }
 
 // @public
-export interface FormValueControl<TValue> extends FormUiControl<TValue> {
+export interface FormValueControl<TValue, TMinMax = NonNullable<TValue> | undefined, TLength = number | undefined> extends FormUiControl<TValue, TMinMax, TLength> {
     readonly checked?: undefined;
     readonly value: ModelSignal<TValue>;
 }

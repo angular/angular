@@ -23,6 +23,7 @@ import {
   CustomFormControlType,
   customFormControlBannedInputFields,
   expandBoundAttributesForField,
+  hasExplicitConstraintBinding,
 } from './signal_forms';
 import {getBoundAttributes, widenBinding} from './bindings';
 import {LocalSymbol} from './references';
@@ -71,7 +72,15 @@ export class TcbDirectiveInputsOp extends TcbOp {
     const boundAttrs = getBoundAttributes(this.dir, this.node);
 
     if (this.customFormControlType !== null) {
-      checkUnsupportedFieldBindings(this.node, customFormControlBannedInputFields, this.tcb);
+      checkUnsupportedFieldBindings(
+        this.node,
+        new Set(
+          [...customFormControlBannedInputFields].filter(
+            (name) => !hasExplicitConstraintBinding(this.node, name),
+          ),
+        ),
+        this.tcb,
+      );
     }
 
     if (this.customFormControlType !== null || this.isFormControl) {
