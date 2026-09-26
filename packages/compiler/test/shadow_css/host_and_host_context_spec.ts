@@ -325,6 +325,96 @@ describe('ShadowCss, :host and :host-context', () => {
       );
     });
 
+    it('should not rewrite declaration values that look like :host', () => {
+      // Minifiers drop the space after the colon, which used to make `:host` match inside a
+      // declaration and take the value with it.
+      expect(shim(':host{container-name:host}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]{container-name:host}',
+      );
+
+      expect(shim(':host{container:host/inline-size}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]{container:host/inline-size}',
+      );
+
+      expect(shim('.foo{grid-area:host}', 'contenta', 'a-host')).toEqualCss(
+        '.foo[contenta]{grid-area:host}',
+      );
+
+      expect(shim('@media all{:host{container-name:host}}', 'contenta', 'a-host')).toEqualCss(
+        '@media all{[a-host]{container-name:host}}',
+      );
+
+      expect(shim(':host{content:":host"}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]{content:":host"}',
+      );
+
+      expect(
+        shim('div{grid-area:host;container-name:host-element}', 'contenta', 'a-host'),
+      ).toEqualCss('div[contenta]{grid-area:host;container-name:host-element}');
+
+      expect(
+        shim('@media screen{:host{container:host/inline-size}}', 'contenta', 'a-host'),
+      ).toEqualCss('@media screen{[a-host]{container:host/inline-size}}');
+    });
+
+    it('should not rewrite `:host` in at-rule preludes', () => {
+      expect(
+        shim('@supports (container-name:host){:host{container-name:host}}', 'contenta', 'a-host'),
+      ).toEqualCss('@supports (container-name:host){[a-host]{container-name:host}}');
+
+      expect(
+        shim('@container style(--theme:host){:host{color:red}}', 'contenta', 'a-host'),
+      ).toEqualCss('@container style(--theme:host){[a-host]{color:red}}');
+    });
+
+    it('should not rewrite `:host` in unquoted url() values', () => {
+      expect(shim(':host{background:url(a:host.png)}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]{background:url(a:host.png)}',
+      );
+
+      expect(shim('.foo{background:url(a:host.png)}', 'contenta', 'a-host')).toEqualCss(
+        '.foo[contenta]{background:url(a:host.png)}',
+      );
+
+      expect(
+        shim('@media all{:host{background:url(a:host.png)}}', 'contenta', 'a-host'),
+      ).toEqualCss('@media all{[a-host]{background:url(a:host.png)}}');
+
+      expect(
+        shim(':host{background:url(a:host.png);.child{color:red}}', 'contenta', 'a-host'),
+      ).toEqualCss('[a-host]{background:url(a:host.png);.child[contenta]{color:red}}');
+    });
+
+    it('should not rewrite `:host` inside escapes and attribute selectors', () => {
+      expect(shim('.foo\\:host{color:red}', 'contenta', 'a-host')).toEqualCss(
+        '.foo\\:host[contenta]{color:red}',
+      );
+
+      expect(shim('[data-x=a:host]{color:red}', 'contenta', 'a-host')).toEqualCss(
+        '[data-x=a:host][contenta]{color:red}',
+      );
+
+      expect(shim(':host[data-x=a:host]{color:red}', 'contenta', 'a-host')).toEqualCss(
+        '[data-x=a:host][a-host]{color:red}',
+      );
+    });
+
+    it('should not rewrite selectors that only start with `:host`', () => {
+      expect(shim(':hostess{color:red}', 'contenta', 'a-host')).toEqualCss(
+        '[contenta]:hostess{color:red}',
+      );
+
+      expect(shim(':host-foo{color:red}', 'contenta', 'a-host')).toEqualCss(
+        '[contenta]:host-foo{color:red}',
+      );
+    });
+
+    it('should not replace `:host-context` in declaration values', () => {
+      expect(shim(':host{container:host-context(foo)}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]{container:host-context(foo)}',
+      );
+    });
+
     it('should parse multiple rules containing :host-context and :host', () => {
       const input = `
             :host-context(outer1) :host(bar) {}
