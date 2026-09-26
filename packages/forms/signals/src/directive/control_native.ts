@@ -33,16 +33,29 @@ import {
 import {observeSelectMutations} from './select';
 
 /**
+ * Normalizes a control value for comparison, collapsing an invalid `Date` to `null`.
+ *
+ * A `Date` with a `NaN` timestamp has no representation a date-like input can hold: assigning it to
+ * `valueAsDate` empties the input, which then reads back as `null`. Treating the two as the same
+ * value keeps that round-trip from looking like an edit.
+ */
+function normalizeControlValue(value: unknown): unknown {
+  return value instanceof Date && Number.isNaN(value.getTime()) ? null : value;
+}
+
+/**
  * Compares two control values, treating `Date`s for the same instant as equal.
  *
  * Date-like inputs are read through `valueAsDate`, which returns a fresh `Date` on every access, so
  * identity comparison alone would report a change even when the input was never touched.
  */
 function controlValuesEqual(a: unknown, b: unknown): boolean {
-  if (a instanceof Date && b instanceof Date) {
-    return a.getTime() === b.getTime();
+  const normalizedA = normalizeControlValue(a);
+  const normalizedB = normalizeControlValue(b);
+  if (normalizedA instanceof Date && normalizedB instanceof Date) {
+    return normalizedA.getTime() === normalizedB.getTime();
   }
-  return Object.is(a, b);
+  return Object.is(normalizedA, normalizedB);
 }
 
 export function nativeControlCreate(
