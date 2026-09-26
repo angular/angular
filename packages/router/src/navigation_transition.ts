@@ -504,14 +504,15 @@ export class NavigationTransitions {
 
             const onSameUrlNavigation = t.extras.onSameUrlNavigation ?? router.onSameUrlNavigation;
             if (!urlTransition && onSameUrlNavigation !== 'reload') {
+              const url = this.urlSerializer.serialize(t.rawUrl);
               const reason =
                 typeof ngDevMode === 'undefined' || ngDevMode
-                  ? `Navigation to ${t.rawUrl} was ignored because it is the same as the current Router URL.`
+                  ? `Navigation to ${url} was ignored because it is the same as the current Router URL.`
                   : '';
               this.events.next(
                 new NavigationSkipped(
                   t.id,
-                  this.urlSerializer.serialize(t.rawUrl),
+                  url,
                   reason,
                   NavigationSkippedCode.IgnoredSameUrlNavigation,
                 ),
@@ -1016,15 +1017,11 @@ export class NavigationTransitions {
    * currently set to.
    */
   private isUpdatingInternalState() {
-    // TODO(atscott): The serializer should likely be used instead of
-    // `UrlTree.toString()`. Custom serializers are often written to handle
-    // things better than the default one (objects, for example will be
-    // [Object object] with the custom serializer and be "the same" when they
-    // aren't).
-    // (Same for isUpdatedBrowserUrl)
+    const t = this.currentTransition;
     return (
-      this.currentTransition?.extractedUrl.toString() !==
-      this.currentTransition?.currentUrlTree.toString()
+      t !== null &&
+      this.urlSerializer.serialize(t.extractedUrl) !==
+        this.urlSerializer.serialize(t.currentUrlTree)
     );
   }
 
@@ -1034,18 +1031,22 @@ export class NavigationTransitions {
    * bar if navigation succeeds).
    */
   private isUpdatedBrowserUrl() {
+    const currentNavigation = untracked(this.currentNavigation);
+    if (currentNavigation?.extras.skipLocationChange) {
+      return false;
+    }
+
     // The extracted URL is the part of the URL that this application cares about. `extract` may
     // return only part of the browser URL and that part may have not changed even if some other
     // portion of the URL did.
     const currentBrowserUrl = this.urlHandlingStrategy.extract(
       this.urlSerializer.parse(this.location.path(true)),
     );
-
-    const currentNavigation = untracked(this.currentNavigation);
     const targetBrowserUrl = currentNavigation?.targetBrowserUrl ?? currentNavigation?.extractedUrl;
     return (
-      currentBrowserUrl.toString() !== targetBrowserUrl?.toString() &&
-      !currentNavigation?.extras.skipLocationChange
+      !(targetBrowserUrl instanceof UrlTree) ||
+      this.urlSerializer.serialize(currentBrowserUrl) !==
+        this.urlSerializer.serialize(targetBrowserUrl)
     );
   }
 }

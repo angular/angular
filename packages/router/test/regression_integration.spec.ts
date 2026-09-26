@@ -27,6 +27,8 @@ import {
   DefaultUrlSerializer,
   NavigationCancel,
   NavigationError,
+  NavigationSkipped,
+  NavigationSkippedCode,
   Router,
   RouterModule,
   RouterOutlet,
@@ -472,6 +474,86 @@ describe('Integration', () => {
     await router.navigateByUrl(tree);
 
     expect(router.url).toEqual(`/?q=${SPECIAL_SERIALIZATION}`);
+  });
+
+  describe('same-URL detection with a custom serializer', () => {
+    // Writes object query params as JSON. The default serializer would turn any object into
+    // `[object Object]`, making two different filters look like the same URL.
+    class JsonQueryParamSerializer extends DefaultUrlSerializer {
+      override parse(url: string): UrlTree {
+        const tree = super.parse(url);
+        for (const [key, value] of Object.entries(tree.queryParams)) {
+          if (typeof value === 'string' && value.startsWith('{')) {
+            tree.queryParams[key] = JSON.parse(value);
+          }
+        }
+        return tree;
+      }
+      override serialize(tree: UrlTree): string {
+        const queryParams = Object.fromEntries(
+          Object.entries(tree.queryParams).map(([key, value]) => [
+            key,
+            typeof value === 'object' && value !== null ? JSON.stringify(value) : value,
+          ]),
+        );
+        return super.serialize(new UrlTree(tree.root, queryParams, tree.fragment));
+      }
+    }
+
+    function setUp() {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([{path: 'list', children: []}]),
+          provideLocationMocks(),
+          {provide: UrlSerializer, useClass: JsonQueryParamSerializer},
+        ],
+      });
+      const router = TestBed.inject(Router);
+      const skipped: NavigationSkipped[] = [];
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationSkipped) skipped.push(e);
+      });
+      return {router, skipped};
+    }
+
+    function currentQueryParams(router: Router) {
+      return router.routerState.snapshot.root.queryParams;
+    }
+
+    it('should not skip a navigation to a URL that only the custom serializer tells apart', async () => {
+      const {router, skipped} = setUp();
+
+      await router.navigate(['/list'], {queryParams: {filter: {color: 'red'}}});
+      expect(await router.navigate(['/list'], {queryParams: {filter: {color: 'blue'}}})).toBe(true);
+      expect(currentQueryParams(router)).toEqual({filter: {color: 'blue'}});
+      expect(skipped).toEqual([]);
+
+      // Navigating to the URL we're already on is still skipped.
+      expect(await router.navigate(['/list'], {queryParams: {filter: {color: 'blue'}}})).toBe(
+        false,
+      );
+      expect(skipped.length).toBe(1);
+      expect(skipped[0].code).toBe(NavigationSkippedCode.IgnoredSameUrlNavigation);
+    });
+
+    it('should update the browser URL when it only differs according to the custom serializer', async () => {
+      const {router, skipped} = setUp();
+      const location = TestBed.inject(Location);
+
+      await router.navigate(['/list'], {queryParams: {filter: {color: 'red'}}});
+      const redPath = location.path();
+      // The router is now on blue while the browser URL still shows red.
+      await router.navigate(['/list'], {
+        queryParams: {filter: {color: 'blue'}},
+        skipLocationChange: true,
+      });
+      expect(location.path()).toBe(redPath);
+
+      expect(await router.navigate(['/list'], {queryParams: {filter: {color: 'blue'}}})).toBe(true);
+      expect(location.path()).toBe(router.url);
+      expect(location.path()).not.toBe(redPath);
+      expect(skipped).toEqual([]);
+    });
   });
 
   it('navigation works when a redirecting NavigationCancel event causes another synchronous navigation', async () => {
