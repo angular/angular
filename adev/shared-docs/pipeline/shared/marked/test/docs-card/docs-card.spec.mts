@@ -49,6 +49,14 @@ describe('markdown to html', () => {
     expect(cardEl.querySelector('svg')).toBeTruthy();
   });
 
+  it('renders markdown in the title', () => {
+    const cardEl = markdownDocument.querySelectorAll('.docs-card')[4];
+    const titleEl = cardEl.querySelector('h3')!;
+
+    expect(titleEl.textContent?.trim()).toBe('New input() API');
+    expect(titleEl.querySelector('code')?.textContent).toBe('input()');
+  });
+
   it('does not create empty h3 tags when title is empty', () => {
     const cardEl = markdownDocument.querySelectorAll('.docs-card')[3];
 

@@ -6,3 +6,4 @@ Card Content with a symbol: `CommonModule`
 <docs-card title="" link="Open on Playground" href="/playground">
 The fastest way to play with an Angular app. No setup required.
 </docs-card>
+<docs-card title="New `input()` API" link="Migrate now" href="reference/migrations/signal-inputs"></docs-card>
