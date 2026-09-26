@@ -20,6 +20,7 @@ import {
 } from '../../hydration/skip_hydration';
 import {
   canHydrateNode,
+  getProtectedAttributeName,
   getSerializedContainerViews,
   markRNodeAsClaimedByHydration,
   markRNodeAsSkippedByHydration,
@@ -55,6 +56,7 @@ import {
   isSkipHydrationRootTNode,
   lastNodeWasCreated,
   leaveSkipHydrationBlock,
+  setSkippedStaticAttrName,
 } from '../state';
 import {
   directiveHostEndFirstCreatePass,
@@ -340,11 +342,13 @@ function locateOrCreateElementNodeImpl(
 
   // Regular creation mode.
   if (isNodeCreationMode) {
+    setSkippedStaticAttrName(null);
     return createElementNode(lView[RENDERER], name, getNamespace());
   }
 
   // Hydration mode, looking up an existing element in DOM.
   const hydrationInfo = lView[HYDRATION]!;
+  setSkippedStaticAttrName(getProtectedAttributeName(hydrationInfo, index));
   const native = locateNextRNode<RElement>(hydrationInfo, tView, lView, tNode)!;
   ngDevMode && validateMatchingNode(native, Node.ELEMENT_NODE, name, lView, tNode);
   ngDevMode && markRNodeAsClaimedByHydration(native);
