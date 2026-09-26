@@ -21,6 +21,7 @@ import {
 import {TcbDirectiveMetadata, TcbInputMapping} from '../api';
 import {Context} from './context';
 import {TcbExpr} from './codegen';
+import {isNgTemplate} from '../../ml_parser/tags';
 
 export interface TcbBoundAttribute {
   value: AST | string;
@@ -119,7 +120,7 @@ export function getBoundAttributes(
   };
 
   if (node instanceof Template) {
-    if (node.tagName === 'ng-template') {
+    if (node.tagName && isNgTemplate(node.tagName)) {
       node.inputs.forEach(processAttribute);
       node.attributes.forEach(processAttribute);
     }

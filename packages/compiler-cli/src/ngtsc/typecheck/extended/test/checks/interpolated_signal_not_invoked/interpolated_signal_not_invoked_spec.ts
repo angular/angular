@@ -55,6 +55,51 @@ runInEachFileSystem(() => {
     });
   });
 
+  it('should produce a warning when a signal is not invoked in an svg:ng-template', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      {
+        fileName,
+        declarations: [
+          {
+            type: 'directive',
+            name: 'TestDir',
+            selector: '[dir]',
+            inputs: {
+              myInput: 'myInput',
+            },
+          },
+        ],
+        templates: {
+          'TestCmp': `<svg><ng-template dir myInput="{{mySignal}}"></ng-template></svg>`,
+        },
+        source: `
+          import {signal} from '@angular/core';
+
+          export class TestDir {
+            myInput: any;
+          }
+
+          export class TestCmp {
+            mySignal = signal<number>(0);
+          }`,
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+      templateTypeChecker,
+      program.getTypeChecker(),
+      [interpolatedSignalFactory],
+      {} /* options */,
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(1);
+    expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+    expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+    expect(getSourceCodeForDiagnostic(diags[0])).toBe('mySignal');
+  });
+
   it('should produce a warning when a signal is not invoked', () => {
     const fileName = absoluteFrom('/main.ts');
     const {program, templateTypeChecker} = setup([
