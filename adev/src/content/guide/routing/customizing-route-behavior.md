@@ -242,6 +242,24 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
 }
 ```
 
+### Component reuse and guards
+
+The router decides whether to activate or deactivate a route separately from whether to reuse its component. It runs the `canActivate`, `canActivateChild` and `canDeactivate` guards and the resolvers before it asks the route reuse strategy about the component. On a route that stays the same, it only runs them again as configured by [`runGuardsAndResolvers`](api/router/RunGuardsAndResolvers).
+
+For example, if `shouldReuseRoute` returns `false` so that a component is recreated when only its query parameters change, the route itself doesn't change. The router destroys the old component without calling its `canDeactivate` guard, and the new component gets the data resolved for the old one instead of running the resolvers again. If the route needs them, set `runGuardsAndResolvers`:
+
+```ts
+{
+  path: 'orders',
+  component: Orders,
+  canDeactivate: [unsavedChangesGuard],
+  resolve: {orders: ordersResolver},
+  runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+}
+```
+
+With this setting, the guards and resolvers run on every query parameter change, even when your strategy keeps the component, and the `canActivate` guards of the route and the `canActivateChild` guards of its parents run as well. To run them only when your strategy recreates the component, pass a function to `runGuardsAndResolvers` instead.
+
 ### Manually destroying detached route handles
 
 When implementing a custom `RouteReuseStrategy`, you may need to manually destroy a `DetachedRouteHandle` if you decide to discard it without reattaching it. For example, if your strategy has a cache size limit or expires handles after a certain time, you must ensure the component and its state are properly destroyed to avoid memory leaks.
