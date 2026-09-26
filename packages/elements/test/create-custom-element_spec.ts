@@ -9,6 +9,7 @@
 import {
   Component,
   destroyPlatform,
+  Directive,
   DoBootstrap,
   EventEmitter,
   Injector,
@@ -35,6 +36,8 @@ interface WithFooBar {
   barBar: string;
   fooTransformed: unknown;
   fooSignal: string | null;
+  exposedHostInput: string;
+  exposedHostSignal: string | null;
 }
 
 describe('createCustomElement', () => {
@@ -75,6 +78,8 @@ describe('createCustomElement', () => {
       'barbar',
       'foo-transformed',
       'foo-signal',
+      'exposed-host-input',
+      'exposed-host-signal',
     ]);
   });
 
@@ -91,6 +96,21 @@ describe('createCustomElement', () => {
     expect(strategy.getInputValue('barBar')).toBe('value-barbar');
     expect(strategy.getInputValue('fooTransformed')).toBe(true);
     expect(strategy.getInputValue('fooSignal')).toBe('value-signal');
+  });
+
+  it('should expose host directive inputs and preserve their transforms', () => {
+    const element = new NgElementCtor(injector);
+
+    element.setAttribute('exposed-host-input', 'initial');
+    element.connectedCallback();
+
+    expect(strategy.getInputValue('exposedHostInput')).toBe('host:initial');
+
+    element.exposedHostInput = 'updated';
+    expect(strategy.getInputValue('exposedHostInput')).toBe('host:updated');
+
+    // Inputs that the component did not expose must not become part of the custom-element API.
+    expect(NgElementCtor.observedAttributes).not.toContain('hidden-host-input');
   });
 
   it('should work even if the constructor is not called (due to polyfill)', () => {
@@ -342,6 +362,19 @@ describe('createCustomElement', () => {
     expect(isSignal(element.fooFoo)).toBe(true);
   });
 
+  it('should return the value from an exposed host directive signal input getter', () => {
+    const {selector, ElementCtor} = createTestCustomElementWithDefaultStrategy();
+    const element = document.createElement(selector) as HTMLElement & {
+      exposedHostSignal: string | null;
+    };
+    element.setAttribute('exposed-host-signal', 'host-signal-value');
+
+    customElements.define(selector, ElementCtor);
+    testContainer.appendChild(element);
+
+    expect(element.exposedHostSignal).toBe('host-signal-value');
+  });
+
   // Helpers
   function createAndRegisterTestCustomElement(strategyFactory: NgElementStrategyFactory) {
     const {selector, ElementCtor} = createTestCustomElement(strategyFactory);
@@ -365,10 +398,34 @@ describe('createCustomElement', () => {
     };
   }
 
+  function createTestCustomElementWithDefaultStrategy() {
+    return {
+      selector: `test-element-${++selectorUid}`,
+      ElementCtor: createCustomElement(TestComponent, {injector}),
+    };
+  }
+
+  @Directive()
+  class TestHostDirective {
+    @Input({transform: (value: unknown) => `host:${value}`}) hostInput!: string;
+    @Input() hiddenHostInput!: string;
+    // This needs to apply the decorator and pass `isSignal`, because
+    // the compiler transform doesn't run against JIT tests.
+    @Input({isSignal: true} as Input) hostSignal = input<string | null>(null);
+    @Output() hostOutput = new EventEmitter<string>();
+  }
+
   @Component({
     selector: 'test-component',
     template: 'TestComponent|foo({{ fooFoo }})|bar({{ barBar }})',
     standalone: false,
+    hostDirectives: [
+      {
+        directive: TestHostDirective,
+        inputs: ['hostInput: exposedHostInput', 'hostSignal: exposedHostSignal'],
+        outputs: ['hostOutput: exposedHostOutput'],
+      },
+    ],
   })
   class TestComponent {
     @Input() fooFoo: string = 'foo';
