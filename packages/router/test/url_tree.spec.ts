@@ -7,6 +7,7 @@
  */
 
 import {TestBed} from '@angular/core/testing';
+import {provideRouter} from '../src/provide_router';
 import {Router} from '../src/router';
 import {
   containsTree,
@@ -14,6 +15,8 @@ import {
   exactMatchOptions,
   isActive,
   subsetMatchOptions,
+  UrlSerializer,
+  UrlTree,
 } from '../src/url_tree';
 
 describe('UrlTree', () => {
@@ -157,6 +160,7 @@ describe('UrlTree', () => {
       it('should allow partial match options and use subset match options as default', () => {
         const router = {
           parseUrl: (url: string) => serializer.parse(url),
+          serializeUrl: (tree: UrlTree) => serializer.serialize(tree),
           lastSuccessfulNavigation: () => ({finalUrl: serializer.parse('/one/two?a=1&b=2')}),
         } as unknown as Router;
 
@@ -176,12 +180,90 @@ describe('UrlTree', () => {
       it('should use subset match options as base for other properties', () => {
         const router = {
           parseUrl: (url: string) => serializer.parse(url),
+          serializeUrl: (tree: UrlTree) => serializer.serialize(tree),
           lastSuccessfulNavigation: () => ({finalUrl: serializer.parse('/one/two#frag')}),
         } as unknown as Router;
         const t2 = serializer.parse('/one/two#diff');
 
         // fragment is ignored by default in subsetMatchOptions
         expect(isActive(t2, router, {paths: 'exact'})()).toBe(true);
+      });
+
+      // `{tag: ['x']}` and `{tag: 'x'}` both serialize to `?tag=x` with the default serializer, so
+      // they must match no matter how the router got to that URL.
+      describe('with query params that do not survive a serializer round-trip', () => {
+        beforeEach(() => {
+          TestBed.configureTestingModule({
+            providers: [provideRouter([{path: '**', children: []}])],
+          });
+        });
+
+        it('should match a single-item array against a URL parsed from a string', async () => {
+          const router = TestBed.inject(Router);
+          const link = router.createUrlTree(['/a'], {queryParams: {tag: ['x']}});
+
+          await router.navigateByUrl('/a?tag=x');
+
+          expect(isActive(link, router, exactMatchOptions)()).toBe(true);
+          expect(isActive(link, router, subsetMatchOptions)()).toBe(true);
+        });
+
+        it('should match a string against a URL navigated to with a single-item array', async () => {
+          const router = TestBed.inject(Router);
+
+          await router.navigateByUrl(router.createUrlTree(['/a'], {queryParams: {tag: ['x']}}));
+
+          expect(isActive('/a?tag=x', router, exactMatchOptions)()).toBe(true);
+          expect(isActive('/a?tag=x', router, subsetMatchOptions)()).toBe(true);
+        });
+
+        it('should ignore empty arrays, which are dropped when serialized', async () => {
+          const router = TestBed.inject(Router);
+          const link = router.createUrlTree(['/a'], {queryParams: {tag: [], q: '1'}});
+
+          await router.navigateByUrl('/a?q=1');
+          expect(isActive(link, router, exactMatchOptions)()).toBe(true);
+
+          await router.navigateByUrl(link);
+          expect(isActive('/a?q=1', router, exactMatchOptions)()).toBe(true);
+        });
+
+        it('should keep values apart when a custom serializer keeps them apart', async () => {
+          // Writes arrays as JSON, so `{tag: ['x']}` becomes `?tag=%5B%22x%22%5D`, not `?tag=x`.
+          class JsonArraySerializer extends DefaultUrlSerializer {
+            override parse(url: string): UrlTree {
+              const tree = super.parse(url);
+              for (const [key, value] of Object.entries(tree.queryParams)) {
+                if (typeof value === 'string' && value.startsWith('[')) {
+                  tree.queryParams[key] = JSON.parse(value);
+                }
+              }
+              return tree;
+            }
+            override serialize(tree: UrlTree): string {
+              const queryParams = Object.fromEntries(
+                Object.entries(tree.queryParams).map(([key, value]) => [
+                  key,
+                  Array.isArray(value) ? JSON.stringify(value) : value,
+                ]),
+              );
+              return super.serialize(new UrlTree(tree.root, queryParams, tree.fragment));
+            }
+          }
+          TestBed.overrideProvider(UrlSerializer, {useValue: new JsonArraySerializer()});
+          const router = TestBed.inject(Router);
+          const link = router.createUrlTree(['/a'], {queryParams: {tag: ['x']}});
+
+          await router.navigateByUrl('/a?tag=x');
+          expect(isActive(link, router, exactMatchOptions)()).toBe(false);
+
+          // Same-URL detection uses the default serializer, which would see `/a?tag=x` twice and skip
+          // the next navigation, so go somewhere else first.
+          await router.navigateByUrl('/b');
+          await router.navigateByUrl(link);
+          expect(isActive(link, router, exactMatchOptions)()).toBe(true);
+          expect(isActive('/a?tag=x', router, exactMatchOptions)()).toBe(false);
+        });
       });
     });
 
