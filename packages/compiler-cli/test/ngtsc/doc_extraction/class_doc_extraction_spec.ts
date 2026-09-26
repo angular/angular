@@ -721,6 +721,36 @@ runInEachFileSystem(() => {
       expect(fooEntry.name).toBe('foo');
       expect(fooEntry.memberType).toBe(MemberType.Property);
       expect((fooEntry as PropertyEntry).type).toBe('string');
+      expect(fooEntry.memberTags).not.toContain(MemberTags.Inherited);
+    });
+
+    it('should only mark constructor parameter properties from a parent as inherited', () => {
+      env.write(
+        'index.ts',
+        `
+        class Parent {
+          constructor(public name: string) {}
+        }
+
+        export class Child extends Parent {
+          constructor(public age: number) { super(''); }
+        }`,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const classEntry = docs[0] as ClassEntry;
+
+      const ageEntry = classEntry.members.find((member) => member.name === 'age')!;
+      expect(ageEntry).toBeDefined();
+      expect(ageEntry.memberType).toBe(MemberType.Property);
+      expect(ageEntry.memberTags).not.toContain(MemberTags.Inherited);
+
+      const nameEntry = classEntry.members.find((member) => member.name === 'name')!;
+      expect(nameEntry).toBeDefined();
+      expect(nameEntry.memberType).toBe(MemberType.Property);
+      expect(nameEntry.memberTags).toContain(MemberTags.Inherited);
     });
 
     it('should not extract a constructor without parameters', () => {
