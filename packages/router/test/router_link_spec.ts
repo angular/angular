@@ -6,11 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ViewportScroller} from '@angular/common';
 import {Component, inject, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Router, RouterLink, RouterModule, provideRouter} from '../index';
+import {firstValueFrom} from 'rxjs';
+import {filter} from 'rxjs/operators';
+import {
+  Router,
+  RouterLink,
+  RouterModule,
+  Scroll,
+  provideRouter,
+  withInMemoryScrolling,
+} from '../index';
+import {ROUTER_SCROLLER} from '../src/router_scroller';
 import {RouterTestingHarness} from '../testing';
+import {useAutoTick} from '@angular/private/testing';
 
 describe('RouterLink', () => {
   it('does not modify tabindex if already set on non-anchor element', async () => {
@@ -328,5 +340,76 @@ describe('RouterLink', () => {
     expect(anchor.getAttribute('href')).toBe('/initial/child');
     await harness.navigateByUrl('/different');
     expect(anchor.getAttribute('href')).toBe('/different/child');
+  });
+
+  describe('scroll', () => {
+    useAutoTick();
+
+    @Component({
+      template: `
+        <a id="manual" routerLink="/a" scroll="manual">manual</a>
+        <a id="default" routerLink="/b">default</a>
+      `,
+      imports: [RouterLink],
+    })
+    class LinksWithScroll {}
+
+    function click(fixture: ComponentFixture<unknown>, id: string) {
+      fixture.nativeElement.querySelector(`#${id}`).click();
+    }
+
+    it('passes the scroll option to the navigation', async () => {
+      TestBed.configureTestingModule({providers: [provideRouter([{path: '**', children: []}])]});
+      const router = TestBed.inject(Router);
+      const fixture = TestBed.createComponent(LinksWithScroll);
+      await fixture.whenStable();
+
+      click(fixture, 'manual');
+      await fixture.whenStable();
+
+      expect(router.lastSuccessfulNavigation()?.extras.scroll).toBe('manual');
+    });
+
+    it('does not add the scroll option when the input is not set', async () => {
+      TestBed.configureTestingModule({providers: [provideRouter([{path: '**', children: []}])]});
+      const router = TestBed.inject(Router);
+      const navigateSpy = spyOn(router, 'navigateByUrl').and.callThrough();
+      const fixture = TestBed.createComponent(LinksWithScroll);
+      await fixture.whenStable();
+
+      click(fixture, 'default');
+      await fixture.whenStable();
+
+      expect(navigateSpy).toHaveBeenCalledTimes(1);
+      expect('scroll' in navigateSpy.calls.mostRecent().args[1]!).toBe(false);
+    });
+
+    it('skips scroll restoration for links with scroll="manual"', async () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            [{path: '**', children: []}],
+            withInMemoryScrolling({scrollPositionRestoration: 'top'}),
+          ),
+        ],
+      });
+      const router = TestBed.inject(Router);
+      const scrollToSpy = spyOn(TestBed.inject(ViewportScroller), 'scrollToPosition');
+      TestBed.inject(ROUTER_SCROLLER).init();
+      const fixture = TestBed.createComponent(LinksWithScroll);
+      await fixture.whenStable();
+      const nextScroll = () =>
+        firstValueFrom(router.events.pipe(filter((e): e is Scroll => e instanceof Scroll)));
+
+      let scroll = nextScroll();
+      click(fixture, 'manual');
+      expect((await scroll).scrollBehavior).toBe('manual');
+      expect(scrollToSpy).not.toHaveBeenCalled();
+
+      scroll = nextScroll();
+      click(fixture, 'default');
+      await scroll;
+      expect(scrollToSpy).toHaveBeenCalledWith([0, 0]);
+    });
   });
 });
