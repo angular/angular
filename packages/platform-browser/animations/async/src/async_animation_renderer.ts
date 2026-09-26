@@ -28,7 +28,10 @@ import {
   ɵRuntimeError as RuntimeError,
   type ListenerOptions,
 } from '@angular/core';
-import {ɵRuntimeErrorCode as RuntimeErrorCode} from '../../../index';
+import {
+  ɵdisableThrowOnSyntheticProps as disableThrowOnSyntheticProps,
+  ɵRuntimeErrorCode as RuntimeErrorCode,
+} from '../../../index';
 
 const ANIMATION_PREFIX = '@';
 
@@ -125,9 +128,7 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
     }
 
     // We need to prevent the DomRenderer to throw an error because of synthetic properties
-    if (typeof (renderer as any).throwOnSyntheticProps === 'boolean') {
-      (renderer as any).throwOnSyntheticProps = false;
-    }
+    disableThrowOnSyntheticProps(renderer);
 
     // Using a dynamic renderer to switch the renderer implementation once the module is loaded.
     const dynamicRenderer = new DynamicDelegationRenderer(renderer);

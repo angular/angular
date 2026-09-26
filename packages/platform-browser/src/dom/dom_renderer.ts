@@ -538,6 +538,12 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 }
 
+export function disableThrowOnSyntheticProps(renderer: Renderer2): void {
+  if (renderer instanceof DefaultDomRenderer2) {
+    renderer.throwOnSyntheticProps = false;
+  }
+}
+
 const AT_CHARCODE = (() => '@'.charCodeAt(0))();
 
 function checkNoSyntheticProp(name: string, nameKind: string) {
