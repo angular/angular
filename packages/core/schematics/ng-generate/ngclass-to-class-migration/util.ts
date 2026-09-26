@@ -296,6 +296,19 @@ export class NgClassCollector extends RecursiveVisitor {
           attr.valueSpan.end.offset,
         );
 
+        // `[class]` supports the same string and string[] shapes as `[ngClass]`, so a static
+        // string or array literal can be handed to it unchanged.
+        const staticLiteral = tryParseStaticStringOrArrayLiteral(expr);
+
+        if (staticLiteral !== null) {
+          this.replacements.push({
+            start: attr.sourceSpan.start.offset,
+            end: attr.sourceSpan.end.offset,
+            replacement: buildAttribute('[class]', staticLiteral),
+          });
+          continue;
+        }
+
         const parseResult = tryParseStaticObjectLiteral(expr);
 
         if (parseResult === null) {
@@ -316,7 +329,7 @@ export class NgClassCollector extends RecursiveVisitor {
             replacement = '[class]=""';
           } else {
             // Normal single condition: use [class.className]="condition"
-            replacement = `[class.${key}]="${value}"`;
+            replacement = buildAttribute(`[class.${key}]`, value);
           }
         } else {
           // Multiple bindings. If any original key contained spaces, [class]="{...}" object
@@ -336,7 +349,7 @@ export class NgClassCollector extends RecursiveVisitor {
 
             if (config.migrateSpaceSeparatedKey && canExpand) {
               replacement = staticMatch
-                .map(({key, value}) => `[class.${key}]="${value}"`)
+                .map(({key, value}) => buildAttribute(`[class.${key}]`, value))
                 .join(' ');
             } else {
               // Cannot produce valid [class]="..." output — leave binding as-is.
@@ -345,7 +358,7 @@ export class NgClassCollector extends RecursiveVisitor {
             }
           } else {
             // All keys are single class names: [class]="{'cls1': cond1, 'cls2': cond2}" is valid.
-            replacement = `[class]="${expr}"`;
+            replacement = buildAttribute('[class]', expr);
           }
         }
 
@@ -368,6 +381,91 @@ export class NgClassCollector extends RecursiveVisitor {
 
     return super.visitElement(element, config);
   }
+}
+
+/**
+ * Attempts to parse an expression as a static string literal or as an array literal whose
+ * elements are all static string literals. Returns the expression text to place inside the
+ * generated `[class]="..."` binding, or `null` when the expression isn't statically known.
+ *
+ * `[class]` accepts `string | string[] | Set<string> | {[key: string]: any}` (see
+ * `toStylingKeyValueArray` in `packages/core/src/render3/instructions/styling.ts`), so both
+ * shapes map onto it without a behavioural change. Anything dynamic - identifiers, calls,
+ * ternaries, concatenations - is rejected so that those bindings keep using `NgClass`.
+ */
+function tryParseStaticStringOrArrayLiteral(expr: string): string | null {
+  const trimmedExpr = expr.trim();
+
+  let initializer: ts.Expression;
+  try {
+    const sourceFile = ts.createSourceFile(
+      'temp.ts',
+      `const value = ${trimmedExpr}`,
+      ts.ScriptTarget.Latest,
+      true,
+    );
+
+    const variableStatement = sourceFile.statements[0];
+    if (!ts.isVariableStatement(variableStatement)) {
+      return null;
+    }
+
+    const declaration = variableStatement.declarationList.declarations[0];
+    if (!declaration?.initializer) {
+      return null;
+    }
+
+    initializer = declaration.initializer;
+  } catch {
+    return null;
+  }
+
+  // A lone string literal, e.g. [ngClass]="'first second'".
+  if (isStaticStringLiteral(initializer)) {
+    return trimmedExpr;
+  }
+
+  if (!ts.isArrayLiteralExpression(initializer)) {
+    return null;
+  }
+
+  // An empty array is already handled by `tryParseStaticObjectLiteral`, which maps it to
+  // `[class]=""`. Defer to it so that behaviour stays unchanged.
+  if (initializer.elements.length === 0) {
+    return null;
+  }
+
+  for (const element of initializer.elements) {
+    if (!isStaticStringLiteral(element)) {
+      return null;
+    }
+
+    // `NgClass` splits each array entry on whitespace, but `[class]` drops any entry that
+    // contains a space (see `classKeyValueArraySet`), so such an array cannot be forwarded.
+    if (/\s/.test(element.text)) {
+      return null;
+    }
+  }
+
+  return trimmedExpr;
+}
+
+/**
+ * Builds an attribute for the migrated template. The value is emitted verbatim, so the quote
+ * character has to match it: a value containing a double quote (which can only come from a
+ * single-quoted attribute such as `[ngClass]='["a", "b"]'`, and therefore never contains a
+ * single quote) has to be wrapped in single quotes, or it would terminate the attribute early
+ * and produce invalid HTML.
+ */
+function buildAttribute(name: string, value: string): string {
+  return value.includes('"') ? `${name}='${value}'` : `${name}="${value}"`;
+}
+
+/** Whether the expression is a string literal with no interpolation. */
+function isStaticStringLiteral(
+  node: ts.Expression,
+): node is ts.StringLiteral | ts.NoSubstitutionTemplateLiteral {
+  return ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node);
 }
 
 function tryParseStaticObjectLiteral(expr: string): {
@@ -508,9 +606,11 @@ function extractPropertyKey(name: ts.PropertyName): string | null {
  * Extracts text from property value
  */
 function extractPropertyValue(initializer: ts.Expression): string | null {
-  // String literals: 'value' or "value"
+  // String literals: 'value' or "value". Keep them exactly as written rather than re-wrapping
+  // their text in single quotes: the text may contain a quote (e.g. "\"yes\"" in a single-quoted
+  // attribute), which would then clash with the quote `buildAttribute` picks for the attribute.
   if (ts.isStringLiteral(initializer)) {
-    return `'${initializer.text}'`;
+    return initializer.getText();
   }
 
   // Numeric literals: 42, 3.14
