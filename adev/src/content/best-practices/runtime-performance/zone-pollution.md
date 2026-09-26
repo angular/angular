@@ -25,7 +25,7 @@ In such cases, you can instruct Angular to avoid calling change detection for ta
 import { Component, NgZone, OnInit, inject } from '@angular/core';
 
 @Component(...)
-class AppComponent implements OnInit {
+class App implements OnInit {
   private ngZone = inject(NgZone);
 
   ngOnInit() {
@@ -43,7 +43,7 @@ import { Component, NgZone, OnInit, inject } from '@angular/core';
 import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
-class AppComponent implements OnInit {
+class App implements OnInit {
   private ngZone = inject(NgZone);
 
   ngOnInit() {
@@ -65,7 +65,7 @@ import { Component, NgZone, OnInit, output, inject } from '@angular/core';
 import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
-class AppComponent implements OnInit {
+class App implements OnInit {
   private ngZone = inject(NgZone);
 
   plotlyClick = output<Plotly.PlotMouseEvent>();
@@ -97,7 +97,7 @@ import { Component, NgZone, OnInit, output, inject } from '@angular/core';
 import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
-class AppComponent implements OnInit {
+class App implements OnInit {
   private ngZone = inject(NgZone);
 
   plotlyClick = output<Plotly.PlotMouseEvent>();
