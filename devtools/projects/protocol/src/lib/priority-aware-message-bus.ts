@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MessageBus} from './message-bus';
+import {invokeCallback, MessageBus, Parameters} from './message-bus';
 import {Events, Topic} from './messages';
 
 type ThrottleTopicDuration = {
@@ -47,6 +47,16 @@ const TOPIC_REQUEST: TopicSequence = {
   nestedProperties: 'getNestedProperties',
 };
 
+function wrapCallback<F extends (...args: never[]) => unknown>(
+  callback: F,
+  after: () => void,
+): F {
+  return ((...args: Parameters<F>) => {
+    invokeCallback(callback, args);
+    after();
+  }) as F;
+}
+
 export class PriorityAwareMessageBus extends MessageBus<Events> {
   private _throttled: ThrottledTopics = {};
   private _inProgress: TopicsInProgress = {};
@@ -61,17 +71,11 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
   }
 
   override on<E extends Topic>(topic: E, cb: Events[E]): () => void {
-    return this._bus.on(topic, (...args: any) => {
-      (cb as any)(...args);
-      this._afterMessage(topic);
-    });
+    return this._bus.on<E>(topic, wrapCallback(cb, () => this._afterMessage(topic)));
   }
 
   override once<E extends Topic>(topic: E, cb: Events[E]): void {
-    return this._bus.once(topic, (...args: any) => {
-      (cb as any)(...args);
-      this._afterMessage(topic);
-    });
+    return this._bus.once<E>(topic, wrapCallback(cb, () => this._afterMessage(topic)));
   }
 
   override emit<E extends Topic>(topic: E, args?: Parameters<Events[E]>): boolean {

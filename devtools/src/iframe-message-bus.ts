@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Events, MessageBus, Parameters} from '../projects/protocol';
+import {Events, invokeCallback, MessageBus, Parameters} from '../projects/protocol';
 
 type ListenerFn = (e: MessageEvent) => void;
 
@@ -27,7 +27,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
         return;
       }
       if (e.data.topic === topic) {
-        (cb as () => void).apply(null, e.data.args);
+        invokeCallback(cb, e.data.args);
       }
     };
     window.addEventListener('message', listener);
@@ -44,7 +44,7 @@ export class IFrameMessageBus extends MessageBus<Events> {
         return;
       }
       if (e.data.topic === topic) {
-        (cb as any).apply(null, e.data.args);
+        invokeCallback(cb, e.data.args);
         window.removeEventListener('message', listener);
       }
     };

@@ -8,6 +8,13 @@
 
 export type Parameters<F> = F extends (...args: infer T) => any ? T : never;
 
+export function invokeCallback<F extends (...args: never[]) => unknown>(
+  callback: F,
+  args: Parameters<F>,
+): void {
+  callback.apply(null, args);
+}
+
 export abstract class MessageBus<T> {
   abstract on<E extends keyof T>(topic: E, cb: T[E]): () => void;
   abstract once<E extends keyof T>(topic: E, cb: T[E]): void;
