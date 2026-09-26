@@ -21,8 +21,13 @@ interface ApiManifestPackage {
 async function main() {
   const [paramFilePath] = process.argv.slice(2);
   const rawParamLines = (await readFile(paramFilePath, {encoding: 'utf8'})).split('\n');
-  const [srcs, outputFilenameExecRootRelativePath, apiManifestPath, definedRoutesAsStr] =
-    rawParamLines;
+  const [
+    srcs,
+    outputFilenameExecRootRelativePath,
+    apiManifestPath,
+    definedRoutesAsStr,
+    editContentUrl,
+  ] = rawParamLines;
 
   // The highlighter needs to be setup asynchronously
   // so we're doing it at the start of the pipeline
@@ -70,6 +75,7 @@ async function main() {
         apiEntries: mapManifestToEntries(apiManifest),
         highlighter,
         definedRoutes,
+        editContentUrl: editContentUrl || undefined,
       });
 
       // The expected file name structure is the [name of the file].md.html.

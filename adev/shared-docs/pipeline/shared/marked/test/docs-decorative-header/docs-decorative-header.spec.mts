@@ -47,5 +47,22 @@ describe('markdown to html', () => {
         'https://github.com/angular/angular/edit/main/adev/src/content/overview.md',
       );
     });
+
+    it(`uses the configured edit content url (gradientBackground=${gradientBackground})`, () => {
+      const markdownDocument = JSDOM.fragment(
+        parseMarkdown(
+          `<docs-decorative-header title="Custom Title" gradientBackground="${gradientBackground}"></docs-decorative-header>`,
+          {
+            ...rendererContext,
+            markdownFilePath: 'docs/overview.md',
+            editContentUrl: 'https://github.com/angular/components/edit/main',
+          },
+        ),
+      );
+
+      expect(markdownDocument.querySelector('.docs-github-links')?.getAttribute('href')).toBe(
+        'https://github.com/angular/components/edit/main/docs/overview.md',
+      );
+    });
   }
 });

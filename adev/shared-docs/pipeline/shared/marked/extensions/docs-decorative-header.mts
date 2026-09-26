@@ -76,7 +76,7 @@ function getStandardDecorativeHeader(renderer: RendererThis, token: DocsDecorati
       <div class="docs-header-content">
         <docs-breadcrumb></docs-breadcrumb>
 
-        ${getPageTitle(token.title, (renderer.parser.renderer as AdevDocsRenderer).context.markdownFilePath)}
+        ${getPageTitle(token.title, (renderer.parser.renderer as AdevDocsRenderer).context)}
 
         <p>${token.body}</p>
       </div>
@@ -98,7 +98,7 @@ function getGradientDecorativeHeader(renderer: RendererThis, token: DocsDecorati
   <div class="docs-decorative-header-container">
     <div class="docs-decorative-gradient-header">
       <div class="docs-header-content">
-        ${getPageTitle(token.title, (renderer.parser.renderer as AdevDocsRenderer).context.markdownFilePath)}
+        ${getPageTitle(token.title, (renderer.parser.renderer as AdevDocsRenderer).context)}
         <p>${token.body}</p>
       </div>
       <!-- illustration -->

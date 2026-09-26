@@ -26,6 +26,10 @@ export interface RendererContext {
    */
   definedRoutes?: string[];
   /**
+   * Base url for editing the markdown file in its repository, used for the "Edit this page" link.
+   */
+  editContentUrl?: string;
+  /**
    * Map of API entries available for linking within the rendered markdown file.
    */
   apiEntries?: Record<string, {moduleName: string; aliases?: string[]}>;
