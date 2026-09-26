@@ -9,7 +9,13 @@
 import {resource, ɵisPromise} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../../field/validation';
-import type {LogicFn, ReadonlyFieldTree, SchemaPath, SchemaPathTree} from '../../types';
+import type {
+  AsyncValidationProcessingMode,
+  LogicFn,
+  ReadonlyFieldTree,
+  SchemaPath,
+  SchemaPathTree,
+} from '../../types';
 import {createMetadataKey, metadata} from '../metadata';
 import {validateAsync} from './validate_async';
 import {validateTree} from './validate_tree';
@@ -20,6 +26,24 @@ import {
   type WithOptionalFieldTree,
   type WithoutFieldTree,
 } from './validation_errors';
+
+/**
+ * Options for `validateStandardSchema`.
+ *
+ * @see [Signal Form Schema Validation](guide/forms/signals/validation#integration-with-schema-validation-libraries)
+ * @category validation
+ * @publicApi 22.0
+ */
+export interface StandardSchemaOptions {
+  /**
+   * Defines when asynchronous validation for this schema should be executed and processed.
+   * Overrides the form-level `processAsyncValidators` setting if specified.
+   *
+   * - `'whenSyncValid'`: Async validation runs only when all synchronous validation has passed.
+   * - `'always'`: Async validation runs regardless of whether synchronous validation errors are present.
+   */
+  readonly processAsyncValidators?: AsyncValidationProcessingMode;
+}
 
 /**
  * Utility type that removes a string index key when its value is `unknown`,
@@ -59,6 +83,7 @@ export type IgnoreUnknownProperties<T> =
  *
  * @param path The `FieldPath` to the field to validate.
  * @param schema The standard schema compatible validator to use for validation, or a LogicFn that returns the schema.
+ * @param options Optional configuration options for schema validation.
  * @template TSchema The type validated by the schema. This may be either the full `TValue` type,
  *   or a partial of it.
  * @template TValue The type of value stored in the field being validated.
@@ -70,6 +95,7 @@ export type IgnoreUnknownProperties<T> =
 export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProperties<TSchema>>(
   path: SchemaPath<TModel> & SchemaPathTree<TModel>,
   schema: StandardSchemaV1<TSchema> | LogicFn<TModel, StandardSchemaV1<unknown> | undefined>,
+  options?: StandardSchemaOptions,
 ) {
   // We create both a sync and async validator because the standard schema validator can return
   // either a sync result or a Promise, and we need to handle both cases. The sync validator
@@ -121,6 +147,7 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
       return issues.map((issue) => standardIssueToFormTreeError(fieldTreeOf<TModel>(path), issue));
     },
     onError: () => {},
+    processAsyncValidators: options?.processAsyncValidators,
   });
 }
 

@@ -9,7 +9,7 @@
 import {ApplicationRef, computed, Injector, linkedSignal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import * as z from 'zod';
-import {form, schema, validateHttp, validateStandardSchema} from '../../../../public_api';
+import {form, required, schema, validateHttp, validateStandardSchema} from '../../../../public_api';
 
 interface Flight {
   id: number;
@@ -85,6 +85,144 @@ describe('standard schema integration', () => {
     await TestBed.inject(ApplicationRef).whenStable();
 
     expect(nameForm.first().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'standardSchema',
+        issue: jasmine.objectContaining({
+          message: 'Too small: expected string to have >=2 characters',
+        }),
+      }),
+    ]);
+    expect(nameForm.last().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'standardSchema',
+        issue: jasmine.objectContaining({
+          message: 'Too small: expected string to have >=3 characters',
+        }),
+      }),
+    ]);
+  });
+
+  it('should not process async validation for standard schema when sync errors are present by default', async () => {
+    const injector = TestBed.inject(Injector);
+
+    const zodNameAsync = z
+      .object({
+        first: z.string().min(2),
+        last: z.string().min(3),
+      })
+      .refine(() => Promise.resolve());
+
+    const nameForm = form(
+      signal({first: '', last: ''}),
+      (p) => {
+        required(p.first);
+        validateStandardSchema(p, zodNameAsync);
+      },
+      {injector},
+    );
+
+    // Synchronous error from required() is present immediately
+    expect(nameForm.first().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'required',
+      }),
+    ]);
+    expect(nameForm.last().errors()).toEqual([]);
+
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    // Async validation from zod was not processed because syncValid was false
+    expect(nameForm.first().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'required',
+      }),
+    ]);
+    expect(nameForm.last().errors()).toEqual([]);
+  });
+
+  it('should process async validation for standard schema when sync errors are present if processAsyncValidators is "always" on form', async () => {
+    const injector = TestBed.inject(Injector);
+
+    const zodNameAsync = z
+      .object({
+        first: z.string().min(2),
+        last: z.string().min(3),
+      })
+      .refine(() => Promise.resolve());
+
+    const nameForm = form(
+      signal({first: '', last: ''}),
+      (p) => {
+        required(p.first);
+        validateStandardSchema(p, zodNameAsync);
+      },
+      {injector, processAsyncValidators: 'always'},
+    );
+
+    // Initially only the synchronous error is present
+    expect(nameForm.first().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'required',
+      }),
+    ]);
+    expect(nameForm.last().errors()).toEqual([]);
+
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    // After async validation resolves, both sync and async errors are present
+    expect(nameForm.first().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'required',
+      }),
+      jasmine.objectContaining({
+        kind: 'standardSchema',
+        issue: jasmine.objectContaining({
+          message: 'Too small: expected string to have >=2 characters',
+        }),
+      }),
+    ]);
+    expect(nameForm.last().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'standardSchema',
+        issue: jasmine.objectContaining({
+          message: 'Too small: expected string to have >=3 characters',
+        }),
+      }),
+    ]);
+  });
+
+  it('should process async validation for standard schema when sync errors are present if processAsyncValidators is "always" in validateStandardSchema options', async () => {
+    const injector = TestBed.inject(Injector);
+
+    const zodNameAsync = z
+      .object({
+        first: z.string().min(2),
+        last: z.string().min(3),
+      })
+      .refine(() => Promise.resolve());
+
+    const nameForm = form(
+      signal({first: '', last: ''}),
+      (p) => {
+        required(p.first);
+        validateStandardSchema(p, zodNameAsync, {processAsyncValidators: 'always'});
+      },
+      {injector},
+    );
+
+    expect(nameForm.first().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'required',
+      }),
+    ]);
+    expect(nameForm.last().errors()).toEqual([]);
+
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    expect(nameForm.first().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'required',
+      }),
       jasmine.objectContaining({
         kind: 'standardSchema',
         issue: jasmine.objectContaining({
