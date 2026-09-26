@@ -325,6 +325,44 @@ describe('ShadowCss, :host and :host-context', () => {
       );
     });
 
+    it('should not rewrite declaration values that look like :host', () => {
+      // Minifiers drop the space after the colon, which used to make `:host` match inside a
+      // declaration and take the value with it.
+      expect(shim(':host{container-name:host}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]{container-name:host}',
+      );
+
+      expect(shim(':host{container:host/inline-size}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]{container:host/inline-size}',
+      );
+
+      expect(shim('.foo{grid-area:host}', 'contenta', 'a-host')).toEqualCss(
+        '.foo[contenta]{grid-area:host}',
+      );
+
+      expect(shim('@media all{:host{container-name:host}}', 'contenta', 'a-host')).toEqualCss(
+        '@media all{[a-host]{container-name:host}}',
+      );
+
+      expect(shim(':host{content:":host"}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]{content:":host"}',
+      );
+
+      expect(
+        shim('div{grid-area:host;container-name:host-element}', 'contenta', 'a-host'),
+      ).toEqualCss('div[contenta]{grid-area:host;container-name:host-element}');
+
+      expect(
+        shim('@media screen{:host{container:host/inline-size}}', 'contenta', 'a-host'),
+      ).toEqualCss('@media screen{[a-host]{container:host/inline-size}}');
+    });
+
+    it('should not replace `:host-context` in declaration values', () => {
+      expect(shim(':host{container:host-context(foo)}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]{container:host-context(foo)}',
+      );
+    });
+
     it('should parse multiple rules containing :host-context and :host', () => {
       const input = `
             :host-context(outer1) :host(bar) {}

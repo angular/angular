@@ -919,10 +919,18 @@ export class ShadowCss {
     return this._safeSelector!.restore(scopedSelector);
   }
 
-  private _insertPolyfillHostInCssText(selector: string): string {
-    return selector
-      .replace(_colonHostContextRe, _polyfillHostContext)
-      .replace(_colonHostRe, _polyfillHost);
+  private _insertPolyfillHostInCssText(cssText: string): string {
+    // Only rewrite selectors. A declaration value can legitimately read like the pseudo class,
+    // as in `container-name:host` or `grid-area:host`, and must be left alone.
+    return processRules(cssText, (rule) => {
+      if (!rule.isBlock) {
+        return rule;
+      }
+      const selector = rule.selector
+        .replace(_colonHostContextRe, _polyfillHostContext)
+        .replace(_colonHostRe, _polyfillHost);
+      return new CssRule(selector, this._insertPolyfillHostInCssText(rule.content), rule.isBlock);
+    });
   }
 }
 
