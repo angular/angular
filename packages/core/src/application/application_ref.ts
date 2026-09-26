@@ -38,6 +38,7 @@ import {ComponentFactory} from '../render3/component_ref';
 import {getComponentDef, isStandalone} from '../render3/def_getters';
 import type {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
 import {ChangeDetectionMode, detectChangesInternal} from '../render3/instructions/change_detection';
+import {getDeclarationComponentDef} from '../render3/instructions/element_validation';
 import {profiler} from '../render3/profiler';
 import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
@@ -71,14 +72,24 @@ export function publishDefaultGlobalUtils() {
  * Sets the error for an invalid write to a signal to be an Angular `RuntimeError`.
  */
 export function publishSignalConfiguration(): void {
-  setThrowInvalidWriteToSignalError(() => {
+  setThrowInvalidWriteToSignalError((node) => {
     let errorMessage = '';
     if (ngDevMode) {
       const activeConsumer = getActiveConsumer();
-      errorMessage =
-        activeConsumer && isReactiveLViewConsumer(activeConsumer)
-          ? 'Writing to signals is not allowed while Angular renders the template (eg. interpolations)'
-          : 'Writing to signals is not allowed in a `computed`';
+      if (activeConsumer && isReactiveLViewConsumer(activeConsumer)) {
+        errorMessage =
+          'Writing to signals is not allowed while Angular renders the template (eg. interpolations)';
+        const componentName =
+          activeConsumer.lView && getDeclarationComponentDef(activeConsumer.lView)?.type?.name;
+        if (componentName) {
+          errorMessage += `. Template location: '${componentName}' component`;
+        }
+      } else {
+        errorMessage = 'Writing to signals is not allowed in a `computed`';
+      }
+      if (node.debugName) {
+        errorMessage += `. Signal: '${node.debugName}'`;
+      }
     }
     throw new RuntimeError(RuntimeErrorCode.SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT, errorMessage);
   });
