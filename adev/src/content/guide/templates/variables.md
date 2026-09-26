@@ -201,7 +201,7 @@ See [Referencing children with queries](/guide/components/queries) for more info
 
 Just like variables in JavaScript or TypeScript code, template variables are scoped to the template that declares them.
 
-Similarly, [Structural directives](guide/directives/structural-directives) or `<ng-template>` declarations create a new nested template scope, much like JavaScript's control flow statements like `if` and `for` create new lexical scopes. You cannot access template variables within one of these structural directives from outside of its boundaries.
+Similarly, [control flow blocks](guide/templates/control-flow) like `@if` and `@for`, [structural directives](guide/directives/structural-directives), and `<ng-template>` declarations create a new nested template scope, much like JavaScript's control flow statements like `if` and `for` create new lexical scopes. You cannot access template variables within one of these nested templates from outside of its boundaries.
 
 HELPFUL: Define a variable only once in the template so the runtime value remains predictable.
 
@@ -214,17 +214,21 @@ In the following example, changing the text in the `<input>` changes the value i
 ```html
 <input #ref1 type="text" [(ngModel)]="firstExample" />
 
-<span *ngIf="true">Value: {{ ref1.value }}</span>
+@if (true) {
+  <span>Value: {{ ref1.value }}</span>
+}
 ```
 
-In this case, the `*ngIf` on `<span>` creates a new template scope, which includes the `ref1` variable from its parent scope.
+In this case, the `@if` block creates a new template scope, which includes the `ref1` variable from its parent scope.
 
 However, accessing a template variable from a child scope in the parent template doesn't work:
 
 ```html {avoid}
-<input *ngIf="true" #ref2 type="text" [(ngModel)]="secondExample" />
+@if (true) {
+  <input #ref2 type="text" [(ngModel)]="secondExample" />
+}
 
 <span>Value: {{ ref2?.value }}</span>
 ```
 
-Here, `ref2` is declared in the child scope created by `*ngIf`, and is not accessible from the parent template.
+Here, `ref2` is declared in the child scope created by `@if`, and is not accessible from the parent template.
