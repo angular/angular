@@ -30,6 +30,54 @@ describe('control flow - for', () => {
       providers: [provideZoneChangeDetection()],
     });
   });
+
+  it(
+    'rebuilds a @for item template whose first creation pass was interrupted, without ' +
+      'poisoning later items that share the same template',
+    () => {
+      // Regression coverage for the incompleteFirstPass rebuild in view_manipulation.ts.
+      // @for shares one TView between all its items, so an interrupted first pass can
+      // affect other items created from the same template.
+      let shouldThrow = true;
+
+      @Directive({selector: '[boom]'})
+      class BoomDirective {
+        constructor() {
+          if (shouldThrow) {
+            shouldThrow = false;
+            throw new Error('boom');
+          }
+        }
+      }
+
+      @Component({
+        imports: [BoomDirective],
+        template: `
+          @for (item of items(); track item) {
+            <span boom>{{ item }}-first</span>
+            <span>{{ item }}-second</span>
+          }
+        `,
+      })
+      class TestComponent {
+        items = signal([1]);
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+
+      // The first view isn't attached because creation fails.
+      expect(() => fixture.detectChanges()).toThrowError('boom');
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      // The second item uses the same TView.
+      fixture.componentInstance.items.set([1, 2]);
+      expect(() => fixture.detectChanges()).not.toThrow();
+
+      // Both items should render after the TView is rebuilt.
+      expect(fixture.nativeElement.textContent).toBe('1-first1-second2-first2-second');
+    },
+  );
+
   it('should create, remove and move views corresponding to items in a collection', () => {
     @Component({
       template: '@for ((item of items); track item; let idx = $index) {{{item}}({{idx}})|}',
