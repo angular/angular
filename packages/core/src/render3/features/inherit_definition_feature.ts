@@ -23,6 +23,7 @@ import {
 import {TAttributes} from '../interfaces/node';
 import {isComponentDef} from '../interfaces/type_checks';
 import {mergeHostAttrs} from '../util/attrs_utils';
+import {getBindingRoot, getCurrentDirectiveIndex, setBindingRootForHostBindings} from '../state';
 import {stringifyForError} from '../util/stringify_utils';
 
 export function getSuperType(
@@ -83,7 +84,7 @@ export function ɵɵInheritDefinitionFeature(
 
         // Merge hostBindings
         const superHostBindings = superDef.hostBindings;
-        superHostBindings && inheritHostBindings(definition, superHostBindings);
+        superHostBindings && inheritHostBindings(definition, superHostBindings, superDef.hostVars);
 
         // Merge queries
         const superViewQuery = superDef.viewQuery;
@@ -215,12 +216,19 @@ function inheritContentQueries(
 function inheritHostBindings(
   definition: WritableDef,
   superHostBindings: HostBindingsFunction<any>,
+  superHostVars: number,
 ) {
   const prevHostBindings = definition.hostBindings;
   if (prevHostBindings) {
     definition.hostBindings = (rf: RenderFlags, ctx: any) => {
       superHostBindings(rf, ctx);
-      prevHostBindings(rf, ctx);
+      const oldBindRoot = getBindingRoot();
+      setBindingRootForHostBindings(oldBindRoot + superHostVars, getCurrentDirectiveIndex());
+      try {
+        prevHostBindings(rf, ctx);
+      } finally {
+        setBindingRootForHostBindings(oldBindRoot, getCurrentDirectiveIndex());
+      }
     };
   } else {
     definition.hostBindings = superHostBindings;
