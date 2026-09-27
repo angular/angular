@@ -48,6 +48,7 @@ import {
   trackLeavingNodes,
 } from '../../animation/utils';
 import {initializeAnimationQueueScheduler, queueEnterAnimations} from '../../animation/queue';
+import {enableAnimationRuntimeSupport, enableViewDetachAnimationsSupport} from '../node_animations';
 
 /**
  * Instruction to handle the `animate.enter` behavior for class bindings.
@@ -76,6 +77,9 @@ export function ɵɵanimateEnter(value: string | AnimationClassBindingFn): typeo
   // function runs later from the queue, at which point the lView injector
   // may have been destroyed.
   const ngZone = lView[INJECTOR]!.get(NgZone);
+
+  // The runtime that plays and awaits the animations is only linked in from here.
+  enableAnimationRuntimeSupport();
 
   addAnimationToLView(getLViewEnterAnimations(lView), tNode, () =>
     runEnterAnimation(lView, tNode, value, ngZone),
@@ -206,6 +210,8 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
   }
   const tNode = getCurrentTNode()!;
 
+  enableAnimationRuntimeSupport();
+
   addAnimationToLView(getLViewEnterAnimations(lView), tNode, () =>
     runEnterAnimationFunction(lView, tNode, value),
   );
@@ -263,6 +269,9 @@ export function ɵɵanimateLeave(value: string | AnimationClassBindingFn): typeo
   // function runs later from the queue, at which point the lView injector
   // may have been destroyed.
   const ngZone = lView[INJECTOR]!.get(NgZone);
+
+  enableAnimationRuntimeSupport();
+  enableViewDetachAnimationsSupport();
 
   addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
     runLeaveAnimations(lView, tNode, value, ngZone),
@@ -420,6 +429,9 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   // point the lView injector may have been destroyed.
   const ngZone = lView[INJECTOR]!.get(NgZone);
   const maxAnimationTimeout = lView[INJECTOR]!.get(MAX_ANIMATION_TIMEOUT);
+
+  enableAnimationRuntimeSupport();
+  enableViewDetachAnimationsSupport();
 
   addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
     runLeaveAnimationFunction(lView, tNode, value, ngZone, maxAnimationTimeout),
