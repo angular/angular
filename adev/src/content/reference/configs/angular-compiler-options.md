@@ -95,12 +95,6 @@ When enabled, the `.js` output of `ngc` does not include any lazy-loaded templat
 
 For library projects created with the Angular CLI, the development configuration default is `true`.
 
-### `enableLegacyTemplate`
-
-When `true`, enables the deprecated `<template>` element in place of `<ng-template>`.
-Default is `false`.
-Might be required by some third-party Angular libraries.
-
 ### `flatModuleId`
 
 The module ID to use for importing a flat module \(when `flatModuleOutFile` is `true`\).
