@@ -164,6 +164,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.structure.value;
   }
 
+  get submitValue(): Signal<unknown> {
+    return this.nodeState.submitValue;
+  }
+
   get keyInParent(): Signal<string | number> {
     return this.structure.keyInParent;
   }

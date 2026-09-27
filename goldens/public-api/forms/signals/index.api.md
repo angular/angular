@@ -615,6 +615,7 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
     readonly readonly: Signal<boolean>;
     readonly required: Signal<boolean>;
     readonly submitting: Signal<boolean>;
+    readonly submitValue: Signal<TValue>;
     readonly touched: Signal<boolean>;
     readonly valid: Signal<boolean>;
     readonly value: Signal<TValue>;

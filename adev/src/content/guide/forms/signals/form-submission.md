@@ -86,6 +86,24 @@ The `action` function runs only when no validation rules have failed. By default
 
 After validation passes, the action itself may still fail due to scenarios such as a network error or duplicate entry. In those cases, you can surface the failure by returning the error(s). On the other hand, to indicate success, you only need to return `null` or `undefined`, or call an empty `return`.
 
+## Excluding disabled and hidden fields with `submitValue()`
+
+`field().value()` always reflects the complete data model, including fields that are currently `disabled` or `hidden`. When those fields shouldn't be sent to the server — for example a `role` field that's disabled unless the current user is an admin — read `field().submitValue()` instead:
+
+```ts
+submission: {
+  action: async (field) => {
+    // `submitValue()` omits any disabled or hidden fields.
+    const result = await saveContact(field().submitValue());
+    if (result.ok) return;
+
+    return {kind: 'serverError', message: 'Failed to submit form'};
+  },
+}
+```
+
+For object-valued fields, excluded properties are omitted from the resulting object. For array-valued fields, excluded elements are removed from the array, which shifts the indices of the remaining elements.
+
 ## Showing submission state with `submitting()`
 
 When you need to track whether the form is in the process of submitting, Signal Forms provides a `submitting()` signal that returns `true` while the `action` function is running. Use it to show loading indicators or disable the submit button to prevent duplicate submissions.

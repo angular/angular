@@ -348,6 +348,20 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
   readonly controlValue: Signal<TValue>;
 
   /**
+   * A signal containing the value that should be used when submitting the form.
+   *
+   * This differs from {@link value} in that any descendant fields which are currently
+   * {@link disabled} or {@link hidden} are excluded. For object-valued fields, excluded
+   * properties are omitted from the resulting object. For array-valued fields, excluded
+   * elements are removed from the array, which shifts the indices of any subsequent elements
+   * (matching the behavior of `FormArray.value` in reactive forms).
+   *
+   * Because a field can be conditionally disabled or hidden, properties that are present in
+   * {@link TValue} may be missing from the value produced by this signal at runtime.
+   */
+  readonly submitValue: Signal<TValue>;
+
+  /**
    * A signal indicating whether the field is currently disabled.
    */
   readonly disabled: Signal<boolean>;

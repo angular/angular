@@ -12,6 +12,7 @@ import type {Debouncer, DisabledReason} from '../api/types';
 import {DEBOUNCER} from './debounce';
 import type {FieldNode} from './node';
 import {shallowArrayEquals} from '../util/array';
+import {isArray, isObject} from '../util/type_guards';
 import {shortCircuitTrue} from './util';
 
 /**
@@ -150,6 +151,36 @@ export class FieldNodeState {
         this.node.logicNode.logic.hidden.compute(this.node.context)) ??
       false,
   );
+
+  /**
+   * The value of this field with any disabled or hidden descendants excluded.
+   *
+   * @see {@link FieldState.submitValue}
+   */
+  readonly submitValue: Signal<unknown> = computed(() => {
+    const value = this.node.value();
+    if (isArray(value)) {
+      const result: unknown[] = [];
+      for (const child of this.node.structure.children()) {
+        if (child.disabled() || child.hidden()) {
+          continue;
+        }
+        result.push(child.nodeState.submitValue());
+      }
+      return result;
+    }
+    if (isObject(value)) {
+      const result: Record<string, unknown> = {};
+      for (const child of this.node.structure.children()) {
+        if (child.disabled() || child.hidden()) {
+          continue;
+        }
+        result[child.keyInParent() as string] = child.nodeState.submitValue();
+      }
+      return result;
+    }
+    return value;
+  });
 
   readonly name: Signal<string> = computed(() => {
     const parent = this.node.structure.parent;
