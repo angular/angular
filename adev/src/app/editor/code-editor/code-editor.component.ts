@@ -25,7 +25,7 @@ import {
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatTab, MatTabGroup, MatTabLabel} from '@angular/material/tabs';
 import {Title} from '@angular/platform-browser';
-import {from, switchMap} from 'rxjs';
+import {filter, from, switchMap} from 'rxjs';
 
 import {TerminalType} from '../terminal/terminal-handler.service';
 
@@ -36,6 +36,7 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {DownloadManager} from '../download-manager.service';
 import {LoadingStep} from '../enums/loading-steps';
 import {injectEmbeddedTutorialManager} from '../inject-embedded-tutorial-manager';
+import {NodeRuntimeSandbox} from '../node-runtime-sandbox.service';
 import {NodeRuntimeState} from '../node-runtime-state.service';
 import {StackBlitzOpener} from '../stackblitz-opener.service';
 import {CodeMirrorEditor} from './code-mirror-editor.service';
@@ -75,6 +76,9 @@ export class CodeEditor {
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
+  private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox, {
+    optional: true,
+  });
   private readonly codeMirrorEditor = inject(CodeMirrorEditor);
   private readonly diagnosticsState = inject(DiagnosticsState);
   private readonly downloadManager = inject(DownloadManager);
@@ -165,8 +169,26 @@ export class CodeEditor {
       openFile(file, line, character);
     };
 
-    // Listen for postMessage from preview iframe (Vite error overlay)
+    // Listen for postMessage from preview iframe (Vite error overlay).
+    // The preview iframe is hosted on a dynamic `*.webcontainer.io` origin
+    // (cross-origin), so the trusted origin is captured at runtime once the
+    // dev server becomes ready and every other sender is rejected.
+    let trustedPreviewOrigin: string | null = null;
+
+    this.nodeRuntimeSandbox?.previewUrl$
+      .pipe(
+        filter((url): url is string => !!url),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((url) => {
+        trustedPreviewOrigin = new URL(url).origin;
+      });
+
     const handlePostMessage = (event: MessageEvent) => {
+      // Only accept postMessage events from the WebContainer preview origin.
+      if (trustedPreviewOrigin === null || event.origin !== trustedPreviewOrigin) {
+        return;
+      }
       // Check if this is an openFileAtLocation message
       if (event.data?.type === 'openFileAtLocation') {
         const {file, line, character} = event.data;

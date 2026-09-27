@@ -8,7 +8,7 @@
 
 import {WebContainer} from '@webcontainer/api';
 
-function errorFilenameHandler() {
+function errorFilenameHandler(parentOrigin: string) {
   const originalFetch = window.fetch;
   window.fetch = async (input, init) => {
     const url = input.toString();
@@ -24,7 +24,9 @@ function errorFilenameHandler() {
             line: parseInt(line, 10),
             character: parseInt(column, 10),
           },
-          '*',
+          // Only expose the message to the parent origin that embedded the
+          // preview, instead of broadcasting it to any origin via `'*'`.
+          parentOrigin,
         );
       }
       return new Response(null, {status: 200});
@@ -34,5 +36,10 @@ function errorFilenameHandler() {
 }
 
 export async function setupErrorFilenameHandler(webContainer: WebContainer): Promise<void> {
-  await webContainer.setPreviewScript(`(${errorFilenameHandler.toString()})()`);
+  // The handler below is serialized and executed inside the preview iframe,
+  // so it cannot reference this scope. The parent origin is therefore
+  // captured here, at setup time, and passed into the serialized handler.
+  await webContainer.setPreviewScript(
+    `(${errorFilenameHandler.toString()})(${JSON.stringify(window.location.origin)})`,
+  );
 }
