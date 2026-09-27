@@ -24,6 +24,6 @@ load("//tools:defaults.bzl", "ts_project")
 ts_project(
     name = "consumer",
     srcs = ["consumer.ts"],
-    deps = ["//tools/defaults_ts_project_test/leaf"],
     tags = ["no-sandbox"],
+    deps = ["//tools/defaults_ts_project_test/leaf"],
 )
