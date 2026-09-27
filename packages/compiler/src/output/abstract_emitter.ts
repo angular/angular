@@ -598,10 +598,28 @@ export abstract class AbstractEmitterVisitor
 
   visitParenthesizedExpr(ast: o.ParenthesizedExpr, ctx: EmitterVisitorContext): void {
     this.printLeadingComments(ast, ctx);
-    // We parenthesize everything regardless of an explicit ParenthesizedExpr, so we can just visit
-    // the inner expression.
-    // TODO: Do we *need* to parenthesize everything?
-    ast.expr.visitExpression(this, ctx);
+
+    // The condition of an `if` statement is already wrapped in parentheses. Forward the
+    // "last if condition" status to the inner expression so it doesn't add its own either.
+    if (ast === this.lastIfCondition) {
+      this.lastIfCondition = ast.expr;
+      ast.expr.visitExpression(this, ctx);
+    } else {
+      // Some expressions always wrap themselves in parentheses so we can skip adding more.
+      // Other expressions (e.g. `NotExpr`, `TypeofExpr`, literals, arrow functions or calls)
+      // don't and require explicit parentheses to preserve precedence, e.g. `(!a).b`,
+      // `(typeof a) ** 2`, `(1).toString()`.
+      const preserveParens =
+        !(ast.expr instanceof o.BinaryOperatorExpr) &&
+        !(ast.expr instanceof o.UnaryOperatorExpr) &&
+        !(ast.expr instanceof o.ConditionalExpr) &&
+        !(ast.expr instanceof o.CommaExpr) &&
+        !(ast.expr instanceof o.ParenthesizedExpr);
+
+      preserveParens && ctx.print(ast, '(');
+      ast.expr.visitExpression(this, ctx);
+      preserveParens && ctx.print(ast, ')');
+    }
   }
 
   visitSpreadElementExpr(ast: o.SpreadElementExpr, ctx: EmitterVisitorContext): void {
