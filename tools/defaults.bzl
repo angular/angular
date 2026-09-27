@@ -7,7 +7,7 @@ load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@devinfra//bazel/ts_project:index.bzl", "strict_deps_test")
 load("@rules_angular//src/ng_examples_db:index.bzl", _ng_examples_db = "ng_examples_db")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
-load("@rules_angular//src/ts_project:index.bzl", _ts_project = "ts_project")
+load("@aspect_rules_ts//ts:defs.bzl", _ts_project = "ts_project")
 load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 load("//tools/bazel:esbuild.bzl", _esbuild = "esbuild", _esbuild_checked_in = "esbuild_checked_in")
@@ -96,6 +96,22 @@ def ts_project(
     if tsconfig == None:
         tsconfig = _determine_tsconfig(testonly)
 
+    # Use aspect_rules_ts's dict-mode tsconfig instead of passing `tsconfig` as a
+    # label directly. Dict-mode generates a tsconfig with an explicit `files` list
+    # (derived from `srcs`) instead of relying on TypeScript's implicit `**/*`
+    # discovery. Under Bazel's sandboxed execution strategies, implicit discovery
+    # only ever sees this target's own declared inputs, so this makes no difference.
+    # Under unsandboxed/local execution (the only strategy available on native
+    # Windows), the shared execroot can contain sibling targets' files as well,
+    # which implicit discovery would otherwise pick up and reject via the
+    # rule's forced `--rootDir`, resulting in Windows-only TS6059 failures. The
+    # `extends` chain preserves the original resolved tsconfig unchanged.
+    #
+    # This calls aspect_rules_ts's `ts_project` directly rather than through
+    # `@rules_angular//src/ts_project:index.bzl`, because that wrapper
+    # unconditionally rejects a dict `tsconfig`. The `supports_workers`,
+    # `tsc_worker` and `build_progress_message` values below are copied
+    # from that wrapper so its behavior is otherwise unchanged.
     _ts_project(
         name,
         srcs = srcs,
@@ -103,7 +119,15 @@ def ts_project(
         declaration = True,
         source_map = source_map,
         testonly = testonly,
-        tsconfig = tsconfig,
+        tsconfig = {},
+        extends = tsconfig,
+        supports_workers = 1,
+        tsc_worker = "@rules_angular//src/worker:worker_vanilla_ts",
+        build_progress_message = select({
+            "@rules_angular//src/ng_project/config:partial_compilation_enabled":
+                "Compiling TS (partial compilation): {label}",
+            "//conditions:default": "Compiling TS: {label}",
+        }),
         **kwargs
     )
 

@@ -1,0 +1,29 @@
+load("//tools:defaults.bzl", "ts_project")
+
+# Regression test for the tools/defaults.bzl `ts_project` macro's tsconfig
+# handling (see the fix in tools/defaults.bzl and the comment on `leaf`).
+#
+# Both `leaf` and `consumer` resolve to the same shared, includeless
+# `//tools:tsconfig_build`, the same way every `packages/core` `ts_project`
+# target shares `//packages/core:tsconfig_build`. `consumer` does not import
+# anything from `leaf` -- the `deps` edge below exists only to force Bazel to
+# build `leaf` (and materialize `leaf.ts` into the shared, unsandboxed
+# execroot) before compiling `consumer`, isolating the implicit-discovery
+# mechanism from ordinary module resolution.
+#
+# Before the fix: `consumer`'s forced `--rootDir` is its own package
+# directory, but the shared tsconfig has no `include`/`files`/`exclude`, so
+# TypeScript's implicit `**/*` discovery -- scanning from the tsconfig's own
+# directory, which is an ancestor of both packages -- finds `leaf.ts` sitting
+# in the shared execroot and rejects it with TS6059, because it falls outside
+# `consumer`'s rootDir.
+#
+# After the fix: the generated tsconfig for `consumer` has an explicit
+# `files` list containing only `consumer.ts`, so `leaf.ts` is never
+# considered part of the program, and this target builds successfully.
+ts_project(
+    name = "consumer",
+    srcs = ["consumer.ts"],
+    deps = ["//tools/defaults_ts_project_test/leaf"],
+    tags = ["no-sandbox"],
+)

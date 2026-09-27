@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//tools/defaults_ts_project_test:__subpackages__"])
+
+# Regression test fixture for tools/defaults.bzl's `ts_project` macro. See
+# ../consumer/BUILD.bazel for what this is actually verifying.
+ts_project(
+    name = "leaf",
+    srcs = ["leaf.ts"],
+    # Forces unsandboxed/local execution for this target's compile action,
+    # regardless of the platform's default spawn strategy, so the Windows-only
+    # execroot-accumulation condition this test guards against is reproducible
+    # on any OS without changing global build/test configuration.
+    tags = ["no-sandbox"],
+)
