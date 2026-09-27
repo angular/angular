@@ -22,10 +22,10 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {MatTab, MatTabGroup, MatTabLabel} from '@angular/material/tabs';
 import {Title} from '@angular/platform-browser';
-import {filter, from, switchMap} from 'rxjs';
+import {EMPTY, from, switchMap} from 'rxjs';
 
 import {TerminalType} from '../terminal/terminal-handler.service';
 
@@ -78,6 +78,13 @@ export class CodeEditor {
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
   private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox, {
     optional: true,
+  });
+  private readonly previewUrl = toSignal(this.nodeRuntimeSandbox?.previewUrl$ ?? EMPTY, {
+    initialValue: null,
+  });
+  private readonly trustedPreviewOrigin = computed(() => {
+    const url = this.previewUrl();
+    return url ? new URL(url).origin : null;
   });
   private readonly codeMirrorEditor = inject(CodeMirrorEditor);
   private readonly diagnosticsState = inject(DiagnosticsState);
@@ -170,22 +177,12 @@ export class CodeEditor {
     };
 
     // Listen for postMessage from preview iframe (Vite error overlay).
-    // The preview iframe is hosted on a dynamic `*.webcontainer.io` origin
-    // (cross-origin), so the trusted origin is captured at runtime once the
-    // dev server becomes ready and every other sender is rejected.
-    let trustedPreviewOrigin: string | null = null;
-
-    this.nodeRuntimeSandbox?.previewUrl$
-      .pipe(
-        filter((url): url is string => !!url),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((url) => {
-        trustedPreviewOrigin = new URL(url).origin;
-      });
-
+    // Only accept messages from the WebContainer preview origin, which is
+    // hosted on a dynamic `*.webcontainer.io` subdomain (cross-origin) and
+    // therefore captured at runtime once the dev server becomes ready.
     const handlePostMessage = (event: MessageEvent) => {
-      // Only accept postMessage events from the WebContainer preview origin.
+      const trustedPreviewOrigin = this.trustedPreviewOrigin();
+
       if (trustedPreviewOrigin === null || event.origin !== trustedPreviewOrigin) {
         return;
       }
