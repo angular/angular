@@ -32113,8 +32113,9 @@ function getCredentialFilePath() {
   if (credentialFilePath === void 0) {
     const tmpDir = mkdtempSync(join(tmpdir(), "credential-"));
     const filePath = join(tmpDir, "credential.json");
-    writeFileSync(filePath, getInput("serviceKey", { required: true }));
-    setSecret(filePath);
+    const serviceKey = getInput("serviceKey", { required: true });
+    setSecret(serviceKey);
+    writeFileSync(filePath, serviceKey, { mode: 384 });
     credentialFilePath = filePath;
   }
   return credentialFilePath;
