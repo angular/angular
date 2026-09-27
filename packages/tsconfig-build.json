@@ -19,8 +19,15 @@
     "target": "es2022",
     "lib": ["es2022", "es2024.promise", "dom", "dom.iterable"],
     "skipLibCheck": true,
-    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
-    "types": [],
+    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output.
+    // "global_types" is //packages/core/global_types, Angular's internal global flags
+    // (ngDevMode etc), which every package needs since they're referenced as bare ambient
+    // identifiers without being imported. See the target's BUILD.bazel for more. Setting
+    // "typeRoots" replaces the default node_modules/@types search path, so it is included
+    // explicitly alongside "./core", for packages (e.g. tests) that override "types" to also
+    // include "node" or "jasmine".
+    "typeRoots": ["../node_modules/@types", "./core"],
+    "types": ["global_types"],
     "experimentalDecorators": true,
     // This is needed due to https://github.com/Microsoft/TypeScript/issues/17516.
     // As tsickle will lower decorators before TS, this is not a problem for our build.

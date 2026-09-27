@@ -1,0 +1,20 @@
+load("//tools:defaults.bzl", "ts_config", "ts_project")
+
+# Angular's internal global flags (`ngDevMode`, `ngJitMode`, etc.), declared as bare ambient
+# globals and referenced without import throughout `packages/`. Every package's shared tsconfig
+# (`//packages:tsconfig_build`) depends on this target so the flags are visible everywhere; see
+# the comment there and in `index.d.ts`.
+package(default_visibility = ["//visibility:public"])
+
+# A standalone tsconfig, not extending //packages:tsconfig_build, since that config depends on
+# this target: extending it here would be a dependency cycle.
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+)
+
+ts_project(
+    name = "global_types",
+    srcs = ["index.d.ts"],
+    tsconfig = ":tsconfig",
+)

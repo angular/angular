@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import '../util/ng_hmr_mode';
-import '../util/ng_jit_mode';
-import '../util/ng_server_mode';
-
 import {type Observable, Subject, type Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {

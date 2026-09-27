@@ -41,6 +41,7 @@ ts_config(
     src = "tsconfig-build.json",
     deps = [
         "//:node_modules/tslib",
+        "//packages/core/global_types",
     ],
 )
 

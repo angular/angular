@@ -1,5 +1,5 @@
 load("@aspect_rules_js//js:defs.bzl", _js_library = "js_library")
-load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
+load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config", _ts_project = "ts_project")
 load("@bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
@@ -7,7 +7,6 @@ load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@devinfra//bazel/ts_project:index.bzl", "strict_deps_test")
 load("@rules_angular//src/ng_examples_db:index.bzl", _ng_examples_db = "ng_examples_db")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
-load("@aspect_rules_ts//ts:defs.bzl", _ts_project = "ts_project")
 load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 load("//tools/bazel:esbuild.bzl", _esbuild = "esbuild", _esbuild_checked_in = "esbuild_checked_in")
@@ -124,8 +123,7 @@ def ts_project(
         supports_workers = 1,
         tsc_worker = "@rules_angular//src/worker:worker_vanilla_ts",
         build_progress_message = select({
-            "@rules_angular//src/ng_project/config:partial_compilation_enabled":
-                "Compiling TS (partial compilation): {label}",
+            "@rules_angular//src/ng_project/config:partial_compilation_enabled": "Compiling TS (partial compilation): {label}",
             "//conditions:default": "Compiling TS: {label}",
         }),
         **kwargs

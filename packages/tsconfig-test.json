@@ -4,11 +4,13 @@
 {
   "extends": "./tsconfig-build.json",
   "compilerOptions": {
-    "types": ["node", "jasmine"],
-    "plugins": [{
+    "types": ["node", "jasmine", "global_types"],
+    "plugins": [
+      {
         "name": "@bazel/tsetse",
         "disabledRules": ["must-use-promises"]
-    }]
+      }
+    ]
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true

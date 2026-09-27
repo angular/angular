@@ -1,6 +1,6 @@
 {
   "extends": "../tsconfig-build.json",
   "compilerOptions": {
-    "types": ["dom-navigation"]
+    "types": ["dom-navigation", "global_types"]
   }
 }
