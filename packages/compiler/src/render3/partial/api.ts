@@ -271,6 +271,11 @@ export interface R3DeclareDirectiveDependencyMetadata {
    * Names by which this directive exports itself for references.
    */
   exportAs?: string[];
+
+  /**
+   * Qualified element names under which this component is referenced by its consumer.
+   */
+  qualifiedNames?: string[];
 }
 
 export interface R3DeclarePipeDependencyMetadata {

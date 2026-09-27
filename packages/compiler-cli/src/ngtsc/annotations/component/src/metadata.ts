@@ -95,6 +95,7 @@ export interface ComponentAnalysisData {
 
   rawImports: ts.Expression | null;
   resolvedImports: Reference<ClassDeclaration>[] | null;
+  qualifiedImports: Array<{name: string; ref: Reference<ClassDeclaration>}> | null;
   foreignImports: ForeignComponentMeta[] | null;
   rawDeferredImports: ts.Expression | null;
   resolvedDeferredImports: Reference<ClassDeclaration>[] | null;
@@ -139,7 +140,10 @@ export interface ComponentResolutionData {
    * the current source file. The `Import` preserves the exported name
    * as seen by the importing module so aliasing is handled correctly.
    */
-  deferrableDeclToImportDecl: Map<ClassDeclaration, Import>;
+  deferrableDeclToImportDecl: Map<
+    ClassDeclaration,
+    Import & {symbolPath?: string[]; qualifiedNames?: string[]}
+  >;
 
   /**
    * Map of `@defer` blocks -> their corresponding dependencies.

@@ -201,6 +201,7 @@ import {ComponentSymbol} from './symbol';
 import {
   collectLegacyAnimationNames,
   extractForeignImportsFromAst,
+  extractQualifiedComponentImportsFromAst,
   legacyAnimationTriggerResolver,
   validateAndFlattenComponentImports,
 } from './util';
@@ -609,6 +610,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     }
 
     let resolvedImports: Reference<ClassDeclaration>[] | null = null;
+    let qualifiedImports: Array<{name: string; ref: Reference<ClassDeclaration>}> | null = null;
     let foreignImports: ForeignComponentMeta[] | null = null;
     let resolvedDeferredImports: Reference<ClassDeclaration>[] | null = null;
     let resolvedDeferredImportsByBlock: Map<string, Reference<ClassDeclaration>[]> | null = null;
@@ -662,13 +664,15 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
         if (rawImports) {
           const expr = rawImports;
           const imported = this.evaluator.evaluate(expr, importResolvers);
-          const {imports: flattened, diagnostics} = validateAndFlattenComponentImports(
-            imported,
-            expr,
-            false /* isDeferred */,
-          );
+          const {
+            imports: flattened,
+            qualifiedImports: flattenedQualifiedImports,
+            diagnostics,
+          } = validateAndFlattenComponentImports(imported, expr, false /* isDeferred */);
           importDiagnostics.push(...diagnostics);
           resolvedImports = flattened;
+          qualifiedImports =
+            flattenedQualifiedImports.length > 0 ? flattenedQualifiedImports : null;
           rawImports = expr;
         }
 
@@ -1015,6 +1019,9 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       }
     }
 
+    const rawQualifiedImports =
+      rawImports !== null ? extractQualifiedComponentImportsFromAst(rawImports) : [];
+
     const output: AnalysisOutput<ComponentAnalysisData> = {
       analysis: {
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
@@ -1040,6 +1047,13 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           i18nUseExternalIds: this.i18nUseExternalIds,
           relativeContextFilePath,
           rawImports: rawImports !== null ? new o.WrappedNodeExpr(rawImports) : undefined,
+          qualifiedImports:
+            rawQualifiedImports.length > 0
+              ? rawQualifiedImports.map(({name, expression}) => ({
+                  name,
+                  type: new o.WrappedNodeExpr(expression),
+                }))
+              : null,
           relativeTemplatePath,
           foreignImports: null,
           enableTemplateSourceLocations: this.enableTemplateSourceLocations,
@@ -1076,6 +1090,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
         legacyAnimationTriggerNames: legacyAnimationTriggerNames,
         rawImports,
         resolvedImports,
+        qualifiedImports,
         foreignImports,
         rawDeferredImports,
         resolvedDeferredImports,
@@ -1130,6 +1145,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
       isStandalone: analysis.meta.isStandalone,
       isSignal: analysis.meta.isSignal,
       imports: analysis.resolvedImports,
+      qualifiedImports: analysis.qualifiedImports,
       foreignImports: analysis.foreignImports,
       rawImports: analysis.rawImports,
       deferredImports: analysis.resolvedDeferredImports,
@@ -1457,6 +1473,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
         allDependencies,
         wholeTemplateUsed,
         pipes,
+        scope.kind === ComponentScopeKind.Standalone ? scope.qualifiedDependencies : undefined,
       );
 
       if (this.semanticDepGraphUpdater !== null) {
@@ -1947,6 +1964,13 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           deferBlockMatcher.addSelectables(CssSelector.parse(dep.selector), [dep]);
         }
       }
+      if (scope.kind === ComponentScopeKind.Standalone) {
+        for (const [name, dep] of scope.qualifiedDependencies ?? []) {
+          const selector = new CssSelector();
+          selector.setElement(name);
+          deferBlockMatcher.addSelectables([selector], [dep]);
+        }
+      }
       deferBlockBinder = new R3TargetBinder(deferBlockMatcher);
     }
 
@@ -2017,6 +2041,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     allDependencies: (DirectiveMeta | PipeMeta | NgModuleMeta)[],
     wholeTemplateUsed: Set<ClassDeclaration>,
     pipes: Map<string, PipeMeta>,
+    qualifiedDependencies?: Map<string, DirectiveMeta>,
   ): ComponentDeclarations {
     const declarations: ComponentDeclarations = new Map();
 
@@ -2039,6 +2064,13 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             dep.isComponent ? 'component' : 'directive',
           );
 
+          const qualifiedNames =
+            dep.isComponent && qualifiedDependencies !== undefined
+              ? Array.from(qualifiedDependencies.entries())
+                  .filter(([, qualifiedDep]) => qualifiedDep.ref.node === dep.ref.node)
+                  .map(([name]) => name)
+              : [];
+
           declarations.set(dep.ref.node, {
             kind: R3TemplateDependencyKind.Directive,
             ref: dep.ref,
@@ -2049,6 +2081,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             outputs: dep.outputs.propertyNames,
             exportAs: dep.exportAs,
             isComponent: dep.isComponent,
+            qualifiedNames: qualifiedNames.length > 0 ? qualifiedNames : null,
           });
           break;
         case MetaKind.NgModule:
@@ -2358,6 +2391,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
           deferBlockDep.symbolName = importInfo.name;
           deferBlockDep.importPath = importInfo.from;
           deferBlockDep.isDefaultImport = isDefaultImport(importInfo.node);
+          deferBlockDep.symbolPath = importInfo.symbolPath ?? null;
+          deferBlockDep.qualifiedNames = importInfo.qualifiedNames ?? deferBlockDep.qualifiedNames;
 
           // The same dependency may be used across multiple deferred blocks. De-duplicate it
           // because it can throw off other logic further down the compilation pipeline.
@@ -2384,20 +2419,27 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     const explicitlyDeferredTypes: R3DeferPerComponentDependency[] = [];
     for (const element of rawDeferredImports.elements) {
       const node = tryUnwrapForwardRef(element, this.reflector) || element;
-      if (!ts.isIdentifier(node)) {
+      const qualified = getQualifiedImportExpressionInfo(node);
+      const identifier = ts.isIdentifier(node) ? node : qualified?.terminal;
+      const trackerIdentifier = ts.isIdentifier(node) ? node : qualified?.root;
+      if (identifier === undefined || trackerIdentifier === undefined) {
         continue;
       }
-      const imp = this.reflector.getImportOfIdentifier(node);
+
+      const imp = this.reflector.getImportOfIdentifier(identifier);
       if (imp === null) {
         continue;
       }
+
       explicitlyDeferredTypes.push({
         symbolName: imp.name,
         importPath: imp.from,
         isDefaultImport: isDefaultImport(imp.node),
+        symbolPath: qualified?.path ?? null,
+        qualifiedNames: qualified === null ? null : [qualified.name],
       });
       this.deferredSymbolTracker.markAsDeferrableCandidate(
-        node,
+        trackerIdentifier,
         imp.node,
         decl,
         true /* isExplicitlyDeferred */,
@@ -2542,6 +2584,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             isDeferrable: false,
             importPath: null,
             isDefaultImport: false,
+            qualifiedNames:
+              decl.kind === R3TemplateDependencyKind.Directive
+                ? (decl.qualifiedNames ?? null)
+                : null,
             declaration: decl.ref,
           });
           allDeferredDecls.add(decl.ref.node);
@@ -2578,6 +2624,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
             isDeferrable: false,
             importPath: null,
             isDefaultImport: false,
+            qualifiedNames:
+              decl.kind === R3TemplateDependencyKind.Directive
+                ? (decl.qualifiedNames ?? null)
+                : null,
             declaration: decl.ref,
           });
           allDeferredDecls.add(decl.ref.node);
@@ -2676,19 +2726,22 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     resolutionData: ComponentResolutionData,
   ) {
     const node = tryUnwrapForwardRef(element, this.reflector) || element;
+    const qualified = getQualifiedImportExpressionInfo(node);
+    const identifier = ts.isIdentifier(node) ? node : qualified?.terminal;
+    const trackerIdentifier = ts.isIdentifier(node) ? node : qualified?.root;
 
-    if (!ts.isIdentifier(node)) {
+    if (identifier === undefined || trackerIdentifier === undefined) {
       // Can't defer-load non-literal references.
       return;
     }
 
-    const imp = this.reflector.getImportOfIdentifier(node);
+    const imp = this.reflector.getImportOfIdentifier(identifier);
     if (imp === null) {
       // Can't defer-load symbols which aren't imported.
       return;
     }
 
-    const decl = this.reflector.getDeclarationOfIdentifier(node);
+    const decl = this.reflector.getDeclarationOfIdentifier(identifier);
     if (decl === null) {
       // Can't defer-load symbols which don't exist.
       return;
@@ -2730,10 +2783,14 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     // Keep track of how this class made it into the current source file.
     // Store the full `Import` info so that callers can correctly determine the
     // exported name (handling aliasing) and the module specifier.
-    resolutionData.deferrableDeclToImportDecl.set(decl.node, imp);
+    resolutionData.deferrableDeclToImportDecl.set(decl.node, {
+      ...imp,
+      symbolPath: qualified?.path,
+      qualifiedNames: qualified === null ? undefined : [qualified.name],
+    });
 
     this.deferredSymbolTracker.markAsDeferrableCandidate(
-      node,
+      trackerIdentifier,
       imp.node,
       componentClassDecl,
       isDeferredImport,
@@ -2791,6 +2848,34 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
   }
 }
 
+function getQualifiedImportExpressionInfo(
+  expression: ts.Expression,
+): {name: string; root: ts.Identifier; terminal: ts.Identifier; path: string[]} | null {
+  if (!ts.isPropertyAccessExpression(expression)) {
+    return null;
+  }
+
+  const terminal = expression.name;
+  const path: string[] = [];
+  let current: ts.Expression = expression;
+
+  while (ts.isPropertyAccessExpression(current)) {
+    path.unshift(current.name.text);
+    current = current.expression;
+  }
+
+  if (!ts.isIdentifier(current) || path.length === 0) {
+    return null;
+  }
+
+  return {
+    name: [current.text, ...path].join('.'),
+    root: current,
+    terminal,
+    path,
+  };
+}
+
 function createMatcherFromScope(
   scope: ComponentScope,
   hostDirectivesResolver: HostDirectivesResolver,
@@ -2816,6 +2901,14 @@ function createMatcherFromScope(
   for (const dep of dependencies) {
     if (dep.kind === MetaKind.Directive && dep.selector !== null) {
       matcher.addSelectables(CssSelector.parse(dep.selector), [dep]);
+    }
+  }
+
+  if (scope.kind === ComponentScopeKind.Standalone) {
+    for (const [name, dep] of scope.qualifiedDependencies ?? []) {
+      const selector = new CssSelector();
+      selector.setElement(name);
+      matcher.addSelectables([selector], [dep]);
     }
   }
 

@@ -149,7 +149,10 @@ export class TypeCheckScopeRegistry {
         allDependencies = [...allDependencies, ...scope.deferredDependencies];
       }
 
-      matcher = this.getSelectorMatcher(allDependencies);
+      matcher = this.getSelectorMatcher(
+        allDependencies,
+        !isNgModuleScope ? scope.qualifiedDependencies : undefined,
+      );
 
       for (const dep of allDependencies) {
         if (dep.kind === MetaKind.Directive) {
@@ -207,6 +210,7 @@ export class TypeCheckScopeRegistry {
 
   private getSelectorMatcher(
     allDependencies: (DirectiveMeta | PipeMeta | NgModuleMeta)[],
+    qualifiedDependencies?: Map<string, DirectiveMeta>,
   ): SelectorMatcher<DirectiveMeta[]> {
     const matcher = new SelectorMatcher<DirectiveMeta[]>();
 
@@ -227,6 +231,24 @@ export class TypeCheckScopeRegistry {
           CssSelector.parse(meta.selector),
           this.combineWithHostDirectives(directiveMeta),
         );
+      }
+    }
+
+    if (qualifiedDependencies !== undefined) {
+      for (const [name, meta] of qualifiedDependencies) {
+        const extMeta = this.getTypeCheckDirectiveMetadata(meta.ref);
+        if (extMeta === null) {
+          continue;
+        }
+
+        const directiveMeta = this.applyExplicitlyDeferredFlag(
+          extMeta,
+          meta.isExplicitlyDeferred,
+          meta.deferredBlocks,
+        );
+        const selector = new CssSelector();
+        selector.setElement(name);
+        matcher.addSelectables([selector], this.combineWithHostDirectives(directiveMeta));
       }
     }
 

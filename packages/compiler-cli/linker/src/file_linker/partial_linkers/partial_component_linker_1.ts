@@ -62,6 +62,9 @@ function makeDirectiveMetadata<TExpression>(
     exportAs: directiveExpr.has('exportAs')
       ? directiveExpr.getArray('exportAs').map((exportAs) => exportAs.getString())
       : null,
+    qualifiedNames: directiveExpr.has('qualifiedNames')
+      ? directiveExpr.getArray('qualifiedNames').map((name) => name.getString())
+      : null,
   };
 }
 

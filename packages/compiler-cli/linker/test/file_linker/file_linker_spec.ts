@@ -179,6 +179,41 @@ describe('FileLinker', () => {
     });
   });
 
+  describe('qualified component dependencies', () => {
+    it('should restore qualified names from partial component metadata', () => {
+      const source = `
+        ɵɵngDeclareComponent({
+          minVersion: "0.0.0-PLACEHOLDER",
+          version: "0.0.0-PLACEHOLDER",
+          ngImport: core,
+          type: SomeComp,
+          isStandalone: true,
+          template: \`<Card.Header />\`,
+          isInline: true,
+          dependencies: [{
+            kind: "component",
+            type: Header,
+            selector: "card-header",
+            qualifiedNames: ["Card.Header"]
+          }]
+        });
+      `;
+
+      const {fileLinker} = createFileLinker(source);
+      const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
+      const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+        .expression as ts.CallExpression;
+      const result = fileLinker.linkPartialDeclaration(
+        'ɵɵngDeclareComponent',
+        [call.arguments[0]],
+        new MockDeclarationScope(),
+      );
+      const linked = ts.createPrinter().printNode(ts.EmitHint.Unspecified, result, sourceFile);
+
+      expect(linked).toContain('qualifiedNames: ["Card.Header"]');
+    });
+  });
+
   describe('legacyOptionalChaining support', () => {
     function linkComponentWithTemplate(version: string, template: string): string {
       // Note that the `minVersion` is set to the placeholder,
