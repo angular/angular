@@ -11,7 +11,7 @@
           From v.
 
           <button type="button" [cdkMenuTriggerFor]="templatesMenuFrom">
-            <span>{{ from.name }}</span>
+            <span>{{ from().name }}</span>
             <docs-icon>expand_more</docs-icon>
           </button>
 
@@ -19,7 +19,7 @@
             <ul class="adev-template-dropdown" cdkMenu>
               @for (version of versions; track $index) {
                 <li>
-                  <button cdkMenuItem type="button" (click)="from = version; showUpdatePath()">
+                  <button cdkMenuItem type="button" (click)="from.set(version); showUpdatePath()">
                     <span>{{ version.name }}</span>
                   </button>
                 </li>
@@ -32,7 +32,7 @@
           <span class="adev-template-select">
             To v.
             <button type="button" [cdkMenuTriggerFor]="templatesMenuTo">
-              <span>{{ to.name }}</span>
+              <span>{{ to().name }}</span>
               <docs-icon>expand_more</docs-icon>
             </button>
 
@@ -40,7 +40,7 @@
               <ul class="adev-template-dropdown" cdkMenu>
                 @for (version of versions; track $index) {
                   <li>
-                    <button cdkMenuItem type="button" (click)="to = version; showUpdatePath()">
+                    <button cdkMenuItem type="button" (click)="to.set(version); showUpdatePath()">
                       <span>{{ version.name }}</span>
                     </button>
                   </li>
@@ -51,7 +51,7 @@
         </span>
       </div>
 
-      @if (from.number >= futureVersion || to.number >= futureVersion) {
+      @if (from().number >= futureVersion || to().number >= futureVersion) {
         <div class="docs-alert docs-alert-critical">
           <p>
             <strong>Warning:</strong>
@@ -61,7 +61,7 @@
         </div>
       }
 
-      @if (from.number > to.number) {
+      @if (from().number > to().number) {
         <div class="docs-alert docs-alert-critical">
           <p>
             <strong>Warning:</strong>
@@ -70,7 +70,7 @@
         </div>
       }
 
-      @if (to.number - from.number > 150 && from.number > 240) {
+      @if (to().number - from().number > 150 && from().number > 240) {
         <div class="docs-alert docs-alert-critical">
           <p>
             <strong>Warning:</strong>
@@ -84,19 +84,19 @@
 
       <h3>Application complexity</h3>
       <mat-button-toggle-group
-        (change)="level = $event.value; showUpdatePath()"
-        [value]="level"
+        (change)="level.set($event.value); showUpdatePath()"
+        [value]="level()"
         style="margin-bottom: 16px"
       >
         <mat-button-toggle [value]="1">Basic</mat-button-toggle>
         <mat-button-toggle [value]="2">Medium</mat-button-toggle>
         <mat-button-toggle [value]="3">Advanced</mat-button-toggle>
       </mat-button-toggle-group>
-      @if (level === 1) {
+      @if (level() === 1) {
         <p>Shows information for all Angular developers.</p>
-      } @else if (level === 2) {
+      } @else if (level() === 2) {
         <p>Shows information that's of interest to more advanced Angular developers.</p>
-      } @else if (level === 3) {
+      } @else if (level() === 3) {
         <p>Shows all the information we have about this update.</p>
       }
 
@@ -111,7 +111,7 @@
         </div>
       }
 
-      @if (from.number < 600) {
+      @if (from().number < 600) {
         <h4>Package Manager</h4>
         <mat-button-toggle-group
           (change)="packageManager = $event.value; showUpdatePath()"
