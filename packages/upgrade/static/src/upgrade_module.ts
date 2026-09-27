@@ -42,7 +42,7 @@ import {NgAdapterInjector} from './util';
  *    that it can be used in an AngularJS template. See `downgradeComponent`.
  * 3. Creation of an Angular root injector provider that wraps and exposes an AngularJS
  *    service so that it can be injected into an Angular context. See
- *    {@link UpgradeModule#upgrading-an-angular-1-service Upgrading an AngularJS service} below.
+ *    {@link UpgradeModule#upgrading-an-angularjs-service Upgrading an AngularJS service} below.
  * 4. Creation of an AngularJS service that wraps and exposes an Angular injectable
  *    so that it can be injected into an AngularJS context. See `downgradeInjectable`.
  * 5. Bootstrapping of a hybrid Angular application which contains both of the frameworks

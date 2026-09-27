@@ -76,6 +76,93 @@ Anything exported from this file is made public when your library is imported in
 
 Your library should supply documentation \(typically a README file\) for installation and maintenance.
 
+## Entry points
+
+An _entry point_ is a module specifier that consumers import from, together with the public API that specifier exposes.
+Every library has one _primary entry point_, and can add any number of _secondary entry points_.
+
+The primary entry point is the package itself.
+The `ng-package.json` file at the root of the library configures it, and `lib.entryFile` names the file that defines its public API.
+
+```json {header: 'projects/my-lib/ng-package.json'}
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/my-lib",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  }
+}
+```
+
+Consumers import the primary entry point by the package name:
+
+```ts
+import {ThemeService} from 'my-lib';
+```
+
+A secondary entry point is a directory inside the library with its own `ng-package.json` file.
+The path of that directory relative to the library root defines the import subpath.
+For example, a `button` directory makes `my-lib/button` available to consumers:
+
+```ts
+import {ButtonComponent} from 'my-lib/button';
+```
+
+Angular packages use this same structure.
+For example, `@angular/core` is the primary entry point and `@angular/core/testing` is a secondary entry point of the same package.
+
+HELPFUL: For an architectural overview of how entry points enable code splitting and define chunk boundaries in the Angular Package Format, see [Entrypoints and code splitting](tools/libraries/angular-package-format#entrypoints-and-code-splitting).
+
+### Adding a secondary entry point
+
+Create a directory inside the library with its own `ng-package.json` and public API file:
+
+```text
+projects/my-lib/
+├── ng-package.json      (primary entry point: my-lib)
+├── package.json
+├── src/
+│   ├── public-api.ts
+│   └── lib/ …
+└── button/
+    ├── ng-package.json  (secondary entry point: my-lib/button)
+    └── src/
+        ├── public-api.ts
+        └── button.ts
+```
+
+The secondary `ng-package.json` configures only the entry point itself:
+
+```json {header: 'projects/my-lib/button/ng-package.json'}
+{
+  "$schema": "../../../node_modules/ng-packagr/ng-entrypoint.schema.json",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  }
+}
+```
+
+IMPORTANT: A secondary `ng-package.json` accepts only the `lib` options. Package-wide options such as `dest` and `assets` belong in the `ng-package.json` at the library root and apply to every entry point.
+
+You do not need to register the secondary entry point anywhere else.
+During the build, `ng-packagr` automatically discovers every `ng-package.json` under the library root and derives the import subpath from its directory path (for example, `button/` becomes `my-lib/button` and `testing/harness/` becomes `my-lib/testing/harness`).
+
+To import a secondary entry point from an application in the same workspace, add a wildcard path mapping in the workspace `tsconfig.json`.
+By default, `ng generate library` maps only the package root, which does not cover subpaths:
+
+```json {header: 'tsconfig.json'}
+{
+  "compilerOptions": {
+    "paths": {
+      "my-lib": ["./dist/my-lib"],
+      "my-lib/*": ["./dist/my-lib/*"]
+    }
+  }
+}
+```
+
+IMPORTANT: When importing code from another entry point in the same library, always use its package import path (for example, `import {ThemeService} from 'my-lib'`) instead of a relative path. `ng-packagr` builds each entry point separately in dependency order, so relative imports across entry points and circular dependencies between entry points will fail the build.
+
 ## Refactoring parts of an application into a library
 
 To make your solution reusable, you need to adjust it so that it does not depend on application-specific code.

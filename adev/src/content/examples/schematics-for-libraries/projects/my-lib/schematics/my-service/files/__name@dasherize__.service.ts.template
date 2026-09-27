@@ -1,10 +1,8 @@
 // #docregion template
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class <%= classify(name) %>Service {
   private http = inject(HttpClient);
 }

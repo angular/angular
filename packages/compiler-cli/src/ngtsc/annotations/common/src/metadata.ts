@@ -8,12 +8,11 @@
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {
-  ArrowFunctionExpr,
   Expression,
   LiteralArrayExpr,
-  LiteralExpr,
   literalMap,
   R3ClassMetadata,
+  R3ClassMetadataCtorParameter,
   WrappedNodeExpr,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -79,13 +78,10 @@ export function extractClassMetadata(
   );
 
   // Convert the constructor parameters to metadata, passing null if none are present.
-  let metaCtorParameters: Expression | null = null;
+  let metaCtorParameters: R3ClassMetadataCtorParameter[] | null = null;
   const classCtorParameters = reflection.getConstructorParameters(clazz);
   if (classCtorParameters !== null) {
-    const ctorParameters = classCtorParameters.map((param) =>
-      ctorParameterToMetadata(param, isCore),
-    );
-    metaCtorParameters = new ArrowFunctionExpr([], new LiteralArrayExpr(ctorParameters));
+    metaCtorParameters = classCtorParameters.map((param) => ctorParameterToMetadata(param, isCore));
   }
 
   // Do the same for property decorators.
@@ -157,27 +153,33 @@ export function extractClassMetadata(
 /**
  * Convert a reflected constructor parameter to metadata.
  */
-function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): Expression {
+function ctorParameterToMetadata(
+  param: CtorParameter,
+  isCore: boolean,
+): R3ClassMetadataCtorParameter {
   // Parameters sometimes have a type that can be referenced. If so, then use it, otherwise
   // its type is undefined.
-  const type =
-    param.typeValueReference.kind !== TypeValueReferenceKind.UNAVAILABLE
-      ? valueReferenceToExpression(param.typeValueReference)
-      : new LiteralExpr(undefined);
+  let type: Expression | null = null;
 
-  const mapEntries: {key: string; value: Expression; quoted: false}[] = [
-    {key: 'type', value: type, quoted: false},
-  ];
+  // Only guard references that the compiler couldn't prove to have a value at runtime. Anywhere
+  // else the reference is known to be a value, so a suppression would just be noise.
+  let suppressTypeErrors = false;
+
+  if (param.typeValueReference.kind !== TypeValueReferenceKind.UNAVAILABLE) {
+    type = valueReferenceToExpression(param.typeValueReference);
+    suppressTypeErrors = param.typeValueReference.valueUnverified === true;
+  }
 
   // If the parameter has decorators, include the ones from Angular.
+  let decorators: Expression | null = null;
   if (param.decorators !== null) {
     const ngDecorators = param.decorators
       .filter((dec) => isAngularDecorator(dec, isCore))
       .map((decorator: Decorator) => decoratorToMetadata(decorator));
-    const value = new WrappedNodeExpr(ts.factory.createArrayLiteralExpression(ngDecorators));
-    mapEntries.push({key: 'decorators', value, quoted: false});
+    decorators = new WrappedNodeExpr(ts.factory.createArrayLiteralExpression(ngDecorators));
   }
-  return literalMap(mapEntries);
+
+  return {type, decorators, suppressTypeErrors};
 }
 
 /**

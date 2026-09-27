@@ -1,8 +1,8 @@
-import {inject, Injectable} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {SwUpdate, VersionReadyEvent} from '@angular/service-worker';
 
 // #docregion sw-update
-@Injectable({providedIn: 'root'})
+@Service()
 export class LogUpdateService {
   private updates = inject(SwUpdate);
   constructor() {

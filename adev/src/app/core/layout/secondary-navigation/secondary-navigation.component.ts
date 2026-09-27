@@ -26,7 +26,7 @@ import {SUB_NAVIGATION_DATA} from '../../../routing/sub-navigation-data';
 import {PRIMARY_NAV_ID, SEARCH_DIALOG_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {PAGE_PREFIX} from '../../constants/pages';
 
-export const ANIMATION_DURATION = 500;
+const ANIMATION_DURATION = 500;
 
 @Component({
   selector: 'adev-secondary-navigation',

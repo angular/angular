@@ -120,11 +120,13 @@ export interface AstFactory<TStatement, TExpression, TType> {
    * @param functionName the name of the function.
    * @param parameters the names of the function's parameters.
    * @param body a statement (or a block of statements) that are the body of the function.
+   * @param returnType return type annotation for the function.
    */
   createFunctionDeclaration(
     functionName: string,
     parameters: Parameter<TType>[],
     body: TStatement,
+    returnType: TType | null,
   ): TStatement;
 
   /**
@@ -134,11 +136,13 @@ export interface AstFactory<TStatement, TExpression, TType> {
    * @param functionName the name of the function.
    * @param parameters the names of the function's parameters.
    * @param body a statement (or a block of statements) that are the body of the function.
+   * @param returnType return type annotation for the function.
    */
   createFunctionExpression(
     functionName: string | null,
     parameters: Parameter<TType>[],
     body: TStatement,
+    returnType: TType | null,
   ): TExpression;
 
   /**
@@ -147,10 +151,12 @@ export interface AstFactory<TStatement, TExpression, TType> {
    *
    * @param parameters the names of the function's parameters.
    * @param body an expression or block of statements that are the body of the function.
+   * @param returnType return type annotation for the function.
    */
   createArrowFunctionExpression(
     parameters: Parameter<TType>[],
     body: TExpression | TStatement,
+    returnType: TType | null,
   ): TExpression;
 
   /**
@@ -283,12 +289,18 @@ export interface AstFactory<TStatement, TExpression, TType> {
   createVoidExpression(expression: TExpression): TExpression;
 
   /**
-   * Prefix the `operand` with the given `operator` (e.g. `-expr`).
+   * Apply the given `operator` to the `operand` (e.g. `-expr`, `++expr` or `expr++`).
    *
-   * @param operator the text of the operator to apply (e.g. `+`, `-` or `!`).
+   * @param operator the text of the operator to apply (e.g. `+`, `-`, `!`, `++` or `--`).
    * @param operand the expression that the operator applies to.
+   * @param isPrefix whether the operator precedes the operand. Only `++` and `--` can be used as
+   *     postfix operators. Defaults to `true`.
    */
-  createUnaryExpression(operator: UnaryOperator, operand: TExpression): TExpression;
+  createUnaryExpression(
+    operator: UnaryOperator,
+    operand: TExpression,
+    isPrefix?: boolean,
+  ): TExpression;
 
   /**
    * Create an expression that declares a new variable, possibly initialized to `initializer`.
@@ -371,17 +383,11 @@ export type VariableDeclarationType = 'const' | 'let' | 'var';
 /**
  * The unary operators supported by the `AstFactory`.
  */
-export type UnaryOperator = '+' | '-' | '!';
+export type UnaryOperator = '+' | '-' | '!' | '++' | '--';
 
 /** Supported built-in types. */
 export type BuiltInType =
-  | 'any'
-  | 'boolean'
-  | 'number'
-  | 'string'
-  | 'function'
-  | 'never'
-  | 'unknown';
+  'any' | 'boolean' | 'number' | 'string' | 'function' | 'never' | 'unknown';
 
 export interface Parameter<TType> {
   name: string;
@@ -467,6 +473,7 @@ export interface ObjectLiteralAssignment<TExpression> {
    * Whether the `propertyName` should be enclosed in quotes.
    */
   quoted: boolean;
+  leadingComments?: LeadingComment[];
 }
 
 /**
@@ -479,8 +486,7 @@ export interface ObjectLiteralSpread<TExpression> {
 
 /** Possible properties in an object literal. */
 export type ObjectLiteralProperty<TExpression> =
-  | ObjectLiteralAssignment<TExpression>
-  | ObjectLiteralSpread<TExpression>;
+  ObjectLiteralAssignment<TExpression> | ObjectLiteralSpread<TExpression>;
 
 /**
  * Information used by the `AstFactory` to create a template literal string (i.e. a back-ticked

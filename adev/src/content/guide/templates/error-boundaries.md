@@ -81,6 +81,32 @@ export class MyErrorHandler implements ErrorHandler {
 
 IMPORTANT: If an `@error` block itself throws an error, the error propagates to the next outer `@boundary` or Angular treats it as an unhandled application error.
 
+## Content projection
+
+If your component uses [content projection](guide/components/content-projection), wrapping `<ng-content>` in a `@boundary` does not catch errors from projected content. That content belongs to the view that declares it, not the receiving component's view.
+
+For example, a wrapper component with the following template does not catch errors from components projected into it:
+
+```angular-html {avoid}
+@boundary {
+  <ng-content />
+} @error {
+  <p>Something went wrong!</p>
+}
+```
+
+To catch those errors, wrap the wrapper component and its projected content in a `@boundary` in the parent template:
+
+```angular-html {prefer}
+@boundary {
+  <app-wrapper>
+    <app-risky-component />
+  </app-wrapper>
+} @error {
+  <p>Something went wrong!</p>
+}
+```
+
 ## Dynamic views and programmatic error handling
 
 Error handling isn't limited to template syntax. If you are creating components or embedded views dynamically, you can use the `onError` option to handle errors. See the [Handling rendering errors](guide/components/programmatic-rendering#handling-rendering-errors) section in the programmatic rendering guide for more information.

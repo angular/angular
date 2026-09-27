@@ -9,6 +9,7 @@ ts_project(
         exclude = ["*.spec.ts"],
     ),
     deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib/config",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/component-tree",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/identity-tracker",
         "//devtools/projects/ng-devtools-backend/src/lib/profiling/profiler",

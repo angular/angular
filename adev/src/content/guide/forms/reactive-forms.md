@@ -685,7 +685,7 @@ export function positiveValues(control: AbstractControl) {
 ## Reactive forms API summary
 
 The following table lists the base classes and services used to create and manage reactive form controls.
-For complete syntax details, see the API reference documentation for the [Forms package](api#forms 'API reference').
+For complete syntax details, see the API reference documentation for the [Forms package](api#angular_forms 'API reference').
 
 ### Classes
 

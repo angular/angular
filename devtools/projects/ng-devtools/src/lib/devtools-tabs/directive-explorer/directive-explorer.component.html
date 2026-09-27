@@ -1,7 +1,12 @@
-<as-split unit="percent" [direction]="splitDirection()" [gutterSize]="9">
-  <as-split-area #directiveForestSplitArea size="60">
+<as-split
+  unit="percent"
+  [ngResponsiveSplit]="tabSplitConfig"
+  direction="horizontal"
+  [gutterSize]="9"
+>
+  <as-split-area size="60">
     <as-split
-      [ngResponsiveSplit]="responsiveSplitConfig"
+      [ngResponsiveSplit]="forestSplitConfig"
       (directionChange)="onResponsiveSplitDirChange($event)"
       direction="vertical"
       [gutterSize]="9"

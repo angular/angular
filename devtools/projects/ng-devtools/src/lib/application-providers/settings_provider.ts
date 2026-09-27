@@ -122,6 +122,8 @@ export function applyMigrations(
       // since the SettingsStore is responsible for the initial/default values.
       'highlight_change_detection@profiling': undefined as any,
       'show_cd_in_explorer@components': undefined as any,
+      'show_defer_blocks@components': undefined as any,
+      'show_for_blocks@components': undefined as any,
     };
 
     dataCopy = newData as unknown as {[key: string]: unknown};

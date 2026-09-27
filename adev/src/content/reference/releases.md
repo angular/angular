@@ -77,7 +77,7 @@ HELPFUL: Approximate dates are offered as general guidance and are subject to ch
 | Version | Date               |
 | :------ | :----------------- |
 | v22.1   | Week of 2026-07-27 |
-| v22.2   | ~ September 2026   |
+| v22.2   | Week of 2026-09-21 |
 | v22.3   | ~ November 2026    |
 | v22.4   | ~ January 2027     |
 | v22.5   | ~ March 2027       |

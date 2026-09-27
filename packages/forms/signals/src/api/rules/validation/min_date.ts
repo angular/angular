@@ -21,7 +21,7 @@ import {minDateError} from './validation_errors';
  * @param path Path of the field to validate
  * @param minDate The minimum date, or a LogicFn that returns the minimum date.
  * @param config Optional, allows providing any of the following options:
- *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.min(minDate)`
+ *  - `error`: Custom validation error(s) to be used instead of the default `minDateError()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *

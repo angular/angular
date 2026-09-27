@@ -11,9 +11,10 @@ import {
   Resource,
   effect,
   DestroyRef,
+  EnvironmentInjector,
 } from '@angular/core';
 import {OperatorFunction, pipe} from 'rxjs';
-import {ResourceContext, ResourceResult} from '../models';
+import {ResourceContext, ResourceResult, Route} from '../models';
 import {NavigationTransition} from '../navigation_transition';
 import {ActivatedRoute, ActivatedRouteSnapshot, initializeActivatedRoute} from '../router_state';
 import {TreeNode} from '../utils/tree';
@@ -77,7 +78,7 @@ function processRoute(
   if (newlyCreatedRoutes.has(route)) {
     // This route is new. We need to run its resources function once.
     resourceSetupPromises.push(
-      setupNewRouterResources(route._futureSnapshot, route, abortSignal, blockingResourcePromises),
+      setupNewRouterResources(route, resources, abortSignal, blockingResourcePromises),
     );
   } else {
     updateExistingResources(route, blockingResourcePromises, abortSignal);
@@ -85,16 +86,12 @@ function processRoute(
 }
 
 async function setupNewRouterResources(
-  snapshot: ActivatedRouteSnapshot,
   route: ActivatedRoute,
+  resourcesFn: NonNullable<Route['resources']>,
   abortSignal: AbortSignal,
   blockingResourcePromises: Promise<void>[],
 ) {
-  const resourcesFn = snapshot?.routeConfig?.resources;
-  const parentInjector = snapshot?._environmentInjector;
-  if (!resourcesFn || !parentInjector) {
-    return;
-  }
+  const parentInjector = route._futureSnapshot._environmentInjector;
 
   let childInjector = route._localInjector;
   if (!childInjector) {
@@ -109,37 +106,27 @@ async function setupNewRouterResources(
     data: route.dataSignal,
   };
 
-  const resourceResultRaw = runInInjectionContext(childInjector, () => resourcesFn(context));
-  let resourceResult: ResourceResult;
-  if (resourceResultRaw instanceof Promise) {
-    resourceResult = await resourceResultRaw;
-    // Bail out if the router cancelled the navigation (and destroyed our injector!)
-    // while we were waiting.
-    if (abortSignal.aborted) return;
-  } else {
-    resourceResult = resourceResultRaw as ResourceResult;
-  }
-
-  if (!resourceResult) return;
+  const resourceResult = await runInInjectionContext(childInjector, () => resourcesFn(context));
+  if (abortSignal.aborted || !resourceResult) return;
 
   const wrappedResult: ResourceResult = {};
-  for (const [key, res] of Object.entries(resourceResult)) {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  runInInjectionContext(childInjector, () => {
+    for (const [key, res] of Object.entries(resourceResult)) {
       if (
-        !res ||
-        typeof res !== 'object' ||
-        typeof (res as Partial<Resource<unknown>>).snapshot !== 'function'
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        (!res ||
+          typeof res !== 'object' ||
+          typeof (res as Partial<Resource<unknown>>).snapshot !== 'function')
       ) {
         throw new Error(
           `Invalid resource returned for key "${key}". Expected a Resource, but got ${res === null ? 'null' : typeof res}.`,
         );
       }
+      wrappedResult[key] = routerResource(res);
     }
+  });
 
-    wrappedResult[key] = runInInjectionContext(childInjector, () => routerResource(res));
-  }
-
-  route.resources = route._futureSnapshot.resources = snapshot.resources = wrappedResult;
+  route.resources = route._futureSnapshot.resources = wrappedResult;
   setupBlocking(route, wrappedResult, blockingResourcePromises, abortSignal);
 }
 
@@ -155,15 +142,15 @@ function updateExistingResources(
     return;
   }
 
-  Object.values(currentResources).forEach((r) => {
+  for (const r of Object.values(currentResources)) {
     const underlyingRes = (r as InternalRouterResource)[SOURCE_RESOURCE_SYMBOL];
     if (underlyingRes.status() === 'error') {
       // If a resource previously failed and the route is reused identically,
       // the parameter signals won't change, meaning the internal effect won't automatically refetch.
       // We must manually trigger a reload to ensure the new navigation attempts a retry.
-      (underlyingRes as unknown as {reload?: () => boolean}).reload?.();
+      (underlyingRes as Partial<InternalRouterResource>).reload?.();
     }
-  });
+  }
 
   route._futureSnapshot.resources = currentResources;
   setupBlocking(route, currentResources, blockingResourcePromises, abortSignal);
@@ -179,52 +166,53 @@ function setupBlocking(
   const childInjector = route._localInjector;
   if (!childInjector || !resourceResult) return;
 
-  for (const r of Object.values(resourceResult)) {
-    const res = r as InternalRouterResource;
-    if (res[BLOCKING_SYMBOL] === false) {
-      continue;
+  for (const res of Object.values(resourceResult)) {
+    const internalRes = res as InternalRouterResource;
+    if (internalRes[BLOCKING_SYMBOL] !== false) {
+      blockingResourcePromises.push(waitForResource(internalRes, childInjector, abortSignal));
     }
-    const promise = new Promise<void>((resolve, reject) => {
-      const underlyingRes = res[SOURCE_RESOURCE_SYMBOL];
-      let isDestroyed = false;
-      let unregisterOnDestroy: (() => void) | undefined;
-
-      const cleanup = () => {
-        isDestroyed = true;
-        blockingEffect.destroy();
-        unregisterOnDestroy?.();
-        abortSignal.removeEventListener('abort', onAbort);
-      };
-
-      const onAbort = () => {
-        cleanup();
-        resolve();
-      };
-
-      abortSignal.addEventListener('abort', onAbort, {once: true});
-
-      const blockingEffect = effect(
-        () => {
-          if (isDestroyed) {
-            return;
-          }
-          const status = underlyingRes.status();
-          if (status === 'error') {
-            cleanup();
-            reject(underlyingRes.error());
-          } else if (!underlyingRes.isLoading()) {
-            cleanup();
-            resolve();
-          }
-        },
-        {injector: childInjector, manualCleanup: true},
-      );
-
-      unregisterOnDestroy = childInjector.get(DestroyRef).onDestroy(() => {
-        cleanup();
-        resolve();
-      });
-    });
-    blockingResourcePromises.push(promise);
   }
+}
+
+function waitForResource(
+  resource: InternalRouterResource,
+  injector: EnvironmentInjector,
+  abortSignal: AbortSignal,
+): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const underlyingRes = resource[SOURCE_RESOURCE_SYMBOL];
+    let isDestroyed = false;
+    let unregisterDestroy: (() => void) | undefined;
+
+    const cleanup = () => {
+      isDestroyed = true;
+      blockingEffect.destroy();
+      unregisterDestroy?.();
+      abortSignal.removeEventListener('abort', onDone);
+    };
+
+    const onDone = () => {
+      cleanup();
+      resolve();
+    };
+
+    abortSignal.addEventListener('abort', onDone, {once: true});
+
+    const blockingEffect = effect(
+      () => {
+        if (isDestroyed) return;
+        const status = underlyingRes.status();
+        if (status === 'error') {
+          cleanup();
+          reject(underlyingRes.error());
+        } else if (!underlyingRes.isLoading()) {
+          cleanup();
+          resolve();
+        }
+      },
+      {injector, manualCleanup: true},
+    );
+
+    unregisterDestroy = injector.get(DestroyRef).onDestroy(onDone);
+  });
 }

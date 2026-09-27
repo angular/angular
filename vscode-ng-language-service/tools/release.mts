@@ -386,7 +386,9 @@ async function buildExtension(): Promise<void> {
   console.log(chalk.blue('Building VSCode extension...'));
   await execAndStream('pnpm', ['bazel', 'clean']);
   await execAndStream('pnpm', [
-    'pnpm --filter=ng-template run package',
+    '--filter=ng-template',
+    'run',
+    'package',
     ...additionBazelReleaseArgs,
   ]);
 

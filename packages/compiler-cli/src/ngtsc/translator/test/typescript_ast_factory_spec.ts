@@ -185,8 +185,26 @@ describe('TypeScriptAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         body,
+        null,
       );
       expect(generate(fn)).toEqual('function foo(arg1, arg2: number) { x = 10; y = 20; }');
+    });
+
+    it('should create a function declaration with a return type', () => {
+      const {
+        items: [body],
+        generate,
+      } = setupStatements('{x = 10; y = 20;}');
+      const fn = factory.createFunctionDeclaration(
+        'foo',
+        [
+          {name: 'arg1', type: null},
+          {name: 'arg2', type: factory.createBuiltInType('number')},
+        ],
+        body,
+        factory.createBuiltInType('boolean'),
+      );
+      expect(generate(fn)).toEqual('function foo(arg1, arg2: number): boolean { x = 10; y = 20; }');
     });
   });
 
@@ -203,9 +221,27 @@ describe('TypeScriptAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         body,
+        null,
       );
       expect(ts.isExpressionStatement(fn)).toBe(false);
       expect(generate(fn)).toEqual('function foo(arg1, arg2: number) { x = 10; y = 20; }');
+    });
+
+    it('should create a function expression with a return type', () => {
+      const {
+        items: [body],
+        generate,
+      } = setupStatements('{x = 10; y = 20;}');
+      const fn = factory.createFunctionExpression(
+        'foo',
+        [
+          {name: 'arg1', type: null},
+          {name: 'arg2', type: factory.createBuiltInType('number')},
+        ],
+        body,
+        factory.createBuiltInType('boolean'),
+      );
+      expect(generate(fn)).toEqual('function foo(arg1, arg2: number): boolean { x = 10; y = 20; }');
     });
 
     it('should create an anonymous function expression node if the name is null', () => {
@@ -220,6 +256,7 @@ describe('TypeScriptAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         body,
+        null,
       );
       expect(generate(fn)).toEqual('function (arg1, arg2: number) { x = 10; y = 20; }');
     });
@@ -269,8 +306,25 @@ describe('TypeScriptAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         body,
+        null,
       );
       expect(generate(fn)).toEqual('(arg1, arg2: number) => arg2 + arg1');
+    });
+
+    it('should create an arrow function with a return type', () => {
+      const {
+        items: [body],
+        generate,
+      } = setupExpressions('arg2 + arg1');
+      const fn = factory.createArrowFunctionExpression(
+        [
+          {name: 'arg1', type: null},
+          {name: 'arg2', type: factory.createBuiltInType('number')},
+        ],
+        body,
+        factory.createBuiltInType('number'),
+      );
+      expect(generate(fn)).toEqual('(arg1, arg2: number): number => arg2 + arg1');
     });
 
     it('should create an arrow function with an implicit return object literal', () => {
@@ -278,7 +332,7 @@ describe('TypeScriptAstFactory', () => {
         items: [body],
         generate,
       } = setupExpressions('{a: 1, b: 2}');
-      const fn = factory.createArrowFunctionExpression([], body);
+      const fn = factory.createArrowFunctionExpression([], body, null);
       expect(generate(fn)).toEqual('() => ({ a: 1, b: 2 })');
     });
 
@@ -293,6 +347,7 @@ describe('TypeScriptAstFactory', () => {
           {name: 'arg2', type: factory.createBuiltInType('number')},
         ],
         body,
+        null,
       );
       expect(generate(fn)).toEqual('(arg1, arg2: number) => { x = 10; y = 20; return x + y; }');
     });
@@ -372,6 +427,23 @@ describe('TypeScriptAstFactory', () => {
         {expression: prop3, kind: 'spread'},
       ]);
       expect(generate(obj)).toEqual('{ prop1: 42, "prop2": "moo", ...foo }');
+    });
+
+    it('should attach leading comments to object literal properties', () => {
+      const {
+        items: [prop1],
+        generate,
+      } = setupExpressions('42');
+      const obj = factory.createObjectLiteral([
+        {
+          propertyName: 'prop1',
+          value: prop1,
+          kind: 'property',
+          quoted: false,
+          leadingComments: [leadingComment('@ts-ignore', true, true)],
+        },
+      ]);
+      expect(generate(obj)).toEqual('{ /* @ts-ignore */\n    prop1: 42 }');
     });
   });
 
@@ -471,6 +543,17 @@ describe('TypeScriptAstFactory', () => {
       } = setupExpressions(`value`);
       const unaryExpr = factory.createUnaryExpression('!', expr);
       expect(generate(unaryExpr)).toEqual('!value');
+    });
+
+    it('should create prefix and postfix increment/decrement expressions', () => {
+      const {
+        items: [expr1, expr2, expr3, expr4],
+        generate,
+      } = setupExpressions(`a; b; c; d;`);
+      expect(generate(factory.createUnaryExpression('++', expr1, true))).toEqual('++a');
+      expect(generate(factory.createUnaryExpression('++', expr2, false))).toEqual('b++');
+      expect(generate(factory.createUnaryExpression('--', expr3, true))).toEqual('--c');
+      expect(generate(factory.createUnaryExpression('--', expr4, false))).toEqual('d--');
     });
   });
 

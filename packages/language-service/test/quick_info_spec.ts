@@ -657,6 +657,58 @@ describe('quick info', () => {
           expectedDisplayString: '(property) AppCmp.anyValue: any',
         });
       });
+
+      it('should work for postfix update expression targets', () => {
+        expectQuickInfo({
+          templateOverride: `<div (click)="hero.i¦d++"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+        expectQuickInfo({
+          templateOverride: `<div (click)="hero.i¦d--"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+      });
+
+      it('should work for prefix update expression targets', () => {
+        expectQuickInfo({
+          templateOverride: `<div (click)="++hero.i¦d"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+        expectQuickInfo({
+          templateOverride: `<div (click)="--hero.i¦d"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+      });
+
+      it('should work for update expression targets wrapped in parentheses or non-null assertions', () => {
+        expectQuickInfo({
+          templateOverride: `<div (click)="(hero.i¦d)++"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+        expectQuickInfo({
+          templateOverride: `<div (click)="++(hero.i¦d)"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+        expectQuickInfo({
+          templateOverride: `<div (click)="hero.i¦d!++"></div>`,
+          expectedSpanText: 'id',
+          expectedDisplayString: '(property) Hero.id: number',
+        });
+      });
+
+      it('should work for the operand of an update expression inside a larger expression', () => {
+        expectQuickInfo({
+          templateOverride: `<div (click)="setTitle(hero.nam¦e); hero.id++"></div>`,
+          expectedSpanText: 'name',
+          expectedDisplayString: '(property) Hero.name: string',
+        });
+      });
     });
 
     describe('blocks', () => {

@@ -23,7 +23,7 @@ export function getRelativeUrl(
   return `${removeTrailingSlash(normalizePath(url.pathname))}${url.hash ?? ''}`;
 }
 
-export const removeTrailingSlash = (url: string): string => {
+const removeTrailingSlash = (url: string): string => {
   if (url.endsWith('/')) {
     return url.slice(0, -1);
   }

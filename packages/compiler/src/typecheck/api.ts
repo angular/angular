@@ -206,6 +206,12 @@ export interface TypeCheckingConfig {
   checkTypeOfDomEvents: boolean;
 
   /**
+   * Whether to report event bindings on elements with matched directives whose name matches
+   * neither an output of the matched directives nor a known native DOM event.
+   */
+  checkUnclaimedEventNames: boolean;
+
+  /**
    * Whether to infer the type of local references to DOM elements.
    */
   checkTypeOfDomReferences: boolean;

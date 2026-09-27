@@ -24,7 +24,8 @@
             "styles": ["src/styles.css"],
             "scripts": [],
             "optimization": true,
-            "progress": false
+            "progress": false,
+            "preserveSymlinks": true
           },
           "configurations": {
             "development": {
@@ -83,6 +84,7 @@
             "styles": ["src/styles.css"],
             "scripts": [],
             "progress": false,
+            "preserveSymlinks": true,
             "watch": false
           }
         },

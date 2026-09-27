@@ -69,10 +69,27 @@ ts_test_library(
     ],
 )
 
+ts_test_library(
+    name = "directive_forest_component_test",
+    srcs = ["directive-forest.component.spec.ts"],
+    deps = [
+        ":directive-forest",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@angular/platform-browser",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:app_data",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:deep_link",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/tree-node",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
+        "//devtools/projects/protocol",
+    ],
+)
+
 zoneless_web_test_suite(
     name = "test",
     deps = [
         ":directive-forest-filter-fn-generator_test",
+        ":directive_forest_component_test",
         ":directive_forest_utils_test",
     ],
 )

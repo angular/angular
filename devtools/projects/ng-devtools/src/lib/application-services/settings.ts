@@ -27,6 +27,18 @@ export class Settings {
     initialValue: false,
   });
 
+  readonly showDeferBlocks = this.settingsStore.create({
+    key: 'show_defer_blocks',
+    category: 'components',
+    initialValue: true,
+  });
+
+  readonly showForBlocks = this.settingsStore.create({
+    key: 'show_for_blocks',
+    category: 'components',
+    initialValue: true,
+  });
+
   readonly performanceTrack = this.settingsStore.create({
     key: 'performance_track',
     category: 'profiling',

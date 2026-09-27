@@ -2109,6 +2109,204 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('afterRenderEffect', () => {
+      it('should not insert debug info into afterRenderEffect function if not imported from angular core', () => {
+        env.write(
+          'test.ts',
+          `
+            declare function afterRenderEffect(fn: () => any): any;
+            import {Component} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testEffect = afterRenderEffect(() => {});
+            }
+          `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).not.toContain('debugName');
+      });
+
+      it('should insert debug info into afterRenderEffect function if imported from angular core', () => {
+        env.write(
+          'test.ts',
+          `
+            import {signal, afterRenderEffect, Component} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testSignal = signal(123);
+                testEffect = afterRenderEffect(() => this.testSignal());
+            }
+          `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(cleanNewLines(jsContents)).toContain(
+          `afterRenderEffect(() => this.testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+        );
+      });
+
+      it('should insert debug info into afterRenderEffect function with a phase spec', () => {
+        env.write(
+          'test.ts',
+          `
+            import {signal, afterRenderEffect, Component} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testSignal = signal(123);
+                testEffect = afterRenderEffect({read: () => this.testSignal()});
+            }
+          `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(cleanNewLines(jsContents)).toContain(
+          `afterRenderEffect({ read: () => this.testSignal() }, /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+        );
+      });
+
+      it('should insert debug info into afterRenderEffect function in a property assignment', () => {
+        env.write(
+          'test.ts',
+          `
+            import {signal, afterRenderEffect, AfterRenderRef, Component} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testSignal = signal(123);
+                testEffect: AfterRenderRef;
+                constructor() {
+                    this.testEffect = afterRenderEffect(() => this.testSignal());
+                }
+            }
+          `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(cleanNewLines(jsContents)).toContain(
+          `afterRenderEffect(() => this.testSignal(), /* @ts-ignore */ ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ []))`,
+        );
+      });
+
+      it('should not override an explicit debugName', () => {
+        env.write(
+          'test.ts',
+          `
+            import {afterRenderEffect, Component} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testEffect = afterRenderEffect(() => {}, {debugName: 'customName'});
+            }
+          `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(`debugName: 'customName'`);
+        expect(jsContents).not.toContain('debugName: "testEffect"');
+      });
+
+      it('should tree-shake away debug info if in prod mode', async () => {
+        env.write(
+          'test.ts',
+          `
+            import {signal, afterRenderEffect, Component} from '@angular/core';
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testSignal = signal(123);
+                testEffect = afterRenderEffect(() => this.testSignal());
+            }
+          `,
+        );
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
+        expect(builtContent).not.toContain('debugName');
+        expect(cleanNewLines(builtContent)).toContain(
+          'afterRenderEffect( () => this.testSignal() )',
+        );
+      });
+
+      it('should not tree-shake away debug info if in dev mode', async () => {
+        env.write(
+          'test.ts',
+          `
+            import {signal, afterRenderEffect, Component} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testSignal = signal(123);
+                testEffect = afterRenderEffect(() => this.testSignal());
+            }
+          `,
+        );
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
+        expect(cleanNewLines(builtContent)).toContain(
+          `afterRenderEffect( () => this.testSignal(), { debugName: "testEffect" } )`,
+        );
+      });
+
+      it('should tree-shake away debug info if in prod mode with existing options', async () => {
+        env.write(
+          'test.ts',
+          `
+            import {signal, afterRenderEffect, Component} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testSignal = signal(123);
+                testEffect = afterRenderEffect(() => this.testSignal(), { manualCleanup: true });
+            }
+          `,
+        );
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const builtContent = (await esbuild.transform(jsContents, minifiedProdBuildOptions)).code;
+        expect(builtContent).not.toContain('debugName');
+        expect(cleanNewLines(builtContent)).toContain(
+          'afterRenderEffect(() => this.testSignal(), { manualCleanup: !0 })',
+        );
+      });
+
+      it('should not tree-shake away debug info if in dev mode with existing options', async () => {
+        env.write(
+          'test.ts',
+          `
+            import {signal, afterRenderEffect, Component} from '@angular/core';
+
+            @Component({
+                template: ''
+            }) class MyComponent {
+                testSignal = signal(123);
+                testEffect = afterRenderEffect(() => this.testSignal(), { manualCleanup: true });
+            }
+          `,
+        );
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const builtContent = (await esbuild.transform(jsContents, minifiedDevBuildOptions)).code;
+        expect(cleanNewLines(builtContent)).toContain(
+          `afterRenderEffect(() => this.testSignal(), { debugName: "testEffect", manualCleanup: !0 })`,
+        );
+      });
+    });
+
     describe('linkedSignal', () => {
       it('should not insert debug info into linkedSignal function if not imported from angular core', () => {
         env.write(

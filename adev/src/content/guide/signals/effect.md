@@ -1,4 +1,4 @@
-## Effects
+# Effects
 
 Signals are useful because they notify interested consumers when they change. An **effect** is an operation that runs whenever one or more signal values change. You can create an effect with the `effect` function:
 
@@ -14,7 +14,7 @@ Effects always run **at least once.** When an effect runs, it tracks any signal 
 
 Effects always execute **asynchronously**, during the change detection process.
 
-### Use cases for effects
+## Use cases for effects
 
 Effects should be the last API you reach for. Always prefer `computed()` for derived values and `linkedSignal()` for values that can be both derived and manually set. If you find yourself copying data from one signal to another with an effect, it's a sign you should move your source-of-truth higher up and use `computed()` or `linkedSignal()` instead. Effects are best for syncing signal state to imperative, non-signal APIs.
 
@@ -31,7 +31,7 @@ Avoid using effects for propagation of state changes. This can result in `Expres
 Instead, use `computed` signals to model state that depends on other state.
 </docs-callout>
 
-### Injection context
+## Injection context
 
 By default, you can only create an `effect()` within an [injection context](guide/di/dependency-injection-context) (where you have access to the `inject` function). The easiest way to satisfy this requirement is to call `effect` within a component, directive, or service `constructor`:
 
@@ -68,7 +68,7 @@ export class EffectiveCounter {
 }
 ```
 
-### Execution of effects
+## Execution of effects
 
 Angular implicitly defines two implicit behaviors for its effects depending on the context they were created in.
 
@@ -82,7 +82,7 @@ The execution of both kinds of `effect` are tied to the change detection process
 
 In both cases, if at least one of the effect dependencies changed during the effect execution, the effect will re-run before moving ahead on the change detection process.
 
-### Destroying effects
+## Destroying effects
 
 When a component or directive is destroyed, Angular automatically cleans up any associated effects.
 
@@ -93,7 +93,7 @@ An `effect` can be created in two different contexts that will affect when it's 
 
 Effects return an `EffectRef`. You can use the ref's `destroy` method to manually dispose of an effect. You can combine this with the `manualCleanup` option when creating an effect to disable automatic cleanup. Be careful to actually destroy such effects when they're no longer required.
 
-### Effect cleanup functions
+## Effect cleanup functions
 
 When a component or directive is destroyed, Angular automatically cleans up any associated effects.
 Effects might start long-running operations, which you should cancel if the effect is destroyed or runs again before the first operation finished. When you create an effect, your function can optionally accept an `onCleanup` function as its first parameter. This `onCleanup` function lets you register a callback that is invoked before the next run of the effect begins, or when the effect is destroyed.

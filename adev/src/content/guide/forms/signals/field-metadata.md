@@ -355,6 +355,8 @@ import {URL_PREVIEW} from './url-preview';
   `,
 })
 export class LinkEditor {
+  URL_PREVIEW = URL_PREVIEW;
+
   linksModel = signal({links: [{url: ''}]});
 
   linksForm = form(this.linksModel, (path) => {

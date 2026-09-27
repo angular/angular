@@ -5,7 +5,7 @@ Angular uses the Unicode _locale identifier_ \(Unicode locale ID\) to find the c
 <docs-callout title="Unicode locale ID">
 
 - A locale ID conforms to the [Unicode Common Locale Data Repository (CLDR) core specification][UnicodeCldrDevelopmentCoreSpecification].
-  For more information about locale IDs, see [Unicode Language and Locale Identifiers][UnicodeCldrDevelopmentCoreSpecificationLocaleIDs].
+  For more information about locale IDs, see [Unicode Language and Locale Identifiers][UnicodeCldrDevelopmentCoreSpecificationLocaleID].
 
 - CLDR and Angular use [BCP 47 tags][RfcEditorInfoBcp47] as the base for the locale ID
 

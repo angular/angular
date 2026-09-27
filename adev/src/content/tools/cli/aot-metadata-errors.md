@@ -185,37 +185,6 @@ export abstract class MyStrategy { }
   …
 ```
 
-## Reference to a non-exported function
-
-HELPFUL: _Metadata referenced a function that wasn't exported._
-
-For example, you may have set a providers `useFactory` property to a locally defined function that you neglected to export.
-
-```ts
-// ERROR
-function myStrategy() { … }
-
-  …
-  providers: [
-    { provide: MyStrategy, useFactory: myStrategy }
-  ]
-  …
-```
-
-Angular generates a class factory in a separate module and that factory [can only access exported functions](tools/cli/aot-compiler#public-or-protected-symbols).
-To correct this error, export the function.
-
-```ts
-// CORRECTED
-export function myStrategy() { … }
-
-  …
-  providers: [
-    { provide: MyStrategy, useFactory: myStrategy }
-  ]
-  …
-```
-
 ## Destructured variable or constant not supported
 
 HELPFUL: _Referencing an exported destructured variable or constant is not supported by the template compiler. Consider simplifying this to avoid destructuring._

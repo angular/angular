@@ -41,10 +41,8 @@ import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode} from '../util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
-import {AnimationLViewData} from '../../animation/interfaces';
-import {allLeavingAnimations} from '../../animation/longest_animation';
-import {removeFromAnimationQueue} from '../../animation/queue';
 import {removeDehydratedViews} from '../../hydration/cleanup';
+import {clearViewDetachAnimations, initViewDetachAnimations} from '../node_animations';
 import {
   addLViewToLContainer,
   detachView,
@@ -605,19 +603,8 @@ function clearDetachAnimationList(lContainer: LContainer, index: number): void {
 
   const indexInContainer = CONTAINER_HEADER_OFFSET + index;
   const viewToDetach = lContainer[indexInContainer] as LView;
-  const animations = viewToDetach
-    ? (viewToDetach[ANIMATIONS] as AnimationLViewData | undefined)
-    : undefined;
-  if (
-    viewToDetach &&
-    animations &&
-    animations.detachedLeaveAnimationFns &&
-    animations.detachedLeaveAnimationFns.length > 0
-  ) {
-    const injector = viewToDetach[INJECTOR];
-    removeFromAnimationQueue(injector, animations);
-    allLeavingAnimations.delete(viewToDetach[ID]);
-    animations.detachedLeaveAnimationFns = undefined;
+  if (viewToDetach) {
+    clearViewDetachAnimations(viewToDetach);
   }
 }
 
@@ -627,12 +614,9 @@ function maybeInitDetachAnimationList(lContainer: LContainer, index: number): vo
   if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
 
   const indexInContainer = CONTAINER_HEADER_OFFSET + index;
-  const viewToDetach = lContainer[indexInContainer];
-  const animations = viewToDetach
-    ? (viewToDetach[ANIMATIONS] as AnimationLViewData | undefined)
-    : undefined;
-  if (animations && animations.leave && animations.leave.size > 0) {
-    animations.detachedLeaveAnimationFns = [];
+  const viewToDetach = lContainer[indexInContainer] as LView;
+  if (viewToDetach) {
+    initViewDetachAnimations(viewToDetach);
   }
 }
 

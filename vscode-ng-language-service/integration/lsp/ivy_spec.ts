@@ -251,6 +251,39 @@ export class AppComponent {
     expect(response).toContain({startLine: 7, endLine: 8});
   });
 
+  it('provides folding ranges for inline templates with interpolated strings', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+
+const suffix = '!';
+
+@Component({
+  selector: 'my-app',
+  template: \`
+  <div>
+    <span>
+      Hello \${suffix}
+    </span>
+  </div>\`,
+})
+export class AppComponent {
+  name = 'Angular';
+}`,
+    );
+    const response = (await client.sendRequest(lsp.FoldingRangeRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.FoldingRange[];
+    expect(Array.isArray(response)).toBe(true);
+    expect(response.length).toEqual(2);
+    expect(response).toContain({startLine: 8, endLine: 11});
+    expect(response).toContain({startLine: 9, endLine: 10});
+  });
+
   it('provides folding ranges for control flow', async () => {
     openTextDocument(
       client,

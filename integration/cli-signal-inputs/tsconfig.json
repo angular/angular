@@ -10,6 +10,7 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "es2022",
+    "skipLibCheck": true,
     "typeRoots": ["node_modules/@types"],
     "lib": ["es2018", "dom"]
   },

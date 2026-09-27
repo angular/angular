@@ -12,9 +12,6 @@ import {isIos} from '@angular/docs';
 import {LoadingStep} from './enums/loading-steps';
 import {OUT_OF_MEMORY_MSG} from './node-runtime-errors';
 
-export const MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES = 3;
-export const WEBCONTAINERS_COUNTER_KEY = 'numberOfWebcontainers';
-
 export type NodeRuntimeError = {
   message: string | undefined;
   type: ErrorType | undefined;

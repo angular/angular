@@ -18,6 +18,7 @@ import {wrapIntoObservable} from './utils/collection';
 import {firstValueFrom} from './utils/first_value_from';
 
 export class NoMatch extends Error {
+  override readonly name: string = 'NoMatch';
   public segmentGroup: UrlSegmentGroup | null;
 
   constructor(segmentGroup?: UrlSegmentGroup) {
@@ -32,6 +33,8 @@ export class NoMatch extends Error {
 }
 
 export class AbsoluteRedirect extends Error {
+  override readonly name: string = 'AbsoluteRedirect';
+
   constructor(public urlTree: UrlTree) {
     super();
 

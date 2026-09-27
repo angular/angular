@@ -180,7 +180,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     RUNTIME_DEPS_ORPHAN_COMPONENT = 981,
     // (undocumented)
-    SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
+    SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = -600,
     // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,
     // (undocumented)

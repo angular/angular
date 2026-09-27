@@ -556,11 +556,11 @@ function isTemplateNode(node: any): node is HTMLTemplateElement {
 }
 
 class ShadowDomRenderer extends DefaultDomRenderer2 {
-  private shadowRoot: any;
+  private readonly shadowRoot: ShadowRoot;
 
   constructor(
     eventManager: EventManager,
-    private hostEl: any,
+    private readonly hostEl: Element,
     component: RendererType2,
     doc: Document,
     ngZone: NgZone,
@@ -570,7 +570,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     private sharedStylesHost?: SharedStylesHost,
   ) {
     super(eventManager, doc, ngZone, tracingService, cssVarNamespace);
-    this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+    this.shadowRoot = hostEl.attachShadow({mode: 'open'});
 
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
     // This is optional as it is not used by ExperimentalIsolatedShadowDom.

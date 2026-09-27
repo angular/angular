@@ -1,0 +1,54 @@
+:host {
+  width: 100%;
+  height: var(--horizontal-scroller-height, 24px);
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .content {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    height: 100%;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    flex: 1;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .content-inner {
+      min-width: max-content;
+    }
+  }
+
+  .scroll-button {
+    height: 100%;
+    background-color: var(--septenary-contrast);
+    border: none;
+    cursor: pointer;
+    color: var(--tertiary-contrast);
+    display: flex;
+    align-items: center;
+
+    &.hidden {
+      visibility: hidden;
+    }
+
+    &.display-none {
+      display: none;
+    }
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

@@ -37,8 +37,8 @@ import {TerminalType} from './terminal/terminal-handler.service';
 import {Terminal} from './terminal/terminal.component';
 
 export const EMBEDDED_EDITOR_SELECTOR = 'embedded-editor';
-export const LARGE_EDITOR_WIDTH_BREAKPOINT = 950;
-export const LARGE_EDITOR_HEIGHT_BREAKPOINT = 550;
+const LARGE_EDITOR_WIDTH_BREAKPOINT = 950;
+const LARGE_EDITOR_HEIGHT_BREAKPOINT = 550;
 
 @Component({
   selector: EMBEDDED_EDITOR_SELECTOR,

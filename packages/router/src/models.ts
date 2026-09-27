@@ -16,6 +16,7 @@ import {
   Signal,
   Type,
   Resource,
+  WritableResource,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 export {DefaultExport} from '@angular/core';
@@ -28,7 +29,10 @@ import type {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
  * The expected return type of a `resources` function.
  * @developerPreview 22.2
  */
-export type ResourceResult = Record<string, Resource<unknown>>;
+export type ResourceResult = Record<
+  string,
+  Resource<unknown> & Pick<WritableResource<unknown>, 'reload'>
+>;
 
 // Developer notes: properties are exposed as a plain Record (`Params`) rather than a `ParamMap`
 // to allow future type-check layers to infer exact keys (e.g., `{ id: string }`).
@@ -39,7 +43,7 @@ export type ResourceResult = Record<string, Resource<unknown>>;
  */
 export interface ResourceContext {
   /**
-   * The matrix parameters of the route.
+   * The path and matrix parameters available to the route.
    *
    * @developerPreview 22.2
    */

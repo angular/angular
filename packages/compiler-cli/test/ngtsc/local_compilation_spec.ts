@@ -1495,6 +1495,61 @@ runInEachFileSystem(() => {
           `MyDirective.ɵfac = function MyDirective_Factory(__ngFactoryType__) { i0.ɵɵinvalidFactory(); };`,
         );
       });
+
+      it('should guard unresolvable constructor parameter types in class metadata', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive, Optional} from '@angular/core';
+          import {SomeService1} from './some-where1'
+          import SomeService2 from './some-where2'
+
+          @Directive({
+            selector: '[main]',
+          })
+          export class MainDirective {
+            constructor(
+              private someService1: SomeService1,
+              @Optional() private someService2: SomeService2,
+              ) {}
+          }
+          `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        // Neither type could be confirmed to exist at runtime, so each parameter type is guarded
+        // individually on the `type` property assignment. Even when a parameter decorator forces
+        // the object literal across multiple lines, the comment stays on the line immediately
+        // before `type:`.
+        expect(jsContents).toMatch(
+          /\(\) => \[\{\s*\/\* @ts-ignore \*\/\n\s*type: i1\.SomeService1 \}, \{\s*\/\* @ts-ignore \*\/\n\s*type: SomeService2,\s*decorators: \[\{\s*type: Optional\s*\}\]\s*\}\], null\)/,
+        );
+      });
+
+      it('should not guard constructor parameter types that are known to exist at runtime', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Directive} from '@angular/core';
+
+          export class SomeService {}
+
+          @Directive({
+            selector: '[main]',
+          })
+          export class MainDirective {
+            constructor(private someService: SomeService) {}
+          }
+          `,
+        );
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('() => [{ type: SomeService }], null)');
+      });
     });
 
     describe('LOCAL_COMPILATION_UNRESOLVED_CONST errors', () => {

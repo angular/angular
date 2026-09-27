@@ -168,7 +168,7 @@ export class ConstantPool {
     fn: o.Expression,
     prefix: string,
     useUniqueName: boolean = true,
-  ): o.Expression {
+  ): o.ReadVarExpr {
     const isArrow = fn instanceof o.ArrowFunctionExpr;
 
     for (const current of this.statements) {

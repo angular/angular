@@ -27,7 +27,7 @@ import {minLengthError} from './validation_errors';
  * @param path Path of the field to validate
  * @param minLength The minimum length, or a LogicFn that returns the minimum length.
  * @param config Optional, allows providing any of the following options:
- *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.minLength(minLength)`
+ *  - `error`: Custom validation error(s) to be used instead of the default `minLengthError()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)

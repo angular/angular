@@ -1391,6 +1391,231 @@ runInEachFileSystem(() => {
       });
     });
 
+    describe('strictUnclaimedEventNames', () => {
+      function writeTestComponent(
+        template: string,
+        imports: string = '[TargetCmp]',
+        extraMetadata: string = '',
+      ): void {
+        env.write(
+          'test.ts',
+          `
+          import {Component, CUSTOM_ELEMENTS_SCHEMA, Directive, EventEmitter, NO_ERRORS_SCHEMA, Output} from '@angular/core';
+
+          @Component({
+            selector: 'target-cmp',
+            template: '',
+          })
+          export class TargetCmp {
+            @Output() someOutput = new EventEmitter<string>();
+            @Output('publicName') internalProp = new EventEmitter<string>();
+          }
+
+          @Directive({
+            selector: '[some-dir]',
+          })
+          export class SomeDir {}
+
+          @Component({
+            selector: 'test',
+            template: '${template}',
+            imports: ${imports},
+            ${extraMetadata}
+          })
+          export class TestCmp {
+            handle(value: unknown) {}
+          }
+        `,
+        );
+      }
+
+      function expectNoDiagnostics(): void {
+        expect(env.driveDiagnostics().map((diag) => diag.messageText)).toEqual([]);
+      }
+
+      it('should report events matching neither an output nor a native DOM event', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (someOutptu)="handle($event)"></target-cmp>');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'someOutptu' is not emitted by any directive applied to 'target-cmp' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should report unclaimed camelCase events on elements with matched directives', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<div some-dir (myEvent)="handle($event)"></div>', '[SomeDir]');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'myEvent' is not emitted by any directive applied to 'div' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should not report outputs of matched directives', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (someOutput)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report native DOM events', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (click)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report dash-separated custom events', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (my-custom-event)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report key pseudo-events', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (keyup.ArrowDown)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report events with a target prefix', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (window:resize)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report events on elements without matched directives', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<div (myEvent)="handle($any($event))"></div>', '[]');
+
+        expectNoDiagnostics();
+      });
+
+      it('should report output typos on components even when using CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<target-cmp (someOutptu)="handle($any($event))"></target-cmp>',
+          '[TargetCmp]',
+          'schemas: [CUSTOM_ELEMENTS_SCHEMA],',
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'someOutptu' is not emitted by any directive applied to 'target-cmp' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should not report events on elements without a matched component when using CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<div some-dir (itemSelected)="handle($any($event))"><my-web-component></my-web-component></div>',
+          '[SomeDir]',
+          'schemas: [CUSTOM_ELEMENTS_SCHEMA],',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report events on customized built-in elements when using CUSTOM_ELEMENTS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<button is="fancy-button" some-dir (buttonCustomEvent)="handle($any($event))"></button>',
+          '[SomeDir]',
+          'schemas: [CUSTOM_ELEMENTS_SCHEMA],',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report vendor-prefixed native events with camelCase names', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<div some-dir (webkitAnimationEnd)="handle($event)"></div>',
+          '[SomeDir]',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report any events when using NO_ERRORS_SCHEMA', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<target-cmp (someOutptu)="handle($any($event))"></target-cmp>',
+          '[TargetCmp]',
+          'schemas: [NO_ERRORS_SCHEMA],',
+        );
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report unclaimed events when explicitly disabled', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: false});
+        writeTestComponent('<target-cmp (someOutptu)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report unclaimed events when not enabled', () => {
+        env.tsconfig({strictTemplates: true});
+        writeTestComponent('<target-cmp (someOutptu)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should not report the public name of an aliased output', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (publicName)="handle($event)"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+
+      it('should report the internal property name of an aliased output', () => {
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (internalProp)="handle($event)"></target-cmp>');
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'internalProp' is not emitted by any directive applied to 'target-cmp' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should report camelCase bubbling custom events listened to via event delegation', () => {
+        // Event delegation of camelCase custom events dispatched by descendants is valid DOM
+        // behavior, but it's statically indistinguishable from a misspelled output name. Not
+        // reporting it would require dropping the check entirely, so reporting it is the
+        // documented trade-off of this opt-in option: such projects should use dash-separated
+        // event names or leave the option disabled.
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent(
+          '<div some-dir (cardSwipe)="handle($event)"><button>Action</button></div>',
+          '[SomeDir]',
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain(
+          `Event 'cardSwipe' is not emitted by any directive applied to 'div' and it isn't a known native DOM event.`,
+        );
+      });
+
+      it('should not report all-lowercase unclaimed events', () => {
+        // All-lowercase names could be custom events dispatched by a descendant element, so
+        // they're intentionally not reported, even when they're likely misspelled outputs.
+        env.tsconfig({strictTemplates: true, strictUnclaimedEventNames: true});
+        writeTestComponent('<target-cmp (someoutput)="handle($any($event))"></target-cmp>');
+
+        expectNoDiagnostics();
+      });
+    });
+
     it('should check basic usage of NgIf', () => {
       env.write(
         'test.ts',
@@ -2031,6 +2256,44 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
     });
 
+    it('should type check increment/decrement operations', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<button (click)="name++"></button>'})
+        class TestCmp {
+          name = 'frodo';
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(
+        `An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type.`,
+      );
+    });
+
+    it('should type check increment/decrement targets', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<button (click)="doesNotExist++"></button>'})
+        class TestCmp {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(
+        `Property 'doesNotExist' does not exist on type 'TestCmp'.`,
+      );
+    });
+
     describe('microsyntax variables', () => {
       beforeEach(() => {
         // Use the same template for both tests
@@ -2229,6 +2492,65 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[1])).toEqual('y = !y');
       expect(diags[0].messageText).toEqual(`Type 'false' is not assignable to type 'true'.`);
       expect(diags[1].messageText).toEqual(
+        `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+      );
+    });
+
+    it('should detect an illegal write to a template variable through update operators', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          template: \`
+            <div *ngIf="x as y">
+              <button (click)="y++">Increment</button>
+              <button (click)="--y">Decrement</button>
+            </div>
+          \`,
+          imports: [CommonModule]
+        })
+        export class TestCmp {
+          x!: number;
+        }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(2);
+      expect(diags.map((d) => getSourceCodeForDiagnostic(d))).toEqual(['y++', '--y']);
+      expect(diags.map((d) => d.messageText)).toEqual([
+        `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+        `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
+      ]);
+    });
+
+    it('should detect an illegal write to a template variable through an update operator on the right-hand side of an assignment', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          template: \`
+            <div *ngIf="x as y">
+              <button (click)="prop = y++">Increment</button>
+            </div>
+          \`,
+          imports: [CommonModule]
+        })
+        export class TestCmp {
+          x!: number;
+          prop = 0;
+        }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('prop = y++');
+      expect(diags[0].messageText).toBe(
         `Cannot use variable 'y' as the left-hand side of an assignment expression. Template variables are read-only.`,
       );
     });
@@ -7120,6 +7442,206 @@ suppress
         ]);
       });
 
+      it('should report diagnostics within sub-expressions of compound @for loop expressions', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of items && does_not_exist; track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            items = [1, 2, 3];
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          "Property 'does_not_exist' does not exist on type 'Main'.",
+        ]);
+      });
+
+      it('should report diagnostics on invalid arguments in compound @for loop expressions', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of items && items.slice('not_a_number'); track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            items = [1, 2, 3];
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          "Argument of type 'string' is not assignable to parameter of type 'number'.",
+        ]);
+      });
+
+      it('should report diagnostics on ternary expressions in @for loop expressions', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of condition ? not_found : items; track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            condition = true;
+            items = [1, 2, 3];
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          "Property 'not_found' does not exist on type 'Main'.",
+        ]);
+      });
+
+      it('should report diagnostics on nested property reads in @for loop expressions', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of nested.does_not_exist; track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            nested = {a: 1};
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          "Property 'does_not_exist' does not exist on type '{ a: number; }'.",
+        ]);
+      });
+
+      it('should report diagnostics when calling functions with invalid arguments in @for loop expressions', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @for (item of getItems('invalid'); track item) {
+                {{item}}
+              }
+            \`,
+          })
+          export class Main {
+            getItems(count: number): string[] {
+              return [];
+            }
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          "Argument of type 'string' is not assignable to parameter of type 'number'.",
+        ]);
+      });
+
+      it('should report diagnostics when iterating over an un-narrowed async pipe result with empty array fallback', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Pipe} from '@angular/core';
+
+          interface Subscribable<T> {
+            subscribe(observer: any): any;
+          }
+
+          @Pipe({name: 'async'})
+          export class AsyncPipe {
+            transform<T>(value: Subscribable<T> | Promise<T> | null | undefined): T | null {
+              return null;
+            }
+          }
+
+          @Component({
+            template: \`
+              @for (a of (x | async) || []; track a) {
+                {{a}}
+              }
+            \`,
+            imports: [AsyncPipe],
+          })
+          export class Main {
+            x: any;
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Type '{}' must have a '[Symbol.iterator]()' method that returns an iterator.`,
+        ]);
+      });
+
+      it('should not report diagnostics when iterating over a typed async pipe result with empty array fallback', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Pipe} from '@angular/core';
+
+          interface Subscribable<T> {
+            subscribe(observer: any): any;
+          }
+
+          @Pipe({name: 'async'})
+          export class AsyncPipe {
+            transform<T>(value: Subscribable<T> | Promise<T> | null | undefined): T | null {
+              return null;
+            }
+          }
+
+          @Component({
+            template: \`
+              @for (a of (x | async) || []; track a) {
+                {{a}}
+              }
+            \`,
+            imports: [AsyncPipe],
+          })
+          export class Main {
+            x!: Subscribable<number[]>;
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([]);
+      });
+
       it('should check for loop variables with the same name as built-in globals', () => {
         // strictTemplates are necessary so the event listener is checked.
         env.tsconfig({strictTemplates: true});
@@ -8451,6 +8973,55 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
+      });
+
+      it('should not allow a let declaration value to be changed through update operators', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @let value = 1;
+              <button (click)="value++">Click me</button>
+              <button (click)="--value">Click me</button>
+            \`,
+          })
+          export class Main {
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(2);
+        expect(diags[0].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
+        expect(diags[1].messageText).toBe(`Cannot assign to @let declaration 'value'.`);
+      });
+
+      it('should not allow update operators to be used on a readonly signal', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal} from '@angular/core';
+
+          @Component({
+            template: \`
+              <button (click)="count++">Click me</button>
+              <button (click)="--count">Click me</button>
+            \`,
+          })
+          export class Main {
+            readonly count = signal(0);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map((d) => d.messageText)).toEqual([
+          `Cannot assign to 'count' because it is a read-only property.`,
+          `Cannot assign to 'count' because it is a read-only property.`,
+        ]);
       });
 
       it('should not allow a let declaration value to be changed through a `this` access', () => {

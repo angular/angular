@@ -26,6 +26,7 @@
 | `NG0505`  | [No hydration info in server response](errors/NG0505)                                |
 | `NG0506`  | [NgZone remains unstable](errors/NG0506)                                             |
 | `NG0507`  | [HTML content was altered after SSR](errors/NG0507)                                  |
+| `NG0600`  | [Signal write in a disallowed context](errors/NG0600)                                |
 | `NG0602`  | [Disallowed function call inside reactive context](errors/NG0602)                    |
 | `NG0750`  | [@defer dependencies failed to load](errors/NG0750)                                  |
 | `NG0751`  | [@defer behavior when HMR is enabled](errors/NG0751)                                 |

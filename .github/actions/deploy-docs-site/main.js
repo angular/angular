@@ -37925,6 +37925,7 @@ var yellow = styleText.bind(null, "yellow");
 var bold = styleText.bind(null, "bold");
 var blue = styleText.bind(null, "blue");
 var underline = styleText.bind(null, "underline");
+var magenta = styleText.bind(null, "magenta");
 var Log = class {
 };
 Log.info = buildLogLevelFunction(() => console.info, LogLevel.INFO, null);
@@ -50777,36 +50778,38 @@ var require_Alias = __commonJS2({
           if (node.anchor === this.source)
             found = node;
         }
+        if (found && ctx) {
+          const { anchors: anchors2, doc: doc2, maxAliasCount } = ctx;
+          let data = anchors2.get(found);
+          if (!data) {
+            toJS.toJS(found, null, ctx);
+            data = anchors2.get(found);
+          }
+          if (data?.res === void 0) {
+            const msg = "This should not happen: Alias anchor was not resolved?";
+            throw new ReferenceError(msg);
+          }
+          if (maxAliasCount >= 0) {
+            data.count += 1;
+            if (data.aliasCount === 0)
+              data.aliasCount = getAliasCount(doc2, found, anchors2);
+            if (data.count * data.aliasCount > maxAliasCount) {
+              const msg = "Excessive alias count indicates a resource exhaustion attack";
+              throw new ReferenceError(msg);
+            }
+          }
+        }
         return found;
       }
       toJSON(_arg, ctx) {
         if (!ctx)
           return { source: this.source };
-        const { anchors: anchors2, doc, maxAliasCount } = ctx;
-        const source = this.resolve(doc, ctx);
+        const source = this.resolve(ctx.doc, ctx);
         if (!source) {
           const msg = `Unresolved alias (the anchor must be set before the alias): ${this.source}`;
           throw new ReferenceError(msg);
         }
-        let data = anchors2.get(source);
-        if (!data) {
-          toJS.toJS(source, null, ctx);
-          data = anchors2.get(source);
-        }
-        if (data?.res === void 0) {
-          const msg = "This should not happen: Alias anchor was not resolved?";
-          throw new ReferenceError(msg);
-        }
-        if (maxAliasCount >= 0) {
-          data.count += 1;
-          if (data.aliasCount === 0)
-            data.aliasCount = getAliasCount(doc, source, anchors2);
-          if (data.count * data.aliasCount > maxAliasCount) {
-            const msg = "Excessive alias count indicates a resource exhaustion attack";
-            throw new ReferenceError(msg);
-          }
-        }
-        return data.res;
+        return ctx.anchors.get(source).res;
       }
       toString(ctx, _onComment, _onChompKeep) {
         const src = `*${this.source}`;
@@ -54704,37 +54707,38 @@ var require_resolve_flow_scalar = __commonJS2({
       }
       if (badChar)
         onError(0, "BAD_SCALAR_START", `Plain value cannot start with ${badChar}`);
-      return foldLines(source);
+      return unfoldLines(source);
     }
     function singleQuotedValue(source, onError) {
       if (source[source.length - 1] !== "'" || source.length === 1)
         onError(source.length, "MISSING_CHAR", "Missing closing 'quote");
-      return foldLines(source.slice(1, -1)).replace(/''/g, "'");
+      return unfoldLines(source.slice(1, -1)).replace(/''/g, "'");
     }
-    function foldLines(source) {
-      let first, line;
-      try {
-        first = new RegExp("(.*?)(?<![ 	])[ 	]*\r?\n", "sy");
-        line = new RegExp("[ 	]*(.*?)(?:(?<![ 	])[ 	]*)?\r?\n", "sy");
-      } catch {
-        first = /(.*?)[ \t]*\r?\n/sy;
-        line = /[ \t]*(.*?)[ \t]*\r?\n/sy;
-      }
-      let match = first.exec(source);
+    function unfoldLines(source) {
+      const line = /(.*?)\r?\n/sy;
+      let match = line.exec(source);
       if (!match)
         return source;
-      let res = match[1];
+      let trimEnd, trimBoth;
+      try {
+        trimEnd = new RegExp("(?<![ 	])[ 	]+$");
+        trimBoth = new RegExp("^[ 	]+|(?<![ 	])[ 	]+$", "g");
+      } catch {
+        trimEnd = /[ \t]+$/;
+        trimBoth = /^[ \t]+|[ \t]+$/g;
+      }
+      let res = match[1].replace(trimEnd, "");
       let sep22 = " ";
-      let pos = first.lastIndex;
-      line.lastIndex = pos;
+      let pos = line.lastIndex;
       while (match = line.exec(source)) {
-        if (match[1] === "") {
+        const lm = match[1].replace(trimBoth, "");
+        if (lm === "") {
           if (sep22 === "\n")
             res += sep22;
           else
             sep22 = "\n";
         } else {
-          res += sep22 + match[1];
+          res += sep22 + lm;
           sep22 = " ";
         }
         pos = line.lastIndex;
@@ -63719,6 +63723,14 @@ var PromisePolyfill = class extends Promise {
   }
 };
 var nativeSetImmediate = globalThis.setImmediate;
+function listenTo(target, event, listener) {
+  if ("on" in target) {
+    target.on(event, listener);
+    return () => target.removeListener(event, listener);
+  }
+  target.addEventListener(event, listener);
+  return () => target.removeEventListener(event, listener);
+}
 function getCallSites() {
   const savedPrepareStackTrace = Error.prepareStackTrace;
   let result = [];
@@ -63750,37 +63762,45 @@ function createPrompt(view) {
     output.mute();
     const screen = new ScreenManager(rl);
     const { promise, resolve: resolve22, reject } = PromisePolyfill.withResolver();
-    const cancel = () => reject(new CancelPromptError());
-    if (signal) {
-      const abort = () => reject(new AbortPromptError({ cause: signal.reason }));
-      if (signal.aborted) {
-        abort();
-        return Object.assign(promise, { cancel });
-      }
-      signal.addEventListener("abort", abort);
-      cleanups.add(() => signal.removeEventListener("abort", abort));
-    }
-    cleanups.add(onExit((code, signal2) => {
-      reject(new ExitPromptError(`User force closed the prompt with ${code} ${signal2}`));
-    }));
-    const sigint = () => reject(new ExitPromptError(`User force closed the prompt with SIGINT`));
-    rl.on("SIGINT", sigint);
-    cleanups.add(() => rl.removeListener("SIGINT", sigint));
     return withHooks(rl, (cycle) => {
-      const hooksCleanup = AsyncResource3.bind(() => effectScheduler.clearAll());
-      rl.on("close", hooksCleanup);
-      cleanups.add(() => rl.removeListener("close", hooksCleanup));
+      const clearEffects = AsyncResource3.bind(() => effectScheduler.clearAll());
+      const settlePrompt = (settle) => {
+        try {
+          clearEffects();
+          settle();
+        } catch (error2) {
+          reject(error2);
+        }
+      };
+      const resolvePrompt = (value) => settlePrompt(() => resolve22(value));
+      const rejectPrompt = (error2) => settlePrompt(() => reject(error2));
+      const promptPromise = Object.assign(promise.finally(() => {
+        cleanups.forEach((cleanup) => cleanup());
+        screen.done({ clearContent: Boolean(context3.clearPromptOnDone) });
+        output.end();
+      }).then(() => promise), { cancel: () => rejectPrompt(new CancelPromptError()) });
+      if (signal) {
+        const abort = () => rejectPrompt(new AbortPromptError({ cause: signal.reason }));
+        if (signal.aborted) {
+          abort();
+          return promptPromise;
+        }
+        cleanups.add(listenTo(signal, "abort", abort));
+      }
+      cleanups.add(onExit((code, signal2) => {
+        rejectPrompt(new ExitPromptError(`User force closed the prompt with ${code} ${signal2}`));
+      }));
+      cleanups.add(listenTo(rl, "SIGINT", () => rejectPrompt(new ExitPromptError(`User force closed the prompt with SIGINT`))));
+      cleanups.add(listenTo(rl, "close", clearEffects));
       const startCycle = () => {
-        const checkCursorPos = () => screen.checkCursorPos();
-        rl.input.on("keypress", checkCursorPos);
-        cleanups.add(() => rl.input.removeListener("keypress", checkCursorPos));
+        cleanups.add(listenTo(rl.input, "keypress", () => screen.checkCursorPos()));
         let pendingDone = null;
         cycle(() => {
           let effectsSettled = false;
           try {
             const nextView = view(config, (value) => {
               if (effectsSettled) {
-                resolve22(value);
+                resolvePrompt(value);
               } else {
                 pendingDone = { value };
               }
@@ -63797,13 +63817,13 @@ function createPrompt(view) {
             screen.render(content, bottomContent);
             effectScheduler.run();
           } catch (error2) {
-            reject(error2);
+            rejectPrompt(error2);
           }
           effectsSettled = true;
           if (pendingDone !== null) {
             const { value } = pendingDone;
             pendingDone = null;
-            resolve22(value);
+            resolvePrompt(value);
           }
         });
       };
@@ -63812,17 +63832,7 @@ function createPrompt(view) {
       } else {
         startCycle();
       }
-      return Object.assign(promise.then((answer) => {
-        effectScheduler.clearAll();
-        return answer;
-      }, (error2) => {
-        effectScheduler.clearAll();
-        throw error2;
-      }).finally(() => {
-        cleanups.forEach((cleanup) => cleanup());
-        screen.done({ clearContent: Boolean(context3.clearPromptOnDone) });
-        output.end();
-      }).then(() => promise), { cancel });
+      return promptPromise;
     });
   };
   return prompt;
@@ -64300,7 +64310,7 @@ var dist_default6 = createPrompt((config, done) => {
   }
   const { transformer = boolToString } = config;
   function getBooleanValue(value2, defaultValue2) {
-    const v = value2.toLowerCase();
+    const v = value2.trim().toLowerCase();
     if (v === "")
       return defaultValue2 !== false;
     if (yes.toLowerCase().startsWith(v))
@@ -65331,7 +65341,7 @@ content-type/dist/index.js:
 @octokit/graphql/dist-bundle/index.js:
   (* v8 ignore if -- @preserve *)
 
-@angular/ng-dev/bundles/chunk-H3MYIWGQ.mjs:
+@angular/ng-dev/bundles/chunk-3TPHGSIP.mjs:
   (*! Bundled license information:
   
   yargs-parser/build/lib/string-utils.js:
@@ -65372,7 +65382,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-U7PAJR6D.mjs:
+@angular/ng-dev/bundles/chunk-4PNYOBOC.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:

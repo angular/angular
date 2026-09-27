@@ -28,6 +28,24 @@
     </li>
     <li>
       <input
+        id="show-defer-blocks"
+        type="checkbox"
+        (change)="settings.showDeferBlocks.set($event.target.checked)"
+        [checked]="settings.showDeferBlocks()"
+      />
+      <label for="show-defer-blocks">Show &#64;defer blocks</label>
+    </li>
+    <li>
+      <input
+        id="show-for-blocks"
+        type="checkbox"
+        (change)="settings.showForBlocks.set($event.target.checked)"
+        [checked]="settings.showForBlocks()"
+      />
+      <label for="show-for-blocks">Show &#64;for blocks</label>
+    </li>
+    <li>
+      <input
         id="show-hydration-overlays"
         type="checkbox"
         (change)="settings.showHydrationOverlays.set($event.target.checked)"

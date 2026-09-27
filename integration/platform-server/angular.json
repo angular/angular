@@ -22,6 +22,8 @@
               "entry": "projects/ngmodule/server.ts"
             },
             "progress": false,
+            "preserveSymlinks": true,
+            "externalDependencies": ["express", "xhr2"],
             "polyfills": ["zone.js"],
             "tsConfig": "projects/ngmodule/tsconfig.app.json",
             "assets": ["projects/ngmodule/src/favicon.ico", "projects/ngmodule/src/assets"],
@@ -100,6 +102,8 @@
             "assets": ["projects/standalone/src/favicon.ico", "projects/standalone/src/assets"],
             "styles": ["projects/standalone/src/styles.css"],
             "progress": false,
+            "preserveSymlinks": true,
+            "externalDependencies": ["express", "xhr2"],
             "scripts": []
           },
           "configurations": {
