@@ -18,6 +18,7 @@ import {
   Parameter,
   SourceMapRange,
   TemplateLiteral,
+  UnaryOperator,
   VariableDeclarationType,
 } from '../../../../src/ngtsc/translator/src/api/ast_factory';
 
@@ -38,7 +39,10 @@ export class BabelAstFactory implements AstFactory<
     this.typesEnabled = sourcePath.endsWith('.ts') || sourcePath.endsWith('.mts');
   }
 
-  attachComments(statement: t.Statement | t.Expression, leadingComments: LeadingComment[]): void {
+  attachComments(
+    statement: t.Statement | t.Expression | t.SpreadElement | t.ObjectProperty,
+    leadingComments: LeadingComment[],
+  ): void {
     // We must process the comments in reverse because `t.addComment()` will add new ones in front.
     for (let i = leadingComments.length - 1; i >= 0; i--) {
       const comment = leadingComments[i];
@@ -145,40 +149,46 @@ export class BabelAstFactory implements AstFactory<
     functionName: string,
     parameters: Parameter<t.TSType>[],
     body: t.Statement,
+    returnType: t.TSType | null,
   ): t.Statement {
     assert(body, t.isBlockStatement, 'a block');
-    return t.functionDeclaration(
+    const fn = t.functionDeclaration(
       t.identifier(functionName),
       parameters.map((param) => this.identifierWithType(param.name, param.type)),
       body,
     );
+    return this.attachReturnType(fn, returnType);
   }
 
   createArrowFunctionExpression(
     parameters: Parameter<t.TSType>[],
     body: t.Statement | t.Expression,
+    returnType: t.TSType | null,
   ): t.Expression {
     if (t.isStatement(body)) {
       assert(body, t.isBlockStatement, 'a block');
     }
-    return t.arrowFunctionExpression(
+    const fn = t.arrowFunctionExpression(
       parameters.map((param) => this.identifierWithType(param.name, param.type)),
       body,
     );
+    return this.attachReturnType(fn, returnType);
   }
 
   createFunctionExpression(
     functionName: string | null,
     parameters: Parameter<t.TSType>[],
     body: t.Statement,
+    returnType: t.TSType | null,
   ): t.Expression {
     assert(body, t.isBlockStatement, 'a block');
     const name = functionName !== null ? t.identifier(functionName) : null;
-    return t.functionExpression(
+    const fn = t.functionExpression(
       name,
       parameters.map((param) => this.identifierWithType(param.name, param.type)),
       body,
     );
+    return this.attachReturnType(fn, returnType);
   }
 
   createIdentifier = t.identifier;
@@ -222,7 +232,11 @@ export class BabelAstFactory implements AstFactory<
         const key = prop.quoted
           ? t.stringLiteral(prop.propertyName)
           : t.identifier(prop.propertyName);
-        return t.objectProperty(key, prop.value);
+        const propNode = t.objectProperty(key, prop.value);
+        if (prop.leadingComments) {
+          this.attachComments(propNode, prop.leadingComments);
+        }
+        return propNode;
       }),
     );
   }
@@ -274,7 +288,15 @@ export class BabelAstFactory implements AstFactory<
     return t.unaryExpression('void', expression);
   }
 
-  createUnaryExpression = t.unaryExpression;
+  createUnaryExpression(
+    operator: UnaryOperator,
+    operand: t.Expression,
+    isPrefix = true,
+  ): t.Expression {
+    return operator === '++' || operator === '--'
+      ? t.updateExpression(operator, operand as t.Identifier, isPrefix)
+      : t.unaryExpression(operator, operand);
+  }
 
   createVariableDeclaration(
     variableName: string,
@@ -366,6 +388,16 @@ export class BabelAstFactory implements AstFactory<
 
     if (this.typesEnabled && type != null) {
       node.typeAnnotation = t.tsTypeAnnotation(type);
+    }
+
+    return node;
+  }
+
+  private attachReturnType<
+    T extends t.FunctionDeclaration | t.FunctionExpression | t.ArrowFunctionExpression,
+  >(node: T, returnType: t.TSType | null): T {
+    if (this.typesEnabled && returnType !== null) {
+      node.returnType = t.tsTypeAnnotation(returnType);
     }
 
     return node;

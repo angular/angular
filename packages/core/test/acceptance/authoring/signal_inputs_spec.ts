@@ -320,10 +320,10 @@ describe('signal inputs', () => {
     it('should support signal inputs', async () => {
       const styles = `
         .slide-in {
-          animation: slide-in 1ms;
+          animation: slide-in 250ms;
         }
         .fade-in {
-          animation: fade-in 2ms;
+          animation: fade-in 500ms;
         }
         @keyframes slide-in {
           from {
@@ -383,10 +383,10 @@ describe('signal inputs', () => {
     it('should support content projection', async () => {
       const animateStyles = `
         .fade-in {
-          animation: fade 1ms forwards;
+          animation: fade 250ms forwards;
         }
         .fade-out {
-          animation: fade 2ms reverse;
+          animation: fade 500ms reverse;
         }
         @keyframes fade {
           from {

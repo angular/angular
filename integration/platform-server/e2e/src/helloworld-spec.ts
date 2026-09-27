@@ -1,12 +1,13 @@
-import {browser, by, element} from 'protractor';
-import {bootstrapClientApp, navigateTo, verifyNoBrowserErrors} from './util';
+import {
+  bootstrapClientApp,
+  getElement,
+  isElementPresent,
+  navigateTo,
+  verifyNoBrowserErrors,
+} from './util';
 
 describe('Hello world E2E Tests', () => {
   beforeEach(async () => {
-    // Don't wait for Angular since it is not bootstrapped automatically.
-    await browser.waitForAngularEnabled(false);
-
-    // Load the page without waiting for Angular since it is not bootstrapped automatically.
     await navigateTo('helloworld');
   });
 
@@ -16,23 +17,21 @@ describe('Hello world E2E Tests', () => {
   });
 
   it('should display: Hello world!', async () => {
-    // Test the contents from the server.
-    expect(await element(by.css('div')).getText()).toEqual('Hello world!');
+    expect(await (await getElement('div')).getText()).toEqual('Hello world!');
 
     await bootstrapClientApp();
 
-    // Retest the contents after the client bootstraps.
-    expect(await element(by.css('div')).getText()).toEqual('Hello world!');
+    expect(await (await getElement('div')).getText()).toEqual('Hello world!');
   });
 
   it('should re-use component styles rendered on the server', async () => {
-    expect(await element(by.css('style[ng-app-id="ng"]')).getText()).not.toBeNull();
+    expect(await (await getElement('style[ng-app-id="ng"]')).getText()).not.toBeNull();
 
     await bootstrapClientApp();
 
     // Make sure the server styles get reused by the client.
-    expect(await element(by.css('style[ng-app-id="ng"]')).isPresent()).toBeFalsy();
-    expect(await element(by.css('style[ng-style-reused]')).isPresent()).toBeTruthy();
-    expect(await element(by.css('style')).getText()).toBe('');
+    expect(await isElementPresent('style[ng-app-id="ng"]')).toBeFalsy();
+    expect(await isElementPresent('style[ng-style-reused]')).toBeTruthy();
+    expect(await (await getElement('style')).getText()).toBe('');
   });
 });

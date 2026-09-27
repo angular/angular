@@ -10,6 +10,7 @@ import {
   APP_ID,
   ApplicationRef,
   Component,
+  Directive,
   ɵDEHYDRATED_BLOCK_REGISTRY as DEHYDRATED_BLOCK_REGISTRY,
   destroyPlatform,
   ɵgetDocument as getDocument,
@@ -25,7 +26,9 @@ import {
   ɵresetIncrementalHydrationEnabledWarnedForTests as resetIncrementalHydrationEnabledWarnedForTests,
   signal,
   ɵTimerScheduler as TimerScheduler,
+  ViewChild,
   ViewChildren,
+  ViewContainerRef,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
 } from '@angular/core';
 
@@ -2939,6 +2942,211 @@ describe('platform-server partial hydration integration', () => {
       expect(contract.instance!.cleanUp).not.toHaveBeenCalled();
       expect(registry.cleanup).toHaveBeenCalledTimes(1);
     });
+
+    it(
+      'should not remove a still-pending dehydrated view (e.g. from a plain ' +
+        'ViewContainerRef.createComponent() call guarded by PendingTasks) when an ' +
+        'unrelated @defer block on the same page hydrates first',
+      async () => {
+        // Represents content created dynamically via `ViewContainerRef.createComponent()`
+        // -- NOT a `@defer` block -- so its dehydrated view carries no `DEFER_BLOCK_ID`.
+        @Component({
+          selector: 'dynamic-cmp',
+          template: `<p id="dynamic-content">Dynamically created</p>`,
+        })
+        class DynamicCmp {}
+
+        @Component({
+          selector: 'app',
+          template: `
+            @defer (hydrate on immediate) {
+              <p id="defer-content">defer block</p>
+            }
+            <ng-template #container />
+          `,
+        })
+        class SimpleComponent {
+          @ViewChild('container', {read: ViewContainerRef, static: true})
+          container!: ViewContainerRef;
+
+          private readonly pendingTasks = inject(PendingTasks);
+
+          ngAfterViewInit() {
+            // Mirrors a real dynamic-component loader: creation is guarded by
+            // `PendingTasks` (so SSR waits for it), but the creation itself is
+            // genuinely async (e.g. behind a lazy-loaded chunk) on the client --
+            // giving the unrelated @defer block above time to hydrate and run
+            // its cleanup first.
+            this.pendingTasks.run(async () => {
+              await dynamicImportOf(DynamicCmp, 101);
+              this.container.createComponent(DynamicCmp);
+            });
+          }
+        }
+
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+        const hydrationFeatures = () => [withIncrementalHydration()];
+
+        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<p id="dynamic-content">Dynamically created</p>');
+        expect(ssrContents).toContain('<p id="defer-content">defer block</p>');
+
+        // Internal cleanup before we do server->client transition in this test.
+        resetTViewsFor(SimpleComponent, DynamicCmp);
+
+        ////////////////////////////////
+        const doc = getDocument();
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+          hydrationFeatures,
+        });
+
+        appRef.tick();
+
+        // Let the @defer (hydrate on immediate) block finish hydrating -- its
+        // completion triggers a GLOBAL `cleanupDehydratedViews` sweep over every
+        // LView on the page -- well before our own PendingTasks-guarded dynamic
+        // component creation resolves (that's still ~101ms away).
+        await timeout(20);
+
+        // BUG: `dynamic-content` was never claimed or replaced by anything at
+        // this point -- our own creation logic hasn't run yet. It should still
+        // be exactly the server-rendered content sitting untouched in the DOM.
+        // Before the fix, the @defer block's cleanup sweep incorrectly deletes
+        // it here because it carries no DEFER_BLOCK_ID, well before the code
+        // that's actually supposed to claim it ever gets a chance to run.
+        expect(doc.getElementById('dynamic-content')).not.toBeNull();
+
+        await allPendingDynamicImports();
+        appRef.tick();
+        await appRef.whenStable();
+
+        expect(doc.getElementById('dynamic-content')).not.toBeNull();
+      },
+    );
+
+    it(
+      'should not remove a dehydrated view that a PendingTasks-guarded ' +
+        'createComponent() inside the hydrating @defer block is about to claim',
+      async () => {
+        @Component({selector: 'late-cmp', template: `<p id="late-content">Late content</p>`})
+        class LateCmp {}
+
+        // Creates `LateCmp` after a slow dynamic import, holding a pending task the whole time.
+        @Directive({selector: '[lateHost]'})
+        class LateHost {
+          private readonly vcr = inject(ViewContainerRef);
+          private readonly pendingTasks = inject(PendingTasks);
+
+          ngOnInit() {
+            this.pendingTasks.run(async () => {
+              await dynamicImportOf(LateCmp, 101);
+              this.vcr.createComponent(LateCmp);
+            });
+          }
+        }
+
+        @Component({
+          selector: 'app',
+          imports: [LateHost],
+          template: `
+            <section>
+              @defer (hydrate on immediate) {
+                <ng-container lateHost />
+              }
+            </section>
+          `,
+        })
+        class SimpleComponent {}
+
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+        const hydrationFeatures = () => [withIncrementalHydration()];
+
+        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+        expect(getAppContents(html)).toContain('<p id="late-content">Late content</p>');
+
+        // Internal cleanup before we do server->client transition in this test.
+        resetTViewsFor(SimpleComponent, LateCmp);
+
+        ////////////////////////////////
+        const doc = getDocument();
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+          hydrationFeatures,
+        });
+        const serverNode = doc.getElementById('late-content');
+        expect(serverNode).not.toBeNull();
+
+        await appRef.whenStable();
+        await allPendingDynamicImports();
+        appRef.tick();
+        await appRef.whenStable();
+
+        // The server-rendered node is claimed by `createComponent()`, not deleted and rebuilt.
+        expect(serverNode!.isConnected).toBeTrue();
+        expect(doc.getElementById('late-content')).toBe(serverNode);
+      },
+    );
+
+    it('should skip the cleanup when the app is destroyed while it waits for stability', async () => {
+      let hydratedCount = 0;
+
+      @Component({selector: 'block-content', template: `<p id="content">defer block</p>`})
+      class BlockContent {
+        constructor() {
+          if (!isPlatformServer(inject(PLATFORM_ID))) {
+            hydratedCount++;
+          }
+        }
+      }
+
+      @Component({
+        selector: 'app',
+        imports: [BlockContent],
+        template: `
+          @defer (hydrate on immediate) {
+            <block-content />
+          }
+        `,
+      })
+      class SimpleComponent {}
+
+      const appId = 'custom-app-id';
+      const providers = [{provide: APP_ID, useValue: appId}];
+      const hydrationFeatures = () => [withIncrementalHydration()];
+
+      const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+
+      // Internal cleanup before we do server->client transition in this test.
+      resetTViewsFor(SimpleComponent, BlockContent);
+
+      ////////////////////////////////
+      const doc = getDocument();
+      const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+        hydrationFeatures,
+      });
+      const registry = appRef.injector.get(DEHYDRATED_BLOCK_REGISTRY);
+      spyOn(registry, 'cleanup').and.callThrough();
+
+      // This task is never removed, so the cleanup keeps waiting for stability.
+      appRef.injector.get(PendingTasks).add();
+      appRef.tick();
+      await timeout(60);
+
+      // The block is hydrated, but its cleanup is still waiting.
+      expect(hydratedCount).toBe(1);
+      expect(registry.cleanup).not.toHaveBeenCalled();
+
+      appRef.destroy();
+      await timeout(60);
+
+      expect(registry.cleanup).not.toHaveBeenCalled();
+    });
   });
 
   describe('Router', () => {
@@ -3153,6 +3361,75 @@ describe('platform-server partial hydration integration', () => {
       );
       expect(appHostNode.outerHTML).toContain(`<p id="hydrated">yup</p>`);
     });
+
+    it(
+      'should not remove the server-rendered DOM of a lazy route that is still loading ' +
+        'when a @defer block in the app shell hydrates',
+      async () => {
+        @Component({selector: 'routed-page', template: `<p id="routed-content">Routed page</p>`})
+        class RoutedPage {}
+
+        @Component({
+          selector: 'shell-widget',
+          template: `<button id="shell-btn" (click)="clicks.set(clicks() + 1)">
+            {{ clicks() }}
+          </button>`,
+        })
+        class ShellWidget {
+          clicks = signal(0);
+        }
+
+        const routes: Routes = [{path: '', loadComponent: () => dynamicImportOf(RoutedPage, 100)}];
+
+        // The `@defer` block sits outside the `<router-outlet>`, so it hydrates while the
+        // navigation is still waiting for the lazy route.
+        @Component({
+          selector: 'app',
+          imports: [RouterOutlet, ShellWidget],
+          template: `
+            <header>
+              @defer (hydrate on immediate) {
+                <shell-widget />
+              }
+            </header>
+            <main><router-outlet /></main>
+          `,
+        })
+        class SimpleComponent {}
+
+        const appId = 'custom-app-id';
+        const providers = [
+          {provide: APP_ID, useValue: appId},
+          {provide: PlatformLocation, useClass: MockPlatformLocation},
+          provideRouter(routes),
+        ] as unknown as Provider[];
+        const hydrationFeatures = () => [withIncrementalHydration()];
+
+        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+        expect(getAppContents(html)).toContain('<p id="routed-content">Routed page</p>');
+
+        // Internal cleanup before we do server->client transition in this test.
+        resetTViewsFor(SimpleComponent, RoutedPage, ShellWidget);
+
+        ////////////////////////////////
+        const doc = getDocument();
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+          envProviders: [...providers],
+          hydrationFeatures,
+        });
+        const serverNode = doc.getElementById('routed-content');
+        expect(serverNode).not.toBeNull();
+
+        await appRef.whenStable();
+        await allPendingDynamicImports();
+        appRef.tick();
+        await appRef.whenStable();
+
+        // The router claims the server-rendered node, it is not deleted and rebuilt.
+        expect(serverNode!.isConnected).toBeTrue();
+        expect(doc.getElementById('routed-content')).toBe(serverNode);
+      },
+    );
   });
 
   describe('misconfiguration', () => {

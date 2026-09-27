@@ -31,14 +31,14 @@ The first call to `this.exporter()` triggers the dynamic import and resolves the
 
 If the lazy-loaded service is the [default export](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/export#using_the_default_export), pass the dynamic import directly, Angular unwraps the `default` for you:
 
-```ts {header: report-exporter.ts}
+```ts {header: "report-exporter.ts"}
 @Service()
 export default class ReportExporter {
   /* … */
 }
 ```
 
-```ts {header: report.ts}
+```ts {header: "report.ts"}
 private exporter = injectAsync(() => import('./report-exporter'));
 ```
 
@@ -51,9 +51,7 @@ Angular ships with `onIdle`, a built-in trigger that waits until the browser bec
 ```ts
 import {Component, injectAsync, onIdle} from '@angular/core';
 
-@Component({
-  /* … */
-})
+@Component({/* … */})
 export class Report {
   private exporter = injectAsync(() => import('./report-exporter').then((m) => m.ReportExporter), {
     prefetch: onIdle,

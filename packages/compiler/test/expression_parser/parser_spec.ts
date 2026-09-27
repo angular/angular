@@ -75,6 +75,26 @@ describe('parser', () => {
       checkAction('1*2**3', '1 * 2 ** 3');
     });
 
+    it('should allow ++ and -- on the left-hand side of **', () => {
+      checkAction('a++ ** 2');
+      checkAction('++a ** 2');
+      checkAction('a-- ** 2');
+      checkAction('--a ** 2');
+      checkAction('a.b++ ** 2');
+      checkAction('a[0]++ ** 2');
+      checkAction('2 ** a++');
+      checkAction('a ** b++ ** c');
+    });
+
+    it('should not allow other unary operators on the left-hand side of **', () => {
+      const error = 'Unary operator used immediately before exponentiation expression';
+      expectActionError('-a ** 2', error);
+      expectActionError('+a ** 2', error);
+      expectActionError('!a ** 2', error);
+      expectActionError('typeof a ** 2', error);
+      expectActionError('void a ** 2', error);
+    });
+
     it('should parse multiplicative expressions', () => {
       checkAction('3*4/2%5', '3 * 4 / 2 % 5');
     });
@@ -179,6 +199,77 @@ describe('parser', () => {
       checkAction('a[0] &&= b');
       checkAction('a[0] ||= b');
       checkAction('a[0] ??= b');
+    });
+
+    it('should parse prefix ++ and --', () => {
+      checkAction('++a');
+      checkAction('--a');
+      checkAction('++a.b');
+      checkAction('--a.b');
+      checkAction('++a[0]');
+      checkAction('--a[0]');
+      checkAction('++this.a', '++a');
+      checkAction('--this.a', '--a');
+      checkAction('++a!');
+      checkAction('--a!');
+      checkAction('++(a)');
+      checkAction('--(a)');
+    });
+
+    it('should parse postfix ++ and --', () => {
+      checkAction('a++');
+      checkAction('a--');
+      checkAction('a.b++');
+      checkAction('a.b--');
+      checkAction('a[0]++');
+      checkAction('a[0]--');
+      checkAction('this.a++', 'a++');
+      checkAction('this.a--', 'a--');
+      checkAction('a!++');
+      checkAction('a!--');
+      checkAction('(a)++');
+      checkAction('(a)--');
+    });
+
+    it('should parse consecutive unary expressions', () => {
+      checkAction('- - foo++', '- -foo++');
+      checkAction('+ + foo++', '+ +foo++');
+      checkAction('- ++foo', '-++foo');
+      checkAction('+ --foo', '+--foo');
+      checkAction('a+++b', 'a++ + b');
+      checkAction('a---b', 'a-- - b');
+      checkAction('a+++b+++c', 'a++ + b++ + c');
+      checkAction('a+++ +b', 'a++ + +b');
+      checkAction('a+ ++b', 'a + ++b');
+      checkAction('a- --b', 'a - --b');
+      checkAction('a - -b');
+      checkAction('a + + b', 'a + +b');
+    });
+
+    it('should bind ++ and -- tighter than the other unary operators', () => {
+      checkAction('-a++');
+      checkAction('+a++');
+      checkAction('!a++');
+      checkAction('-a--');
+      checkAction('typeof a++');
+      checkAction('void a++');
+    });
+
+    it('should allow ++ and -- expressions as operands of other operators', () => {
+      checkAction('a++ instanceof b');
+      checkAction('a++ in o');
+      checkAction('a++ < 3');
+      checkAction('a++ * 2');
+      checkAction('a++ ?? b');
+      checkAction('a ? b++ : c--');
+      checkAction('o[a++]');
+      checkAction('f(a++)');
+      checkAction('[a++]');
+      checkAction('{x: a++}');
+      checkAction('c = a++');
+      checkAction('c += a++');
+      checkAction('a.b[c++].d++');
+      checkAction('a++ + ++a');
     });
 
     describe('literals', () => {
@@ -479,6 +570,72 @@ describe('parser', () => {
 
       it('should support array updates', () => {
         checkAction('a[0] = 200');
+      });
+
+      it('should report invalid increment/decrement expressions', () => {
+        expectActionError('-- foo++', 'cannot be used in the assignment');
+        expectActionError('++ foo--', 'cannot be used in the assignment');
+        expectActionError('a?.a++', 'cannot be used in the assignment');
+        expectActionError('++a?.a', 'cannot be used in the assignment');
+        expectActionError('a?.[0]++', 'cannot be used in the assignment');
+        expectActionError('++a?.[0]', 'cannot be used in the assignment');
+        expectActionError('5++', 'cannot be used in the assignment');
+        expectActionError('++5', 'cannot be used in the assignment');
+        expectActionError('foo()++', 'cannot be used in the assignment');
+        expectActionError('++foo()', 'cannot be used in the assignment');
+        expectActionError('---foo', 'cannot be used in the assignment');
+        expectActionError('+++foo', 'cannot be used in the assignment');
+        expectActionError('(foo++)++', 'cannot be used in the assignment');
+        expectActionError('++(foo++)', 'cannot be used in the assignment');
+        expectActionError('++foo++', 'cannot be used in the assignment');
+        expectActionError('--foo--', 'cannot be used in the assignment');
+        expectActionError('++foo--', 'cannot be used in the assignment');
+        expectActionError('--foo++', 'cannot be used in the assignment');
+        expectActionError('++ ++foo', 'cannot be used in the assignment');
+        expectActionError('-- --foo', 'cannot be used in the assignment');
+        expectActionError('++foo+++bar', 'cannot be used in the assignment');
+        expectActionError('(-foo)++', 'cannot be used in the assignment');
+        expectActionError('(foo + bar)++', 'cannot be used in the assignment');
+        expectActionError('++(foo + bar)', 'cannot be used in the assignment');
+        expectActionError('"foo"++', 'cannot be used in the assignment');
+      });
+
+      it('should report unexpected token for chained postfix operators', () => {
+        expectActionError('foo++ ++', "Unexpected token '++'");
+        expectActionError('foo-- --', "Unexpected token '--'");
+        expectActionError('foo+++++bar', "Unexpected token '++'");
+        expectActionError('foo-----bar', "Unexpected token '--'");
+      });
+
+      it('should report a dangling + or - left over after an update operator', () => {
+        expectActionError('a+++', 'Unexpected end of expression');
+        expectActionError('a---', 'Unexpected end of expression');
+        expectActionError('a++ +', 'Unexpected end of expression');
+        expectActionError('a++-', 'Unexpected end of expression');
+        expectActionError('++a+', 'Unexpected end of expression');
+        expectActionError('a+++b+', 'Unexpected end of expression');
+        expectActionError('foo.bar+++', 'Unexpected end of expression');
+        expectActionError('foo[0]+++', 'Unexpected end of expression');
+      });
+
+      it('should report a increment/decrement expression with no target', () => {
+        expectActionError('++', 'Unexpected end of expression');
+        expectActionError('--', 'Unexpected end of expression');
+        expectActionError('+++', 'Unexpected end of expression');
+      });
+
+      it('should not allow member access or calls after a postfix update', () => {
+        expectActionError('foo++.bar', "Unexpected token '.'");
+        expectActionError('foo++[0]', "Unexpected token '['");
+        expectActionError('foo++()', "Unexpected token '('");
+        expectActionError('foo--.bar', "Unexpected token '.'");
+        expectActionError('foo-- bar', "Unexpected token 'bar'");
+      });
+
+      it('should not allow assigning to an update expression', () => {
+        expectActionError('foo++ = 1', "Unexpected token '='");
+        expectActionError('++foo = 1', 'cannot be used in the assignment');
+        expectActionError('foo+++=bar', "Unexpected token '+='");
       });
     });
 
@@ -995,6 +1152,13 @@ describe('parser', () => {
       expectError(parseBinding('a=2'), 'contain assignments');
     });
 
+    it('should report update operators in bindings', () => {
+      expectError(parseBinding('a++'), 'contain assignments');
+      expectError(parseBinding('a--'), 'contain assignments');
+      expectError(parseBinding('++a'), 'contain assignments');
+      expectError(parseBinding('--a'), 'contain assignments');
+    });
+
     it('should report when encountering interpolation', () => {
       expectBindingError('{{a.b}}', 'Got interpolation ({{}}) where expression was expected');
     });
@@ -1058,6 +1222,14 @@ describe('parser', () => {
 
       it('should parse an arrow function containing an assignment', () => {
         checkBinding('(a, b) => c = a + b');
+      });
+
+      it('should parse an arrow function containing update operators', () => {
+        checkBinding('a => a++');
+        checkBinding('a => a--');
+        checkBinding('a => ++a');
+        checkBinding('a => --a');
+        checkBinding('(a) => a++', 'a => a++');
       });
 
       it('should be able to pass an arrow function through a pipe', () => {
@@ -1629,8 +1801,12 @@ describe('parser', () => {
       expect(parseSimpleBinding(`'{{\\'}}'`).errors).toEqual([]);
     });
 
-    it('should report when encountering field write', () => {
+    it('should report when encountering field write or update operators', () => {
       expectError(validate(parseSimpleBinding('a = b')), 'Bindings cannot contain assignments');
+      expectError(validate(parseSimpleBinding('a++')), 'Bindings cannot contain assignments');
+      expectError(validate(parseSimpleBinding('a--')), 'Bindings cannot contain assignments');
+      expectError(validate(parseSimpleBinding('++a')), 'Bindings cannot contain assignments');
+      expectError(validate(parseSimpleBinding('--a')), 'Bindings cannot contain assignments');
     });
 
     it('should throw if a pipe is used inside a conditional', () => {

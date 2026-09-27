@@ -231,8 +231,8 @@ export abstract class NgControl extends AbstractControlDirective {
     // (e.g., FormControlDirective's form input hasn't been bound)
     host.listenToCustomControlModel((value) => {
       // TODO: is there a case where this input has not yet been set?
-      this.control?.setValue(value, {emitModelToViewChange: false});
       this.control?.markAsDirty();
+      this.control?.setValue(value, {emitModelToViewChange: false});
       this.viewToModelUpdate(value);
     });
 

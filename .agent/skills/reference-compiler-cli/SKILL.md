@@ -49,12 +49,12 @@ The compiler is designed as a **lazy, incremental, and partial** compilation pip
 ### 4. Template Type Checking (`ngtsc/typecheck`)
 
 - **`TemplateTypeChecker`**: Generates "Type Check Blocks" (TCBs). A TCB is a block of TypeScript code that represents the template's logic in a way `tsc` can understand and check for errors.
-- **`TypeCheckBlock`**: The actual generated code that validates bindings, events, and structural directives.
+- **`generateTypeCheckBlock`** (from `@angular/compiler`, called by `TypeCheckFile` and `InlineTcbOp`): Generates TypeScript source for checking template bindings, events, directive usage, and host bindings.
 
 ### 5. Metadata & Scope (`ngtsc/metadata`, `ngtsc/scope`)
 
 - **`MetadataReader`**: Reads Angular metadata from source files (using `LocalMetadataRegistry`) and `.d.ts` files (using `DtsMetadataReader`).
-- **`ScopeRegistry`**: Determines the "compilation scope" of a component (which directives/pipes are available to it), handling `NgModule` transitive exports and Standalone Component imports.
+- **`ComponentScopeReader`**: Determines the "compilation scope" of a component (which directives/pipes are available to it), handling `NgModule` transitive exports and Standalone Component imports.
 
 ### 6. Emit & Transformation (`ngtsc/transform`)
 
@@ -71,7 +71,7 @@ The compiler is designed as a **lazy, incremental, and partial** compilation pip
     - No cross-file resolution happens here (allowing for parallelism and caching).
 3.  **Resolution** (`resolve`):
     - `TraitCompiler` resolves traits.
-    - Components link their templates to specific Directives and Pipes (found via `ScopeRegistry`).
+    - Components link their templates to specific Directives and Pipes (found via `ComponentScopeReader`).
     - Import cycles are detected and handled (e.g., via "remote scoping").
 4.  **Type Checking**:
     - `TemplateTypeChecker` creates TCBs for all components.
@@ -87,5 +87,5 @@ The compiler is designed as a **lazy, incremental, and partial** compilation pip
 - `packages/compiler-cli/src/ngtsc/core/src/compiler.ts`: Core logic (`NgCompiler`).
 - `packages/compiler-cli/src/ngtsc/transform/src/trait.ts`: Trait state machine.
 - `packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts`: Component compilation logic.
-- `packages/compiler-cli/src/ngtsc/typecheck/src/template_type_checker.ts`: Type checking logic.
+- `packages/compiler-cli/src/ngtsc/typecheck/src/checker.ts`: Type checking logic (`TemplateTypeCheckerImpl`).
 - `packages/compiler-cli/src/ngtsc/transform/src/transform.ts`: AST transformation logic.

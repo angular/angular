@@ -16,6 +16,8 @@ import {
   SafeCall,
   SafePropertyRead,
   ThisReceiver,
+  Unary,
+  unwrapWriteTarget,
 } from '../../expression_parser/ast';
 import {LetDeclaration} from '../../render3/r3_ast';
 import {Identifiers as R3Identifiers} from '../../render3/r3_identifiers';
@@ -138,20 +140,39 @@ export class TcbExpressionTranslator {
 
       return targetExpression;
     } else if (
-      ast instanceof Binary &&
-      Binary.isAssignmentOperation(ast.operation) &&
-      ast.left instanceof PropertyRead &&
-      (ast.left.receiver instanceof ImplicitReceiver || ast.left.receiver instanceof ThisReceiver)
+      (ast instanceof Binary && Binary.isAssignmentOperation(ast.operation)) ||
+      (ast instanceof Unary && Unary.isUpdateOperation(ast.operator))
     ) {
-      const read = ast.left;
+      const update = ast instanceof Unary ? ast : null;
+
+      const read = unwrapWriteTarget(update !== null ? update.expr : ast.left);
+
+      if (
+        !(read instanceof PropertyRead) ||
+        !(read.receiver instanceof ImplicitReceiver || read.receiver instanceof ThisReceiver)
+      ) {
+        return null;
+      }
+
       const target = this.tcb.boundTarget.getExpressionTarget(read);
       if (target === null) {
         return null;
       }
 
       const targetExpression = this.getTargetNodeExpression(target, read);
-      const expr = this.translate(ast.right);
-      const result = new TcbExpr(`(${targetExpression.print()} = ${expr.print()})`);
+      let result: TcbExpr;
+
+      if (update !== null) {
+        result = new TcbExpr(
+          update.isPrefix
+            ? `(${update.operator}${targetExpression.print()})`
+            : `(${targetExpression.print()}${update.operator})`,
+        );
+      } else {
+        const expr = this.translate(ast.right);
+        result = new TcbExpr(`(${targetExpression.print()} = ${expr.print()})`);
+      }
+
       result.addParseSpanInfo(read.sourceSpan);
 
       // Ignore diagnostics from TS produced for writes to `@let` and re-report them using

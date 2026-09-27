@@ -20,24 +20,31 @@ chunks automatically and loaded only when necessary, based on the configured tri
 template.
 
 ```angular-ts
-@Component({/*...*/})
-export class AdminBio { /* ... */ }
+import {NgComponentOutlet} from '@angular/common';
 
 @Component({/*...*/})
-export class StandardBio { /* ... */ }
+export class AdminBio {
+  /* ... */
+}
+
+@Component({/*...*/})
+export class StandardBio {
+  /* ... */
+}
 
 @Component({
-  ...,
+  imports: [NgComponentOutlet],
   template: `
-    <p>Profile for {{user.name}}</p>
-    <ng-container *ngComponentOutlet="getBioComponent()" /> `
+    <p>Profile for {{ user().name }}</p>
+    <ng-container *ngComponentOutlet="bioComponent()" />
+  `,
 })
 export class CustomDialog {
   user = input.required<User>();
 
-  getBioComponent() {
+  bioComponent = computed(() => {
     return this.user().isAdmin ? AdminBio : StandardBio;
-  }
+  });
 }
 ```
 

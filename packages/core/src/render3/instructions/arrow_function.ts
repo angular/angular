@@ -24,7 +24,7 @@ export function ɵɵarrowFunction<T>(
   slotOffset: number,
   factory: (context: T, view: LView) => (...args: unknown[]) => unknown,
   context: T,
-) {
+): any {
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   return lView[bindingIndex] === NO_CHANGE

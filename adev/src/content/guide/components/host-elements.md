@@ -64,6 +64,11 @@ export class CustomSlider {
 
 NOTE: The global target names that can be used to prefix an event name are `document:`, `window:` and `body:`.
 
+NOTE: Key names like `'(keydown.enter)'` are matched against `KeyboardEvent.key`, which depends on
+the user's keyboard layout and input language. To match a physical key regardless of layout, use
+the `code` modifier instead, e.g. `'(keydown.code.Enter)'`. See
+[Using key modifiers](guide/templates/event-listeners#using-key-modifiers) for details.
+
 ## The `@HostBinding` and `@HostListener` decorators
 
 You can alternatively bind to the host element by applying the `@HostBinding` and `@HostListener`
@@ -72,9 +77,7 @@ decorator to class members.
 `@HostBinding` lets you bind host properties and attributes to properties and getters:
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class CustomSlider {
   @HostBinding('attr.aria-valuenow')
   value: number = 0;

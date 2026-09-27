@@ -346,6 +346,7 @@ describe('AstValue', () => {
         'foo',
         [],
         factory.createBlock([factory.createReturnStatement(factory.createLiteral(42))]),
+        null,
       );
       expect(createAstValue(funcExpr).isFunction()).toEqual(true);
     });
@@ -361,6 +362,7 @@ describe('AstValue', () => {
         'foo',
         [],
         factory.createBlock([factory.createReturnStatement(factory.createLiteral(42))]),
+        null,
       );
       expect(createAstValue<Function>(funcExpr).getFunctionReturnValue()).toEqual(
         createAstValue(factory.createLiteral(42)),
@@ -381,6 +383,7 @@ describe('AstValue', () => {
         factory.createBlock([
           factory.createExpressionStatement(factory.createLiteral('do nothing')),
         ]),
+        null,
       );
       expect(() => createAstValue<Function>(funcExpr).getFunctionReturnValue()).toThrowError(
         'Unsupported syntax, expected a function body with a single return statement.',
@@ -397,6 +400,7 @@ describe('AstValue', () => {
           {name: 'b', type: null},
         ],
         factory.createBlock([]),
+        null,
       );
       expect(createAstValue<Function>(funcExpr).getFunctionParameters()).toEqual(
         ['a', 'b'].map((name) => createAstValue(factory.createIdentifier(name))),

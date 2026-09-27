@@ -6,7 +6,7 @@ As background for this guide, you should already be familiar with [Angular React
 
 ## Overview of Typed Forms
 
-<docs-video src="https://www.youtube.com/embed/L-odCf4MfJc" alt="Typed Forms in Angular" />
+<docs-video src="https://www.youtube.com/embed/L-odCf4MfJc" title="Typed Forms in Angular" />
 
 With Angular reactive forms, you explicitly specify a _form model_. As a simple example, consider this basic user login form:
 

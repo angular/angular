@@ -1,41 +1,43 @@
-import {browser, logging} from 'protractor';
-
+import * as webdriver from 'selenium-webdriver';
 import {AppPage} from './app.po';
+import {createWebDriver, verifyNoBrowserErrors} from './driver-util';
 
 describe('cli-signal-inputs App', () => {
+  let driver: webdriver.WebDriver;
   let page: AppPage;
+  const baseUrl = process.env['E2E_BASE_URL'] || 'http://localhost:4210';
 
-  beforeEach(() => {
-    page = new AppPage();
+  beforeAll(() => {
+    driver = createWebDriver();
+    page = new AppPage(driver, baseUrl);
   });
 
-  it('should show greet message', () => {
-    page.navigateTo();
-    expect(page.getGreetText()).toEqual('John - transformed-fallback');
-    expect(page.getUnboundLastNameGreetText()).toEqual('John - initial-unset');
+  afterAll(async () => {
+    await driver.quit();
   });
 
-  it('should update greet message when last name is set', () => {
-    page.navigateTo();
-    expect(page.getGreetText()).toEqual('John - transformed-fallback');
-    page.setLastName();
-    expect(page.getGreetText()).toEqual('John - ng-Doe');
-    page.unsetLastName();
-    expect(page.getGreetText()).toEqual('John - transformed-fallback');
+  beforeEach(async () => {
+    await page.navigateTo();
   });
 
-  it('should properly query via `viewChildren`', () => {
-    page.navigateTo();
-    expect(page.getGreetCount()).toEqual('Greet component count: 2');
+  it('should show greet message', async () => {
+    expect(await page.getGreetText()).toEqual('John - transformed-fallback');
+    expect(await page.getUnboundLastNameGreetText()).toEqual('John - initial-unset');
+  });
+
+  it('should update greet message when last name is set', async () => {
+    expect(await page.getGreetText()).toEqual('John - transformed-fallback');
+    await page.setLastName();
+    expect(await page.getGreetText()).toEqual('John - ng-Doe');
+    await page.unsetLastName();
+    expect(await page.getGreetText()).toEqual('John - transformed-fallback');
+  });
+
+  it('should properly query via `viewChildren`', async () => {
+    expect(await page.getGreetCount()).toEqual('Greet component count: 2');
   });
 
   afterEach(async () => {
-    // Assert that there are no errors emitted from the browser
-    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
-    expect(logs).not.toContain(
-      jasmine.objectContaining({
-        level: logging.Level.SEVERE,
-      } as logging.Entry),
-    );
+    await verifyNoBrowserErrors(driver);
   });
 });

@@ -82,6 +82,18 @@
       .docs-breadcrumb span {
         color: white !important;
       }
+
+      // The edit link sits on the gradient, where the default gray icon color
+      // doesn't have enough contrast.
+      .docs-page-title a {
+        docs-icon {
+          color: color-mix(in srgb, white 70%, transparent);
+        }
+
+        &:hover docs-icon {
+          color: #fff;
+        }
+      }
     }
 
     svg {

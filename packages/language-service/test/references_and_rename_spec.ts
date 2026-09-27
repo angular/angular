@@ -2544,6 +2544,70 @@ describe('find references and rename locations', () => {
     });
   });
 
+  describe('when cursor is on the target of an update expression', () => {
+    function setup(template: string, cursor: string): OpenBuffer {
+      env = LanguageServiceTestEnv.setup();
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({templateUrl: './app.html', standalone: false})
+          export class AppCmp {
+            counter = 0;
+          }`,
+        'app.html': template,
+      });
+      const file = project.openFile('app.html');
+      file.moveCursorToText(cursor);
+      return file;
+    }
+
+    it('gets member reference for a postfix update', () => {
+      const file = setup(`<div (click)="counter++"></div>`, 'coun¦ter++');
+      const refs = getReferencesAtPosition(file)!;
+      expect(refs.length).toBe(2);
+
+      assertFileNames(refs, ['app.ts', 'app.html']);
+      assertTextSpans(refs, ['counter']);
+    });
+
+    it('gets rename location for a postfix update', () => {
+      const file = setup(`<div (click)="counter++"></div>`, 'coun¦ter++');
+      const renameLocations = getRenameLocationsAtPosition(file)!;
+      expect(renameLocations.length).toBe(2);
+
+      assertFileNames(renameLocations, ['app.ts', 'app.html']);
+      assertTextSpans(renameLocations, ['counter']);
+    });
+
+    it('gets rename location for a prefix update', () => {
+      const file = setup(`<div (click)="--counter"></div>`, '--coun¦ter');
+      const renameLocations = getRenameLocationsAtPosition(file)!;
+      expect(renameLocations.length).toBe(2);
+
+      assertFileNames(renameLocations, ['app.ts', 'app.html']);
+      assertTextSpans(renameLocations, ['counter']);
+    });
+
+    it('gets rename location when the target is parenthesized', () => {
+      const file = setup(`<div (click)="(counter)++"></div>`, '(coun¦ter)++');
+      const renameLocations = getRenameLocationsAtPosition(file)!;
+      expect(renameLocations.length).toBe(2);
+
+      assertFileNames(renameLocations, ['app.ts', 'app.html']);
+      assertTextSpans(renameLocations, ['counter']);
+    });
+
+    it('gets rename location when the target has a non-null assertion', () => {
+      const file = setup(`<div (click)="counter!++"></div>`, 'coun¦ter!++');
+      const renameLocations = getRenameLocationsAtPosition(file)!;
+      expect(renameLocations.length).toBe(2);
+
+      assertFileNames(renameLocations, ['app.ts', 'app.html']);
+      assertTextSpans(renameLocations, ['counter']);
+    });
+  });
+
   function getReferencesAtPosition(file: OpenBuffer) {
     env.expectNoSourceDiagnostics();
     const result = file.getReferencesAtPosition();

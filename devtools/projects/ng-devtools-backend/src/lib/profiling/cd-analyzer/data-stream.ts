@@ -13,28 +13,23 @@
  */
 
 import {CdElementData, Events, MessageBus} from '../../../../../protocol';
+import {getConfig} from '../../config/config';
 import {CdAnalyzer, CdData, getCdAnalyzer} from './analyzer';
 
-// State of change detection data streaming
-let isCdDataStreamEnabled = false;
 let cdAnalyzerUnsubscriber: (() => void) | undefined;
 let cdAnalyzerDispose: (() => void) | undefined;
 
-export function enableCdDataStream(messageBus: MessageBus<Events>) {
-  return () => {
-    if (!isCdDataStreamEnabled) {
+export function loadCdDataStream(messageBus: MessageBus<Events>): () => void {
+  return getConfig().onChange('cdDataStream', (enabled) => {
+    if (enabled) {
       const {analyzer, disposeFn} = getCdAnalyzer();
       cdAnalyzerDispose = disposeFn;
       emitLatestCdData(analyzer, messageBus);
+    } else {
+      cdAnalyzerUnsubscriber?.();
+      cdAnalyzerDispose?.();
     }
-    isCdDataStreamEnabled = true;
-  };
-}
-
-export function disableCdDataStream() {
-  cdAnalyzerUnsubscriber?.();
-  cdAnalyzerDispose?.();
-  isCdDataStreamEnabled = false;
+  });
 }
 
 function emitLatestCdData(cdAnalyzer: CdAnalyzer, messageBus: MessageBus<Events>) {

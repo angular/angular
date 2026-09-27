@@ -27,6 +27,16 @@
 >}
 #^ template.blocks.ng control.block.ng punctuation.definition.block.ts
 >
+>@boundary {
+#^ template.blocks.ng control.block.ng keyword.control.block.transition.ng
+# ^^^^^^^^ template.blocks.ng control.block.ng keyword.control.block.kind.ng
+#         ^ template.blocks.ng control.block.ng
+#          ^ template.blocks.ng control.block.ng punctuation.definition.block.ts
+>    <a></a>
+#^^^^^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng
+>}
+#^ template.blocks.ng control.block.ng punctuation.definition.block.ts
+>
 >@switch (a) {
 #^ template.blocks.ng control.block.ng keyword.control.block.transition.ng
 # ^^^^^^ template.blocks.ng control.block.ng keyword.control.block.kind.ng

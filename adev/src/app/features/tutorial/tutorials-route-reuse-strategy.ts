@@ -9,7 +9,7 @@
 import {ActivatedRouteSnapshot, BaseRouteReuseStrategy} from '@angular/router';
 
 // Match tutorial pages, apart of /tutorials.
-export const IS_TUTORIAL_PAGE_RULE = /(^tutorials)\/(\S*)/s;
+const IS_TUTORIAL_PAGE_RULE = /(^tutorials)\/(\S*)/s;
 
 export class ReuseTutorialsRouteStrategy extends BaseRouteReuseStrategy {
   // reuse route when not navigating to a new one or when navigating between tutorial pages

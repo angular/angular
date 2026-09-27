@@ -15,13 +15,15 @@ import {ChromeApplicationOperations} from './chrome-application-operations';
 
 describe('ChromeApplicationOperations', () => {
   let operations: ChromeApplicationOperations;
+  let evalSpy: jasmine.Spy;
 
   beforeEach(() => {
+    evalSpy = jasmine.createSpy('eval');
     // Mock chrome global
     (globalThis as any).chrome = {
       devtools: {
         inspectedWindow: {
-          eval: jasmine.createSpy('eval'),
+          eval: evalSpy,
         },
       },
     };
@@ -45,7 +47,7 @@ describe('ChromeApplicationOperations', () => {
       } as any;
       operations.viewSource([0, 0], target, 0);
 
-      expect(chrome.devtools.inspectedWindow.eval).toHaveBeenCalledWith(
+      expect(evalSpy).toHaveBeenCalledWith(
         'inspect(inspectedApplication.findConstructorByPosition("[0,0]", 0))',
         {frameURL: 'http://localhost:4200/url'},
       );

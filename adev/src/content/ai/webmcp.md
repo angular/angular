@@ -214,7 +214,7 @@ export class UserRegistration {
       },
       submission: {
         action: async (formValue) => {
-          console.log('Submitting user:', formValue);
+          console.log('Submitting user:', formValue().value());
           // ...
         },
       },

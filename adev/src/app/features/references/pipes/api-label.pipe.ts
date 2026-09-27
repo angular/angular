@@ -35,7 +35,7 @@ export const shortLabelsMap: Record<ApiItemType, string> = {
   [ApiItemType.INITIALIZER_API_FUNCTION]: 'IA',
 };
 
-export const fullLabelsMap: Record<ApiItemType, string> = {
+const fullLabelsMap: Record<ApiItemType, string> = {
   [ApiItemType.BLOCK]: 'Block',
   [ApiItemType.CLASS]: 'Class',
   [ApiItemType.CONST]: 'Const',

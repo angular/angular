@@ -13,7 +13,7 @@ export const isApple =
   typeof window !== 'undefined' &&
   (/iPad|iPhone/.test(window.navigator.userAgent) || window.navigator.userAgent.includes('Mac'));
 
-export const isIpad =
+const isIpad =
   typeof window !== 'undefined' &&
   isApple &&
   !!window.navigator.maxTouchPoints &&

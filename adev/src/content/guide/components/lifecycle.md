@@ -37,7 +37,7 @@ process.
       </td>
     </tr>
     <tr>
-      <td rowspan="7">Change<p>Detection</td>
+      <td rowspan="7">Change<br>Detection</td>
       <td><code>ngOnInit</code>
       </td>
       <td>Runs once after Angular has initialized all the component's inputs.</td>
@@ -111,9 +111,7 @@ has changed.
 You can optionally pass the current class or this as the first generic argument for stronger type checking.
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserProfile {
   name = input('');
 
@@ -143,9 +141,7 @@ register a callback to be invoked upon the component's destruction by calling th
 of `DestroyRef`.
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserProfile {
   constructor() {
     inject(DestroyRef).onDestroy(() => {
@@ -306,9 +302,7 @@ Each interface has the same name as the corresponding method without the `ng` pr
 the interface for `ngOnInit` is `OnInit`.
 
 ```ts
-@Component({
-  /* ... */
-})
+@Component({/* ... */})
 export class UserProfile implements OnInit {
   ngOnInit() {
     /* ... */

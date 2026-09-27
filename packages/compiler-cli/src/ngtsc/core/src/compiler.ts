@@ -22,8 +22,8 @@ import {InjectableClassRegistry, JitDeclarationRegistry} from '../../annotations
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {
   addDiagnosticDetails,
-  errorCodeWithGuideFromDiagnosticCode,
   ErrorCode,
+  errorCodeWithGuideFromDiagnosticCode,
   isFatalDiagnosticError,
   ngErrorCode,
 } from '../../diagnostics';
@@ -1107,6 +1107,8 @@ export class NgCompiler {
         // - error TS2531: Object is possibly 'null'.
         // - error TS2339: Property 'value' does not exist on type 'EventTarget'.
         checkTypeOfDomEvents: strictTemplates,
+        checkUnclaimedEventNames: false, // 3p-only
+        // g3-only checkUnclaimedEventNames: strictTemplates,
         checkTypeOfDomReferences: strictTemplates,
         // Non-DOM references have the correct type in View Engine so there is no strictness flag.
         checkTypeOfNonDomReferences: true,
@@ -1141,6 +1143,7 @@ export class NgCompiler {
         checkTypeOfOutputEvents: false,
         checkTypeOfAnimationEvents: false,
         checkTypeOfDomEvents: false,
+        checkUnclaimedEventNames: false,
         checkTypeOfDomReferences: false,
         checkTypeOfNonDomReferences: false,
         checkTypeOfPipes: false,
@@ -1177,6 +1180,9 @@ export class NgCompiler {
     }
     if (this.options.strictDomEventTypes !== undefined) {
       typeCheckingConfig.checkTypeOfDomEvents = this.options.strictDomEventTypes;
+    }
+    if (this.options.strictUnclaimedEventNames !== undefined) {
+      typeCheckingConfig.checkUnclaimedEventNames = this.options.strictUnclaimedEventNames;
     }
     if (this.options.strictSafeNavigationTypes !== undefined) {
       typeCheckingConfig.strictSafeNavigationTypes = this.options.strictSafeNavigationTypes;

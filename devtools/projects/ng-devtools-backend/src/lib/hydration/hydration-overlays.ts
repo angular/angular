@@ -8,6 +8,7 @@
 
 import {debounceTime, Subscription} from 'rxjs';
 import {HydrationStatus} from '../../../../protocol';
+import {getConfig} from '../config/config';
 import {getDirectiveForestManager} from '../directive-forest/manager';
 import {getProfiler} from '../profiling/profiler';
 import {highlightElement, removeHighlightsByType} from '../shared/highlighter';
@@ -25,7 +26,17 @@ import {runOutsideAngular} from '../shared/utils/general';
 let hydrationOverlaysEnabled = false;
 let profilerSubs: Subscription | undefined;
 
-export function enableHydrationOverlays() {
+export function loadHydrationOverlays(): () => void {
+  return getConfig().onChange('hydrationOverlays', (enabled) => {
+    if (enabled) {
+      enableHydrationOverlays();
+    } else {
+      disableHydrationOverlays();
+    }
+  });
+}
+
+function enableHydrationOverlays() {
   if (hydrationOverlaysEnabled) {
     return;
   }
@@ -42,7 +53,7 @@ export function enableHydrationOverlays() {
   });
 }
 
-export function disableHydrationOverlays() {
+function disableHydrationOverlays() {
   removeHydrationHighlights();
   profilerSubs?.unsubscribe();
   hydrationOverlaysEnabled = false;

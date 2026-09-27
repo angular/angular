@@ -1293,6 +1293,41 @@
         "startLine": 131,
         "endLine": 578
       }
+    },
+    {
+      "name": "FakeHostListener",
+      "decoratorType": "member",
+      "entryType": "decorator",
+      "rawComment": "/**\n * A decorator with no members, used to check that its signature is rendered.\n */",
+      "description": "A decorator with no members, used to check that its signature is rendered.",
+      "jsdocTags": [],
+      "members": null,
+      "signatures": [
+        {
+          "parameters": [
+            {
+              "name": "eventName",
+              "description": "",
+              "type": "string",
+              "isOptional": false,
+              "isRestParam": false
+            },
+            {
+              "name": "args",
+              "description": "",
+              "type": "string[]",
+              "isOptional": true,
+              "isRestParam": false
+            }
+          ],
+          "jsdocTags": []
+        }
+      ],
+      "source": {
+        "filePath": "/packages/core/src/metadata/directives.ts",
+        "startLine": 1,
+        "endLine": 2
+      }
     }
   ],
   "symbols": [

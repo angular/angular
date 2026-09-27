@@ -35,6 +35,7 @@ import {SUPPORTED_APIS} from '../application-providers/supported_apis';
 import {ButtonComponent} from '../shared/button/button.component';
 import {APP_DATA} from '../application-providers/app_data';
 import {SettingsComponent} from './settings/settings.component';
+import {HorizontalScrollerComponent} from '../shared/horizontal-scroller/horizontal-scroller.component';
 
 type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transfer State';
 
@@ -58,6 +59,7 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transf
     TransferStateComponent,
     SettingsComponent,
     ButtonComponent,
+    HorizontalScrollerComponent,
   ],
   providers: [TabUpdate],
   host: {

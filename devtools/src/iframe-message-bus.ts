@@ -8,8 +8,10 @@
 
 import {Events, MessageBus, Parameters} from '../projects/protocol';
 
+type ListenerFn = (e: MessageEvent) => void;
+
 export class IFrameMessageBus extends MessageBus<Events> {
-  private listeners: any[] = [];
+  private listeners: ListenerFn[] = [];
 
   constructor(
     private readonly source: string,

@@ -1,10 +1,10 @@
-import {inject, Injectable} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
 
 function notifyUser(message: string): void {}
 
 // #docregion sw-unrecoverable-state
-@Injectable({providedIn: 'root'})
+@Service()
 export class HandleUnrecoverableStateService {
   private updates = inject(SwUpdate);
   constructor() {

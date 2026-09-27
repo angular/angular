@@ -12,6 +12,7 @@
     "outDir": "built",
     "rootDir": ".",
     "declaration": true,
+    "skipLibCheck": true,
     "types": []
   },
   "exclude": ["vendor", "node_modules", "built", "dist", "e2e"]

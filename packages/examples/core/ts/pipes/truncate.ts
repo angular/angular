@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-// #docregion
+// #docregion truncate
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
@@ -16,3 +16,4 @@ export class TruncatePipe implements PipeTransform {
     return value.split(' ').slice(0, length).join(' ') + symbol;
   }
 }
+// #enddocregion truncate

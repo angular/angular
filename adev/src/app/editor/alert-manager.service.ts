@@ -16,7 +16,7 @@ import {
 } from '../core/services/errors-handling/error-snack-bar';
 
 export const MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES = 3;
-export const WEBCONTAINERS_COUNTER_KEY = 'numberOfWebcontainers';
+const WEBCONTAINERS_COUNTER_KEY = 'numberOfWebcontainers';
 
 export enum AlertReason {
   OUT_OF_MEMORY,

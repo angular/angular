@@ -117,6 +117,10 @@ describe('type check blocks', () => {
     expect(tcb('<b (click)="a &&= b"></b>')).toContain('(((this).a)) &&= (((this).b));');
     expect(tcb('<b (click)="a ||= b"></b>')).toContain('(((this).a)) ||= (((this).b));');
     expect(tcb('<b (click)="a ??= b"></b>')).toContain('(((this).a)) ??= (((this).b));');
+    expect(tcb('<b (click)="a++"></b>')).toContain('(((this).a)++)');
+    expect(tcb('<b (click)="a--"></b>')).toContain('(((this).a)--)');
+    expect(tcb('<b (click)="++a"></b>')).toContain('(++((this).a))');
+    expect(tcb('<b (click)="--a"></b>')).toContain('(--((this).a))');
   });
 
   it('should handle exponentiation expressions', () => {
@@ -124,6 +128,12 @@ describe('type check blocks', () => {
       '(((((this).a)) * (((((this).b)) ** (((this).c))))) + (((this).d)))',
     );
     expect(tcb('{{a ** b ** c}}')).toContain('((((this).a)) ** (((((this).b)) ** (((this).c)))))');
+  });
+
+  it('should handle update expressions as operands of an exponentiation expression', () => {
+    expect(tcb('<b (click)="a++ ** 2"></b>')).toContain('(((((this).a)++)) ** (2));');
+    expect(tcb('<b (click)="++a ** 2"></b>')).toContain('(((++((this).a))) ** (2));');
+    expect(tcb('<b (click)="2 ** a--"></b>')).toContain('((2) ** ((((this).a)--)));');
   });
 
   it('should handle "in" expressions', () => {
@@ -1182,6 +1192,7 @@ describe('type check blocks', () => {
       checkTypeOfOutputEvents: true,
       checkTypeOfAnimationEvents: true,
       checkTypeOfDomEvents: true,
+      checkUnclaimedEventNames: false,
       checkTypeOfDomReferences: true,
       checkTypeOfNonDomReferences: true,
       checkTypeOfPipes: true,
@@ -2348,7 +2359,7 @@ describe('type check blocks', () => {
       `;
 
       const result = tcb(TEMPLATE);
-      expect(result).toContain('for (const _t1 of ((this).items)!) {');
+      expect(result).toContain('for (const _t1 of (((this).items))!) {');
       expect(result).toContain('"" + ((this).main(_t1))');
       expect(result).toContain('"" + ((this).empty())');
     });
@@ -2361,7 +2372,7 @@ describe('type check blocks', () => {
       `;
 
       const result = tcb(TEMPLATE);
-      expect(result).toContain('for (const _t1 of ((this).items)!) {');
+      expect(result).toContain('for (const _t1 of (((this).items))!) {');
       expect(result).toContain('var _t2 = null! as number;');
       expect(result).toContain('var _t3 = null! as boolean;');
       expect(result).toContain('var _t4 = null! as boolean;');
@@ -2379,7 +2390,7 @@ describe('type check blocks', () => {
       `;
 
       const result = tcb(TEMPLATE);
-      expect(result).toContain('for (const _t1 of ((this).items)!) {');
+      expect(result).toContain('for (const _t1 of (((this).items))!) {');
       expect(result).toContain('var _t2 = null! as number;');
       expect(result).toContain('var _t3 = null! as boolean;');
       expect(result).toContain('var _t4 = null! as boolean;');
@@ -2395,7 +2406,7 @@ describe('type check blocks', () => {
       `;
 
       const result = tcb(TEMPLATE);
-      expect(result).toContain('for (const _t1 of ((this).items)!) {');
+      expect(result).toContain('for (const _t1 of (((this).items))!) {');
       expect(result).toContain('var _t2 = null! as number;');
       expect(result).toContain('var _t3 = null! as number;');
       expect(result).toContain('"" + (_t2) + (_t3)');
@@ -2413,15 +2424,15 @@ describe('type check blocks', () => {
       `;
 
       const result = tcb(TEMPLATE);
-      expect(result).toContain('for (const _t1 of ((this).items)!) { var _t2 = null! as number;');
+      expect(result).toContain('for (const _t1 of (((this).items))!) { var _t2 = null! as number;');
       expect(result).toContain('"" + (_t1) + (_t2)');
-      expect(result).toContain('for (const _t3 of ((_t1).items)!) { var _t4 = null! as number;');
+      expect(result).toContain('for (const _t3 of (((_t1).items))!) { var _t4 = null! as number;');
       expect(result).toContain('"" + (_t1) + ((_t2)) + (_t3) + (_t4)');
     });
 
     it('should generate the tracking expression of a for loop', () => {
       const result = tcb(`@for (item of items; track trackingFn($index, item, prop)) {}`);
-      expect(result).toContain('for (const _t1 of ((this).items)!) { var _t2 = null! as number;');
+      expect(result).toContain('for (const _t1 of (((this).items))!) { var _t2 = null! as number;');
       expect(result).toContain('(this).trackingFn(_t2, _t1, ((this).prop));');
     });
 
@@ -2435,9 +2446,22 @@ describe('type check blocks', () => {
           `;
 
       const result = tcb(TEMPLATE, undefined, {checkControlFlowBodies: false});
-      expect(result).toContain('for (const _t1 of ((this).items)!) {');
+      expect(result).toContain('for (const _t1 of (((this).items))!) {');
       expect(result).not.toContain('.main');
       expect(result).not.toContain('.empty');
+    });
+
+    it('should wrap compound expressions in parentheses before appending non-null assertion', () => {
+      const TEMPLATE = `
+        @for (item of items && items.slice(0, 10); track item) {
+          {{item}}
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+      expect(result).toContain(
+        'for (const _t1 of ((((this).items)) && ((((this).items)).slice(0, 10)))!) {',
+      );
     });
   });
 
@@ -2467,6 +2491,16 @@ describe('type check blocks', () => {
       expect(result).toContain(
         '_t2.addEventListener("click", ($event): any => { (this).doStuff(_t1); });',
       );
+    });
+
+    it('should rewrite writes to let declarations with update operators', () => {
+      const result = tcb(`
+        @let value = 1;
+        <button (click)="value++"></button>
+      `);
+
+      expect(result).toContain('const _t1 = (1);');
+      expect(result).toContain('(_t1++)');
     });
   });
 

@@ -45,7 +45,7 @@ export class MyComponent {
 
 **After**
 
-```angular-ts {[[4],[7], [10,12]]}
+```angular-ts {highlight: [[4],[7], [10,12]]}
 import {Component, input} from '@angular/core';
 
 @Component({

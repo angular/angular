@@ -119,6 +119,8 @@ export interface TypeVisitor {
 export enum UnaryOperator {
   Minus,
   Plus,
+  Increment,
+  Decrement,
 }
 
 export enum BinaryOperator {
@@ -1134,6 +1136,7 @@ export class UnaryOperatorExpr extends Expression {
     sourceSpan?: ParseSourceSpan | null,
     public parens: boolean = true,
     leadingComments?: LeadingComment[],
+    public isPrefix = true,
   ) {
     super(type || NUMBER_TYPE, sourceSpan, leadingComments);
   }
@@ -1142,7 +1145,8 @@ export class UnaryOperatorExpr extends Expression {
     return (
       e instanceof UnaryOperatorExpr &&
       this.operator === e.operator &&
-      this.expr.isEquivalent(e.expr)
+      this.expr.isEquivalent(e.expr) &&
+      this.isPrefix === e.isPrefix
     );
   }
 
@@ -1161,6 +1165,8 @@ export class UnaryOperatorExpr extends Expression {
       this.type,
       this.sourceSpan,
       this.parens,
+      this.leadingComments,
+      this.isPrefix,
     );
   }
 }
@@ -1401,6 +1407,7 @@ export class LiteralMapPropertyAssignment {
     public key: string,
     public value: Expression,
     public quoted: boolean,
+    public leadingComments?: LeadingComment[],
   ) {}
 
   isEquivalent(e: LiteralMapPropertyAssignment): boolean {
@@ -1408,7 +1415,12 @@ export class LiteralMapPropertyAssignment {
   }
 
   clone(): LiteralMapPropertyAssignment {
-    return new LiteralMapPropertyAssignment(this.key, this.value.clone(), this.quoted);
+    return new LiteralMapPropertyAssignment(
+      this.key,
+      this.value.clone(),
+      this.quoted,
+      this.leadingComments ? [...this.leadingComments] : undefined,
+    );
   }
 
   isConstant() {
@@ -1614,7 +1626,7 @@ export class DeclareVarStmt extends Statement {
     leadingComments?: LeadingComment[],
   ) {
     super(modifiers, sourceSpan, leadingComments);
-    this.type = type || (value && value.type) || null;
+    this.type = type || null;
   }
   override isEquivalent(stmt: Statement): boolean {
     return (

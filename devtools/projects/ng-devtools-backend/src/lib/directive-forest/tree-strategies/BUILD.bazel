@@ -15,6 +15,7 @@ ts_project(
         "//:node_modules/@types/semver",
         "//:node_modules/semver",
         "//devtools/projects/ng-devtools-backend/src/lib:version",
+        "//devtools/projects/ng-devtools-backend/src/lib/config",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest/utils:control-flow",
         "//devtools/projects/ng-devtools-backend/src/lib/shared:interfaces",
         "//devtools/projects/ng-devtools-backend/src/lib/shared/ng-debug-api",
@@ -32,6 +33,7 @@ ts_test_library(
     deps = [
         ":tree-strategies",
         "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/config",
     ],
 )
 

@@ -1,57 +1,71 @@
-import {browser, by, element, ElementFinder, ExpectedConditions as EC} from 'protractor';
+import {By, until, WebElement} from 'selenium-webdriver';
+import {getWebDriver, quitWebDriver} from './driver-util';
 
-browser.waitForAngularEnabled(false);
 describe('Element E2E Tests', function () {
+  let driver: ReturnType<typeof getWebDriver>;
+  const baseUrl = process.env['E2E_BASE_URL'] || 'http://localhost:4205/';
+
+  beforeAll(() => {
+    driver = getWebDriver();
+  });
+
+  afterAll(async () => {
+    await quitWebDriver();
+  });
+
   describe('Hello World Elements', () => {
-    beforeEach(() => browser.get('hello-world.html'));
+    beforeEach(async () => {
+      await driver.get(baseUrl + 'hello-world.html');
+    });
 
     describe('(with default CD strategy and view encapsulation)', () => {
-      const helloWorldEl = element(by.css('hello-world-el'));
-
-      it('should display "Hello World!"', function () {
-        expect(helloWorldEl.getText()).toBe('Hello World!');
+      it('should display "Hello World!"', async () => {
+        const helloWorldEl = await driver.findElement(By.css('hello-world-el'));
+        expect(await helloWorldEl.getText()).toBe('Hello World!');
       });
 
-      it('should display "Hello Foo!" via name attribute', function () {
-        const input = element(by.css('input[type=text]'));
-        input.sendKeys('Foo');
+      it('should display "Hello Foo!" via name attribute', async () => {
+        const helloWorldEl = await driver.findElement(By.css('hello-world-el'));
+        const input = await driver.findElement(By.css('input[type=text]'));
+        await input.sendKeys('Foo');
 
         // Make tests less flaky on CI by waiting up to 5s for the element text to be updated.
-        browser.wait(EC.textToBePresentInElement(helloWorldEl, 'Hello Foo!'), 5000);
+        await driver.wait(until.elementTextIs(helloWorldEl, 'Hello Foo!'), 5000);
       });
     });
 
     describe('(with `OnPush` CD strategy)', () => {
-      const helloWorldOnpushEl = element(by.css('hello-world-onpush-el'));
-
-      it('should display "Hello World!"', function () {
-        expect(helloWorldOnpushEl.getText()).toBe('Hello World!');
+      it('should display "Hello World!"', async () => {
+        const helloWorldOnpushEl = await driver.findElement(By.css('hello-world-onpush-el'));
+        expect(await helloWorldOnpushEl.getText()).toBe('Hello World!');
       });
 
-      it('should display "Hello Foo!" via name attribute', function () {
-        const input = element(by.css('input[type=text]'));
-        input.sendKeys('Foo');
+      it('should display "Hello Foo!" via name attribute', async () => {
+        const helloWorldOnpushEl = await driver.findElement(By.css('hello-world-onpush-el'));
+        const input = await driver.findElement(By.css('input[type=text]'));
+        await input.sendKeys('Foo');
 
         // Make tests less flaky on CI by waiting up to 5s for the element text to be updated.
-        browser.wait(EC.textToBePresentInElement(helloWorldOnpushEl, 'Hello Foo!'), 5000);
+        await driver.wait(until.elementTextIs(helloWorldOnpushEl, 'Hello Foo!'), 5000);
       });
     });
 
     describe('(with `ShadowDom` view encapsulation)', () => {
-      const helloWorldShadowEl = element(by.css('hello-world-shadow-el'));
-      const getShadowDomText = (el: ElementFinder) =>
-        browser.executeScript('return arguments[0].shadowRoot.textContent', el);
+      const getShadowDomText = async (el: WebElement) =>
+        (await driver.executeScript('return arguments[0].shadowRoot.textContent', el)) as string;
 
-      it('should display "Hello World!"', function () {
-        expect(getShadowDomText(helloWorldShadowEl)).toBe('Hello World!');
+      it('should display "Hello World!"', async () => {
+        const helloWorldShadowEl = await driver.findElement(By.css('hello-world-shadow-el'));
+        expect(await getShadowDomText(helloWorldShadowEl)).toBe('Hello World!');
       });
 
-      it('should display "Hello Foo!" via name attribute', function () {
-        const input = element(by.css('input[type=text]'));
-        input.sendKeys('Foo');
+      it('should display "Hello Foo!" via name attribute', async () => {
+        const helloWorldShadowEl = await driver.findElement(By.css('hello-world-shadow-el'));
+        const input = await driver.findElement(By.css('input[type=text]'));
+        await input.sendKeys('Foo');
 
         // Make tests less flaky on CI by waiting up to 5s for the element text to be updated.
-        browser.wait(
+        await driver.wait(
           async () => (await getShadowDomText(helloWorldShadowEl)) === 'Hello Foo!',
           5000,
         );

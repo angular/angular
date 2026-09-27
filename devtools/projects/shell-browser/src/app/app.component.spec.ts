@@ -36,8 +36,6 @@ function postDeepLink(data: unknown, origin = window.location.origin): void {
 describe('AppComponent', () => {
   let messageBus: jasmine.SpyObj<MessageBus<Events>>;
   let onNavigated: jasmine.SpyObj<ChromeEvent>;
-  let onProfilingStarted: jasmine.SpyObj<ChromeEvent>;
-  let onProfilingStopped: jasmine.SpyObj<ChromeEvent>;
 
   async function createFixture(): Promise<ComponentFixture<AppComponent>> {
     const fixture = TestBed.createComponent(AppComponent);
@@ -48,19 +46,10 @@ describe('AppComponent', () => {
   beforeEach(() => {
     messageBus = jasmine.createSpyObj('MessageBus', ['on', 'once', 'emit', 'destroy']);
     onNavigated = jasmine.createSpyObj('onNavigated', ['addListener', 'removeListener']);
-    onProfilingStarted = jasmine.createSpyObj('onProfilingStarted', [
-      'addListener',
-      'removeListener',
-    ]);
-    onProfilingStopped = jasmine.createSpyObj('onProfilingStopped', [
-      'addListener',
-      'removeListener',
-    ]);
 
     (globalThis as any).chrome = {
       devtools: {
         network: {onNavigated},
-        performance: {onProfilingStarted, onProfilingStopped},
       },
     };
 
@@ -82,30 +71,10 @@ describe('AppComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should listen for navigations and profiling on init', async () => {
+  it('should listen for navigations on init', async () => {
     await createFixture();
 
     expect(onNavigated.addListener).toHaveBeenCalled();
-    expect(onProfilingStarted.addListener).toHaveBeenCalled();
-    expect(onProfilingStopped.addListener).toHaveBeenCalled();
-  });
-
-  it('should emit when profiling starts and stops', async () => {
-    await createFixture();
-
-    onProfilingStarted.addListener.calls.mostRecent().args[0]();
-    expect(messageBus.emit).toHaveBeenCalledWith('enablePerformanceTrack');
-
-    onProfilingStopped.addListener.calls.mostRecent().args[0]();
-    expect(messageBus.emit).toHaveBeenCalledWith('disablePerformanceTrack');
-  });
-
-  it('should stop listening for profiling once destroyed', async () => {
-    const fixture = await createFixture();
-    fixture.destroy();
-
-    expect(onProfilingStarted.removeListener).toHaveBeenCalled();
-    expect(onProfilingStopped.removeListener).toHaveBeenCalled();
   });
 
   it('should record the instance id sent by a same origin deep link', async () => {

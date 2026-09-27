@@ -54,9 +54,9 @@ export function DecoratorReference(entry: DecoratorEntryRenderable) {
       <HeaderApi entry={entry} />
       <SectionApi entry={entry} />
       <div className={REFERENCE_MEMBERS}>
-        {entry.members.map((member, index) =>
+        {entry.members.map((member) =>
           signatureCard(member.name, member, {
-            id: `${member.name}_${index}`,
+            id: member.name,
           }),
         )}
       </div>

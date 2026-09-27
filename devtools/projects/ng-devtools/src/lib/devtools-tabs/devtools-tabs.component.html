@@ -34,19 +34,21 @@
     }
   </select>
 
-  <nav
-    mat-tab-nav-bar
-    mat-stretch-tabs="false"
-    [disablePagination]="true"
-    [color]="'accent'"
-    [tabPanel]="tabPanel"
-  >
-    @for (tab of tabs(); track $index) {
-      <a class="tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab() === tab">
-        {{ tab }}
-      </a>
-    }
-  </nav>
+  <ng-horizontal-scroller [scrollStep]="150" buttonHidingStrategy="display-none">
+    <nav
+      mat-tab-nav-bar
+      mat-stretch-tabs="false"
+      [disablePagination]="true"
+      [color]="'accent'"
+      [tabPanel]="tabPanel"
+    >
+      @for (tab of tabs(); track $index) {
+        <a class="tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab() === tab">
+          {{ tab }}
+        </a>
+      }
+    </nav>
+  </ng-horizontal-scroller>
 
   <div class="settings">
     <div class="ver-ruler"></div>

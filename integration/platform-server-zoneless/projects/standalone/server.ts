@@ -28,16 +28,16 @@ app.use(
 );
 
 // Mock API
-app.get('/api', (req, res) => {
+app.get('/api', (req: any, res: any) => {
   res.json({data: 'API 1 response'});
 });
 
-app.get('/api-2', (req, res) => {
+app.get('/api-2', (req: any, res: any) => {
   res.json({data: 'API 2 response'});
 });
 
 // All regular routes use the Universal engine
-app.use((req, res) => {
+app.use((req: any, res: any) => {
   const {protocol, originalUrl, baseUrl, headers} = req;
 
   renderApplication(bootstrap, {

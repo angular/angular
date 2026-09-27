@@ -16,13 +16,21 @@ import {
   queueEnterAnimations,
   addToAnimationQueue,
   removeAnimationsFromQueue,
+  removeFromAnimationQueue,
 } from '../animation/queue';
 import {Injector, INJECTOR} from '../di';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {TNode, TNodeType} from './interfaces/node';
 import {RElement} from './interfaces/renderer_dom';
 import {isLContainer} from './interfaces/type_checks';
-import {ANIMATIONS, ID, LView, TVIEW, TViewType} from './interfaces/view';
+import {
+  ANIMATIONS,
+  ID,
+  INJECTOR as LVIEW_INJECTOR,
+  LView,
+  TVIEW,
+  TViewType,
+} from './interfaces/view';
 
 export function maybeQueueEnterAnimation(
   parentLView: LView | undefined,
@@ -52,7 +60,7 @@ export function runLeaveAnimationsWithCallback(
     return callback(false);
   }
 
-  const animations = lView?.[ANIMATIONS];
+  const animations = lView ? (lView[ANIMATIONS] ??= {}) : undefined;
 
   // regarding the TNode index to see if it is the same element.
   if (animations?.enter?.has(tNode.index)) {
@@ -63,12 +71,7 @@ export function runLeaveAnimationsWithCallback(
   const nodesWithExitAnimations = aggregateDescendantAnimations(lView, tNode, animations);
 
   if (nodesWithExitAnimations.size === 0) {
-    let hasNestedAnimations = false;
-    if (lView) {
-      const nestedPromises: Promise<unknown>[] = [];
-      collectNestedViewAnimations(lView, tNode, nestedPromises);
-      hasNestedAnimations = nestedPromises.length > 0;
-    }
+    const hasNestedAnimations = lView ? hasNestedViewAnimations(lView, tNode) : false;
 
     if (!hasNestedAnimations) {
       return callback(false);
@@ -79,15 +82,8 @@ export function runLeaveAnimationsWithCallback(
 
   addToAnimationQueue(
     injector,
-    () =>
-      executeLeaveAnimations(
-        lView,
-        tNode,
-        animations || undefined,
-        nodesWithExitAnimations,
-        callback,
-      ),
-    animations || undefined,
+    () => executeLeaveAnimations(lView, tNode, animations, nodesWithExitAnimations, callback),
+    animations,
   );
 }
 
@@ -193,6 +189,50 @@ function executeLeaveAnimations(
 }
 
 /**
+ * Checks whether nested views (containers only, NOT child components) have any leave animations,
+ * without invoking the animation functions.
+ */
+function hasNestedViewAnimations(lView: LView, tNode: TNode): boolean {
+  if (tNode.type & TNodeType.AnyContainer) {
+    const lContainer = lView[tNode.index];
+    if (isLContainer(lContainer)) {
+      for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+        const subView = lContainer[i] as LView;
+        if (subView[TVIEW].type === TViewType.Embedded) {
+          if (hasViewLeaveAnimations(subView)) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+
+  let child = tNode.child;
+  while (child) {
+    if (hasNestedViewAnimations(lView, child)) {
+      return true;
+    }
+    child = child.next;
+  }
+  return false;
+}
+
+function hasViewLeaveAnimations(view: LView): boolean {
+  const animations = view[ANIMATIONS];
+  if (animations?.leave && animations.leave.size > 0) {
+    return true;
+  }
+  let child = view[TVIEW].firstChild;
+  while (child) {
+    if (hasNestedViewAnimations(view, child)) {
+      return true;
+    }
+    child = child.next;
+  }
+  return false;
+}
+
+/**
  * Collects leave animations from nested views (containers only, NOT child components)
  * starting from the given TNode's children.
  */
@@ -263,4 +303,86 @@ function runAfterLeaveAnimations(
     }
     callback(true);
   });
+}
+
+/**
+ * Recursively initializes the detached leave animations list for a view and all its nested
+ * embedded views. This allows animations queued during view detachment (e.g. during list
+ * reordering) to be tracked and cancelled if the view is re-attached before the animation queue runs.
+ */
+export function initViewDetachAnimations(view: LView): void {
+  const animations = (view[ANIMATIONS] ??= {});
+  animations.detachedLeaveAnimationFns = [];
+
+  let child = view[TVIEW].firstChild;
+  while (child) {
+    initNestedViewDetachAnimations(view, child);
+    child = child.next;
+  }
+}
+
+function initNestedViewDetachAnimations(lView: LView, tNode: TNode): void {
+  if (tNode.type & TNodeType.AnyContainer) {
+    const lContainer = lView[tNode.index];
+    if (isLContainer(lContainer)) {
+      for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+        const subView = lContainer[i] as LView;
+        if (subView[TVIEW].type === TViewType.Embedded) {
+          initViewDetachAnimations(subView);
+        }
+      }
+    }
+  }
+
+  let child = tNode.child;
+  while (child) {
+    initNestedViewDetachAnimations(lView, child);
+    child = child.next;
+  }
+}
+
+/**
+ * Recursively removes any queued detach leave animations for a view and all its nested embedded
+ * views when the view is re-attached during list reconciliation.
+ */
+export function clearViewDetachAnimations(view: LView): void {
+  const animations = view[ANIMATIONS];
+  if (
+    animations &&
+    animations.detachedLeaveAnimationFns &&
+    animations.detachedLeaveAnimationFns.length > 0
+  ) {
+    const injector = view[LVIEW_INJECTOR]!;
+    removeFromAnimationQueue(injector, animations);
+    allLeavingAnimations.delete(view[ID]);
+    animations.detachedLeaveAnimationFns = undefined;
+  } else if (animations) {
+    animations.detachedLeaveAnimationFns = undefined;
+  }
+
+  let child = view[TVIEW].firstChild;
+  while (child) {
+    clearNestedViewDetachAnimations(view, child);
+    child = child.next;
+  }
+}
+
+function clearNestedViewDetachAnimations(lView: LView, tNode: TNode): void {
+  if (tNode.type & TNodeType.AnyContainer) {
+    const lContainer = lView[tNode.index];
+    if (isLContainer(lContainer)) {
+      for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
+        const subView = lContainer[i] as LView;
+        if (subView[TVIEW].type === TViewType.Embedded) {
+          clearViewDetachAnimations(subView);
+        }
+      }
+    }
+  }
+
+  let child = tNode.child;
+  while (child) {
+    clearNestedViewDetachAnimations(lView, child);
+    child = child.next;
+  }
 }

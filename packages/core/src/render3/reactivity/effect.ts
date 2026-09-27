@@ -130,7 +130,7 @@ export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
  *
  * `effect()` must be run in injection context, unless the `injector` option is manually specified.
  *
- * @see [Effects](guide/signals/effect#effects)
+ * @see [Effects](guide/signals/effect)
  *
  * @publicApi 20.0
  */

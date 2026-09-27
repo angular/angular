@@ -472,6 +472,36 @@ describe('url serializer', () => {
       expect(() => url.parse(`/${urlStr}`)).not.toThrow();
     });
   });
+
+  describe('numeric parameter and outlet names', () => {
+    it('should round-trip numeric names without adding the internal sentinel', () => {
+      const tree = url.parse('/one;7=a;32=b;032=c;1e3=d(32:two)');
+
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({
+        '7': 'a',
+        '32': 'b',
+        '032': 'c',
+        '1e3': 'd',
+      });
+      expectSegment(tree.root.children['32'], 'two');
+      expect(url.serialize(tree)).toEqual('/one;7=a;32=b;032=c;1e3=d(32:two)');
+    });
+
+    it('should preserve names that match the internal sentinel', () => {
+      // 1073741824 is the helper's sentinel.
+      const tree = url.parse('/one;1073741824=keep;32=other(1073741824:two//32:three)');
+
+      expect(tree.root.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({
+        '1073741824': 'keep',
+        '32': 'other',
+      });
+      expectSegment(tree.root.children['1073741824'], 'two');
+      expectSegment(tree.root.children['32'], 'three');
+      expect(url.serialize(tree)).toEqual(
+        '/one;32=other;1073741824=keep(32:three//1073741824:two)',
+      );
+    });
+  });
 });
 
 function expectSegment(

@@ -138,7 +138,7 @@ Open `external` directory which contains everything that bazel downloaded while 
 workspace file:
 
 ```sh
-open $(pnpm run -s bazel info output_base)/external
+open $(pnpm --silent bazel info output_base)/external
 ```
 
 See subcommands that bazel executes (helpful for debugging):
@@ -189,7 +189,7 @@ To enable remote caching for your build:
 5. Create a file called `.bazelrc.user` in the root directory of the workspace, and add the following content:
 
 ```
-build --config=angular-team --google_credentials=[ABSOLUTE_PATH_TO_SERVICE_KEY]
+build --config=remote-cache --google_credentials=[ABSOLUTE_PATH_TO_SERVICE_KEY]
 ```
 
 ## Diagnosing slow builds

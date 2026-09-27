@@ -64,13 +64,6 @@ Use `'partial'` for independently published libraries, such as npm packages.
 `'partial'` compilations output a stable, intermediate format which better supports usage by applications built at different Angular versions from the library.
 Libraries built at "HEAD" alongside their applications and using the same version of Angular such as in a mono-repository can use `'full'` since there is no risk of version skew.
 
-### `disableExpressionLowering`
-
-When `true`, the default, transforms code that is or could be used in an annotation, to allow it to be imported from template factory modules.
-See [metadata rewriting](tools/cli/aot-compiler#metadata-rewriting) for more information.
-
-When `false`, disables this rewriting, requiring the rewriting to be done manually.
-
 ### `disableTypeScriptVersionCheck`
 
 When `true`, the compiler does not look at the TypeScript version and does not report an error when an unsupported version of TypeScript is used.

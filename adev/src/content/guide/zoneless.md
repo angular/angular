@@ -113,7 +113,7 @@ try {
 }
 ```
 
-In addition, the [pendingUntilEvent](/api/core/rxjs-interop/pendingUntilEvent#) helper in `rxjs-interop` ensures
+In addition, the [pendingUntilEvent](/api/core/rxjs-interop/pendingUntilEvent) helper in `rxjs-interop` ensures
 the application remains unstable until the observable emits, completes, errors, or is unsubscribed.
 
 ```typescript

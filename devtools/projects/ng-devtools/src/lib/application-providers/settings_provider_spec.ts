@@ -42,6 +42,8 @@ describe('applyMigrations', () => {
       'show_hydration_overlays@components': false,
       'highlight_change_detection@profiling': undefined as any,
       'show_cd_in_explorer@components': undefined as any,
+      'show_defer_blocks@components': undefined as any,
+      'show_for_blocks@components': undefined as any,
     } satisfies SettingsDataV2);
   });
 });

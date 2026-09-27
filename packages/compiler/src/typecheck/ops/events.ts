@@ -130,6 +130,8 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
     private outputs: BoundEvent[],
     private inputs: BoundAttribute[] | null,
     private claimedOutputs: Set<string> | null,
+    private hasDirectives: boolean = false,
+    private hasComponent: boolean = false,
   ) {
     super();
   }
@@ -158,6 +160,23 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
           // Skip this event handler as the error was already handled.
           continue;
         }
+      }
+
+      if (
+        this.tcb.env.config.checkUnclaimedEventNames &&
+        this.hasDirectives &&
+        output.type === ParsedEventType.Regular &&
+        output.target === null &&
+        this.target instanceof Element
+      ) {
+        this.tcb.domSchemaChecker.checkTemplateElementEvent(
+          this.tcb.id,
+          this.target.name,
+          output.name,
+          output.keySpan,
+          this.tcb.schemas,
+          this.hasComponent,
+        );
       }
 
       if (output.type === ParsedEventType.LegacyAnimation) {

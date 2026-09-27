@@ -22,6 +22,14 @@
     {
       "description": "should support i18n nodes with ICUs inside",
       "inputFiles": ["icu_and_i18n.ts"]
+    },
+    {
+      "description": "should handle a component with many i18n elements",
+      "inputFiles": ["many_i18n_elements.ts"]
+    },
+    {
+      "description": "should handle a component with many i18n attributes",
+      "inputFiles": ["many_i18n_attributes.ts"]
     }
   ]
 }

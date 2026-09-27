@@ -109,6 +109,10 @@ export class MyApp {
     <button (click)="number &&= 1"></button>
     <button (click)="number ||= 1"></button>
     <button (click)="number ??= 1"></button>
+    <button (click)="number++"></button>
+    <button (click)="number--"></button>
+    <button (click)="++number"></button>
+    <button (click)="--number"></button>
   `, isInline: true, dependencies: [{ kind: "pipe", type: IdentityPipe, name: "identity" }] });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -135,6 +139,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <button (click)="number &&= 1"></button>
     <button (click)="number ||= 1"></button>
     <button (click)="number ??= 1"></button>
+    <button (click)="number++"></button>
+    <button (click)="number--"></button>
+    <button (click)="++number"></button>
+    <button (click)="--number"></button>
   `,
                     imports: [IdentityPipe],
                 }]
@@ -207,6 +215,10 @@ export class MyApp {
     <button (click)="number &&= 1"></button>
     <button (click)="number ||= 1"></button>
     <button (click)="number ??= 1"></button>
+    <button (click)="number++"></button>
+    <button (click)="number--"></button>
+    <button (click)="++number"></button>
+    <button (click)="--number"></button>
   `, isInline: true, dependencies: [{ kind: "pipe", type: IdentityPipe, name: "identity" }] });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -233,6 +245,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <button (click)="number &&= 1"></button>
     <button (click)="number ||= 1"></button>
     <button (click)="number ??= 1"></button>
+    <button (click)="number++"></button>
+    <button (click)="number--"></button>
+    <button (click)="++number"></button>
+    <button (click)="--number"></button>
   `,
                     imports: [IdentityPipe],
                 }]

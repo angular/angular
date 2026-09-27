@@ -37,6 +37,8 @@ import {Context} from './context';
 const UNARY_OPERATORS = /* @__PURE__ */ new Map<o.UnaryOperator, UnaryOperator>([
   [o.UnaryOperator.Minus, '-'],
   [o.UnaryOperator.Plus, '+'],
+  [o.UnaryOperator.Increment, '++'],
+  [o.UnaryOperator.Decrement, '--'],
 ]);
 
 const BINARY_OPERATORS = /* @__PURE__ */ new Map<o.BinaryOperator, BinaryOperator>([
@@ -123,6 +125,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
         stmt.name,
         this.translateParams(stmt.params, context),
         this.factory.createBlock(this.visitStatements(stmt.statements, context.withStatementMode)),
+        stmt.type?.visitType(this, context) ?? null,
       ),
       stmt.leadingComments,
     );
@@ -439,6 +442,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
         ast.name ?? null,
         this.translateParams(ast.params, context),
         this.factory.createBlock(this.visitStatements(ast.statements, context)),
+        ast.type?.visitType(this, context) ?? null,
       ),
       ast.leadingComments,
     );
@@ -451,6 +455,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
         Array.isArray(ast.body)
           ? this.factory.createBlock(this.visitStatements(ast.body, context))
           : ast.body.visitExpression(this, context),
+        ast.type?.visitType(this, context) ?? null,
       ),
       ast.leadingComments,
     );
@@ -524,6 +529,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
             propertyName: entry.key,
             quoted: entry.quoted,
             value: entry.value.visitExpression(this, context),
+            leadingComments: entry.leadingComments,
           } satisfies ObjectLiteralAssignment<TExpression>)
         : ({
             kind: 'spread',
@@ -579,6 +585,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
       this.factory.createUnaryExpression(
         UNARY_OPERATORS.get(ast.operator)!,
         ast.expr.visitExpression(this, context),
+        ast.isPrefix,
       ),
       ast.leadingComments,
     );

@@ -70,23 +70,24 @@ Use the appropriate language identifier for syntax highlighting:
 - **TypeScript (Generic):** Use `ts` for plain TypeScript.
 - **HTML (Generic):** Use `html` for plain HTML.
 - **Shell/Terminal:** Use `shell` or `bash`.
-- **Mermaid Diagrams:** Use `mermaid`.
+- **Mermaid Diagrams:** Use a `mermaid` fenced block. `<docs-code language="mermaid">` is not supported and fails the build.
 
 #### Attributes
 
-You can enhance code blocks with attributes in curly braces `{}` after the language identifier:
+You can enhance code blocks with attributes in curly braces `{}` after the language identifier. `header` and `highlight` take a value after a colon; the rest are bare flags, and writing one as `flag: true` fails the build with `Invalid code block metadata`, as does an unrecognized key:
 
-- `header="Title"`: Adds a title to the code block.
+- `header: "Title"`: Adds a title to the code block.
 - `linenums`: Enables line numbering.
-- `highlight="[1, 3-5]"`: Highlights specific lines.
+- `highlight: [2]`: Highlights specific lines. An ascending two-number array is a range, so `[12, 19]` highlights lines 12 through 19. One number, or three or more, is a literal list. Nest one level to mix the two: `[[3,7], 9]`.
 - `hideCopy`: Hides the copy button.
+- `hideDollar`: Hides the `$` prompt in shell examples.
 - `prefer`: Marks code as a preferred example (green border/check).
 - `avoid`: Marks code as an example to avoid (red border/cross).
 
 **Example:**
 
 ````markdown
-```angular-ts {header:"My Component", linenums, highlight="[2]"}
+```angular-ts {header: "My Component", linenums, highlight: [2]}
 @Component({
   selector: 'my-app',
   template: '<h1>Hello</h1>',
@@ -97,18 +98,19 @@ export class App {}
 
 #### `<docs-code>` Component
 
-For more advanced code block features, use the `<docs-code>` component:
+For more advanced code block features, use the `<docs-code>` component. Its attributes use HTML syntax, `attr="value"` with double quotes, and bare names for the boolean ones. It validates nothing, so an unrecognized attribute and a single-quoted value are both ignored without an error:
 
 - `path`: Path to a source file (e.g., `adev/src/content/examples/...`).
 - `header`: Custom header text.
-- `language`: Language identifier (e.g., `angular-ts`).
+- `language`: Language identifier (e.g., `angular-ts`). When omitted, it is inferred from the file extension, and an extension it does not recognize falls back to `angular-ts`, so set it for shell, markdown and scss files.
 - `linenums`: Boolean attribute.
-- `highlight`: Array of line numbers/ranges (e.g., `[[3,7], 9]`).
-- `diff`: Path to diff file.
+- `highlight`: Array of line numbers/ranges, with the same semantics as the fenced form (e.g., `[[3,7], 9]`).
 - `visibleLines`: Range of lines to show initially (collapsible).
 - `region`: Region to extract from source file.
-- `preview`: Boolean. Renders a live preview (StackBlitz). _Only works with standalone examples._
+- `preview`: Boolean. Renders the example as a running component below the code. _Only works with standalone examples._
 - `hideCode`: Boolean. Collapses code by default.
+- `hideDollar`: Hides the `$` prompt in shell examples.
+- `prefer` / `avoid`: Mark the example as preferred or as one to avoid.
 
 **Multifile Example:**
 
@@ -127,7 +129,7 @@ Use specific keywords followed by a colon for alerts. These render as styled blo
 - `TIP:` For helpful hints or shortcuts.
 - `IMPORTANT:` For crucial information.
 - `CRITICAL:` For warnings about potential data loss or severe issues.
-- `TODO`: For incomplete documentation.
+- `TODO:` For incomplete documentation.
 - `QUESTION:` To pose a question to the reader.
 - `SUMMARY:` For section summaries.
 - `TLDR:` For concise summaries.
@@ -142,8 +144,9 @@ TIP: Use `ng serve` to run your application locally.
 ### Custom Components
 
 - **Cards (`<docs-card>`):**
-  - Must be inside `<docs-card-container>`.
-  - Attributes: `title`, `link`, `href`.
+  - Usually inside `<docs-card-container>`; a single card also renders on its own.
+  - Attributes: `title`, `href`, `link`, `imgSrc`, `iconImgSrc`, `titleInline`.
+  - `href` is the destination and `link` only replaces the default "Learn more" label, so a URL written in `link` renders as text and a card without `href` is not clickable.
 - **Callouts (`<docs-callout>`):**
   - Attributes: `title`, `important`, `critical`.
 - **Pills (`<docs-pill>`):**
@@ -156,7 +159,7 @@ TIP: Use `ng serve` to run your application locally.
   - Must be inside `<docs-tab-group>`.
   - Attributes: `label`.
 - **Videos (`<docs-video>`):**
-  - Attributes: `src` (YouTube embed URL), `alt`.
+  - Attributes: `src` (YouTube embed URL), `title` (names the video in the play link's label).
 
 ### Images
 
