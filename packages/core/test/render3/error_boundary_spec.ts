@@ -1055,6 +1055,136 @@ describe('@boundary runtime instructions (JIT)', () => {
     expect(fixture.nativeElement.textContent).toContain('Error: Effect Error');
   });
 
+  it('should intercept errors thrown inside an effect on a subsequent targeted update when no template is dirty', async () => {
+    const shouldThrow = signal(false);
+
+    @Component({
+      selector: 'throwing-effect',
+      template: '',
+    })
+    class ThrowingEffect {
+      constructor() {
+        effect(() => {
+          if (shouldThrow()) {
+            throw new Error('Targeted Effect Error');
+          }
+        });
+      }
+    }
+
+    @Component({
+      template: `
+        @boundary {
+          <throwing-effect/>
+          Main Content
+        } @error (let err) {
+          Error: {{err.message}}
+        }
+      `,
+      imports: [ThrowingEffect],
+    })
+    class Host {}
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Main Content');
+
+    shouldThrow.set(true);
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toContain('Error: Targeted Effect Error');
+    expect(fixture.nativeElement.textContent).not.toContain('Main Content');
+  });
+
+  it('should invoke onError outside of a reactive context', async () => {
+    let interceptedError: Error | undefined;
+
+    @Component({
+      template: '{{ throwError() }}',
+    })
+    class ThrowingComponent {
+      throwError() {
+        throw new Error('Template Error');
+      }
+    }
+
+    @Component({
+      template: '<ng-container #vc></ng-container>',
+    })
+    class Host {
+      @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
+    }
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+
+    const ref = fixture.componentInstance.vc.createComponent(ThrowingComponent, {
+      onError: (e: Error) => {
+        interceptedError = e;
+        // Creating an effect inside onError should not throw NG0602.
+        const effectRef = effect(() => {}, {injector: fixture.componentRef.injector});
+        effectRef.destroy();
+      },
+    });
+    expect(ref).toBeDefined();
+
+    await fixture.whenStable();
+    expect(interceptedError?.message).toBe('Template Error');
+  });
+
+  it('should continue traversing healthy dirty children when a view effect error is caught by onError', async () => {
+    const shouldThrow = signal(false);
+    const childText = signal('initial');
+    let interceptedError: Error | undefined;
+
+    @Component({
+      selector: 'healthy-child',
+      template: '{{ text() }}',
+    })
+    class HealthyChild {
+      text = childText;
+    }
+
+    @Component({
+      imports: [HealthyChild],
+      template: '<healthy-child />',
+    })
+    class ParentWithEffect {
+      constructor() {
+        effect(() => {
+          if (shouldThrow()) {
+            throw new Error('Parent Effect Error');
+          }
+        });
+      }
+    }
+
+    @Component({
+      template: '<ng-container #vc></ng-container>',
+    })
+    class Host {
+      @ViewChild('vc', {read: ViewContainerRef, static: true}) vc!: ViewContainerRef;
+    }
+
+    const fixture = TestBed.createComponent(Host);
+    await fixture.whenStable();
+
+    fixture.componentInstance.vc.createComponent(ParentWithEffect, {
+      onError: (e: Error) => {
+        interceptedError = e;
+      },
+    });
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toBe('initial');
+
+    shouldThrow.set(true);
+    childText.set('updated');
+    await fixture.whenStable();
+
+    expect(interceptedError?.message).toBe('Parent Effect Error');
+    expect(fixture.nativeElement.textContent).toBe('updated');
+  });
+
   it('should populate ErrorDetails correctly when caught by @boundary and handled by ErrorHandler.onViewError', () => {
     let capturedDetails!: ErrorDetails;
     let capturedError: Error;

@@ -513,6 +513,7 @@
       "handleStoppedNotification",
       "handleUncaughtError",
       "handleUnhandledError",
+      "handleViewError",
       "hasApplyArgsData",
       "hasClassInput",
       "hasDeps",

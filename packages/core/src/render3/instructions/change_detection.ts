@@ -363,9 +363,24 @@ export function refreshView<T>(
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
   } catch (e) {
-    let handled = false;
-    let errorToHandle = e;
-    let currentLView: LView | LContainer | null = lView;
+    handleViewError(lView, e, isInCheckNoChangesPass);
+  } finally {
+    if (currentConsumer !== null) {
+      consumerAfterComputation(currentConsumer, prevConsumer);
+      if (returnConsumerToPool) {
+        maybeReturnReactiveLViewConsumer(currentConsumer);
+      }
+    }
+    leaveView();
+  }
+}
+
+function handleViewError(lView: LView, e: unknown, isInCheckNoChangesPass: boolean | null): void {
+  let handled = false;
+  let errorToHandle = e;
+  let currentLView: LView | LContainer | null = lView;
+  const prevConsumer = setActiveConsumer(null);
+  try {
     while (currentLView !== null) {
       if (isLContainer(currentLView)) {
         currentLView = currentLView[PARENT];
@@ -394,25 +409,19 @@ export function refreshView<T>(
       }
       currentLView = currentLView[PARENT];
     }
-
-    if (!handled) {
-      if (!isInCheckNoChangesPass) {
-        // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
-        // because the error might have caused a situation where views below the current location are
-        // dirty but will be unreachable because the "has dirty children" flag in the ancestors has been
-        // cleared during change detection and we failed to run to completion.
-        markAncestorsForTraversal(lView);
-      }
-      throw errorToHandle;
-    }
   } finally {
-    if (currentConsumer !== null) {
-      consumerAfterComputation(currentConsumer, prevConsumer);
-      if (returnConsumerToPool) {
-        maybeReturnReactiveLViewConsumer(currentConsumer);
-      }
+    setActiveConsumer(prevConsumer);
+  }
+
+  if (!handled) {
+    if (!isInCheckNoChangesPass) {
+      // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
+      // because the error might have caused a situation where views below the current location are
+      // dirty but will be unreachable because the "has dirty children" flag in the ancestors has been
+      // cleared during change detection and we failed to run to completion.
+      markAncestorsForTraversal(lView);
     }
-    leaveView();
+    throw errorToHandle;
   }
 }
 
@@ -544,7 +553,11 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
     const prevConsumer = setActiveConsumer(null);
     try {
       if (!isInCheckNoChangesPass) {
-        runEffectsInView(lView);
+        try {
+          runEffectsInView(lView);
+        } catch (e) {
+          handleViewError(lView, e, isInCheckNoChangesPass);
+        }
       }
       detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Targeted);
       const components = tView.components;

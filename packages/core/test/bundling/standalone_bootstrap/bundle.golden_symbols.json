@@ -426,6 +426,7 @@
       "getUniqueLViewId",
       "handleStoppedNotification",
       "handleUnhandledError",
+      "handleViewError",
       "hasApplyArgsData",
       "hasDeps",
       "hasInSkipHydrationBlockFlag",
