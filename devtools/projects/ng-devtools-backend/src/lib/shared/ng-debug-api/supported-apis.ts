@@ -13,6 +13,7 @@ import {
   ngDebugRoutesApiIsSupported,
   ngDebugSignalGraphApiIsSupported,
   ngDebugSignalPropertiesInspectionApiIsSupported,
+  ngDebugSignalWatchApiIsSupported,
   ngDebugTransferStateApiIsSupported,
 } from './ng-debug-api';
 
@@ -28,6 +29,7 @@ export function getSupportedApis(): SupportedApis {
   const signals = ngDebugSignalGraphApiIsSupported();
   const transferState = ngDebugTransferStateApiIsSupported();
   const signalPropertiesInspection = ngDebugSignalPropertiesInspectionApiIsSupported();
+  const signalWatch = ngDebugSignalWatchApiIsSupported();
 
   return {
     profiler,
@@ -36,5 +38,6 @@ export function getSupportedApis(): SupportedApis {
     signals,
     transferState,
     signalPropertiesInspection,
+    signalWatch,
   };
 }
