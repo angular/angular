@@ -32,7 +32,89 @@ import {
   TViewType,
 } from './interfaces/view';
 
+/**
+ * The entry points of the animation runtime, as called from `node_manipulation.ts` and the
+ * control flow instructions. They are no-ops until an `animate.enter` or `animate.leave`
+ * instruction runs, see `enableAnimationRuntimeSupport`. An application that never uses those
+ * bindings has no animation data on its views, so the no-ops behave the same and the bundler
+ * can drop the runtime below.
+ */
+interface NodeAnimationRuntime {
+  maybeQueueEnterAnimation: typeof maybeQueueEnterAnimationImpl;
+  runLeaveAnimationsWithCallback: typeof runLeaveAnimationsWithCallbackImpl;
+}
+
+/** The part that carries leave animations across a detach and a re-attach in `@for`. */
+interface ViewDetachAnimationRuntime {
+  initViewDetachAnimations: typeof initViewDetachAnimationsImpl;
+  clearViewDetachAnimations: typeof clearViewDetachAnimationsImpl;
+}
+
+let nodeAnimationRuntime: NodeAnimationRuntime | null = null;
+let viewDetachAnimationRuntime: ViewDetachAnimationRuntime | null = null;
+
 export function maybeQueueEnterAnimation(
+  parentLView: LView | undefined,
+  parent: RElement | null,
+  tNode: TNode,
+  injector: Injector,
+): void {
+  nodeAnimationRuntime?.maybeQueueEnterAnimation(parentLView, parent, tNode, injector);
+}
+
+export function runLeaveAnimationsWithCallback(
+  lView: LView | undefined,
+  tNode: TNode,
+  injector: Injector,
+  callback: Function,
+): void {
+  if (nodeAnimationRuntime === null) {
+    callback(false);
+  } else {
+    nodeAnimationRuntime.runLeaveAnimationsWithCallback(lView, tNode, injector, callback);
+  }
+}
+
+export function initViewDetachAnimations(view: LView): void {
+  viewDetachAnimationRuntime?.initViewDetachAnimations(view);
+}
+
+export function clearViewDetachAnimations(view: LView): void {
+  viewDetachAnimationRuntime?.clearViewDetachAnimations(view);
+}
+
+/**
+ * Switches the animation runtime on. The `animate.enter` and `animate.leave` instructions call
+ * it before they record the first animation on a view.
+ */
+export function enableAnimationRuntimeSupport(): void {
+  nodeAnimationRuntime ??= {
+    maybeQueueEnterAnimation: maybeQueueEnterAnimationImpl,
+    runLeaveAnimationsWithCallback: runLeaveAnimationsWithCallbackImpl,
+  };
+}
+
+/**
+ * Switches the detach tracking on. Only the `animate.leave` instructions call it, an enter
+ * animation has nothing to carry across a detach.
+ */
+export function enableViewDetachAnimationsSupport(): void {
+  viewDetachAnimationRuntime ??= {
+    initViewDetachAnimations: initViewDetachAnimationsImpl,
+    clearViewDetachAnimations: clearViewDetachAnimationsImpl,
+  };
+}
+
+/**
+ * Resets the module-level switches, for tests that check what an application without animate
+ * bindings gets.
+ */
+export function resetAnimationRuntimeSupportForTests(): void {
+  nodeAnimationRuntime = null;
+  viewDetachAnimationRuntime = null;
+}
+
+function maybeQueueEnterAnimationImpl(
   parentLView: LView | undefined,
   parent: RElement | null,
   tNode: TNode,
@@ -44,7 +126,7 @@ export function maybeQueueEnterAnimation(
   }
 }
 
-export function runLeaveAnimationsWithCallback(
+function runLeaveAnimationsWithCallbackImpl(
   lView: LView | undefined,
   tNode: TNode,
   injector: Injector,
@@ -310,7 +392,7 @@ function runAfterLeaveAnimations(
  * embedded views. This allows animations queued during view detachment (e.g. during list
  * reordering) to be tracked and cancelled if the view is re-attached before the animation queue runs.
  */
-export function initViewDetachAnimations(view: LView): void {
+function initViewDetachAnimationsImpl(view: LView): void {
   const animations = (view[ANIMATIONS] ??= {});
   animations.detachedLeaveAnimationFns = [];
 
@@ -328,7 +410,7 @@ function initNestedViewDetachAnimations(lView: LView, tNode: TNode): void {
       for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
         const subView = lContainer[i] as LView;
         if (subView[TVIEW].type === TViewType.Embedded) {
-          initViewDetachAnimations(subView);
+          initViewDetachAnimationsImpl(subView);
         }
       }
     }
@@ -345,7 +427,7 @@ function initNestedViewDetachAnimations(lView: LView, tNode: TNode): void {
  * Recursively removes any queued detach leave animations for a view and all its nested embedded
  * views when the view is re-attached during list reconciliation.
  */
-export function clearViewDetachAnimations(view: LView): void {
+function clearViewDetachAnimationsImpl(view: LView): void {
   const animations = view[ANIMATIONS];
   if (
     animations &&
@@ -374,7 +456,7 @@ function clearNestedViewDetachAnimations(lView: LView, tNode: TNode): void {
       for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
         const subView = lContainer[i] as LView;
         if (subView[TVIEW].type === TViewType.Embedded) {
-          clearViewDetachAnimations(subView);
+          clearViewDetachAnimationsImpl(subView);
         }
       }
     }
