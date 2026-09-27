@@ -33,6 +33,13 @@ import {
   type WrappedEventCallback,
 } from '../../event_delegation_utils';
 
+type CoalescedEventCallback = EventCallback & {
+  __ngNextListenerFn__?: CoalescedEventCallback;
+  __ngLastListenerFn__?: CoalescedEventCallback;
+};
+
+type WrappedListener = WrappedEventCallback & CoalescedEventCallback & {__ngNativeEl__?: Element};
+
 /**
  * Wraps an event listener with a function that marks ancestors dirty and prevents default behavior,
  * if applicable.
@@ -50,11 +57,13 @@ export function wrapListener(
 ): WrappedEventCallback {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
-  return function wrapListenerIn_markDirtyAndPreventDefault(event: any) {
+  const wrappedListener: WrappedListener = function wrapListenerIn_markDirtyAndPreventDefault(
+    event: any,
+  ) {
     // When a native element is stored on this function (set by listenToDomEvent for
     // non-global-target listeners), mark the (event, element) pair as handled so that
     // jsaction does not replay an event already dispatched by the real DOM listener.
-    const nativeEl = (wrapListenerIn_markDirtyAndPreventDefault as any).__ngNativeEl__;
+    const nativeEl = wrappedListener.__ngNativeEl__;
     if (nativeEl !== undefined) {
       markEventHandledForElement(event, nativeEl);
     }
@@ -68,15 +77,16 @@ export function wrapListener(
     let result = executeListenerWithErrorHandling(lView, context, listenerFn, event);
     // A just-invoked listener function might have coalesced listeners so we need to check for
     // their presence and invoke as needed.
-    let nextListenerFn = (<any>wrapListenerIn_markDirtyAndPreventDefault).__ngNextListenerFn__;
+    let nextListenerFn = wrappedListener.__ngNextListenerFn__;
     while (nextListenerFn) {
       // We should prevent default if any of the listeners explicitly return false
       result = executeListenerWithErrorHandling(lView, context, nextListenerFn, event) && result;
-      nextListenerFn = (<any>nextListenerFn).__ngNextListenerFn__;
+      nextListenerFn = nextListenerFn.__ngNextListenerFn__;
     }
 
     return result;
-  } as WrappedEventCallback;
+  } as WrappedListener;
+  return wrappedListener;
 }
 
 function executeListenerWithErrorHandling(
@@ -146,7 +156,7 @@ export function listenToDomEvent(
   // In order to have just one native event handler in presence of multiple handler functions,
   // we just register a first handler function as a native event listener and then chain
   // (coalesce) other handler functions on top of the first native handler function.
-  let existingListener: any = null;
+  let existingListener: CoalescedEventCallback | null = null;
   // Please note that the coalescing described here doesn't happen for events specifying an
   // alternative target (ex. (document:click)) - this is to keep backward compatibility with the
   // view engine.
@@ -176,7 +186,7 @@ export function listenToDomEvent(
     // (event, element) pair as handled, preventing jsaction from replaying an event that
     // was already dispatched by the real DOM listener post-hydration (see #67328).
     if (!eventTargetResolver) {
-      (wrappedListener as any).__ngNativeEl__ = native as unknown as Element;
+      (wrappedListener as WrappedListener).__ngNativeEl__ = native as unknown as Element;
     }
     const cleanupFn = renderer.listen(target as RElement, eventName, wrappedListener);
 
@@ -216,7 +226,7 @@ function findExistingListener(
   lView: LView,
   eventName: string,
   tNodeIndex: number,
-): EventCallback | null {
+): CoalescedEventCallback | null {
   const tCleanup = tView.cleanup;
   if (tCleanup != null) {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
@@ -228,7 +238,7 @@ function findExistingListener(
         const lCleanup = lView[CLEANUP];
         const listenerIdxInLCleanup = tCleanup[i + 2];
         return lCleanup && lCleanup.length > listenerIdxInLCleanup
-          ? lCleanup[listenerIdxInLCleanup]
+          ? (lCleanup[listenerIdxInLCleanup] as CoalescedEventCallback)
           : null;
       }
       // TView.cleanup can have a mix of 4-elements entries (for event handler cleanups) or
