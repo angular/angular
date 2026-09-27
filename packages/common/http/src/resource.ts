@@ -314,7 +314,7 @@ function normalizeRequest(
     {
       headers,
       params,
-      reportProgress: unwrappedRequest.reportProgress,
+      reportDownloadProgress: unwrappedRequest.reportProgress,
       withCredentials: unwrappedRequest.withCredentials,
       keepalive: unwrappedRequest.keepalive,
       cache: unwrappedRequest.cache as RequestCache,
