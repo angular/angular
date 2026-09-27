@@ -18,7 +18,14 @@ ts_project(
 
 ts_project(
     name = "main",
-    srcs = ["main.ts"],
+    srcs = [
+        "main.ts",
+        # `main.ts` uses `ServiceWorkerGlobalScope` (from the `webworker` lib) without importing
+        # anything from `service-worker.d.ts`, so it must be listed explicitly: `ts_project`'s
+        # dict-mode tsconfig only includes a target's own `srcs`, not ambient declarations
+        # pulled in solely via `deps`.
+        "src/service-worker.d.ts",
+    ],
     deps = [":worker"],
 )
 
