@@ -211,7 +211,7 @@ An inner template can access template variables that the outer template defines.
 
 In the following example, changing the text in the `<input>` changes the value in the `<span>` because Angular immediately updates changes through the template variable, `ref1`.
 
-```html
+```angular-html
 <input #ref1 type="text" [(ngModel)]="firstExample" />
 
 @if (true) {
@@ -223,7 +223,7 @@ In this case, the `@if` block creates a new template scope, which includes the `
 
 However, accessing a template variable from a child scope in the parent template doesn't work:
 
-```html {avoid}
+```angular-html {avoid}
 @if (true) {
   <input #ref2 type="text" [(ngModel)]="secondExample" />
 }
