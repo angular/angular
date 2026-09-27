@@ -12,13 +12,16 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   EnvironmentInjector,
   inject,
+  input,
   PLATFORM_ID,
   Signal,
   signal,
   Type,
+  untracked,
   viewChild,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -32,9 +35,8 @@ import {
   TutorialNavigationItem,
   TutorialType,
 } from '@angular/docs';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {from} from 'rxjs';
-import {filter} from 'rxjs/operators';
 
 import {PAGE_PREFIX} from '../../core/constants/pages';
 import {
@@ -74,11 +76,17 @@ export default class Tutorial {
   private readonly elementRef = inject(ElementRef<unknown>);
   private readonly embeddedTutorialManager = inject(EmbeddedTutorialManager);
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
-  private readonly route = inject(ActivatedRoute);
   private readonly splitResizerHandler = inject(SplitResizerHandler);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  readonly documentContent = signal<string | null>(null);
+  // Bound from the route data (the tutorial navigation item and its resolved content).
+  readonly docContent = input<DocContent>();
+  readonly tutorialData = input<TutorialNavigationData>();
+  readonly path = input<string>();
+  readonly label = input<string>();
+  readonly parent = input<TutorialNavigationItem>();
+
+  readonly documentContent = computed(() => this.docContent()?.contents ?? null);
   readonly localTutorialZipUrl = signal<string | undefined>(undefined);
 
   readonly nextTutorialPath = signal<string | null>(null);
@@ -101,18 +109,16 @@ export default class Tutorial {
   readonly answerRevealed = signal<boolean>(false);
 
   constructor() {
-    this.route.data
-      .pipe(
-        filter(() =>
-          Boolean(this.route?.routeConfig?.path?.startsWith(`${PAGE_PREFIX.TUTORIALS}/`)),
-        ),
-        takeUntilDestroyed(),
-      )
-      .subscribe((data) => {
-        const docContent = (data['docContent'] as DocContent | undefined)?.contents ?? null;
-        this.documentContent.set(docContent);
-        this.setTutorialData(data as TutorialNavigationItem);
-      });
+    effect(() => {
+      const tutorialData = this.tutorialData();
+      const path = this.path();
+      const label = this.label();
+      const parent = this.parent();
+      if (!tutorialData || !path || !label) {
+        return;
+      }
+      untracked(() => this.setTutorialData({path, label, parent, tutorialData}));
+    });
 
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
