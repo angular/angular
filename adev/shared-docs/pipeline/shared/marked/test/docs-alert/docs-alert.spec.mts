@@ -15,11 +15,13 @@ import {parseMarkdown} from '../../parse.mjs';
 import {rendererContext} from '../renderer-context.mjs';
 
 describe('markdown to html', () => {
+  let html: string;
   let markdownDocument: DocumentFragment;
 
   beforeAll(async () => {
     const markdownContent = await readFile(resolve('docs-alert.md'), {encoding: 'utf-8'});
-    markdownDocument = JSDOM.fragment(await parseMarkdown(markdownContent, rendererContext));
+    html = await parseMarkdown(markdownContent, rendererContext);
+    markdownDocument = JSDOM.fragment(html);
   });
 
   for (const [key, level] of Object.entries(AlertSeverityLevel)) {
@@ -47,5 +49,10 @@ describe('markdown to html', () => {
     const noteEl = markdownDocument.querySelector(`.docs-alert-note:last-of-type`);
 
     expect(noteEl?.textContent?.trim()).toContain(`THIS NOTE WITHOUT A LINE RETURN`);
+  });
+
+  it(`should not wrap alerts in a paragraph`, () => {
+    expect(html).not.toMatch(/<p>\s*<div class="docs-alert/);
+    expect(html).toMatch(/<p>Some prose[^<]*<\/p>\s*<div class="docs-alert docs-alert-tip">/);
   });
 });
