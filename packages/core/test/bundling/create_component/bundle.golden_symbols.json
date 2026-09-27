@@ -458,6 +458,7 @@
       "handleStoppedNotification",
       "handleUncaughtError",
       "handleUnhandledError",
+      "handleViewError",
       "handledEventElements",
       "hasApplyArgsData",
       "hasDeps",
