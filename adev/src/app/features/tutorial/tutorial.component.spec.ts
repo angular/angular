@@ -29,7 +29,7 @@ class FakeEmbeddedEditor {}
   template: '<div>FakeDocsViewer</div>',
 })
 class FakeDocViewer {
-  documentFilePath = input<string | undefined>();
+  docContent = input<string | undefined>();
 }
 
 // TODO: export this class, it's a helpful mock we could you on other tests.
@@ -123,10 +123,51 @@ describe('Tutorial', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should set the tutorial data from the route data inputs', async () => {
+    const parent = {
+      path: 'tutorials/first-app',
+      label: 'First App',
+      tutorialData: {type: TutorialType.LOCAL, title: 'First App', restrictedMode: false},
+    };
+    fixture.componentRef.setInput('path', 'tutorials/first-app/steps/01-hello-world');
+    fixture.componentRef.setInput('label', 'Hello world');
+    fixture.componentRef.setInput('parent', parent);
+    fixture.componentRef.setInput('tutorialData', {
+      type: TutorialType.LOCAL,
+      title: 'Hello world',
+      sourceCodeZipPath: 'assets/tutorials/01-hello-world.zip',
+      nextStep: 'tutorials/first-app/steps/02-home',
+      restrictedMode: false,
+    });
+    fixture.componentRef.setInput('docContent', {id: 'hello-world', contents: '<p>Hello</p>'});
+    await fixture.whenStable();
+
+    expect(component.documentContent()).toBe('<p>Hello</p>');
+    expect(component.tutorialName()).toBe('First App');
+    expect(component.stepName()).toBe('Hello world');
+    expect(component.localTutorialZipUrl()).toBe('assets/tutorials/01-hello-world.zip');
+    expect(component.nextStepPath).toBe('/tutorials/first-app/steps/02-home');
+    expect(component.shouldRenderEmbeddedEditor()).toBeFalse();
+
+    // Navigating to another step reuses the component and only updates the inputs.
+    fixture.componentRef.setInput('path', 'tutorials/first-app/steps/02-home');
+    fixture.componentRef.setInput('label', 'Home');
+    fixture.componentRef.setInput('tutorialData', {
+      type: TutorialType.LOCAL,
+      title: 'Home',
+      previousStep: 'tutorials/first-app/steps/01-hello-world',
+      restrictedMode: false,
+    });
+    await fixture.whenStable();
+
+    expect(component.stepName()).toBe('Home');
+    expect(component.previousStepPath).toBe('/tutorials/first-app/steps/01-hello-world');
+    expect(component.nextStepPath).toBeUndefined();
+  });
+
   // TODO: Add tests in a future PR
   // it('should render the embedded editor based on the tutorial config', () => {});
   // it('should not render the embedded editor based on the tutorial config', () => {});
-  // it('should load the tutorial', () => {});
 
   it('should reset the reveal answer', async () => {
     setupResetRevealAnswerValues();
