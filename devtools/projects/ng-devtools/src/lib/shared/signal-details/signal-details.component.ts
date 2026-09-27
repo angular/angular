@@ -11,6 +11,7 @@ import {Platform} from '@angular/cdk/platform';
 import {MatIcon} from '@angular/material/icon';
 
 import {DebugSignalGraphNode, ElementPosition, Events, MessageBus} from '../../../../../protocol';
+import {SUPPORTED_APIS} from '../../application-providers/supported_apis';
 import {SignalValueTreeComponent} from './signal-value-tree/signal-value-tree.component';
 import {ButtonComponent} from '../button/button.component';
 import {
@@ -72,6 +73,7 @@ export class SignalDetailsComponent {
   protected readonly close = output<void>();
 
   private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly _supportedApis = inject(SUPPORTED_APIS);
 
   protected readonly TYPE_CLASS_MAP = TYPE_CLASS_MAP;
   protected readonly CLUSTER_TYPE_CLASS_MAP = CLUSTER_TYPE_CLASS_MAP;
@@ -81,6 +83,7 @@ export class SignalDetailsComponent {
 
   protected isWatchable(node: DevtoolsSignalGraphNode): node is DevtoolsSignalNode {
     return (
+      this._supportedApis().signalWatch &&
       isSignalNode(node) &&
       (node.kind === 'signal' || node.kind === 'computed' || node.kind === 'linkedSignal')
     );
