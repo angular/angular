@@ -661,6 +661,7 @@
       "handleStoppedNotification",
       "handleUncaughtError",
       "handleUnhandledError",
+      "handleViewError",
       "handledEventElements",
       "hasApplyArgsData",
       "hasClassInput",

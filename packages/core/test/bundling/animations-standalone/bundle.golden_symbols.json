@@ -554,6 +554,7 @@
       "getUniqueLViewId",
       "handleStoppedNotification",
       "handleUnhandledError",
+      "handleViewError",
       "hasApplyArgsData",
       "hasClassInput",
       "hasDeps",
