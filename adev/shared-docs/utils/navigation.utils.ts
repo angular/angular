@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject} from '@angular/core';
 import {ActivatedRouteSnapshot, Route, Router} from '@angular/router';
 import {NavigationItem} from '../interfaces/index';
-import {DOCS_CONTENT_LOADER} from '../providers/index';
+import {contentResource} from '../providers/index';
 
 export const flatNavigationData = (tree: NavigationItem[]) => {
   const result: NavigationItem[] = [];
@@ -111,14 +110,11 @@ export const mapNavigationItemsToRoutes = (
         ...route.data,
       };
 
-      route.resolve = {
-        'docContent': (snapshot: ActivatedRouteSnapshot) => {
-          return snapshot.data['contentPath'] !== undefined
-            ? inject(DOCS_CONTENT_LOADER).getContent(snapshot.data['contentPath'])
-            : undefined;
-        },
-        ...route.resolve,
-      };
+      // Read the content path from the route data so that the resource refetches when a reused
+      // route (e.g. between tutorial steps) receives the data of another navigation item.
+      route.resources ??= (ctx) => ({
+        docContent: contentResource(() => ctx.data()['contentPath']),
+      });
       return route;
     });
 

@@ -20,6 +20,7 @@ import {
   withNavigationErrorHandler,
   withRouterConfig,
   withExperimentalPlatformNavigation,
+  withRouterResources,
   isActive,
 } from '@angular/router';
 import {routes} from './routes';
@@ -69,6 +70,7 @@ export const routerProviders = [
       },
     }),
     withComponentInputBinding(),
+    withRouterResources(),
     ...(isPlatformNavigationSupported ? [withExperimentalPlatformNavigation()] : []),
   ),
   {

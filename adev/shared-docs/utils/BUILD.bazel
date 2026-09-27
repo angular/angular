@@ -30,7 +30,10 @@ ts_project(
     ),
     deps = [
         ":utils",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
         "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/providers",
     ],
 )
 

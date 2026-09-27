@@ -9,7 +9,7 @@
 import {Route} from '@angular/router';
 import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
 import {ApiManifest, ApiManifestEntry, ApiManifestPackage} from '../interfaces/api-manifest';
-import {contentResolver} from '@angular/docs';
+import {contentResource} from '@angular/docs';
 import {PAGE_PREFIX} from '../../../core/constants/pages';
 
 const manifest = API_MANIFEST_JSON as ApiManifest;
@@ -19,13 +19,14 @@ export function mapApiManifestToRoutes(): Route[] {
 
   for (const packageEntry of manifest) {
     for (const api of packageEntry.entries) {
+      const contentPath = `api/${getNormalizedFilename(packageEntry, api)}`;
       apiRoutes.push({
         path: getApiUrl(packageEntry, api.name),
         loadComponent: () =>
           import('./../api-reference-details-page/api-reference-details-page.component'),
-        resolve: {
-          docContent: contentResolver(`api/${getNormalizedFilename(packageEntry, api)}`),
-        },
+        resources: () => ({
+          docContent: contentResource(() => contentPath),
+        }),
         data: {
           label: api.name,
           displaySecondaryNav: true,

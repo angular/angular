@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {contentResolver, flatNavigationData, mapNavigationItemsToRoutes} from '@angular/docs';
+import {contentResource, flatNavigationData, mapNavigationItemsToRoutes} from '@angular/docs';
 import {Route} from '@angular/router';
 import {SUB_NAVIGATION_DATA} from './sub-navigation-data';
 import {mapApiManifestToRoutes} from '../features/references/helpers/manifest.helper';
@@ -55,16 +55,14 @@ const cliReferencePageRoutes = mapNavigationItemsToRoutes(
   referenceNavigationItems.filter((r) => r.path?.startsWith(`${PAGE_PREFIX.CLI}/`)),
   {
     loadComponent: () =>
-      import(
-        '../features/references/cli-reference-details-page/cli-reference-details-page.component'
-      ),
+      import('../features/references/cli-reference-details-page/cli-reference-details-page.component'),
     data: commonReferenceRouteData,
   },
 ).map((route) => ({
   ...route,
-  resolve: {
-    docContent: contentResolver(`${route.path}.html`),
-  },
+  resources: () => ({
+    docContent: contentResource(() => `${route.path}.html`),
+  }),
 }));
 
 const docsReferencePageRoutes = mapNavigationItemsToRoutes(
