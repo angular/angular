@@ -49,10 +49,11 @@ export class NgZoneChangeDetectionScheduler implements OnDestroy {
 
     this._onMicrotaskEmptySubscription = this.zone.onMicrotaskEmpty.subscribe({
       next: () => {
-        // `onMicroTaskEmpty` can happen _during_ the zoneless scheduler change detection because
-        // zone.run(() => {}) will result in `checkStable` at the end of the `zone.run` closure
-        // and emit `onMicrotaskEmpty` synchronously if run coalsecing is false.
-        if (this.changeDetectionScheduler.runningTick) {
+        // `onMicroTaskEmpty` can happen _during_ change detection because zone.run(() => {}) will
+        // result in `checkStable` at the end of the `zone.run` closure and emit `onMicrotaskEmpty`
+        // synchronously if run coalsecing is false. Angular itself enters the zone this way while
+        // it flushes effects, so this can happen for any running tick, not just a scheduled one.
+        if (this.changeDetectionScheduler.runningTick || this.applicationRef._runningTick) {
           return;
         }
         this.zone.run(() => {
