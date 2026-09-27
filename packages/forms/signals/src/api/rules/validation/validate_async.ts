@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DebounceTimer, Resource, Signal, computed, debounced, ɵchain} from '@angular/core';
+import {
+  DebounceTimer,
+  Resource,
+  Signal,
+  WritableResource,
+  computed,
+  debounced,
+  resourceFromSnapshots,
+} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
@@ -136,8 +144,37 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
     (_state, params) => {
       if (opts.debounce !== undefined) {
         const debouncedResource = debounced(() => params(), opts.debounce);
-        const wrappedParams = computed(() => ɵchain(debouncedResource));
-        return opts.factory(wrappedParams);
+        const wrappedParams = computed<TParams | undefined>(() => {
+          const snapshot = debouncedResource.snapshot();
+          return snapshot.status === 'error' ? undefined : snapshot.value;
+        });
+        const factoryResource = opts.factory(wrappedParams);
+        const composedResource = resourceFromSnapshots<TResult | undefined>(() => {
+          const snapshot = debouncedResource.snapshot();
+          if (snapshot.status === 'resolved' || snapshot.status === 'local') {
+            return factoryResource.snapshot();
+          }
+          if (snapshot.status === 'error') {
+            return {status: 'error' as const, error: snapshot.error};
+          }
+          const factorySnapshot = factoryResource.snapshot();
+          return {
+            status: 'loading' as const,
+            value: factorySnapshot.status === 'error' ? undefined : factorySnapshot.value,
+          };
+        });
+        if (hasReload(factoryResource)) {
+          return Object.assign(composedResource, {
+            reload: () => {
+              const snapshot = debouncedResource.snapshot();
+              if (snapshot.status !== 'resolved' && snapshot.status !== 'local') {
+                return false;
+              }
+              return factoryResource.reload();
+            },
+          });
+        }
+        return composedResource;
       }
       return opts.factory(params);
     },
@@ -177,4 +214,10 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
         return addDefaultField(errors, ctx.fieldTree);
     }
   });
+}
+
+function hasReload<T>(
+  resource: Resource<T>,
+): resource is Resource<T> & Pick<WritableResource<T>, 'reload'> {
+  return 'reload' in resource && typeof resource.reload === 'function';
 }

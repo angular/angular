@@ -12,6 +12,7 @@ import {
   assertNotInReactiveContext,
   Injector,
   resource,
+  resourceFromSnapshots,
   signal,
   type Signal,
 } from '@angular/core';
@@ -441,6 +442,87 @@ describe('resources', () => {
     expect(usernameForm().valid()).toBe(false);
   });
 
+  it('should not expose debounce loading to a custom resource factory', async () => {
+    let factoryParams: Signal<string | undefined> | undefined;
+    const usernameForm = form(
+      signal('initial-user'),
+      (p) => {
+        validateAsync(p, {
+          params: ({value}) => value(),
+          debounce: 50,
+          factory: (params) => {
+            factoryParams = params;
+            return resourceFromSnapshots(() => ({status: 'resolved', value: params()}));
+          },
+          onSuccess: () => undefined,
+          onError: () => null,
+        });
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    await timeout(80);
+    TestBed.tick();
+    await appRef.whenStable();
+    expect(usernameForm().pending()).toBe(false);
+    expect(factoryParams!()).toBe('initial-user');
+
+    usernameForm().value.set('latest-user');
+    TestBed.tick();
+
+    expect(() => usernameForm().pending()).not.toThrow();
+    expect(usernameForm().pending()).toBe(true);
+    expect(factoryParams!()).toBe('initial-user');
+
+    await timeout(80);
+    TestBed.tick();
+    await appRef.whenStable();
+    expect(usernameForm().pending()).toBe(false);
+    expect(factoryParams!()).toBe('latest-user');
+  });
+
+  it('should propagate debounce source errors through a custom resource factory', async () => {
+    const usernameForm = form(
+      signal('initial-user'),
+      (p) => {
+        validateAsync(p, {
+          params: ({value}) => {
+            const username = value();
+            if (username === 'error') {
+              throw new Error('Could not derive username params');
+            }
+            return username;
+          },
+          debounce: 50,
+          factory: (params) => resourceFromSnapshots(() => ({status: 'resolved', value: params()})),
+          onSuccess: () => undefined,
+          onError: (error) => ({
+            kind: 'paramsError',
+            message: error instanceof Error ? error.message : String(error),
+          }),
+        });
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    await timeout(80);
+    TestBed.tick();
+    await appRef.whenStable();
+
+    usernameForm().value.set('error');
+    TestBed.tick();
+    await appRef.whenStable();
+
+    expect(usernameForm().errors()).toEqual([
+      jasmine.objectContaining({
+        kind: 'paramsError',
+        message: 'Could not derive username params',
+      }),
+    ]);
+  });
+
   describe('reloadValidation', () => {
     it('should trigger a reload of async http validation', async () => {
       const usernameForm = form(
@@ -481,6 +563,143 @@ describe('resources', () => {
 
       expect(usernameForm().invalid()).toBe(true);
       expect(usernameForm().pending()).toBe(false);
+    });
+
+    it('should trigger a reload of debounced async http validation', async () => {
+      const usernameForm = form(
+        signal('unique-user'),
+        (p) => {
+          validateHttp(p, {
+            request: ({value}) => `/api/check?username=${value()}`,
+            debounce: 50,
+            onSuccess: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
+            onError: () => null,
+          });
+        },
+        {injector},
+      );
+
+      TestBed.tick();
+      await timeout(80);
+      TestBed.tick();
+      const req1 = backend.expectOne('/api/check?username=unique-user');
+      req1.flush(true);
+      await appRef.whenStable();
+
+      usernameForm().reloadValidation();
+      TestBed.tick();
+      const req2 = backend.expectOne('/api/check?username=unique-user');
+      expect(usernameForm().pending()).toBe(true);
+      req2.flush(false);
+      await appRef.whenStable();
+
+      expect(usernameForm().invalid()).toBe(true);
+      expect(usernameForm().pending()).toBe(false);
+    });
+
+    it('should not reload stale params while debounce is pending', async () => {
+      const usernameForm = form(
+        signal('initial-user'),
+        (p) => {
+          validateHttp(p, {
+            request: ({value}) => `/api/check?username=${value()}`,
+            debounce: 50,
+            onSuccess: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
+            onError: () => null,
+          });
+        },
+        {injector},
+      );
+
+      TestBed.tick();
+      await timeout(80);
+      TestBed.tick();
+      const req1 = backend.expectOne('/api/check?username=initial-user');
+      req1.flush(true);
+      await appRef.whenStable();
+
+      usernameForm().value.set('latest-user');
+      TestBed.tick();
+      usernameForm().reloadValidation();
+      TestBed.tick();
+
+      backend.expectNone('/api/check?username=initial-user');
+      backend.expectNone('/api/check?username=latest-user');
+      expect(usernameForm().pending()).toBe(true);
+
+      await timeout(80);
+      TestBed.tick();
+      const req2 = backend.expectOne('/api/check?username=latest-user');
+      req2.flush(false);
+      await appRef.whenStable();
+
+      expect(usernameForm().invalid()).toBe(true);
+      expect(usernameForm().pending()).toBe(false);
+    });
+
+    it('should not throw when reloadValidation is called with a non-reloadable custom debounce factory', async () => {
+      const usernameForm = form(
+        signal('unique-user'),
+        (p) => {
+          validateAsync(p, {
+            params: ({value}) => value(),
+            debounce: 50,
+            // resourceFromSnapshots returns a plain Resource — it has no reload() method.
+            factory: (params) =>
+              resourceFromSnapshots(() => ({status: 'resolved' as const, value: params()})),
+            onSuccess: () => undefined,
+            onError: () => null,
+          });
+        },
+        {injector},
+      );
+
+      TestBed.tick();
+      await timeout(80);
+      TestBed.tick();
+      await appRef.whenStable();
+
+      expect(usernameForm().pending()).toBe(false);
+      // Must not throw even though the composed resource has no reload() method.
+      expect(() => usernameForm().reloadValidation()).not.toThrow();
+    });
+
+    it('should delegate reload to the factory resource when it supports reload', async () => {
+      let reloadCount = 0;
+      const usernameForm = form(
+        signal('unique-user'),
+        (p) => {
+          validateAsync(p, {
+            params: ({value}) => value(),
+            debounce: 50,
+            factory: (params) => {
+              // Wrap a resourceFromSnapshots with a manual reload() to simulate a reloadable factory.
+              const inner = resourceFromSnapshots(() => ({
+                status: 'resolved' as const,
+                value: params(),
+              }));
+              return Object.assign(inner, {
+                reload: () => {
+                  reloadCount++;
+                  return true;
+                },
+              });
+            },
+            onSuccess: () => undefined,
+            onError: () => null,
+          });
+        },
+        {injector},
+      );
+
+      TestBed.tick();
+      await timeout(80);
+      TestBed.tick();
+      await appRef.whenStable();
+
+      expect(reloadCount).toBe(0);
+      usernameForm().reloadValidation();
+      expect(reloadCount).toBe(1);
     });
   });
 
