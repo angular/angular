@@ -7,7 +7,18 @@
  */
 
 import {CommonModule, NgForOf} from '@angular/common';
-import {Component, inject, Input, Type, NgModule, signal, resource} from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  input,
+  Input,
+  model,
+  NgModule,
+  resource,
+  signal,
+  Type,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   provideRouter as internalProvideRouter,
@@ -651,6 +662,56 @@ describe('component input binding', () => {
     trigger.set('after-destroy');
     await harness.fixture.whenStable();
     expect(instance.result).toEqual('data: updated');
+  });
+
+  it('sets blocking resource input synchronously so input.required() is available in ngOnInit and constructor effects on first render', async () => {
+    const log: string[] = [];
+
+    @Component({
+      template: '{{ passenger() }}',
+    })
+    class PassengerEdit {
+      @Input({isSignal: true, required: true} as any)
+      readonly passenger = model.required<string>();
+      @Input({isSignal: true, required: true} as any)
+      readonly details = input.required<string>();
+
+      constructor() {
+        effect(() => {
+          log.push(`effect:${this.passenger()}:${this.details()}`);
+        });
+      }
+
+      ngOnInit() {
+        log.push(`init:${this.passenger()}:${this.details()}`);
+      }
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'edit',
+              component: PassengerEdit,
+              resources: () => ({
+                passenger: resource({loader: async () => 'Alice'}),
+                details: resource({loader: async () => 'VIP'}),
+              }),
+            },
+          ],
+          withComponentInputBinding(),
+          withRouterResources(),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/edit', PassengerEdit);
+    await harness.fixture.whenStable();
+
+    expect(log).toEqual(['init:Alice:VIP', 'effect:Alice:VIP']);
+    expect(harness.routeNativeElement?.textContent).toBe('Alice');
   });
 });
 
