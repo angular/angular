@@ -20,6 +20,7 @@ import {
   ComponentRef,
   createComponent,
   destroyPlatform,
+  effect,
   ElementRef,
   EnvironmentInjector,
   ErrorHandler,
@@ -978,4 +979,113 @@ describe('Angular with scheduler and ZoneJS', () => {
     tick();
     expect(didRun).toBe(true);
   }));
+
+  describe('explicit ApplicationRef.tick from outside the Angular zone', () => {
+    function collectErrors(): unknown[] {
+      const errors: unknown[] = [];
+      TestBed.configureTestingModule({
+        rethrowApplicationErrors: false,
+        providers: [
+          provideZoneChangeDetection(),
+          {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+          {
+            provide: ErrorHandler,
+            useValue: {
+              handleError: (e: unknown) => {
+                errors.push(e);
+              },
+            },
+          },
+        ],
+      });
+      return errors;
+    }
+
+    it('does not report a recursive tick when a view effect is flushed', async () => {
+      const errors = collectErrors();
+
+      @Component({template: '{{display()}}'})
+      class App {
+        readonly source = signal('initial');
+        readonly display = signal('initial');
+
+        constructor() {
+          effect(() => {
+            this.display.set(this.source());
+          });
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      const appRef = TestBed.inject(ApplicationRef);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toContain('initial');
+
+      fixture.componentInstance.source.set('updated');
+      TestBed.inject(NgZone).runOutsideAngular(() => appRef.tick());
+
+      expect(errors).toEqual([]);
+      expect(fixture.nativeElement.textContent).toContain('updated');
+    });
+
+    it('does not report a recursive tick when a root effect is flushed', async () => {
+      const errors = collectErrors();
+
+      @Component({template: '{{display()}}'})
+      class App {
+        readonly display = signal('initial');
+      }
+
+      const fixture = TestBed.createComponent(App);
+      const appRef = TestBed.inject(ApplicationRef);
+      const ngZone = TestBed.inject(NgZone);
+      const source = signal('initial');
+
+      // Root effects capture the zone they are created in, just like the effects that components
+      // and services of a zone-based application create.
+      ngZone.run(() => {
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            fixture.componentInstance.display.set(source());
+          });
+        });
+      });
+      await fixture.whenStable();
+      expect(fixture.nativeElement.textContent).toContain('initial');
+
+      source.set('updated');
+      ngZone.runOutsideAngular(() => appRef.tick());
+
+      expect(errors).toEqual([]);
+      expect(fixture.nativeElement.textContent).toContain('updated');
+    });
+
+    it('still throws when tick is called during change detection', async () => {
+      collectErrors();
+
+      @Component({template: '{{reenter()}}'})
+      class App {
+        private readonly appRef = inject(ApplicationRef);
+        reenterCount = 1;
+        reenterError: unknown;
+
+        reenter() {
+          if (this.reenterCount--) {
+            try {
+              this.appRef.tick();
+            } catch (e) {
+              this.reenterError = e;
+            }
+          }
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await fixture.whenStable();
+
+      expect((fixture.componentInstance.reenterError as Error).message).toBe(
+        'NG0101: ApplicationRef.tick is called recursively',
+      );
+    });
+  });
 });
