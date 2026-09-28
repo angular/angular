@@ -243,7 +243,10 @@ async function waitForReadyToRegister() {
                   provide: ApplicationRef,
                   useValue: {
                     isStable: isStableSub.asObservable(),
-                    whenStable: () => isStableSub.pipe(filter(Boolean), take(1)),
+                    whenStable: () =>
+                      new Promise<void>((resolve) =>
+                        isStableSub.pipe(filter(Boolean), take(1)).subscribe(() => resolve()),
+                      ),
                     afterTick: new Subject(),
                     onDestroy: () => {},
                   },
@@ -263,7 +266,10 @@ async function waitForReadyToRegister() {
                   provide: ApplicationRef,
                   useValue: {
                     isStable: isStableSub.asObservable(),
-                    whenStable: () => isStableSub.pipe(filter(Boolean), take(1)),
+                    whenStable: () =>
+                      new Promise<void>((resolve) =>
+                        isStableSub.pipe(filter(Boolean), take(1)).subscribe(() => resolve()),
+                      ),
                     afterTick: new Subject(),
                     onDestroy: () => {},
                   },
@@ -365,6 +371,7 @@ async function waitForReadyToRegister() {
           isStableSub.next(false);
           isStableSub.next(false);
 
+          tick(60000);
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           isStableSub.next(true);
@@ -383,6 +390,7 @@ async function waitForReadyToRegister() {
           isStableSub.next(false);
           isStableSub.next(false);
 
+          tick(60000);
           expect(swRegisterSpy).not.toHaveBeenCalled();
 
           isStableSub.next(true);

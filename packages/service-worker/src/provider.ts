@@ -80,7 +80,9 @@ export function ngswAppInitializer(): void {
           readyToRegister = delayWithTimeout(+args[0] || 0);
           break;
         case 'registerWhenStable':
-          readyToRegister = Promise.race([appRef.whenStable(), delayWithTimeout(+args[0])]);
+          readyToRegister = args[0]
+            ? Promise.race([appRef.whenStable(), delayWithTimeout(+args[0])])
+            : appRef.whenStable();
           break;
         default:
           // Unknown strategy.
