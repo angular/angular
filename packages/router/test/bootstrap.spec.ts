@@ -69,10 +69,9 @@ describe('bootstrap', () => {
   @Injectable({providedIn: 'root'})
   class TestResolver {
     resolve() {
-      let resolve: (value: unknown) => void;
-      const res = new Promise((r) => (resolve = r));
+      const {promise, resolve} = Promise.withResolvers();
       setTimeout(() => resolve('test-data'), 0);
-      return res;
+      return promise;
     }
   }
 
