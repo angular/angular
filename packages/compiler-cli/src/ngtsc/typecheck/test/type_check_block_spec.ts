@@ -1170,7 +1170,6 @@ describe('type check blocks', () => {
     ];
     const BASE_CONFIG: TypeCheckingConfig = {
       applyTemplateContextGuards: true,
-      checkQueries: false,
       checkTemplateBodies: true,
       checkControlFlowBodies: true,
       alwaysCheckSchemaInTemplateBodies: true,

@@ -282,7 +282,6 @@ export function ngForTypeCheckTarget(): TypeCheckingTarget {
 
 export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   applyTemplateContextGuards: true,
-  checkQueries: false,
   checkTemplateBodies: true,
   checkControlFlowBodies: true,
   alwaysCheckSchemaInTemplateBodies: true,
@@ -442,7 +441,6 @@ export function tcb(
 
   const fullConfig: TypeCheckingConfig = {
     applyTemplateContextGuards: true,
-    checkQueries: false,
     checkTypeOfInputBindings: true,
     honorAccessModifiersForInputBindings: false,
     strictNullInputBindings: true,
