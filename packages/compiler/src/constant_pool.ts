@@ -128,13 +128,7 @@ export class ConstantPool {
         // const myStr = function() { return "very very very long string"; };
         // const usage1 = myStr();
         // const usage2 = myStr();
-        value = new o.FunctionExpr(
-          [], // Params.
-          [
-            // Statements.
-            new o.ReturnStatement(literal),
-          ],
-        );
+        value = new o.FunctionExpr([], [new o.ReturnStatement(literal)], o.DYNAMIC_TYPE);
         usage = o.variable(name).callFn([]);
       } else {
         // Just declare and use the variable directly, without a function call
