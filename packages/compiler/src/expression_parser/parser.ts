@@ -1693,8 +1693,16 @@ class _ParseAST {
           this.error('Template literal interpolation cannot be empty');
         }
         expressions.push(expression);
+        // Expect the closing brace before decrementing `rbracesExpected` so that, if the brace is
+        // missing, error recovery stops at this interpolation's brace instead of skipping the rest
+        // of the literal.
+        this.expectCharacter(chars.$RBRACE);
         this.rbracesExpected--;
+      } else if (token.isError()) {
+        // The lexer produces an error token if the template literal isn't terminated.
+        this.error(`Unexpected token ${token}`);
       } else {
+        // Skip over any leftover tokens of an interpolation that was already reported as invalid.
         this.advance();
       }
     }
