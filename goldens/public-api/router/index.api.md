@@ -248,6 +248,11 @@ export function defaultUrlMatcher(segments: UrlSegment[], segmentGroup: UrlSegme
 
 // @public
 export class DefaultUrlSerializer implements UrlSerializer {
+    constructor(limits?: {
+        maxSegments?: number;
+        maxOutlets?: number;
+        maxParams?: number;
+    });
     parse(url: string): UrlTree;
     serialize(tree: UrlTree): string;
 }
@@ -779,6 +784,11 @@ export interface RouterConfigOptions {
     onSameUrlNavigation?: OnSameUrlNavigation;
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     resolveNavigationPromiseOnError?: boolean;
+    urlParsingLimits?: {
+        maxSegments?: number;
+        maxOutlets?: number;
+        maxParams?: number;
+    };
     urlUpdateStrategy?: 'deferred' | 'eager';
 }
 
