@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject, signal} from '@angular/core';
+import {Component, DestroyRef, inject, signal} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -42,7 +43,9 @@ export class ProfilerComponent {
   public dialog = inject(MatDialog);
 
   constructor() {
-    this._fileApiService.uploadedData.subscribe((importedFile) => {
+    // `FileApiService` is provided in root and outlives this component, which is destroyed and
+    // recreated when another frame is inspected.
+    this._fileApiService.uploadedData.pipe(takeUntilDestroyed()).subscribe((importedFile) => {
       if (importedFile.error) {
         console.error('Could not process uploaded file');
         console.error(importedFile.error);
@@ -84,16 +87,24 @@ export class ProfilerComponent {
       }
     });
 
-    this._messageBus.on('profilerResults', (remainingRecords) => {
+    const unlistenProfilerResults = this._messageBus.on('profilerResults', (remainingRecords) => {
       if (remainingRecords.duration > 0 && remainingRecords.source) {
         this.stream.next([remainingRecords]);
         this._buffer.push(remainingRecords);
       }
     });
 
-    this._messageBus.on('sendProfilerChunk', (chunkOfRecords: ProfilerFrame) => {
-      this.stream.next([chunkOfRecords]);
-      this._buffer.push(chunkOfRecords);
+    const unlistenProfilerChunk = this._messageBus.on(
+      'sendProfilerChunk',
+      (chunkOfRecords: ProfilerFrame) => {
+        this.stream.next([chunkOfRecords]);
+        this._buffer.push(chunkOfRecords);
+      },
+    );
+
+    inject(DestroyRef).onDestroy(() => {
+      unlistenProfilerResults();
+      unlistenProfilerChunk();
     });
   }
 
