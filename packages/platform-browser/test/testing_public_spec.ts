@@ -965,8 +965,7 @@ describe('public testing API', () => {
 
       it('should fail with an error from a promise', waitForAsync(
         inject([], () => {
-          let reject: (error: any) => void = undefined!;
-          const promise = new Promise((_, rej) => (reject = rej));
+          const {promise, reject} = Promise.withResolvers();
           const p = promise.then(() => expect(1).toEqual(2));
 
           reject('baz');
