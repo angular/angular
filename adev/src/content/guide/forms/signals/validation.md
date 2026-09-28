@@ -140,7 +140,7 @@ registrationForm = form(this.registrationModel, (schemaPath) => {
 
 The validation rule only runs when the `when` function returns `true`.
 
-Note: `required` treats an empty array as present (valid), so use [`minLength()`](#minlength-and-maxlength) to enforce a minimum number of array items.
+NOTE: `required` treats an empty array as present (valid), so use [`minLength()`](#minlength-and-maxlength) to enforce a minimum number of array items.
 
 ### email()
 

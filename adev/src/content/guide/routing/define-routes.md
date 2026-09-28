@@ -42,7 +42,7 @@ export const routes: Routes = [
 ];
 ```
 
-Tip: If you generated a project with Angular CLI, your routes are defined in `src/app/app.routes.ts`.
+TIP: If you generated a project with Angular CLI, your routes are defined in `src/app/app.routes.ts`.
 
 ### Adding the router to your application
 
@@ -140,7 +140,7 @@ const routes: Routes = [
 
 In this routes array, the app displays the `NotFound` component when the user visits any path outside of `home` and `user/:id`.
 
-Tip: Wildcard routes are typically placed at the end of a routes array.
+TIP: Wildcard routes are typically placed at the end of a routes array.
 
 ## How Angular matches URLs
 

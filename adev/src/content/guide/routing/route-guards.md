@@ -62,7 +62,7 @@ export const authGuard: CanActivateFn = (
 };
 ```
 
-Tip: If you need to redirect the user, return a [`URLTree`](api/router/UrlTree) or [`RedirectCommand`](api/router/RedirectCommand). Do **not** return `false` and then programmatically `navigate` the user.
+TIP: If you need to redirect the user, return a [`URLTree`](api/router/UrlTree) or [`RedirectCommand`](api/router/RedirectCommand). Do **not** return `false` and then programmatically `navigate` the user.
 
 For more information, check out the [API docs for CanActivateFn](api/router/CanActivateFn).
 
