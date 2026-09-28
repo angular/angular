@@ -49,6 +49,7 @@ npm_package(
         "//packages/core/schematics/ng-generate/ngclass-to-class-migration:static_files",
         "//packages/core/schematics/ng-generate/ngstyle-to-style-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",
+        "//packages/core/schematics/ng-generate/route-input-binding-migration:static_files",
         "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",
         "//packages/core/schematics/ng-generate/router-testing-module-migration:static_files",
         "//packages/core/schematics/ng-generate/self-closing-tags-migration:static_files",
@@ -127,6 +128,10 @@ bundle_entrypoints = [
         "packages/core/schematics/ng-generate/router-testing-module-migration/index.js",
     ],
     [
+        "route-input-binding-migration",
+        "packages/core/schematics/ng-generate/route-input-binding-migration/index.js",
+    ],
+    [
         "http-xhr-backend",
         "packages/core/schematics/migrations/http-xhr-backend/index.js",
     ],
@@ -180,6 +185,7 @@ rollup.rollup(
         "//packages/core/schematics/ng-generate/ngclass-to-class-migration",
         "//packages/core/schematics/ng-generate/ngstyle-to-style-migration",
         "//packages/core/schematics/ng-generate/output-migration",
+        "//packages/core/schematics/ng-generate/route-input-binding-migration",
         "//packages/core/schematics/ng-generate/route-lazy-loading",
         "//packages/core/schematics/ng-generate/router-testing-module-migration",
         "//packages/core/schematics/ng-generate/self-closing-tags-migration",

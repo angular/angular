@@ -81,6 +81,12 @@
       "factory": "./bundles/router-testing-module-migration.cjs#migrate",
       "schema": "./ng-generate/router-testing-module-migration/schema.json"
     },
+    "route-input-binding-migration": {
+      "description": "Replaces reads of route params from an injected `ActivatedRoute` with inputs bound via `withComponentInputBinding`",
+      "factory": "./bundles/route-input-binding-migration.cjs#migrate",
+      "schema": "./ng-generate/route-input-binding-migration/schema.json",
+      "aliases": ["route-input-binding"]
+    },
     "service-migration": {
       "description": "Converts @Injectable to @Service where applicable",
       "factory": "./bundles/service-migration.cjs#migrate",
