@@ -327,6 +327,26 @@ When you need to fetch data for a route, Angular Router supports reactive route 
 - [Data fetching with resources](/guide/routing/data-fetching-with-resources): Fetch data reactively using Angular Signals `Resource` APIs.
 - [Route data resolvers](/guide/routing/data-resolvers): Fetch data before route activation using resolver functions.
 
+### Error fallback components
+
+You can specify an `errorComponent` on a route to render a dedicated fallback component if the route component throws an error during initialization or rendering:
+
+```ts
+import {Routes} from '@angular/router';
+import {ProductDetails} from './product-details';
+import {ProductErrorFallback} from './product-error-fallback';
+
+export const routes: Routes = [
+  {
+    path: 'product/:id',
+    component: ProductDetails,
+    errorComponent: ProductErrorFallback,
+  },
+];
+```
+
+To learn more about configuring error fallbacks and retrying failed routes, see the [Error boundaries guide](/guide/routing/error-boundaries).
+
 ## Nested Routes
 
 Nested routes, also known as child routes, are a common technique for managing more complex navigation routes where a component has a sub-view that changes based on the URL.
