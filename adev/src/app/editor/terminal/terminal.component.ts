@@ -17,8 +17,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {Subject} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
+import {Subject, debounceTime} from 'rxjs';
 
 import {TerminalHandler, TerminalType} from './terminal-handler.service';
 

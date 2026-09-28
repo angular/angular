@@ -1,6 +1,5 @@
 import {Service} from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {delay} from 'rxjs/operators';
+import {Observable, of, delay} from 'rxjs';
 
 const ROLES = ['Hamlet', 'Ophelia', 'Romeo', 'Juliet'];
 
