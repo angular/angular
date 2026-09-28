@@ -21,7 +21,7 @@ When you select a specific route in the tree, Angular DevTools displays its prop
 - **Auxiliary**: Indicates if the route is an auxiliary route (e.g., in a named outlet).
 - **Lazy**: Indicates if the route is lazily loaded.
 
-Note: Properties like Path Match, Data, Resolvers, Guards, Providers, Title, and RunGuardsAndResolvers only appear in the sidebar when they are configured on the selected route.
+NOTE: Properties like Path Match, Data, Resolvers, Guards, Providers, Title, and RunGuardsAndResolvers only appear in the sidebar when they are configured on the selected route.
 
 ### Navigate to a specific route
 
