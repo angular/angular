@@ -452,6 +452,7 @@
       "captureError",
       "catchError",
       "checkGuards",
+      "checkOutletNameUniqueness",
       "checkSecurityContext",
       "checkStable",
       "classIndexOf",
