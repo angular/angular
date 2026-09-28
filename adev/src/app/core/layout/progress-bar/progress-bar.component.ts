@@ -17,7 +17,7 @@ import {
   Router,
 } from '@angular/router';
 import {NgProgressbar, NgProgressRef} from 'ngx-progressbar';
-import {filter, map, switchMap, take} from 'rxjs/operators';
+import {filter, map, switchMap, take} from 'rxjs';
 
 /** Time to wait after navigation starts before showing the progress bar. This delay allows a small amount of time to skip showing the progress bar when a navigation is effectively immediate. 30ms is approximately the amount of time we can wait before a delay is perceptible.*/
 export const PROGRESS_BAR_DELAY = 30;
