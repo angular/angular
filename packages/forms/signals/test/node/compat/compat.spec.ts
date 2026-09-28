@@ -187,10 +187,10 @@ describe('Forms compat', () => {
       const formControl = new FormControl<number>(5, {
         nonNullable: true,
         asyncValidators: () => {
-          // can't use promiseWithResolver here, because this runs multiple times across tests.
-          return new Promise<null>((r) => {
-            resolve = r;
-          });
+          // Create a new promise on every run, because the validator runs multiple times across tests.
+          const {promise, resolve: r} = Promise.withResolvers<null>();
+          resolve = r;
+          return promise;
         },
       });
       const cat = signal({

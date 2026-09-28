@@ -50,10 +50,8 @@ describe('navigation', () => {
   beforeEach(() => {
     const navigation = new FakeNavigation(document, 'https://test.com');
     const navigateEvents: FakeNavigateEvent[] = [];
-    let nextNavigateEventResolve!: (value: FakeNavigateEvent) => void;
-    let nextNavigateEventPromise = new Promise<FakeNavigateEvent>((resolve) => {
-      nextNavigateEventResolve = resolve;
-    });
+    let {promise: nextNavigateEventPromise, resolve: nextNavigateEventResolve} =
+      Promise.withResolvers<FakeNavigateEvent>();
     const navigationCurrentEntryChangeEvents: FakeNavigationCurrentEntryChangeEvent[] = [];
     const popStateEvents: PopStateEvent[] = [];
     const pendingInterceptOptions: NavigationInterceptOptions[] = [];
@@ -62,9 +60,8 @@ describe('navigation', () => {
     navigation.addEventListener('navigate', (event: Event) => {
       const navigateEvent = event as FakeNavigateEvent;
       nextNavigateEventResolve(navigateEvent);
-      nextNavigateEventPromise = new Promise<FakeNavigateEvent>((resolve) => {
-        nextNavigateEventResolve = resolve;
-      });
+      ({promise: nextNavigateEventPromise, resolve: nextNavigateEventResolve} =
+        Promise.withResolvers<FakeNavigateEvent>());
       locals.navigateEvents.push(navigateEvent);
       const interceptOptions = pendingInterceptOptions.shift();
       if (interceptOptions) {
@@ -378,10 +375,8 @@ describe('navigation', () => {
     });
 
     it('push URL with handler', async () => {
-      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
-      const handlerFinished = new Promise<undefined>((resolve) => {
-        handlerFinishedResolve = resolve;
-      });
+      const {promise: handlerFinished, resolve: handlerFinishedResolve} =
+        Promise.withResolvers<undefined>();
       locals.pendingInterceptOptions.push({
         handler: () => handlerFinished,
       });
@@ -406,10 +401,8 @@ describe('navigation', () => {
     });
 
     it('replace URL with handler', async () => {
-      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
-      const handlerFinished = new Promise<undefined>((resolve) => {
-        handlerFinishedResolve = resolve;
-      });
+      const {promise: handlerFinished, resolve: handlerFinishedResolve} =
+        Promise.withResolvers<undefined>();
       locals.pendingInterceptOptions.push({
         handler: () => handlerFinished,
       });
@@ -436,14 +429,10 @@ describe('navigation', () => {
     });
 
     it('deferred commit', async () => {
-      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
-      const handlerFinished = new Promise<undefined>((resolve) => {
-        handlerFinishedResolve = resolve;
-      });
-      let precommitHandlerFinishedResolve!: () => void;
-      const precommitHandlerFinished = new Promise<void>((resolve) => {
-        precommitHandlerFinishedResolve = resolve;
-      });
+      const {promise: handlerFinished, resolve: handlerFinishedResolve} =
+        Promise.withResolvers<undefined>();
+      const {promise: precommitHandlerFinished, resolve: precommitHandlerFinishedResolve} =
+        Promise.withResolvers<void>();
       locals.pendingInterceptOptions.push({
         handler: () => handlerFinished,
         precommitHandler: () => precommitHandlerFinished,
@@ -472,10 +461,8 @@ describe('navigation', () => {
     });
 
     it('deferred commit early resolve', async () => {
-      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
-      const handlerFinished = new Promise<undefined>((resolve) => {
-        handlerFinishedResolve = resolve;
-      });
+      const {promise: handlerFinished, resolve: handlerFinishedResolve} =
+        Promise.withResolvers<undefined>();
       locals.pendingInterceptOptions.push({
         precommitHandler: () => handlerFinished,
       });
@@ -529,14 +516,10 @@ describe('navigation', () => {
     });
 
     it('deferred commit resolves on finished', async () => {
-      let handlerFinishedResolve!: () => void;
-      let precommitHandlerResolve!: () => void;
-      const handlerFinished = new Promise<void>((resolve) => {
-        handlerFinishedResolve = resolve;
-      });
-      const precommitHandlerFinished = new Promise<void>((resolve) => {
-        precommitHandlerResolve = resolve;
-      });
+      const {promise: handlerFinished, resolve: handlerFinishedResolve} =
+        Promise.withResolvers<void>();
+      const {promise: precommitHandlerFinished, resolve: precommitHandlerResolve} =
+        Promise.withResolvers<void>();
       locals.pendingInterceptOptions.push({
         handler: () => handlerFinished,
         precommitHandler: () => precommitHandlerFinished,
@@ -623,10 +606,11 @@ describe('navigation', () => {
     it('push with handler reject', async () => {
       let handlerFinishedReject!: (reason: unknown) => void;
       locals.pendingInterceptOptions.push({
-        handler: () =>
-          new Promise<undefined>((resolve, reject) => {
-            handlerFinishedReject = reject;
-          }),
+        handler: () => {
+          const {promise, reject} = Promise.withResolvers<undefined>();
+          handlerFinishedReject = reject;
+          return promise;
+        },
       });
 
       const {committed, finished} = locals.navigation.navigate('/test');
@@ -645,10 +629,11 @@ describe('navigation', () => {
     it('replace with reject', async () => {
       let handlerFinishedReject!: (reason: unknown) => void;
       locals.pendingInterceptOptions.push({
-        handler: () =>
-          new Promise<undefined>((resolve, reject) => {
-            handlerFinishedReject = reject;
-          }),
+        handler: () => {
+          const {promise, reject} = Promise.withResolvers<undefined>();
+          handlerFinishedReject = reject;
+          return promise;
+        },
       });
 
       const {committed, finished} = locals.navigation.navigate('/test', {
@@ -1108,10 +1093,8 @@ describe('navigation', () => {
 
     it('traverses with handler', async () => {
       const [firstPageEntry] = await setUpEntries();
-      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
-      const handlerFinished = new Promise<undefined>((resolve) => {
-        handlerFinishedResolve = resolve;
-      });
+      const {promise: handlerFinished, resolve: handlerFinishedResolve} =
+        Promise.withResolvers<undefined>();
       locals.pendingInterceptOptions.push({
         handler: () => handlerFinished,
       });
@@ -1154,10 +1137,11 @@ describe('navigation', () => {
       const [firstPageEntry] = await setUpEntries();
       let handlerFinishedReject!: (reason: unknown) => void;
       locals.pendingInterceptOptions.push({
-        handler: () =>
-          new Promise<undefined>((resolve, reject) => {
-            handlerFinishedReject = reject;
-          }),
+        handler: () => {
+          const {promise, reject} = Promise.withResolvers<undefined>();
+          handlerFinishedReject = reject;
+          return promise;
+        },
       });
 
       const {committed, finished} = locals.navigation.traverseTo(firstPageEntry.key);
@@ -1675,10 +1659,8 @@ describe('navigation', () => {
       });
 
       it('push URL with handler', async () => {
-        let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
-        const handlerFinished = new Promise<undefined>((resolve) => {
-          handlerFinishedResolve = resolve;
-        });
+        const {promise: handlerFinished, resolve: handlerFinishedResolve} =
+          Promise.withResolvers<undefined>();
         locals.pendingInterceptOptions.push({
           handler: () => handlerFinished,
         });
@@ -1698,10 +1680,8 @@ describe('navigation', () => {
       });
 
       it('replace URL with handler', async () => {
-        let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
-        const handlerFinished = new Promise<undefined>((resolve) => {
-          handlerFinishedResolve = resolve;
-        });
+        const {promise: handlerFinished, resolve: handlerFinishedResolve} =
+          Promise.withResolvers<undefined>();
         locals.pendingInterceptOptions.push({
           handler: () => handlerFinished,
         });
@@ -1759,10 +1739,8 @@ describe('navigation', () => {
       });
 
       it('push with handler reject', async () => {
-        let handlerFinishedReject!: (reason: unknown) => void;
-        const handlerPromise = new Promise<undefined>((resolve, reject) => {
-          handlerFinishedReject = reject;
-        });
+        const {promise: handlerPromise, reject: handlerFinishedReject} =
+          Promise.withResolvers<undefined>();
         locals.pendingInterceptOptions.push({
           handler: () => handlerPromise,
         });
@@ -1779,10 +1757,8 @@ describe('navigation', () => {
       });
 
       it('replace with reject', async () => {
-        let handlerFinishedReject!: (reason: unknown) => void;
-        const handlerPromise = new Promise<undefined>((resolve, reject) => {
-          handlerFinishedReject = reject;
-        });
+        const {promise: handlerPromise, reject: handlerFinishedReject} =
+          Promise.withResolvers<undefined>();
         locals.pendingInterceptOptions.push({
           handler: () => handlerPromise,
         });
@@ -1951,10 +1927,8 @@ describe('navigation', () => {
 
       it('go with handler', async () => {
         const [firstPageEntry] = await setUpEntries();
-        let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
-        const handlerFinished = new Promise<undefined>((resolve) => {
-          handlerFinishedResolve = resolve;
-        });
+        const {promise: handlerFinished, resolve: handlerFinishedResolve} =
+          Promise.withResolvers<undefined>();
         locals.pendingInterceptOptions.push({
           handler: () => handlerFinished,
         });
@@ -1990,10 +1964,11 @@ describe('navigation', () => {
         const [firstPageEntry] = await setUpEntries();
         let handlerFinishedReject!: (reason: unknown) => void;
         locals.pendingInterceptOptions.push({
-          handler: () =>
-            new Promise<undefined>((resolve, reject) => {
-              handlerFinishedReject = reject;
-            }),
+          handler: () => {
+            const {promise, reject} = Promise.withResolvers<undefined>();
+            handlerFinishedReject = reject;
+            return promise;
+          },
         });
 
         locals.navigation.go(-2);
@@ -2210,10 +2185,7 @@ describe('navigation', () => {
     });
 
     it('waits for async handlers added via addHandler before finished resolves', async () => {
-      let resolveHandler!: () => void;
-      const handlerPromise = new Promise<void>((resolve) => {
-        resolveHandler = resolve;
-      });
+      const {promise: handlerPromise, resolve: resolveHandler} = Promise.withResolvers<void>();
       locals.pendingInterceptOptions.push({
         precommitHandler: (controller) => {
           controller.addHandler(() => handlerPromise);

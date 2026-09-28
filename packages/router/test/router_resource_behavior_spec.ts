@@ -15,7 +15,6 @@ import {
   signal,
   WritableSignal,
   resource,
-  ɵpromiseWithResolvers,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {provideRouter, Router, UrlTree} from '@angular/router';
@@ -131,7 +130,9 @@ describe('routerResource behavior tests', () => {
       await timeout();
 
       // Setup pending navigation to /route2
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -158,7 +159,9 @@ describe('routerResource behavior tests', () => {
       const wrapped = createWrappedResource();
       await timeout();
 
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -203,9 +206,13 @@ describe('routerResource behavior tests', () => {
       await timeout();
 
       // Block route3 with a pending guard so we can pause and inspect the redirect transition
-      guardPromise3 = new Promise((resolve) => (resolveGuard3 = resolve));
+      ({promise: guardPromise3, resolve: resolveGuard3} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
 
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -233,7 +240,9 @@ describe('routerResource behavior tests', () => {
       const wrapped = createWrappedResource();
       await timeout();
 
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -266,12 +275,16 @@ describe('routerResource behavior tests', () => {
       await timeout();
 
       // Start Nav 1 (to /route2)
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const nav1Promise = harness.navigateByUrl('/route2');
       await timeout();
 
       // Start Nav 2 (to /route3), which cancels Nav 1
-      guardPromise3 = new Promise((resolve) => (resolveGuard3 = resolve));
+      ({promise: guardPromise3, resolve: resolveGuard3} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const nav2Promise = harness.navigateByUrl('/route3');
       await timeout();
 
@@ -301,7 +314,9 @@ describe('routerResource behavior tests', () => {
       await timeout();
 
       // Start Nav 1
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const nav1Promise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -313,7 +328,9 @@ describe('routerResource behavior tests', () => {
       await timeout();
 
       // While recovery is pending, a new navigation (Nav 2) starts (to /route3)
-      guardPromise3 = new Promise((resolve) => (resolveGuard3 = resolve));
+      ({promise: guardPromise3, resolve: resolveGuard3} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const nav2Promise = harness.navigateByUrl('/route3');
       await timeout();
 
@@ -352,7 +369,9 @@ describe('routerResource behavior tests', () => {
       const wrapped = createWrappedResource();
       await timeout();
 
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
@@ -376,7 +395,9 @@ describe('routerResource behavior tests', () => {
       expect(wrapped.value()).toBe('initial');
 
       // 1. Start navigation to route2 (blocked by guard)
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout(); // Let router start and freeze the resource
 
@@ -437,7 +458,9 @@ describe('routerResource behavior tests', () => {
       expect(wrapped.value()).toBe('initial-2');
 
       // 2. Start navigation (should freeze at the last streamed value)
-      guardPromise2 = new Promise((resolve) => (resolveGuard2 = resolve));
+      ({promise: guardPromise2, resolve: resolveGuard2} = Promise.withResolvers<
+        boolean | UrlTree
+      >());
       const navPromise = harness.navigateByUrl('/route2');
       await timeout();
 
