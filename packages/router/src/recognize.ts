@@ -228,11 +228,6 @@ export class Recognizer {
     // multiple activated results for the same outlet. We should merge the children of
     // these results so the final return value is only one `TreeNode` per outlet.
     const mergedChildren = mergeEmptyPathMatches(children);
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      // This should really never happen - we are only taking the first match for each
-      // outlet and merge the empty path matches.
-      checkOutletNameUniqueness(mergedChildren);
-    }
     sortActivatedRouteSnapshots(mergedChildren);
     return mergedChildren;
   }
@@ -585,11 +580,13 @@ function mergeEmptyPathMatches(
     const mergedChildren = mergeEmptyPathMatches(mergedNode.children);
     result.push(new TreeNode(mergedNode.value, mergedChildren));
   }
-  return result.filter((n) => !mergedNodes.has(n));
+  const merged = result.filter((n) => !mergedNodes.has(n));
+  checkOutletNameUniqueness(merged);
+  return merged;
 }
 
 function checkOutletNameUniqueness(nodes: TreeNode<ActivatedRouteSnapshot>[]): void {
-  const names: {[k: string]: ActivatedRouteSnapshot} = {};
+  const names: {[k: string]: ActivatedRouteSnapshot} = Object.create(null);
   nodes.forEach((n) => {
     const routeWithSameOutletName = names[n.value.outlet];
     if (routeWithSameOutletName) {
