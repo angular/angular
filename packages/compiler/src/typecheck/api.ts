@@ -253,11 +253,6 @@ export interface TypeCheckingConfig {
   alwaysCheckSchemaInTemplateBodies: boolean;
 
   /**
-   * Whether to check resolvable queries.
-   */
-  checkQueries: false;
-
-  /**
    * Whether to check if control flow syntax will prevent a node from being projected.
    */
   controlFlowPreventingContentProjection: 'error' | 'warning' | 'suppress';
