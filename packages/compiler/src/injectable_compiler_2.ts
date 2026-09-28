@@ -92,7 +92,10 @@ export function compileInjectable(
         delegateType: R3FactoryDelegateType.Function,
       });
     } else {
-      result = {statements: [], expression: o.arrowFn([], meta.useFactory.callFn([]))};
+      result = {
+        statements: [],
+        expression: o.arrowFn([], meta.useFactory.callFn([]), o.DYNAMIC_TYPE),
+      };
     }
   } else if (meta.useValue !== undefined) {
     // Note: it's safe to use `meta.useValue` instead of the `USE_VALUE in meta` check used for
@@ -181,5 +184,5 @@ export function delegateToFactory(
 
 function createFactoryFunction(type: o.Expression): o.ArrowFunctionExpr {
   const t = new o.FnParam('__ngFactoryType__', o.DYNAMIC_TYPE);
-  return o.arrowFn([t], type.prop('ɵfac').callFn([o.variable(t.name)]));
+  return o.arrowFn([t], type.prop('ɵfac').callFn([o.variable(t.name)]), o.DYNAMIC_TYPE);
 }

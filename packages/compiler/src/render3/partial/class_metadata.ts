@@ -78,6 +78,7 @@ export function compileComponentDeclareClassMetadata(
     o.arrowFn(
       dependencies.map((dep) => new o.FnParam(dep.symbolName, o.DYNAMIC_TYPE)),
       callbackReturnDefinitionMap.toLiteralMap(),
+      o.DYNAMIC_TYPE,
     ),
   );
 

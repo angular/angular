@@ -28,7 +28,7 @@ runInEachFileSystem(() => {
     @Component('metadata') class Target {}
     `);
       expect(res).toEqual(
-        `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null); })();`,
+        `((): any => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null); })();`,
       );
     });
 
@@ -39,7 +39,7 @@ runInEachFileSystem(() => {
     @core.Component('metadata') class Target {}
     `);
       expect(res).toEqual(
-        `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null); })();`,
+        `((): any => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null); })();`,
       );
     });
 
@@ -53,7 +53,7 @@ runInEachFileSystem(() => {
     }
     `);
       expect(res).toContain(
-        `() => [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: i0.Injector }], null);`,
+        `(): any => [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: i0.Injector }], null);`,
       );
     });
 

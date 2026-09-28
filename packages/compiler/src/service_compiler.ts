@@ -38,7 +38,7 @@ export function compileService(
           meta.type.value as o.WrappedNodeExpr<any>,
           resolveForwardRefs,
         )
-      : o.arrowFn([], meta.factory.callFn([])),
+      : o.arrowFn([], meta.factory.callFn([]), o.DYNAMIC_TYPE),
   );
 
   // Only generate providedIn property if it's different from the default.

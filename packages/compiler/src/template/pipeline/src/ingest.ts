@@ -1442,6 +1442,7 @@ function convertAst(
       o.arrowFn(
         ast.parameters.map((arg) => new o.FnParam(arg.name, o.DYNAMIC_TYPE)),
         convertAst(ast.body, job, baseSourceSpan),
+        o.DYNAMIC_TYPE,
       ),
     );
   } else {
