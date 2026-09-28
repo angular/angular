@@ -261,7 +261,7 @@ function emitView(view: ViewCompilationUnit): o.FunctionExpr {
   return o.fn(
     [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, o.DYNAMIC_TYPE)],
     [...createCond, ...updateCond],
-    /* type */ undefined,
+    /* type */ o.DYNAMIC_TYPE,
     /* sourceSpan */ undefined,
     view.fnName,
   );
@@ -321,7 +321,7 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
   return o.fn(
     [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, o.DYNAMIC_TYPE)],
     [...createCond, ...updateCond],
-    /* type */ undefined,
+    /* type */ o.DYNAMIC_TYPE,
     /* sourceSpan */ undefined,
     job.root.fnName,
   );

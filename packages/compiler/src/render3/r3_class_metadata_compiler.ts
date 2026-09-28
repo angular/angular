@@ -79,7 +79,7 @@ export interface R3ClassMetadata {
 
 export function compileClassMetadata(metadata: R3ClassMetadata): o.InvokeFunctionExpr {
   const fnCall = internalCompileClassMetadata(metadata);
-  return o.arrowFn([], [devOnlyGuardedExpression(fnCall).toStmt()]).callFn([]);
+  return o.arrowFn([], [devOnlyGuardedExpression(fnCall).toStmt()], o.DYNAMIC_TYPE).callFn([]);
 }
 
 /** Compiles only the `setClassMetadata` call without any additional wrappers. */
@@ -145,7 +145,7 @@ export function compileCtorParameters(
     return new o.LiteralMapExpr(entries);
   });
 
-  return o.arrowFn([], o.literalArr(params));
+  return o.arrowFn([], o.literalArr(params), o.DYNAMIC_TYPE);
 }
 
 /**
@@ -220,12 +220,18 @@ function internalCompileSetClassMetadataAsync(
 ): o.Expression {
   // Omit the wrapper since it'll be added around `setClassMetadataAsync` instead.
   const setClassMetadataCall = internalCompileClassMetadata(metadata);
-  const setClassMetaWrapper = o.arrowFn(wrapperParams, [setClassMetadataCall.toStmt()]);
+  const setClassMetaWrapper = o.arrowFn(
+    wrapperParams,
+    [setClassMetadataCall.toStmt()],
+    o.DYNAMIC_TYPE,
+  );
   const setClassMetaAsync = o
     .importExpr(R3.setClassMetadataAsync)
     .callFn([metadata.type, dependencyResolverFn, setClassMetaWrapper]);
 
-  return o.arrowFn([], [devOnlyGuardedExpression(setClassMetaAsync).toStmt()]).callFn([]);
+  return o
+    .arrowFn([], [devOnlyGuardedExpression(setClassMetaAsync).toStmt()], o.DYNAMIC_TYPE)
+    .callFn([]);
 }
 
 /**
@@ -242,6 +248,7 @@ export function compileComponentMetadataAsyncResolver(
       o.arrowFn(
         [new o.FnParam('m', o.DYNAMIC_TYPE)],
         o.variable('m').prop(isDefaultImport ? 'default' : symbolName),
+        o.DYNAMIC_TYPE,
       );
 
     // e.g. `import('./cmp-a').then(...)`
@@ -255,5 +262,5 @@ export function compileComponentMetadataAsyncResolver(
   });
 
   // e.g. `() => [ ... ];`
-  return o.arrowFn([], o.literalArr(dynamicImports));
+  return o.arrowFn([], o.literalArr(dynamicImports), o.DYNAMIC_TYPE);
 }
