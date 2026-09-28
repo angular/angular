@@ -844,6 +844,44 @@ describe('recognize', () => {
       }
     });
   });
+
+  describe('outlet name uniqueness', () => {
+    // The two `detail` matches merge into one node, so the duplicate is among its children.
+    it('rejects duplicates that appear only after empty path matches are merged', async () => {
+      await expectAsync(
+        recognize(
+          [
+            {
+              path: 'a',
+              children: [
+                {path: '', outlet: 'detail', children: [{path: ':id', component: ComponentA}]},
+              ],
+            },
+          ],
+          'a/(detail:1//x:/(detail:2))',
+        ),
+      ).toBeRejectedWithError(/Two segments cannot have the same outlet name: '1' and '2'/);
+    });
+
+    it('does not treat an outlet named after an Object member as a duplicate', async () => {
+      const s = await recognize(
+        [
+          {
+            path: 'a',
+            children: [
+              {path: 'b', outlet: 'constructor', component: ComponentB},
+              {path: 'c', component: ComponentC},
+            ],
+          },
+        ],
+        'a/(c//constructor:b)',
+      );
+      const children = s.root.firstChild!.children;
+      expect(children.length).toBe(2);
+      checkActivatedRoute(children[0], 'c', {}, ComponentC);
+      checkActivatedRoute(children[1], 'b', {}, ComponentB, 'constructor');
+    });
+  });
 });
 
 function collectSnapshots(
