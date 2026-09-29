@@ -76,54 +76,13 @@ export function readConfiguration(
   project: string,
   existingOptions?: api.CompilerOptions,
   host: ConfigurationHost = getFileSystem(),
+  extendedConfigCache = new Map<string, ts.ExtendedConfigCacheEntry>(),
 ): ParsedConfiguration {
   try {
     const fs = getFileSystem();
-
-    const readConfigFile = (configFile: string) =>
-      ts.readConfigFile(configFile, (file) => host.readFile(host.resolve(file)));
-    const readAngularCompilerOptions = (
-      configFile: string,
-      parentOptions: NgCompilerOptions = {},
-    ): NgCompilerOptions => {
-      const {config, error} = readConfigFile(configFile);
-
-      if (error) {
-        // Errors are handled later on by 'parseJsonConfigFileContent'
-        return parentOptions;
-      }
-
-      // Note: In Google, `angularCompilerOptions` are stored in `bazelOptions`.
-      // This function typically doesn't run for actual Angular compilations, but
-      // tooling like Tsurge, or schematics may leverage this helper, so we account
-      // for this here.
-      const angularCompilerOptions =
-        config.angularCompilerOptions ?? config.bazelOptions?.angularCompilerOptions;
-
-      // we are only interested into merging 'angularCompilerOptions' as
-      // other options like 'compilerOptions' are merged by TS
-      let existingNgCompilerOptions = {...angularCompilerOptions, ...parentOptions};
-      if (!config.extends) {
-        return existingNgCompilerOptions;
-      }
-
-      const extendsPaths: string[] =
-        typeof config.extends === 'string' ? [config.extends] : config.extends;
-
-      // Call readAngularCompilerOptions recursively to merge NG Compiler options
-      // Reverse the array so the overrides happen from right to left.
-      return [...extendsPaths].reverse().reduce((prevOptions, extendsPath) => {
-        const extendedConfigPath = getExtendedConfigPath(configFile, extendsPath, host, fs);
-
-        return extendedConfigPath === null
-          ? prevOptions
-          : readAngularCompilerOptions(extendedConfigPath, prevOptions);
-      }, existingNgCompilerOptions);
-    };
-
     const {projectFile, basePath} = calcProjectFileAndBasePath(project, host);
-    const configFileName = host.resolve(host.pwd(), projectFile);
-    const {config, error} = readConfigFile(projectFile);
+    const parseConfigHost = createParseConfigHost(host, fs);
+    const {config, error} = readConfigFile(projectFile, host, fs, extendedConfigCache);
 
     if (error) {
       return {
@@ -138,31 +97,45 @@ export function readConfiguration(
     const existingCompilerOptions: api.CompilerOptions = {
       genDir: basePath,
       basePath,
-      ...readAngularCompilerOptions(configFileName),
       ...existingOptions,
     };
 
-    const parseConfigHost = createParseConfigHost(host, fs);
     const {
       options,
       errors,
       fileNames: rootNames,
       projectReferences,
     } = ts.parseJsonConfigFileContent(
-      config,
-      parseConfigHost,
-      basePath,
-      existingCompilerOptions,
-      configFileName,
+      /* json */ config,
+      /* host */ parseConfigHost,
+      /* basePath */ basePath,
+      /* existingOptions */ existingCompilerOptions,
+      /* configFileName */ projectFile,
+      /* resolutionStack */ undefined,
+      /* extraFileExtensions */ undefined,
+      /* extendedConfigCache */ extendedConfigCache,
     );
 
+    const angularCompilerOptions = readAngularCompilerOptions(
+      projectFile,
+      config,
+      host,
+      fs,
+      parseConfigHost,
+      extendedConfigCache,
+    );
+
+    Object.assign(options, angularCompilerOptions, existingOptions);
+
     let emitFlags = api.EmitFlags.Default;
-    if (!(options['skipMetadataEmit'] || options['flatModuleOutFile'])) {
+    if (!options['skipMetadataEmit'] && !options['flatModuleOutFile']) {
       emitFlags |= api.EmitFlags.Metadata;
     }
+
     if (options['skipTemplateCodegen']) {
       emitFlags = emitFlags & ~api.EmitFlags.Codegen;
     }
+
     return {project: projectFile, rootNames, projectReferences, options, errors, emitFlags};
   } catch (e) {
     const errors: ts.Diagnostic[] = [
@@ -180,6 +153,113 @@ export function readConfiguration(
   }
 }
 
+function readConfigFile(
+  configFile: string,
+  host: ConfigurationHost,
+  fs: FileSystem,
+  extendedConfigCache?: Map<string, ts.ExtendedConfigCacheEntry>,
+): {config?: any; error?: ts.Diagnostic} {
+  const cacheKey = fs.isCaseSensitive() ? configFile : configFile.toLowerCase();
+  const cacheEntry = extendedConfigCache?.get(cacheKey);
+
+  if (cacheEntry) {
+    return {
+      config: cacheEntry.extendedConfig?.raw,
+      error: (cacheEntry.extendedResult as {parseDiagnostics?: ts.Diagnostic[]})
+        .parseDiagnostics?.[0],
+    };
+  }
+
+  return ts.readConfigFile(configFile, (file) => host.readFile(host.resolve(file)));
+}
+
+function readAngularCompilerOptions(
+  configFile: string,
+  config: any,
+  host: ConfigurationHost,
+  fs: FileSystem,
+  parseConfigHost: ts.ParseConfigHost,
+  extendedConfigCache: Map<string, ts.ExtendedConfigCacheEntry>,
+): NgCompilerOptions {
+  const cacheKey = fs.isCaseSensitive() ? configFile : configFile.toLowerCase();
+  const cacheEntry = extendedConfigCache.get(cacheKey);
+  const cachedExtendedConfig = cacheEntry?.extendedConfig as
+    | (ts.ExtendedConfigCacheEntry['extendedConfig'] & {
+        angularCompilerOptions?: NgCompilerOptions;
+      })
+    | undefined;
+
+  // If the merged angularCompilerOptions for this config are already cached, reuse them.
+  if (cachedExtendedConfig?.angularCompilerOptions) {
+    return cachedExtendedConfig.angularCompilerOptions;
+  }
+
+  // Note: In Google, `angularCompilerOptions` are stored in `bazelOptions`.
+  // This function typically doesn't run for actual Angular compilations, but
+  // tooling like Tsurge, or schematics may leverage this helper, so we account
+  // for this here.
+  const angularCompilerOptions =
+    config.angularCompilerOptions ?? config.bazelOptions?.angularCompilerOptions ?? {};
+
+  if (!config.extends) {
+    if (cachedExtendedConfig) {
+      cachedExtendedConfig.angularCompilerOptions = angularCompilerOptions;
+    }
+    return angularCompilerOptions;
+  }
+
+  const resolvedExtendedConfigPath = cachedExtendedConfig?.extendedConfigPath;
+
+  const extendsPaths: string[] = resolvedExtendedConfigPath
+    ? typeof resolvedExtendedConfigPath === 'string'
+      ? [resolvedExtendedConfigPath]
+      : resolvedExtendedConfigPath
+    : typeof config.extends === 'string'
+      ? [config.extends]
+      : Array.isArray(config.extends)
+        ? config.extends
+        : [];
+
+  // Recursively merge extended configurations from base to leaf (left-to-right).
+  const inheritedOptions = extendsPaths.reduce((prevOptions, extendsPath) => {
+    const extendedConfigPath = resolvedExtendedConfigPath
+      ? absoluteFrom(extendsPath)
+      : getExtendedConfigPath(configFile, extendsPath, host, fs, parseConfigHost);
+    if (extendedConfigPath === null) {
+      return prevOptions;
+    }
+
+    const {config: extendedConfig, error} = readConfigFile(
+      extendedConfigPath,
+      host,
+      fs,
+      extendedConfigCache,
+    );
+
+    if (error || !extendedConfig) {
+      return prevOptions;
+    }
+
+    const options = readAngularCompilerOptions(
+      extendedConfigPath,
+      extendedConfig,
+      host,
+      fs,
+      parseConfigHost,
+      extendedConfigCache,
+    );
+
+    return {...prevOptions, ...options};
+  }, {} as NgCompilerOptions);
+
+  const mergedOptions = {...inheritedOptions, ...angularCompilerOptions};
+  if (cachedExtendedConfig) {
+    cachedExtendedConfig.angularCompilerOptions = mergedOptions;
+  }
+
+  return mergedOptions;
+}
+
 function createParseConfigHost(host: ConfigurationHost, fs = getFileSystem()): ts.ParseConfigHost {
   return {
     fileExists: host.exists.bind(host),
@@ -194,41 +274,25 @@ function getExtendedConfigPath(
   extendsValue: string,
   host: ConfigurationHost,
   fs: FileSystem,
+  parseConfigHost: ts.ParseConfigHost,
 ): AbsoluteFsPath | null {
-  const result = getExtendedConfigPathWorker(configFile, extendsValue, host, fs);
-  if (result !== null) {
-    return result;
-  }
-
-  // Try to resolve the paths with a json extension append a json extension to the file in case if
-  // it is missing and the resolution failed. This is to replicate TypeScript behaviour, see:
-  // https://github.com/microsoft/TypeScript/blob/294a5a7d784a5a95a8048ee990400979a6bc3a1c/src/compiler/commandLineParser.ts#L2806
-  return getExtendedConfigPathWorker(configFile, `${extendsValue}.json`, host, fs);
-}
-
-function getExtendedConfigPathWorker(
-  configFile: string,
-  extendsValue: string,
-  host: ConfigurationHost,
-  fs: FileSystem,
-): AbsoluteFsPath | null {
-  if (extendsValue.startsWith('.') || fs.isRooted(extendsValue)) {
-    const extendedConfigPath = host.resolve(host.dirname(configFile), extendsValue);
-    if (host.exists(extendedConfigPath)) {
-      return extendedConfigPath;
-    }
-  } else {
-    const parseConfigHost = createParseConfigHost(host, fs);
-
-    // Path isn't a rooted or relative path, resolve like a module.
-    const {resolvedModule} = ts.nodeModuleNameResolver(
-      extendsValue,
-      configFile,
-      {moduleResolution: ts.ModuleResolutionKind.NodeNext, resolveJsonModule: true},
-      parseConfigHost,
-    );
-    if (resolvedModule) {
-      return absoluteFrom(resolvedModule.resolvedFileName);
+  for (const candidate of [extendsValue, `${extendsValue}.json`]) {
+    if (candidate[0] === '.' || fs.isRooted(candidate)) {
+      const extendedConfigPath = host.resolve(host.dirname(configFile), candidate);
+      if (host.exists(extendedConfigPath)) {
+        return extendedConfigPath;
+      }
+    } else {
+      // Path isn't a rooted or relative path, resolve like a module.
+      const {resolvedModule} = ts.nodeModuleNameResolver(
+        candidate,
+        configFile,
+        {moduleResolution: ts.ModuleResolutionKind.NodeNext, resolveJsonModule: true},
+        parseConfigHost,
+      );
+      if (resolvedModule) {
+        return absoluteFrom(resolvedModule.resolvedFileName);
+      }
     }
   }
 
