@@ -302,8 +302,11 @@ export function expandBoundAttributesForField(
     boundInputs.push(primaryInput);
   }
 
+  // Other directives on the same node may still require schema-bound constraint inputs.
+  const skipConstraintBindings =
+    customFormControlType !== null || isControlValueAccessorLike(directive);
   for (const name of formControlInputFields) {
-    if (customFormControlType !== null && CUSTOM_CONTROL_CONSTRAINT_INPUTS.has(name)) {
+    if (skipConstraintBindings && CUSTOM_CONTROL_CONSTRAINT_INPUTS.has(name)) {
       continue;
     }
     const input = getSyntheticFieldBoundInput(

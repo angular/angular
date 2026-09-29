@@ -647,7 +647,68 @@ runInEachFileSystem(() => {
       expect(extractMessage(diags[0])).toContain(`Setting the 'min' attribute is not allowed`);
     });
 
-    it('should retain schema constraint type checking for a CVA', () => {
+    it('should allow CVA-owned constraint inputs without explicit bindings', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, input, signal} from '@angular/core';
+          import {ControlValueAccessor} from '@angular/forms';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({selector: 'date-picker', template: ''})
+          class DatePicker implements ControlValueAccessor {
+            readonly min = input<Date | null>(null);
+            readonly maxLength = input<{days: number} | null>(null);
+            writeValue(value: unknown): void {}
+            registerOnChange(fn: (value: unknown) => void): void {}
+            registerOnTouched(fn: () => void): void {}
+          }
+
+          @Component({
+            imports: [FormField, DatePicker],
+            template: '<date-picker [formField]="field" />',
+          })
+          class TestCmp {
+            readonly field = form(signal(5));
+          }
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should check explicit CVA constraints against their input types', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, input, signal} from '@angular/core';
+          import {ControlValueAccessor} from '@angular/forms';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({selector: 'date-picker', template: ''})
+          class DatePicker implements ControlValueAccessor {
+            readonly min = input<Date | null>(null);
+            writeValue(value: unknown): void {}
+            registerOnChange(fn: (value: unknown) => void): void {}
+            registerOnTouched(fn: () => void): void {}
+          }
+
+          @Component({
+            imports: [FormField, DatePicker],
+            template: '<date-picker [formField]="field" [min]="5" />',
+          })
+          class TestCmp {
+            readonly field = form(signal(5));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(`Type 'number' is not assignable to type 'Date'`);
+    });
+
+    it('should allow CVA-owned constraint inputs on a native element', () => {
       env.write(
         'test.ts',
         `
@@ -657,7 +718,7 @@ runInEachFileSystem(() => {
 
           @Directive({selector: 'input[cva]'})
           class CustomCva implements ControlValueAccessor {
-            readonly min = input('');
+            readonly min = input<Date | null>(null);
             writeValue(value: unknown): void {}
             registerOnChange(fn: (value: unknown) => void): void {}
             registerOnTouched(fn: () => void): void {}
@@ -665,7 +726,7 @@ runInEachFileSystem(() => {
 
           @Component({
             imports: [FormField, CustomCva],
-            template: '<input cva [formField]="field" [min]="\\'control\\'" />',
+            template: '<input cva [formField]="field" />',
           })
           class TestCmp {
             readonly field = form(signal(5));
@@ -673,10 +734,7 @@ runInEachFileSystem(() => {
         `,
       );
 
-      const diags = env.driveDiagnostics();
-      expect(diags.some((diag) => extractMessage(diag).includes('is not assignable to type'))).toBe(
-        true,
-      );
+      expect(env.driveDiagnostics()).toEqual([]);
     });
 
     it('should continue to reject explicit native constraints', () => {
