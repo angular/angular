@@ -3184,7 +3184,7 @@ describe('type check blocks', () => {
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
-    it('should produce safe reads for the fields that are optional', () => {
+    it('should not add implicit constraint bindings to custom controls', () => {
       const block = tcb('<custom-control [formField]="f"/>', [
         FieldMock,
         {
@@ -3217,7 +3217,7 @@ describe('type check blocks', () => {
       expect(block).toContain(
         '_t1.value[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
       );
-      expect(block).toContain(
+      expect(block).not.toContain(
         '_t1.max[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = ((((((this).f)()).max))?.());',
       );
       expect(block).toContain('var _t2 = null! as i0.FormField;');

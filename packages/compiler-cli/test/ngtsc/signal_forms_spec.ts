@@ -505,7 +505,7 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should report unsupported property bindings on a field with a custom control', () => {
+    it('should allow explicitly bound constraints on a custom control', () => {
       env.write(
         'test.ts',
         `
@@ -528,10 +528,208 @@ runInEachFileSystem(() => {
         `,
       );
 
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should check explicitly bound constraints against the custom control inputs', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model, input} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({selector: 'custom-control', template: ''})
+          class CustomControl {
+            readonly value = model(0);
+            readonly min = input(0);
+          }
+
+          @Component({
+            imports: [FormField, CustomControl],
+            template: \`<custom-control [formField]="field" [min]="'wrong'" />\`,
+          })
+          class TestCmp {
+            readonly field = form(signal(1));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `Type 'string' is not assignable to type 'number'`,
+      );
+    });
+
+    it('should allow independently bound constraints on custom controls', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model, input} from '@angular/core';
+          import {FormField, form, FormValueControl} from '@angular/forms/signals';
+
+          @Component({selector: 'range-control', template: ''})
+          class RangeControl implements FormValueControl<readonly [number, number]> {
+            readonly value = model.required<readonly [number, number]>();
+            readonly min = input(0);
+            readonly max = input(100);
+            readonly minLength = input<{days: number} | null>(null);
+            readonly maxLength = input<number | undefined>(undefined);
+          }
+
+          @Component({
+            imports: [FormField, RangeControl],
+            template: '<range-control [formField]="field" [min]="0" [max]="100" [minLength]="{days: 3}"/>',
+          })
+          class TestCmp {
+            readonly field = form(signal<readonly [number, number]>([20, 80]));
+          }
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should allow component-owned constraint inputs without explicit bindings', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model, input} from '@angular/core';
+          import {FormField, form, FormValueControl} from '@angular/forms/signals';
+
+          @Component({selector: 'range-control', template: ''})
+          class RangeControl implements FormValueControl<readonly [number, number]> {
+            readonly value = model.required<readonly [number, number]>();
+            readonly min = input(0);
+            readonly max = input(100);
+            readonly minLength = input<{days: number} | null>(null);
+            readonly maxLength = input<number | undefined>(undefined);
+          }
+
+          @Component({
+            imports: [FormField, RangeControl],
+            template: '<range-control [formField]="field"/>',
+          })
+          class TestCmp {
+            readonly field = form(signal<readonly [number, number]>([20, 80]));
+          }
+        `,
+      );
+
+      expect(env.driveDiagnostics()).toEqual([]);
+    });
+
+    it('should reject a static native constraint on a custom control directive', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Directive, signal, model} from '@angular/core';
+          import {Component} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Directive({selector: 'input[custom-control]'})
+          class CustomControl {
+            readonly value = model(0);
+          }
+
+          @Component({
+            imports: [FormField, CustomControl],
+            template: '<input custom-control [formField]="field" min="0" />',
+          })
+          class TestCmp {
+            readonly field = form(signal(5));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(`Setting the 'min' attribute is not allowed`);
+    });
+
+    it('should retain schema constraint type checking for a CVA', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive, input, signal} from '@angular/core';
+          import {ControlValueAccessor} from '@angular/forms';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Directive({selector: 'input[cva]'})
+          class CustomCva implements ControlValueAccessor {
+            readonly min = input('');
+            writeValue(value: unknown): void {}
+            registerOnChange(fn: (value: unknown) => void): void {}
+            registerOnTouched(fn: () => void): void {}
+          }
+
+          @Component({
+            imports: [FormField, CustomCva],
+            template: '<input cva [formField]="field" [min]="\\'control\\'" />',
+          })
+          class TestCmp {
+            readonly field = form(signal(5));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.some((diag) => extractMessage(diag).includes('is not assignable to type'))).toBe(
+        true,
+      );
+    });
+
+    it('should continue to reject explicit native constraints', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            imports: [FormField],
+            template: '<input type="number" [formField]="field" [min]="0"/>',
+          })
+          class TestCmp {
+            readonly field = form(signal(5));
+          }
+        `,
+      );
+
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Binding to '[max]' is not allowed on nodes using the '[formField]' directive`,
+        `Binding to '[min]' is not allowed on nodes using the '[formField]' directive`,
+      );
+    });
+
+    it('should not treat an attribute binding as a custom control input', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, input, model, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({selector: 'custom-control', template: ''})
+          class CustomControl {
+            readonly value = model(0);
+            readonly min = input(0);
+          }
+
+          @Component({
+            imports: [FormField, CustomControl],
+            template: '<custom-control [formField]="field" [attr.min]="0"/>',
+          })
+          class TestCmp {
+            readonly field = form(signal(5));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Binding to '[attr.min]' is not allowed on nodes using the '[formField]' directive`,
       );
     });
 
