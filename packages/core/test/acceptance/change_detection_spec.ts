@@ -1507,6 +1507,33 @@ describe('change detection', () => {
           expect(error!.code).toEqual(RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED);
         });
 
+        it('does not throw expression changed with interval for a detached root view', async () => {
+          let error: RuntimeError | undefined = undefined;
+          TestBed.configureTestingModule({
+            providers: [
+              provideZonelessChangeDetection(),
+              provideCheckNoChangesConfig({interval: 5, exhaustive: true}),
+              {
+                provide: ErrorHandler,
+                useValue: {
+                  handleError(e: unknown) {
+                    error = e as RuntimeError;
+                  },
+                },
+              },
+            ],
+          });
+
+          const fixture = TestBed.createComponent(MyApp);
+          await fixture.whenStable();
+
+          fixture.changeDetectorRef.detach();
+          fixture.componentInstance.state = 'new';
+          await timeout(10);
+
+          expect(error).toBeUndefined();
+        });
+
         it('does not throw expression changed with interval if change detection is scheduled', async () => {
           let error: RuntimeError | undefined = undefined;
           TestBed.configureTestingModule({
