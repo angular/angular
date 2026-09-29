@@ -256,6 +256,12 @@ section {
   .uwu img {
     width: 50vw;
   }
+
+  .angie img {
+    height: clamp(260px, 60vh, 560px);
+    width: auto;
+    max-width: 90vw;
+  }
 }
 
 .features-section {
