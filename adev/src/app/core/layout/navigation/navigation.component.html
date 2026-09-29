@@ -83,7 +83,7 @@
       >
         <a aria-label="Angular homepage" routerLink="/">
           <!-- Logo Symbol -->
-          @if (!isUwu) {
+          @if (!isUwu && !isAngie) {
             <svg
               class="angular-logo"
               xmlns="http://www.w3.org/2000/svg"
@@ -133,11 +133,19 @@
                 </clipPath>
               </defs>
             </svg>
-          } @else {
+          } @else if (isUwu) {
             <img
               src="assets/images/uwu.png"
               style="width: auto; margin: 0"
               class="uwu-logo"
+              alt="Angular logo"
+              height="34"
+            />
+          } @else {
+            <img
+              src="assets/images/angie.svg"
+              style="width: auto; margin: 0"
+              class="angie-logo"
               alt="Angular logo"
               height="34"
             />
