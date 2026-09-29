@@ -241,5 +241,5 @@ export function noLeftoversInUrl(
   segments: UrlSegment[],
   outlet: string,
 ): boolean {
-  return segments.length === 0 && !segmentGroup.children[outlet];
+  return segments.length === 0 && !segmentGroup.hasChildren();
 }
