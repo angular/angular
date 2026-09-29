@@ -226,14 +226,18 @@ export class Recognizer {
       // appear first, followed by routes for other outlets, which might match if they have
       // an empty path.
       const sortedConfig = sortByMatchingOutlets(config, childOutlet);
-      const outletChildren = await this.processSegmentGroup(
+      const outletChild = await this.processSegment(
         injector,
         sortedConfig,
         child,
+        child.segments,
         childOutlet,
+        true,
         parentRoute,
       );
-      children.push(...outletChildren);
+      if (outletChild instanceof TreeNode) {
+        children.push(outletChild);
+      }
     }
 
     // Because we may have matched two outlets to the same empty path segment, we can have
@@ -302,7 +306,12 @@ export class Recognizer {
     // This should only match if the url is `/(x:b)`.
     if (
       getOutlet(route) !== outlet &&
-      (outlet === PRIMARY_OUTLET || !emptyPathMatch(rawSegment, segments, route))
+      (outlet === PRIMARY_OUTLET ||
+        !emptyPathMatch(rawSegment, segments, route) ||
+        // the route has no children to pierce into.
+        (!route.children?.length && !route.loadChildren) ||
+        // the URL segment group has no segments or children to pierce with.
+        (segments.length === 0 && !rawSegment.hasChildren()))
     ) {
       throw new NoMatch(rawSegment);
     }
@@ -453,7 +462,9 @@ export class Recognizer {
       outlet,
     );
 
-    if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
+    const matchedOnOutlet = getOutlet(route) === outlet;
+
+    if (matchedOnOutlet && slicedSegments.length === 0 && segmentGroup.hasChildren()) {
       const children = await this.processChildren(
         childInjector,
         childConfig,
@@ -463,11 +474,10 @@ export class Recognizer {
       return new TreeNode(snapshot, children);
     }
 
-    if (childConfig.length === 0 && slicedSegments.length === 0) {
+    if (matchedOnOutlet && childConfig.length === 0 && slicedSegments.length === 0) {
       return new TreeNode(snapshot, []);
     }
 
-    const matchedOnOutlet = getOutlet(route) === outlet;
     // If we matched a config due to empty path match on a different outlet, we need to
     // continue passing the current outlet for the segment rather than switch to PRIMARY.
     // Note that we switch to primary when we have a match because outlet configs look like
@@ -485,6 +495,9 @@ export class Recognizer {
       true,
       snapshot,
     );
+    if (!matchedOnOutlet && !(child instanceof TreeNode)) {
+      throw new NoMatch(rawSegment);
+    }
     return new TreeNode(snapshot, child instanceof TreeNode ? [child] : []);
   }
   private async getChildConfig(
