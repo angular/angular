@@ -42,4 +42,7 @@ Learn about how you can migrate your existing angular project to the latest feat
   <docs-card title="CommonModule to standalone imports" link="Migrate now" href="reference/migrations/common-to-standalone">
     Replace imports of the `CommonModule` with imports of the individual directives and pipes used in the templates when possible.
   </docs-card>
+  <docs-card title="Injectable to Service" link="Migrate now" href="reference/migrations/injectable-to-service">
+    Convert eligible `@Injectable` classes to the `@Service` decorator.
+  </docs-card>
 </docs-card-container>
