@@ -126,14 +126,13 @@ export function split(
   consumedSegments: UrlSegment[],
   slicedSegments: UrlSegment[],
   config: Route[],
-  outlet?: string,
 ): {
   segmentGroup: UrlSegmentGroup;
   slicedSegments: UrlSegment[];
 } {
   if (
     slicedSegments.length > 0 &&
-    containsEmptyPathMatchesWithNamedOutlets(segmentGroup, slicedSegments, config, outlet)
+    containsEmptyPathMatchesWithNamedOutlets(segmentGroup, slicedSegments, config)
   ) {
     const s = new UrlSegmentGroup(
       consumedSegments,
@@ -196,24 +195,10 @@ function containsEmptyPathMatchesWithNamedOutlets(
   segmentGroup: UrlSegmentGroup,
   slicedSegments: UrlSegment[],
   routes: Route[],
-  outlet?: string,
 ): boolean {
-  return routes.some((r) => {
-    // 1. Can this route match as an empty path?
-    const matchesEmpty = emptyPathMatch(segmentGroup, slicedSegments, r);
-    if (!matchesEmpty) return false;
-
-    // 2. Is this a named outlet? (We only pull in empty paths if they are named outlets).
-    const isNamedOutlet = getOutlet(r) !== PRIMARY_OUTLET;
-    if (!isNamedOutlet) return false;
-
-    // 3. Are we already processing this outlet? If so, we ignore it as a pull-in
-    // candidate. For example, if we are evaluating the 'secondary' outlet, we shouldn't
-    // "pull in" an empty 'secondary' group.  We should let standard
-    // segment matching handle it (which looks at the actual characters in the URL).
-    const isSelfEvaluating = outlet !== undefined && getOutlet(r) === outlet;
-    return !isSelfEvaluating;
-  });
+  return routes.some(
+    (r) => emptyPathMatch(segmentGroup, slicedSegments, r) && getOutlet(r) !== PRIMARY_OUTLET,
+  );
 }
 
 function containsEmptyPathMatches(
