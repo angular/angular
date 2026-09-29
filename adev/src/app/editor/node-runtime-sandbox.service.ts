@@ -108,6 +108,9 @@ export class NodeRuntimeSandbox {
       }
 
       await this.startInteractiveTerminal(webContainer);
+      if (this.nodeRuntimeState.error()) {
+        return;
+      }
       this.terminalHandler.clearTerminals();
 
       const startDevServer = this.embeddedTutorialManager.type() !== TutorialType.CLI;
@@ -365,6 +368,12 @@ export class NodeRuntimeSandbox {
   }
 
   private setLoading(loading: LoadingStep) {
+    if (
+      this.nodeRuntimeState.error() ||
+      this.nodeRuntimeState.loadingStep() === LoadingStep.ERROR
+    ) {
+      return;
+    }
     this.nodeRuntimeState.setLoadingStep(loading);
   }
 
@@ -412,7 +421,10 @@ export class NodeRuntimeSandbox {
   }
 
   private setErrorState(message: string | undefined, type?: ErrorType) {
-    if (this.nodeRuntimeState.loadingStep() === LoadingStep.ERROR) {
+    if (
+      this.nodeRuntimeState.error() ||
+      this.nodeRuntimeState.loadingStep() === LoadingStep.ERROR
+    ) {
       return;
     }
 
