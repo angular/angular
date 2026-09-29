@@ -81,8 +81,8 @@ describe('NodeRuntimeSandbox', () => {
 
     const fakeSpawnProcess = new FakeWebContainerProcess();
     fakeSpawnProcess.output = {
-      pipeTo: (data: WritableStream) => {
-        data.getWriter().write(OUT_OF_MEMORY_MSG);
+      pipeTo: async (data: WritableStream) => {
+        await data.getWriter().write(OUT_OF_MEMORY_MSG);
       },
       pipeThrough: () => fakeSpawnProcess.output,
     } as any;
