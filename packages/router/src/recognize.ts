@@ -223,12 +223,22 @@ export class Recognizer {
         // appear first, followed by routes for other outlets, which might match if they have
         // an empty path.
         const sortedConfig = sortByMatchingOutlets(config, childOutlet);
-        return this.processSegmentGroup(injector, sortedConfig, child, childOutlet, parentRoute);
+        return this.processSegment(
+          injector,
+          sortedConfig,
+          child,
+          child.segments,
+          childOutlet,
+          true,
+          parentRoute,
+        );
       }),
-      scan((children, outletChildren) => {
-        children.push(...outletChildren);
+      scan((children, outletChild) => {
+        if (outletChild instanceof TreeNode) {
+          children.push(outletChild);
+        }
         return children;
-      }),
+      }, [] as TreeNode<ActivatedRouteSnapshot>[]),
       defaultIfEmpty(null as TreeNode<ActivatedRouteSnapshot>[] | null),
       last(),
       mergeMap((children) => {
@@ -308,7 +318,12 @@ export class Recognizer {
     // This should only match if the url is `/(x:b)`.
     if (
       getOutlet(route) !== outlet &&
-      (outlet === PRIMARY_OUTLET || !emptyPathMatch(rawSegment, segments, route))
+      (outlet === PRIMARY_OUTLET ||
+        !emptyPathMatch(rawSegment, segments, route) ||
+        // the route has no children to pierce into.
+        (!route.children?.length && !route.loadChildren) ||
+        // the URL segment group has no segments or children to pierce with.
+        (segments.length === 0 && !rawSegment.hasChildren()))
     ) {
       return noMatch(rawSegment);
     }
@@ -457,7 +472,9 @@ export class Recognizer {
               childConfig,
             );
 
-            if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
+            const matchedOnOutlet = getOutlet(route) === outlet;
+
+            if (matchedOnOutlet && slicedSegments.length === 0 && segmentGroup.hasChildren()) {
               return this.processChildren(childInjector, childConfig, segmentGroup, snapshot).pipe(
                 map((children) => {
                   return new TreeNode(snapshot, children);
@@ -465,11 +482,10 @@ export class Recognizer {
               );
             }
 
-            if (childConfig.length === 0 && slicedSegments.length === 0) {
+            if (matchedOnOutlet && childConfig.length === 0 && slicedSegments.length === 0) {
               return of(new TreeNode(snapshot, []));
             }
 
-            const matchedOnOutlet = getOutlet(route) === outlet;
             // If we matched a config due to empty path match on a different outlet, we need to
             // continue passing the current outlet for the segment rather than switch to PRIMARY.
             // Note that we switch to primary when we have a match because outlet configs look like
@@ -487,8 +503,11 @@ export class Recognizer {
               true,
               snapshot,
             ).pipe(
-              map((child) => {
-                return new TreeNode(snapshot, child instanceof TreeNode ? [child] : []);
+              switchMap((child) => {
+                if (!matchedOnOutlet && !(child instanceof TreeNode)) {
+                  return noMatch(rawSegment);
+                }
+                return of(new TreeNode(snapshot, child instanceof TreeNode ? [child] : []));
               }),
             );
           }),
