@@ -9,6 +9,8 @@ Run the schematic using the following command:
 ng generate @angular/core:ngstyle-to-style
 ```
 
+An object with a single key becomes a binding to that one style property.
+
 #### Before
 
 ```html
@@ -18,7 +20,21 @@ ng generate @angular/core:ngstyle-to-style
 #### After
 
 ```html
-<div [style]="{'background-color': 'red'}"></div>
+<div [style.background-color]="'red'"></div>
+```
+
+An object with more than one key becomes a single `[style]` binding.
+
+#### Before {#multiple-keys-before}
+
+```html
+<div [ngStyle]="{'color': 'blue', 'font-weight': 'bold'}"></div>
+```
+
+#### After {#multiple-keys-after}
+
+```html
+<div [style]="{'color': 'blue', 'font-weight': 'bold'}"></div>
 ```
 
 ## Configuration options
