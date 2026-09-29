@@ -365,6 +365,7 @@ export class NodeRuntimeSandbox {
   }
 
   private setLoading(loading: LoadingStep) {
+    if (this.nodeRuntimeState.loadingStep() === LoadingStep.ERROR) return;
     this.nodeRuntimeState.setLoadingStep(loading);
   }
 
