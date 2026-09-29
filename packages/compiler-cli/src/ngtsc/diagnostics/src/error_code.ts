@@ -378,7 +378,7 @@ export enum ErrorCode {
    * </comp>
    * ```
    */
-  CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 8011,
+  CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = -8011,
 
   /**
    * A pipe imported via `@Component.deferredImports` is
