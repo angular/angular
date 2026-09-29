@@ -58,6 +58,22 @@ To use the MCP server, you configure your host environment (IDE or CLI) to run `
     ```
 
   </docs-tab>
+
+  <docs-tab label="Zed">
+    Create `.zed/settings.json`:
+
+    ```json
+    {
+      "context_servers": {
+        "angular-cli": {
+          "command": "npx",
+          "args": ["-y", "@angular/cli", "mcp"]
+        }
+      }
+    }
+    ```
+
+  </docs-tab>
 </docs-tab-group>
 
 ## Available Tools (Default)
