@@ -5690,6 +5690,90 @@ describe('field directive', () => {
       expect(Number.isNaN((field().value() as Date).getTime())).toBe(true);
     });
 
+    // A string the input can't parse as a date is rejected outright, so the DOM value stays empty
+    // while the model still holds the original string. Comparing the two as values reports a change
+    // on every sync and dirties the field on load. See #69632.
+    it('should not be dirty when the initial validity animation fires on an unparseable string model', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="date" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal('invalid-date'));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const field = fix.componentInstance.f;
+
+      // The browser refuses a value it can't parse as a date, leaving the input empty.
+      expect(input.value).toBe('');
+      expect(field().dirty()).toBe(false);
+
+      act(() => {
+        input.dispatchEvent(
+          new AnimationEvent('animationstart', {animationName: 'ng-invalid', bubbles: true}),
+        );
+      });
+
+      expect(field().dirty()).toBe(false);
+      // The model keeps the value the app supplied; the sync must not silently empty it.
+      expect(field().value()).toBe('invalid-date');
+    });
+
+    // A `Date` can hold more precision than any of these inputs keeps: `date` drops the time,
+    // `month` the day, `time` the date, and `week` snaps to the start of the week. The value read
+    // back therefore differs from the model through no action of the user. See #69632.
+    it('should not be dirty when the initial validity animation fires on a Date the input truncates', () => {
+      @Component({
+        imports: [FormField],
+        template: `
+          <input type="date" [formField]="f.date" />
+          <input type="month" [formField]="f.month" />
+          <input type="time" [formField]="f.time" />
+          <input type="week" [formField]="f.week" />
+        `,
+      })
+      class TestCmp {
+        f = form(
+          signal<{date: Date | null; month: Date | null; time: Date | null; week: Date | null}>({
+            date: new Date('2024-03-15T12:34:56.000Z'),
+            month: new Date('2024-03-15T12:34:56.000Z'),
+            time: new Date('2024-03-15T12:34:56.000Z'),
+            week: new Date('2024-03-15T12:34:56.000Z'),
+          }),
+        );
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const cmp = fix.componentInstance as TestCmp;
+      const inputs = Array.from(
+        (fix.nativeElement as HTMLElement).querySelectorAll('input'),
+      ) as HTMLInputElement[];
+      const fields = [cmp.f.date, cmp.f.month, cmp.f.time, cmp.f.week];
+
+      expect(inputs.map((i) => i.getAttribute('type'))).toEqual(['date', 'month', 'time', 'week']);
+      expect(fields.map((field) => field().dirty())).toEqual([false, false, false, false]);
+
+      act(() => {
+        for (const input of inputs) {
+          input.dispatchEvent(
+            new AnimationEvent('animationstart', {animationName: 'ng-invalid', bubbles: true}),
+          );
+        }
+      });
+
+      expect(fields.map((field) => field().dirty())).toEqual([false, false, false, false]);
+      // Each model keeps its full instant rather than the truncated value the input displays.
+      const instant = new Date('2024-03-15T12:34:56.000Z').getTime();
+      expect(fields.map((field) => (field().value() as Date).getTime())).toEqual([
+        instant,
+        instant,
+        instant,
+        instant,
+      ]);
+    });
+
     // The initial `:valid` / `:invalid` animation fires for every input type we track validity on,
     // not just `date`, so none of them may dirty their field on load. See #69632.
     //

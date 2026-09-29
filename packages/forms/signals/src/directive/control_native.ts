@@ -32,32 +32,6 @@ import {
 } from './native';
 import {observeSelectMutations} from './select';
 
-/**
- * Normalizes a control value for comparison, collapsing an invalid `Date` to `null`.
- *
- * A `Date` with a `NaN` timestamp has no representation a date-like input can hold: assigning it to
- * `valueAsDate` empties the input, which then reads back as `null`. Treating the two as the same
- * value keeps that round-trip from looking like an edit.
- */
-function normalizeControlValue(value: unknown): unknown {
-  return value instanceof Date && Number.isNaN(value.getTime()) ? null : value;
-}
-
-/**
- * Compares two control values, treating `Date`s for the same instant as equal.
- *
- * Date-like inputs are read through `valueAsDate`, which returns a fresh `Date` on every access, so
- * identity comparison alone would report a change even when the input was never touched.
- */
-function controlValuesEqual(a: unknown, b: unknown): boolean {
-  const normalizedA = normalizeControlValue(a);
-  const normalizedB = normalizeControlValue(b);
-  if (normalizedA instanceof Date && normalizedB instanceof Date) {
-    return normalizedA.getTime() === normalizedB.getTime();
-  }
-  return Object.is(normalizedA, normalizedB);
-}
-
 export function nativeControlCreate(
   host: ControlDirectiveHost,
   parent: FormField<unknown>,
@@ -67,40 +41,42 @@ export function nativeControlCreate(
   validityMonitor: InputValidityMonitor,
 ): () => void {
   let updateMode = false;
-  // While true, a write that leaves the value untouched must not dirty the field.
-  //
-  // A native validity change isn't necessarily a user edit: the browser runs the `:valid` /
-  // `:invalid` animation as soon as the input is rendered, which would otherwise dirty every
-  // date-like field on load (#69632). Syncs that clear a parse error are exempt, because a parse
-  // error can only exist in response to the user typing something the input couldn't parse.
-  let dirtyOnlyIfValueChanged = false;
   const input = parent.nativeFormElement;
+  // The input's value as the DOM itself holds it, recorded after each write we make.
+  //
+  // Comparing model values can't tell a user edit from the browser reshaping what we wrote: an
+  // unparseable string or a `Date` the input can't represent is rejected and leaves the value
+  // empty, and a `Date` carrying more precision than the input keeps is truncated. In each case the
+  // value read back differs from the model through no action of the user, which would dirty every
+  // date-like field on load (#69632). The DOM's own string is the one representation both sides
+  // agree on.
+  let lastWrittenDomValue = input.value;
 
   // TODO: (perf) ok to always create this?
   const parser = createParser(
     // Read from the model value
     () => parent.state().value(),
     // Write to the buffered "control value"
-    (rawValue: unknown) => {
-      const state = parent.state();
-      if (dirtyOnlyIfValueChanged && controlValuesEqual(untracked(state.controlValue), rawValue)) {
-        return;
-      }
-      // Outside of `dirtyOnlyIfValueChanged` we intentionally write even when the value is
-      // unchanged, so that re-entering the same value still dirties the field.
-      state.controlValue.set(rawValue);
-    },
+    (rawValue: unknown) => parent.state().controlValue.set(rawValue),
     // Our parse function doesn't care about the raw value that gets passed in,
     // It just reads the newly parsed value directly off the input element.
     (_rawValue: unknown) => getNativeControlValue(input, parent.state().value, validityMonitor),
   );
 
   parseErrorsSource.set(parser.errors);
+  // Writes to the DOM and records what the DOM ended up holding, which is not necessarily what we
+  // asked for: the browser rejects values it can't parse and truncates ones carrying more precision
+  // than the input type keeps.
+  const writeNativeControlValue = (value: unknown) => {
+    setNativeControlValue(input, value);
+    lastWrittenDomValue = input.value;
+  };
+
   parent.onReset = () => {
     parser.reset();
     const value = parent.state().value();
     bindings['controlValue'] = value;
-    setNativeControlValue(input, value);
+    writeNativeControlValue(value);
   };
   // Pass undefined as the raw value since the parse function doesn't care about it.
   host.listenToDom('input', () => {
@@ -115,14 +91,21 @@ export function nativeControlCreate(
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
     validityMonitor.watchValidity(parent.destroyRef, input, () => {
-      // Resolving a parse error is always a user edit, so let those syncs dirty the field even
-      // when the parsed value is unchanged.
-      dirtyOnlyIfValueChanged = untracked(parser.errors).length === 0;
-      try {
-        parser.setRawValue(undefined);
-      } finally {
-        dirtyOnlyIfValueChanged = false;
+      // The browser runs the `:valid` / `:invalid` animation as soon as the input renders, which is
+      // not a user edit. If the DOM still holds exactly what we last wrote then nothing changed and
+      // there is nothing to sync.
+      //
+      // Two states are exempt, because in both the user did edit the input while its `value` stayed
+      // empty: entering text the input can't convert (`badInput`, which reports an empty `value`),
+      // and clearing that text again, which resolves the parse error the previous sync recorded.
+      if (
+        untracked(parser.errors).length === 0 &&
+        !validityMonitor.isBadInput(input) &&
+        input.value === lastWrittenDomValue
+      ) {
+        return;
       }
+      parser.setRawValue(undefined);
     });
   }
 
@@ -179,7 +162,7 @@ export function nativeControlCreate(
       input.type === 'radio' && bindingUpdated(bindings, 'radioValue', input.value);
 
     if (controlValueChanged || radioValueChanged) {
-      setNativeControlValue(input, controlValue);
+      writeNativeControlValue(controlValue);
     }
 
     updateMode = true;
