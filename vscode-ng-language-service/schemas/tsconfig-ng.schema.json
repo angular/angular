@@ -158,7 +158,7 @@
         },
         "i18nUseExternalIds": {
           "type": "boolean",
-          "description": "Whether translation variable name should contain external message id."
+          "description": "Whether a translation variable name should contain an external message id."
         },
         "onlyExplicitDeferDependencyImports": {
           "type": "boolean",
@@ -224,6 +224,16 @@
         "strictTemplates": {
           "type": "boolean",
           "description": "If 'true', implies all template strictness flags."
+        },
+        "strictUnclaimedEventNames": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to report event bindings whose name matches neither an output of a directive applied to the element nor a known native DOM event, which usually indicates a misspelled output name. Not implied by 'strictTemplates'."
+        },
+        "strictUnknownElements": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to validate unknown element tags even when matched by attribute directives."
         },
         "typeCheckHostBindings": {
           "type": "boolean",
