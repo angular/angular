@@ -266,7 +266,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    * `ts.Program` changes, the `TemplateTypeCheckerImpl` as a whole is destroyed and replaced.
    */
   private symbolBuilderCache = new Map<ts.ClassDeclaration, SymbolBuilder>();
-  private typeCheckDataCache = new Map<ts.ClassDeclaration, TypeCheckData | null>();
 
   /**
    * Stores directives and pipes that are in scope for each component.
@@ -448,72 +447,42 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getTemplate(component: ts.ClassDeclaration, optimizeFor?: OptimizeFor): TmplAstNode[] | null {
-    return this.getTypeCheckData(component, optimizeFor)?.template ?? null;
+    const {data} = this.getLatestComponentState(component, optimizeFor);
+    return data?.template ?? null;
   }
 
   getHostElement(
     directive: ts.ClassDeclaration,
     optimizeFor?: OptimizeFor,
   ): TmplAstHostElement | null {
-    return this.getTypeCheckData(directive, optimizeFor)?.hostElement ?? null;
+    const {data} = this.getLatestComponentState(directive, optimizeFor);
+    return data?.hostElement ?? null;
   }
 
   getDirectivesOfNode(
     component: ts.ClassDeclaration,
     node: TmplAstElement | TmplAstTemplate,
   ): TypeCheckableDirectiveMeta[] | null {
-    return this.getTypeCheckData(component)?.boundTarget.getDirectivesOfNode(node) ?? null;
+    return (
+      this.getLatestComponentState(component).data?.boundTarget.getDirectivesOfNode(node) ?? null
+    );
   }
 
   getForeignComponent(
     component: ts.ClassDeclaration,
     element: TmplAstElement,
   ): ForeignComponentMeta | null {
-    return this.getTypeCheckData(component)?.boundTarget.getForeignComponent(element) ?? null;
+    return (
+      this.getLatestComponentState(component).data?.boundTarget.getForeignComponent(element) ?? null
+    );
   }
 
   getUsedDirectives(component: ts.ClassDeclaration): TypeCheckableDirectiveMeta[] | null {
-    return this.getTypeCheckData(component)?.boundTarget.getUsedDirectives() ?? null;
+    return this.getLatestComponentState(component).data?.boundTarget.getUsedDirectives() ?? null;
   }
 
   getUsedPipes(component: ts.ClassDeclaration): string[] | null {
-    return this.getTypeCheckData(component)?.boundTarget.getUsedPipes() ?? null;
-  }
-
-  private getTypeCheckData(
-    clazz: ts.ClassDeclaration,
-    optimizeFor: OptimizeFor = OptimizeFor.SingleFile,
-  ): TypeCheckData | null {
-    if (this.typeCheckDataCache.has(clazz)) {
-      return this.typeCheckDataCache.get(clazz)!;
-    }
-
-    switch (optimizeFor) {
-      case OptimizeFor.WholeProgram:
-        this.ensureAllShimsForAllFiles();
-        break;
-      case OptimizeFor.SingleFile:
-        this.ensureShimForComponent(clazz);
-        break;
-    }
-
-    const sf = clazz.getSourceFile();
-    const sfPath = absoluteFromSourceFile(sf);
-    const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
-    const fileRecord = this.getFileData(sfPath);
-
-    if (!fileRecord.shimData.has(shimPath)) {
-      this.typeCheckDataCache.set(clazz, null);
-      return null;
-    }
-
-    const id = fileRecord.sourceManager.getTypeCheckId(clazz);
-    const shimRecord = fileRecord.shimData.get(shimPath)!;
-    const data = shimRecord.data.get(id) ?? null;
-
-    this.typeCheckDataCache.set(clazz, data);
-
-    return data;
+    return this.getLatestComponentState(component).data?.boundTarget.getUsedPipes() ?? null;
   }
 
   private getLatestComponentState(
@@ -525,7 +494,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     tcbPath: AbsoluteFsPath;
     tcbIsShim: boolean;
   } {
-    const data = this.getTypeCheckData(component, optimizeFor);
+    switch (optimizeFor) {
+      case OptimizeFor.WholeProgram:
+        this.ensureAllShimsForAllFiles();
+        break;
+      case OptimizeFor.SingleFile:
+        this.ensureShimForComponent(component);
+        break;
+    }
 
     const sf = component.getSourceFile();
     const sfPath = absoluteFromSourceFile(sf);
@@ -538,6 +514,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     const id = fileRecord.sourceManager.getTypeCheckId(component);
+    const shimRecord = fileRecord.shimData.get(shimPath)!;
 
     const program = this.programDriver.getProgram();
     const shimSf = getSourceFileOrNull(program, shimPath);
@@ -557,6 +534,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       if (tcb !== null) {
         tcbPath = sfPath;
       }
+    }
+
+    let data: TypeCheckData | null = null;
+    if (shimRecord.data.has(id)) {
+      data = shimRecord.data.get(id)!;
     }
 
     return {data, tcb, tcbPath, tcbIsShim: tcbPath === shimPath};
@@ -893,7 +875,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   invalidateClass(clazz: ts.ClassDeclaration): void {
     this.completionCache.delete(clazz);
     this.symbolBuilderCache.delete(clazz);
-    this.typeCheckDataCache.delete(clazz);
     this.scopeCache.delete(clazz);
     this.elementTagCache.delete(clazz);
 
@@ -910,7 +891,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   getExpressionTarget(expression: AST, clazz: ts.ClassDeclaration): TemplateEntity | null {
-    return this.getTypeCheckData(clazz)?.boundTarget.getExpressionTarget(expression) ?? null;
+    return (
+      this.getLatestComponentState(clazz).data?.boundTarget.getExpressionTarget(expression) ?? null
+    );
   }
 
   makeTemplateDiagnostic<T extends ErrorCode>(
@@ -1089,8 +1072,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    * they won't overwrite or corrupt existing inlines that are used by such shims.
    */
   clearAllShimDataUsingInlines(): void {
-    this.typeCheckDataCache.clear();
-
     for (const fileData of this.state.values()) {
       if (!fileData.hasInlines) {
         continue;
