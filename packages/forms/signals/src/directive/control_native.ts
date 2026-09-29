@@ -32,6 +32,8 @@ import {
 } from './native';
 import {observeSelectMutations} from './select';
 
+const INCOMPLETE_EXPONENT_REGEXP = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)[eE][+-]?$/;
+
 export function nativeControlCreate(
   host: ControlDirectiveHost,
   parent: FormField<unknown>,
@@ -171,7 +173,7 @@ function isIntermediate(inputValue: string, controlValue: unknown): boolean {
   if (inputValue === '-' || inputValue === '.' || inputValue === '-.') return true;
   if (inputValue.endsWith('.')) return true;
   // An exponent marker and optional sign are unfinished until an exponent digit is entered.
-  if (/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)[eE][+-]?$/.test(inputValue)) return true;
+  if (INCOMPLETE_EXPONENT_REGEXP.test(inputValue)) return true;
   if (typeof controlValue === 'number' && !Number.isNaN(controlValue)) {
     const parsed = parseDecimalNumber(inputValue);
     if (parsed === controlValue && inputValue !== String(controlValue)) {
