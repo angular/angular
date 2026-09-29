@@ -54,15 +54,16 @@
 
 ## Compiler errors
 
-| Code     | Name                                                       |
-| :------- | :--------------------------------------------------------- |
-| `NG1001` | [Argument Not Literal](errors/NG1001)                      |
-| `NG2003` | [Missing Token](errors/NG2003)                             |
-| `NG2009` | [Invalid Shadow DOM selector](errors/NG2009)               |
-| `NG3003` | [Import Cycle Detected](errors/NG3003)                     |
-| `NG6100` | [NgModule.id Set to module.id anti-pattern](errors/NG6100) |
-| `NG8001` | [Invalid Element](errors/NG8001)                           |
-| `NG8002` | [Invalid Attribute](errors/NG8002)                         |
-| `NG8003` | [Missing Reference Target](errors/NG8003)                  |
-| `NG8023` | [Multiple Components Match Same Element](errors/NG8023)    |
-| `NG8024` | [Conflicting Host Directive Binding](errors/NG8024)        |
+| Code     | Name                                                        |
+| :------- | :---------------------------------------------------------- |
+| `NG1001` | [Argument Not Literal](errors/NG1001)                       |
+| `NG2003` | [Missing Token](errors/NG2003)                              |
+| `NG2009` | [Invalid Shadow DOM selector](errors/NG2009)                |
+| `NG3003` | [Import Cycle Detected](errors/NG3003)                      |
+| `NG6100` | [NgModule.id Set to module.id anti-pattern](errors/NG6100)  |
+| `NG8001` | [Invalid Element](errors/NG8001)                            |
+| `NG8002` | [Invalid Attribute](errors/NG8002)                          |
+| `NG8003` | [Missing Reference Target](errors/NG8003)                   |
+| `NG8011` | [Control Flow Preventing Content Projection](errors/NG8011) |
+| `NG8023` | [Multiple Components Match Same Element](errors/NG8023)     |
+| `NG8024` | [Conflicting Host Directive Binding](errors/NG8024)         |
