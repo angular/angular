@@ -658,7 +658,7 @@ describe('text input with numeric model', () => {
     expect(input.value).toBe('-0.5');
   });
 
-  for (const incompleteValue of ['1e', '1e-', '1e+', '-1.5E+']) {
+  for (const incompleteValue of ['+', '1e', '1e-', '1e+', '-1.5E+']) {
     it(`should defer an external model update while editing ${incompleteValue}`, async () => {
       @Component({
         imports: [FormField],

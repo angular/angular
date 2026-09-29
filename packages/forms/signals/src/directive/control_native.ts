@@ -151,7 +151,7 @@ export function nativeControlCreate(
       // Chromium hides incomplete numbers (e.g. `-` or `1e`) behind an empty value and badInput,
       // so isIntermediate cannot detect them.
       const isBadInput = isFocused && isInput(input) && validityMonitor.isBadInput(input);
-      if (!(isFocused && (isIntermediate(input.value, controlValue) || isBadInput))) {
+      if (!(isFocused && (isBadInput || isIntermediate(input.value, controlValue)))) {
         setNativeControlValue(input, controlValue);
         hasPendingValueWrite = false;
       } else if (controlValue !== lastEditedValue) {
@@ -170,7 +170,8 @@ function isIntermediate(inputValue: string, controlValue: unknown): boolean {
   // model can legitimately hold text that happens to end in "." (e.g. "draft."), so restrict
   // them to non-string models to avoid blocking external string updates while focused.
   if (typeof controlValue === 'string') return false;
-  if (inputValue === '-' || inputValue === '.' || inputValue === '-.') return true;
+  if (inputValue === '+' || inputValue === '-' || inputValue === '.' || inputValue === '-.')
+    return true;
   if (inputValue.endsWith('.')) return true;
   // An exponent marker and optional sign are unfinished until an exponent digit is entered.
   if (INCOMPLETE_EXPONENT_REGEXP.test(inputValue)) return true;
