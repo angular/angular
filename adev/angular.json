@@ -26,14 +26,7 @@
             "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              "src/favicon.ico",
-              "src/robots.txt",
-              "src/llms.txt",
-              "src/assets",
-              "src/assets/images/v21-event",
-              "src/assets/images/v22-event"
-            ],
+            "assets": ["src/favicon.ico", "src/robots.txt", "src/llms.txt", "src/assets"],
             "styles": ["@angular/docs/styles/global-styles.scss", "./src/local-styles.scss"],
             "scripts": [],
             "webWorkerTsConfig": "tsconfig.worker.json",
