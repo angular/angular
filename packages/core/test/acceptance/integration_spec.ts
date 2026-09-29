@@ -3066,6 +3066,46 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toEqual('1.03 | 0.97');
   });
 
+  it('should preserve parentheses around expressions used as receivers', async () => {
+    @Component({
+      template: `
+        <span
+          [attr.not]="(!!value()?.required).toString()"
+          [attr.typeof]="(typeof value()).length"
+          [attr.pow]="(!value()) ** 2"
+          [attr.num]="(1).toString()"
+          [attr.negative]="(-1).toFixed(1)"
+          [attr.conditional]="(value() ? 1 : 2).toFixed(1)"
+          [attr.binary]="(1 + 2).toFixed(1)"
+        ></span>
+      `,
+    })
+    class TestComponent {
+      value = signal<{required: boolean} | null>(null);
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.autoDetectChanges();
+    await fixture.whenStable();
+    const span: HTMLElement = fixture.nativeElement.querySelector('span');
+
+    expect(span.getAttribute('not')).toBe('false');
+    expect(span.getAttribute('typeof')).toBe('6');
+    expect(span.getAttribute('pow')).toBe('1');
+    expect(span.getAttribute('num')).toBe('1');
+    expect(span.getAttribute('negative')).toBe('-1.0');
+    expect(span.getAttribute('conditional')).toBe('2.0');
+    expect(span.getAttribute('binary')).toBe('3.0');
+
+    fixture.componentInstance.value.set({required: false});
+    await fixture.whenStable();
+
+    expect(span.getAttribute('not')).toBe('false');
+    expect(span.getAttribute('typeof')).toBe('6');
+    expect(span.getAttribute('pow')).toBe('0');
+    expect(span.getAttribute('conditional')).toBe('1.0');
+  });
+
   it('should have right-to-left associativity for exponentiation', () => {
     @Component({
       template: '{{2 ** 2 ** 3}}',
