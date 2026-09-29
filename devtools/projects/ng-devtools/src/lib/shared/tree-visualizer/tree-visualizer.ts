@@ -279,14 +279,14 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       )
       .on(
         'mouseover',
-        wrapEvent((pointerEvent: PointerEvent, node: TreeD3Node<T>) => {
-          this.nodeMouseoverListeners.forEach((listener) => listener(pointerEvent, node));
+        wrapEvent((event: MouseEvent, node: TreeD3Node<T>) => {
+          this.nodeMouseoverListeners.forEach((listener) => listener(event, node));
         }),
       )
       .on(
         'mouseout',
-        wrapEvent((pointerEvent: PointerEvent, node: TreeD3Node<T>) => {
-          this.nodeMouseoutListeners.forEach((listener) => listener(pointerEvent, node));
+        wrapEvent((event: MouseEvent, node: TreeD3Node<T>) => {
+          this.nodeMouseoutListeners.forEach((listener) => listener(event, node));
         }),
       )
       .attr('transform', (node: TreeD3Node<T>) => {
