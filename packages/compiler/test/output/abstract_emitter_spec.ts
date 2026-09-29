@@ -165,6 +165,33 @@ describe('AbstractEmitter', () => {
       );
     });
 
+    it('should parenthesize a negative number before a method call', () => {
+      const unaryMinus = new o.UnaryOperatorExpr(o.UnaryOperator.Minus, o.literal(1));
+      expect(emitExpr(new o.ParenthesizedExpr(unaryMinus).prop('toString').callFn([]))).toBe(
+        '(-1).toString()',
+      );
+      expect(emitExpr(unaryMinus.prop('toString').callFn([]))).toBe('(-1).toString()');
+      expect(emitExpr(new o.ParenthesizedExpr(o.literal(-1)).prop('toString').callFn([]))).toBe(
+        '(-1).toString()',
+      );
+    });
+
+    it('should parenthesize a conditional expression before a method call', () => {
+      const conditional = new o.ConditionalExpr(a, b, x);
+      expect(emitExpr(new o.ParenthesizedExpr(conditional).prop('toString').callFn([]))).toBe(
+        '(a ? b : x).toString()',
+      );
+      expect(emitExpr(conditional.prop('toString').callFn([]))).toBe('(a ? b : x).toString()');
+    });
+
+    it('should parenthesize a binary expression before a method call', () => {
+      const sum = a.plus(b);
+      expect(emitExpr(new o.ParenthesizedExpr(sum).prop('toString').callFn([]))).toBe(
+        '(a + b).toString()',
+      );
+      expect(emitExpr(sum.prop('toString').callFn([]))).toBe('(a + b).toString()');
+    });
+
     it('should not add redundant parentheses around an if statement condition', () => {
       const ctx = EmitterVisitorContext.createRoot();
       new o.IfStmt(new o.ParenthesizedExpr(a.or(b)), [new o.ExpressionStatement(x)]).visitStatement(
