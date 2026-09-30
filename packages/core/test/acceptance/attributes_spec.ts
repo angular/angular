@@ -7,7 +7,12 @@
  */
 
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {ChangeDetectionStrategy, Component, provideZoneChangeDetection} from '../../src/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  provideZoneChangeDetection,
+} from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('attribute creation', () => {
@@ -208,6 +213,21 @@ describe('attribute binding', () => {
 
     // should not start with `unsafe:`.
     expect(a.href.indexOf('unsafe:')).toBe(-1);
+  });
+
+  it('should bind attribute src and not expose a safe value', () => {
+    @Component({
+      template: `<img [attr.src]="badUrl" />`,
+    })
+    class Comp {
+      badUrl = inject(DomSanitizer).bypassSecurityTrustUrl('javascript:true');
+    }
+
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+
+    const img = fixture.debugElement.query(By.css('img')).nativeElement;
+    expect(img.getAttribute('src')).toBe('javascript:true');
   });
 });
 
