@@ -1,3 +1,19 @@
+<a name="21.2.25"></a>
+# 21.2.25 (2026-09-30)
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [450af9c813](https://github.com/angular/angular/commit/450af9c813c7660b9bd91e5635f705ee3ed7b32a) | fix | reject protocol-relative paths in resolveUrl |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4bc11a546b](https://github.com/angular/angular/commit/4bc11a546be9e66ee5c40b48d7a8a5d014609987) | fix | do not copy URL-sized objects into every route snapshot |
+| [6489ca5d84](https://github.com/angular/angular/commit/6489ca5d8460a9ed8ae4daf7b0c24ec052f20398) | fix | reject duplicate outlets in production builds |
+| [a83f8119ac](https://github.com/angular/angular/commit/a83f8119acd466b524ae0113096ed188358d6d6c) | fix | require outlets to match a route before processing child segments |
+| [a131f77d92](https://github.com/angular/angular/commit/a131f77d92808ad5c2f3fa4dc6fde36825f12c5a) | perf | do not retain UrlTree instances in RouterLink |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.33"></a>
 # 20.3.33 (2026-09-30)
 ### platform-server
