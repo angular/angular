@@ -374,6 +374,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   deactivate(): void {
     if (this.activated) {
       const c = this.component;
+      this.inputBinder?.unsubscribeFromRouteData(this);
       this.activated.destroy();
       this.activated = null;
       this._activatedRoute = null;
@@ -455,8 +456,8 @@ export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>(
  * retained if the data got removed from the route (i.e. if a query parameter is removed).
  * The `unmatchedInputBehavior` option can be used to configure this behavior.
  *
- * The `RouterOutlet` should unregister itself when destroyed via `unsubscribeFromRouteData` so that
- * the subscriptions are cleaned up.
+ * The `RouterOutlet` should unregister itself when deactivated or destroyed via
+ * `unsubscribeFromRouteData` so that the subscriptions are cleaned up.
  */
 @Injectable()
 export class RoutedComponentInputBinder {
