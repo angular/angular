@@ -16,8 +16,7 @@ import {
   HydrationStatus,
   ChangeDetection,
 } from '../../../../../../../protocol';
-import {BehaviorSubject, merge, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {BehaviorSubject, merge, Observable, map} from 'rxjs';
 
 import {diff} from '../../diffing';
 import {IndexedNode, indexForest} from '../index-forest';

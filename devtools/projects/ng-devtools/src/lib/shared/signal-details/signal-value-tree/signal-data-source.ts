@@ -17,8 +17,7 @@ import {
   Properties,
   SignalNodePosition,
 } from '../../../../../../protocol';
-import {BehaviorSubject, merge, Observable, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {BehaviorSubject, merge, Observable, Subject, takeUntil} from 'rxjs';
 import {FlatNode, Property} from '../../object-tree-explorer/object-tree-types';
 
 export const arrayifyProps = (

@@ -17,8 +17,7 @@ import {
   MessageBus,
   Properties,
 } from '../../../../../../protocol';
-import {BehaviorSubject, merge, Observable, Subscription} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {BehaviorSubject, merge, Observable, Subscription, map} from 'rxjs';
 
 import {diff} from '../diffing';
 
