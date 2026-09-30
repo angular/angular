@@ -6,19 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DeclarationNode} from '../../reflection';
-
-import {IndexedComponent, NodeAdapter} from './api.js';
-import {IndexingContext} from './context.js';
-import {getTemplateIdentifiers} from './template.js';
+import {IndexedComponent, NodeAdapter} from './api';
+import {IndexingContext} from './context';
+import {getIndexerTemplateIdentifiers} from './template';
 
 /**
  * Generates `IndexedComponent` entries from a `IndexingContext`, which has information
  * about components discovered in the program registered in it.
  *
- * The context must be populated before `generateAnalysis` is called.
+ * The context must be populated before `generateIndexerAnalysis` is called.
  */
-export function generateAnalysis<T = DeclarationNode>(
+export function generateIndexerAnalysis<T>(
   context: IndexingContext<T>,
   adapter: NodeAdapter<T>,
 ): Map<T, IndexedComponent<T>> {
@@ -37,7 +35,7 @@ export function generateAnalysis<T = DeclarationNode>(
       templateFileUrl = templateMeta.file.url;
     }
 
-    const {identifiers, errors} = getTemplateIdentifiers<T>(boundTemplate);
+    const {identifiers, errors} = getIndexerTemplateIdentifiers<T>(boundTemplate);
     analysis.set(declaration, {
       name,
       selector,

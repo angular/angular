@@ -6,27 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DirectiveMeta, ParseSourceFile} from '@angular/compiler';
-import {DeclarationNode} from '../../reflection';
-
-import {AbstractBoundTemplate} from './api.js';
-
-/**
- * Metadata about a component, extending DirectiveMeta to include a reference to the node.
- */
-export interface ComponentMeta<T = DeclarationNode> extends DirectiveMeta {
-  ref: {key: string; node: T};
-  /**
-   * Unparsed selector of the directive, or null if the directive does not have a selector.
-   */
-  selector: string | null;
-}
+import {ParseSourceFile} from '../parse_util';
+import {AbstractBoundTemplate} from './api';
 
 /**
  * An intermediate representation of a component.
  */
-export interface ComponentInfo<T = DeclarationNode> {
-  /** Component TypeScript class declaration */
+export interface IndexerComponentInfo<T = unknown> {
+  /** Component class declaration */
   declaration: T;
 
   /** Component template selector if it exists, otherwise null. */
@@ -54,13 +41,13 @@ export interface ComponentInfo<T = DeclarationNode> {
  * An `IndexingContext` collects component and template analysis information from
  * `DecoratorHandler`s and exposes them to be indexed.
  */
-export class IndexingContext<T = DeclarationNode> {
-  readonly components = new Set<ComponentInfo<T>>();
+export class IndexingContext<T = unknown> {
+  readonly components = new Set<IndexerComponentInfo<T>>();
 
   /**
    * Adds a component to the context.
    */
-  addComponent(info: ComponentInfo<T>) {
+  addComponent(info: IndexerComponentInfo<T>) {
     this.components.add(info);
   }
 }
