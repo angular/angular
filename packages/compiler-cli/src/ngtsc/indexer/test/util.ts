@@ -7,10 +7,11 @@
  */
 
 import {
-  BoundTarget,
   ClassPropertyMapping,
   CssSelector,
+  AbstractBoundTemplate,
   DirectiveMatcher,
+  DirectiveMeta,
   MatchSource,
   parseTemplate,
   ParseTemplateOptions,
@@ -24,8 +25,11 @@ import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
-import {ComponentMeta} from '../src/context';
-import {AbstractBoundTemplate} from '../src/api';
+
+export interface ComponentMeta extends DirectiveMeta {
+  ref: {key: string; node: DeclarationNode};
+  selector: string | null;
+}
 
 /** Dummy file URL */
 function getTestFilePath(): AbsoluteFsPath {

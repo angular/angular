@@ -7,6 +7,7 @@
  */
 
 import {
+  AbstractBoundTemplate,
   BoundTarget,
   compileClassDebugInfo,
   compileComponentClassMetadata,
@@ -25,6 +26,7 @@ import {
   DomElementSchemaRegistry,
   ExternalExpr,
   FactoryTarget,
+  IndexingContext,
   LegacyAnimationTriggerNames,
   makeBindingParser,
   MatchSource,
@@ -72,8 +74,6 @@ import {
   extractSemanticTypeParameters,
   SemanticDepGraphUpdater,
 } from '../../../incremental/semantic_graph';
-import {IndexingContext} from '../../../indexer';
-import {AbstractBoundTemplate} from '../../../indexer/src/api';
 
 import {
   createForeignComponentMatcher,
@@ -1153,7 +1153,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
   }
 
   index(
-    context: IndexingContext,
+    context: IndexingContext<DeclarationNode>,
     node: ClassDeclaration,
     analysis: Readonly<ComponentAnalysisData>,
   ) {

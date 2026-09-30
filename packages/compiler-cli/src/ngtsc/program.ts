@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HtmlParser, MessageBundle} from '@angular/compiler';
+import {HtmlParser, IndexedComponent, MessageBundle} from '@angular/compiler';
 import ts from 'typescript';
 
 import * as api from '../transformers/api';
@@ -24,7 +24,6 @@ import {NgCompilerOptions} from './core/api';
 import {DocEntry} from './docs';
 import {absoluteFrom, AbsoluteFsPath, getFileSystem, resolve} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
-import {IndexedComponent} from './indexer';
 import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
 import {TsCreateProgramDriver} from './program_driver';
 import {DeclarationNode} from './reflection';
@@ -387,7 +386,7 @@ export class NgtscProgram implements api.Program {
     return res;
   }
 
-  getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {
+  getIndexedComponents(): Map<DeclarationNode, IndexedComponent<DeclarationNode>> {
     return this.compiler.getIndexedComponents();
   }
 
