@@ -17,8 +17,7 @@ import {
   viewChild,
 } from '@angular/core';
 import {ProfilerFrame} from '../../../../../../../../protocol';
-import {Subject, Subscription} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
+import {Subject, Subscription, debounceTime} from 'rxjs';
 
 import {render} from 'webtreemap/build/treemap';
 import {TreeMapFormatter, TreeMapNode} from '../../record-formatter/tree-map-formatter';
