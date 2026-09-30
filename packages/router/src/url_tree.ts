@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, ɵRuntimeError as RuntimeError, Service, Signal} from '@angular/core';
+import {
+  computed,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵRuntimeError as RuntimeError,
+  Service,
+  Signal,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 import type {Router} from './router';
@@ -472,12 +478,40 @@ export class DefaultUrlSerializer implements UrlSerializer {
 
   /** Converts a `UrlTree` into a url */
   serialize(tree: UrlTree): string {
-    const segment = `/${serializeSegment(tree.root, true)}`;
+    let segment = `/${serializeSegment(tree.root, true)}`;
+    if (isProtocolRelative(segment)) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.PROTOCOL_RELATIVE_URL_NOT_ALLOWED,
+            `Cannot serialize a UrlTree that would produce a protocol-relative URL. Falling back to '/' instead.`,
+          ),
+        );
+      }
+      segment = '/';
+    }
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
       typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment)}` : '';
 
     return `${segment}${query}${fragment}`;
+  }
+}
+
+const DUMMY_BASE_URL = 'http://fake';
+
+/**
+ * Determines whether a serialized path would produce a protocol-relative URL when interpreted
+ * by a browser or server. Under the WHATWG URL standard, paths starting with `//` or `/\`, or paths
+ * where leading dot segments collapse to `//` (such as `/.//` or `/..//`), resolve to an external
+ * origin or a protocol-relative pathname.
+ */
+function isProtocolRelative(url: string): boolean {
+  try {
+    const resolved = new URL(url, DUMMY_BASE_URL);
+    return resolved.origin !== DUMMY_BASE_URL || resolved.pathname.startsWith('//');
+  } catch {
+    return true;
   }
 }
 
