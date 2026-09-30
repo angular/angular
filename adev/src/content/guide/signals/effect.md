@@ -129,7 +129,7 @@ export class MyFancyChart {
     // Run a single time to create the chart instance
     afterNextRender({
       write: () => {
-        this.chart = initializeChart(this.canvas().nativeElement(), this.chartData());
+        this.chart = initializeChart(this.canvas().nativeElement, this.chartData());
       },
     });
 
@@ -162,7 +162,7 @@ The phases are:
 
 Using these phases helps prevent layout thrashing and ensures that your DOM operations are performed in a safe and efficient manner.
 
-You can specify the phase by passing an object with a `phase` property to `afterRender` or `afterNextRender`:
+You can specify the phases by passing an object with a callback for each phase to `afterRenderEffect`:
 
 ```ts
 afterRenderEffect({
