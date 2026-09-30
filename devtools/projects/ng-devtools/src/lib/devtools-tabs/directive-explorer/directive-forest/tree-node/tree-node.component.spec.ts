@@ -9,7 +9,6 @@
 import {signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {FlatTreeControl} from '@angular/cdk/tree';
 
 import {MatTooltip} from '@angular/material/tooltip';
 
@@ -17,6 +16,7 @@ import {NodeTextMatch, TreeNodeComponent} from './tree-node.component';
 import {FlatNode} from '../component-data-source';
 import {APP_DATA, AppData} from '../../../../application-providers/app_data';
 import {CdElementData, ChangeDetection} from '../../../../../../../protocol';
+import {ExpansionModel} from '../expansion-model';
 
 type DeepPartial<T> = T extends object ? {[P in keyof T]?: DeepPartial<T[P]>} : T;
 
@@ -54,13 +54,7 @@ async function configureTestingModule(appData?: Partial<AppData>) {
   fixture.componentRef.setInput('node', srcNode);
   fixture.componentRef.setInput('selectedNode', null);
   fixture.componentRef.setInput('highlightedId', 0);
-  fixture.componentRef.setInput(
-    'treeControl',
-    new FlatTreeControl<FlatNode>(
-      (node) => node!.level,
-      (node) => node.expandable,
-    ),
-  );
+  fixture.componentRef.setInput('expansionModel', new ExpansionModel<FlatNode>());
 
   await fixture.whenStable();
 
