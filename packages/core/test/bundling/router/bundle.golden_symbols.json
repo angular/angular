@@ -1169,6 +1169,7 @@
       "untracked",
       "untracked2",
       "unwrapElementRef",
+      "unwrapImgVideoSrcValue",
       "unwrapRNode",
       "unwrapSafeValue",
       "updateAncestorTraversalFlagsOnAttach",
