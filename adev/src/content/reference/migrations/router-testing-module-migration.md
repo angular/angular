@@ -78,8 +78,7 @@ After:
 
 ```ts
 import {RouterModule} from '@angular/router';
-import {provideLocationMocks} from '@angular/common/testing';
-import {SpyLocation} from '@angular/common/testing';
+import {SpyLocation, provideLocationMocks} from '@angular/common/testing';
 
 describe('test', () => {
   let spy: SpyLocation;
