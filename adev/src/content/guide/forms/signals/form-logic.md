@@ -262,7 +262,7 @@ export class Profile {
 
 ## Display uneditable fields with `readonly()`
 
-The `readonly()` rule prevents users from updating a field. The `[FormField]` directive automatically binds this state to the HTML `readonly` attribute, which prevents editing while still allowing users to focus and select text.
+The `readonly()` rule prevents users from updating a field. The `FormField` directive automatically binds this state to the HTML `readonly` attribute, which prevents editing while still allowing users to focus and select text.
 
 NOTE: Readonly fields skip [validation](guide/forms/signals/validation).
 
@@ -301,7 +301,7 @@ export class Account {
 }
 ```
 
-The `[FormField]` directive automatically binds the `readonly` attribute based on the field's state.
+The `FormField` directive automatically binds the `readonly` attribute based on the field's state.
 
 ### Conditional readonly
 
@@ -457,10 +457,18 @@ export class Search {
   });
 
   searchForm = form(this.searchModel, (schemaPath) => {
-    debounce(schemaPath.query, () => {
-      // Return a promise that resolves after 500ms
+    debounce(schemaPath.query, (context, abortSignal) => {
+      // Return a promise that resolves after 500ms, or right away when the debounce is aborted
       return new Promise<void>((resolve) => {
-        setTimeout(() => resolve(), 500);
+        const timeoutId = setTimeout(resolve, 500);
+        abortSignal.addEventListener(
+          'abort',
+          () => {
+            clearTimeout(timeoutId);
+            resolve();
+          },
+          {once: true},
+        );
       });
     });
   });
