@@ -38,7 +38,7 @@ Run the migration in the order listed below, verifying that your code builds and
 
 1. Run `ng g @angular/core:standalone` and select "Convert all components, directives and pipes to standalone"
 2. Run `ng g @angular/core:standalone` and select "Remove unnecessary NgModule classes"
-3. Run `ng g @angular/core:standalone` and select "Bootstrap the project using standalone APIs"
+3. Run `ng g @angular/core:standalone` and select "Bootstrap the application using standalone APIs"
 4. Run any linting and formatting checks, fix any failures, and commit the result
 
 ## After the migration
