@@ -12,6 +12,7 @@ import {hasSkipHydrationAttrOnRElement} from '../../hydration/skip_hydration';
 import {PRESERVE_HOST_CONTENT, PRESERVE_HOST_CONTENT_DEFAULT} from '../../hydration/tokens';
 import {processTextNodeMarkersBeforeHydration} from '../../hydration/utils';
 import {ViewEncapsulation} from '../../metadata/view';
+import {unwrapSafeValue} from '../../sanitization/bypass';
 import {validateAgainstEventProperties} from '../../sanitization/sanitization';
 
 import {ProfilerEvent} from '../../../primitives/devtools';
@@ -305,6 +306,15 @@ export function setDomProperty<T>(
     // It is assumed that the sanitizer is only added when the compiler determines that the
     // property is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value, tNode.value || '', propName) as any) : value;
+
+    // The `src` property previously used a sanitizer which mapped `null`/`undefined` to `''`.
+    // Now that `img` and `video` `src` are no longer sanitized, we still need to map `null` and
+    // `undefined` to `''` to avoid stringifying them to `'null'` or `'undefined'` and causing
+    // broken network requests.
+
+    // TODO(v23): Remove this workaround once we can introduce a breaking change
+    value = unwrapImgVideoSrcValue(propName, element as RElement, value);
+
     renderer.setProperty(element as RElement, propName, value);
   } else if (tNode.type & TNodeType.AnyContainer) {
     // If the node is a container and the property didn't
@@ -313,6 +323,28 @@ export function setDomProperty<T>(
       handleUnknownPropertyError(propName, tNode.value, tNode.type, lView);
     }
   }
+}
+
+/**
+ * This function allows us to workaround a breaking change introduced by #71095
+ * src attributes/bindings used to be sanitized which was responsible for:
+ * - converting undefined/null to ''
+ * - supporting bypassed values (via bypassSecurityTrustResourceUrl)
+ *
+ * This workaround is intended to be dropped in v23 when the breaking change window opens.
+ */
+function unwrapImgVideoSrcValue(propName: string, element: RElement, value: unknown): any {
+  if (
+    propName === 'src' &&
+    ((element as RElement).tagName === 'IMG' || (element as RElement).tagName === 'VIDEO')
+  ) {
+    if (value == null) {
+      return '';
+    }
+
+    return unwrapSafeValue(value);
+  }
+  return value;
 }
 
 /** If node is an OnPush component, marks its LView dirty. */
@@ -515,6 +547,8 @@ export function elementAttributeInternal(
   }
 
   const element = getNativeByTNode(tNode, lView) as RElement;
+  // TODO(v23): Remove this workaround once we can introduce a breaking change
+  value = unwrapImgVideoSrcValue(name, element, value);
   setElementAttribute(lView[RENDERER], element, namespace, tNode.value, name, value, sanitizer);
 }
 
