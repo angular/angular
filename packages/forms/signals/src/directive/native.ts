@@ -97,12 +97,15 @@ export function getNativeControlValue(
 }
 
 /**
- * Strictly parses a decimal number from a string, rejecting the other numeric literal forms
+ * Parses numeric text as a decimal, rejecting exponent notation and other numeric literal forms
  * that `Number()` accepts on its own (hex, binary, octal, etc). `parseFloat` doesn't consume
  * those non-decimal prefixes, while `Number` rejects trailing garbage, so requiring both to
  * agree keeps decimal input permissive without accepting other JavaScript numeric literal forms.
  */
 export function parseDecimalNumber(value: string): number | undefined {
+  if (value.includes('e') || value.includes('E')) {
+    return undefined;
+  }
   const parsed = Number(value);
   if (Number.isNaN(parsed) || !Object.is(parsed, parseFloat(value))) {
     return undefined;
