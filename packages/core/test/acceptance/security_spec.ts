@@ -1246,6 +1246,16 @@ describe('host binding sanitization', () => {
     });
   });
 
+  it('should preserve tagName sanitization when a dynamic host has a different localName', async () => {
+    await expectHostBinding({
+      tagName: 'iframe',
+      attrName: 'src',
+      value: HOST_BINDING_URL,
+      expectedError: resourceUrlError,
+      localName: 'div',
+    });
+  });
+
   it('should reject security-sensitive attribute host bindings on concrete dynamic iframe hosts', async () => {
     await expectHostBinding({
       tagName: 'iframe',
