@@ -21,7 +21,6 @@ import {DecimalPipe, DOCUMENT} from '@angular/common';
 
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
-import {FlatTreeControl} from '@angular/cdk/tree';
 
 import {FlatNode} from '../component-data-source';
 import {
@@ -32,6 +31,7 @@ import {
 import {BlockType} from '../../../../shared/utils/control-flow';
 import {APP_DATA} from '../../../../application-providers/app_data';
 import {CdElementData} from '../../../../../../../protocol';
+import {ExpansionModel} from '../expansion-model';
 
 const PADDING_LEFT_STEP = 15; // px
 
@@ -69,7 +69,7 @@ export class TreeNodeComponent {
   protected readonly node = input.required<FlatNode>();
   protected readonly selectedNode = input.required<FlatNode | null>();
   protected readonly highlightedId = input.required<number | null>();
-  protected readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
+  protected readonly expansionModel = input.required<ExpansionModel<FlatNode>>();
   protected readonly textMatches = input<NodeTextMatch[]>([]);
   protected readonly nodeCdData = input<CdElementData>();
 

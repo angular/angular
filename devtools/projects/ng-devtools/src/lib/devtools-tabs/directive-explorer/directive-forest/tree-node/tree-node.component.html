@@ -4,12 +4,12 @@
   @if (node().expandable) {
     <!-- We stop propagration on dblClick to prevent to show the element panel -->
     <button
-      (click)="treeControl().toggle(node())"
+      (click)="expansionModel().toggle(node())"
       (dblclick)="$event.stopPropagation()"
       [attr.aria-label]="'Toggle ' + node().name"
     >
       <mat-icon class="mat-icon-rtl-mirror">
-        {{ treeControl().isExpanded(node()) ? 'expand_more' : 'chevron_right' }}
+        {{ expansionModel().isExpanded(node()) ? 'expand_more' : 'chevron_right' }}
       </mat-icon>
     </button>
   }
@@ -93,7 +93,7 @@
 </div>
 
 @if (
-  treeControl().isExpanded(node()) &&
+  expansionModel().isExpanded(node()) &&
   hydration &&
   hydration.status === 'mismatched' &&
   (hydration.expectedNodeDetails || hydration.actualNodeDetails)

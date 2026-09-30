@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FlatTreeControl} from '@angular/cdk/tree';
+import {of} from 'rxjs';
+
 import {DevToolsNode} from '../../../../../../../protocol';
 
 import {ComponentDataSource, FlatNode} from '.';
+import {ExpansionModel} from '../expansion-model';
 
 const tree1: DevToolsNode = {
   tagName: 'app',
@@ -213,12 +215,9 @@ const tree4: DevToolsNode = {
 
 describe('ComponentDataSource', () => {
   let dataSource: ComponentDataSource;
-  const treeControl = new FlatTreeControl<FlatNode>(
-    (node) => node.level,
-    (node) => node.expandable,
-  );
+  const expansionModel = new ExpansionModel<FlatNode>();
 
-  beforeEach(() => (dataSource = new ComponentDataSource(treeControl)));
+  beforeEach(() => (dataSource = new ComponentDataSource(expansionModel)));
 
   it('should return new and old items', () => {
     const result = dataSource.update([tree1], true);
@@ -249,5 +248,28 @@ describe('ComponentDataSource', () => {
     expect(result.newItems[1].level).toBe(1);
 
     expect(result.newItems[1].position).toEqual([0, 0, 0, 0, 0, 0]);
+  });
+
+  it('should only show the children of expanded nodes', () => {
+    const expansionModel = new ExpansionModel<FlatNode>();
+    const source = new ComponentDataSource(expansionModel);
+    source.update([tree1], true);
+    const [app, bar] = source.data;
+    expect([app.level, bar.level]).toEqual([0, 1]);
+
+    let visibleNodes: string[] = [];
+    const subscription = source
+      .connect({viewChange: of({start: 0, end: Number.MAX_VALUE})})
+      .subscribe((nodes) => (visibleNodes = nodes.map((node) => node.name)));
+
+    expect(visibleNodes).toEqual(['app']);
+
+    expansionModel.expand(app);
+    expect(visibleNodes).toEqual(['app', 'bar']);
+
+    expansionModel.collapse(app);
+    expect(visibleNodes).toEqual(['app']);
+
+    subscription.unsubscribe();
   });
 });

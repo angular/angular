@@ -18,6 +18,7 @@ ng_project(
     ],
     deps = [
         ":directive_forest_utils",
+        ":expansion_model",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
@@ -35,10 +36,19 @@ ng_project(
 )
 
 ts_project(
+    name = "expansion_model",
+    srcs = ["expansion-model.ts"],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/rxjs",
+    ],
+)
+
+ts_project(
     name = "directive_forest_utils",
     srcs = ["directive-forest-utils.ts"],
     deps = [
-        "//:node_modules/@angular/cdk",
+        ":expansion_model",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
     ],
 )
