@@ -658,8 +658,41 @@ describe('text input with numeric model', () => {
     expect(input.value).toBe('-0.5');
   });
 
-  for (const incompleteValue of ['+', '1e', '1e-', '1e+', '-1.5E+']) {
-    it(`should defer an external model update while editing ${incompleteValue}`, async () => {
+  it('should defer an external model update while editing a leading plus', async () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(1);
+      readonly f = form(this.data);
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    await fixture.whenStable();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.focus();
+    input.value = '+';
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+
+    expect(input.value).toBe('+');
+    expect(fixture.componentInstance.data()).toBe(1);
+
+    fixture.componentInstance.data.set(1000);
+    await fixture.whenStable();
+
+    expect(input.value).toBe('+');
+
+    input.blur();
+    await fixture.whenStable();
+
+    expect(input.value).toBe('1000');
+    expect(fixture.componentInstance.data()).toBe(1000);
+  });
+
+  for (const inputValue of ['hello.', 'ten.']) {
+    it(`should preserve non-exponent text ${inputValue} until blur after an external update`, async () => {
       @Component({
         imports: [FormField],
         template: `<input type="text" inputmode="decimal" [formField]="f" />`,
@@ -673,23 +706,67 @@ describe('text input with numeric model', () => {
       await fixture.whenStable();
       const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
       input.focus();
-      input.value = incompleteValue;
+      input.value = inputValue;
       input.dispatchEvent(new Event('input'));
       await fixture.whenStable();
 
-      expect(input.value).toBe(incompleteValue);
       expect(fixture.componentInstance.data()).toBe(1);
+      expect(fixture.componentInstance.f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'parse'}),
+      ]);
+
+      fixture.componentInstance.data.set(1000);
+      await fixture.whenStable();
+      expect(input.value).toBe(inputValue);
+
+      input.blur();
+      await fixture.whenStable();
+      expect(input.value).toBe('1000');
+      expect(fixture.componentInstance.data()).toBe(1000);
+    });
+  }
+
+  for (const exponentValue of [
+    '1e',
+    '1e-',
+    '1e+',
+    '-1.5E+',
+    '1e2',
+    '-1.5E2',
+    '1e0',
+    '1e.',
+    '1e2.',
+    '1E.',
+  ]) {
+    it(`should reject ${exponentValue} and apply external model updates while focused`, async () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="text" inputmode="decimal" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(1);
+        readonly f = form(this.data);
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      await fixture.whenStable();
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      input.focus();
+      input.value = exponentValue;
+      input.dispatchEvent(new Event('input'));
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.data()).toBe(1);
+      expect(fixture.componentInstance.f().errors()).toEqual([
+        jasmine.objectContaining({kind: 'parse'}),
+      ]);
 
       fixture.componentInstance.data.set(1000);
       await fixture.whenStable();
 
-      expect(input.value).toBe(incompleteValue);
-
-      input.blur();
-      await fixture.whenStable();
-
       expect(input.value).toBe('1000');
       expect(fixture.componentInstance.data()).toBe(1000);
+      expect(fixture.componentInstance.f().errors()).toEqual([]);
     });
   }
 
@@ -720,51 +797,6 @@ describe('text input with numeric model', () => {
       fixture.componentInstance.data.set(1);
       await fixture.whenStable();
     }
-  });
-
-  it('should preserve scientific notation and a leading plus while typing into a text input with a numeric model', () => {
-    // `parseDecimalNumber` already accepts complete scientific notation and an explicit leading
-    // `+` (`Number` and `parseFloat` agree on them), so once a full literal like `1e2` or `+1` is
-    // typed, the generic "parses to the same value but the string differs" branch of
-    // `isIntermediate` preserves it exactly like it does for `-0` or `1.0`. An incomplete literal
-    // such as `1e` or a lone `+` fails to parse, so the model does not change and this directive
-    // never attempts to write anything back over it.
-    @Component({
-      imports: [FormField],
-      template: `<input type="text" inputmode="decimal" [formField]="f" />`,
-    })
-    class TestCmp {
-      readonly data = signal<number | null>(null);
-      readonly f = form(this.data);
-    }
-
-    const fixture = act(() => TestBed.createComponent(TestCmp));
-    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
-    input.focus();
-
-    act(() => {
-      input.value = '1';
-      input.dispatchEvent(new Event('input'));
-    });
-    expect(fixture.componentInstance.f().value()).toBe(1);
-
-    act(() => {
-      input.value = '1e';
-      input.dispatchEvent(new Event('input'));
-    });
-    expect(fixture.componentInstance.f().value()).toBe(1);
-    expect(fixture.componentInstance.f().errors()).toEqual([
-      jasmine.objectContaining({kind: 'parse'}),
-    ]);
-    expect(input.value).toBe('1e');
-
-    act(() => {
-      input.value = '1e2';
-      input.dispatchEvent(new Event('input'));
-    });
-    expect(fixture.componentInstance.f().value()).toBe(100);
-    expect(fixture.componentInstance.f().errors()).toEqual([]);
-    expect(input.value).toBe('1e2');
   });
 
   it('should preserve a leading plus sign while typing into a text input with a numeric model', () => {

@@ -32,7 +32,7 @@ import {
 } from './native';
 import {observeSelectMutations} from './select';
 
-const INCOMPLETE_EXPONENT_REGEXP = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)[eE][+-]?$/;
+const EXPONENT_PREFIX_REGEXP = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)[eE]/;
 
 export function nativeControlCreate(
   host: ControlDirectiveHost,
@@ -170,11 +170,10 @@ function isIntermediate(inputValue: string, controlValue: unknown): boolean {
   // model can legitimately hold text that happens to end in "." (e.g. "draft."), so restrict
   // them to non-string models to avoid blocking external string updates while focused.
   if (typeof controlValue === 'string') return false;
+  if (EXPONENT_PREFIX_REGEXP.test(inputValue)) return false;
   if (inputValue === '+' || inputValue === '-' || inputValue === '.' || inputValue === '-.')
     return true;
   if (inputValue.endsWith('.')) return true;
-  // An exponent marker and optional sign are unfinished until an exponent digit is entered.
-  if (INCOMPLETE_EXPONENT_REGEXP.test(inputValue)) return true;
   if (typeof controlValue === 'number' && !Number.isNaN(controlValue)) {
     const parsed = parseDecimalNumber(inputValue);
     if (parsed === controlValue && inputValue !== String(controlValue)) {
