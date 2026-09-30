@@ -6,16 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AsyncPipe} from '@angular/common';
-import {Component, computed, inject, input} from '@angular/core';
+import {Component, inject, input, resource} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ThemeManager} from '../../../../core/services/theme-manager.service';
 import {CodeHighlighter} from '../../code-highlighting/code-highlighter';
 
 @Component({
   selector: 'adev-code-block',
-  template: `<pre><code [innerHTML]="highlightedCode() | async"></code></pre>`,
-  imports: [AsyncPipe],
+  template: `<pre><code [innerHTML]="highlightedCode.value()"></code></pre>`,
   styles: `
     ::ng-deep pre {
       margin: 0;
@@ -29,15 +27,19 @@ export class CodeBlock {
   sanitizer = inject(DomSanitizer);
   theme = inject(ThemeManager);
 
-  highlightedCode = computed(() => {
-    return this.codeHighlighter
-      .codeToHtml(this.code(), {
+  highlightedCode = resource({
+    params: () => ({
+      code: this.code(),
+      lang: this.language(),
+      theme: this.theme.resolvedTheme() === 'dark' ? 'github-dark' : 'github-light',
+    }),
+    loader: async ({params: {code, lang, theme}}) => {
+      const highlightedHtml = await this.codeHighlighter.codeToHtml(code, {
         cssVariablePrefix: '--shiki-',
-        lang: this.language(),
-        theme: this.theme.resolvedTheme() === 'dark' ? 'github-dark' : 'github-light',
-      })
-      .then((hightlightedHtml) => {
-        return this.sanitizer.bypassSecurityTrustHtml(hightlightedHtml);
+        lang,
+        theme,
       });
+      return this.sanitizer.bypassSecurityTrustHtml(highlightedHtml);
+    },
   });
 }
