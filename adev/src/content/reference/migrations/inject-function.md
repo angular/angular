@@ -78,15 +78,15 @@ export class MyComp {
 
 #### After {#backwards-compatible-constructors-after}
 
-```ts
-import { Component } from '@angular/core';
-import { MyService } from './service';
+```typescript
+import {Component, inject} from '@angular/core';
+import {MyService} from './service';
 
 @Component()
 export class MyComp {
-private service = inject(MyService);
+  private service = inject(MyService);
 
-  /\*_ Inserted by Angular inject() migration for backwards compatibility _/
+  /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
 
   constructor() {}
