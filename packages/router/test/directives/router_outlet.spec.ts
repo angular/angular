@@ -20,6 +20,7 @@ import {
   Type,
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 import {
   provideRouter as internalProvideRouter,
   Router,
@@ -35,6 +36,7 @@ import {
 import {RouterTestingHarness} from '../../testing';
 import {EnvironmentProviders, InjectionToken} from '../../../core/src/di';
 import {useAutoTick, timeout} from '@angular/private/testing';
+import {INPUT_BINDER} from '../../src/directives/router_outlet';
 
 export function provideRouter(
   routes: Route[],
@@ -662,6 +664,65 @@ describe('component input binding', () => {
     trigger.set('after-destroy');
     await harness.fixture.whenStable();
     expect(instance.result).toEqual('data: updated');
+  });
+
+  it('unsubscribes from route data and cleans up binding effects on outlet deactivation', async () => {
+    @Component({
+      template: '',
+      standalone: false,
+    })
+    class MyComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {path: 'test', component: MyComponent},
+            {path: 'empty', children: []},
+          ],
+          withComponentInputBinding(),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/test', MyComponent);
+
+    const inputBinder = TestBed.inject(INPUT_BINDER);
+    const spy = spyOn(inputBinder, 'unsubscribeFromRouteData').and.callThrough();
+
+    const outlet = harness.fixture.debugElement
+      .query(By.directive(RouterOutlet))
+      .injector.get(RouterOutlet);
+    await harness.navigateByUrl('/empty');
+    await harness.fixture.whenStable();
+
+    expect(spy).toHaveBeenCalledWith(outlet);
+  });
+
+  it('unsubscribes from route data when deactivate() is called directly', async () => {
+    @Component({
+      template: '',
+      standalone: false,
+    })
+    class MyComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{path: 'test', component: MyComponent}], withComponentInputBinding()),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/test', MyComponent);
+
+    const inputBinder = TestBed.inject(INPUT_BINDER);
+    const spy = spyOn(inputBinder, 'unsubscribeFromRouteData').and.callThrough();
+
+    const outlet = harness.fixture.debugElement
+      .query(By.directive(RouterOutlet))
+      .injector.get(RouterOutlet);
+    outlet.deactivate();
+
+    expect(spy).toHaveBeenCalledWith(outlet);
   });
 
   it('sets blocking resource input synchronously so input.required() is available in ngOnInit and constructor effects on first render', async () => {
