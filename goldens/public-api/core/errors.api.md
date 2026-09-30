@@ -198,7 +198,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNSAFE_ATTRIBUTE_BINDING = -910,
     // (undocumented)
-    UNSAFE_VALUE_IN_RESOURCE_URL = 904,
+    UNSAFE_VALUE_IN_RESOURCE_URL = -904,
     // (undocumented)
     UNSAFE_VALUE_IN_SCRIPT = 905,
     // (undocumented)
