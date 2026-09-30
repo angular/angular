@@ -1,3 +1,21 @@
+<a name="22.3.0-next.0"></a>
+# 22.3.0-next.0 (2026-09-30)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0ee0a16c4a](https://github.com/angular/angular/commit/0ee0a16c4ae92458757f79afbbfc1e3aa000eae6) | fix | stop suppressing non-iterable values in `@for` expression |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a614bd23cd](https://github.com/angular/angular/commit/a614bd23cd9b0b4c0b8676bf72eadafa7a30e785) | fix | resolve base class defined via intermediate variable in dts |
+| [91b8391b3d](https://github.com/angular/angular/commit/91b8391b3d3fb23767834a373b68ab604f2f1655) | fix | validate unknown element tags even when matched by attribute directives |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6ea13efc20](https://github.com/angular/angular/commit/6ea13efc20c9509237062b1aaa77dad8942b9b25) | feat | support increment/decrement operators in expressions |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.2.1"></a>
 # 22.2.1 (2026-09-30)
 ### common
