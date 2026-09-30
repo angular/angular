@@ -7,7 +7,17 @@
  */
 import {expect} from '@angular/private/testing/matchers';
 import {CommonModule, Location} from '@angular/common';
-import {Component, OnDestroy, NgModule, InjectionToken, Inject, signal} from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  NgModule,
+  InjectionToken,
+  Inject,
+  Injectable,
+  Injector,
+  inject,
+  signal,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   RouteReuseStrategy,
@@ -543,6 +553,80 @@ export function routeReuseIntegrationSuite() {
       router.navigateByUrl('/events/1/edit');
       await advance(fixture);
       expect(fixture.debugElement.query(By.directive(EventEditCmp))).toBeTruthy();
+    });
+
+    it('should resolve dependencies of a reattached component from its current parent', async () => {
+      @Injectable()
+      class ParentScopedService {}
+
+      @Component({
+        selector: 'grandchild-cmp',
+        template: 'grandchild',
+        standalone: false,
+      })
+      class GrandchildCmp {
+        readonly service = inject(ParentScopedService);
+      }
+
+      @Component({
+        selector: 'child-cmp',
+        template: '@if (showGrandchild()) {<grandchild-cmp />}',
+        standalone: false,
+      })
+      class ChildCmp {
+        readonly injector = inject(Injector);
+        readonly showGrandchild = signal(false);
+      }
+
+      @Component({
+        selector: 'parent-cmp',
+        template: '<router-outlet></router-outlet>',
+        providers: [ParentScopedService],
+        standalone: false,
+      })
+      class ParentCmp {
+        readonly service = inject(ParentScopedService);
+      }
+
+      @NgModule({
+        declarations: [ParentCmp, ChildCmp, GrandchildCmp],
+        imports: [...ROUTER_DIRECTIVES],
+      })
+      class TestModule {}
+
+      TestBed.configureTestingModule({
+        imports: [TestModule],
+        providers: [
+          {provide: RouteReuseStrategy, useClass: AttachDetachReuseStrategy},
+          provideRouter([
+            {path: 'parent', component: ParentCmp, children: [{path: 'a', component: ChildCmp}]},
+            {path: 'other', component: SimpleCmp},
+          ]),
+        ],
+      });
+      const router = TestBed.inject(Router);
+      const fixture = await createRoot(router, RootCmp);
+
+      router.navigateByUrl('/parent/a');
+      await advance(fixture);
+      const firstParent = fixture.debugElement.query(By.directive(ParentCmp)).componentInstance;
+      const child = fixture.debugElement.query(By.directive(ChildCmp)).componentInstance;
+
+      router.navigateByUrl('/other');
+      await advance(fixture);
+
+      router.navigateByUrl('/parent/a');
+      await advance(fixture);
+      const secondParent = fixture.debugElement.query(By.directive(ParentCmp)).componentInstance;
+      expect(secondParent).not.toBe(firstParent);
+      expect(fixture.debugElement.query(By.directive(ChildCmp)).componentInstance).toBe(child);
+
+      expect(child.injector.get(ParentScopedService)).toBe(secondParent.service);
+
+      child.showGrandchild.set(true);
+      await advance(fixture);
+      const grandchild = fixture.debugElement.query(By.directive(GrandchildCmp)).componentInstance;
+      expect(grandchild.service).toBe(secondParent.service);
     });
 
     it('should render child routes of a reused tab after a sibling tab was shown in the same outlet', async () => {

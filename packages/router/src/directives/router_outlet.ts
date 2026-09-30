@@ -366,6 +366,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void {
     this.activated = ref;
     this._activatedRoute = activatedRoute;
+    outletInjectors.get(ref)?.moveTo(this.location.injector, this.routerOutletData);
     this.location.insert(ref.hostView);
     this.inputBinder?.bindActivatedRouteToOutletComponent(this, this.location.injector);
     this.attachEvents.emit(ref.instance);
@@ -406,6 +407,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       injector,
       environmentInjector: environmentInjector,
     });
+    outletInjectors.set(this.activated, injector);
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
@@ -413,6 +415,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this.activateEvents.emit(this.activated.instance);
   }
 }
+const outletInjectors = new WeakMap<ComponentRef<unknown>, OutletInjector>();
 
 class OutletInjector implements Injector {
   constructor(
@@ -436,6 +439,11 @@ class OutletInjector implements Injector {
     }
 
     return this.parent.get(token, notFoundValue);
+  }
+
+  moveTo(parent: Injector, outletData: Signal<unknown>): void {
+    this.parent = parent;
+    this.outletData = outletData;
   }
 }
 
