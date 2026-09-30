@@ -38,8 +38,12 @@ function createNode(
   prevState: TreeNode<ActivatedRoute> | undefined,
   newlyCreatedRoutes: Set<ActivatedRoute>,
 ): TreeNode<ActivatedRoute> {
-  // reuse an activated route that is currently displayed on the screen
-  if (prevState && routeReuseStrategy.shouldReuseRoute(curr.value, prevState.value.snapshot)) {
+  // reuse an activated route that is currently displayed on the screen. A route without a snapshot
+  // was committed by a navigation that failed before activating it, so it was never displayed.
+  if (
+    prevState?.value.snapshot &&
+    routeReuseStrategy.shouldReuseRoute(curr.value, prevState.value.snapshot)
+  ) {
     const value = prevState.value;
     value._setPending(curr.value);
     const children = createOrReuseChildren(routeReuseStrategy, curr, prevState, newlyCreatedRoutes);
@@ -76,7 +80,7 @@ function createOrReuseChildren(
 ) {
   return curr.children.map((child) => {
     for (const p of prevState.children) {
-      if (routeReuseStrategy.shouldReuseRoute(child.value, p.value.snapshot)) {
+      if (p.value.snapshot && routeReuseStrategy.shouldReuseRoute(child.value, p.value.snapshot)) {
         return createNode(routeReuseStrategy, child, p, newlyCreatedRoutes);
       }
     }

@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {Location} from '@angular/common';
-import {inject, Injectable} from '@angular/core';
+import {Component, inject, Injectable} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
   ActivationEnd,
   ActivationStart,
+  BaseRouteReuseStrategy,
   ChildActivationEnd,
   ChildActivationStart,
   Event,
@@ -26,6 +29,7 @@ import {
   RedirectCommand,
   ResolveEnd,
   ResolveStart,
+  RouteReuseStrategy,
   Router,
   RouterModule,
   RoutesRecognized,
@@ -40,6 +44,7 @@ import {
   expectEvents,
   SimpleCmp,
   ThrowingCmp,
+  TwoOutletsCmp,
   ConditionalThrowingCmp,
   EmptyQueryParamsCmp,
   createRoot,
@@ -217,6 +222,215 @@ export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'naviga
       ],
     });
     const router = TestBed.inject(Router);
+  });
+
+  if (browserAPI === 'history') {
+    it('can redirect from error handler after the browser URL update fails', async () => {
+      const errors: string[] = [];
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            [
+              {path: 'simple', component: SimpleCmp},
+              {path: 'user/:name', component: UserCmp},
+              {path: 'user/:name', outlet: 'aux', component: UserCmp},
+              {path: 'error', component: SimpleCmp},
+            ],
+            withRouterConfig({resolveNavigationPromiseOnError: true}),
+            withNavigationErrorHandler((e: NavigationError) => {
+              errors.push((e.error as Error).message);
+              // Bound redirects so a regression fails instead of looping forever.
+              return errors.length <= 3
+                ? new RedirectCommand(inject(Router).parseUrl('/error'))
+                : undefined;
+            }),
+          ),
+        ],
+      });
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+      const fixture = TestBed.createComponent(TwoOutletsCmp);
+      await router.navigateByUrl('/simple(aux:user/fred)');
+      await fixture.whenStable();
+      expect(fixture.nativeElement).toHaveText('[ simple, aux: user fred ]');
+
+      const go = location.go.bind(location);
+      spyOn(location, 'go').and.callFake((path, query, state) => {
+        if (path === '/user/victor') {
+          throw new Error('browser URL update failed');
+        }
+        go(path, query, state);
+      });
+      await router.navigateByUrl('/user/victor');
+      await fixture.whenStable();
+
+      expect(errors).toEqual(['browser URL update failed']);
+      expect(router.url).toEqual('/error');
+      expect(location.path()).toEqual('/error');
+      expect(fixture.nativeElement).toHaveText('[ simple, aux:  ]');
+    });
+  }
+
+  it('can redirect from error handler after a component fails to be destroyed', async () => {
+    let throwOnDestroy = false;
+    @Component({template: 'destroy throwing'})
+    class DestroyThrowingCmp {
+      ngOnDestroy() {
+        if (throwOnDestroy) {
+          throwOnDestroy = false;
+          throw new Error('destroy failed');
+        }
+      }
+    }
+    // Only reuses routes that opt in, so the root route is recreated by every navigation and is
+    // not activated yet when the previous component is destroyed.
+    class OptInReuseStrategy extends BaseRouteReuseStrategy {
+      override shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot) {
+        return future.routeConfig === curr.routeConfig && future.data['reuse'] === true;
+      }
+    }
+    const errors: string[] = [];
+    TestBed.configureTestingModule({
+      providers: [
+        {provide: RouteReuseStrategy, useClass: OptInReuseStrategy},
+        provideRouter(
+          [
+            {path: 'destroy-throwing', component: DestroyThrowingCmp},
+            {path: 'user/:name', component: UserCmp},
+            {path: 'error', component: SimpleCmp},
+          ],
+          withRouterConfig({resolveNavigationPromiseOnError: true}),
+          withNavigationErrorHandler((e: NavigationError) => {
+            errors.push((e.error as Error).message);
+            return errors.length <= 3
+              ? new RedirectCommand(inject(Router).parseUrl('/error'))
+              : undefined;
+          }),
+        ),
+      ],
+    });
+    const router = TestBed.inject(Router);
+    const fixture = TestBed.createComponent(RootCmp);
+    await router.navigateByUrl('/destroy-throwing');
+    await fixture.whenStable();
+
+    throwOnDestroy = true;
+    await router.navigateByUrl('/user/victor');
+    await fixture.whenStable();
+
+    expect(errors).toEqual(['destroy failed']);
+    expect(router.url).toEqual('/error');
+    expect(fixture.nativeElement).toHaveText('simple');
+  });
+
+  it('can redirect from error handler after a component fails to be created next to another outlet', async () => {
+    class MissingService {}
+    @Component({template: 'missing provider'})
+    class MissingProviderCmp {
+      readonly service = inject(MissingService);
+    }
+    // Custom strategies read the snapshots they are given.
+    class DataRouteReuseStrategy extends BaseRouteReuseStrategy {
+      override shouldDetach(route: ActivatedRouteSnapshot): boolean {
+        return route.data['reuse'] === true;
+      }
+    }
+    const errors: string[] = [];
+    TestBed.configureTestingModule({
+      providers: [
+        {provide: RouteReuseStrategy, useClass: DataRouteReuseStrategy},
+        provideRouter(
+          [
+            {path: 'error', component: SimpleCmp},
+            {path: 'missing-provider', component: MissingProviderCmp},
+            {path: 'blank', outlet: 'aux', component: BlankCmp},
+          ],
+          withRouterConfig({resolveNavigationPromiseOnError: true}),
+          withNavigationErrorHandler((e: NavigationError) => {
+            errors.push((e.error as Error).message);
+            return errors.length <= 3
+              ? new RedirectCommand(inject(Router).parseUrl('/error'))
+              : undefined;
+          }),
+        ),
+      ],
+    });
+    const router = TestBed.inject(Router);
+    const fixture = TestBed.createComponent(TwoOutletsCmp);
+    await router.navigateByUrl('/error');
+    await fixture.whenStable();
+
+    await router.navigateByUrl('/missing-provider(aux:blank)');
+    await fixture.whenStable();
+
+    expect(errors.length).toEqual(1);
+    expect(errors[0]).toContain('MissingService');
+    expect(router.url).toEqual('/error');
+    expect(fixture.nativeElement).toHaveText('[ simple, aux:  ]');
+  });
+
+  it('can redirect after a malformed query value fails component creation beside a named outlet', async () => {
+    @Component({template: 'login {{returnUrl}}'})
+    class LoginCmp {
+      readonly returnUrl = decodeURIComponent(
+        inject(ActivatedRoute).snapshot.queryParamMap.get('returnUrl') ?? '/',
+      );
+    }
+    const errors: Error[] = [];
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {path: 'shell', component: SimpleCmp},
+            {path: 'error', component: SimpleCmp},
+            {path: 'login', component: LoginCmp},
+            {path: 'room/:name', outlet: 'aux', component: UserCmp},
+          ],
+          withRouterConfig({resolveNavigationPromiseOnError: true}),
+          withNavigationErrorHandler((e: NavigationError) => {
+            errors.push(e.error as Error);
+            // Bound redirects so the regression reports a failure instead of looping forever.
+            return errors.length <= 3
+              ? new RedirectCommand(inject(Router).parseUrl('/error'))
+              : undefined;
+          }),
+        ),
+      ],
+    });
+    const router = TestBed.inject(Router);
+    const fixture = TestBed.createComponent(TwoOutletsCmp);
+
+    await router.navigateByUrl('/login?returnUrl=%2Fapp');
+    await fixture.whenStable();
+    expect(fixture.nativeElement).toHaveText('[ login /app, aux:  ]');
+
+    await router.navigateByUrl('/login(aux:room/42)?returnUrl=%2Fapp');
+    await fixture.whenStable();
+    expect(fixture.nativeElement).toHaveText('[ login /app, aux: user 42 ]');
+
+    await router.navigateByUrl('/shell');
+    await fixture.whenStable();
+    await router.navigateByUrl('/login?returnUrl=%25');
+    await fixture.whenStable();
+    expect(errors.length).toBe(1);
+    expect(errors[0] instanceof URIError).toBeTrue();
+    expect(router.url).toBe('/error');
+    expect(fixture.nativeElement).toHaveText('[ simple, aux:  ]');
+
+    await router.navigateByUrl('/shell');
+    await fixture.whenStable();
+    expect(fixture.nativeElement).toHaveText('[ simple, aux:  ]');
+
+    await router.navigateByUrl('/login(aux:room/42)?returnUrl=%25');
+    await fixture.whenStable();
+    expect(errors.length).toBe(2);
+    expect(errors[1] instanceof URIError).toBeTrue();
+    expect(router.url).toBe('/error');
+    expect(fixture.nativeElement).toHaveText('[ simple, aux:  ]');
+
+    await router.navigateByUrl('/shell');
+    await fixture.whenStable();
+    expect(fixture.nativeElement).toHaveText('[ simple, aux:  ]');
   });
 
   // Errors should behave the same for both deferred and eager URL update strategies

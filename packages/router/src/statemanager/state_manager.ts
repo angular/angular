@@ -176,6 +176,7 @@ export class HistoryStateManager extends StateManager {
    */
   private currentPageId: number = 0;
   private lastSuccessfulId: number = -1;
+  private failedUrlUpdateId: number = -1;
 
   /**
    * The ɵrouterPageId of whatever page is currently active in the browser history. This is
@@ -231,10 +232,19 @@ export class HistoryStateManager extends StateManager {
     } else if (e instanceof BeforeActivateRoutes) {
       this.commitTransition(currentTransition);
       if (this.urlUpdateStrategy === 'deferred' && !currentTransition.extras.skipLocationChange) {
-        this.setBrowserUrl(this.createBrowserPath(currentTransition), currentTransition);
+        try {
+          this.setBrowserUrl(this.createBrowserPath(currentTransition), currentTransition);
+        } catch (error) {
+          this.failedUrlUpdateId = currentTransition.id;
+          throw error;
+        }
       }
     } else if (e instanceof NavigationCancel && !isRedirectingEvent(e)) {
       this.restoreHistory(currentTransition);
+    } else if (e instanceof NavigationCancel && currentTransition.id === this.failedUrlUpdateId) {
+      // The routes committed before the URL update failed were never activated, so the redirect
+      // has to start from the previous state.
+      this.resetInternalState(currentTransition);
     } else if (e instanceof NavigationError) {
       this.restoreHistory(currentTransition, true);
     } else if (e instanceof NavigationEnd) {

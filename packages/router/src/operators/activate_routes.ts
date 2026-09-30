@@ -85,8 +85,13 @@ export class ActivateRoutes {
     parentContexts: ChildrenOutletContexts,
   ): void {
     // If there is no component, the Route is never attached to an outlet (because there is no
-    // component to attach).
-    if (route.value.component && this.routeReuseStrategy.shouldDetach(route.value.snapshot)) {
+    // component to attach). A route without a snapshot was never activated, so there is nothing to
+    // detach either.
+    if (
+      route.value.component &&
+      route.value.snapshot &&
+      this.routeReuseStrategy.shouldDetach(route.value.snapshot)
+    ) {
       this.detachAndStoreRouteSubtree(route, parentContexts);
     } else {
       this.deactivateRouteAndOutlet(route, parentContexts);
