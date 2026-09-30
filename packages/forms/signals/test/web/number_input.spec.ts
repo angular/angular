@@ -737,6 +737,8 @@ describe('text input with numeric model', () => {
     '1e.',
     '1e2.',
     '1E.',
+    ' 1e.',
+    '\t-1.5E2.',
   ]) {
     it(`should reject ${exponentValue} and apply external model updates while focused`, async () => {
       @Component({

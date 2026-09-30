@@ -32,7 +32,7 @@ import {
 } from './native';
 import {observeSelectMutations} from './select';
 
-const EXPONENT_PREFIX_REGEXP = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)[eE]/;
+const EXPONENT_PREFIX_REGEXP = /^\s*[+-]?(?:\d+(?:\.\d*)?|\.\d+)[eE]/;
 
 export function nativeControlCreate(
   host: ControlDirectiveHost,
