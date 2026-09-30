@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LEGACY_OPTIONAL_CHAINING_DEFAULT, TypeCheckingConfig} from '@angular/compiler';
+import {
+  generateIndexerAnalysis,
+  IndexedComponent,
+  IndexingContext,
+  LEGACY_OPTIONAL_CHAINING_DEFAULT,
+  NodeAdapter,
+  TypeCheckingConfig,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {
@@ -63,8 +70,6 @@ import {
   IncrementalState,
 } from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
-import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
-import {NodeAdapter} from '../../indexer/src/api';
 import {
   CompoundMetadataReader,
   CompoundMetadataRegistry,
@@ -924,9 +929,9 @@ export class NgCompiler {
    *
    * See the `indexing` package for more details.
    */
-  getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {
+  getIndexedComponents(): Map<DeclarationNode, IndexedComponent<DeclarationNode>> {
     const compilation = this.ensureAnalyzed();
-    const context = new IndexingContext();
+    const context = new IndexingContext<DeclarationNode>();
     compilation.traitCompiler.index(context);
 
     const adapter: NodeAdapter<DeclarationNode> = {
@@ -938,7 +943,7 @@ export class NgCompiler {
       },
     };
 
-    return generateAnalysis(context, adapter);
+    return generateIndexerAnalysis(context, adapter);
   }
 
   /**

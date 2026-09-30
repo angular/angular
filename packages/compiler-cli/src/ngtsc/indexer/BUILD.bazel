@@ -4,13 +4,8 @@ package(default_visibility = ["//visibility:public"])
 
 ts_project(
     name = "indexer",
-    srcs = ["index.ts"] + glob([
-        "src/**/*.ts",
-    ]),
+    srcs = ["index.ts"],
     deps = [
-        "//:node_modules/typescript",
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/imports",
-        "//packages/compiler-cli/src/ngtsc/reflection",
     ],
 )

@@ -5,33 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+
+import {CombinedRecursiveAstVisitor} from '../combined_visitor';
 import {
+  AbsoluteSourceSpan,
   AST,
   ASTWithSource,
   BindingPipe,
-  CombinedRecursiveAstVisitor,
   ImplicitReceiver,
-  ParseSourceSpan,
   PropertyRead,
   ThisReceiver,
-  TmplAstBoundAttribute,
-  TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
-  TmplAstElement,
-  TmplAstLetDeclaration,
-  TmplAstNode,
-  TmplAstReference,
-  TmplAstTemplate,
-  TmplAstTextAttribute,
-  TmplAstVariable,
-  tmplAstVisitAll,
-} from '@angular/compiler';
-
-import {DeclarationNode} from '../../reflection';
+} from '../expression_parser/ast';
+import {ParseSourceSpan} from '../parse_util';
+import * as t from '../render3/r3_ast';
 
 import {
-  AbsoluteSourceSpan,
   AbstractBoundTemplate,
   AttributeIdentifier,
   BoundAttributeIdentifier,
@@ -50,17 +38,17 @@ import {
   VariableIdentifier,
 } from './api';
 
-type ExpressionIdentifier<T = DeclarationNode> = PropertyIdentifier<T> | MethodIdentifier<T>;
-type TmplTarget = TmplAstReference | TmplAstVariable | TmplAstLetDeclaration;
-type TargetIdentifier<T = DeclarationNode> =
-  ReferenceIdentifier<T> | VariableIdentifier | LetDeclarationIdentifier;
-type TargetIdentifierMap<T = DeclarationNode> = Map<TmplTarget, TargetIdentifier<T>>;
+type ExpressionIdentifier<T> = PropertyIdentifier<T> | MethodIdentifier<T>;
+type TmplTarget = t.Reference | t.Variable | t.LetDeclaration;
+type TargetIdentifier<T> = ReferenceIdentifier<T> | VariableIdentifier | LetDeclarationIdentifier;
+type TargetIdentifierMap<T> = Map<TmplTarget, TargetIdentifier<T>>;
+type DirectiveHostNode = t.Element | t.Template | t.Component | t.Directive;
 
 /**
  * Visits the AST of a parsed Angular template. Discovers and stores
  * identifiers of interest, deferring to an `ExpressionVisitor` as needed.
  */
-class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
+export class IndexerVisitor<T = unknown> extends CombinedRecursiveAstVisitor {
   // Identifiers of interest found in the template.
   readonly identifiers = new Set<TopLevelIdentifier<T>>();
   readonly errors: Error[] = [];
@@ -71,7 +59,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
 
   // Map of elements and templates to their identifiers.
   private readonly directiveHostIdentifierCache = new Map<
-    TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
+    DirectiveHostNode,
     DirectiveHostIdentifier<T>
   >();
 
@@ -90,7 +78,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
    *
    * @param element
    */
-  override visitElement(element: TmplAstElement) {
+  override visitElement(element: t.Element) {
     const elementIdentifier = this.directiveHostToIdentifier(element);
     if (elementIdentifier !== null) {
       this.identifiers.add(elementIdentifier);
@@ -98,7 +86,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     super.visitElement(element);
   }
 
-  override visitTemplate(template: TmplAstTemplate) {
+  override visitTemplate(template: t.Template) {
     const templateIdentifier = this.directiveHostToIdentifier(template);
     if (templateIdentifier !== null) {
       this.identifiers.add(templateIdentifier);
@@ -106,14 +94,14 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     super.visitTemplate(template);
   }
 
-  override visitReference(reference: TmplAstReference) {
+  override visitReference(reference: t.Reference) {
     const referenceIdentifier = this.targetToIdentifier(reference);
     if (referenceIdentifier !== null) {
       this.identifiers.add(referenceIdentifier);
     }
     super.visitReference(reference);
   }
-  override visitVariable(variable: TmplAstVariable) {
+  override visitVariable(variable: t.Variable) {
     const variableIdentifier = this.targetToIdentifier(variable);
     if (variableIdentifier !== null) {
       this.identifiers.add(variableIdentifier);
@@ -121,7 +109,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     super.visitVariable(variable);
   }
 
-  override visitLetDeclaration(decl: TmplAstLetDeclaration): void {
+  override visitLetDeclaration(decl: t.LetDeclaration): void {
     const identifier = this.targetToIdentifier(decl);
     if (identifier !== null) {
       this.identifiers.add(identifier);
@@ -129,7 +117,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     super.visitLetDeclaration(decl);
   }
 
-  override visitComponent(component: TmplAstComponent): void {
+  override visitComponent(component: t.Component): void {
     const identifier = this.directiveHostToIdentifier(component);
     if (identifier !== null) {
       this.identifiers.add(identifier);
@@ -137,7 +125,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     super.visitComponent(component);
   }
 
-  override visitDirective(directive: TmplAstDirective): void {
+  override visitDirective(directive: t.Directive): void {
     const identifier = this.directiveHostToIdentifier(directive);
     if (identifier !== null) {
       this.identifiers.add(identifier);
@@ -185,7 +173,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     this.identifiers.add(identifier);
   }
 
-  override visitBoundAttribute(attribute: TmplAstBoundAttribute): void {
+  override visitBoundAttribute(attribute: t.BoundAttribute): void {
     const identifier = this.bindingToIdentifier(attribute, IdentifierKind.Input);
     if (identifier !== null) {
       this.identifiers.add(identifier);
@@ -199,7 +187,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     this.currentAstWithSource = previous;
   }
 
-  override visitBoundEvent(event: TmplAstBoundEvent): void {
+  override visitBoundEvent(event: t.BoundEvent): void {
     const identifier = this.bindingToIdentifier(event, IdentifierKind.Output);
     if (identifier !== null) {
       this.identifiers.add(identifier);
@@ -207,7 +195,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     super.visitBoundEvent(event);
   }
 
-  override visitTextAttribute(attribute: TmplAstTextAttribute): void {
+  override visitTextAttribute(attribute: t.TextAttribute): void {
     const identifier = this.bindingToIdentifier(attribute, IdentifierKind.Input);
     if (identifier !== null) {
       this.identifiers.add(identifier);
@@ -216,18 +204,18 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
   }
 
   private bindingToIdentifier(
-    node: TmplAstBoundAttribute | TmplAstBoundEvent | TmplAstTextAttribute,
+    node: t.BoundAttribute | t.BoundEvent | t.TextAttribute,
     kind: IdentifierKind.Input | IdentifierKind.Output,
   ): BoundAttributeIdentifier<T> | null {
     if (!this.boundTemplate.getConsumerOfBinding) {
       return null;
     }
     const consumer = this.boundTemplate.getConsumerOfBinding(node);
-    if (!consumer || consumer instanceof TmplAstElement || consumer instanceof TmplAstTemplate) {
+    if (!consumer || consumer instanceof t.Element || consumer instanceof t.Template) {
       return null;
     }
 
-    const keySpan = node.keySpan ?? (node instanceof TmplAstTextAttribute ? node.sourceSpan : null);
+    const keySpan = node.keySpan ?? (node instanceof t.TextAttribute ? node.sourceSpan : null);
     if (!keySpan) {
       return null;
     }
@@ -247,9 +235,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
   }
 
   /** Creates an identifier for a template element or template node. */
-  private directiveHostToIdentifier(
-    node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
-  ): DirectiveHostIdentifier<T> | null {
+  private directiveHostToIdentifier(node: DirectiveHostNode): DirectiveHostIdentifier<T> | null {
     // If this node has already been seen, return the cached result.
     if (this.directiveHostIdentifierCache.has(node)) {
       return this.directiveHostIdentifierCache.get(node)!;
@@ -261,13 +247,13 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
       | IdentifierKind.Template
       | IdentifierKind.Component
       | IdentifierKind.Directive;
-    if (node instanceof TmplAstTemplate) {
+    if (node instanceof t.Template) {
       name = node.tagName ?? 'ng-template';
       kind = IdentifierKind.Template;
-    } else if (node instanceof TmplAstElement) {
+    } else if (node instanceof t.Element) {
       name = node.name;
       kind = IdentifierKind.Element;
-    } else if (node instanceof TmplAstComponent) {
+    } else if (node instanceof t.Component) {
       name = node.fullName;
       kind = IdentifierKind.Component;
     } else {
@@ -277,10 +263,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
     // Namespaced elements have a particular format for `node.name` that needs to be handled.
     // For example, an `<svg>` element has a `node.name` of `':svg:svg'`.
     // TODO(alxhub): properly handle namespaced elements
-    if (
-      (node instanceof TmplAstTemplate || node instanceof TmplAstElement) &&
-      name.startsWith(':')
-    ) {
+    if ((node instanceof t.Template || node instanceof t.Element) && name.startsWith(':')) {
       name = name.split(':').pop()!;
     }
 
@@ -344,7 +327,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
 
     const span = new AbsoluteSourceSpan(start, start + name.length);
     let identifier: ReferenceIdentifier<T> | VariableIdentifier | LetDeclarationIdentifier;
-    if (node instanceof TmplAstReference) {
+    if (node instanceof t.Reference) {
       // If the node is a reference, we care about its target. The target can be an element, a
       // template, a directive applied on a template or element (in which case the directive field
       // is non-null), or nothing at all.
@@ -354,10 +337,10 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
         let node: DirectiveHostIdentifier<T> | null = null;
         let directive: T | null = null;
         if (
-          refTarget instanceof TmplAstElement ||
-          refTarget instanceof TmplAstTemplate ||
-          refTarget instanceof TmplAstComponent ||
-          refTarget instanceof TmplAstDirective
+          refTarget instanceof t.Element ||
+          refTarget instanceof t.Template ||
+          refTarget instanceof t.Component ||
+          refTarget instanceof t.Directive
         ) {
           node = this.directiveHostToIdentifier(refTarget);
         } else {
@@ -380,7 +363,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
         kind: IdentifierKind.Reference,
         target,
       };
-    } else if (node instanceof TmplAstVariable) {
+    } else if (node instanceof t.Variable) {
       identifier = {
         name,
         span,
@@ -414,7 +397,7 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
    *
    * @param node node whose expression to visit
    */
-  override visit(node: TmplAstNode | AST): void {
+  override visit(node: t.Node | AST): void {
     if (node instanceof ASTWithSource) {
       const previous = this.currentAstWithSource;
       this.currentAstWithSource = {source: node.source, absoluteOffset: node.sourceSpan.start};
@@ -491,16 +474,14 @@ class TemplateVisitor<T = DeclarationNode> extends CombinedRecursiveAstVisitor {
  * @param boundTemplate bound template target, which can be used for querying expression targets.
  * @return identifiers in template
  */
-export function getTemplateIdentifiers<T = DeclarationNode>(
-  boundTemplate: AbstractBoundTemplate<T>,
-): {
+export function getIndexerTemplateIdentifiers<T>(boundTemplate: AbstractBoundTemplate<T>): {
   identifiers: Set<TopLevelIdentifier<T>>;
   errors: Error[];
 } {
-  const visitor = new TemplateVisitor<T>(boundTemplate);
+  const visitor = new IndexerVisitor<T>(boundTemplate);
   const template = boundTemplate.getTemplateAst();
   if (template !== undefined) {
-    tmplAstVisitAll(visitor, template);
+    t.visitAll(visitor, template);
   }
   return {identifiers: visitor.identifiers, errors: visitor.errors};
 }

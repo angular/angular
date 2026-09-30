@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ConstantPool} from '@angular/compiler';
+import {ConstantPool, IndexingContext} from '@angular/compiler';
 import ts from 'typescript';
 
 import {SourceFileTypeIdentifier} from '../../core/api';
 import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
 import {IncrementalBuild} from '../../incremental/api';
 import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semantic_graph';
-import {IndexingContext} from '../../indexer';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {
   ClassDeclaration,
@@ -600,7 +599,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     return diagnostics;
   }
 
-  index(ctx: IndexingContext): void {
+  index(ctx: IndexingContext<DeclarationNode>): void {
     for (const clazz of this.classes.keys()) {
       const record = this.classes.get(clazz)!;
       for (const trait of record.traits) {
