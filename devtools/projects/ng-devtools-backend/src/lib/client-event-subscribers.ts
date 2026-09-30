@@ -7,7 +7,7 @@
  */
 
 import {ɵDebugSignalGraph as InternalDebugSignalGraph} from '@angular/core';
-import {debounceTime} from 'rxjs/operators';
+import {debounceTime} from 'rxjs';
 import {
   ComponentExplorerViewQuery,
   ComponentType,

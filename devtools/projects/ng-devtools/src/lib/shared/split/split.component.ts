@@ -23,8 +23,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
-import {Observable, Subject, Subscriber} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
+import {Observable, Subject, Subscriber, debounceTime} from 'rxjs';
 
 import {
   Direction,
