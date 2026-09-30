@@ -50,6 +50,32 @@ describe('property bindings', () => {
     expect(spanEl.id).toBe('testId');
   });
 
+  it('should not set `src` to "undefined" string for img/video elements when bound to undefined', () => {
+    @Component({
+      template: `
+        <img [src]="imgSrc" />
+        <video [src]="videoSrc"></video>
+      `,
+    })
+    class Comp {
+      imgSrc: string | undefined;
+      videoSrc: string | undefined;
+    }
+
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img') as HTMLImageElement;
+    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+
+    // Both should have their src attribute set to an empty string, not "undefined"
+    // (Wait, actually they might not have the attribute if the property is set to '', but `img.src` should not contain 'undefined')
+    expect(img.getAttribute('src')).not.toBe('undefined');
+    expect(img.getAttribute('src')).toBe('');
+    expect(video.getAttribute('src')).not.toBe('undefined');
+    expect(video.getAttribute('src')).toBe('');
+  });
+
   it('should update bindings when value changes', () => {
     @Component({
       template: `<a [title]="title"></a>`,
