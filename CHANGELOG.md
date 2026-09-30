@@ -1,3 +1,18 @@
+<a name="20.3.33"></a>
+# 20.3.33 (2026-09-30)
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [83944fc8c5](https://github.com/angular/angular/commit/83944fc8c50e86be90e8ec4184cd15002b5af262) | fix | reject protocol-relative paths in resolveUrl |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [142f187b3c](https://github.com/angular/angular/commit/142f187b3c8e956aade5457f7f9c8ed73754979b) | fix | do not copy URL-sized objects into every route snapshot |
+| [cd8efcb924](https://github.com/angular/angular/commit/cd8efcb924d26464bc42ee436d39e10784cfc240) | fix | reject duplicate outlets in production builds |
+| [b0d2ba0f54](https://github.com/angular/angular/commit/b0d2ba0f54e21cb57ea5a0ca0d8e6065f28e23a0) | fix | require outlets to match a route before processing child segments |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.2.0"></a>
 # 22.2.0 (2026-09-23)
 ### compiler
