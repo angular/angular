@@ -1280,6 +1280,66 @@ describe('platform-server partial hydration integration', () => {
           expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
         });
 
+        it('should replay an event dispatched while a viewport trigger is hydrating the block', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+              <main>
+                @defer (hydrate on viewport) {
+                  <article>
+                    defer block rendered!
+                    <span id="test" (click)="increment()">{{ clicks() }}</span>
+                  </article>
+                } @placeholder {
+                  <span>Outer block placeholder</span>
+                }
+              </main>
+            `,
+          })
+          class SimpleComponent {
+            clicks = signal(0);
+            increment() {
+              this.clicks.update((clicks) => clicks + 1);
+            }
+          }
+
+          const appId = 'custom-app-id';
+          const providers = [{provide: APP_ID, useValue: appId}];
+          const hydrationFeatures = () => [withIncrementalHydration()];
+
+          const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+
+          // Internal cleanup before we do server->client transition in this test.
+          resetTViewsFor(SimpleComponent);
+
+          ////////////////////////////////
+          const doc = getDocument();
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+            hydrationFeatures,
+          });
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+          await appRef.whenStable();
+
+          const appHostNode = compRef.location.nativeElement;
+
+          // The block scrolls into view, which starts its hydration...
+          const article: HTMLElement = doc.getElementsByTagName('article')[0];
+          MockIntersectionObserver.invokeCallbacksForElement(article, true);
+
+          // ...and a click lands inside it before that hydration completes.
+          const testElement = doc.getElementById('test')!;
+          expect(testElement.getAttribute('ngb')).toBe('d0');
+          testElement.dispatchEvent(new CustomEvent('click', {bubbles: true}));
+
+          await allPendingDynamicImports();
+          appRef.tick();
+
+          // The click was replayed once the block was hydrated, and only once.
+          expect(appHostNode.outerHTML).toContain('<span id="test">1</span>');
+        });
+
         it('should create IntersectionObserver with the options from the `hydrate on viewport` trigger', async () => {
           @Component({
             selector: 'app',

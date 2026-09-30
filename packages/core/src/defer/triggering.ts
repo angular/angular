@@ -381,6 +381,18 @@ export async function triggerHydrationFromBlockName(
 
   // Make sure we don't hydrate/trigger the same thing multiple times
   if (blocksBeingHydrated.has(blockName)) {
+    // Another trigger, such as `hydrate on viewport`, is already hydrating this block. An event
+    // queued for replay in the meantime still needs replaying once that hydration completes,
+    // since the trigger that started it did not ask for a replay.
+    if (replayQueuedEventsFn) {
+      try {
+        await blocksBeingHydrated.get(blockName)!.promise;
+      } catch {
+        // The block failed to hydrate and its content was cleaned up: there is nothing to replay on.
+        return;
+      }
+      replayQueuedEventsFn([blockName]);
+    }
     return;
   }
 
