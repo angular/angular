@@ -158,7 +158,7 @@ export interface ErrorBoundaryOptions {
   /**
    * Default component to render when an error occurs in a route that does not specify its own `errorComponent`.
    */
-  defaultErrorComponent?: Type<any>;
+  defaultErrorComponent?: Type<unknown>;
 
   /**
    * Optional global callback invoked when any route-level error is caught by the router error boundaries.

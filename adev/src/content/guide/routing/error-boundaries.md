@@ -1,6 +1,10 @@
 # Error boundaries in routing
 
+IMPORTANT: Router error boundaries are in [developer preview](reference/releases#developer-preview).
+
 When building web applications, runtime errors can occur during component initialization, data loading, or rendering. Angular Router allows you to isolate these failures to individual routes using **error boundaries**, preventing a single failing component from crashing the entire application shell.
+
+NOTE: This guide covers error handling at the route level. For catching errors within specific sections of a component's template, refer to the [template `@boundary` block guide](/guide/templates/error-boundaries).
 
 ## What are router error boundaries?
 
@@ -59,7 +63,7 @@ export class ProductErrorFallback {
 
 NOTE: If your route configuration includes parameters, query parameters, or route data named `error`, the caught runtime `Error` always takes precedence on the `error` input of an error component.
 
-IMPORTANT: If the `errorComponent` itself throws an error during its creation or rendering, the `RouterOutlet` will not catch it again. The exception will bubble out of the outlet to the root `ErrorHandler` (or an enclosing template `@boundary` block) to prevent infinite error loops.
+IMPORTANT: If the `errorComponent` itself throws an error during its creation or rendering, the `RouterOutlet` will not catch it again. The exception will bubble out of the outlet to the root `ErrorHandler` (or an enclosing [template `@boundary` block](/guide/templates/error-boundaries)) to prevent infinite error loops.
 
 ## Route parameter and data binding
 
@@ -117,7 +121,7 @@ export const appConfig: ApplicationConfig = {
 
 | Option                  | Type                                             | Description                                                                                                                          |
 | ----------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `defaultErrorComponent` | `Type<any>`                                      | Default fallback component to render when a route without its own `errorComponent` throws an error.                                  |
+| `defaultErrorComponent` | `Type<unknown>`                                  | Default fallback component to render when a route without its own `errorComponent` throws an error.                                  |
 | `onError`               | `(error: Error, details?: ErrorDetails) => void` | Global callback invoked whenever any error is caught by a router error boundary. Ideal for sending telemetry to monitoring services. |
 
 ---
@@ -158,8 +162,6 @@ When a `RedirectCommand` is thrown:
 
 NOTE: If a `RedirectCommand` is thrown and no `errorComponent` is configured, the router initiates the navigation and intentionally swallows the error to prevent it from being logged as a crash by the global `ErrorHandler`.
 
----
-
 ## Error boundary scope vs. navigation errors
 
 It is helpful to understand the distinction between **view-layer errors** and **navigation pipeline errors**:
@@ -167,11 +169,12 @@ It is helpful to understand the distinction between **view-layer errors** and **
 - **View-layer errors (Error boundaries)**: Occur inside component constructors, dependency injection, lifecycle hooks (`ngOnInit`), template expressions, and component `resource()` loaders. These are caught by `RouterOutlet` and display the `errorComponent`.
 - **Navigation pipeline errors (`NavigationError`)**: Occur before route activation, such as failing `canActivate` / `canMatch` guards or route `resolve` data functions. These halt the navigation transition before reaching the outlet and can be customized using `withNavigationErrorHandler`.
 
----
+NOTE: When an error boundary displays an `errorComponent`, any `canDeactivate` guards configured for that route are bypassed. This ensures users can safely navigate away from the error fallback without triggering guards that expect state from the failed primary component.
 
 ## Next steps
 
 <docs-pill-row>
+  <docs-pill href="/guide/templates/error-boundaries" title="Template error boundaries"/>
   <docs-pill href="/guide/routing/show-routes-with-outlets" title="Show routes with outlets"/>
   <docs-pill href="/guide/routing/redirecting-routes" title="Redirecting routes"/>
   <docs-pill href="/guide/routing/data-fetching-with-resources" title="Data fetching with resources"/>

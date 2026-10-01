@@ -276,7 +276,7 @@ export type ErrorBoundariesFeature = RouterFeature<RouterFeatureKind.ErrorBounda
 
 // @public
 export interface ErrorBoundaryOptions {
-    defaultErrorComponent?: Type<any>;
+    defaultErrorComponent?: Type<unknown>;
     onError?: (error: Error, details?: ErrorDetails) => void;
 }
 
@@ -699,7 +699,7 @@ export interface Route {
     children?: Routes;
     component?: Type<any>;
     data?: Data;
-    errorComponent?: Type<any>;
+    errorComponent?: Type<unknown>;
     loadChildren?: LoadChildren;
     loadComponent?: () => Type<unknown> | Observable<Type<unknown> | DefaultExport<Type<unknown>>> | Promise<Type<unknown> | DefaultExport<Type<unknown>>>;
     matcher?: UrlMatcher;
@@ -979,6 +979,7 @@ export interface RouterOutletContract {
     detach(): ComponentRef<unknown>;
     detachEvents?: EventEmitter<unknown>;
     isActivated: boolean;
+    isErrorComponentActive?: boolean;
     readonly supportsBindingToComponentInputs?: true;
 }
 

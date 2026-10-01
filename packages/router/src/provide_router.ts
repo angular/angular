@@ -21,6 +21,7 @@ import {
   ENVIRONMENT_INITIALIZER,
   EnvironmentInjector,
   EnvironmentProviders,
+  ErrorDetails,
   inject,
   InjectionToken,
   Injector,
@@ -32,17 +33,14 @@ import {
   Provider,
   Type,
   ɵpublishNonCoreGlobalUtil,
-  ErrorDetails,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
 import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outlet';
-import {ErrorBoundaryHandler} from './router_error_boundary';
-import {ROUTER_ERROR_BOUNDARY_HANDLER} from './router_error_boundary_feature';
-import {createResourceOutletBindingEffects} from './router_resource';
 import {Event, NavigationError, stringifyEvent} from './events';
 import {RedirectCommand, Routes} from './models';
 import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
+import {setupAndRunResources} from './operators/setup_and_run_resources';
 import {ROUTE_INJECTOR_CLEANUP, routeInjectorCleanup} from './route_injector_cleanup';
 import {Router} from './router';
 import {
@@ -52,12 +50,15 @@ import {
   RouterConfigOptions,
 } from './router_config';
 import {ROUTES} from './router_config_loader';
-import {setupAndRunResources} from './operators/setup_and_run_resources';
+import {ErrorBoundaryHandler} from './router_error_boundary';
+import {ROUTER_ERROR_BOUNDARY_HANDLER} from './router_error_boundary_feature';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
+import {createResourceOutletBindingEffects} from './router_resource';
 
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 
 import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtools';
+import {ROUTER_RESOURCES_FEATURE} from './router_resource_feature';
 import {ActivatedRoute} from './router_state';
 import {NavigationStateManager} from './statemanager/navigation_state_manager';
 import {StateManager} from './statemanager/state_manager';
@@ -68,7 +69,6 @@ import {
   VIEW_TRANSITION_OPTIONS,
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
-import {ROUTER_RESOURCES_FEATURE} from './router_resource_feature';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -952,13 +952,13 @@ export function withRouterResources(): RouterResourcesFeature {
 /**
  * Options to configure router error boundary behavior when using `withErrorBoundaries`.
  *
- * @publicApi
+ * @developerPreview 22.3
  */
 export interface ErrorBoundaryOptions {
   /**
    * Default component to render when an error occurs in a route that does not specify its own `errorComponent`.
    */
-  defaultErrorComponent?: Type<any>;
+  defaultErrorComponent?: Type<unknown>;
 
   /**
    * Optional global callback invoked when any route-level error is caught by the router error
@@ -976,7 +976,7 @@ export interface ErrorBoundaryOptions {
  * @see {@link withErrorBoundaries}
  * @see {@link provideRouter}
  *
- * @publicApi
+ * @developerPreview 22.3
  */
 export type ErrorBoundariesFeature = RouterFeature<RouterFeatureKind.ErrorBoundariesFeature>;
 
@@ -1003,7 +1003,7 @@ export type ErrorBoundariesFeature = RouterFeature<RouterFeatureKind.ErrorBounda
  * });
  * ```
  *
- * @publicApi
+ * @developerPreview 22.3
  */
 export function withErrorBoundaries(options: ErrorBoundaryOptions = {}): ErrorBoundariesFeature {
   const providers = [

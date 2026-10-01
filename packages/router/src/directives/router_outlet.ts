@@ -89,6 +89,11 @@ export interface RouterOutletContract {
    */
   isActivated: boolean;
 
+  /**
+   * Whether the given outlet is currently rendering an error component instead of the primary component.
+   */
+  isErrorComponentActive?: boolean;
+
   /** The instance of the activated component or `null` if the outlet is not activated. */
   component: Object | null;
 
@@ -459,11 +464,18 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       return;
     }
     const c = this.component;
+    const wasErrorComponentActive = this.isErrorComponentActive;
     this.inputBinder?.unsubscribeFromRouteData(this);
     this.activated.destroy();
     this.activated = null;
     this.isErrorComponentActive = false;
-    this.deactivateEvents.emit(c);
+
+    // The error component is an internal implementation detail and is never emitted
+    // via `activateEvents` (which only emit the primary component). Therefore, we
+    // must not emit it via `deactivateEvents` either, to maintain symmetry.
+    if (!wasErrorComponentActive) {
+      this.deactivateEvents.emit(c);
+    }
   }
 
   /**
