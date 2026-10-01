@@ -77,6 +77,7 @@ export interface TypeCheckingOptions {
     strictInputAccessModifiers?: boolean;
     strictInputTypes?: boolean;
     strictLiteralTypes?: boolean;
+    strictNgTemplateTypes?: boolean;
     strictNullInputTypes?: boolean;
     strictOutputEventTypes?: boolean;
     strictSafeNavigationTypes?: boolean;
