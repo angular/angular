@@ -258,7 +258,7 @@ The following JSON schema is a complete description of the long-form syntax for 
 ## Schematics CLI
 
 Schematics come with their own command-line tool.
-Using Node 6.9 or later, install the Schematics command line tool globally:
+Install the Schematics command line tool globally:
 
 ```shell
 

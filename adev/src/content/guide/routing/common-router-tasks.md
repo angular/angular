@@ -33,7 +33,7 @@ Update the component to have an `input()` property matching the name of the para
 
 ```ts
 id = input.required<string>();
-hero = computed(() => this.service.getHero(id()));
+hero = computed(() => this.service.getHero(this.id()));
 ```
 
 </docs-step>

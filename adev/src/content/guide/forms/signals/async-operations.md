@@ -211,19 +211,19 @@ onError: (error) => {
 
 ### HTTP options
 
-Customize the HTTP request with the `options` parameter:
+Customize the HTTP request by returning an `HttpResourceRequest` object from the `request` function:
 
 ```ts
 import {HttpHeaders} from '@angular/common/http';
 
 validateHttp(schemaPath.field, {
-  request: ({value}) => `/api/validate?value=${value()}`,
-  options: {
+  request: ({value}) => ({
+    url: `/api/validate?value=${value()}`,
     headers: new HttpHeaders({
       Authorization: 'Bearer token',
     }),
     timeout: 5000,
-  },
+  }),
   onSuccess: (response: {valid: boolean}) =>
     response.valid
       ? null
@@ -597,7 +597,7 @@ When async validation runs, the field's `pending()` signal returns `true`. Durin
 - `valid()` returns `false`
 - `invalid()` returns `false`
 - `errors()` returns an empty array
-- `submit()` waits for validation to complete
+- `submit()` does not wait for it; by default the `action` runs anyway (see [`ignoreValidators`](guide/forms/signals/form-submission#controlling-validation-gating-with-ignorevalidators))
 
 Show the pending state in your template to provide feedback:
 

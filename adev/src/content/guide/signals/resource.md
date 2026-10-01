@@ -90,7 +90,7 @@ const userResource = resource({
   loader: ({params, abortSignal}): Promise<User> => {
     // fetch cancels any outstanding HTTP requests when the given `AbortSignal`
     // indicates that the request has been aborted.
-    return fetch(`users/${params.id}`, {signal: abortSignal});
+    return fetch(`users/${params.id}`, {signal: abortSignal}).then((res) => res.json());
   },
 });
 ```
@@ -131,7 +131,7 @@ The `status` signal provides a specific `ResourceStatus` that describes the stat
 | Status        | `value()`         | Description                                                                  |
 | ------------- | :---------------- | ---------------------------------------------------------------------------- |
 | `'idle'`      | `undefined`       | The resource has no valid request and the loader has not run.                |
-| `'error'`     | `undefined`       | The loader has encountered an error.                                         |
+| `'error'`     | Throws an error   | The loader has encountered an error.                                         |
 | `'loading'`   | `undefined`       | The loader is running as a result of the `params` value changing.            |
 | `'reloading'` | Previous value    | The loader is running as a result of calling the resource's `reload` method. |
 | `'resolved'`  | Resolved value    | The loader has completed.                                                    |
@@ -252,9 +252,7 @@ function withPreviousValue<T>(input: Resource<T>): Resource<T> {
   return resourceFromSnapshots(derived);
 }
 
-@Component({
-  /*... */
-})
+@Component({/*... */})
 export class AwesomeProfile {
   userId = input.required<number>();
   user = withPreviousValue(httpResource(() => `/user/${this.userId()}`));

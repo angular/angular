@@ -135,7 +135,7 @@ Each component gets its own `UserClient` instance. Changes in one component don'
 **Solution:** Use `@Service` for singletons.
 
 ```ts {prefer, header: 'Root-level singleton'}
-import {Injectable} from '@angular/core';
+import {Service} from '@angular/core';
 
 @Service()
 export class UserClient {
@@ -250,7 +250,7 @@ export class UserProfile {
 Use `runInInjectionContext()` when you need to enable **other code** to call `inject()`. This is useful when accepting callbacks that might use dependency injection:
 
 ```angular-ts
-import {Component, inject, Injector, input} from '@angular/core';
+import {Component, inject, Injector, input, runInInjectionContext} from '@angular/core';
 
 @Component({
   selector: 'app-data-loader',
@@ -264,13 +264,13 @@ export class DataLoader {
     const callback = this.onLoad();
     if (callback) {
       // Enable the callback to use inject()
-      this.injector.runInInjectionContext(callback);
+      runInInjectionContext(this.injector, callback);
     }
   }
 }
 ```
 
-The `runInInjectionContext()` method creates a temporary injection context, allowing code inside the callback to call `inject()`.
+The `runInInjectionContext()` function creates a temporary injection context, allowing code inside the callback to call `inject()`.
 
 IMPORTANT: Always capture dependencies at the class level when possible. Use `injector.get()` for simple deferred retrieval, and `runInInjectionContext()` only when external code needs to call `inject()`.
 
@@ -671,7 +671,7 @@ This section provides detailed information about specific Angular DI error codes
 
 ### NullInjectorError: No provider for [Service]
 
-**Error code:** None (displayed as `NullInjectorError`)
+**Error code:** [NG0201](errors/NG0201)
 
 This error occurs when Angular cannot find a provider for a token in the injector hierarchy. The error message includes a dependency path showing where the injection was attempted.
 
@@ -855,12 +855,12 @@ Angular allows `inject()` in these locations:
    })
    export class UserProfile {
      private userService: UserClient;
+     user: ReturnType<UserClient['getUser']>;
 
      constructor() {
        this.userService = inject(UserClient); // Valid
+       this.user = this.userService.getUser();
      }
-
-     user = this.userService.getUser();
    }
    ```
 
@@ -882,7 +882,7 @@ Angular allows `inject()` in these locations:
 4. **Inside runInInjectionContext()**
 
    ```angular-ts
-   import {Component, inject, Injector} from '@angular/core';
+   import {Component, inject, Injector, runInInjectionContext} from '@angular/core';
    import {UserClient} from './user-client';
 
    @Component({
@@ -893,7 +893,7 @@ Angular allows `inject()` in these locations:
      private injector = inject(Injector);
 
      loadUser() {
-       this.injector.runInInjectionContext(() => {
+       runInInjectionContext(this.injector, () => {
          const userService = inject(UserClient); // Valid
          console.log(userService.getUser());
        });
@@ -934,7 +934,7 @@ private userService = inject(UserClient) // Capture at class level
 private injector = inject(Injector)
 
 someCallback() {
-  this.injector.runInInjectionContext(() => {
+  runInInjectionContext(this.injector, () => {
     const service = inject(MyClient)
   })
 }

@@ -72,7 +72,7 @@ bootstrapApplication(App, appConfig);
 The `bootstrapApplication()` method creates a child injector of the platform injector which is configured by the `ApplicationConfig` instance.
 This is the `root` `EnvironmentInjector`.
 
-The `platformBrowserDynamic()` method creates an injector configured by a `PlatformModule`, which contains platform-specific dependencies.
+The `bootstrapApplication()` method also creates (or reuses) the platform injector, which contains platform-specific dependencies.
 This allows multiple applications to share a platform configuration.
 For example, a browser has only one URL bar, no matter how many applications you have running.
 You can configure additional platform-specific providers at the platform level by supplying `extraProviders` using the `platformBrowser()` function.
