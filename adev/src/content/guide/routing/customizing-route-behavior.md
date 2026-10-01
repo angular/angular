@@ -472,8 +472,7 @@ You can register a custom strategy through Angular's dependency injection system
 
 ```ts
 import {ApplicationConfig} from '@angular/core';
-import {provideRouter} from '@angular/router';
-import {UrlHandlingStrategy} from '@angular/router';
+import {provideRouter, UrlHandlingStrategy} from '@angular/router';
 
 export const appConfig: ApplicationConfig = {
   providers: [
