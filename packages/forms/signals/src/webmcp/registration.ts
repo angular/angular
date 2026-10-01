@@ -65,6 +65,9 @@ async function initWebMcpForm(
         // Response text is currently hard-coded by the framework and trusted or derived from application
         // errors which are considered trusted.
         untrustedContentHint: false,
+
+        // Forms are end-user UI elements, not developer-facing debugging tools.
+        debugging: false,
       },
       execute: async (args: Record<string, unknown> | unknown[]) => {
         // Populate the form with changes from the agent.
