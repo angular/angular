@@ -185,7 +185,7 @@ CRITICAL: If you don't specify the phase, `afterRenderEffect` runs callbacks dur
 
 #### Phase executions
 
-The `earlyRead` phase callback receives no parameters. Each subsequent phase receives the return value of the previous phase's callback as a Signal. You can use this to coordinate work across phases.
+The `earlyRead` phase callback receives only the cleanup function. Each subsequent phase receives the return value of the previous phase's callback as a Signal. You can use this to coordinate work across phases.
 
 Effects run in the following phase order:
 

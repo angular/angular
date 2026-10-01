@@ -26,7 +26,7 @@ The `ActivatedRoute` can provide different information about the route. Some com
 
 | Property      | Details                                                                                                                           |
 | :------------ | :-------------------------------------------------------------------------------------------------------------------------------- |
-| `url`         | An `Observable` of the route paths, represented as an array of strings for each part of the route path.                           |
+| `url`         | An `Observable` of the route paths, represented as an array of `UrlSegment` objects for each part of the route path.              |
 | `data`        | An `Observable` that contains the `data` object provided for the route. Also contains any resolved values from the resolve guard. |
 | `params`      | An `Observable` that contains the required and optional parameters specific to the route.                                         |
 | `queryParams` | An `Observable` that contains the query parameters available to all routes.                                                       |
@@ -59,7 +59,7 @@ export class UserProfile {
     // Access multiple route elements
     const snapshot = this.route.snapshot;
     console.log({
-      url: snapshot.url, // https://www.angular.dev
+      url: snapshot.url, // Array of UrlSegments matched by this route
       // Route parameters object: {id: '123'}
       params: snapshot.params,
       // Query parameters object: {role: 'admin', status: 'active'}
@@ -255,9 +255,7 @@ If you need to add multiple classes onto the element, you can use either a space
 <a routerLink="/user/bob" [routerLinkActive]="['class1', 'class2']">Bob</a>
 ```
 
-When you specify a value for routerLinkActive, you are also defining the same value for `ariaCurrentWhenActive`. This makes sure that visually impaired users (which may not perceive the different styling being applied) can also identify the active button.
-
-If you want to define a different value for aria, you’ll need to explicitly set the value using the `ariaCurrentWhenActive` directive.
+Setting `routerLinkActive` alone does not set `aria-current`. Set the `ariaCurrentWhenActive` input, as in the example above, so that visually impaired users (which may not perceive the different styling being applied) can also identify the active link.
 
 ### Route matching strategy
 

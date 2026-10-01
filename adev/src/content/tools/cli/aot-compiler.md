@@ -45,7 +45,7 @@ In the following example, the `@Component()` metadata object and the class const
 ```angular-ts
 @Component({
   selector: 'app-typical',
-  template: '<div>A typical component for {{data.name}}</div>',
+  template: '<div>A typical component for {{data().name}}</div>',
 })
 export class Typical {
   data = input.required<TypicalData>();
@@ -60,11 +60,11 @@ When it needs to create a `Typical` instance, Angular calls the factory, which p
 
 There are three phases of AOT compilation.
 
-|     | Phase                  | Details                                                                                                                                                                                                                                                                                                        |
-| :-- | :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | code analysis          | In this phase, the TypeScript compiler and _AOT collector_ create a representation of the source. The collector does not attempt to interpret the metadata it collects. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.                              |
-| 2   | code generation        | In this phase, the compiler's `StaticReflector` interprets the metadata collected in phase 1, performs additional validation of the metadata, and throws an error if it detects a metadata restriction violation.                                                                                              |
-| 3   | template type checking | In this optional phase, the Angular _template compiler_ uses the TypeScript compiler to validate the binding expressions in templates. You can enable this phase explicitly by setting the `strictTemplates` configuration option; see [Angular compiler options](reference/configs/angular-compiler-options). |
+|     | Phase                  | Details                                                                                                                                                                                                                                                                                                                     |
+| :-- | :--------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | code analysis          | In this phase, the TypeScript compiler and _AOT collector_ create a representation of the source. The collector does not attempt to interpret the metadata it collects. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.                                           |
+| 2   | code generation        | In this phase, the compiler's `StaticReflector` interprets the metadata collected in phase 1, performs additional validation of the metadata, and throws an error if it detects a metadata restriction violation.                                                                                                           |
+| 3   | template type checking | In this phase, the Angular _template compiler_ uses the TypeScript compiler to validate the binding expressions in templates. Strict checking in this phase is enabled by default and controlled by the `strictTemplates` configuration option; see [Angular compiler options](reference/configs/angular-compiler-options). |
 
 ### Metadata restrictions
 
@@ -294,7 +294,7 @@ for these methods to see how macros can simplify configuration of complex [NgMod
 One of the Angular compiler's most helpful features is the ability to type-check expressions within templates, and catch any errors before they cause crashes at runtime.
 In the template type-checking phase, the Angular template compiler uses the TypeScript compiler to validate the binding expressions in templates.
 
-Enable this phase explicitly by adding the compiler option `"strictTemplates"` in the `"angularCompilerOptions"` of the project's TypeScript configuration file
+Strict checking in this phase is enabled by default and controlled by the compiler option `"strictTemplates"` in the `"angularCompilerOptions"` of the project's TypeScript configuration file
 (see [Angular Compiler Options](reference/configs/angular-compiler-options)).
 
 Template validation produces error messages when a type error is detected in a template binding
@@ -332,7 +332,7 @@ If the error is in an attribute binding such as `[value]="person.address.street"
 location is the location of the attribute that contains the error.
 
 The validation uses the TypeScript type checker and the options supplied to the TypeScript compiler to control how detailed the type validation is.
-For example, if the `strictTypeChecks` is specified, the error
+For example, if the `strictNullChecks` TypeScript option is enabled, the error
 
 ```shell {hideCopy}
 

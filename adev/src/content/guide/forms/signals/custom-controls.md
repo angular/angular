@@ -175,7 +175,7 @@ Control whether users can interact with your field:
 | `readonly`        | Whether the field is readonly (visible but not editable) |
 | `hidden`          | Whether the field is hidden from view                    |
 
-NOTE: `disabledReasons` is an array of `DisabledReason` objects. Each object has a `field` property (reference to the field tree) and an optional `message` property. Access the message via `reason.message`.
+NOTE: `disabledReasons` is an array of `DisabledReason` objects. Each object has a `fieldTree` property (reference to the field tree) and an optional `message` property. Access the message via `reason.message`.
 
 #### Validation constraints
 

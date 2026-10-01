@@ -446,7 +446,7 @@ The `fakeAsync` helper function is another mock clock that relies on patching as
 
 TIP: Prefer using native async testing strategies or other fake timers (also called mock clocks) like those from Vitest or Jasmine.
 
-IMPORTANT: `fakeAsync` cannot be used with the Vitest test runner as no `zone.js` patch is applied for this runner.
+IMPORTANT: `fakeAsync` requires `zone.js`. To use it with the Vitest test runner, add the `zone.js/plugins/vitest-patch` polyfill as described in [the Vitest migration guide](guide/testing/migrating-to-vitest#zonejs-vitest-patch).
 
 ## Component with inputs and outputs
 
@@ -558,7 +558,7 @@ it('should raise selected event when clicked (triggerEventHandler)', () => {
 });
 ```
 
-The component's `selected` property returns an `EventEmitter`, which looks like an RxJS synchronous `Observable` to consumers.
+The component's `selected` property is an `OutputEmitterRef`, whose `subscribe` method notifies subscribers synchronously.
 The test subscribes to it _explicitly_ just as the host component does _implicitly_.
 
 If the component behaves as expected, clicking the hero's element should tell the component's `selected` property to emit the `hero` object.
@@ -567,7 +567,7 @@ The test detects that event through its subscription to `selected`.
 
 ### `triggerEventHandler`
 
-The `heroDe` in the previous test is a `DebugElement` that represents the hero `<div>`.
+The `heroDe` in the previous test is a `DebugElement` that represents the hero `<button>`.
 
 It has Angular properties and methods that abstract interaction with the native element.
 This test calls the `DebugElement.triggerEventHandler` with the "click" event name.

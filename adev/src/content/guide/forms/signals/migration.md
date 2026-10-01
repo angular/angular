@@ -503,7 +503,7 @@ import {BasicInput} from './basic-input';
     </form>
     <p>Text: {{ reactiveFormGroup.value.reactiveControlName }}</p>
   `,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, BasicInput],
 })
 export class ExampleComponent {
   readonly reactiveFormGroup = new FormGroup({

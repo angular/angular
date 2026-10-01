@@ -25,14 +25,6 @@ ng generate my-schematic-collection:my-schematic-name
 
 ```
 
-or
-
-```shell
-
-ng generate my-schematic-name --collection collection-name
-
-```
-
 ### Configuring CLI schematics
 
 A JSON schema associated with a schematic tells the Angular CLI what options are available to commands and sub-commands, and determines the defaults.

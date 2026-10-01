@@ -132,9 +132,9 @@ If a template depends on reactive forms state, connect forms observables to a ch
 
 ### Using Zoneless in `TestBed`
 
-`TestBed` uses Zone-based change detection by default when `zone.js` is loaded via the `polyfills`.
+`TestBed` uses zoneless change detection by default, even when `zone.js` is loaded via the `polyfills`.
 
-If `zone.js` is not present, `TestBed` runs zoneless by default. To force zoneless mode when `zone.js` is loaded, add `provideZonelessChangeDetection()`:
+To use Zone-based change detection in a test, add `provideZoneChangeDetection()` to the `TestBed` providers. Adding `provideZonelessChangeDetection()` is optional:
 
 ```typescript
 TestBed.configureTestingModule({

@@ -70,7 +70,7 @@ With the pipe logic implemented, the final step is to use it in the template. In
 ```angular-ts {highlight:[3,4]}
 @Component({
   ...
-  template: `Reverse Machine: {{ word | reverse }}`
+  template: `Reverse Machine: {{ word | reverse }}`,
   imports: [ReversePipe]
 })
 ```

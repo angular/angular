@@ -122,7 +122,7 @@ Use this callback to customize transition behavior based on navigation context. 
 
 ```ts
 import {inject} from '@angular/core';
-import {Router, withViewTransitions, isActive} from '@angular/router';
+import {Router, withViewTransitions, isActive, IsActiveMatchOptions} from '@angular/router';
 
 withViewTransitions({
   onViewTransitionCreated: ({transition}) => {
@@ -130,7 +130,7 @@ withViewTransitions({
     const targetUrl = router.currentNavigation()!.finalUrl!;
 
     // Skip transition if only fragment or query params change
-    const config = {
+    const config: Partial<IsActiveMatchOptions> = {
       paths: 'exact',
       matrixParams: 'exact',
       fragment: 'ignored',
