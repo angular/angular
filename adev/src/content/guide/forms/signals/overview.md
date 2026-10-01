@@ -15,7 +15,7 @@ Signal Forms address these challenges by:
 - **Providing type safety** - Supports fully type safe schemas & bindings between your UI controls and data model
 - **Centralizing validation logic** - Define all validation rules in one place using a validation schema
 
-Signal Forms work best in new applications built with signals. If you're working with an existing application that uses reactive forms, or if you need production stability guarantees, reactive forms remain a solid choice.
+Signal Forms work best in new applications built with signals. If you're working with an existing application that uses reactive forms, reactive forms remain a solid choice.
 
 NOTE: If you're coming from template or reactive forms, you may be interested in the [comparison guide](guide/forms/signals/comparison).
 
