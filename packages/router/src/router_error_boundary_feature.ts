@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken} from '@angular/core';
-import type {EnvironmentInjector, ErrorDetails} from '@angular/core';
+import {InjectionToken, type EnvironmentInjector, type ErrorDetails} from '@angular/core';
 
 import type {RouterOutlet} from './directives/router_outlet';
 import type {ChildrenOutletContexts} from './router_outlet_context';

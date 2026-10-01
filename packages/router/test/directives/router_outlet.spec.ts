@@ -1373,8 +1373,389 @@ describe('Error boundaries and errorComponent integration', () => {
 
     expect(telemetryError).not.toBeNull();
     expect((telemetryError as any)?.message).toBe('Telemetry Error');
-    // The global hook is configured at the root, so it must not see the route's providers.
     expect(injectedRootValue as string | null).toBe('root');
+  });
+
+  it('bubbles error up to template boundary even if onError is provided', async () => {
+    let telemetryError: Error | null = null;
+
+    @Component({
+      template: '',
+    })
+    class ThrowingComponent {
+      ngOnInit() {
+        throw new Error('Telemetry Error');
+      }
+    }
+
+    @Component({
+      imports: [RouterOutlet],
+      template: `
+        @boundary {
+          <router-outlet />
+        } @error (let err) {
+          <div class="boundary-catch">Caught by template boundary: {{ err.message }}</div>
+        }
+      `,
+    })
+    class RootBoundaryComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'telemetry',
+              component: ThrowingComponent,
+              // No errorComponent provided
+            },
+          ],
+          withErrorBoundaries({
+            onError: (err) => {
+              telemetryError = err;
+            },
+          }),
+        ),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    const fixture = await createRoot(router, RootBoundaryComponent);
+    await router.navigateByUrl('/telemetry');
+    await advance(fixture);
+
+    // Verify the global hook was still invoked
+    expect(telemetryError).not.toBeNull();
+    expect((telemetryError as any)?.message).toBe('Telemetry Error');
+    // Verify it still bubbled up to the template boundary
+    expect(fixture.nativeElement.innerHTML).toContain(
+      'Caught by template boundary: Telemetry Error',
+    );
+  });
+
+  it('bypasses canDeactivate guards when the error component is active', async () => {
+    let guardExecutionCount = 0;
+
+    @Component({
+      template: '',
+    })
+    class ThrowingComponent {
+      hasUnsavedChanges(): boolean {
+        return false;
+      }
+
+      ngOnInit() {
+        throw new Error('Crash in OnInit');
+      }
+    }
+
+    @Component({
+      template: 'Error View',
+    })
+    class ErrorViewComponent {}
+
+    @Component({
+      template: 'Home View',
+    })
+    class HomeComponent {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'home',
+              component: HomeComponent,
+            },
+            {
+              path: 'editor',
+              component: ThrowingComponent,
+              errorComponent: ErrorViewComponent,
+              canDeactivate: [
+                (comp: ThrowingComponent) => {
+                  guardExecutionCount++;
+                  return !comp.hasUnsavedChanges();
+                },
+              ],
+            },
+          ],
+          withErrorBoundaries(),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/editor');
+    await harness.fixture.whenStable();
+
+    // Verify error component is shown
+    expect(harness.routeNativeElement?.innerHTML).toContain('Error View');
+
+    // Attempt to navigate away
+    const router = TestBed.inject(Router);
+    const navResult = await router.navigateByUrl('/home');
+
+    expect(navResult).toBe(true);
+    // The guard should NOT have been executed at all, since the primary component was destroyed and errorComponent is active.
+    expect(guardExecutionCount).toBe(0);
+  });
+
+  it('recovers from the error component when navigating to the same route with different parameters', async () => {
+    let constructorCount = 0;
+    let shouldCrash = true;
+
+    @Component({
+      template: 'Product',
+    })
+    class ProductDetails {
+      constructor() {
+        constructorCount++;
+        if (shouldCrash) {
+          throw new Error('Crash on 1');
+        }
+      }
+    }
+
+    @Component({
+      template: 'Error',
+    })
+    class ProductErrorFallback {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'product/:id',
+              component: ProductDetails,
+              errorComponent: ProductErrorFallback,
+            },
+          ],
+          withErrorBoundaries(),
+          withComponentInputBinding(),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+
+    // Navigate to product 1, which crashes.
+    await harness.navigateByUrl('/product/1');
+    await harness.fixture.whenStable();
+
+    // Verify error component is shown
+    expect(harness.routeNativeElement?.innerHTML).toContain('Error');
+    expect(constructorCount).toBe(1);
+
+    // Now navigate to product 2.
+    shouldCrash = false;
+    await harness.navigateByUrl('/product/2');
+    await harness.fixture.whenStable();
+
+    // The primary component MUST be rendered for Product 2.
+    expect(harness.routeNativeElement?.innerHTML).toContain('Product');
+    // And the primary component MUST have been instantiated a second time!
+    expect(constructorCount).toBe(2);
+
+    // If we navigate to yet another product without crashing, the component MUST be reused!
+    await harness.navigateByUrl('/product/3');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.innerHTML).toContain('Product');
+    // The constructor should NOT have been called again.
+    expect(constructorCount).toBe(2);
+  });
+
+  it('bubbles child component crashes to the parent error boundary', async () => {
+    let parentErrorShown = false;
+
+    @Component({
+      template: 'Parent <router-outlet></router-outlet>',
+      imports: [RouterOutlet],
+    })
+    class ParentComponent {}
+
+    @Component({
+      template: 'Parent Error',
+    })
+    class ParentErrorFallback {
+      constructor() {
+        console.trace('ParentErrorFallback instantiated!');
+        parentErrorShown = true;
+      }
+    }
+
+    @Component({template: 'Child'})
+    class ChildComponent {
+      constructor() {
+        throw new Error('Child crash');
+      }
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'parent',
+              component: ParentComponent,
+              errorComponent: ParentErrorFallback,
+              children: [
+                {
+                  path: 'child',
+                  component: ChildComponent,
+                },
+              ],
+            },
+          ],
+          withErrorBoundaries(),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+
+    try {
+      await harness.navigateByUrl('/parent/child');
+    } catch (e) {}
+
+    await harness.fixture.whenStable();
+
+    // If error boundaries are hierarchical, the parent error component should catch the child's crash!
+    // And it DOES! Thanks to Angular's view-level onError bubbling.
+    expect(parentErrorShown).toBe(true);
+    expect(harness.routeNativeElement?.innerHTML).toContain('Parent Error');
+  });
+
+  it('does not emit activateEvents or deactivateEvents for the errorComponent', async () => {
+    let activateCount = 0;
+    let activatedInstance: any = null;
+    let deactivateCount = 0;
+    let deactivatedInstance: any = null;
+
+    @Component({
+      template: 'Product',
+    })
+    class ProductDetails {
+      constructor() {
+        throw new Error('Crash');
+      }
+    }
+
+    @Component({
+      template: 'Error',
+    })
+    class ProductErrorFallback {}
+
+    @Component({
+      template:
+        '<router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)"></router-outlet>',
+      imports: [RouterOutlet],
+    })
+    class AppCmp {
+      onActivate(instance: any) {
+        activateCount++;
+        activatedInstance = instance;
+      }
+      onDeactivate(instance: any) {
+        deactivateCount++;
+        deactivatedInstance = instance;
+      }
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'product/:id',
+              component: ProductDetails,
+              errorComponent: ProductErrorFallback,
+            },
+            {
+              path: 'other',
+              component: ProductErrorFallback, // Just something else to navigate to
+            },
+          ],
+          withErrorBoundaries(),
+        ),
+      ],
+    });
+
+    const fixture = TestBed.createComponent(AppCmp);
+    const router = TestBed.inject(Router);
+    fixture.detectChanges();
+
+    await router.navigateByUrl('/product/1');
+    fixture.detectChanges();
+
+    // Verify error component is shown
+    expect(fixture.nativeElement.innerHTML).toContain('Error');
+
+    // activateEvents should NOT emit the error component instance
+    expect(activateCount).toBe(0);
+
+    // Navigate away to trigger deactivation of the error component
+    await router.navigateByUrl('/other');
+    fixture.detectChanges();
+
+    // deactivateEvents should NOT emit the error component instance, maintaining symmetry with activateEvents
+    expect(deactivateCount).toBe(0);
+  });
+
+  it('renders the errorComponent of a componentless parent route if a child crashes', async () => {
+    @Component({
+      template: 'Product',
+    })
+    class ProductDetails {
+      constructor() {
+        throw new Error('Crash');
+      }
+    }
+
+    @Component({
+      template: 'Componentless Error',
+    })
+    class ComponentlessErrorFallback {}
+
+    @Component({
+      template: '<router-outlet></router-outlet>',
+      imports: [RouterOutlet],
+    })
+    class AppCmp {}
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'parent',
+              // No component here! It's a componentless route
+              errorComponent: ComponentlessErrorFallback,
+              children: [
+                {
+                  path: 'child',
+                  component: ProductDetails,
+                },
+              ],
+            },
+          ],
+          withErrorBoundaries(),
+        ),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+
+    try {
+      await harness.navigateByUrl('/parent/child');
+    } catch (e) {}
+
+    await harness.fixture.whenStable();
+
+    // The router should render the ComponentlessErrorFallback
+    // BUT since the componentless route doesn't have an outlet, its errorComponent might be ignored!
+    expect(harness.routeNativeElement?.innerHTML).toContain('Componentless Error');
   });
 
   it('does not catch errors when the error boundary feature is not enabled', async () => {
@@ -1530,6 +1911,190 @@ describe('Error boundaries and errorComponent integration', () => {
     await harness.fixture.whenStable();
 
     expect(harness.routeNativeElement?.innerText).toContain('Parent Caught Error: Child Failed');
+  });
+
+  it('unmounts parent component and renders parent errorComponent when child route throws without its own errorComponent', async () => {
+    @Component({
+      imports: [RouterOutlet],
+      template: '<h1>Parent Layout</h1><router-outlet />',
+    })
+    class ParentLayoutComponent {}
+
+    @Component({
+      template: 'Child Content',
+    })
+    class ThrowingChildComponent {
+      ngOnInit() {
+        throw new Error('Child Page Failed');
+      }
+    }
+
+    @Component({
+      template: '<div class="parent-error">Parent Fallback: {{ error?.message }}</div>',
+    })
+    class ParentErrorComponent {
+      @Input() error?: Error;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouterWithBoundaries([
+          {
+            path: 'parent',
+            component: ParentLayoutComponent,
+            errorComponent: ParentErrorComponent,
+            children: [
+              {
+                path: 'child',
+                component: ThrowingChildComponent,
+              },
+            ],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/parent/child');
+    await harness.fixture.whenStable();
+
+    // The parent route's errorComponent is rendered with the error that bubbled from the child
+    expect(harness.routeNativeElement?.innerText).toContain('Parent Fallback: Child Page Failed');
+    // The entire parent component is destroyed and replaced (the parent layout header is no longer rendered)
+    expect(harness.routeNativeElement?.innerText).not.toContain('Parent Layout');
+  });
+
+  it('keeps parent layout and child component mounted when error is caught by child template boundary', async () => {
+    @Component({
+      selector: 'crashing-widget',
+      template: '',
+    })
+    class CrashingWidget {
+      ngOnInit() {
+        throw new Error('Nested Widget Crash');
+      }
+    }
+
+    @Component({
+      imports: [RouterOutlet],
+      template: '<h1>Parent Layout</h1><router-outlet />',
+    })
+    class ParentLayoutComponent {}
+
+    @Component({
+      imports: [CrashingWidget],
+      template: `
+        <h2>Child Content</h2>
+        @boundary {
+          <crashing-widget />
+        } @error (let err) {
+          <p class="child-caught">Caught locally: {{ err.message }}</p>
+        }
+      `,
+    })
+    class ChildWithBoundaryComponent {}
+
+    @Component({
+      template: 'Parent Fallback: {{ error?.message }}',
+    })
+    class ParentErrorComponent {
+      @Input() error?: Error;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouterWithBoundaries([
+          {
+            path: 'parent',
+            component: ParentLayoutComponent,
+            errorComponent: ParentErrorComponent,
+            children: [
+              {
+                path: 'child',
+                component: ChildWithBoundaryComponent,
+              },
+            ],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/parent/child');
+    await harness.fixture.whenStable();
+
+    // 1. Child template boundary caught the error locally
+    expect(harness.routeNativeElement?.innerText).toContain('Caught locally: Nested Widget Crash');
+    // 2. Child component remains mounted
+    expect(harness.routeNativeElement?.innerText).toContain('Child Content');
+    // 3. Parent layout remains mounted because error was not bubbled to router
+    expect(harness.routeNativeElement?.innerText).toContain('Parent Layout');
+    // 4. Parent route errorComponent was NOT rendered
+    expect(harness.routeNativeElement?.innerText).not.toContain('Parent Fallback');
+  });
+
+  it('catches error in parent template boundary when parent wraps router-outlet inside @if and @boundary', async () => {
+    @Component({
+      template: '',
+    })
+    class ThrowingChildComponent {
+      ngOnInit() {
+        throw new Error('Child Failed');
+      }
+    }
+
+    @Component({
+      imports: [RouterOutlet],
+      template: `
+        <h1>Parent Layout Header</h1>
+        @if (true) {
+          @boundary {
+            <router-outlet />
+          } @error (let err) {
+            <div class="template-fallback">Caught by template boundary: {{ err.message }}</div>
+          }
+        }
+      `,
+    })
+    class ParentWithTemplateBoundaryComponent {}
+
+    @Component({
+      template: '<div class="route-error-fallback">Parent Route Error: {{ error?.message }}</div>',
+    })
+    class ParentRouteErrorComponent {
+      @Input() error?: Error;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouterWithBoundaries([
+          {
+            path: 'parent',
+            component: ParentWithTemplateBoundaryComponent,
+            errorComponent: ParentRouteErrorComponent,
+            children: [
+              {
+                path: 'child',
+                component: ThrowingChildComponent,
+              },
+            ],
+          },
+        ]),
+      ],
+    });
+
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/parent/child');
+    await harness.fixture.whenStable();
+
+    // 1. The template boundary inside Parent caught the error
+    expect(harness.routeNativeElement?.innerHTML).toContain(
+      'Caught by template boundary: Child Failed',
+    );
+    // 2. The parent component remains mounted (layout header is preserved)
+    expect(harness.routeNativeElement?.innerHTML).toContain('Parent Layout Header');
+    // 3. The parent route errorComponent is NOT rendered because the template boundary caught it
+    expect(harness.routeNativeElement?.innerHTML).not.toContain('Parent Route Error');
   });
 
   it('binds route params, data, and blocking resources to errorComponent when withComponentInputBinding is enabled', async () => {
