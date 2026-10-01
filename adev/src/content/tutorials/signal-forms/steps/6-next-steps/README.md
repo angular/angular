@@ -29,6 +29,6 @@ Ready to learn more? Here are recommended next steps:
 
 ## Keep learning
 
-IMPORTANT: Signal Forms is experimental, so check the [official documentation](guide/forms/signals/overview) for updates to the API.
+Check the [official documentation](guide/forms/signals/overview) for the complete Signal Forms API.
 
 Happy coding!
