@@ -132,7 +132,6 @@ export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'naviga
             {path: 'error', component: BlankCmp},
           ],
           {
-            resolveNavigationPromiseOnError: true,
             errorHandler: () => new RedirectCommand(inject(Router).parseUrl('/error')),
           },
         ),
@@ -171,7 +170,6 @@ export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'naviga
             },
             {path: 'error', component: BlankCmp},
           ],
-          withRouterConfig({resolveNavigationPromiseOnError: true}),
           withNavigationErrorHandler(() => new RedirectCommand(inject(Router).parseUrl('/error'))),
         ),
       ],
@@ -217,6 +215,34 @@ export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'naviga
       ],
     });
     const router = TestBed.inject(Router);
+  });
+
+  it('can redirect from error handler when a component throws during activation alongside a secondary outlet', async () => {
+    let errors = 0;
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {path: 'throwing', component: ThrowingCmp},
+            {path: 'user/:name', outlet: 'aux', component: UserCmp},
+            {path: 'error', component: SimpleCmp},
+          ],
+          withNavigationErrorHandler(() => {
+            errors++;
+            return errors <= 3 ? new RedirectCommand(inject(Router).parseUrl('/error')) : undefined;
+          }),
+        ),
+      ],
+    });
+    const router = TestBed.inject(Router);
+    const fixture = await createRoot(router, RootCmp);
+
+    await router.navigateByUrl('/throwing(aux:user/victor)');
+    await advance(fixture);
+
+    expect(errors).toBe(1);
+    expect(router.url).toEqual('/error');
+    expect(fixture.nativeElement).toHaveText('simple');
   });
 
   // Errors should behave the same for both deferred and eager URL update strategies
