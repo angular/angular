@@ -80,7 +80,7 @@ ng generate @angular/core:output-migration --path src/app/sub-folder
 ## Exceptions
 
 In some cases, the migration will not touch the code.
-One of these exceptions is the case where the event is used with a `pipe()` method.
+One of these exceptions is the case where the event is used with a `pipe()` method outside a test file.
 The following code won't be migrated:
 
 ```typescript
@@ -94,3 +94,7 @@ export class MyDialogComponent {
   }
 }
 ```
+
+In a test file the migration rewrites the usage instead of skipping the output, so `this.close.pipe(…)` becomes `outputToObservable(this.close).pipe(…)`.
+
+NOTE: The migration recognizes a test file by looking for an import whose path contains `jasmine` or `catalyst`. It does not recognize a file that only imports Jest or Vitest, so it skips the output there instead of rewriting it.
