@@ -372,6 +372,8 @@ export abstract class NgControl extends AbstractControlDirective {
       () => {
         convertedErrors = convertedParseErrors();
         this.control?.updateValueAndValidity({emitEvent: false});
+        // `emitEvent: false` skips `statusChanges`, so mark the view dirty explicitly.
+        this.injector?.get(ChangeDetectorRef).markForCheck();
       },
       {injector: this.injector},
     );

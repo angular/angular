@@ -1351,6 +1351,77 @@ describe('ControlValueAccessor', () => {
     });
   });
 
+  describe('parse errors', () => {
+    @Component({
+      selector: 'parsing-input',
+      template: `
+        <input #i [value]="text()" (input)="text.set(i.value)" />
+        <p>{{ errors().length }}</p>
+      `,
+    })
+    class ParsingInput {
+      readonly value = model<number | null>(null);
+      readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
+      protected readonly text = transformedValue(this.value, {
+        parse: (val) => {
+          if (val === '') return {value: null};
+          const num = Number(val);
+          return Number.isNaN(num)
+            ? {error: {kind: 'parse', message: `${val} is not numeric`}}
+            : {value: num};
+        },
+        format: (val) => val?.toString() ?? '',
+      });
+    }
+
+    function typeInto(fixture: {nativeElement: HTMLElement}, text: string) {
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      input.value = text;
+      input.dispatchEvent(new Event('input'));
+    }
+
+    it('should pass parse errors to the control `errors` input with ngModel', async () => {
+      @Component({
+        template: `<parsing-input [(ngModel)]="val" />`,
+        imports: [ParsingInput, FormsModule],
+      })
+      class TestCmp {
+        val = signal<number | null>(10);
+      }
+
+      const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+      const paragraph = fixture.nativeElement.querySelector('p') as HTMLElement;
+      expect(paragraph.textContent).toBe('0');
+
+      await actAsync(() => typeInto(fixture, 'abc'));
+      await fixture.whenStable();
+
+      expect(paragraph.textContent).toBe('1');
+    });
+
+    it('should pass parse errors to the control `errors` input with [formControl]', async () => {
+      @Component({
+        template: `<parsing-input [formControl]="control" />`,
+        imports: [ParsingInput, ReactiveFormsModule],
+      })
+      class TestCmp {
+        readonly control = new FormControl<number | null>(10);
+      }
+
+      const fixture = await actAsync(() => TestBed.createComponent(TestCmp));
+      const paragraph = fixture.nativeElement.querySelector('p') as HTMLElement;
+      expect(paragraph.textContent).toBe('0');
+
+      await actAsync(() => typeInto(fixture, 'abc'));
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.control.errors).toEqual({
+        parse: jasmine.objectContaining({kind: 'parse'}),
+      });
+      expect(paragraph.textContent).toBe('1');
+    });
+  });
+
   describe('reset', () => {
     it('should unconditionally call writeValue on CVA during reset', () => {
       // --- 1. Component Setup ---
