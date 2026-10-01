@@ -8,7 +8,12 @@
 
 import {InjectionToken} from '@angular/core';
 
-import {OnSameUrlNavigation, QueryParamsHandling, RedirectCommand} from './models';
+import {
+  OnSameUrlNavigation,
+  QueryParamsHandling,
+  QueryParamsHandlingFn,
+  RedirectCommand,
+} from './models';
 
 /**
  * Allowed values in an `ExtraOptions` object that configure
@@ -119,14 +124,19 @@ export interface RouterConfigOptions {
    * When neither the default nor the queryParamsHandling option is specified in the call to `createUrlTree`,
    * the current parameters will be replaced by new parameters.
    *
+   * To keep only specific parameters on every navigation, use a function. For example,
+   * `(current) => ({lang: current['lang']})` keeps the `lang` parameter across navigations,
+   * while allowing navigations to set or override other parameters.
+   *
    * @see {@link Router#createUrlTree}
    * @see {@link QueryParamsHandling}
+   * @see {@link QueryParamsHandlingFn}
    * 
    * @see [Choose default query parameter handling](guide/routing/customizing-route-behavior#choose-default-query-parameter-handling)
 
    * 
    */
-  defaultQueryParamsHandling?: QueryParamsHandling;
+  defaultQueryParamsHandling?: QueryParamsHandling | QueryParamsHandlingFn;
 
   /**
    * When `true`, the `Promise` will instead resolve with `false`, as it does with other failed

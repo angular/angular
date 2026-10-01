@@ -473,16 +473,16 @@ export class Router {
     const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
       navigationExtras;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
-    let q: Params | null = null;
-    switch (queryParamsHandling ?? this.options.defaultQueryParamsHandling) {
-      case 'merge':
-        q = {...this.currentUrlTree.queryParams, ...queryParams};
-        break;
-      case 'preserve':
-        q = this.currentUrlTree.queryParams;
-        break;
-      default:
-        q = queryParams || null;
+    const handling = queryParamsHandling ?? this.options.defaultQueryParamsHandling;
+    let q: Params | null;
+    if (typeof handling === 'function') {
+      q = {...handling(this.currentUrlTree.queryParams), ...queryParams};
+    } else if (handling === 'merge') {
+      q = {...this.currentUrlTree.queryParams, ...queryParams};
+    } else if (handling === 'preserve') {
+      q = this.currentUrlTree.queryParams;
+    } else {
+      q = queryParams || null;
     }
     if (q !== null) {
       q = this.removeEmptyProps(q);

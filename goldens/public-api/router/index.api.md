@@ -610,6 +610,9 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
 export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
 // @public
+export type QueryParamsHandlingFn = (current: Readonly<Params>) => Params;
+
+// @public
 export class RedirectCommand extends Error {
     constructor(redirectTo: UrlTree, navigationBehaviorOptions?: NavigationBehaviorOptions | undefined);
     // (undocumented)
@@ -775,7 +778,7 @@ export const ROUTER_OUTLET_DATA: InjectionToken<Signal<unknown>>;
 // @public
 export interface RouterConfigOptions {
     canceledNavigationResolution?: 'replace' | 'computed';
-    defaultQueryParamsHandling?: QueryParamsHandling;
+    defaultQueryParamsHandling?: QueryParamsHandling | QueryParamsHandlingFn;
     onSameUrlNavigation?: OnSameUrlNavigation;
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     resolveNavigationPromiseOnError?: boolean;
@@ -850,9 +853,9 @@ class RouterLink implements OnChanges, OnDestroy {
     set queryParams(value: Params | null | undefined);
     // (undocumented)
     get queryParams(): Params | null | undefined;
-    set queryParamsHandling(value: QueryParamsHandling | null | undefined);
+    set queryParamsHandling(value: QueryParamsHandling | QueryParamsHandlingFn | null | undefined);
     // (undocumented)
-    get queryParamsHandling(): QueryParamsHandling | null | undefined;
+    get queryParamsHandling(): QueryParamsHandling | QueryParamsHandlingFn | null | undefined;
     protected readonly reactiveHref: i0.WritableSignal<string | null>;
     set relativeTo(value: ActivatedRoute | null | undefined);
     // (undocumented)
@@ -1064,7 +1067,7 @@ export interface UrlCreationOptions {
     fragment?: string;
     preserveFragment?: boolean;
     queryParams?: Params | null;
-    queryParamsHandling?: QueryParamsHandling | null;
+    queryParamsHandling?: QueryParamsHandling | QueryParamsHandlingFn | null;
     relativeTo?: ActivatedRoute | null;
 }
 

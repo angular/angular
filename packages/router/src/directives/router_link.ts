@@ -34,7 +34,7 @@ import {Subject} from 'rxjs';
 
 import {RuntimeErrorCode} from '../errors';
 import {NavigationEnd} from '../events';
-import {QueryParamsHandling} from '../models';
+import {QueryParamsHandling, QueryParamsHandlingFn} from '../models';
 import {Router} from '../router';
 import {ROUTER_CONFIGURATION} from '../router_config';
 import {ActivatedRoute} from '../router_state';
@@ -131,12 +131,22 @@ export class ReactiveRouterState {
  *
  *  - `'merge'`: Merge the given `queryParams` into the current query params.
  *  - `'preserve'`: Preserve the current query params.
+ *  - A {@link QueryParamsHandlingFn}: Select query params to preserve from the current URL.
+ *    Any `queryParams` given for the link merge on top.
  *
  * For example:
  *
  * ```html
  * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}"
  * queryParamsHandling="merge"> link to user component
+ * </a>
+ * ```
+ *
+ * The following link keeps only the `q` query param of the current URL:
+ *
+ * ```html
+ * <a [routerLink]="['/user/bob']" [queryParamsHandling]="(current) => ({q: current['q']})">
+ *   link to user component
  * </a>
  * ```
  *
@@ -200,8 +210,9 @@ export class RouterLink implements OnChanges, OnDestroy {
     if (this._preserveFragment()) {
       this.reactiveRouterState.fragment();
     }
-    const shouldTrackParams = (handling: QueryParamsHandling | undefined | null) =>
-      handling === 'preserve' || handling === 'merge';
+    const shouldTrackParams = (
+      handling: QueryParamsHandling | QueryParamsHandlingFn | undefined | null,
+    ) => handling === 'preserve' || handling === 'merge' || typeof handling === 'function';
     if (
       shouldTrackParams(this._queryParamsHandling()) ||
       shouldTrackParams(this.options?.defaultQueryParamsHandling)
@@ -275,13 +286,17 @@ export class RouterLink implements OnChanges, OnDestroy {
    * @see {@link UrlCreationOptions#queryParamsHandling}
    * @see {@link Router#createUrlTree}
    */
-  @Input() set queryParamsHandling(value: QueryParamsHandling | null | undefined) {
+  @Input() set queryParamsHandling(
+    value: QueryParamsHandling | QueryParamsHandlingFn | null | undefined,
+  ) {
     this._queryParamsHandling.set(value);
   }
-  get queryParamsHandling(): QueryParamsHandling | null | undefined {
+  get queryParamsHandling(): QueryParamsHandling | QueryParamsHandlingFn | null | undefined {
     return untracked(this._queryParamsHandling);
   }
-  private _queryParamsHandling = signal<QueryParamsHandling | null | undefined>(undefined);
+  private _queryParamsHandling = signal<
+    QueryParamsHandling | QueryParamsHandlingFn | null | undefined
+  >(undefined);
   /**
    * Passed to {@link Router#navigateByUrl} as part of the
    * `NavigationBehaviorOptions`.

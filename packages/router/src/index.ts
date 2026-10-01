@@ -56,6 +56,7 @@ export {
   OnSameUrlNavigation,
   PartialMatchRouteSnapshot,
   QueryParamsHandling,
+  QueryParamsHandlingFn,
   RedirectCommand,
   RedirectFunction,
   Resolve,
