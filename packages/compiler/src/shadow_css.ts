@@ -598,7 +598,7 @@ export class ShadowCss {
       if (rule.selector[0] !== '@') {
         if (rule.isBlock) {
           const selectorParts = selector.split(_selectorSplitRe);
-          const containsDeep = selectorParts.some((part) => _shadowDeepSelectors.test(part));
+          const containsDeep = selectorParts.some((part) => _shadowDeepSelectorRe.test(part));
 
           selector = this._scopeSelector({
             selector,
@@ -1013,6 +1013,8 @@ const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s,]*)/;
 // Support for `>>>`, `deep`, `::ng-deep` is then also deprecated and will be removed in the future.
 // see https://github.com/angular/angular/pull/17677
 const _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)|(?:::ng-deep)/g;
+// Non-global copy for `.test()`, which would otherwise carry `lastIndex` over to the next rule.
+const _shadowDeepSelectorRe = new RegExp(_shadowDeepSelectors.source);
 
 // Splits the selector into independent parts by `,` (comma) unless comma is within parenthesis,
 // for example `:is(.one, two)`. Negative lookup after comma allows not splitting inside nested
