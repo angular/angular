@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {
   escapeRegExp,
-  getJitOnPushDefaultForVersion,
+  getJitChangeDetectionDefaultForVersion,
   getJitStandaloneDefaultForVersion,
   splitAtColon,
   stringify,
@@ -111,21 +112,23 @@ describe('util', () => {
     });
   });
 
-  describe('getJitOnPushDefaultForVersion', () => {
-    it('should return true for 0.0.0-PLACEHOLDER (starts with 0.)', () => {
-      expect(getJitOnPushDefaultForVersion('0.0.0-PLACEHOLDER')).toBe(true);
+  describe('getJitChangeDetectionDefaultForVersion', () => {
+    it('should return OnPush for 0.0.0-PLACEHOLDER (starts with 0.)', () => {
+      expect(getJitChangeDetectionDefaultForVersion('0.0.0-PLACEHOLDER')).toBe(
+        ChangeDetectionStrategy.OnPush,
+      );
     });
 
-    it('should return false for versions 1 through 21', () => {
-      expect(getJitOnPushDefaultForVersion('14.2.0')).toBe(false);
-      expect(getJitOnPushDefaultForVersion('20.0.0')).toBe(false);
-      expect(getJitOnPushDefaultForVersion('21.0.0')).toBe(false);
-      expect(getJitOnPushDefaultForVersion('21.2.0')).toBe(false);
+    it('should return Eager for versions 1 through 21', () => {
+      expect(getJitChangeDetectionDefaultForVersion('14.2.0')).toBe(ChangeDetectionStrategy.Eager);
+      expect(getJitChangeDetectionDefaultForVersion('20.0.0')).toBe(ChangeDetectionStrategy.Eager);
+      expect(getJitChangeDetectionDefaultForVersion('21.0.0')).toBe(ChangeDetectionStrategy.Eager);
+      expect(getJitChangeDetectionDefaultForVersion('21.2.0')).toBe(ChangeDetectionStrategy.Eager);
     });
 
-    it('should return true for versions 22 and above', () => {
-      expect(getJitOnPushDefaultForVersion('22.0.0')).toBe(true);
-      expect(getJitOnPushDefaultForVersion('23.0.0')).toBe(true);
+    it('should return OnPush for versions 22 and above', () => {
+      expect(getJitChangeDetectionDefaultForVersion('22.0.0')).toBe(ChangeDetectionStrategy.OnPush);
+      expect(getJitChangeDetectionDefaultForVersion('23.0.0')).toBe(ChangeDetectionStrategy.OnPush);
     });
   });
 });
