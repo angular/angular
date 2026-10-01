@@ -109,7 +109,7 @@ import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 import {compileService} from './service_compiler';
-import {getJitStandaloneDefaultForVersion} from './util';
+import {getJitOnPushDefaultForVersion, getJitStandaloneDefaultForVersion} from './util';
 
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget;
@@ -707,6 +707,8 @@ function convertDeclareComponentFacadeToMetadata(
       kind === R3TemplateDependencyKind.Directive || kind === R3TemplateDependencyKind.NgModule,
   );
 
+  const hasOnPushByDefault = getJitOnPushDefaultForVersion(decl.version);
+
   return {
     ...convertDeclareDirectiveFacadeToMetadata(decl, typeSourceSpan),
     template,
@@ -716,7 +718,9 @@ function convertDeclareComponentFacadeToMetadata(
       decl.viewProviders !== undefined ? new WrappedNodeExpr(decl.viewProviders) : null,
     animations: decl.animations !== undefined ? new WrappedNodeExpr(decl.animations) : null,
     defer,
-    changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.OnPush,
+    changeDetection:
+      decl.changeDetection ??
+      (hasOnPushByDefault ? ChangeDetectionStrategy.OnPush : ChangeDetectionStrategy.Default),
     encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
     declarationListEmitMode: DeclarationListEmitMode.ClosureResolved,
     relativeContextFilePath: '',

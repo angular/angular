@@ -8,6 +8,7 @@
 
 import {core} from '@angular/compiler';
 import {
+  AbstractType,
   ChangeDetectionStrategy,
   Component,
   Directive,
@@ -15,7 +16,6 @@ import {
   forwardRef,
   Pipe,
   Type,
-  AbstractType,
   ViewEncapsulation,
   ɵɵngDeclareComponent,
 } from '../../../src/core';
