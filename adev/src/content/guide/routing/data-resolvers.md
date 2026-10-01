@@ -151,9 +151,8 @@ The [`withNavigationErrorHandler`](api/router/withNavigationErrorHandler) featur
 
 ```ts
 import {bootstrapApplication} from '@angular/platform-browser';
-import {provideRouter, withNavigationErrorHandler} from '@angular/router';
+import {provideRouter, Router, withNavigationErrorHandler} from '@angular/router';
 import {inject} from '@angular/core';
-import {Router} from '@angular/router';
 import {routes} from './app.routes';
 
 bootstrapApplication(App, {
