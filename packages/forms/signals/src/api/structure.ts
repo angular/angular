@@ -74,8 +74,8 @@ export interface FormOptions<TModel> {
      * Set of configuration values extending the core tool behavior.
      */
     annotations?: {
-      // `readOnlyHint` and `untrustedContentHint` are intentionally omitted as they have
-      // hard-coded values.
+      // `readOnlyHint`, `untrustedContentHint`, and `debugging` are intentionally omitted as they
+      // have hard-coded values.
 
       /**
        * A hint that the tool will have consequential effects like mutating state or interacting
