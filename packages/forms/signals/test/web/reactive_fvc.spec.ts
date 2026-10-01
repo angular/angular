@@ -429,6 +429,132 @@ describe('error bindings', () => {
     expect(fixture.componentInstance.ctrl.errors).toBeNull();
   });
 
+  it('should not emit duplicate valueChanges when parseErrors change alongside value', () => {
+    @Component({
+      selector: 'my-parsing-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class MyParsingInput {
+      readonly value = model('');
+      constructor() {
+        const parseErrorsToken = inject(ɵFORM_CONTROL_INTEGRATION, {optional: true, self: true});
+        if (parseErrorsToken) {
+          parseErrorsToken.setParseErrors(
+            computed(() => {
+              return this.value() === 'INVALID' ? [{kind: 'parse', reason: 'cannot parse'}] : [];
+            }),
+          );
+        }
+      }
+    }
+
+    @Component({
+      template: `<my-parsing-input [formControl]="ctrl" />`,
+      imports: [MyParsingInput, ReactiveFormsModule],
+    })
+    class TestCmp {
+      ctrl = new FormControl('');
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(MyParsingInput)).componentInstance;
+
+    let valueChangesCount = 0;
+    fixture.componentInstance.ctrl.valueChanges.subscribe(() => valueChangesCount++);
+
+    // Set value that triggers a parse error
+    // This updates the value AND updates the parseErrors
+    act(() => fvc.value.set('INVALID'));
+
+    // Value should only emit once, even though parseErrors also changed
+    expect(valueChangesCount).toBe(1);
+  });
+
+  it('should emit statusChanges with the correct status when parseErrors change alongside value', () => {
+    @Component({
+      selector: 'my-parsing-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class MyParsingInput {
+      readonly value = model('');
+      constructor() {
+        const parseErrorsToken = inject(ɵFORM_CONTROL_INTEGRATION, {optional: true, self: true});
+        if (parseErrorsToken) {
+          parseErrorsToken.setParseErrors(
+            computed(() => {
+              return this.value() === 'INVALID' ? [{kind: 'parse', reason: 'cannot parse'}] : [];
+            }),
+          );
+        }
+      }
+    }
+
+    @Component({
+      template: `<my-parsing-input [formControl]="ctrl" />`,
+      imports: [MyParsingInput, ReactiveFormsModule],
+    })
+    class TestCmp {
+      ctrl = new FormControl('');
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(MyParsingInput)).componentInstance;
+
+    const emittedStatuses: string[] = [];
+    fixture.componentInstance.ctrl.statusChanges.subscribe((s) => emittedStatuses.push(s));
+
+    act(() => fvc.value.set('INVALID'));
+
+    // The emitted status should be INVALID.
+    // In the original code (with a stale validator), this would have incorrectly emitted 'VALID'.
+    expect(emittedStatuses).toEqual(['INVALID']);
+  });
+
+  it('should not emit valueChanges when parseErrors update independently of value', () => {
+    @Component({
+      selector: 'my-parsing-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class MyParsingInput {
+      readonly value = model('');
+      readonly forceError = signal(false);
+      constructor() {
+        const parseErrorsToken = inject(ɵFORM_CONTROL_INTEGRATION, {optional: true, self: true});
+        if (parseErrorsToken) {
+          parseErrorsToken.setParseErrors(
+            computed(() => {
+              if (this.forceError()) return [{kind: 'parse', reason: 'forced error'}];
+              return this.value() === 'INVALID' ? [{kind: 'parse', reason: 'cannot parse'}] : [];
+            }),
+          );
+        }
+      }
+    }
+
+    @Component({
+      template: `<my-parsing-input [formControl]="ctrl" />`,
+      imports: [MyParsingInput, ReactiveFormsModule],
+    })
+    class TestCmp {
+      ctrl = new FormControl('');
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(MyParsingInput)).componentInstance;
+
+    let valueChangesCount = 0;
+    fixture.componentInstance.ctrl.valueChanges.subscribe(() => valueChangesCount++);
+
+    // Force a parse error without changing the value
+    act(() => fvc.forceError.set(true));
+
+    expect(fixture.componentInstance.ctrl.errors).toEqual({
+      parse: {kind: 'parse', reason: 'forced error'},
+    });
+    // NO value emission should happen because only the validation state changed
+    expect(valueChangesCount).toBe(0);
+  });
+
   it('should merge parseErrors with validator errors', () => {
     @Component({
       selector: 'my-parsing-input',
@@ -473,6 +599,54 @@ describe('error bindings', () => {
     // Set valid long value - no errors
     act(() => fvc.value.set('valid-long'));
     expect(fixture.componentInstance.ctrl.errors).toBeNull();
+  });
+
+  it('should immediately pass parse error to control errors input (issue #71127)', () => {
+    @Component({
+      selector: 'my-parsing-input-71127',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class MyParsingInput {
+      readonly value = model('');
+      readonly errors = input<any>(null);
+
+      constructor() {
+        const parseErrorsToken = inject(ɵFORM_CONTROL_INTEGRATION, {optional: true, self: true});
+        if (parseErrorsToken) {
+          parseErrorsToken.setParseErrors(
+            computed(() => {
+              return this.value() === 'INVALID' ? [{kind: 'parse', reason: 'cannot parse'}] : [];
+            }),
+          );
+        }
+      }
+    }
+
+    @Component({
+      template: `
+        <my-parsing-input-71127 [formControl]="ctrl" #myInput />
+        <p>{{ myInput.errors()?.length ? 'HAS_ERRORS' : 'NO_ERRORS' }}</p>
+      `,
+      imports: [MyParsingInput, ReactiveFormsModule],
+    })
+    class TestCmp {
+      ctrl = new FormControl('');
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const fvc = fixture.debugElement.query(By.directive(MyParsingInput)).componentInstance;
+
+    // Initially no errors
+    expect(fixture.componentInstance.ctrl.errors).toBeNull();
+    let text = fixture.nativeElement.querySelector('p').textContent;
+    expect(text).toContain('NO_ERRORS');
+
+    // Set value that triggers a parse error
+    act(() => fvc.value.set('INVALID'));
+    fixture.detectChanges();
+
+    text = fixture.nativeElement.querySelector('p').textContent;
+    expect(text).toContain('HAS_ERRORS'); // Should immediately update the rendered error count
   });
 
   it('should switch parseErrors to new FormControl when swapped', () => {
