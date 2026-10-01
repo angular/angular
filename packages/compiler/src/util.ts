@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ChangeDetectionStrategy} from '../src/core';
+
 const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
 
 export function dashCaseToCamelCase(input: string): string {
@@ -138,10 +140,6 @@ const V1_TO_18 = /^([1-9]|1[0-8])\./;
 const V1_TO_21 = /^([1-9]|1[0-9]|2[0-1])\./;
 
 export function getJitStandaloneDefaultForVersion(version: string): boolean {
-  if (version.startsWith('0.')) {
-    // 0.0.0 is always "latest", default is true.
-    return true;
-  }
   if (V1_TO_18.test(version)) {
     // Angular v2 - v18 default is false.
     return false;
@@ -151,18 +149,14 @@ export function getJitStandaloneDefaultForVersion(version: string): boolean {
   return true;
 }
 
-export function getJitOnPushDefaultForVersion(version: string): boolean {
-  if (version.startsWith('0.')) {
-    // 0.0.0 is always "latest", default is true.
-    return true;
-  }
+export function getJitChangeDetectionDefaultForVersion(version: string): ChangeDetectionStrategy {
   if (V1_TO_21.test(version)) {
     // Angular v2 - v21 default is false.
-    return false;
+    return ChangeDetectionStrategy.Eager;
   }
 
   // All other Angular versions (v22+) default to true.
-  return true;
+  return ChangeDetectionStrategy.OnPush;
 }
 
 /**
