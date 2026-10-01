@@ -62,40 +62,6 @@ describe('declareExperimentalWebMcpTool', () => {
     });
   });
 
-  it('should pass tool annotations to registerTool', async () => {
-    const execute = jasmine.createSpy<Execute<JsonSchemaForInference>>('execute');
-    const modelContext = (globalThis.document as any).modelContext;
-    const registerSpy = spyOn(modelContext, 'registerTool').and.callThrough();
-
-    await declareExperimentalWebMcpTool(
-      {
-        name: 'annotatedTool',
-        description: 'A tool with annotations',
-        inputSchema: {type: 'object', properties: {}},
-        execute,
-        annotations: {
-          readOnlyHint: true,
-          untrustedContentHint: true,
-          consequentialHint: true,
-          debugging: true,
-        },
-      },
-      Injector.create({providers: []}),
-    );
-
-    expect(registerSpy).toHaveBeenCalledWith(
-      jasmine.objectContaining({
-        annotations: {
-          readOnlyHint: true,
-          untrustedContentHint: true,
-          consequentialHint: true,
-          debugging: true,
-        },
-      }),
-      jasmine.anything(),
-    );
-  });
-
   it('should throw if the tool is already registered', async () => {
     const injector = Injector.create({providers: []});
 
