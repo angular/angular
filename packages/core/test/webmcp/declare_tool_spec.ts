@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initializeWebMCPPolyfill, cleanupWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
-import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
+import {cleanupWebMCPPolyfill, initializeWebMCPPolyfill} from '@mcp-b/webmcp-polyfill';
 import {inject, Injectable, Injector, runInInjectionContext} from '../../src/di';
-import {declareExperimentalWebMcpTool} from '../../src/webmcp/declare_tool';
-import {Execute, ModelContext, ToolDescriptor} from '../../src/webmcp/types';
 import {RuntimeErrorCode} from '../../src/errors';
+import {declareExperimentalWebMcpTool} from '../../src/webmcp/declare_tool';
+import {Execute, ToolDescriptor} from '../../src/webmcp/types';
+import type {JsonSchemaForInference} from '../../third_party/@mcp-b/webmcp-types';
 
 // Whether or not the input type is `any`.
 type IsAny<T> = 0 extends 1 & T ? true : false;
@@ -60,6 +60,40 @@ describe('declareExperimentalWebMcpTool', () => {
     expect(JSON.parse(result!)).toEqual({
       content: [{type: 'text', text: 'Hello!'}],
     });
+  });
+
+  it('should pass tool annotations to registerTool', async () => {
+    const execute = jasmine.createSpy<Execute<JsonSchemaForInference>>('execute');
+    const modelContext = (globalThis.document as any).modelContext;
+    const registerSpy = spyOn(modelContext, 'registerTool').and.callThrough();
+
+    await declareExperimentalWebMcpTool(
+      {
+        name: 'annotatedTool',
+        description: 'A tool with annotations',
+        inputSchema: {type: 'object', properties: {}},
+        execute,
+        annotations: {
+          readOnlyHint: true,
+          untrustedContentHint: true,
+          consequentialHint: true,
+          debugging: true,
+        },
+      },
+      Injector.create({providers: []}),
+    );
+
+    expect(registerSpy).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        annotations: {
+          readOnlyHint: true,
+          untrustedContentHint: true,
+          consequentialHint: true,
+          debugging: true,
+        },
+      }),
+      jasmine.anything(),
+    );
   });
 
   it('should throw if the tool is already registered', async () => {

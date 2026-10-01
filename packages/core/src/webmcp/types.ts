@@ -81,6 +81,12 @@ export interface Annotations {
    * with the external world.
    */
   consequentialHint?: boolean;
+
+  /**
+   * Whether the tool is intended for debugging and development purposes rather than end-user
+   * agent interaction.
+   */
+  debugging?: boolean;
 }
 
 /**
