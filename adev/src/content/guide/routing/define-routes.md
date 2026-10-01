@@ -112,7 +112,7 @@ import {SocialMediaFeed} from './social-media-feed';
 
 const routes: Routes = [
   {path: 'user/:id/:social-media', component: SocialMediaFeed},
-  {path: 'user/:id/', component: UserProfile},
+  {path: 'user/:id', component: UserProfile},
 ];
 ```
 
@@ -216,7 +216,8 @@ The page `title` property can be set dynamically to a resolver function using [`
 ```ts
 const titleResolver: ResolveFn<string> = (route) => route.queryParams['id'];
 const routes: Routes = [
-  ...{
+  // ...
+  {
     path: 'products',
     component: Products,
     title: titleResolver,

@@ -45,4 +45,4 @@ import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 export class ComponentWithCustomElements { }
 ```
 
-Angular does not support any other schemas at this time.
+Angular also provides `NO_ERRORS_SCHEMA`, which allows any element and any property.

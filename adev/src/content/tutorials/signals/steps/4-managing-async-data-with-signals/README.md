@@ -58,7 +58,7 @@ isLoading = computed(() => this.userResource.status() === 'loading');
 hasError = computed(() => this.userResource.status() === 'error');
 ```
 
-Resources provide a `status()` signal that can be 'loading', 'success', or 'error', a `value()` signal for the loaded data, and a `hasValue()` method that safely checks if data is available.
+Resources provide a `status()` signal that can be 'loading', 'resolved', or 'error', a `value()` signal for the loaded data, and a `hasValue()` method that safely checks if data is available.
 </docs-step>
 
 <docs-step title="Wire up the buttons and display resource states">

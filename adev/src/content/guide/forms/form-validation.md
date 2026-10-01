@@ -372,7 +372,7 @@ Use [`setValidators`](api/forms/AbstractControl#setValidators) to replace all ex
 toggleStrictNameValidation(isStrict: boolean) {
   const nameControl = this.profileForm.get('name');
 
-  if (enable) {
+  if (isStrict) {
     // Set strict validation rules
     nameControl.setValidators([
       Validators.required,

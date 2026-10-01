@@ -190,7 +190,7 @@ $localize`:site header|An introduction header for this sample:Hello i18n!`;
 <docs-callout title="How meanings control text extraction and merges">
 
 The Angular extraction tool generates a translation unit entry for each `i18n` attribute in a template.
-The Angular extraction tool assigns each translation unit a unique ID based on the _meaning_ and _description_.
+The Angular extraction tool assigns each translation unit a unique ID based on its source text and _meaning_. The _description_ does not affect the ID.
 
 HELPFUL: For more information about the Angular extraction tool, see [Work with translation files](guide/i18n/translation-files).
 

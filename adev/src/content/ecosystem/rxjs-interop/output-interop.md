@@ -2,7 +2,7 @@
 
 TIP: This guide assumes you're familiar with [component and directive outputs](guide/components/outputs).
 
-The `@angular/rxjs-interop` package offers two APIs related to component and directive outputs.
+The `@angular/core/rxjs-interop` package offers two APIs related to component and directive outputs.
 
 ## Creating an output based on an RxJs Observable
 

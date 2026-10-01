@@ -168,8 +168,9 @@ You can customize the `idle` trigger by providing your own `IdleService` impleme
 ```ts
 @Service()
 class CustomIdleService implements IdleService {
-  requestOnIdle(callback: (deadline?: IdleDeadline) => void, options?: IdleRequestOptions) {
+  requestOnIdle(callback: (deadline?: IdleDeadline) => void, options?: IdleRequestOptions): number {
     // Custom idle scheduling logic can be implemented here.
+    return requestIdleCallback(callback, options);
   }
 
   cancelOnIdle(id: number) {

@@ -123,7 +123,7 @@ export interface User {
 
 @Component({
   selector: 'user-detail',
-  template: '{{ user.name }}',
+  template: '{{ user().name }}',
 })
 export class UserDetailComponent {
   user = input.required<User>();
@@ -207,7 +207,7 @@ Consider the following directive:
   selector: 'submit-button',
   template: `
     <div class="wrapper">
-      <button [disabled]="disabled">Submit</button>
+      <button [disabled]="disabled()">Submit</button>
     </div>
   `,
 })

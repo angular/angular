@@ -102,7 +102,7 @@ export class UserProfile {}
 
 If the query does not find a result, its value is `undefined`. This may occur if the target element is absent or hidden by `@if`. Angular keeps the result of `contentChild` up to date as your application state changes.
 
-By default, content queries find only _direct_ children of the component and do not traverse into descendants.
+By default, `contentChild` queries traverse into descendants, while `contentChildren` queries find only _direct_ children. See [Content descendants](#content-descendants).
 
 You can also query for multiple results with the `contentChildren` function.
 
