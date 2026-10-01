@@ -6,16 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {runInInjectionContext, untracked} from '@angular/core';
-import type {EnvironmentInjector, ErrorDetails} from '@angular/core';
+import {
+  EnvironmentInjector,
+  ErrorDetails,
+  runInInjectionContext,
+  untracked,
+  Type,
+} from '@angular/core';
 
 import type {RouterOutlet} from './directives/router_outlet';
 import {RedirectCommand} from './models';
 import type {ErrorBoundaryOptions} from './provide_router';
 import type {Router} from './router';
-import type {ChildrenOutletContexts} from './router_outlet_context';
 import type {RouterErrorBoundaryHandler} from './router_error_boundary_feature';
-import type {ActivatedRoute} from './router_state';
+import type {ChildrenOutletContexts} from './router_outlet_context';
+import type {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
 
 const REDIRECT_DISPATCHED: unique symbol = /* @__PURE__ */ Symbol(
   typeof ngDevMode === 'undefined' || ngDevMode ? '__redirectDispatched' : '',
@@ -78,9 +83,20 @@ export class ErrorBoundaryHandler implements RouterErrorBoundaryHandler {
         runInInjectionContext(this.rootInjector, () => globalOnError(error, details));
       }
 
-      const routeConfig = activatedRoute.snapshot.routeConfig;
+      let errorComponent: Type<unknown> | null | undefined = null;
+      let currentRoute: ActivatedRouteSnapshot | null = activatedRoute.snapshot;
+      while (currentRoute) {
+        if (currentRoute.routeConfig?.errorComponent) {
+          errorComponent = currentRoute.routeConfig.errorComponent;
+          break;
+        }
+        if (!currentRoute.parent || currentRoute.parent.routeConfig?.component) {
+          break;
+        }
+        currentRoute = currentRoute.parent;
+      }
 
-      const errorComponent = routeConfig?.errorComponent ?? this.options.defaultErrorComponent;
+      errorComponent = errorComponent ?? this.options.defaultErrorComponent;
       if (!errorComponent) {
         if (isRedirect) {
           // The redirect navigation replaces the current view, so there is nothing to render and no

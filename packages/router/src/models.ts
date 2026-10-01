@@ -13,9 +13,9 @@ import {
   NgModuleFactory,
   Provider,
   ProviderToken,
+  Resource,
   Signal,
   Type,
-  Resource,
   WritableResource,
 } from '@angular/core';
 import {Observable} from 'rxjs';
@@ -667,7 +667,7 @@ export interface Route {
    *
    * Requires the error boundary feature to be enabled with `withErrorBoundaries`.
    */
-  errorComponent?: Type<any>;
+  errorComponent?: Type<unknown>;
 
   /**
    * An object specifying a lazy-loaded component.
