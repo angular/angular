@@ -8,7 +8,6 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {provideZoneChangeDetection} from '@angular/core';
 import {Events, MessageBus} from '../../../../../protocol';
 import {ApplicationOperations} from '../../application-operations';
 import {FrameManager} from '../../application-services/frame_manager';
@@ -33,8 +32,6 @@ describe('RouterTreeComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RouterTreeComponent],
       providers: [
-        // TODO: This test should be migrated to zoneless but its not straightforward.
-        provideZoneChangeDetection(),
         {provide: ApplicationOperations, useValue: applicationOperationsSpy},
         {provide: MessageBus, useValue: messageBus},
         {provide: FrameManager, useValue: frameManager},
@@ -59,7 +56,7 @@ describe('RouterTreeComponent', () => {
   describe('router tree apis supported', () => {
     beforeEach(async () => {
       fixture.componentRef.setInput('routerDebugApiSupport', true);
-      fixture.detectChanges();
+      await fixture.whenStable();
     });
 
     it('should create', () => {
@@ -100,12 +97,12 @@ describe('RouterTreeComponent', () => {
   describe('router tree apis not supported', () => {
     beforeEach(async () => {
       fixture.componentRef.setInput('routerDebugApiSupport', false);
-      fixture.detectChanges();
+      await fixture.whenStable();
     });
 
-    it('should show unsupported version message when routerDebugApiSupport is false', () => {
+    it('should show unsupported version message when routerDebugApiSupport is false', async () => {
       fixture.componentRef.setInput('routerDebugApiSupport', false);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const unsupportedMsg = fixture.nativeElement.querySelector('.unsupported-version');
       expect(unsupportedMsg).toBeTruthy();
