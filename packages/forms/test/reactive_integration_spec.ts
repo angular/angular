@@ -66,7 +66,7 @@ import {
   ValueChangeEvent,
 } from '../src/model/abstract_model';
 
-import {MyInput, MyInputForm} from './value_accessor_integration_spec';
+import {MyInputForm} from './value_accessor_integration_spec';
 
 // Produces a new @Directive (with a given selector) that represents a validator class.
 function createValidatorClass(selector: string) {
@@ -820,7 +820,7 @@ describe('reactive forms integration tests', () => {
       });
 
       it('should not add disabled attribute to custom controls when disable() is called', async () => {
-        const fixture = initTest(MyInputForm, MyInput);
+        const fixture = TestBed.createComponent(MyInputForm);
         const control = new FormControl('some value');
         fixture.componentInstance.form = new FormGroup({login: control});
         await fixture.whenStable();
