@@ -14,7 +14,7 @@ import type {DirectiveDef} from '../interfaces/definition';
 import {InputFlags} from '../interfaces/input_flags';
 import {type TNode, TNodeFlags} from '../interfaces/node';
 import {isComponentHost} from '../interfaces/type_checks';
-import {type LView, RENDERER, type TView} from '../interfaces/view';
+import type {LView, TView} from '../interfaces/view';
 import {
   getCurrentTNode,
   getLView,
@@ -25,7 +25,7 @@ import {
 import {getNativeByTNode} from '../util/view_utils';
 import {debugStringifyTypeForError} from '../util/stringify_utils';
 import {listenToDirectiveOutput} from '../view/directive_outputs';
-import {listenToDomEvent, wrapListener} from '../view/listeners';
+import {wrapListener} from '../view/listeners';
 import {setDirectiveInput} from './shared';
 import {writeToDirectiveInput} from './write_to_directive_input';
 
@@ -141,19 +141,6 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
       this.lView,
       directiveDef,
       modelName,
-      wrapListener(this.tNode, this.lView, listener),
-    );
-  }
-
-  listenToDom(eventName: string, listener: (event: Event) => void): void {
-    listenToDomEvent(
-      this.tNode,
-      this.tView,
-      this.lView as LView<{} | null>,
-      undefined,
-      this.lView[RENDERER],
-      eventName,
-      listener,
       wrapListener(this.tNode, this.lView, listener),
     );
   }

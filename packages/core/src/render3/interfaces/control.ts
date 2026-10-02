@@ -88,9 +88,4 @@ export interface ControlDirectiveHost<_TPassthroughInput extends string | undefi
     value: unknown,
     writePredicate?: (currentValue: unknown) => boolean,
   ): boolean;
-
-  /**
-   * Listens to a DOM event on the host element.
-   */
-  listenToDom(eventName: string, listener: (event: Event) => void): void;
 }
