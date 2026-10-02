@@ -13,13 +13,16 @@ import {
   ChangeDetectorRef,
   Component,
   Directive,
+  ElementRef,
   inject,
   Input,
   OnInit,
   Pipe,
   PipeTransform,
+  QueryList,
   signal,
   TemplateRef,
+  ViewChildren,
   ViewContainerRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
@@ -33,6 +36,101 @@ class MultiplyPipe implements PipeTransform {
 }
 
 describe('control flow - if', () => {
+  it(
+    'rebuilds an @if branch whose first creation pass was interrupted, without leaving ' +
+      'orphaned content behind (non-hydration case)',
+    () => {
+      // Regression coverage for the incompleteFirstPass rebuild in view_manipulation.ts.
+      // A directive that throws once reproduces the interrupted first pass without hydration.
+      let shouldThrow = true;
+
+      @Directive({selector: '[boom]'})
+      class BoomDirective {
+        constructor() {
+          if (shouldThrow) {
+            shouldThrow = false;
+            throw new Error('boom');
+          }
+        }
+      }
+
+      @Component({
+        imports: [BoomDirective],
+        template: `
+          @if (show()) {
+            <span boom>first</span>
+            <span>second</span>
+          }
+        `,
+      })
+      class TestComponent {
+        show = signal(false);
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      fixture.componentInstance.show.set(true);
+      expect(() => fixture.detectChanges()).toThrowError('boom');
+
+      // A failed @if view isn't attached to the DOM, so there should be nothing left behind.
+      expect(fixture.nativeElement.textContent).toBe('');
+
+      fixture.componentInstance.show.set(false);
+      fixture.detectChanges();
+      fixture.componentInstance.show.set(true);
+      expect(() => fixture.detectChanges()).not.toThrow();
+
+      expect(fixture.nativeElement.textContent).toBe('firstsecond');
+    },
+  );
+
+  it('reconnects a query that reaches into an @if branch whose first creation pass was interrupted', () => {
+    // Rebuilding the branch's embedded TView also has to re-inherit the component's queries.
+    // Otherwise a @ViewChildren reaching into the branch loses its matches after the rebuild.
+    let shouldThrow = true;
+
+    @Directive({selector: '[boom]'})
+    class BoomDirective {
+      constructor() {
+        if (shouldThrow) {
+          shouldThrow = false;
+          throw new Error('boom');
+        }
+      }
+    }
+
+    @Component({
+      imports: [BoomDirective],
+      template: `
+        @if (show()) {
+          <span #item boom>first</span>
+          <span #item>second</span>
+        }
+      `,
+    })
+    class TestComponent {
+      @ViewChildren('item') items!: QueryList<ElementRef>;
+      show = signal(false);
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    fixture.componentInstance.show.set(true);
+    expect(() => fixture.detectChanges()).toThrowError('boom');
+
+    fixture.componentInstance.show.set(false);
+    fixture.detectChanges();
+    fixture.componentInstance.show.set(true);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.items.map((ref) => ref.nativeElement.textContent)).toEqual([
+      'first',
+      'second',
+    ]);
+  });
+
   it('should add and remove views based on conditions change', async () => {
     @Component({template: '@if (show()) {Something} @else {Nothing}'})
     class TestComponent {
