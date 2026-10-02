@@ -281,11 +281,30 @@ function getSanitizer(): Sanitizer | null {
 }
 
 function getSecurityContext(tagName: string, propName: string): SecurityContext {
-  const [namespace, resolvedTagName] = resolveElement(tagName);
-  return checkSecurityContext(resolvedTagName, propName, namespace);
+  return resolveSecurityContext(tagName, propName)[2];
 }
 
-function resolveElement(tagName: string): [namespace: string | null | undefined, tagName: string] {
+function resolveSecurityContext(
+  tagName: string,
+  propName: string,
+): [namespace: string | null | undefined, tagName: string, context: SecurityContext] {
+  const [namespace, resolvedTagName, localName] = resolveElement(tagName);
+  const securityContext = checkSecurityContext(resolvedTagName, propName, namespace);
+
+  // Preserve the tagName result and only use localName to fill an otherwise absent context.
+  if (securityContext === SecurityContext.NONE && localName !== undefined) {
+    const localNameSecurityContext = checkSecurityContext(localName, propName, namespace);
+    if (localNameSecurityContext !== SecurityContext.NONE) {
+      return [namespace, localName, localNameSecurityContext];
+    }
+  }
+
+  return [namespace, resolvedTagName, securityContext];
+}
+
+function resolveElement(
+  tagName: string,
+): [namespace: string | null | undefined, tagName: string, localName?: string] {
   tagName = tagName.toLowerCase();
   const splitResult = splitNsName(tagName, false);
   if (splitResult[0]) {
@@ -295,11 +314,17 @@ function resolveElement(tagName: string): [namespace: string | null | undefined,
   const index = getSelectedIndex();
   const tNode = index === -1 ? null : getSelectedTNode();
   let namespace = tNode?.namespace;
+  let localName: string | undefined;
 
   if (tagName === TNodeName.DynamicHost && tNode?.type === TNodeType.Element) {
     const element = getNativeByTNode(tNode, getLView()) as RElement;
     if (element.tagName) {
       tagName = element.tagName.toLowerCase();
+    }
+
+    const elementLocalName = 'localName' in element ? element.localName : undefined;
+    if (typeof elementLocalName === 'string' && elementLocalName.length > 0) {
+      localName = elementLocalName.toLowerCase();
     }
 
     if (namespace == null) {
@@ -308,7 +333,7 @@ function resolveElement(tagName: string): [namespace: string | null | undefined,
     }
   }
 
-  return [namespace, tagName];
+  return [namespace, tagName, localName];
 }
 
 /**
@@ -346,8 +371,10 @@ export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attrib
     return value;
   }
 
-  const [namespace, resolvedTagName] = resolveElement(tagName);
-  const securityContext = checkSecurityContext(resolvedTagName, attributeName, namespace);
+  const [namespace, resolvedTagName, securityContext] = resolveSecurityContext(
+    tagName,
+    attributeName,
+  );
 
   if (securityContext !== SecurityContext.ATTRIBUTE_NO_BINDING) {
     return value;
