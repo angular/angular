@@ -13,9 +13,9 @@ import {
   NgModuleFactory,
   Provider,
   ProviderToken,
+  Resource,
   Signal,
   Type,
-  Resource,
   WritableResource,
 } from '@angular/core';
 import {Observable} from 'rxjs';
@@ -651,6 +651,13 @@ export interface Route {
    * Can be empty if child routes specify components.
    */
   component?: Type<any>;
+
+  /**
+   * The component to instantiate when an error occurs in this route.
+   *
+   * Requires the error boundary feature to be enabled with `withErrorBoundaries`.
+   */
+  errorComponent?: Type<unknown>;
 
   /**
    * An object specifying a lazy-loaded component.

@@ -86,7 +86,13 @@ export class ActivateRoutes {
   ): void {
     // If there is no component, the Route is never attached to an outlet (because there is no
     // component to attach).
-    if (route.value.component && this.routeReuseStrategy.shouldDetach(route.value.snapshot)) {
+    const isErrorComponentActive = parentContexts.getContext(route.value.outlet)?.outlet
+      ?.isErrorComponentActive;
+    if (
+      !isErrorComponentActive &&
+      route.value.component &&
+      this.routeReuseStrategy.shouldDetach(route.value.snapshot)
+    ) {
       this.detachAndStoreRouteSubtree(route, parentContexts);
     } else {
       this.deactivateRouteAndOutlet(route, parentContexts);
@@ -181,6 +187,10 @@ export class ActivateRoutes {
       if (future.component) {
         // If we have a normal route, we need to go through an outlet.
         const context = parentContexts.getOrCreateContext(future.outlet);
+        if (context.outlet?.isErrorComponentActive) {
+          context.outlet.deactivate();
+          context.outlet.activateWith(future, context.injector!);
+        }
         this.activateChildRoutes(futureNode, currNode, context.children);
       } else {
         // if we have a componentless route, we recurse but keep the same outlet map.
