@@ -42,14 +42,8 @@ export function nativeControlCreate(
 ): () => void {
   let updateMode = false;
   const input = parent.nativeFormElement;
-  // The input's value as the DOM itself holds it, recorded after each write we make.
-  //
-  // Comparing model values can't tell a user edit from the browser reshaping what we wrote: an
-  // unparseable string or a `Date` the input can't represent is rejected and leaves the value
-  // empty, and a `Date` carrying more precision than the input keeps is truncated. In each case the
-  // value read back differs from the model through no action of the user, which would dirty every
-  // date-like field on load (#69632). The DOM's own string is the one representation both sides
-  // agree on.
+  // The DOM's own string, recorded after each write. The browser rejects values it can't parse and
+  // truncates ones it can't represent, so comparing model values reads those as edits (#69632).
   let lastWrittenDomValue = input.value;
 
   // TODO: (perf) ok to always create this?
@@ -64,9 +58,7 @@ export function nativeControlCreate(
   );
 
   parseErrorsSource.set(parser.errors);
-  // Writes to the DOM and records what the DOM ended up holding, which is not necessarily what we
-  // asked for: the browser rejects values it can't parse and truncates ones carrying more precision
-  // than the input type keeps.
+  // Records what the DOM kept, which may differ from what we asked it to hold.
   const writeNativeControlValue = (value: unknown) => {
     setNativeControlValue(input, value);
     lastWrittenDomValue = input.value;
@@ -80,9 +72,8 @@ export function nativeControlCreate(
   };
   // Pass undefined as the raw value since the parse function doesn't care about it.
   host.listenToDom('input', () => {
-    // An `input` event is the definitive signal of user interaction, so dirty the field up front.
-    // Parsing may fail — typing `e` into a number input, or an incomplete date — in which case no
-    // value reaches `controlValue` and nothing else would mark the field as edited.
+    // An `input` event means the user edited, even if parsing then fails and no value reaches
+    // `controlValue`.
     parent.state().markAsDirty();
     parser.setRawValue(undefined);
   });
@@ -91,13 +82,9 @@ export function nativeControlCreate(
   // TODO: move extraction to first update pass?
   if (isInput(input) && inputRequiresValidityTracking(input)) {
     validityMonitor.watchValidity(parent.destroyRef, input, () => {
-      // The browser runs the `:valid` / `:invalid` animation as soon as the input renders, which is
-      // not a user edit. If the DOM still holds exactly what we last wrote then nothing changed and
-      // there is nothing to sync.
-      //
-      // Two states are exempt, because in both the user did edit the input while its `value` stayed
-      // empty: entering text the input can't convert (`badInput`, which reports an empty `value`),
-      // and clearing that text again, which resolves the parse error the previous sync recorded.
+      // The `:valid` / `:invalid` animation fires on render, which is not an edit: if the DOM still
+      // holds what we wrote, nothing changed. `badInput` and a pending parse error are exempt —
+      // both mean the user edited while `value` stayed empty.
       if (
         untracked(parser.errors).length === 0 &&
         !validityMonitor.isBadInput(input) &&
