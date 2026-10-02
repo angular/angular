@@ -405,10 +405,33 @@ function getSecuritySensitiveSVGAnimationAttributeName(
     }
 
     const attributeNameValue = element.getAttribute(attributeName);
-    if (attributeNameValue !== null && validationConfig.has(attributeNameValue.toLowerCase())) {
+    if (
+      attributeNameValue !== null &&
+      isSecuritySensitiveSVGAnimationAttributeName(attributeNameValue, validationConfig)
+    ) {
       return attributeNameValue;
     }
   }
 
   return null;
+}
+
+/** Whether an SVG animation attribute name can target a security-sensitive local name. */
+function isSecuritySensitiveSVGAnimationAttributeName(
+  attributeName: string,
+  validationConfig: ReadonlySet<string>,
+): boolean {
+  const normalizedAttributeName = attributeName.toLowerCase();
+  if (validationConfig.has(normalizedAttributeName)) {
+    return true;
+  }
+
+  // Namespace mappings can change after validation, so resolve QName aliases by local name rather
+  // than relying on the prefix or its current namespace URI.
+  const namespaceSeparatorIndex = normalizedAttributeName.indexOf(':');
+  return (
+    namespaceSeparatorIndex > 0 &&
+    namespaceSeparatorIndex === normalizedAttributeName.lastIndexOf(':') &&
+    validationConfig.has(normalizedAttributeName.slice(namespaceSeparatorIndex + 1))
+  );
 }
