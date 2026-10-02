@@ -61,7 +61,10 @@ export class UserProfile {
 
 ### The `ResourceContext` object
 
-The `resources` function receives a `ResourceContext` that provides access to reactive route signals: `params`, `queryParams`, `fragment`, and `data`.
+The `resources` function receives a `ResourceContext` that provides:
+
+- Route signals: `params`, `queryParams`, `fragment`, and `data`.
+- `resources`: a signal of the resources inherited from ancestor routes. See [Resource inheritance](#resource-inheritance).
 
 ### Supported resource implementations
 
@@ -123,7 +126,122 @@ TIP: Read specific properties, such as `ctx.params()['id']`, instead of returnin
 
 Data resolvers execute sequentially from parent route to child route. If a parent route resolver takes 200ms and a child route resolver takes 300ms, the navigation is blocked for 500ms.
 
-Route resources across the matched route hierarchy run concurrently, so the same navigation completes in 300ms, the time of the slowest resource.
+Route resources across the matched route hierarchy run concurrently, so the same navigation completes in 300ms, the time of the slowest resource. Resources that depend on data from an ancestor route also set up immediately instead of waiting; see [Chaining a resource off an ancestor resource](#chaining-a-resource-off-an-ancestor-resource).
+
+## Resource inheritance
+
+Every route inherits the resources of its ancestor routes. Angular exposes those inherited resources in two forms:
+
+| API                                                               | Contains                                         | Behavior                                                                                        | Use it to                                                          |
+| :---------------------------------------------------------------- | :----------------------------------------------- | :---------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
+| `ctx.resources()` inside a `resources` function                   | Ancestor resources only                          | The raw resources returned by ancestor `resources` functions. Their state is always live.       | Chain a resource off an ancestor resource                          |
+| `ActivatedRoute.resources` and `ActivatedRouteSnapshot.resources` | The route's own resources and ancestor resources | Read-only resources managed by the router. Their state is frozen while a navigation is pending. | Read data or call `reload()` from a component, directive, or guard |
+
+If a route defines a resource with the same name as an ancestor resource, the route's own resource shadows the inherited one.
+
+### Binding inherited resources to component inputs
+
+With `withComponentInputBinding()`, the router binds both inherited resources and the route's own resources to matching component inputs:
+
+```angular-ts
+import {Component, input, resource} from '@angular/core';
+import {Routes} from '@angular/router';
+
+interface Project {
+  id: string;
+  name: string;
+}
+
+interface Task {
+  id: string;
+  title: string;
+}
+
+const routes: Routes = [
+  {
+    path: 'projects/:projectId',
+    resources: (ctx) => ({
+      project: resource({
+        params: () => ctx.params()['projectId'],
+        loader: ({params: id}) => fetchProject(id),
+      }),
+    }),
+    children: [
+      {
+        path: 'tasks/:taskId',
+        component: TaskDetail,
+        resources: (ctx) => ({
+          task: resource({
+            params: () => ctx.params()['taskId'],
+            loader: ({params: id}) => fetchTask(id),
+          }),
+        }),
+      },
+    ],
+  },
+];
+
+@Component({
+  template: `
+    <h1>Project: {{ project().name }}</h1>
+    <h2>Task: {{ task().title }}</h2>
+  `,
+})
+export class TaskDetail {
+  // Inherited from the parent 'projects/:projectId' route
+  project = input.required<Project>();
+
+  // Bound from the route's own resource
+  task = input.required<Task>();
+}
+```
+
+NOTE: When the router binds route state to component inputs, resource names take precedence over route `data` (including resolved values), path parameters, and query parameters.
+
+### Chaining a resource off an ancestor resource
+
+A child route frequently needs data from an ancestor route before it can load its own data. Instead of waiting for the ancestor route to finish loading, chain the child's `params` function off the ancestor resource with [`chain()`](/guide/signals/resource#chaining-resources). Angular passes a context object that contains `chain` to every `params` function:
+
+```ts
+import {Resource, resource} from '@angular/core';
+import {Routes} from '@angular/router';
+
+interface User {
+  id: string;
+  role: string;
+}
+
+const routes: Routes = [
+  {
+    path: 'user/:id',
+    resources: (ctx) => ({
+      user: resource({
+        params: () => ctx.params()['id'],
+        loader: ({params: id}) => fetchUser(id),
+      }),
+    }),
+    children: [
+      {
+        path: 'details',
+        component: UserDetails,
+        resources: (ctx) => ({
+          details: resource({
+            // Retains the loading state until the inherited 'user' resource resolves
+            params: ({chain}) => chain(ctx.resources()['user'] as Resource<User>).role,
+            loader: ({params: role}) => fetchRoleDetails(role),
+          }),
+        }),
+      },
+    ],
+  },
+];
+```
+
+Both `resources` functions run concurrently: the parent route starts fetching the user while the child route sets up its own resources. As soon as `user` resolves, the child's `params` function reruns with the user value and `fetchRoleDetails` starts.
+
+NOTE: Read `ctx.resources()` inside a reactive context such as a resource's `params` function rather than synchronously in the top-level `resources` function body, as ancestor `resources` functions may still be initializing asynchronously. Because `ctx.resources()` is typed as a record of `Resource<unknown>`, cast the inherited resource to its value type when reading it.
+
+`chain()` also propagates the state of the ancestor resource. If the ancestor errors, the chained resource errors with a `ResourceDependencyError`, and the router cancels the navigation when that chained resource is blocking. If the ancestor is `idle`, the chained resource becomes `idle`.
 
 ## Blocking and non-blocking resources
 
@@ -240,6 +358,8 @@ While a navigation is pending, the router freezes the resources that it exposes 
 If you navigate from `/user/1` to `/user/2` and the router reuses the `UserProfile` component, the component keeps rendering the data from `/user/1` until `/user/2` resolves. The router then unfreezes the resources and the UI transitions directly to the new data with no loading flash.
 
 The router exposes these resources as read-only, even when the `resources` function returns a writable resource such as `resource()`. You can read the resource signals and call `reload()`, but not `set()` or `update()`. A `reload()` call during an active navigation or during rollback recovery returns `false` so that it cannot interrupt the router's transition tracking.
+
+NOTE: Freezing applies only to the resources that the router exposes on `ActivatedRoute`. The raw resources available through `ctx.resources()` always report their live state, which is what allows a chained resource to react to an ancestor resource during a navigation.
 
 ### Rollback recovery on cancellation
 
