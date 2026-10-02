@@ -189,7 +189,7 @@ export class RouterPreloader implements OnDestroy {
         }),
       );
       if (route.loadComponent && !route._loadedComponent) {
-        const loadComponent$ = this.loader.loadComponent(injector, route);
+        const loadComponent$ = this.loader.loadComponent(route);
         return from([recursiveLoadChildren$, loadComponent$]).pipe(mergeAll());
       } else {
         return recursiveLoadChildren$;
