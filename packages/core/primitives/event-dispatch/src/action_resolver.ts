@@ -268,8 +268,8 @@ export class ActionResolver {
             }
             const colon = value.indexOf(Char.EVENT_ACTION_SEPARATOR);
             const hasColon = colon !== -1;
-            const type = hasColon ? value.substr(0, colon).trim() : DEFAULT_EVENT_TYPE;
-            const action = hasColon ? value.substr(colon + 1).trim() : value;
+            const type = hasColon ? value.slice(0, colon).trim() : DEFAULT_EVENT_TYPE;
+            const action = hasColon ? value.slice(colon + 1).trim() : value;
             actionMap[type] = action;
           }
           cache.setParsed(jsactionAttribute, actionMap);
