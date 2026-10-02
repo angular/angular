@@ -259,6 +259,78 @@ describe('event replay', () => {
     expect(window._ejsas![appId]).toBeUndefined();
   });
 
+  // Two apps with the same APP_ID both see `_ejsas[appId]` as set, so both enable event
+  // replay. The first one to stabilize reads it and clears it. The second one used to crash
+  // instead of just skipping replay.
+  it('should not crash initEventReplay when two apps share the same APP_ID', async () => {
+    const appId = 'shared-app-id';
+
+    @Component({
+      selector: 'app',
+      template: ` <button id="btn-1" (click)="onClick()"></button> `,
+    })
+    class AppComponent_1 {
+      onClick() {}
+    }
+
+    @Component({
+      selector: 'app-2',
+      template: ` <button id="btn-2" (click)="onClick()"></button> `,
+    })
+    class AppComponent_2 {
+      onClick() {}
+    }
+
+    const hydrationFeatures = () => [withEventReplay()];
+    const docHtml = `
+      <html>
+      <head></head>
+      <body>
+        ${EVENT_DISPATCH_SCRIPT}
+        <app></app>
+        <app-2></app-2>
+      </body>
+      </html>
+    `;
+    const html = await ssr(AppComponent_1, {
+      hydrationFeatures,
+      doc: docHtml,
+      envProviders: [{provide: APP_ID, useValue: appId}],
+    });
+    const ssrContents = getAppContents(html);
+    const doc = getDocument();
+
+    prepareEnvironment(doc, ssrContents);
+    resetTViewsFor(AppComponent_1);
+
+    let unhandledRejection: unknown;
+    const onUnhandledRejection = (reason: unknown) => (unhandledRejection = reason);
+    process.on('unhandledRejection', onUnhandledRejection);
+    try {
+      // Start both apps before awaiting either one. If we await the first one alone, it
+      // already reaches stability and clears `_ejsas[appId]`, so app 2 never sees the bug.
+      const bootstrap1 = hydrate(doc, AppComponent_1, {
+        hydrationFeatures,
+        envProviders: [{provide: APP_ID, useValue: appId}],
+      });
+      const bootstrap2 = bootstrapApplication(AppComponent_2, {
+        providers: [provideClientHydration(withEventReplay()), {provide: APP_ID, useValue: appId}],
+      });
+      const [appRef1, appRef2] = await Promise.all([bootstrap1, bootstrap2]);
+
+      await appRef1.whenStable();
+      await appRef2.whenStable();
+      // Let the internal `whenStable().then(...)` callbacks run before we check for a
+      // rejection.
+      await Promise.resolve();
+      await Promise.resolve();
+    } finally {
+      process.off('unhandledRejection', onUnhandledRejection);
+    }
+
+    expect(unhandledRejection).toBeUndefined();
+  });
+
   it('should route to the appropriate component with content projection', async () => {
     const outerOnClickSpy = jasmine.createSpy();
     const innerOnClickSpy = jasmine.createSpy();

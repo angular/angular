@@ -172,7 +172,11 @@ export function withEventReplay(): Provider[] {
               }
 
               const eventContractDetails = injector.get(JSACTION_EVENT_CONTRACT);
-              initEventReplay(eventContractDetails, injector);
+              if (!initEventReplay(eventContractDetails, injector)) {
+                // Another app with the same APP_ID already used the early event data.
+                // Nothing left to replay here.
+                return;
+              }
               const jsActionMap = injector.get(JSACTION_BLOCK_ELEMENT_MAP);
               jsActionMap.get(EAGER_CONTENT_LISTENERS_KEY)?.forEach(removeListeners);
               jsActionMap.delete(EAGER_CONTENT_LISTENERS_KEY);
@@ -201,10 +205,15 @@ export function withEventReplay(): Provider[] {
   return providers;
 }
 
-const initEventReplay = (eventDelegation: EventContractDetails, injector: Injector) => {
+/** @returns false if there was no early event data to replay (another app already used it). */
+const initEventReplay = (eventDelegation: EventContractDetails, injector: Injector): boolean => {
   const appId = injector.get(APP_ID);
-  // This is set in packages/platform-server/src/utils.ts
-  const earlyJsactionData = window._ejsas![appId]!;
+  // This is set in packages/platform-server/src/utils.ts. Two apps can share an APP_ID
+  // (duplicate bootstrap script, embedded widget), so it may already be cleared.
+  const earlyJsactionData = window._ejsas?.[appId];
+  if (!earlyJsactionData) {
+    return false;
+  }
   const eventContract = (eventDelegation.instance = new EventContract(
     new EventContractContainer(earlyJsactionData.c),
   ));
@@ -221,6 +230,7 @@ const initEventReplay = (eventDelegation: EventContractDetails, injector: Inject
     invokeRegisteredReplayListeners(injector, event, event.currentTarget as Element);
   });
   registerDispatcher(eventContract, dispatcher);
+  return true;
 };
 
 /**
