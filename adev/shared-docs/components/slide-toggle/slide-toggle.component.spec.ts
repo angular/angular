@@ -31,14 +31,14 @@ describe('SlideToggle', () => {
     expect(component['checked']()).toBeTrue();
   });
 
-  it('should set active class for button when is checked', () => {
+  it('should set active class for button when is checked', async () => {
     component.checked.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
     const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('input');
     expect(buttonElement.classList.contains('docs-toggle-active')).toBeTrue();
 
     component.checked.set(false);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(buttonElement.classList.contains('docs-toggle-active')).toBeFalse();
   });
 });
