@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {escapeRegExp, splitAtColon, stringify, utf8Encode} from '../src/util';
+import {
+  escapeRegExp,
+  getJitOnPushDefaultForVersion,
+  getJitStandaloneDefaultForVersion,
+  splitAtColon,
+  stringify,
+  utf8Encode,
+} from '../src/util';
 
 describe('util', () => {
   describe('splitAtColon', () => {
@@ -84,6 +91,41 @@ describe('util', () => {
   describe('stringify()', () => {
     it('should handle objects with no prototype.', () => {
       expect(stringify(Object.create(null))).toEqual('object');
+    });
+  });
+
+  describe('getJitStandaloneDefaultForVersion', () => {
+    it('should return true for 0.0.0-PLACEHOLDER (starts with 0.)', () => {
+      expect(getJitStandaloneDefaultForVersion('0.0.0-PLACEHOLDER')).toBe(true);
+    });
+
+    it('should return false for versions 1 through 18', () => {
+      expect(getJitStandaloneDefaultForVersion('14.2.0')).toBe(false);
+      expect(getJitStandaloneDefaultForVersion('18.0.0')).toBe(false);
+      expect(getJitStandaloneDefaultForVersion('18.2.0')).toBe(false);
+    });
+
+    it('should return true for versions 19 and above', () => {
+      expect(getJitStandaloneDefaultForVersion('19.0.0')).toBe(true);
+      expect(getJitStandaloneDefaultForVersion('20.0.0')).toBe(true);
+    });
+  });
+
+  describe('getJitOnPushDefaultForVersion', () => {
+    it('should return true for 0.0.0-PLACEHOLDER (starts with 0.)', () => {
+      expect(getJitOnPushDefaultForVersion('0.0.0-PLACEHOLDER')).toBe(true);
+    });
+
+    it('should return false for versions 1 through 21', () => {
+      expect(getJitOnPushDefaultForVersion('14.2.0')).toBe(false);
+      expect(getJitOnPushDefaultForVersion('20.0.0')).toBe(false);
+      expect(getJitOnPushDefaultForVersion('21.0.0')).toBe(false);
+      expect(getJitOnPushDefaultForVersion('21.2.0')).toBe(false);
+    });
+
+    it('should return true for versions 22 and above', () => {
+      expect(getJitOnPushDefaultForVersion('22.0.0')).toBe(true);
+      expect(getJitOnPushDefaultForVersion('23.0.0')).toBe(true);
     });
   });
 });
