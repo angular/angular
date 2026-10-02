@@ -7,6 +7,7 @@
  */
 
 import {TestBed} from '@angular/core/testing';
+import {provideRouter} from '../src/provide_router';
 import {Router} from '../src/router';
 import {
   containsTree,
@@ -23,6 +24,9 @@ describe('UrlTree', () => {
     let serializer: DefaultUrlSerializer;
 
     beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideRouter([])],
+      });
       serializer = new DefaultUrlSerializer();
     });
 

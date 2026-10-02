@@ -57,6 +57,7 @@ import {
   createRoot,
   advance,
   simulateLocationChange,
+  provideTestRouter,
 } from './integration_helpers';
 import {getLoadedComponent} from '../../src/utils/config';
 import {of, delay} from 'rxjs';
@@ -1062,7 +1063,9 @@ export function lazyLoadingIntegrationSuite(browserAPI: 'navigation' | 'history'
 
       it('should not remove parts of the URL that are not handled by the router when "eager"', async () => {
         TestBed.configureTestingModule({
-          providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+          providers: [
+            provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy: 'eager'})),
+          ],
         });
         const router = TestBed.inject(Router);
         const location = TestBed.inject(Location);

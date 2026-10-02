@@ -23,6 +23,7 @@ import {
   RootCmp,
   BlankCmp,
   simulateLocationChange,
+  provideTestRouter,
 } from './integration_helpers';
 import {timeout} from '@angular/private/testing';
 
@@ -49,7 +50,9 @@ export function duplicateInFlightNavigationsIntegrationSuite(browserAPI: 'histor
       // with deferred routing, the navigation API is able to defer the commit for the first navigation
       // meaning that we _never_ transition to the /simple route entry.
       TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+        providers: [
+          provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy: 'eager'})),
+        ],
       });
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
@@ -105,7 +108,9 @@ export function duplicateInFlightNavigationsIntegrationSuite(browserAPI: 'histor
 
     it('should not cause URL thrashing', async () => {
       TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+        providers: [
+          provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy: 'eager'})),
+        ],
       });
 
       const router = TestBed.inject(Router);
@@ -139,7 +144,9 @@ export function duplicateInFlightNavigationsIntegrationSuite(browserAPI: 'histor
 
     it('can render a 404 page without changing the URL', async () => {
       TestBed.configureTestingModule({
-        providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+        providers: [
+          provideTestRouter(browserAPI, [], withRouterConfig({urlUpdateStrategy: 'eager'})),
+        ],
       });
       const router = TestBed.inject(Router);
       TestBed.inject(RedirectingGuard).skipLocationChange = true;

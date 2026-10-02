@@ -21,10 +21,23 @@ import {
   RouterModule,
   RouterOutlet,
   UrlSegment,
+  Routes,
 } from '../../index';
+import {provideRouter, RouterFeatures} from '../../src/provide_router';
+import {providePlatformNavigationRouter} from '../../src/provide_platform_navigation_router';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {timeout} from '@angular/private/testing';
+
+export function provideTestRouter(
+  browserAPI: 'history' | 'navigation',
+  routes: Routes,
+  ...features: RouterFeatures[]
+) {
+  return browserAPI === 'navigation'
+    ? providePlatformNavigationRouter(routes, ...features)
+    : provideRouter(routes, ...features);
+}
 
 export const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
 
