@@ -154,6 +154,10 @@ bundle_entrypoints = [
         "safe-optional-chaining",
         "packages/core/schematics/migrations/safe-optional-chaining/index.js",
     ],
+    [
+        "can-load-to-can-match",
+        "packages/core/schematics/migrations/can-load-to-can-match/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -165,6 +169,7 @@ rollup.rollup(
         "//:node_modules/magic-string",
         "//:node_modules/semver",
         "//packages/core/schematics:tsconfig_build",
+        "//packages/core/schematics/migrations/can-load-to-can-match",
         "//packages/core/schematics/migrations/can-match-snapshot-required",
         "//packages/core/schematics/migrations/change-detection-eager",
         "//packages/core/schematics/migrations/http-xhr-backend",
