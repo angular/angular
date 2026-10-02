@@ -441,7 +441,7 @@ export class NavigationStateManager extends StateManager {
     const abortHandler = () => {
       this.currentNavigation.routerTransition?.abort();
     };
-    event.signal.addEventListener('abort', abortHandler);
+    event.signal.addEventListener('abort', abortHandler, {once: true});
     this.currentNavigation.removeAbortListener = () =>
       event.signal.removeEventListener('abort', abortHandler);
 
