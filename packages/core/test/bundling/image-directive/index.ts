@@ -26,6 +26,10 @@ import {ImagePerfWarningsLazyComponent} from './e2e/image-perf-warnings-lazy/ima
 import {ImagePerfWarningsOversizedComponent} from './e2e/image-perf-warnings-oversized/image-perf-warnings-oversized';
 import {SvgNoOversizedPerfWarningsComponent} from './e2e/image-perf-warnings-oversized/svg-no-perf-oversized-warnings';
 import {LcpCheckDuplicate} from './e2e/lcp-check-duplicate/lcp-check-duplicate';
+import {
+  LcpCheckSoftNavigationStart,
+  LcpCheckSoftNavigationTarget,
+} from './e2e/lcp-check-soft-navigation/lcp-check-soft-navigation';
 import {LcpCheckComponent} from './e2e/lcp-check/lcp-check';
 import {
   OversizedImageComponentFailing,
@@ -50,6 +54,8 @@ const ROUTES = [
   {path: 'e2e/basic', component: BasicComponent},
   {path: 'e2e/lcp-check', component: LcpCheckComponent},
   {path: 'e2e/lcp-check-duplicate', component: LcpCheckDuplicate},
+  {path: 'e2e/lcp-check-soft-navigation', component: LcpCheckSoftNavigationStart},
+  {path: 'e2e/lcp-check-soft-navigation-target', component: LcpCheckSoftNavigationTarget},
   {path: 'e2e/image-perf-warnings-lazy', component: ImagePerfWarningsLazyComponent},
   {path: 'e2e/image-perf-warnings-oversized', component: ImagePerfWarningsOversizedComponent},
   {path: 'e2e/svg-no-perf-oversized-warnings', component: SvgNoOversizedPerfWarningsComponent},
