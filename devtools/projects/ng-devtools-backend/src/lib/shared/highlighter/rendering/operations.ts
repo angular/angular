@@ -90,7 +90,7 @@ export abstract class RenderOp {
 
 /** Use for static highlights that don't have a TTL. */
 export class StaticHighlightRenderOp extends RenderOp {
-  render(timestamp: number) {
+  override render(timestamp: number) {
     this.start = timestamp;
 
     if (this.isVisible) {
@@ -110,7 +110,7 @@ export class StaticHighlightRenderOp extends RenderOp {
 export class DynamicTtlBoundHighlightRenderOp extends RenderOp {
   private readonly fadeOutStart = this.template.ttl! - OVERLAY_FADE_OUT_DUR;
 
-  render(timestamp: number) {
+  override render(timestamp: number) {
     if (this.start === -1) {
       this.start = timestamp;
       this.stateInternal = 'in-progress';
