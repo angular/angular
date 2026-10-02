@@ -81,7 +81,7 @@
     "mermaid": "12.0.0",
     "ngx-progressbar": "14.0.0",
     "playwright-core": "1.63.0",
-    "preact": "10.29.8",
+    "preact": "11.0.0",
     "preact-render-to-string": "6.7.0",
     "prettier": "3.9.9",
     "property-information": "^7.1.0",
