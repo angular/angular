@@ -30,6 +30,7 @@
 | `NG0602`  | [Disallowed function call inside reactive context](errors/NG0602)                    |
 | `NG0750`  | [@defer dependencies failed to load](errors/NG0750)                                  |
 | `NG0751`  | [@defer behavior when HMR is enabled](errors/NG0751)                                 |
+| `NG0904`  | [Unsafe value used in a resource URL context](errors/NG0904)                         |
 | `NG0910`  | [Unsafe bindings on an iframe element](errors/NG0910)                                |
 | `NG0912`  | [Component ID generation collision](errors/NG0912)                                   |
 | `NG0913`  | [Runtime Performance Warnings](errors/NG0913)                                        |
