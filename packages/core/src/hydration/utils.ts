@@ -28,6 +28,7 @@ import {
   ELEMENT_CONTAINERS,
   MULTIPLIER,
   NUM_ROOT_NODES,
+  PROTECTED_ATTRIBUTES,
   SerializedContainerView,
   SerializedDeferBlock,
   SerializedTriggerDetails,
@@ -472,6 +473,17 @@ export function getSerializedContainerViews(
   index: number,
 ): SerializedContainerView[] | null {
   return hydrationInfo.data[CONTAINERS]?.[index] ?? null;
+}
+
+/**
+ * Returns the name of a static attribute that must be left untouched while setting up an
+ * element's static attributes during hydration, if any (see `PROTECTED_ATTRIBUTES`).
+ */
+export function getProtectedAttributeName(
+  hydrationInfo: DehydratedView | null,
+  index: number,
+): string | null {
+  return hydrationInfo?.data[PROTECTED_ATTRIBUTES]?.[index] ?? null;
 }
 
 /**

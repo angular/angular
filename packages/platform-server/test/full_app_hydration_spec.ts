@@ -62,6 +62,8 @@ import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {
   clearDocument,
   getAppContents,
+  hydrate,
+  prepareEnvironment,
   prepareEnvironmentAndHydrate,
   resetTViewsFor,
   stripUtilAttributes,
@@ -482,6 +484,49 @@ describe('platform-server full application hydration integration', () => {
           const clientRootNode = compRef.location.nativeElement;
           verifyAllNodesClaimedForHydration(clientRootNode);
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+      });
+
+      describe('protected attributes', () => {
+        it('should not re-set a static `src` attribute on an `<iframe>` during hydration', async () => {
+          @Component({
+            selector: 'app',
+            template: `<iframe src="/assets/some-file.pdf"></iframe>`,
+          })
+          class SimpleComponent {}
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          prepareEnvironment(doc, html);
+          const iframe = doc.querySelector('iframe')!;
+          const setAttributeCalls: string[] = [];
+          const originalSetAttribute = iframe.setAttribute.bind(iframe);
+          // `spyOn` can't reassign `setAttribute` here because the DOM implementation used in
+          // these tests exposes it as a non-writable prototype property. Shadowing it with an
+          // own property via `defineProperty` works regardless of that.
+          Object.defineProperty(iframe, 'setAttribute', {
+            configurable: true,
+            writable: true,
+            value: (name: string, value: string) => {
+              setAttributeCalls.push(name);
+              return originalSetAttribute(name, value);
+            },
+          });
+
+          const appRef = await hydrate(doc, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          expect(setAttributeCalls).not.toContain('src');
         });
       });
 
