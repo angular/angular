@@ -53,10 +53,11 @@ export function parseHostStyleProperties(job: CompilationJob): void {
       op.name = 'style';
     } else if (op.name.startsWith(CLASS_DOT)) {
       op.bindingKind = ir.BindingKind.ClassName;
-      op.name = parseProperty(op.name.substring(CLASS_DOT.length)).property;
+      // Class names can contain dots (e.g. `px-3.5`), so there is no suffix to split off.
+      op.name = stripImportant(op.name.substring(CLASS_DOT.length));
     } else if (op.name.startsWith(CLASS_BANG)) {
       op.bindingKind = ir.BindingKind.ClassName;
-      op.name = parseProperty(op.name.substring(CLASS_BANG.length)).property;
+      op.name = stripImportant(op.name.substring(CLASS_BANG.length));
     }
   }
 }
@@ -77,11 +78,16 @@ function hyphenate(value: string): string {
     .toLowerCase();
 }
 
-function parseProperty(name: string): {property: string; suffix: string | null} {
-  const overrideIndex = name.indexOf('!important');
+function stripImportant(name: string): string {
+  const overrideIndex = name.indexOf(BANG_IMPORTANT);
   if (overrideIndex !== -1) {
     name = overrideIndex > 0 ? name.substring(0, overrideIndex) : '';
   }
+  return name;
+}
+
+function parseProperty(name: string): {property: string; suffix: string | null} {
+  name = stripImportant(name);
 
   let suffix: string | null = null;
   let property = name;

@@ -589,7 +589,8 @@ export class BindingParser {
 
         bindingType = BindingType.Attribute;
       } else if (parts[0] == CLASS_PREFIX) {
-        boundPropertyName = parts[1];
+        // Class names can contain dots (e.g. `px-3.5`), so everything after the prefix is the name.
+        boundPropertyName = parts.slice(1).join(PROPERTY_PARTS_SEPARATOR);
         bindingType = BindingType.Class;
         securityContexts = [SecurityContext.NONE];
       } else if (parts[0] == STYLE_PREFIX) {
