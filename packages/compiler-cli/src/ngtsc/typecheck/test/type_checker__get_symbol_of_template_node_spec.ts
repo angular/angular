@@ -1713,7 +1713,7 @@ runInEachFileSystem(() => {
 
       // Note that `honorAccessModifiersForInputBindings` is `false` even with `--strictTemplates`,
       // so this captures a potential common scenario, assuming the input is restricted.
-      it('should not throw when retrieving a symbol for a signal-input with restricted access', () => {
+      it('can retrieve a symbol for a signal-input with restricted access', () => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');
         const templateString = `
@@ -1767,13 +1767,69 @@ runInEachFileSystem(() => {
         const testElement = ifBranchNode.children[0] as TmplAstElement;
 
         const inputAbinding = testElement.inputs[0];
-        const aSymbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp);
-        expect(aSymbol)
-          .withContext(
-            'Symbol builder does not return symbols for restricted inputs with ' +
-              '`honorAccessModifiersForInputBindings = false` (same for decorator inputs)',
-          )
-          .toBe(null);
+        const aSymbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp)!;
+        assertInputBindingSymbol(aSymbol);
+        expect(
+          (
+            templateTypeChecker.getTsSymbolOfSymbol(aSymbol.bindings[0])!
+              .declarations![0] as ts.PropertyDeclaration
+          ).name.getText(),
+        ).toEqual('inputA');
+      });
+
+      // Note that `honorAccessModifiersForInputBindings` is `false` even with `--strictTemplates`,
+      // so this captures a potential common scenario, assuming the input is restricted.
+      it('can retrieve a symbol for a readonly decorator input with restricted access', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const templateString = `<div dir [inputA]="'ok'"></div>`;
+        const {program, templateTypeChecker} = setup(
+          [
+            {
+              fileName,
+              templates: {'Cmp': templateString},
+              declarations: [
+                {
+                  name: 'TestDir',
+                  selector: '[dir]',
+                  file: dirFile,
+                  type: 'directive',
+                  restrictedInputFields: ['inputA'],
+                  inputs: {inputA: 'inputA'},
+                },
+              ],
+            },
+            {
+              fileName: dirFile,
+              source: `
+                export class TestDir {
+                  readonly inputA: string = '';
+                }
+              `,
+            },
+          ],
+          {honorAccessModifiersForInputBindings: false},
+        );
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+        const testElement = nodes[0] as TmplAstElement;
+
+        const inputAbinding = testElement.inputs[0];
+        const aSymbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp)!;
+        assertInputBindingSymbol(aSymbol);
+        expect(
+          (
+            templateTypeChecker.getTsSymbolOfSymbol(aSymbol.bindings[0])!
+              .declarations![0] as ts.PropertyDeclaration
+          ).name.getText(),
+        ).toEqual('inputA');
+        expect(
+          program
+            .getTypeChecker()
+            .typeToString(templateTypeChecker.getTypeOfSymbol(aSymbol.bindings[0])!),
+        ).toBe('string');
       });
 
       it('does not retrieve a symbol for an input when undeclared', () => {

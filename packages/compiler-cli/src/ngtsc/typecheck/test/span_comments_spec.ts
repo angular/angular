@@ -229,6 +229,24 @@ describe('type check blocks diagnostics', () => {
       });
     });
 
+    describe('attaching comments for restricted directive inputs', () => {
+      it('should annotate the type of the temporary variable with the key span', () => {
+        const DIRECTIVES: TestDeclaration[] = [
+          {
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {fieldA: 'inputA'},
+            restrictedInputFields: ['fieldA'],
+          },
+        ];
+        const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+        expect(tcbWithSpans(TEMPLATE, DIRECTIVES)).toContain(
+          'var _t2 = null! as typeof _t1.fieldA /*T:VAE*/ /*D:ignore*/ /*10,16*/;',
+        );
+      });
+    });
+
     describe('control flow', () => {
       it('@for', () => {
         const template = `@for (user of users; track user; let i = $index) { {{i}} }`;

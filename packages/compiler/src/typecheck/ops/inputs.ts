@@ -147,9 +147,22 @@ export class TcbDirectiveInputsOp extends TcbOp {
           }
 
           const id = new TcbExpr(this.tcb.allocateId());
-          const type = new TcbExpr(
-            `(typeof ${dirId.print()})[${TcbExpr.quoteAndEscape(fieldName)}]`,
-          );
+          let type: TcbExpr;
+          if (this.dir.stringLiteralInputFields.has(fieldName)) {
+            // Non-identifier field names cannot be expressed as a type query.
+            type = new TcbExpr(`(typeof ${dirId.print()})[${TcbExpr.quoteAndEscape(fieldName)}]`);
+          } else {
+            // Use a type query with a qualified name (`typeof _t1.fieldName`) rather than an
+            // indexed access type (`(typeof _t1)["fieldName"]`) so that the type retains a
+            // TypeScript-visible reference to the input's class member, which the language
+            // service relies on e.g. to find references to a `readonly` input. Reading the
+            // field is an error if it is private/protected, so diagnostics are ignored for the
+            // type; the assignment into the temporary variable remains fully type-checked.
+            type = new TcbExpr(`typeof ${dirId.print()}.${fieldName}`).markIgnoreDiagnostics();
+            if (attr.keySpan !== null) {
+              type.addParseSpanInfo(attr.keySpan);
+            }
+          }
           const temp = declareVariable(id, type);
           this.scope.addStatement(temp);
           target = id;
