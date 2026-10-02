@@ -26,6 +26,7 @@
  * Jira Issue = FW-1184
  */
 export * from '../../defer/instructions';
+export * from '../../defer/retry';
 export * from './advance';
 export * from './aria_property';
 export * from './attribute';
