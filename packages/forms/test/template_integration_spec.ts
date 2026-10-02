@@ -41,7 +41,7 @@ import {
   Validator,
 } from '../index';
 
-import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
+import {NgModelCustomWrapper} from './value_accessor_integration_spec';
 
 describe('template-driven forms integration tests', () => {
   useAutoTick();
@@ -1383,7 +1383,7 @@ describe('template-driven forms integration tests', () => {
     });
 
     it('should disable a custom control if disabled attr is added', async () => {
-      const fixture = initTest(NgModelCustomWrapper, NgModelCustomComp);
+      const fixture = TestBed.createComponent(NgModelCustomWrapper);
       fixture.componentInstance.name = 'Nancy';
       fixture.componentInstance.isDisabled = true;
       await fixture.whenStable();
