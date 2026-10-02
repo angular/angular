@@ -1683,6 +1683,82 @@ describe('find references and rename locations', () => {
     assertTextSpans(refs, ['signalModel']);
   });
 
+  describe('readonly inputs', () => {
+    // Note: this is a factory because `createModuleAndProjectWithDeclarations` adds the
+    // generated module to the passed-in files.
+    const getFiles = () => ({
+      'dir.ts': `
+        import {Directive, Input, input} from '@angular/core';
+
+        @Directive({
+          selector: '[readonly-dir]',
+          standalone: false,
+        })
+        export class ReadonlyDir {
+          readonly signalInput = input<string>();
+          @Input() readonly decoratorInput: string|undefined;
+        }`,
+      'app.ts': `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<div readonly-dir [signalInput]="title" [decoratorInput]="title"></div>',
+          standalone: false,
+        })
+        export class AppCmp {
+          title = 'title';
+        }`,
+    });
+
+    beforeEach(() => {
+      env = LanguageServiceTestEnv.setup();
+    });
+
+    it('should get references to readonly signal input from the template', () => {
+      const project = createModuleAndProjectWithDeclarations(env, 'test', getFiles());
+      const file = project.openFile('app.ts');
+      file.moveCursorToText('[signal¦Input]="title"');
+
+      const refs = getReferencesAtPosition(file)!;
+      expect(refs.length).toBe(2);
+      assertFileNames(refs, ['dir.ts', 'app.ts']);
+      assertTextSpans(refs, ['signalInput']);
+    });
+
+    it('should get references to readonly signal input from the class member', () => {
+      const project = createModuleAndProjectWithDeclarations(env, 'test', getFiles());
+      const file = project.openFile('dir.ts');
+      file.moveCursorToText('readonly signal¦Input = input');
+
+      const refs = getReferencesAtPosition(file)!;
+      expect(refs.length).toBe(2);
+      assertFileNames(refs, ['dir.ts', 'app.ts']);
+      assertTextSpans(refs, ['signalInput']);
+    });
+
+    it('should get references to readonly decorator input from the template', () => {
+      const project = createModuleAndProjectWithDeclarations(env, 'test', getFiles());
+      const file = project.openFile('app.ts');
+      file.moveCursorToText('[decorator¦Input]="title"');
+
+      const refs = getReferencesAtPosition(file)!;
+      expect(refs.length).toBe(2);
+      assertFileNames(refs, ['dir.ts', 'app.ts']);
+      assertTextSpans(refs, ['decoratorInput']);
+    });
+
+    it('should get references to readonly decorator input from the class member', () => {
+      const project = createModuleAndProjectWithDeclarations(env, 'test', getFiles());
+      const file = project.openFile('dir.ts');
+      file.moveCursorToText('readonly decorator¦Input');
+
+      const refs = getReferencesAtPosition(file)!;
+      expect(refs.length).toBe(2);
+      assertFileNames(refs, ['dir.ts', 'app.ts']);
+      assertTextSpans(refs, ['decoratorInput']);
+    });
+  });
+
   describe('directives', () => {
     describe('when cursor is on the directive class', () => {
       let file: OpenBuffer;

@@ -717,7 +717,7 @@ describe('type check blocks', () => {
     ];
     expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
       'var _t1 = null! as i0.Dir; ' +
-        'var _t2 = null! as (typeof _t1)["fieldA"]; ' +
+        'var _t2 = null! as typeof _t1.fieldA; ' +
         '_t2 = (((this).foo)); ',
     );
   });

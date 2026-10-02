@@ -447,46 +447,54 @@ export class SymbolBuilder {
     });
     const bindings: BindingSymbol[] = [];
     for (const node of nodes) {
-      if (!isAccessExpression(node.left)) {
-        continue;
-      }
-
-      const signalInputAssignment = unwrapSignalInputWriteTAccessor(node.left);
-      let fieldAccessExpr: ts.PropertyAccessExpression | ts.ElementAccessExpression;
       // Signal inputs need special treatment because they are generated with an extra keyed
       // access. E.g. `_t1.prop[WriteT_ACCESSOR_SYMBOL]`. Observations:
       //   - The keyed access for the write type needs to be resolved for the "input type".
       //   - The definition symbol of the input should be the input class member, and not the
       //     internal write accessor. Symbol should resolve `_t1.prop`.
-      let tcbLocation: TcbLocation;
-      if (signalInputAssignment !== null) {
-        // Note: If the field expression for the input binding refers to just an identifier,
-        // then we are handling the case of a temporary variable being used for the input field.
-        // This is the case with `honorAccessModifiersForInputBindings = false` and in those cases
-        // we cannot resolve the owning directive, similar to how we guard above with `isAccessExpression`.
-        if (ts.isIdentifier(signalInputAssignment.fieldExpr)) {
+      const signalInputAssignment = isAccessExpression(node.left)
+        ? unwrapSignalInputWriteTAccessor(node.left)
+        : null;
+      const fieldExpr =
+        signalInputAssignment !== null ? signalInputAssignment.fieldExpr : node.left;
+
+      // The node whose location resolves to the input's class member.
+      let fieldNode: ts.Node;
+      // The node whose type is the type of the input's class member.
+      let fieldTypeNode: ts.Node;
+      // The node whose location resolves to the directive instance.
+      let instanceNode: ts.Node;
+
+      if (isAccessExpression(fieldExpr)) {
+        fieldNode = fieldExpr;
+        fieldTypeNode = fieldExpr;
+        instanceNode = fieldExpr.expression;
+      } else if (ts.isIdentifier(fieldExpr)) {
+        // If the field expression refers to just an identifier, the input binding was assigned
+        // into a temporary variable. This is the case for fields with restricted access
+        // (private/protected/readonly) when `honorAccessModifiersForInputBindings = false`, where
+        // the TCB generates `var _tmp = null! as typeof _dir.fieldName; _tmp = expr;`.
+        // Recover the class member and the directive instance from the type in the temporary
+        // variable's declaration.
+        const restrictedField = unwrapRestrictedFieldTempVariable(this.typeCheckBlock, fieldExpr);
+        if (restrictedField === null) {
           continue;
         }
-
-        fieldAccessExpr = signalInputAssignment.fieldExpr;
-        tcbLocation = this.getTcbLocationForNode(fieldAccessExpr);
+        fieldNode = restrictedField.fieldNode;
+        fieldTypeNode = restrictedField.typeNode;
+        instanceNode = restrictedField.instanceNode;
       } else {
-        fieldAccessExpr = node.left;
-        tcbLocation = this.getTcbLocationForNode(fieldAccessExpr);
+        continue;
       }
 
-      const target = this.getDirectiveSymbolForAccessExpression(fieldAccessExpr, consumer);
+      const target = this.getDirectiveSymbolForInstanceNode(instanceNode, consumer);
       if (target === null) {
         continue;
       }
 
-      if (!consumer.inputs.hasBindingPropertyName(binding.name)) {
-        continue;
-      }
-
       bindings.push({
-        tcbLocation,
-        tcbTypeLocation: this.getTcbSpanForNode(fieldAccessExpr),
+        tcbLocation: this.getTcbLocationForNode(fieldNode),
+        tcbTypeLocation: this.getTcbSpanForNode(fieldTypeNode),
         kind: SymbolKind.Binding,
         target,
       });
@@ -502,10 +510,17 @@ export class SymbolBuilder {
     fieldAccessExpr: ts.ElementAccessExpression | ts.PropertyAccessExpression,
     meta: SymbolDirectiveMeta,
   ): DirectiveSymbol | null {
+    return this.getDirectiveSymbolForInstanceNode(fieldAccessExpr.expression, meta);
+  }
+
+  private getDirectiveSymbolForInstanceNode(
+    instanceNode: ts.Node,
+    meta: SymbolDirectiveMeta,
+  ): DirectiveSymbol | null {
     return {
       ref: meta.getSymbolReference(),
       kind: SymbolKind.Directive,
-      tcbLocation: this.getTcbLocationForNode(fieldAccessExpr.expression),
+      tcbLocation: this.getTcbLocationForNode(instanceNode),
       isComponent: meta.isComponent,
       isStructural: meta.isStructural,
       selector: meta.selector,
@@ -660,7 +675,11 @@ export class SymbolBuilder {
     const expressionTarget = this.boundTarget.getExpressionTarget(expression);
     if (expressionTarget !== null) {
       return this.getSymbol(expressionTarget) as
-        VariableSymbol | ReferenceSymbol | ExpressionSymbol | LetDeclarationSymbol | null;
+        | VariableSymbol
+        | ReferenceSymbol
+        | ExpressionSymbol
+        | LetDeclarationSymbol
+        | null;
     }
 
     let withSpan = expression.sourceSpan;
@@ -852,4 +871,81 @@ function unwrapSignalInputWriteTAccessor(expr: ts.LeftHandSideExpression): null 
     fieldExpr: expr.expression,
     typeExpr: expr,
   };
+}
+
+/**
+ * Resolves the temporary variable that an input binding is assigned into when the input's class
+ * member has restricted access (private/protected/readonly) and
+ * `honorAccessModifiersForInputBindings` is disabled.
+ *
+ * Such bindings are generated as `var _tmp = null! as typeof _dir.fieldName; _tmp = expr;` (or
+ * `var _tmp = null! as (typeof _dir)["fieldName"]; _tmp = expr;` for field names that are not
+ * valid identifiers), so the input's class member, the member type and the directive instance
+ * (`_dir`) can all be recovered from the type in the declaration of the temporary variable.
+ */
+function unwrapRestrictedFieldTempVariable(
+  typeCheckBlock: ts.Node,
+  id: ts.Identifier,
+): null | {
+  fieldNode: ts.Node;
+  typeNode: ts.TypeNode;
+  instanceNode: ts.Node;
+} {
+  const declaration = findVariableDeclaration(typeCheckBlock, id.text);
+  if (
+    declaration === null ||
+    declaration.initializer === undefined ||
+    !ts.isAsExpression(declaration.initializer)
+  ) {
+    return null;
+  }
+  const type = declaration.initializer.type;
+
+  // `var _tmp = null! as typeof _dir.fieldName;`
+  if (ts.isTypeQueryNode(type) && ts.isQualifiedName(type.exprName)) {
+    return {
+      fieldNode: type.exprName,
+      typeNode: type,
+      instanceNode: type.exprName.left,
+    };
+  }
+
+  // `var _tmp = null! as (typeof _dir)["fieldName"];`
+  if (ts.isIndexedAccessTypeNode(type)) {
+    const {indexType} = type;
+    let objectType: ts.TypeNode = type.objectType;
+    while (ts.isParenthesizedTypeNode(objectType)) {
+      objectType = objectType.type;
+    }
+    if (
+      ts.isTypeQueryNode(objectType) &&
+      ts.isLiteralTypeNode(indexType) &&
+      ts.isStringLiteralLike(indexType.literal)
+    ) {
+      return {
+        fieldNode: indexType.literal,
+        typeNode: type,
+        instanceNode: objectType.exprName,
+      };
+    }
+  }
+
+  return null;
+}
+
+/** Finds the declaration of the variable with the given name within the given node. */
+function findVariableDeclaration(root: ts.Node, name: string): ts.VariableDeclaration | null {
+  let result: ts.VariableDeclaration | null = null;
+  const visit = (node: ts.Node): void => {
+    if (result !== null) {
+      return;
+    }
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === name) {
+      result = node;
+      return;
+    }
+    node.forEachChild(visit);
+  };
+  visit(root);
+  return result;
 }
