@@ -4767,6 +4767,63 @@ runInEachFileSystem(() => {
           expect(diags.length).toBe(0);
         });
 
+        it('should not report an ng-template inside an SVG element', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive} from '@angular/core';
+        @Directive({selector: '[ngTemplateOutlet]'})
+        export class NgTemplateOutlet {}
+        @Component({
+          selector: 'blah',
+          imports: [NgTemplateOutlet],
+          template: '<svg><ng-template [ngTemplateOutlet]="foo"></ng-template></svg>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should not report an ng-template inside an XHTML element', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component, Directive} from '@angular/core';
+        @Directive({selector: '[ngIf]'})
+        export class NgIf {}
+        @Component({
+          selector: 'blah',
+          imports: [NgIf],
+          template: '<xhtml:div xmlns:xhtml="http://www.w3.org/1999/xhtml"><ng-template [ngIf]="true"></ng-template></xhtml:div>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
+        it('should not report an ng-template error for unknown structural directives', () => {
+          env.write(
+            'test.ts',
+            `
+        import {Component} from '@angular/core';
+        @Component({
+          selector: 'blah',
+          template: '<div *unknown="1"></div>',
+        })
+        export class FooCmp {}
+      `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(1);
+          expect(diags[0].messageText).toMatch(
+            /A structural directive \`unknown\` was used in the template/,
+          );
+        });
+
         it('should report unclaimed properties on an ng-template that matches a directive', () => {
           env.write(
             'test.ts',
