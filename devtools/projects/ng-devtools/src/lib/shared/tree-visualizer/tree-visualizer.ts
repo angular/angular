@@ -144,6 +144,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
 
   override dispose(): void {
     super.dispose();
+    d3.select(this.containerElement).interrupt();
     this.snappedNodeListenersDisposeFn?.();
   }
 
