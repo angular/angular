@@ -9,7 +9,7 @@
 /**
  * An ES Module object with a default export of the given type.
  *
- * @see {@link injectAsync}
+ * @see [injectAsync](/api/core/injectAsync)
  * @see [Route#loadComponent](/api/router/Route#loadComponent)
  * @see [LoadChildrenCallback](/api/router/LoadChildrenCallback)
  *
