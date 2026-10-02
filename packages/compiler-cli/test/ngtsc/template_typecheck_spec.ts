@@ -4125,6 +4125,38 @@ runInEachFileSystem(() => {
           expect(diags.length).toBe(0);
         });
 
+        it('should widen the inferred literal type of readonly fields', () => {
+          env.write(
+            'test.ts',
+            `
+            import {Component, NgModule, Input, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'blah',
+              template: '<div dir [showBadge]="true"></div>',
+              standalone: false,
+            })
+            export class FooCmp {}
+
+            @Directive({
+              selector: '[dir]',
+              standalone: false,
+            })
+            export class TestDir {
+              // Inferred as the literal type \`false\`; the binding must widen it to \`boolean\`.
+              @Input() readonly showBadge = false;
+            }
+
+            @NgModule({
+              declarations: [FooCmp, TestDir],
+            })
+            export class FooModule {}
+          `,
+          );
+          const diags = env.driveDiagnostics();
+          expect(diags.length).toBe(0);
+        });
+
         it('should produce diagnostics when assigning incorrect type to readonly, private, or protected fields', () => {
           env.write(
             'test.ts',
