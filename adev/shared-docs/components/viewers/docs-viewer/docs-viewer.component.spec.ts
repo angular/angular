@@ -238,12 +238,12 @@ describe('DocViewer', () => {
     expect(copyButton).toBeTruthy();
   });
 
-  it('should not leak any icon text content (so it stays out of the search index)', () => {
+  it('should not leak any icon text content (so it stays out of the search index)', async () => {
     const fixture = TestBed.createComponent(CopyLinkButton);
     fixture.componentRef.setInput('href', '#test-section');
     fixture.componentRef.setInput('label', 'Test Section');
     fixture.componentRef.setInput('matTooltip', 'Copy link to Test Section');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent.trim()).toBe('');
   });
