@@ -7999,6 +7999,40 @@ describe('platform-server full application hydration integration', () => {
         expect(clientRootNode.textContent).toContain('foo');
       });
 
+      it('should not mutate an array of objects stored in a let declaration during cleanup', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @let list = items;
+            @for (item of list; track item.id) {
+              {{ item.id }}/{{ list.length }}
+            }
+          `,
+        })
+        class SimpleComponent {
+          items = Array.from({length: 20}, (_, id) => ({id}));
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+        expect(ssrContents).toContain('19/20');
+
+        resetTViewsFor(SimpleComponent);
+
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+        await appRef.whenStable();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        const {items} = compRef.instance;
+        expect(items.map((item) => Object.keys(item))).toEqual(items.map(() => ['id']));
+      });
+
       it('should handle let declaration inside a projected control flow node', async () => {
         @Component({
           selector: 'test',

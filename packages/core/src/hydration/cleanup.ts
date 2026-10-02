@@ -14,6 +14,7 @@ import {
   DEHYDRATED_VIEWS,
   LContainer,
 } from '../render3/interfaces/container';
+import {isLetDeclaration, isTNodeShape} from '../render3/interfaces/node';
 import {Renderer} from '../render3/interfaces/renderer';
 import {RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer, isLView} from '../render3/interfaces/type_checks';
@@ -112,6 +113,13 @@ export function cleanupLView(lView: LView) {
 
   const tView = lView[TVIEW];
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
+    // Let declarations store arbitrary values in the LView, which may look like an LView
+    // or an LContainer (e.g. an array of objects), so we need to exclude them.
+    const tNode = tView.data[i];
+    if (isTNodeShape(tNode) && isLetDeclaration(tNode)) {
+      continue;
+    }
+
     if (isLContainer(lView[i])) {
       const lContainer = lView[i];
       cleanupLContainer(lContainer);
