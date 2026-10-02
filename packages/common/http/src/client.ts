@@ -2366,6 +2366,304 @@ export class HttpClient {
   ): Observable<any> {
     return this.request<any>('POST', url, addBody(options, body));
   }
+  /**
+   * Constructs a `QUERY` request that interprets the body as an `ArrayBuffer` and returns
+   * an `ArrayBuffer`.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options.
+   *
+   * @return An `Observable` of the response, with the response body as an `ArrayBuffer`.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe?: 'body';
+      responseType: 'arraybuffer';
+    } & HttpClientCommonOptions,
+  ): Observable<ArrayBuffer>;
+
+  /**
+   * Constructs a \`QUERY\` request that interprets the body as a \`Blob\` and returns the
+   * response as a \`Blob\`.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return An \`Observable\` of the response, with the response body as a \`Blob\`.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe?: 'body';
+      responseType: 'blob';
+    } & HttpClientCommonOptions,
+  ): Observable<Blob>;
+
+  /**
+   * Constructs a \`QUERY\` request that interprets the body as a text string and
+   * returns the response as a string value.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return An \`Observable\` of the response, with a response body of type string.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe?: 'body';
+      responseType: 'text';
+    } & HttpClientCommonOptions,
+  ): Observable<string>;
+
+  /**
+   * Constructs a `QUERY` request that interprets the body as an `ArrayBuffer` and
+   * returns the full event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of all `HttpEvent`s for the request,
+   * with the response body as an `ArrayBuffer`.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe: 'events';
+      responseType: 'arraybuffer';
+    } & HttpClientCommonOptions,
+  ): Observable<HttpEvent<ArrayBuffer>>;
+
+  /**
+   * Constructs a `QUERY` request that interprets the body as a `Blob`
+   * and returns the response in an observable of the full event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of all `HttpEvent`s for the request, with the response body as `Blob`.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe: 'events';
+      responseType: 'blob';
+    } & HttpClientCommonOptions,
+  ): Observable<HttpEvent<Blob>>;
+
+  /**
+   * Constructs a `QUERY` request that interprets the body as a text string and returns the full
+   * event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return  An `Observable` of all `HttpEvent`s for the request,
+   * with a response body of type string.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe: 'events';
+      responseType: 'text';
+    } & HttpClientCommonOptions,
+  ): Observable<HttpEvent<string>>;
+
+  /**
+   * Constructs a QUERY request that interprets the body as JSON and returns the full
+   * event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return  An `Observable` of all `HttpEvent`s for the request,
+   * with a response body of type `Object`.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe: 'events';
+      responseType?: 'json';
+    } & HttpClientCommonOptions,
+  ): Observable<HttpEvent<Object>>;
+
+  /**
+   * Constructs a QUERY request that interprets the body as JSON and returns the full
+   * event stream.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of all `HttpEvent`s for the request,
+   * with a response body in the requested type.
+   */
+  query<T>(
+    url: string,
+    body: any | null,
+    options: {
+      observe: 'events';
+      responseType?: 'json';
+    } & HttpClientCommonOptions,
+  ): Observable<HttpEvent<T>>;
+
+  /**
+   * Constructs a QUERY request that interprets the body as an `ArrayBuffer`
+   *  and returns the full `HttpResponse`.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return  An `Observable` of the `HttpResponse` for the request, with the response body as an
+   * `ArrayBuffer`.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe: 'response';
+      responseType: 'arraybuffer';
+    } & HttpClientCommonOptions,
+  ): Observable<HttpResponse<ArrayBuffer>>;
+
+  /**
+   * Constructs a `QUERY` request that interprets the body as a `Blob` and returns the full
+   * `HttpResponse`.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the `HttpResponse` for the request,
+   * with the response body as a `Blob`.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe: 'response';
+      responseType: 'blob';
+    } & HttpClientCommonOptions,
+  ): Observable<HttpResponse<Blob>>;
+
+  /**
+   * Constructs a `QUERY` request that interprets the body as a text stream and returns
+   * the full `HttpResponse`.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return  An `Observable` of the `HttpResponse` for the request,
+   * with a response body of type string.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe: 'response';
+      responseType: 'text';
+    } & HttpClientCommonOptions,
+  ): Observable<HttpResponse<string>>;
+
+  /**
+   * Constructs a `QUERY` request that interprets the body as JSON
+   * and returns the full `HttpResponse`.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the `HttpResponse` for the request, with a response body of type
+   * `Object`.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe: 'response';
+      responseType?: 'json';
+    } & HttpClientCommonOptions,
+  ): Observable<HttpResponse<Object>>;
+
+  /**
+   * Constructs a `QUERY` request that interprets the body as JSON and returns the
+   * full `HttpResponse`.
+   *
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the `HttpResponse` for the request, with a response body in the
+   * requested type.
+   */
+  query<T>(
+    url: string,
+    body: any | null,
+    options: {
+      observe: 'response';
+      responseType?: 'json';
+    } & HttpClientCommonOptions,
+  ): Observable<HttpResponse<T>>;
+
+  /**
+   * Constructs a `QUERY` request that interprets the body as JSON
+   * and returns the response body as an object parsed from JSON.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return An `Observable` of the response, with the response body as an object parsed from JSON.
+   */
+  query(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<Object>;
+
+  /**
+   * Constructs a `QUERY` request that interprets the body as JSON
+   * and returns an observable of the response.
+   *
+   * @param url The endpoint URL.
+   * @param body The query parameters or payload to send.
+   * @param options HTTP options
+   *
+   * @return  An `Observable` of the `HttpResponse` for the request, with a response body in the
+   * requested type.
+   */
+  query<T>(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<T>;
+
+  /**
+   * Constructs an observable that, when subscribed, causes the configured
+   * `QUERY` request to execute on the server. The server responds with the result of
+   * the query. See the individual overloads for
+   * details on the return type.
+   */
+  query(
+    url: string,
+    body: any | null,
+    options: {
+      observe?: 'body' | 'events' | 'response';
+      responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+    } & HttpClientCommonOptions = {},
+  ): Observable<any> {
+    return this.request<any>('QUERY', url, addBody(options, body));
+  }
 
   /**
    * Constructs a `PUT` request that interprets the body as an `ArrayBuffer` and returns the

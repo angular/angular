@@ -456,6 +456,60 @@ export class HttpClient {
     } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
     put(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<Object>;
     put<T>(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<T>;
+    query(url: string, body: any | null, options: {
+        observe?: 'body';
+        responseType: 'arraybuffer';
+    } & HttpClientCommonOptions): Observable<ArrayBuffer>;
+    query(url: string, body: any | null, options: {
+        observe?: 'body';
+        responseType: 'blob';
+    } & HttpClientCommonOptions): Observable<Blob>;
+    query(url: string, body: any | null, options: {
+        observe?: 'body';
+        responseType: 'text';
+    } & HttpClientCommonOptions): Observable<string>;
+    query(url: string, body: any | null, options: {
+        observe: 'events';
+        responseType: 'arraybuffer';
+    } & HttpClientCommonOptions): Observable<HttpEvent<ArrayBuffer>>;
+    query(url: string, body: any | null, options: {
+        observe: 'events';
+        responseType: 'blob';
+    } & HttpClientCommonOptions): Observable<HttpEvent<Blob>>;
+    query(url: string, body: any | null, options: {
+        observe: 'events';
+        responseType: 'text';
+    } & HttpClientCommonOptions): Observable<HttpEvent<string>>;
+    query(url: string, body: any | null, options: {
+        observe: 'events';
+        responseType?: 'json';
+    } & HttpClientCommonOptions): Observable<HttpEvent<Object>>;
+    query<T>(url: string, body: any | null, options: {
+        observe: 'events';
+        responseType?: 'json';
+    } & HttpClientCommonOptions): Observable<HttpEvent<T>>;
+    query(url: string, body: any | null, options: {
+        observe: 'response';
+        responseType: 'arraybuffer';
+    } & HttpClientCommonOptions): Observable<HttpResponse<ArrayBuffer>>;
+    query(url: string, body: any | null, options: {
+        observe: 'response';
+        responseType: 'blob';
+    } & HttpClientCommonOptions): Observable<HttpResponse<Blob>>;
+    query(url: string, body: any | null, options: {
+        observe: 'response';
+        responseType: 'text';
+    } & HttpClientCommonOptions): Observable<HttpResponse<string>>;
+    query(url: string, body: any | null, options: {
+        observe: 'response';
+        responseType?: 'json';
+    } & HttpClientCommonOptions): Observable<HttpResponse<Object>>;
+    query<T>(url: string, body: any | null, options: {
+        observe: 'response';
+        responseType?: 'json';
+    } & HttpClientCommonOptions): Observable<HttpResponse<T>>;
+    query(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<Object>;
+    query<T>(url: string, body: any | null, options?: HttpClientCommonOptions): Observable<T>;
     request<R>(req: HttpRequest<any>): Observable<HttpEvent<R>>;
     request(method: string, url: string, options: {
         body?: any;
@@ -778,7 +832,7 @@ export interface HttpProgressEvent {
 export class HttpRequest<T> implements HttpRequestOptions {
     constructor(method: 'GET' | 'HEAD', url: string, init?: HttpRequestOptions);
     constructor(method: 'DELETE' | 'JSONP' | 'OPTIONS', url: string, init?: HttpRequestOptions);
-    constructor(method: 'POST', url: string, body: T | null, init?: HttpRequestOptions);
+    constructor(method: 'POST' | 'QUERY', url: string, body: T | null, init?: HttpRequestOptions);
     constructor(method: 'PUT' | 'PATCH', url: string, body: T | null, init?: HttpRequestOptions);
     constructor(method: string, url: string, body: T | null, init?: HttpRequestOptions);
     readonly body: T | null;

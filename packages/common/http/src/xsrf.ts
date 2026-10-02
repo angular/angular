@@ -97,7 +97,12 @@ export function xsrfInterceptorFn(
 ): Observable<HttpEvent<unknown>> {
   // Skip both non-mutating requests
   // Non-mutating requests generally don't require a token.
-  if (!inject(XSRF_ENABLED) || req.method === 'GET' || req.method === 'HEAD') {
+  if (
+    !inject(XSRF_ENABLED) ||
+    req.method === 'GET' ||
+    req.method === 'HEAD' ||
+    req.method === 'QUERY'
+  ) {
     return next(req);
   }
 
