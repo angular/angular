@@ -53,7 +53,13 @@ const jsDoclinkRegexGlobal = new RegExp(jsDoclinkRegex.source, 'g');
  *
  * Keep in sync with `templates/section-*.tsx` and the inline `<SectionHeading name="...">` usages.
  */
-const KNOWN_API_SECTION_ANCHORS = new Set(['description', 'usage-notes', 'api', 'pipe-usage']);
+const KNOWN_API_SECTION_ANCHORS = new Set([
+  'description',
+  'usage-notes',
+  'api',
+  'pipe-usage',
+  'exported-by',
+]);
 
 /** Given an entity with a description, gets the entity augmented with an `htmlDescription`. */
 export function addHtmlDescription<T extends HasDescription & HasModuleName & MaybeJsDocTags>(
