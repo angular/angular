@@ -435,6 +435,14 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse bound classes with dots in the name', () => {
+      expectFromHtml('<div [class.px-3.5]="v" [class.a.b.c]="w"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.Class, 'px-3.5', 'v'],
+        ['BoundAttribute', BindingType.Class, 'a.b.c', 'w'],
+      ]);
+    });
+
     it('should parse mixed case bound styles', () => {
       expectFromHtml('<div [style.someStyle]="v"></div>').toEqual([
         ['Element', 'div'],

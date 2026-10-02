@@ -1617,6 +1617,33 @@ describe('styling', () => {
     expect(element.classList.contains('dir-two')).toBeTruthy();
   });
 
+  it('should support class bindings with dots in the class name', () => {
+    @Directive({
+      selector: '[dir]',
+      host: {'[class.py-2.5]': 'exp'},
+    })
+    class Dir {
+      exp = true;
+    }
+
+    @Component({
+      template: `<div dir [class.px-3.5]="exp"></div>`,
+      imports: [Dir],
+    })
+    class Cmp {
+      exp = true;
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement.querySelector('div');
+    expect(element.classList.contains('px-3.5')).toBeTrue();
+    expect(element.classList.contains('py-2.5')).toBeTrue();
+    expect(element.classList.contains('px-3')).toBeFalse();
+    expect(element.classList.contains('py-2')).toBeFalse();
+  });
+
   it('should not write empty style values to the DOM', () => {
     @Component({
       template: `
