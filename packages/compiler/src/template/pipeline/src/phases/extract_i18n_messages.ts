@@ -205,20 +205,26 @@ function formatValue(value: ir.I18nParamValue): string {
       value: value.value.element,
       flags: value.flags & ~ir.I18nParamValueFlags.TemplateTag,
     });
-    const templateValue = formatValue({
+    const templateParam = {
       ...value,
       value: value.value.template,
       flags: value.flags & ~ir.I18nParamValueFlags.ElementTag,
-    });
-    // TODO(mmalerba): This is likely a bug in TemplateDefinitionBuilder, we should not need to
-    // record the template value twice. For now I'm re-implementing the behavior here to keep the
-    // output consistent with TemplateDefinitionBuilder.
+    };
     if (
       value.flags & ir.I18nParamValueFlags.OpenTag &&
       value.flags & ir.I18nParamValueFlags.CloseTag
     ) {
-      return `${templateValue}${elementValue}${templateValue}`;
+      const templateOpen = formatValue({
+        ...templateParam,
+        flags: templateParam.flags & ~ir.I18nParamValueFlags.CloseTag,
+      });
+      const templateClose = formatValue({
+        ...templateParam,
+        flags: templateParam.flags & ~ir.I18nParamValueFlags.OpenTag,
+      });
+      return `${templateOpen}${elementValue}${templateClose}`;
     }
+    const templateValue = formatValue(templateParam);
     // To match the TemplateDefinitionBuilder output, flip the order depending on whether the
     // values represent a closing or opening tag (or both).
     // TODO(mmalerba): Figure out if this makes a difference in terms of either functionality,

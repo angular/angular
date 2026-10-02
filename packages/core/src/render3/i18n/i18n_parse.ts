@@ -22,7 +22,6 @@ import {
 import {_sanitizeUrl} from '../../sanitization/url_sanitizer';
 import {
   assertDefined,
-  assertEqual,
   assertGreaterThanOrEqual,
   assertOneOf,
   assertString,
@@ -68,22 +67,24 @@ import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
 import {ensureIcuContainerVisitorLoaded} from './i18n_tree_shaking';
 import {
   createTNodePlaceholder,
+  getI18nMarkers,
   icuCreateOpCode,
   isRootTemplateMessage,
   setTIcu,
   setTNodeInsertBeforeIndex,
+  splitByI18nPlaceholders,
+  throwInvalidI18nStructure,
+  validateIcuCaseHtml,
+  validateI18nBindingCount,
+  validateI18nBindingIndex,
 } from './i18n_util';
 import {splitNsName} from '../util/tags';
 import {NAMESPACE_URIS} from '../namespaces';
 
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
 const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
-const NESTED_ICU = /�(\d+)�/;
+const NESTED_ICU = /^�(\d+)�$/;
 const ICU_BLOCK_REGEXP = /^\s*(�\d+:?\d*�)\s*,\s*(select|plural)\s*,/;
-
-const MARKER = `�`;
-const SUBTEMPLATE_REGEXP = /�\/?\*(\d+:\d+)�/gi;
-const PH_REGEXP = /�(\/?[#*]\d+):?\d*�/gi;
 
 /**
  * Angular uses the special entity &ngsp; as a placeholder for non-removable space.
@@ -147,7 +148,7 @@ export function i18nStartFirstCreatePass(
   }
 
   message = getTranslationForTemplate(message, subTemplateIndex);
-  const msgParts = replaceNgsp(message).split(PH_REGEXP);
+  const msgParts = splitByI18nPlaceholders(replaceNgsp(message));
   for (let i = 0; i < msgParts.length; i++) {
     let value = msgParts[i];
     if ((i & 1) === 0) {
@@ -359,7 +360,11 @@ function i18nStartFirstCreatePassProcessTextNode(
 /**
  * See `i18nAttributes` above.
  */
-export function i18nAttributesFirstPass(tView: TView, index: number, values: string[]) {
+export function i18nAttributesFirstPass(
+  tView: TView,
+  index: number,
+  values: Array<string | number>,
+) {
   const previousElement = getCurrentTNode()!;
   const previousElementIndex = previousElement.index;
   const updateOpCodes: I18nUpdateOpCodes = [] as any;
@@ -367,10 +372,13 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
     attachDebugGetter(updateOpCodes, i18nUpdateOpCodesToString);
   }
   if (tView.firstCreatePass && tView.data[index] === null) {
-    for (let i = 0; i < values.length; i += 2) {
-      const attrName = values[i];
-      const message = values[i + 1];
-
+    let bindingStart = 0;
+    for (let i = 0; i < values.length; i += 3) {
+      const attrName = values[i] as string;
+      const message = values[i + 1] as string;
+      // The source count cannot be reconstructed when a translation omits or repeats bindings.
+      const sourceBindingCount = values[i + 2] as number;
+      validateI18nBindingCount(sourceBindingCount);
       if (message !== '') {
         // Check if attribute value contains an ICU and throw an error if that's the case.
         // ICUs in element attributes are not supported.
@@ -395,10 +403,12 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
           message,
           previousElementIndex,
           attrName,
-          countBindings(updateOpCodes),
+          bindingStart,
           i18nResolveSanitizer(attrName, tagName),
+          sourceBindingCount,
         );
       }
+      bindingStart += sourceBindingCount;
     }
     tView.data[index] = updateOpCodes;
   }
@@ -411,8 +421,9 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
  * @param str The string containing the bindings.
  * @param destinationNode Index of the destination node which will receive the binding.
  * @param attrName Name of the attribute, if the string belongs to an attribute.
- * @param sanitizeFn Sanitization function used to sanitize the string after update, if necessary.
  * @param bindingStart The lView index of the next expression that can be bound via an opCode.
+ * @param sanitizeFn Sanitization function used to sanitize the string after update, if necessary.
+ * @param sourceBindingCount Number of expressions in the source attribute message.
  * @returns The mask value for these bindings
  */
 function generateBindingUpdateOpCodes(
@@ -422,6 +433,7 @@ function generateBindingUpdateOpCodes(
   attrName: string | null,
   bindingStart: number,
   sanitizeFn: SanitizerFn | null,
+  sourceBindingCount: number | null = null,
 ): number {
   ngDevMode &&
     assertGreaterThanOrEqual(
@@ -444,7 +456,11 @@ function generateBindingUpdateOpCodes(
 
     if (j & 1) {
       // Odd indexes are bindings
-      const bindingIndex = bindingStart + parseInt(textValue, 10);
+      const translatedBindingIndex = parseInt(textValue, 10);
+      if (sourceBindingCount !== null) {
+        validateI18nBindingIndex(translatedBindingIndex, sourceBindingCount);
+      }
+      const bindingIndex = bindingStart + translatedBindingIndex;
       updateOpCodes.push(-1 - bindingIndex);
       mask = mask | toMaskBit(bindingIndex);
     } else if (textValue !== '') {
@@ -466,29 +482,6 @@ function generateBindingUpdateOpCodes(
 }
 
 /**
- * Count the number of bindings in the given `opCodes`.
- *
- * It could be possible to speed this up, by passing the number of bindings found back from
- * `generateBindingUpdateOpCodes()` to `i18nAttributesFirstPass()` but this would then require more
- * complexity in the code and/or transient objects to be created.
- *
- * Since this function is only called once when the template is instantiated, is trivial in the
- * first instance (since `opCodes` will be an empty array), and it is not common for elements to
- * contain multiple i18n bound attributes, it seems like this is a reasonable compromise.
- */
-function countBindings(opCodes: I18nUpdateOpCodes): number {
-  let count = 0;
-  for (let i = 0; i < opCodes.length; i++) {
-    const opCode = opCodes[i];
-    // Bindings are negative numbers.
-    if (typeof opCode === 'number' && opCode < 0) {
-      count++;
-    }
-  }
-  return count;
-}
-
-/**
  * Convert binding index to mask bit.
  *
  * Each index represents a single bit on the bit-mask. Because bit-mask only has 32 bits, we make
@@ -504,31 +497,31 @@ function toMaskBit(bindingIndex: number): number {
  * Removes everything inside the sub-templates of a message.
  */
 function removeInnerTemplateTranslation(message: string): string {
-  let match;
   let res = '';
   let index = 0;
   let inTemplate = false;
-  let tagMatched;
+  let tagMatched = '';
 
-  while ((match = SUBTEMPLATE_REGEXP.exec(message)) !== null) {
+  for (const marker of getI18nMarkers(message)) {
+    const value = marker.value;
+    const typeIndex = value.charCodeAt(0) === CharCode.SLASH ? 1 : 0;
+    if (value.charCodeAt(typeIndex) !== CharCode.STAR) continue;
     if (!inTemplate) {
-      res += message.substring(index, match.index + match[0].length);
-      tagMatched = match[1];
-      inTemplate = true;
-    } else {
-      if (match[0] === `${MARKER}/*${tagMatched}${MARKER}`) {
-        index = match.index;
-        inTemplate = false;
+      if (typeIndex !== 0) {
+        throwInvalidI18nStructure(ngDevMode && 'Mismatched i18n sub-template in translation.');
       }
+      res += message.substring(index, marker.end);
+      tagMatched = value;
+      inTemplate = true;
+    } else if (value === `/${tagMatched}`) {
+      index = marker.start;
+      inTemplate = false;
     }
   }
 
-  ngDevMode &&
-    assertEqual(
-      inTemplate,
-      false,
-      `Tag mismatch: unable to find the end of the sub-template in the translation "${message}"`,
-    );
+  if (inTemplate) {
+    throwInvalidI18nStructure(ngDevMode && 'Unable to find the end of an i18n sub-template.');
+  }
 
   res += message.slice(index);
   return res;
@@ -555,10 +548,26 @@ export function getTranslationForTemplate(message: string, subTemplateIndex: num
     return removeInnerTemplateTranslation(message);
   } else {
     // We want a specific sub-template
-    const start =
-      message.indexOf(`:${subTemplateIndex}${MARKER}`) + 2 + subTemplateIndex.toString().length;
-    const end = message.search(new RegExp(`${MARKER}\\/\\*\\d+:${subTemplateIndex}${MARKER}`));
-    return removeInnerTemplateTranslation(message.substring(start, end));
+    const templateSuffix = `:${subTemplateIndex}`;
+    const markers = getI18nMarkers(message);
+    const opening = markers.find(
+      (marker) =>
+        marker.value.charCodeAt(0) !== CharCode.SLASH && marker.value.endsWith(templateSuffix),
+    );
+    const closing = markers.find(
+      (marker) =>
+        (opening === undefined || marker.start >= opening.end) &&
+        marker.value.startsWith('/*') &&
+        marker.value.endsWith(templateSuffix),
+    );
+    if (opening === undefined && closing === undefined) {
+      // A translation may remove an entire sub-template.
+      return '';
+    }
+    if (opening === undefined || closing === undefined) {
+      throwInvalidI18nStructure(ngDevMode && 'Unable to find the end of an i18n sub-template.');
+    }
+    return removeInnerTemplateTranslation(message.substring(opening.end, closing.start));
   }
 }
 
@@ -580,6 +589,12 @@ function icuStart(
   anchorIdx: number,
 ) {
   ngDevMode && assertDefined(icuExpression, 'ICU expression must be defined');
+  for (const valueArr of icuExpression.values) {
+    validateIcuCaseHtml(
+      valueArr.map((value) => (typeof value === 'string' ? value : '<!---->')).join(''),
+    );
+  }
+
   let bindingMask = 0;
   const tIcu: TIcu = {
     type: icuExpression.type,
@@ -909,6 +924,9 @@ function walkIcuTree(
         if (isNestedIcu) {
           const nestedIcuIndex = parseInt(isNestedIcu[1], 10);
           const icuExpression: IcuExpression = nestedIcus[nestedIcuIndex];
+          if (icuExpression === undefined) {
+            throwInvalidI18nStructure(ngDevMode && 'Invalid nested i18n ICU reference.');
+          }
           // Create the comment node that will anchor the ICU expression
           addCreateNodeAndAppend(
             create,

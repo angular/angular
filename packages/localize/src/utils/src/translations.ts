@@ -8,6 +8,8 @@
 import {BLOCK_MARKER} from './constants';
 import {MessageId, MessageMetadata, ParsedMessage, parseMessage, TargetMessage} from './messages';
 
+const I18N_MARKER = '\uFFFD';
+
 /**
  * A translation message that has been processed to extract the message parts and placeholders.
  */
@@ -69,6 +71,7 @@ export function translate(
   if (translation === undefined) {
     throw new MissingTranslationError(message);
   }
+  validateTranslationMessageParts(translation.messageParts);
   return [
     translation.messageParts,
     translation.placeholderNames.map((placeholder) => {
@@ -102,6 +105,7 @@ export function parseTranslation(messageString: TargetMessage): ParsedTranslatio
     placeholderNames.push(parts[i]);
     messageParts.push(`${parts[i + 1]}`);
   }
+  validateTranslationMessageParts(messageParts);
   const rawMessageParts = messageParts.map((part) =>
     part.charAt(0) === BLOCK_MARKER ? '\\' + part : part,
   );
@@ -122,6 +126,7 @@ export function makeParsedTranslation(
   messageParts: string[],
   placeholderNames: string[] = [],
 ): ParsedTranslation {
+  validateTranslationMessageParts(messageParts);
   let messageString = messageParts[0];
   for (let i = 0; i < placeholderNames.length; i++) {
     messageString += `{$${placeholderNames[i]}}${messageParts[i + 1]}`;
@@ -131,6 +136,14 @@ export function makeParsedTranslation(
     messageParts: makeTemplateObject(messageParts, messageParts),
     placeholderNames,
   };
+}
+
+function validateTranslationMessageParts(messageParts: readonly string[]): void {
+  if (messageParts.some((part) => part.includes(I18N_MARKER))) {
+    throw new Error(
+      'Invalid translation: the target message contains the reserved U+FFFD character.',
+    );
+  }
 }
 
 /**

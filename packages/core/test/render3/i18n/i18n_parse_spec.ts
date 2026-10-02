@@ -341,13 +341,82 @@ describe('i18n_parse', () => {
         expect(fixture.host.innerHTML).toEqual(`<div></div><!--ICU ${HEADER_OFFSET + 0}:0-->`);
       });
     });
+
+    it('should reject characters that the inert HTML parser would turn into i18n markers', () => {
+      const invalidValues = [
+        '\0',
+        '&#0;',
+        '&#x0',
+        '&#65533;',
+        '&#65533',
+        '&#0000065533;',
+        '&#xFfFd',
+        '&#X0000FFFD;',
+        '&#55296;',
+        '&#xD800;',
+        '&#1114112;',
+        '&#x110000',
+        '&#x999999999999999999999999;',
+        '&#999999999999999999999999;',
+      ];
+
+      for (const value of invalidValues) {
+        fixture = new ViewFixture({decls: 1, vars: 1});
+        expect(() => toT18n(`{�0�, select, other {<span title="${value}">text</span>}}`))
+          .withContext(value)
+          .toThrowError(/NG0700/);
+      }
+    });
+
+    it('should not hide unsafe character references inside malformed comments', () => {
+      for (const value of ['<!-->&#xfffd;1&#xfffd;-->', '<!--foo--!>&#xfffd;1&#xfffd;<!--bar-->']) {
+        fixture = new ViewFixture({decls: 1, vars: 1});
+        expect(() => toT18n(`{�0�, select, other {${value}}}`))
+          .withContext(value)
+          .toThrowError(/NG0700/);
+      }
+    });
+
+    it('should allow numeric character references that do not decode to U+FFFD', () => {
+      expect(() =>
+        toT18n(`{�0�, select, other {
+          &#655330; &#xFFFD0; &#160; &#x1F600; &#65534; &#xD7FF; &#xE000; &#1114111;
+        }}`),
+      ).not.toThrow();
+    });
+
+    it('should reject a forged nested ICU reference', () => {
+      expect(() => toT18n(`{�0�, select, other {<!--�999�-->}}`)).toThrowError(/NG0700/);
+    });
+  });
+
+  it('should reject a translated binding outside the source range in production mode', () => {
+    const globalRef = globalThis as typeof globalThis & {ngDevMode: unknown};
+    const previousDevMode = globalRef.ngDevMode;
+    try {
+      globalRef.ngDevMode = false;
+      const tI18n = toT18n('forged=�1�');
+      fixture.apply(() => applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null));
+
+      expect(() =>
+        fixture.apply(() => {
+          ɵɵi18nExp('public');
+          ɵɵi18nApply(0);
+        }),
+      ).toThrowError('NG0700');
+    } finally {
+      globalRef.ngDevMode = previousDevMode;
+    }
   });
 
   function toT18n(text: string) {
     const tNodeIndex = HEADER_OFFSET;
     fixture.enterView();
-    i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, tNodeIndex, text, -1);
-    fixture.leaveView();
+    try {
+      i18nStartFirstCreatePass(fixture.tView, 0, fixture.lView, tNodeIndex, text, -1);
+    } finally {
+      fixture.leaveView();
+    }
     const tI18n = fixture.tView.data[tNodeIndex] as TI18n;
     expect(tI18n).toEqual(matchTI18n({}));
     return tI18n;

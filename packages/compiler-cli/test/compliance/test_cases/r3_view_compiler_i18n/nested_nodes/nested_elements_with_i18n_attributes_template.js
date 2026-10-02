@@ -8,8 +8,8 @@ consts: () => {
   return [
     $i18n_0$,
     $i18n_2$,
-    ["title", $i18n_1$],
-    ["title", $i18n_3$],
+    ["title", $i18n_1$, 2],
+    ["title", $i18n_3$, 1],
     [__AttributeMarker.I18n__, "title"]
   ];
 },

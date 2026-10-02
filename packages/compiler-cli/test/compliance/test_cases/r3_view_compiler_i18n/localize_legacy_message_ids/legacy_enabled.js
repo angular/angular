@@ -97,7 +97,7 @@ consts: () => {
     /* @ts-ignore */
     $i18n_14$ = $localize`:␟25b7cbf210e59a931423097cb7f2e1b72991a687␟4156372478368653226:&"`;
   }
-  return [$i18n_8$, $i18n_10$, $i18n_12$, $i18n_14$, ["title", $i18n_6$], ["title", $i18n_0$], [6, "title"], ["title", $i18n_2$], ["title", $i18n_4$]];
+  return [$i18n_8$, $i18n_10$, $i18n_12$, $i18n_14$, ["title", $i18n_6$, 1], ["title", $i18n_0$], [6, "title"], ["title", $i18n_2$], ["title", $i18n_4$]];
 },
 template: function MyComponent_Template(rf, ctx) {
   if (rf & 1) {
