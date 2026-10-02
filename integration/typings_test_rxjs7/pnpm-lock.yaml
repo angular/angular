@@ -48,8 +48,8 @@ importers:
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
       '@types/jasmine':
-        specifier: ^6.0.0
-        version: 6.0.0
+        specifier: ^7.0.0
+        version: 7.0.0
       '@types/node':
         specifier: ^20.14.8
         version: 20.19.43
@@ -65,8 +65,8 @@ importers:
 
 packages:
 
-  '@types/jasmine@6.0.0':
-    resolution: {integrity: sha512-18lgGsLmEh3VJk9eZ5wAjTISxdqzl6YOwu8UdMpolajN57QOCNbl+AbHUd+Yu9ItrsFdB+c8LSZSGNg8nHaguw==}
+  '@types/jasmine@7.0.0':
+    resolution: {integrity: sha512-6yNx9BsBSKiXO2yqLXs/GZDuD58Gkn6Ty26254FFOuw6B4XU5Xq8mAR0xFy8zHgAhqQd++y41fSJ8BdwrWXhqQ==}
 
   '@types/node@20.19.43':
     resolution: {integrity: sha512-6oYBAi5ikg4Pl+kGsoYtawUMBT2zZMCvPNF7pVLnHZfd1zf38DRiWn/gT01RYCdUqkv7Fhr+C9ot4/tb+2sVvA==}
@@ -90,7 +90,7 @@ packages:
 
 snapshots:
 
-  '@types/jasmine@6.0.0': {}
+  '@types/jasmine@7.0.0': {}
 
   '@types/node@20.19.43':
     dependencies:
