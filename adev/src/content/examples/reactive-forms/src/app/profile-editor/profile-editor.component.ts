@@ -1,10 +1,9 @@
 // #docplaster
 import {Component, inject} from '@angular/core';
-import {FormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {FormArray, FormBuilder, ReactiveFormsModule} from '@angular/forms';
 // #docregion validator-imports
 import {Validators} from '@angular/forms';
 // #enddocregion validator-imports
-import {FormArray} from '@angular/forms';
 import {JsonPipe} from '@angular/common';
 
 @Component({
