@@ -18,6 +18,8 @@ import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 import {CodeMirrorEditor, EDITOR_CONTENT_CHANGE_DELAY_MILLIES} from './code-mirror-editor.service';
 import {TutorialConfig, TutorialMetadata} from '@angular/docs';
 import {TYPESCRIPT_VFS_WORKER_FACTORY} from './workers/factory-provider';
+import {LANGUAGES} from './constants/code-editor-languages';
+import {TsVfsWorkerActions} from './workers/enums/actions';
 
 class FakeNodeRuntimeSandbox {
   async writeFile(path: string, content: string) {}
@@ -178,6 +180,17 @@ describe('CodeMirrorEditor', () => {
 
     expect(service['embeddedTutorialManager'].tutorialFiles()[newFile]).toBeDefined();
     expect(service.files().find((file) => file.filename === newFile)).toBeDefined();
+  });
+
+  it('should not duplicate listeners when the editor is initialized again', () => {
+    service.disable();
+    service.init(document.createElement('div'));
+
+    const createVfsEnvSpy = spyOn(service as any, 'createVfsEnv');
+    service.files.set([{filename: 'main.ts', content: '', language: LANGUAGES['ts']}]);
+    service['eventManager$'].next({action: TsVfsWorkerActions.INIT_DEFAULT_FILE_SYSTEM_MAP});
+
+    expect(createVfsEnvSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should keep openFiles order', () => {
