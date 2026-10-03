@@ -7,7 +7,7 @@
  */
 
 import {APP_ID, effect, Injector, untracked} from '@angular/core';
-import type {FormSubmitOptions} from '../api/types';
+import type {AsyncValidationProcessingMode, FormSubmitOptions} from '../api/types';
 import type {FieldNodeStructure} from './structure';
 
 /**
@@ -21,15 +21,18 @@ export class FormFieldManager {
   readonly injector: Injector;
   readonly rootName: string;
   readonly submitOptions: FormSubmitOptions<unknown, unknown> | undefined;
+  readonly processAsyncValidators: AsyncValidationProcessingMode;
 
   constructor(
     injector: Injector,
     rootName: string | undefined,
     submitOptions: FormSubmitOptions<unknown, unknown> | undefined,
+    processAsyncValidators: AsyncValidationProcessingMode = 'whenSyncValid',
   ) {
     this.injector = injector;
     this.rootName = rootName ?? `${this.injector.get(APP_ID)}.form${nextFormId++}`;
     this.submitOptions = submitOptions;
+    this.processAsyncValidators = processAsyncValidators;
   }
 
   /**

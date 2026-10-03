@@ -104,8 +104,8 @@ export class SignalFormControl<T> extends AbstractControl {
     const injector = opts?.injector ?? inject(Injector);
 
     const rawTree = schema
-      ? compatForm(this.sourceValue, schema, {injector})
-      : compatForm(this.sourceValue, {injector});
+      ? compatForm(this.sourceValue, schema, {...opts, injector})
+      : compatForm(this.sourceValue, {...opts, injector});
 
     this.fieldTree = wrapFieldTreeForSyncUpdates(rawTree, () =>
       this.parent?.updateValueAndValidity({sourceControl: this} as any),
