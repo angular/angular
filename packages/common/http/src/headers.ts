@@ -255,7 +255,7 @@ export class HttpHeaders {
     }
   }
 
-  private setHeaderEntries(name: string, values: any) {
+  private setHeaderEntries(name: string, values: string | number | (string | number)[]) {
     const headerValues = (Array.isArray(values) ? values : [values]).map((value) =>
       value.toString(),
     );
