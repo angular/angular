@@ -13,7 +13,7 @@ import {groupReplacementsByFile} from '../group_replacements';
 import {synchronouslyCombineUnitData} from '../combine_units';
 import {TsurgeFunnelMigration, TsurgeMigration} from '../../migration';
 import {Replacement, TextUpdate} from '../../replacement';
-import {ProjectRootRelativePath} from '../../project_paths';
+import {ProjectFileID, ProjectRootRelativePath} from '../../project_paths';
 import {ProgramInfo} from '../../program_info';
 import {getProjectTsConfigPaths} from '../../../../utils/project_tsconfig_paths';
 import ts from 'typescript';
@@ -106,6 +106,7 @@ export async function runMigrationInDevkit<Stats>(
     replacements = (await migration.migrate(globalMeta)).replacements;
   } else {
     replacements = [];
+    const migratedFiles = new Set<ProjectFileID>();
 
     for (const tsconfigPath of tsconfigPaths) {
       config.beforeProgramCreation?.(tsconfigPath, MigrationStage.Migrate);
@@ -119,7 +120,19 @@ export async function runMigrationInDevkit<Stats>(
       config.afterProgramCreation?.(info, fs, MigrationStage.Migrate);
 
       const result = await migration.migrate(globalMeta, info);
-      replacements.push(...result.replacements);
+      const filesInUnit = new Set<ProjectFileID>();
+
+      // A file can be part of multiple programs (e.g. build and test tsconfigs). Only keep
+      // the changes from the first unit that migrated it, so they can't be applied twice.
+      for (const replacement of result.replacements) {
+        const fileId = replacement.projectFile.id;
+        if (!migratedFiles.has(fileId)) {
+          filesInUnit.add(fileId);
+          replacements.push(replacement);
+        }
+      }
+
+      filesInUnit.forEach((fileId) => migratedFiles.add(fileId));
     }
   }
 
