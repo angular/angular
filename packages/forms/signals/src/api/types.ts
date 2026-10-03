@@ -835,7 +835,7 @@ export type Schema<in TModel> = {
  * ```typescript
  * const userFormSchema: SchemaFn<User> = (p) => {
  *   required(p.name);
- *   disabled(p.email, ({valueOf}) => valueOf(p.name) === '');
+ *   disabled(p.email, {when: ({valueOf}) => valueOf(p.name) === ''});
  * };
  *
  * const f = form(userModel, userFormSchema, {injector});
