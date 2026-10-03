@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {applyWhenValue, debounce, form, submit} from '@angular/forms/signals';
+import {applyWhenValue, debounce, disabled, form, hidden, submit} from '@angular/forms/signals';
 import {timeout} from '@angular/private/testing';
 
 describe('debounce', () => {
@@ -323,6 +323,44 @@ describe('debounce', () => {
 
       street.controlValue.set('1600 Amphitheatre Pkwy');
       addressForm().markAsTouched();
+      expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+    });
+
+    it('should synchronize the value of a disabled field when it is touched', () => {
+      const locked = signal(false);
+      const address = signal({street: ''});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 'blur');
+          disabled(address.street, {when: () => locked()});
+        },
+        options(),
+      );
+      const street = addressForm.street();
+
+      street.controlValue.set('1600 Amphitheatre Pkwy');
+      locked.set(true);
+      street.markAsTouched();
+      expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+    });
+
+    it('should synchronize values below a hidden field when an ancestor is touched', () => {
+      const showAddress = signal(true);
+      const user = signal({address: {street: ''}});
+      const userForm = form(
+        user,
+        (user) => {
+          debounce(user.address.street, 'blur');
+          hidden(user.address, {when: () => !showAddress()});
+        },
+        options(),
+      );
+      const street = userForm.address.street();
+
+      street.controlValue.set('1600 Amphitheatre Pkwy');
+      showAddress.set(false);
+      userForm().markAsTouched();
       expect(street.value()).toBe('1600 Amphitheatre Pkwy');
     });
 
