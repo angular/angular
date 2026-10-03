@@ -512,6 +512,21 @@
       ]
     },
     {
+      "description": "should generate an if block with namespaced element root nodes",
+      "inputFiles": ["if_namespaced_root_node.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "if_namespaced_root_node_template.js",
+              "generated": "if_namespaced_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate an if block with an ng-template root node",
       "inputFiles": ["if_template_root_node.ts"],
       "expectations": [
