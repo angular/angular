@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {applyWhenValue, debounce, form} from '@angular/forms/signals';
+import {applyWhenValue, debounce, form, submit} from '@angular/forms/signals';
 import {timeout} from '@angular/private/testing';
 
 describe('debounce', () => {
@@ -309,6 +309,39 @@ describe('debounce', () => {
 
       street.markAsTouched();
       expect(street.value()).toBe('2000 N Shoreline Blvd');
+    });
+    it('should synchronize descendant values when an ancestor is touched', () => {
+      const address = signal({street: ''});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 'blur');
+        },
+        options(),
+      );
+      const street = addressForm.street();
+
+      street.controlValue.set('1600 Amphitheatre Pkwy');
+      addressForm().markAsTouched();
+      expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+    });
+
+    it('should synchronize descendant values before running the submit action', async () => {
+      const address = signal({street: ''});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 'blur');
+        },
+        options(),
+      );
+      let submittedStreet: string | undefined;
+
+      addressForm.street().controlValue.set('1600 Amphitheatre Pkwy');
+      await submit(addressForm, async (form) => {
+        submittedStreet = form.street().value();
+      });
+      expect(submittedStreet).toBe('1600 Amphitheatre Pkwy');
     });
   });
 

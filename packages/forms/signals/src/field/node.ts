@@ -292,6 +292,7 @@ export class FieldNode implements FieldState<unknown> {
     }
     for (const child of this.structure.children()) {
       child.markAsTouchedInternal();
+      child.flushSync();
     }
   }
 
