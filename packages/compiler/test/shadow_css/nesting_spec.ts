@@ -465,4 +465,141 @@ describe('ShadowCss nesting', () => {
       '.foo[contenta] .bar { .baz { color: red; } }',
     );
   });
+
+  // Native CSS nesting, as written in plain CSS files. Sass flattens nested rules before the
+  // compiler sees them, so Sass-based styles don't exercise these paths.
+  describe(':host-context inside nested style rules', () => {
+    it('should convert :host-context nested directly in a style rule', () => {
+      const css = `
+        .card {
+          background: white;
+
+          :host-context(.dark-theme) & {
+            background: black;
+          }
+        }
+      `;
+
+      const expected = `
+        .card[contenta] {
+          background: white;
+
+          .dark-theme[a-host] &, .dark-theme [a-host] & {
+            background: black;
+          }
+        }
+      `;
+
+      expect(shim(css, 'contenta', 'a-host')).toEqualCss(expected);
+    });
+
+    it('should convert :host-context prefixed with & in a rule nested in :host', () => {
+      // Inside `:host`, `&` is the host, so `&:host-context()` is what styles the host.
+      // `:host-context() &` would only match an instance nested inside another instance.
+      const css = `
+        :host {
+          background: white;
+
+          &:host-context(.dark-theme) {
+            background: black;
+          }
+        }
+      `;
+
+      const expected = `
+        [a-host] {
+          background: white;
+
+          &.dark-theme[a-host], .dark-theme &[a-host] {
+            background: black;
+          }
+        }
+      `;
+
+      expect(shim(css, 'contenta', 'a-host')).toEqualCss(expected);
+    });
+
+    it('should convert :host-context nested two levels deep', () => {
+      const css = `
+        .toolbar {
+          .icon {
+            margin-right: 8px;
+
+            :host-context([dir=rtl]) & {
+              margin-right: 0;
+              margin-left: 8px;
+            }
+          }
+        }
+      `;
+
+      const expected = `
+        .toolbar[contenta] {
+          .icon[contenta] {
+            margin-right: 8px;
+
+            [dir=rtl][a-host] &, [dir=rtl] [a-host] & {
+              margin-right: 0;
+              margin-left: 8px;
+            }
+          }
+        }
+      `;
+
+      expect(shim(css, 'contenta', 'a-host')).toEqualCss(expected);
+    });
+
+    it('should convert :host-context in a media query nested in a style rule', () => {
+      const css = `
+        .sidebar {
+          width: 240px;
+
+          @media (max-width: 600px) {
+            :host-context(.compact) & {
+              width: 56px;
+            }
+          }
+        }
+      `;
+
+      const expected = `
+        .sidebar[contenta] {
+          width: 240px;
+
+          @media (max-width: 600px) {
+            .compact[a-host] &, .compact [a-host] & {
+              width: 56px;
+            }
+          }
+        }
+      `;
+
+      expect(shim(css, 'contenta', 'a-host')).toEqualCss(expected);
+    });
+
+    it('should convert :host-context in a nested selector list', () => {
+      // If the :host-context selector is left invalid, the browser drops the whole rule,
+      // including the valid `&:focus-visible` selector next to it.
+      const css = `
+        .tab {
+          &:focus-visible,
+          :host-context(.keyboard-mode) &:focus {
+            outline: 2px solid blue;
+          }
+        }
+      `;
+
+      const expected = `
+        .tab[contenta] {
+          &[contenta]:focus-visible,
+          .keyboard-mode[a-host] &[contenta]:focus,
+          .keyboard-mode [a-host] &[contenta]:focus {
+            outline: 2px solid blue;
+          }
+        }
+      `;
+
+      expect(shim(css, 'contenta', 'a-host')).toEqualCss(expected);
+    });
+  });
 });
