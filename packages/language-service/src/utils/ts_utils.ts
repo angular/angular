@@ -673,7 +673,7 @@ export function updateImport(
     const importClauseName = ts.factory.createIdentifier(exportedSpecifierName);
     return ts.factory.updateImportClause(
       importClause,
-      false,
+      undefined,
       importClauseName,
       importClause.namedBindings,
     );
@@ -690,7 +690,7 @@ export function updateImport(
   } else {
     namedImport = ts.factory.updateNamedImports(bindings, [...bindings.elements, newImport]);
   }
-  return ts.factory.updateImportClause(importClause, false, importClause.name, namedImport);
+  return ts.factory.updateImportClause(importClause, undefined, importClause.name, namedImport);
 }
 
 let printer: ts.Printer | null = null;

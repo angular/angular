@@ -33,7 +33,7 @@ const factory: ts.server.PluginModuleFactory = (): ts.server.PluginModule => {
 
       return {
         ...languageService,
-        getRenameInfo: (fileName, position) => {
+        getRenameInfo: (fileName, position, preferences: ts.UserPreferences) => {
           let isInAngular: boolean;
           if (fileToIsInAngularProjectMap.has(fileName)) {
             isInAngular = fileToIsInAngularProjectMap.get(fileName)!;
@@ -47,7 +47,7 @@ const factory: ts.server.PluginModuleFactory = (): ts.server.PluginModule => {
               localizedErrorMessage: 'Delegating rename to the Angular Language Service.',
             };
           } else {
-            return languageService.getRenameInfo(fileName, position);
+            return languageService.getRenameInfo(fileName, position, preferences);
           }
         },
       };

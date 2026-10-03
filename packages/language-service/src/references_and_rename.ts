@@ -236,7 +236,7 @@ export class RenameBuilder {
           };
         } else {
           // TODO(atscott): Add support for other special indirect renames from typescript files.
-          return this.tsLS.getRenameInfo(filePath, position);
+          return this.tsLS.getRenameInfo(filePath, position, {});
         }
       }
 
@@ -326,6 +326,7 @@ export class RenameBuilder {
         position,
         findInStrings,
         findInComments,
+        {},
       );
       if (locations === undefined) {
         return null;
