@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {Subscription} from 'rxjs';
+
 import {Inject, Injectable, InjectionToken, inject} from '../di';
 import {isInInjectionContext} from '../di/contextual';
 import {DestroyRef} from '../linker/destroy_ref';
@@ -132,8 +134,8 @@ export class Testability implements PublicTestability {
       },
     });
 
-    let pendingTasksSubscription: any;
-    let onStableSubscription: any;
+    let pendingTasksSubscription: Subscription | undefined;
+    let onStableSubscription: Subscription;
 
     this._ngZone.runOutsideAngular(() => {
       if (this._usePendingTasks) {
