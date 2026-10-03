@@ -357,6 +357,30 @@ describe('ComponentFactoryNgElementStrategy', () => {
       ).toEqual('foofoo');
     });
   });
+
+  it('should initialize component correctly when configured with a NodeInjector', async () => {
+    @Component({
+      template: `<div id="parent"></div>`,
+    })
+    class ParentComponent {
+      nodeInjector = inject(Injector);
+    }
+
+    const parentFixture = TestBed.createComponent(ParentComponent);
+    const parentNodeInjector = parentFixture.componentInstance.nodeInjector;
+
+    const strategyFactory = new ComponentNgElementStrategyFactory(TestComponent);
+    const nodeStrategy = strategyFactory.create(parentNodeInjector);
+
+    expect(() => {
+      nodeStrategy.connect(document.createElement('div'));
+    }).not.toThrow();
+
+    await whenStable();
+    const componentRef = (nodeStrategy as any).componentRef;
+    expect(componentRef).toBeTruthy();
+    nodeStrategy.disconnect();
+  });
 });
 
 @Directive({
