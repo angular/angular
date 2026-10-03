@@ -557,7 +557,7 @@ function removeImportReferences(
           importClause,
           ts.factory.updateImportClause(
             importClause,
-            importClause.isTypeOnly,
+            importClause.phaseModifier,
             importClause.name,
             undefined,
           ),

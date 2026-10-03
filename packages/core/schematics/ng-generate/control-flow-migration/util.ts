@@ -108,7 +108,7 @@ function updateImportClause(
     }
     clause = ts.factory.updateImportClause(
       clause,
-      clause.isTypeOnly,
+      clause.phaseModifier,
       clause.name,
       ts.factory.createNamedImports(elements),
     );
