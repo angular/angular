@@ -8,6 +8,7 @@
 
 import {
   ImportManager,
+  isShim,
   PartialEvaluator,
   getAngularDecorators,
   QueryFunctionName,
@@ -199,8 +200,13 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     };
 
     this.config.reportProgressFn?.(20, 'Scanning for queries..');
-    groupedAstVisitor.register(findQueryDefinitionsVisitor);
-    groupedAstVisitor.execute();
+    // Search all program files: another unit may own the file that declares a query, but this
+    // unit's files can still use the class in incompatible ways (e.g. `new` in a spec).
+    const queryDefinitionsAstVisitor = new GroupedTsAstVisitor(
+      info.fullProgramSourceFiles.filter((sf) => !sf.isDeclarationFile && !isShim(sf)),
+    );
+    queryDefinitionsAstVisitor.register(findQueryDefinitionsVisitor);
+    queryDefinitionsAstVisitor.execute();
 
     const allFieldsOrKnownQueries: KnownFields<ClassFieldDescriptor> = {
       // Note: We don't support cross-target migration of `Partial<T>` usages.
@@ -420,6 +426,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     const knownQueries = new KnownQueries(info, this.config, globalMetadata);
     const referenceResult: ReferenceResult<ClassFieldDescriptor> = {references: []};
     const sourceQueries: ExtractedQuery[] = [];
+    const unitSourceFiles = new Set(sourceFiles);
 
     // Detect all queries in this unit.
     const queryWholeProgramVisitor = (node: ts.Node) => {
@@ -427,7 +434,10 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       const extractedQuery = extractSourceQueryDefinition(node, reflector, evaluator, info);
       if (extractedQuery !== null) {
         knownQueries.registerQueryField(extractedQuery.node, extractedQuery.id);
-        sourceQueries.push(extractedQuery);
+        // Files shared between tsconfigs are only migrated by the unit that owns them.
+        if (unitSourceFiles.has(extractedQuery.node.getSourceFile())) {
+          sourceQueries.push(extractedQuery);
+        }
         return;
       }
 
