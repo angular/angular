@@ -971,6 +971,37 @@ describe('FieldNode', () => {
         },
       ]);
     });
+
+    it('supports deprecated function syntax', () => {
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          disabled(p.a, ({value}) => value() !== 2);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.a().disabled()).toBe(true);
+      f.a().value.set(2);
+      expect(f.a().disabled()).toBe(false);
+    });
+
+    it('supports deprecated string syntax', () => {
+      const f = form(
+        signal({a: 1, b: 2}),
+        (p) => {
+          disabled(p.a, 'a cannot be changed');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.a().disabledReasons()).toEqual([
+        {
+          fieldTree: f.a,
+          message: 'a cannot be changed',
+        },
+      ]);
+    });
   });
 
   describe('readonly', () => {
