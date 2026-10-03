@@ -159,8 +159,7 @@
             </span>
           </div>
         </div>
-      }
-      @if (beforeRecommendations.length <= 0) {
+      } @empty {
         <div>
           <em>You don't need to do anything before moving between these versions.</em>
         </div>
@@ -187,8 +186,7 @@
             </span>
           </div>
         </div>
-      }
-      @if (duringRecommendations.length <= 0) {
+      } @empty {
         <div>
           <em>There aren't any recommendations for moving between these versions.</em>
         </div>
@@ -209,8 +207,7 @@
             </span>
           </div>
         </div>
-      }
-      @if (afterRecommendations.length <= 0) {
+      } @empty {
         <div>
           <em>You don't need to do anything after moving between these versions.</em>
         </div>
