@@ -224,6 +224,39 @@ describe('control flow - switch', () => {
     await expectText('case 1: (), case 2: (), case 3: (value 3)');
   });
 
+  it('should project @switch cases with namespaced root nodes into tag selector slots', async () => {
+    @Component({
+      selector: 'test',
+      template: 'svg: (<ng-content select="svg"/>), math: (<ng-content select="math"/>)',
+    })
+    class TestComponent {}
+
+    @Component({
+      imports: [TestComponent],
+      template: `
+        <test>
+          @switch (value()) {
+            @case (1) {
+              <svg><text>svg content</text></svg>
+            }
+            @default {
+              <math><mi>math content</mi></math>
+            }
+          }
+        </test>
+      `,
+    })
+    class App {
+      value = signal(1);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await expectText('svg: (svg content), math: ()');
+
+    fixture.componentInstance.value.set(2);
+    await expectText('svg: (), math: (math content)');
+  });
+
   it('should support consecutive cases for the same block', async () => {
     @Component({
       template: `
@@ -341,7 +374,7 @@ describe('control flow - switch', () => {
           @case (1) {
             case 1
           }
-          @default never; 
+          @default never;
         }
         and there.
       `,

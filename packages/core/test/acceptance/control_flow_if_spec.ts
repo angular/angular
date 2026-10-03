@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgFor} from '@angular/common';
+import {NgFor, NgIf} from '@angular/common';
 import {expectText, waitFor} from '@angular/private/testing';
 
 import {
@@ -903,6 +903,86 @@ describe('control flow - if', () => {
 
       const fixture = TestBed.createComponent(App);
       await expectText('Main: Before  After Slot: 2');
+    });
+
+    it('should project an @if with an SVG root node into a tag selector slot', async () => {
+      @Component({
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="svg"/>',
+      })
+      class TestComponent {}
+
+      @Component({
+        imports: [TestComponent],
+        template: `
+          <test
+            >Before
+            @if (true) {
+              <svg><text>foo</text></svg>
+            }
+            After</test
+          >
+        `,
+      })
+      class App {}
+
+      TestBed.createComponent(App);
+      await expectText('Main: Before  After Slot: foo');
+    });
+
+    it('should project an @if with an SVG root template node into a tag selector slot', async () => {
+      @Component({
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="svg"/>',
+      })
+      class TestComponent {}
+
+      @Component({
+        imports: [TestComponent, NgIf],
+        template: `
+          <test
+            >Before
+            @if (true) {
+              <svg *ngIf="true"><text>foo</text></svg>
+            }
+            After</test
+          >
+        `,
+      })
+      class App {}
+
+      TestBed.createComponent(App);
+      await expectText('Main: Before  After Slot: foo');
+    });
+
+    it('should project @if and @else branches with namespaced root nodes into tag selector slots', async () => {
+      @Component({
+        selector: 'test',
+        template: 'svg: (<ng-content select="svg"/>), math: (<ng-content select="math"/>)',
+      })
+      class TestComponent {}
+
+      @Component({
+        imports: [TestComponent],
+        template: `
+          <test>
+            @if (value()) {
+              <svg><text>svg content</text></svg>
+            } @else {
+              <math><mi>math content</mi></math>
+            }
+          </test>
+        `,
+      })
+      class App {
+        value = signal(true);
+      }
+
+      const fixture = TestBed.createComponent(App);
+      await expectText('svg: (svg content), math: ()');
+
+      fixture.componentInstance.value.set(false);
+      await expectText('svg: (), math: (math content)');
     });
   });
 });
