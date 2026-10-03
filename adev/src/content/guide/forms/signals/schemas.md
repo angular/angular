@@ -19,7 +19,7 @@ contactForm = form(this.contactModel, (schemaPath) => {
 graph TD
     A["form(model, schemaFn)"] --> B["Schema function runs ONCE"]
     B --> C["required(path)"]
-    B --> D["disabled(path, logicFn)"]
+    B --> D["disabled(path, {when: logicFn})"]
     B --> E["validate(path, logicFn)"]
     B --> F["apply(path, schema)"]
     C --> G["Reactive: recomputes on signal change"]
