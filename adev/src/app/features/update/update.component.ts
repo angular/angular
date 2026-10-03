@@ -8,7 +8,7 @@
 
 import {Clipboard} from '@angular/cdk/clipboard';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {Component, inject, signal} from '@angular/core';
+import {afterNextRender, Component, inject, input, linkedSignal, signal} from '@angular/core';
 import {IconComponent} from '@angular/docs';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {MatCheckbox} from '@angular/material/checkbox';
@@ -61,7 +61,8 @@ export default class UpdateComponent {
 
   protected title = signal('');
 
-  protected level = 1;
+  /** The application complexity level, initialized from the `l` query param. */
+  protected readonly level = linkedSignal(() => parseInt(this.levelParam() ?? '', 10) || 1);
   protected options: Record<string, boolean> = {
     ngUpgrade: false,
     material: false,
@@ -120,8 +121,13 @@ export default class UpdateComponent {
     {name: '2.1', number: 201},
     {name: '2.0', number: 200},
   ];
-  protected from = this.versions.find((version) => version.name === '21.0')!;
-  protected to = this.versions.find((version) => version.name === '22.0')!;
+  /** The versions to update from and to, initialized from the `v` query param. */
+  protected readonly from = linkedSignal(
+    () => this.findVersion(this.versionsParam()?.split('-')[0]) ?? this.findVersion('21.0')!,
+  );
+  protected readonly to = linkedSignal(
+    () => this.findVersion(this.versionsParam()?.split('-')[1]) ?? this.findVersion('22.0')!,
+  );
   protected futureVersion = 2300;
 
   protected readonly steps: Step[] = RECOMMENDATIONS;
@@ -130,19 +136,22 @@ export default class UpdateComponent {
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
 
-  constructor() {
-    const queryMap = this.activatedRoute.snapshot.queryParamMap;
-    // Detect settings in URL
-    this.level = parseInt(queryMap.get('l')!, 10) || this.level;
+  /** Bound from the `v` query param, in the `<from>-<to>` format (e.g. `21.0-22.0`). */
+  readonly versionsParam = input<string>(undefined, {alias: 'v'});
+  /** Bound from the `l` query param, the application complexity level. */
+  readonly levelParam = input<string>(undefined, {alias: 'l'});
 
-    // Detect versions of from and to
-    const versions = queryMap.get('v');
-    if (versions) {
-      const [from, to] = versions.split('-');
-      this.from = this.versions.find((version) => version.name === from)!;
-      this.to = this.versions.find((version) => version.name === to)!;
-      this.showUpdatePath();
-    }
+  constructor() {
+    // Show the update path right away when the versions are provided in the URL.
+    afterNextRender(() => {
+      if (this.versionsParam()) {
+        this.showUpdatePath();
+      }
+    });
+  }
+
+  private findVersion(name: string | undefined) {
+    return this.versions.find((version) => version.name === name);
   }
 
   copyCode(event: Event) {
@@ -172,7 +181,7 @@ export default class UpdateComponent {
     this.afterRecommendations = [];
 
     // Refuse to generate recommendations for downgrades
-    if (this.to.number < this.from.number) {
+    if (this.to().number < this.from().number) {
       alert('We do not support downgrading versions of Angular.');
       return;
     }
@@ -182,13 +191,13 @@ export default class UpdateComponent {
     const labelMedium = 'medium applications';
     const labelAdvanced = 'advanced applications';
 
-    this.title.set(`${labelTitle} v${this.from.name} -> v${this.to.name}
+    this.title.set(`${labelTitle} v${this.from().name} -> v${this.to().name}
     for
-    ${this.level < 2 ? labelBasic : this.level < 3 ? labelMedium : labelAdvanced}`);
+    ${this.level() < 2 ? labelBasic : this.level() < 3 ? labelMedium : labelAdvanced}`);
 
     // Find applicable steps and organize them into before, during, and after upgrade
     for (const step of this.steps) {
-      if (step.level <= this.level && step.necessaryAsOf > this.from.number) {
+      if (step.level <= this.level() && step.necessaryAsOf > this.from().number) {
         // Check Options
         // Only show steps that don't have a required option
         // Or when the user has a matching option selected
@@ -213,12 +222,12 @@ export default class UpdateComponent {
         step.renderedStep = await marked(this.replaceVariables(step.action));
 
         // If you could do it before now, but didn't have to finish it before now
-        if (step.possibleIn <= this.from.number && step.necessaryAsOf >= this.from.number) {
+        if (step.possibleIn <= this.from().number && step.necessaryAsOf >= this.from().number) {
           this.beforeRecommendations.push(step);
           // If you couldn't do it before now, and you must do it now
-        } else if (step.possibleIn > this.from.number && step.necessaryAsOf <= this.to.number) {
+        } else if (step.possibleIn > this.from().number && step.necessaryAsOf <= this.to().number) {
           this.duringRecommendations.push(step);
-        } else if (step.possibleIn <= this.to.number) {
+        } else if (step.possibleIn <= this.to().number) {
           this.afterRecommendations.push(step);
         }
       }
@@ -227,7 +236,7 @@ export default class UpdateComponent {
     // Update the URL so users can link to this transition
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
-      queryParams: {v: `${this.from.name}-${this.to.name}`, l: this.level},
+      queryParams: {v: `${this.from().name}-${this.to().name}`, l: this.level()},
       queryParamsHandling: 'merge',
     });
 
@@ -257,8 +266,8 @@ export default class UpdateComponent {
 
   private async renderPreV6Instructions(): Promise<void> {
     let upgradeStep: Step;
-    const additionalDeps = this.getAdditionalDependencies(this.to.number);
-    const angularVersion = this.getAngularVersion(this.to.number);
+    const additionalDeps = this.getAdditionalDependencies(this.to().number);
+    const angularVersion = this.getAngularVersion(this.to().number);
     const angularPackages = [
       'animations',
       'common',
@@ -274,7 +283,7 @@ export default class UpdateComponent {
     ];
 
     // Provide npm/yarn instructions for versions before 6
-    if (this.to.number < 600) {
+    if (this.to().number < 600) {
       const actionMessage = `Update all of your dependencies to the latest Angular and the right version of TypeScript.`;
 
       if (isWindows) {
@@ -305,7 +314,7 @@ export default class UpdateComponent {
 
       // Npm installs typescript wrong in v5, let's manually specify
       // https://github.com/npm/npm/issues/16813
-      if (this.packageManager === 'npm install' && this.to.number === 500) {
+      if (this.packageManager === 'npm install' && this.to().number === 500) {
         upgradeStep.action += `
 
 \`npm install typescript@2.4.2 --save-exact\``;
