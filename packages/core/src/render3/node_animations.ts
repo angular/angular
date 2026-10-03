@@ -105,6 +105,11 @@ export function enableViewDetachAnimationsSupport(): void {
   };
 }
 
+/** Whether an `animate.leave` instruction has run, so a destroyed view may still be leaving. */
+export function areLeaveAnimationsEnabled(): boolean {
+  return viewDetachAnimationRuntime !== null;
+}
+
 /**
  * Resets the module-level switches, for tests that check what an application without animate
  * bindings gets.
