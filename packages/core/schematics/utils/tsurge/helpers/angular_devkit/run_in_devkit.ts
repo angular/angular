@@ -106,6 +106,7 @@ export async function runMigrationInDevkit<Stats>(
     replacements = (await migration.migrate(globalMeta)).replacements;
   } else {
     replacements = [];
+    const seenReplacements = new Set<string>();
 
     for (const tsconfigPath of tsconfigPaths) {
       config.beforeProgramCreation?.(tsconfigPath, MigrationStage.Migrate);
@@ -119,7 +120,16 @@ export async function runMigrationInDevkit<Stats>(
       config.afterProgramCreation?.(info, fs, MigrationStage.Migrate);
 
       const result = await migration.migrate(globalMeta, info);
-      replacements.push(...result.replacements);
+
+      // A file can be part of multiple programs (e.g. build and test tsconfigs) and
+      // migrations may produce the same replacement for it in each of them.
+      for (const replacement of result.replacements) {
+        const id = getReplacementID(replacement);
+        if (!seenReplacements.has(id)) {
+          seenReplacements.add(id);
+          replacements.push(replacement);
+        }
+      }
     }
   }
 
@@ -143,6 +153,12 @@ export async function runMigrationInDevkit<Stats>(
   }
 
   config.whenDone?.(await migration.stats(globalMeta));
+}
+
+/** Gets a unique ID for a replacement. */
+function getReplacementID(replacement: Replacement): string {
+  const {position, end, toInsert} = replacement.update.data;
+  return replacement.projectFile.id + '/' + position + '/' + end + '/' + toInsert;
 }
 
 /**
