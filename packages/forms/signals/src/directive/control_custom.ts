@@ -37,11 +37,23 @@ export function customControlCreate(
 
     // Bind remaining field state properties.
     for (const name of CONTROL_BINDING_NAMES) {
+      if (host.hasExplicitInputBinding(name)) {
+        continue;
+      }
       let value: unknown;
       if (name === 'errors') {
         value = parent.errors();
       } else {
         value = readFieldStateBindingValue(state, name);
+      }
+      // An absent constraint must not replace a custom control's own input default. Still write
+      // undefined when a previously bound schema constraint is removed.
+      if (
+        value === undefined &&
+        !(name in bindings) &&
+        (name === 'min' || name === 'max' || name === 'minLength' || name === 'maxLength')
+      ) {
+        continue;
       }
       if (bindingUpdated(bindings, name, value)) {
         host.setInputOnDirectives(name, value);

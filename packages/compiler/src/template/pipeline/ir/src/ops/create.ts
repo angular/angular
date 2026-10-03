@@ -2213,13 +2213,18 @@ export function createSourceLocationOp(
 export interface ControlCreateOp extends Op<CreateOp> {
   kind: OpKind.ControlCreate;
   sourceSpan: ParseSourceSpan;
+  explicitConstraintBindings: readonly string[];
 }
 
 /** Creates a {@link ControlCreateOp}. */
-export function createControlCreateOp(sourceSpan: ParseSourceSpan): ControlCreateOp {
+export function createControlCreateOp(
+  sourceSpan: ParseSourceSpan,
+  explicitConstraintBindings: readonly string[],
+): ControlCreateOp {
   return {
     kind: OpKind.ControlCreate,
     sourceSpan,
+    explicitConstraintBindings,
     ...NEW_OP,
   };
 }

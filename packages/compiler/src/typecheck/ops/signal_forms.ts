@@ -7,7 +7,6 @@
  */
 
 import {AST, BindingType, Call, PropertyRead, SafeCall} from '../../expression_parser/ast';
-import {DirectiveOwner} from '../../render3/view/t2_api';
 import {
   BoundAttribute,
   Component,
@@ -17,6 +16,8 @@ import {
   Node,
   Template,
 } from '../../render3/r3_ast';
+import {CUSTOM_CONTROL_CONSTRAINT_INPUTS} from '../../render3/signal_forms_constraints';
+import {DirectiveOwner} from '../../render3/view/t2_api';
 
 import {TcbDirectiveMetadata, TcbInputMapping} from '../api';
 import {TcbOp} from './base';
@@ -50,6 +51,20 @@ const formControlInputFields = [
   'pattern',
   'required',
 ];
+
+export function hasExplicitConstraintBinding(
+  node: Template | Element | Component | Directive,
+  name: string,
+): boolean {
+  return (
+    CUSTOM_CONTROL_CONSTRAINT_INPUTS.has(name) &&
+    node.inputs.some(
+      (input) =>
+        input.name === name &&
+        (input.type === BindingType.Property || input.type === BindingType.TwoWay),
+    )
+  );
+}
 
 /** Names of input fields to which users aren't allowed to bind when using a `field` directive. */
 export const customFormControlBannedInputFields = new Set([
@@ -287,7 +302,13 @@ export function expandBoundAttributesForField(
     boundInputs.push(primaryInput);
   }
 
+  // Other directives on the same node may still require schema-bound constraint inputs.
+  const skipConstraintBindings =
+    customFormControlType !== null || isControlValueAccessorLike(directive);
   for (const name of formControlInputFields) {
+    if (skipConstraintBindings && CUSTOM_CONTROL_CONSTRAINT_INPUTS.has(name)) {
+      continue;
+    }
     const input = getSyntheticFieldBoundInput(
       directive,
       name,

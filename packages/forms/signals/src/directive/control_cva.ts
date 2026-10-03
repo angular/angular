@@ -97,7 +97,19 @@ export function cvaControlCreate(
     }
 
     for (const name of CONTROL_BINDING_NAMES) {
+      if (host.hasExplicitInputBinding(name)) {
+        continue;
+      }
       const value = readFieldStateBindingValue(fieldState, name);
+      // Leave a CVA's input default alone if the schema has no constraint. A constraint that was
+      // previously forwarded must still be cleared when it is removed from the schema.
+      if (
+        value === undefined &&
+        !(name in bindings) &&
+        (name === 'min' || name === 'max' || name === 'minLength' || name === 'maxLength')
+      ) {
+        continue;
+      }
       if (bindingUpdated(bindings, name, value)) {
         const propertyWasSet = host.setInputOnDirectives(
           name,

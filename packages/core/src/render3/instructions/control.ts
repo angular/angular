@@ -38,11 +38,11 @@ import {writeToDirectiveInput} from './write_to_directive_input';
  *
  * @codeGenApi
  */
-export function ɵɵcontrolCreate(): void {
-  controlCreateInternal();
+export function ɵɵcontrolCreate(explicitConstraintBindings: readonly string[] = []): void {
+  controlCreateInternal(explicitConstraintBindings);
 }
 
-export function controlCreateInternal(): void {
+export function controlCreateInternal(explicitConstraintBindings: readonly string[] = []): void {
   const lView = getLView();
   const tView = getTView();
   const tNode = getCurrentTNode()!;
@@ -58,7 +58,10 @@ export function controlCreateInternal(): void {
 
   const instance = lView[tNode.controlDirectiveIndex];
   const controlDef = (tView.data[tNode.controlDirectiveIndex] as DirectiveDef<unknown>).controlDef!;
-  controlDef.create(instance, new ControlDirectiveHostImpl(lView, tView, tNode));
+  controlDef.create(
+    instance,
+    new ControlDirectiveHostImpl(lView, tView, tNode, explicitConstraintBindings),
+  );
 }
 
 /**
@@ -95,10 +98,18 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
 
   readonly hasPassThrough: boolean;
 
-  constructor(lView: LView, tView: TView, tNode: TNode) {
+  private readonly explicitConstraintBindings: readonly string[];
+
+  constructor(
+    lView: LView,
+    tView: TView,
+    tNode: TNode,
+    explicitConstraintBindings: readonly string[] = [],
+  ) {
     this.lView = lView;
     this.tView = tView;
     this.tNode = tNode;
+    this.explicitConstraintBindings = explicitConstraintBindings;
     this.hasPassThrough = !!(tNode.flags & TNodeFlags.isPassThroughControl);
   }
 
@@ -227,6 +238,10 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
     const presence = (directiveDef.signalFormsInputPresence ??=
       this._buildCustomControlInputCache(directiveDef));
     return presence[inputName] === true;
+  }
+
+  hasExplicitInputBinding(inputName: string): boolean {
+    return this.explicitConstraintBindings.includes(inputName);
   }
 
   private _buildCustomControlInputCache(directiveDef: DirectiveDef<unknown>): {
