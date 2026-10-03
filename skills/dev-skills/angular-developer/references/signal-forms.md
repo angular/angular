@@ -224,6 +224,7 @@ const value = this.userForm().value();
 const isValid = this.userForm().valid();
 const isInvalid = this.userForm().invalid();
 const errors = this.userForm().errors(); // Array of errors
+const error = this.userForm().getError('...'); // Single error, by error `kind`
 const isPending = this.userForm().pending(); // Async validation pending
 
 // Interaction State (Signals)
@@ -290,6 +291,8 @@ interface ValidationError {
   readonly message?: string;
 }
 ```
+
+`field().getError('...')` returns a single ValidationError by its `kind`.
 
 Do _NOT_ return null from validators.
 When there are no errors, return undefined
