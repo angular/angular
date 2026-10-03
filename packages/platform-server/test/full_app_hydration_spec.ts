@@ -6252,6 +6252,114 @@ describe('platform-server full application hydration integration', () => {
         });
       });
 
+      it('should show a bounded DOM path for a mismatch in otherwise identical branches', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            <main id="content">
+              <div class="layout">
+                <section aria-label="Account">
+                  <div class="name"><b>Alice</b></div>
+                </section>
+                <section aria-label="Billing">
+                  <div class="name"><b>Bob</b></div>
+                </section>
+              </div>
+            </main>
+          `,
+        })
+        class AmbiguousBranchMismatchComponent {
+          private doc = inject(DOCUMENT);
+
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('[aria-label="Billing"] b');
+            const span = this.doc.createElement('span');
+            span.textContent = 'Bob';
+            b?.parentNode?.replaceChild(span, b);
+          }
+        }
+
+        const html = await ssr(AmbiguousBranchMismatchComponent);
+
+        resetTViewsFor(AmbiguousBranchMismatchComponent);
+
+        const result = await prepareEnvironmentAndHydrate(
+          doc,
+          html,
+          AmbiguousBranchMismatchComponent,
+          {
+            envProviders: [withNoopErrorHandler()],
+          },
+        ).catch((err: unknown) => err);
+
+        expect(result).toBeInstanceOf(Error);
+        if (!(result instanceof Error)) return;
+
+        expect(result.message).toContain(
+          'Angular expected this DOM:\n\n' +
+            'DOM path:\n' +
+            '<app>\n' +
+            ' └─ ...\n' +
+            '    └─ <section aria-label="Billing">\n' +
+            '       └─ <div class="name">\n' +
+            '          └─ <b>\n\n' +
+            '<div class="name">\n' +
+            '  <b>…</b>  <-- AT THIS LOCATION',
+        );
+        expect(result.message).toContain(
+          'Actual DOM is:\n\n' +
+            'DOM path:\n' +
+            '<app>\n' +
+            ' └─ ...\n' +
+            '    └─ <section aria-label="Billing">\n' +
+            '       └─ <div class="name">\n' +
+            '          └─ <span>\n\n' +
+            '<div class="name">\n' +
+            '  <span>…</span>  <-- AT THIS LOCATION',
+        );
+        verifyNodeHasMismatchInfo(doc);
+      });
+
+      it('should include a non-element mismatch in the actual DOM path', async () => {
+        @Component({
+          selector: 'app',
+          template: `<main>
+            <div class="content"><b>Bold</b></div>
+          </main>`,
+        })
+        class CommentNodeMismatchComponent {
+          private doc = inject(DOCUMENT);
+
+          ngAfterViewInit() {
+            const b = this.doc.querySelector('b');
+            b?.parentNode?.replaceChild(this.doc.createComment('mismatch'), b);
+          }
+        }
+
+        const html = await ssr(CommentNodeMismatchComponent);
+
+        resetTViewsFor(CommentNodeMismatchComponent);
+
+        const result = await prepareEnvironmentAndHydrate(doc, html, CommentNodeMismatchComponent, {
+          envProviders: [withNoopErrorHandler()],
+        }).catch((err: unknown) => err);
+
+        expect(result).toBeInstanceOf(Error);
+        if (!(result instanceof Error)) return;
+
+        expect(result.message).toContain(
+          'Actual DOM is:\n\n' +
+            'DOM path:\n' +
+            '<app>\n' +
+            ' └─ <main>\n' +
+            '    └─ <div class="content">\n' +
+            '       └─ <!-- mismatch -->\n\n' +
+            '<div class="content">\n' +
+            '  <!-- mismatch -->  <-- AT THIS LOCATION',
+        );
+        verifyNodeHasMismatchInfo(doc);
+      });
+
       it(
         'should throw a coded RuntimeError, not a raw TypeError, when an element ' +
           'instruction locates a Text node in production mode (ngDevMode off)',
