@@ -187,8 +187,7 @@ export class DebounceEventPlugin extends EventManagerPlugin {
 Register your custom plugin using the `EVENT_MANAGER_PLUGINS` token in your application's providers:
 
 ```ts
-import {bootstrapApplication} from '@angular/platform-browser';
-import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
+import {bootstrapApplication, EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 import {App} from './app';
 import {DebounceEventPlugin} from './debounce-event-plugin';
 
