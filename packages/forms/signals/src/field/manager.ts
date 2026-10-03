@@ -21,15 +21,24 @@ export class FormFieldManager {
   readonly injector: Injector;
   readonly rootName: string;
   readonly submitOptions: FormSubmitOptions<unknown, unknown> | undefined;
+  readonly skipDisabledValidation: boolean;
+  readonly skipReadonlyValidation: boolean;
+  readonly skipHiddenValidation: boolean;
 
   constructor(
     injector: Injector,
     rootName: string | undefined,
     submitOptions: FormSubmitOptions<unknown, unknown> | undefined,
+    skipDisabledValidation?: boolean,
+    skipReadonlyValidation?: boolean,
+    skipHiddenValidation?: boolean,
   ) {
     this.injector = injector;
     this.rootName = rootName ?? `${this.injector.get(APP_ID)}.form${nextFormId++}`;
     this.submitOptions = submitOptions;
+    this.skipDisabledValidation = skipDisabledValidation ?? true;
+    this.skipReadonlyValidation = skipReadonlyValidation ?? true;
+    this.skipHiddenValidation = skipHiddenValidation ?? true;
   }
 
   /**
