@@ -569,6 +569,18 @@ describe('createUrlTree', () => {
       expect(serializer.serialize(t)).toEqual('/a/(c2//left:cp)(left:ap)');
     });
 
+    it('should skip dot segments inside the first command', async () => {
+      await router.navigateByUrl('/a');
+      const t = create(router.routerState.root.children[0], ['./c2/./c3']);
+      expect(serializer.serialize(t)).toEqual('/a/c2/c3');
+    });
+
+    it('should treat a first command of only dot segments as relative', async () => {
+      await router.navigateByUrl('/a/c');
+      const t = create(router.routerState.root.children[0].children[0], ['././c2']);
+      expect(serializer.serialize(t)).toEqual('/a/c/c2');
+    });
+
     it('should support parameters-only navigation', async () => {
       await router.navigateByUrl('/a');
       const t = create(router.routerState.root.children[0], [{k: 99}]);
