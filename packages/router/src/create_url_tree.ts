@@ -296,8 +296,8 @@ function computeNavigation(commands: readonly any[]): Navigation {
 
     if (cmdIdx === 0) {
       cmd.split('/').forEach((urlPart, partIndex) => {
-        if (partIndex == 0 && urlPart === '.') {
-          // skip './a'
+        if (urlPart === '.') {
+          // skip './a' and any other single dot segment, e.g. 'a/./b'
         } else if (partIndex == 0 && urlPart === '') {
           //  '/a'
           isAbsolute = true;
