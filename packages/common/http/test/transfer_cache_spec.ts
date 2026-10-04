@@ -1232,6 +1232,50 @@ describe('TransferCache', () => {
         makeRequestAndExpectNone('https://other.internal-domain.com:1234/test-1?foo=1');
       });
 
+      describe('when the origin map maps an origin to an empty string', () => {
+        beforeEach(
+          withBody('<test-app-http></test-app-http>', () => {
+            TestBed.resetTestingModule();
+            isStable = new BehaviorSubject<boolean>(false);
+
+            @Injectable()
+            class ApplicationRefPatched extends ApplicationRef {
+              override get isStable() {
+                return new BehaviorSubject<boolean>(false);
+              }
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [SomeComponent],
+              providers: [
+                {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+                {provide: DOCUMENT, useFactory: () => document},
+                {provide: ApplicationRef, useClass: ApplicationRefPatched},
+                withHttpTransferCache({}),
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                {
+                  provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+                  useValue: {
+                    'http://internal-domain.com:1234': '',
+                  },
+                },
+              ],
+            });
+
+            const appRef = TestBed.inject(ApplicationRef);
+            appRef.bootstrap(SomeComponent);
+            isStable = appRef.isStable as BehaviorSubject<boolean>;
+          }),
+        );
+
+        it('should cache the response under a root-relative URL', () => {
+          makeRequestAndExpectOne('http://internal-domain.com:1234/test-1?foo=1', 'foo');
+          const response = makeRequestAndExpectNone('/test-1?foo=1');
+          expect(response.url).toBe('/test-1?foo=1');
+        });
+      });
+
       describe('when the origin map is configured with extra paths', () => {
         beforeEach(
           withBody('<test-app-http></test-app-http>', () => {

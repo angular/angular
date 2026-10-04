@@ -99,6 +99,18 @@ export interface HttpTransferCacheOptions {
  * }
  * ```
  *
+ * A mapping value can also be an empty string. The request URL is then rewritten to a
+ * root-relative path, for scenarios where the client accesses the API without an origin prefix:
+ * ```ts
+ * // in app.server.config.ts
+ * {
+ *     provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+ *     useValue: {
+ *         'http://internal-domain.com:8080': ''
+ *     }
+ * }
+ * ```
+ *
  * @publicApi
  */
 export const HTTP_TRANSFER_CACHE_ORIGIN_MAP = new InjectionToken<Record<string, string>>(
@@ -546,7 +558,9 @@ function appendMissingHeadersDetection(
 function mapRequestOriginUrl(url: string, originMap: Record<string, string>): string {
   const origin = new URL(url, 'resolve://').origin;
   const mappedOrigin = originMap[origin];
-  if (!mappedOrigin) {
+  // An empty string is a valid mapping: it rewrites the request to a root-relative
+  // URL for scenarios where the client accesses the API without an origin prefix.
+  if (mappedOrigin === undefined) {
     return url;
   }
 
@@ -558,7 +572,8 @@ function mapRequestOriginUrl(url: string, originMap: Record<string, string>): st
 }
 
 function verifyMappedOrigin(url: string): void {
-  if (new URL(url, 'resolve://').pathname !== '/') {
+  // An empty mapping results in a root-relative URL, which cannot contain a path segment.
+  if (url !== '' && new URL(url, 'resolve://').pathname !== '/') {
     throw new RuntimeError(
       RuntimeErrorCode.HTTP_ORIGIN_MAP_CONTAINS_PATH,
       'Angular detected a URL with a path segment in the value provided for the ' +
