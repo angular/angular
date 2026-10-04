@@ -450,6 +450,21 @@ import {envIsSupported} from '../testing/utils';
       expect(await makeRequest(scope, '/foo.txt', 'newestClient')).toEqual('this is foo');
     });
 
+    it('falls back on the network when persisting a client assignment fails', async () => {
+      // Initialize the SW and assign the `default` client while storage is still writable.
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      server.clearRequests();
+
+      // All cache writes fail from now on, for example because the storage quota was exceeded.
+      spyOn(MockCache.prototype, 'put').and.throwError('Quota exceeded');
+
+      // A request from a new client cannot persist its version assignment. It should still
+      // receive a response served from the network instead of a failed `respondWith()` promise.
+      expect(await makeRequest(scope, '/foo.txt', 'quotaClient')).toEqual('this is foo');
+      server.assertSawRequestFor('/foo.txt');
+    });
+
     it('updates a specific client to new content on request', async () => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
