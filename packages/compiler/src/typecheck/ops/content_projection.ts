@@ -14,6 +14,7 @@ import {
   ForLoopBlockEmpty,
   IfBlock,
   IfBlockBranch,
+  LetDeclaration,
   Node,
   SwitchBlock,
   SwitchBlockCaseGroup,
@@ -134,6 +135,11 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
 
     // Check the number of root nodes while skipping empty text where relevant.
     for (const child of node.children) {
+      // `@let` declarations don't render anything so they don't affect content projection.
+      if (child instanceof LetDeclaration) {
+        continue;
+      }
+
       // Normally `preserveWhitspaces` would have been accounted for during parsing, however
       // in `ngtsc/annotations/component/src/resources.ts#parseExtractedTemplate` we enable
       // `preserveWhitespaces` to preserve the accuracy of source maps diagnostics. This means
