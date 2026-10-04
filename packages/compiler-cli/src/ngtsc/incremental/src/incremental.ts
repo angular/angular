@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵCustomElementsManifestIndex as CustomElementsManifestIndex} from '@angular/compiler';
 import ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, resolve} from '../../file_system';
@@ -80,6 +81,9 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
    * Exposed via the `state` read-only getter.
    */
   private _state: IncrementalState;
+
+  /** Custom Elements Manifest schemas recorded for this compilation. */
+  private customElementsManifestIndex: CustomElementsManifestIndex | null = null;
 
   private constructor(
     state: IncrementalState,
@@ -286,6 +290,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
       priorAnalysis: traitCompiler.getAnalyzedRecords(),
       typeCheckResults: null,
       emitted,
+      customElementsManifestIndex: this.customElementsManifestIndex,
     };
 
     // We now enter the type-check and emit phase of compilation.
@@ -294,6 +299,35 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
       needsEmit,
       needsTypeCheckEmit,
     };
+  }
+
+  /**
+   * Records the Custom Elements Manifest schemas of this compilation. They depend on type
+   * declarations and global types, so they can change when no manifest or source file does. Before
+   * analysis, schemas that differ from the prior analysis mark every source file as logically
+   * changed, as a manifest edit does.
+   */
+  recordCustomElementsManifestIndex(
+    index: CustomElementsManifestIndex | null,
+    program: ts.Program,
+  ): void {
+    this.customElementsManifestIndex = index;
+    if (this._state.kind === IncrementalStateKind.Analyzed) {
+      // Callers that reload schemas after analysis invalidate affected results themselves.
+      this._state.customElementsManifestIndex = index;
+      return;
+    }
+    if (
+      this.step === null ||
+      haveSameSchemas(this.step.priorState.customElementsManifestIndex, index)
+    ) {
+      return;
+    }
+    for (const sf of program.getSourceFiles()) {
+      if (!sf.isDeclarationFile) {
+        this.step.logicallyChangedTsFiles.add(absoluteFromSourceFile(toOriginalSourceFile(sf)));
+      }
+    }
   }
 
   recordSuccessfulTypeCheck(results: Map<AbsoluteFsPath, FileTypeCheckingData>): void {
@@ -428,4 +462,14 @@ function toOriginalSourceFile(sf: ts.SourceFile): ts.SourceFile {
   } else {
     return unredirectedSf;
   }
+}
+
+/** Compares schemas by value. The loader builds them in a fixed key order. */
+function haveSameSchemas(
+  a: CustomElementsManifestIndex | null,
+  b: CustomElementsManifestIndex | null,
+): boolean {
+  return (
+    a === b || (a !== null && b !== null && JSON.stringify(a.schemas) === JSON.stringify(b.schemas))
+  );
 }

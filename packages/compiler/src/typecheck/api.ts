@@ -10,6 +10,7 @@ import {SchemaMetadata} from '../core';
 import {AbsoluteSourceSpan} from '../expression_parser/ast';
 import {ClassPropertyMapping, ClassPropertyName, InputOrOutput} from '../property_mapping';
 import {BoundTarget, LegacyAnimationTriggerNames, MatchSource} from '../render3/view/t2_api';
+import {CustomElementsManifestIndex} from '../schema/custom_elements_manifest_schema';
 import {TcbExpr} from './ops/codegen';
 
 export interface TypeCtorMetadata {
@@ -251,6 +252,9 @@ export interface TypeCheckingConfig {
    * `checkTemplateBodies` setting.
    */
   alwaysCheckSchemaInTemplateBodies: boolean;
+
+  /** Schemas from the configured Custom Elements Manifests, or `null` if none are configured. */
+  customElementsManifestIndex: CustomElementsManifestIndex | null;
 
   /**
    * Whether to check if control flow syntax will prevent a node from being projected.
