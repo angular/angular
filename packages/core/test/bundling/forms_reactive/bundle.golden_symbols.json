@@ -360,6 +360,7 @@
       "_retrieveHydrationInfoImpl",
       "_stashEventListenerImpl",
       "_testabilityGetter",
+      "_throwMissingControlError",
       "_wasLastNodeCreated",
       "activeConsumer",
       "addAfterRenderSequencesForView",
