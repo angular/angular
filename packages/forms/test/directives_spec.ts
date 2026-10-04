@@ -221,8 +221,23 @@ describe('Form Directives', () => {
         dir.name = 'invalidName';
 
         expect(() => form.addControl(dir)).toThrowError(
-          new RegExp(`Cannot find control with name: 'invalidName'`),
+          new RegExp(`NG01001: Cannot find control with name: 'invalidName'`),
         );
+      });
+
+      it('should throw a coded error when no control found in production mode', () => {
+        const originalNgDevMode = (globalThis as any).ngDevMode;
+        (globalThis as any).ngDevMode = false;
+        try {
+          const dir = new FormControlName(form, null!, null!, [defaultAccessor], null);
+          dir.name = 'invalidName';
+
+          expect(() => form.addControl(dir)).toThrowError(
+            /NG01001: Cannot find control with name: 'invalidName'/,
+          );
+        } finally {
+          (globalThis as any).ngDevMode = originalNgDevMode;
+        }
       });
 
       it('should throw for a named control when no value accessor', () => {

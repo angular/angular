@@ -85,8 +85,12 @@ export function setUpControlValueAccessor(
   callSetDisabledState: SetDisabledStateOption = setDisabledStateDefault,
 ): void {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    if (!control) _throwError(dir, 'Cannot find control with');
     if (!dir.valueAccessor) _throwMissingValueAccessorError(dir);
+  }
+  if (!control) {
+    // Throw in all build modes: continuing with a missing control would crash later with an
+    // unrelated TypeError when the validator setup reads properties of `null`.
+    _throwMissingControlError(dir);
   }
 
   setUpValidators(control, dir);
@@ -317,8 +321,7 @@ export function setUpFormContainer(
   control: FormGroup | FormArray,
   dir: AbstractFormGroupDirective | FormArrayName,
 ) {
-  if (control == null && (typeof ngDevMode === 'undefined' || ngDevMode))
-    _throwError(dir, 'Cannot find control with');
+  if (control == null) _throwMissingControlError(dir);
   setUpValidators(control, dir);
 }
 
@@ -358,6 +361,11 @@ function _throwMissingValueAccessorError(dir: AbstractControlDirective) {
     RuntimeErrorCode.NG_MISSING_VALUE_ACCESSOR,
     `No value accessor for form control ${loc}.`,
   );
+}
+
+function _throwMissingControlError(dir: AbstractControlDirective): never {
+  const loc = _describeControlLocation(dir);
+  throw new RuntimeError(RuntimeErrorCode.MISSING_CONTROL, `Cannot find control with ${loc}`);
 }
 
 function _throwInvalidValueAccessorError(dir: AbstractControlDirective) {
