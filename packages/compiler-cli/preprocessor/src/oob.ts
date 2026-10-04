@@ -15,6 +15,7 @@ import {
   PropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
+  TmplAstBoundaryBlock,
   TmplAstComponent,
   TmplAstDirective,
   TmplAstElement,
@@ -297,7 +298,8 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       | TmplAstIfBlockBranch
       | TmplAstSwitchBlockCase
       | TmplAstForLoopBlock
-      | TmplAstForLoopBlockEmpty,
+      | TmplAstForLoopBlockEmpty
+      | TmplAstBoundaryBlock,
     preservesWhitespaces: boolean,
   ) {
     const blockName = controlFlowNode?.nameSpan?.toString().trim() || 'block';
