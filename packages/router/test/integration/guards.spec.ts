@@ -2342,6 +2342,41 @@ export function guardsIntegrationSuite() {
         await advance(fixture);
         expect(router.url).toEqual('/a/2');
       });
+
+      it('does not keep earlier guards running when a later guard starts a new navigation', async () => {
+        const router = TestBed.inject(Router);
+        const fixture = await createRoot(router, RootCmp);
+        const recorder: string[] = [];
+
+        router.resetConfig([
+          {
+            path: 'a',
+            canMatch: [
+              () => {
+                recorder.push('first guard called');
+                return new Observable<boolean>(() => {
+                  recorder.push('first guard subscribed');
+                  return () => recorder.push('first guard unsubscribed');
+                });
+              },
+              () => {
+                recorder.push('second guard called');
+                inject(Router).navigateByUrl('/b');
+                return false;
+              },
+            ],
+            component: SimpleCmp,
+          },
+          {path: 'b', component: BlankCmp},
+        ]);
+
+        router.navigateByUrl('/a');
+        await advance(fixture);
+
+        expect(router.url).toEqual('/b');
+        // Recorder before the fix: ['first guard called', 'second guard called', 'first guard subscribed'].
+        expect(recorder).toEqual(['first guard called', 'second guard called']);
+      });
     });
 
     it('should allow guards as functions', async () => {
