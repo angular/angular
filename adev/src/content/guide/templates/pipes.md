@@ -328,7 +328,7 @@ export class FormatterService {
 ```
 
 ```ts {header: "formatter.service.ts" , avoid}
-import {Service} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {KebabCasePipe} from './kebab-case.pipe';
 
 @Service()
@@ -368,7 +368,7 @@ export class PriceService {
 ```
 
 ```ts {avoid}
-import {Service} from '@angular/core';
+import {inject, Service} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
 
 @Service()

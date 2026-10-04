@@ -61,7 +61,7 @@ In addition, numeric fields initialize to `null` rather than `0` so an empty fie
 The schema is also derived from the config. You can loop through each entry and apply the validators that match its kind:
 
 ```ts
-import {required, min, max, SchemaFn} from '@angular/forms/signals';
+import {required, min, max, SchemaFn, SchemaPath} from '@angular/forms/signals';
 
 function buildSchema(configs: FieldConfig[]): SchemaFn<Record<string, string | number | null>> {
   return (path) => {
@@ -73,8 +73,9 @@ function buildSchema(configs: FieldConfig[]): SchemaFn<Record<string, string | n
       }
 
       if (config.kind === 'number') {
-        if (config.min !== undefined) min(fieldPath, config.min);
-        if (config.max !== undefined) max(fieldPath, config.max);
+        const numberPath = fieldPath as unknown as SchemaPath<number | null>;
+        if (config.min !== undefined) min(numberPath, config.min);
+        if (config.max !== undefined) max(numberPath, config.max);
       }
     }
   };
@@ -106,7 +107,7 @@ type FieldConfig =
 Update `buildSchema()` to translate `when` into an [`applyWhen()`](api/forms/signals/applyWhen) call. Shared rule application logic moves into a small closure so the conditional and unconditional branches both call the same function:
 
 ```ts
-import {applyWhen, required, min, max, SchemaFn} from '@angular/forms/signals';
+import {applyWhen, required, min, max, SchemaFn, SchemaPath} from '@angular/forms/signals';
 
 function buildSchema(configs: FieldConfig[]): SchemaFn<Record<string, string | number | null>> {
   return (rootPath) => {
@@ -115,8 +116,9 @@ function buildSchema(configs: FieldConfig[]): SchemaFn<Record<string, string | n
         const fieldPath = path[config.name];
         if (config.required) required(fieldPath);
         if (config.kind === 'number') {
-          if (config.min !== undefined) min(fieldPath, config.min);
-          if (config.max !== undefined) max(fieldPath, config.max);
+          const numberPath = fieldPath as unknown as SchemaPath<number | null>;
+          if (config.min !== undefined) min(numberPath, config.min);
+          if (config.max !== undefined) max(numberPath, config.max);
         }
       };
 

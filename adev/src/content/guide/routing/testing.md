@@ -59,7 +59,7 @@ Route guards control access to routes based on conditions like authentication or
 The following example tests an `authGuard` that allows navigation for authenticated users and redirects unauthenticated users to a login page.
 
 ```ts {header: 'auth.guard.spec.ts'}
-import {vi, type Mocked} from 'vitest';
+import {describe, expect, it, vi, type Mocked} from 'vitest';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter, Router} from '@angular/router';
 import {authGuard} from './auth.guard';
