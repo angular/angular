@@ -269,6 +269,57 @@ describe('security integration tests', function () {
       expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'xlink:href'/);
     });
 
+    it('should sanitize href attribute bindings on SVG image elements', () => {
+      const template = `<svg><image [attr.href]="ctxProp"></image></svg>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      const fixture = TestBed.createComponent(SecuredComponent);
+
+      const image = fixture.debugElement.children[0].nativeElement.querySelector('image');
+      const ci = fixture.componentInstance;
+      ci.ctxProp = 'image.png';
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(image.getAttribute('href')).toEqual('image.png');
+
+      ci.ctxProp = 'javascript:alert(1)';
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(image.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
+    });
+
+    it('should sanitize xlink:href attribute bindings on SVG image elements', () => {
+      const template = `<svg><image [attr.xlink:href]="ctxProp"></image></svg>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      const fixture = TestBed.createComponent(SecuredComponent);
+
+      const image = fixture.debugElement.children[0].nativeElement.querySelector('image');
+      const ci = fixture.componentInstance;
+      ci.ctxProp = 'image.png';
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(image.getAttribute('xlink:href')).toEqual('image.png');
+
+      ci.ctxProp = 'javascript:alert(1)';
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(image.getAttribute('xlink:href')).toEqual('unsafe:javascript:alert(1)');
+    });
+
+    it('should unwrap trusted URL values bound to the href attribute of SVG image elements', () => {
+      const template = `<svg><image [attr.href]="ctxProp"></image></svg>`;
+      TestBed.overrideComponent(SecuredComponent, {set: {template}});
+      const fixture = TestBed.createComponent(SecuredComponent);
+      const sanitizer = getTestBed().inject(DomSanitizer);
+
+      const image = fixture.debugElement.children[0].nativeElement.querySelector('image');
+      fixture.componentInstance.ctxProp = sanitizer.bypassSecurityTrustUrl(
+        'app://localhost/path/image.png',
+      );
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      expect(image.getAttribute('href')).toEqual('app://localhost/path/image.png');
+    });
+
     it('should escape unsafe HTML values', () => {
       const template = `<div [innerHTML]="ctxProp">Text</div>`;
       TestBed.overrideComponent(SecuredComponent, {set: {template}});

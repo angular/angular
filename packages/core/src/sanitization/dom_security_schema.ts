@@ -107,7 +107,11 @@ export function SECURITY_SCHEMA(): SecuritySchema {
     ['object', ['codebase', 'data']],
   ]);
 
-  registerContext(SecurityContext.URL, SVG_NAMESPACE, [['a', ['href', 'xlink:href']]]);
+  registerContext(SecurityContext.URL, SVG_NAMESPACE, [
+    ['a', ['href', 'xlink:href']],
+    ['image', ['href', 'xlink:href']],
+    ['feImage', ['href', 'xlink:href']],
+  ]);
 
   // Keep this in sync with SECURITY_SENSITIVE_ELEMENTS in packages/core/src/sanitization/sanitization.ts
   // The `unknown` elements refer to cases when we need to validate the input/binding in a directive (host bindings)
