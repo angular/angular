@@ -1,4 +1,4 @@
-<docs-decorative-header title="Angular Aria">
+<docs-decorative-header title="Angular Aria" imgSrc="adev/src/assets/images/aria.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
 ## What is Angular Aria?
