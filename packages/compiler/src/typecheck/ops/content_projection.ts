@@ -8,6 +8,7 @@
 
 import {CssSelector, SelectorMatcher} from '../../directive_matching';
 import {
+  BoundaryBlock,
   Component,
   Element,
   ForLoopBlock,
@@ -95,8 +96,9 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
   }
 
   private findPotentialControlFlowNodes() {
-    const result: Array<IfBlockBranch | SwitchBlockCaseGroup | ForLoopBlock | ForLoopBlockEmpty> =
-      [];
+    const result: Array<
+      IfBlockBranch | SwitchBlockCaseGroup | ForLoopBlock | ForLoopBlockEmpty | BoundaryBlock
+    > = [];
 
     for (const child of this.element.children) {
       if (child instanceof ForLoopBlock) {
@@ -117,6 +119,12 @@ export class TcbControlFlowContentProjectionOp extends TcbOp {
           if (this.shouldCheck(current)) {
             result.push(current);
           }
+        }
+      } else if (child instanceof BoundaryBlock) {
+        // `@error` blocks aren't checked, because they don't copy the
+        // tag name and attributes of their root node for content projection.
+        if (this.shouldCheck(child)) {
+          result.push(child);
         }
       }
     }
