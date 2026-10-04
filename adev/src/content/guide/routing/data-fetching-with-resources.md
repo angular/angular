@@ -103,21 +103,25 @@ resources: async (ctx) => {
 
 ## Fine-grained change tracking with signals
 
-A resource tracks the signals that its `params` function reads. Read the exact value you need so that the resource refetches only when that value changes:
+A resource reloads whenever a signal read by its `params` function changes, even if `params` returns the same value. Signals such as `ctx.params` and `ctx.queryParams` hold the whole parameters object, which the router replaces on navigation. Reading `ctx.queryParams()['category']` directly in `params` therefore reloads the resource when any query parameter changes.
+
+To refetch only when a specific value changes, derive it with `computed` and pass that signal as `params`:
 
 ```ts
-resources: (ctx) => ({
-  products: resource({
-    // Tracks only the 'category' query parameter
-    params: () => ctx.queryParams()['category'],
-    loader: ({params: category}) => fetchProducts(category),
-  }),
-}),
+resources: (ctx) => {
+  // Notifies only when the 'category' query parameter changes
+  const category = computed(() => ctx.queryParams()['category']);
+
+  return {
+    products: resource({
+      params: category,
+      loader: ({params: category}) => fetchProducts(category),
+    }),
+  };
+},
 ```
 
-A navigation that changes an unrelated query parameter, such as `?sort=desc` or `?page=2`, leaves `category` unchanged, so the resource does not refetch.
-
-TIP: Read specific properties, such as `ctx.params()['id']`, instead of returning an entire parameters object, such as `ctx.params()`. The router creates a new object on every navigation, so returning the whole object refetches the resource even when the individual values are unchanged.
+A navigation that changes an unrelated query parameter, such as `?sort=desc` or `?page=2`, leaves `category` unchanged, so the resource does not refetch. The same applies to path parameters, such as `computed(() => ctx.params()['id'])`.
 
 ## Parallel execution
 

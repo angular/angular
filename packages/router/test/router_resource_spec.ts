@@ -295,6 +295,38 @@ describe('Router resources integration', () => {
       expect(callCount).toBe(1);
     });
 
+    it('should not refetch when a computed query param used as params is unchanged', async () => {
+      let callCount = 0;
+
+      const {harness} = await setupRouter([
+        {
+          path: 'products',
+          component: TargetCmp,
+          resources: (ctx) => {
+            const category = computed(() => ctx.queryParams()['category']);
+            return {
+              data: resource({
+                params: category,
+                loader: async () => {
+                  callCount++;
+                  return 'loaded';
+                },
+              }),
+            };
+          },
+        },
+      ]);
+
+      await harness.navigateByUrl('/products?category=books');
+      expect(callCount).toBe(1);
+
+      await harness.navigateByUrl('/products?category=books&sort=desc');
+      expect(callCount).toBe(1);
+
+      await harness.navigateByUrl('/products?category=games&sort=desc');
+      expect(callCount).toBe(2);
+    });
+
     it('should support resources on componentless routes', async () => {
       const {harness, router} = await setupRouter([
         {
