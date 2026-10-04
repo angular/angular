@@ -204,6 +204,13 @@ describe('sanitization', () => {
       ɵɵsanitizeUrlOrResourceUrl(bypassSanitizationTrustUrl('javascript:true'), 'a', 'href'),
     ).toEqual('javascript:true');
 
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'svg:image', 'href')).toEqual(
+      'unsafe:javascript:true',
+    );
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'svg:feImage', 'href')).toEqual(
+      'unsafe:javascript:true',
+    );
+
     expect(ɵɵsanitizeUrlOrResourceUrl('javascript:true', 'div', 'data')).toBe('javascript:true');
   });
 
