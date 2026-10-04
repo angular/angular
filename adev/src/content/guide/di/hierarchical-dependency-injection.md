@@ -1013,7 +1013,7 @@ Each tax return component has the following characteristics:
 - Can change a tax return without affecting a return in another component
 - Has the ability to save the changes to its tax return or cancel them
 
-Suppose that the `HeroTaxReturn` had logic to manage and restore changes.
+Suppose that the `HeroTaxReturnEditor` had logic to manage and restore changes.
 That would be a straightforward task for a hero tax return.
 In the real world, with a rich tax return data model, the change management would be tricky.
 You could delegate that management to a helper service, as this example does.
@@ -1053,10 +1053,10 @@ export class HeroTaxReturnService {
 }
 ```
 
-Here is the `HeroTaxReturn` that makes use of `HeroTaxReturnService`.
+Here is the `HeroTaxReturnEditor` that makes use of `HeroTaxReturnService`.
 
 ```typescript
-import {Component, input, output} from '@angular/core';
+import {Component, effect, inject, input, output} from '@angular/core';
 import {HeroTaxReturn} from './hero';
 import {HeroTaxReturnService} from './hero-tax-return.service';
 
@@ -1066,24 +1066,20 @@ import {HeroTaxReturnService} from './hero-tax-return.service';
   styleUrls: ['./hero-tax-return.css'],
   providers: [HeroTaxReturnService],
 })
-export class HeroTaxReturn {
+export class HeroTaxReturnEditor {
   message = '';
 
   close = output<void>();
 
-  get taxReturn(): HeroTaxReturn {
-    return this.heroTaxReturnService.taxReturn;
-  }
-
   taxReturn = input.required<HeroTaxReturn>();
+
+  private heroTaxReturnService = inject(HeroTaxReturnService);
 
   constructor() {
     effect(() => {
       this.heroTaxReturnService.taxReturn = this.taxReturn();
     });
   }
-
-  private heroTaxReturnService = inject(HeroTaxReturnService);
 
   onCanceled() {
     this.flashMessage('Canceled');
@@ -1106,21 +1102,21 @@ export class HeroTaxReturn {
 }
 ```
 
-The _tax-return-to-edit_ arrives by way of the `input` property, which is implemented with getters and setters.
-The setter initializes the component's own instance of the `HeroTaxReturnService` with the incoming return.
-The getter always returns what that service says is the current state of the hero.
+The _tax-return-to-edit_ arrives by way of the `taxReturn` signal input.
+An `effect` initializes the component's own instance of the `HeroTaxReturnService` with the incoming return whenever the input changes.
+The service's getter always returns what the service says is the current state of the hero.
 The component also asks the service to save and restore this tax return.
 
 This won't work if the service is an application-wide singleton.
 Every component would share the same service instance, and each component would overwrite the tax return that belonged to another hero.
 
-To prevent this, configure the component-level injector of `HeroTaxReturn` to provide the service, using the `providers` property in the component metadata.
+To prevent this, configure the component-level injector of `HeroTaxReturnEditor` to provide the service, using the `providers` property in the component metadata.
 
 ```typescript
 providers: [HeroTaxReturnService];
 ```
 
-The `HeroTaxReturn` has its own provider of the `HeroTaxReturnService`.
+The `HeroTaxReturnEditor` has its own provider of the `HeroTaxReturnService`.
 Recall that every component _instance_ has its own injector.
 Providing the service at the component level ensures that _every_ instance of the component gets a private instance of the service. This makes sure that no tax return gets overwritten.
 

@@ -241,7 +241,7 @@ Some common browser APIs and capabilities might not be available on the server. 
 In general, code which relies on browser-specific symbols should only be executed in the browser, not on the server. This can be enforced through the `afterEveryRender` and `afterNextRender` lifecycle hooks. These are only executed on the browser and skipped on the server.
 
 ```angular-ts
-import {Component, viewChild, afterNextRender} from '@angular/core';
+import {Component, ElementRef, viewChild, afterNextRender} from '@angular/core';
 
 @Component({
   selector: 'my-cmp',

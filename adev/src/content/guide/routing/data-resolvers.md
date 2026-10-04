@@ -162,8 +162,8 @@ bootstrapApplication(App, {
       withNavigationErrorHandler((error) => {
         const router = inject(Router);
 
-        if (error?.message) {
-          console.error('Navigation error occurred:', error.message);
+        if (error.error?.message) {
+          console.error('Navigation error occurred:', error.error.message);
         }
 
         router.navigate(['/error']);
@@ -280,7 +280,7 @@ TIP: To avoid blocking navigation and render components immediately with skeleto
 To improve user experience during resolver execution, you can listen to router events and show loading indicators:
 
 ```angular-ts
-import {Component, inject} from '@angular/core';
+import {Component, computed, inject} from '@angular/core';
 import {Router} from '@angular/router';
 
 @Component({
