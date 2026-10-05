@@ -24,13 +24,13 @@ import {SelectedDirective, SelectedEntry} from '../recording-visualizer-types';
 export class BargraphVisualizerComponent {
   readonly nodeSelect = output<SelectedEntry>();
 
-  private readonly _formatter = new BarGraphFormatter();
+  private readonly formatter = new BarGraphFormatter();
   frame = input.required<ProfilerFrame>();
 
   /** The `ElementProfile` that corresponds to a bar graph node to highlight. */
   highlighted = input<ElementProfile | null>(null);
 
-  profileRecords = computed(() => this._formatter.formatFrame(this.frame()));
+  profileRecords = computed(() => this.formatter.formatFrame(this.frame()));
 
   formatEntryData(bargraphNode: BargraphNode): SelectedDirective[] {
     return formatDirectiveProfile(bargraphNode.directives ?? []);

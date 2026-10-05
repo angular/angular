@@ -34,49 +34,49 @@ const componentMetadata = (instance: ComponentInstance) => instance?.constructor
  * methods to fire profiler hooks.
  */
 export class PatchingProfiler extends Profiler {
-  private _patched = new Map<ComponentInstance, () => void>();
-  private _undoLifecyclePatch: (() => void)[] = [];
-  private _tracker = IdentityTracker.getInstance();
+  private patched = new Map<ComponentInstance, () => void>();
+  private undoLifecyclePatch: (() => void)[] = [];
+  private tracker = IdentityTracker.getInstance();
 
   override destroy(): void {
-    this._tracker.destroy();
+    this.tracker.destroy();
 
-    for (const [cmp, template] of this._patched) {
+    for (const [cmp, template] of this.patched) {
       const meta = componentMetadata(cmp);
       meta.template = template;
       meta.tView.template = template;
     }
 
-    this._patched = new Map<ComponentInstance, () => void>();
-    this._undoLifecyclePatch.forEach((p) => p());
-    this._undoLifecyclePatch = [];
+    this.patched = new Map<ComponentInstance, () => void>();
+    this.undoLifecyclePatch.forEach((p) => p());
+    this.undoLifecyclePatch = [];
   }
 
   override onIndexForest(newNodes: NodeArray, removedNodes: NodeArray): void {
     newNodes.forEach((node) => {
-      this._observeLifecycle(node.directive, node.isComponent);
-      this._observeComponent(node.directive);
-      this._fireCreationCallback(node.directive, node.isComponent);
+      this.observeLifecycle(node.directive, node.isComponent);
+      this.observeComponent(node.directive);
+      this.fireCreationCallback(node.directive, node.isComponent);
     });
     removedNodes.forEach((node) => {
-      this._patched.delete(node.directive);
-      this._fireDestroyCallback(node.directive, node.isComponent);
+      this.patched.delete(node.directive);
+      this.fireDestroyCallback(node.directive, node.isComponent);
     });
   }
 
-  private _fireCreationCallback(component: ComponentInstance, isComponent: boolean): void {
-    const position = this._tracker.getDirectivePosition(component);
-    const id = this._tracker.getDirectiveId(component);
-    this._onCreate(component, getDirectiveHostElement(component), id, isComponent, position);
+  private fireCreationCallback(component: ComponentInstance, isComponent: boolean): void {
+    const position = this.tracker.getDirectivePosition(component);
+    const id = this.tracker.getDirectiveId(component);
+    this.onCreate(component, getDirectiveHostElement(component), id, isComponent, position);
   }
 
-  private _fireDestroyCallback(component: ComponentInstance, isComponent: boolean): void {
-    const position = this._tracker.getDirectivePosition(component);
-    const id = this._tracker.getDirectiveId(component);
-    this._onDestroy(component, getDirectiveHostElement(component), id, isComponent, position);
+  private fireDestroyCallback(component: ComponentInstance, isComponent: boolean): void {
+    const position = this.tracker.getDirectivePosition(component);
+    const id = this.tracker.getDirectiveId(component);
+    this.onDestroy(component, getDirectiveHostElement(component), id, isComponent, position);
   }
 
-  private _observeComponent(cmp: ComponentInstance): void {
+  private observeComponent(cmp: ComponentInstance): void {
     const declarations = componentMetadata(cmp);
     if (!declarations) {
       return;
@@ -87,29 +87,29 @@ export class PatchingProfiler extends Profiler {
       return;
     }
     declarations.tView.template = function (_: any, component: ComponentInstance): void {
-      if (!self._inChangeDetection) {
-        self._inChangeDetection = true;
+      if (!self.inChangeDetection) {
+        self.inChangeDetection = true;
         runOutsideAngular(() => {
           Promise.resolve().then(() => {
             self.changeDetection$.next();
-            self._inChangeDetection = false;
+            self.inChangeDetection = false;
           });
         });
       }
-      const position = self._tracker.getDirectivePosition(component);
-      const id = self._tracker.getDirectiveId(component);
+      const position = self.tracker.getDirectivePosition(component);
+      const id = self.tracker.getDirectiveId(component);
 
-      self._onChangeDetectionStart(component, getDirectiveHostElement(component), id, position);
+      self.onChangeDetectionStart(component, getDirectiveHostElement(component), id, position);
       original.apply(this, arguments);
-      if (self._tracker.hasDirective(component) && id !== undefined && position !== undefined) {
-        self._onChangeDetectionEnd(component, getDirectiveHostElement(component), id, position);
+      if (self.tracker.hasDirective(component) && id !== undefined && position !== undefined) {
+        self.onChangeDetectionEnd(component, getDirectiveHostElement(component), id, position);
       }
     };
     declarations.tView.template.patched = true;
-    this._patched.set(cmp, original);
+    this.patched.set(cmp, original);
   }
 
-  private _observeLifecycle(directive: DirectiveInstance, isComponent: boolean): void {
+  private observeLifecycle(directive: DirectiveInstance, isComponent: boolean): void {
     const ctx = getLViewFromDirectiveOrElementInstance(directive);
     if (!ctx) {
       return;
@@ -135,16 +135,16 @@ export class PatchingProfiler extends Profiler {
             if (!(this as any)[METADATA_PROPERTY_NAME]) {
               return;
             }
-            const id = self._tracker.getDirectiveId(this);
+            const id = self.tracker.getDirectiveId(this);
             const lifecycleHookName = getLifeCycleName(this, el);
             const element = getDirectiveHostElement(this);
-            self._onLifecycleHookStart(this, lifecycleHookName, element, id, isComponent);
+            self.onLifecycleHookStart(this, lifecycleHookName, element, id, isComponent);
             const result = el.apply(this, arguments);
-            self._onLifecycleHookEnd(this, lifecycleHookName, element, id, isComponent);
+            self.onLifecycleHookEnd(this, lifecycleHookName, element, id, isComponent);
             return result;
           };
           current[idx].patched = true;
-          this._undoLifecyclePatch.push(() => {
+          this.undoLifecyclePatch.push(() => {
             current[idx] = el;
           });
         }
