@@ -266,6 +266,40 @@ export class UserProfileComponent {
 
 The form fields automatically update when the model changes, displaying the fetched data without additional code.
 
+### Example: Synchronizing to a service
+
+For some use cases, a service may store a form model:
+
+```ts
+@Service()
+export class FormService {
+  readonly _formModel = signal<UserFormModel>({ name: '', birthday: null });
+  public readonly formModel = this._formModel.asReadonly();
+
+  public syncFormModel(value: UserFormModel) {
+    this._formModel.set(value);
+  }
+
+  // Model set synchronously or asynchronously elsewhere in service
+}
+
+@Component(...)
+export class UserForm {
+  private readonly formService = inject(FormService);
+
+  private readonly formModel = linkedSignal(() => this.formService.formModel(), {
+    set: (value) => this.formService.syncFormModel(value),
+  });
+
+  protected readonly form = form(this.formModel);
+}
+```
+
+`linkedSignal`'s computation function reads the service's form model, and the `set` function
+in the options allows syncing the component's form model to the service's form model. The
+form fields automatically update when the service's model changes, as well as automatically
+update the service's form model when the form fields update the component's form model.
+
 ## Two-way data binding
 
 The `[formField]` directive creates automatic two-way synchronization between the model, form state, and UI.
