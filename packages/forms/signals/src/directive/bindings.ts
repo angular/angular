@@ -76,7 +76,7 @@ export function bindingUpdated<TKey extends string>(
   key: TKey,
   value: unknown,
 ) {
-  if (bindings[key] !== value) {
+  if (!Object.is(bindings[key], value)) {
     bindings[key] = value;
     return true;
   }
