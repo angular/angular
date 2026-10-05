@@ -17,6 +17,7 @@ import {
   signal,
   Type,
   untracked,
+  ɵRuntimeError as RuntimeError,
   ɵWritable as Writable,
 } from '@angular/core';
 import {BehaviorSubject, EMPTY, from, Observable, of, Subject} from 'rxjs';
@@ -59,9 +60,11 @@ import {
   isRedirectingNavigationCancelingError,
   redirectingNavigationError,
 } from './navigation_canceling_error';
+import {RuntimeErrorCode} from './errors';
 import {ActivateRoutes} from './operators/activate_routes';
 import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
+import {MAX_ALLOWED_REDIRECTS} from './recognize';
 import {resolveData} from './operators/resolve_data';
 import {ROUTER_RESOURCES_FEATURE} from './router_resource_feature';
 import {switchTap} from './operators/switch_tap';
@@ -357,6 +360,14 @@ export class NavigationTransitions {
    * Used to abort the current transition with an error.
    */
   readonly transitionAbortWithErrorSubject = new Subject<Error>();
+
+  /**
+   * The number of consecutive navigation restarts that were caused by a redirect
+   * (a `UrlTree`/`RedirectCommand` returned from a guard or the navigation error
+   * handler). Reset whenever a navigation ends without redirecting. Used to bound
+   * redirect cycles with the same limit applied during route recognition.
+   */
+  private redirectRestartCount = 0;
   private readonly configLoader = inject(RouterConfigLoader);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly destroyRef = inject(DestroyRef);
@@ -516,6 +527,7 @@ export class NavigationTransitions {
                   NavigationSkippedCode.IgnoredSameUrlNavigation,
                 ),
               );
+              this.redirectRestartCount = 0;
               t.resolve(false);
               return EMPTY;
             }
@@ -630,6 +642,7 @@ export class NavigationTransitions {
                   NavigationSkippedCode.IgnoredByUrlHandlingStrategy,
                 ),
               );
+              this.redirectRestartCount = 0;
               t.resolve(false);
               return EMPTY;
             }
@@ -831,6 +844,7 @@ export class NavigationTransitions {
               ),
             );
             this.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
+            this.redirectRestartCount = 0;
             t.resolve(true);
           }),
 
@@ -913,6 +927,14 @@ export class NavigationTransitions {
             /* This error type is issued during Redirect, and is handled as a
              * cancellation rather than an error. */
             if (isNavigationCancelingError(e)) {
+              if (
+                isRedirectingNavigationCancelingError(e) &&
+                this.redirectRestartCount >= MAX_ALLOWED_REDIRECTS
+              ) {
+                this.stopRedirectCycle(overallTransitionState, e.url);
+                return EMPTY;
+              }
+
               this.events.next(
                 new NavigationCancel(
                   overallTransitionState.id,
@@ -925,8 +947,10 @@ export class NavigationTransitions {
               // When redirecting, we need to delay resolving the navigation
               // promise and push it to the redirect navigation
               if (!isRedirectingNavigationCancelingError(e)) {
+                this.redirectRestartCount = 0;
                 overallTransitionState.resolve(false);
               } else {
+                this.redirectRestartCount++;
                 this.events.next(new RedirectRequest(e.url, e.navigationBehaviorOptions));
               }
 
@@ -947,25 +971,34 @@ export class NavigationTransitions {
                 );
 
                 if (navigationErrorHandlerResult instanceof RedirectCommand) {
-                  const {message, cancellationCode} = redirectingNavigationError(
-                    this.urlSerializer,
-                    navigationErrorHandlerResult,
-                  );
-                  this.events.next(
-                    new NavigationCancel(
-                      overallTransitionState.id,
-                      this.urlSerializer.serialize(overallTransitionState.extractedUrl),
-                      message,
-                      cancellationCode,
-                    ),
-                  );
-                  this.events.next(
-                    new RedirectRequest(
+                  if (this.redirectRestartCount >= MAX_ALLOWED_REDIRECTS) {
+                    this.stopRedirectCycle(
+                      overallTransitionState,
                       navigationErrorHandlerResult.redirectTo,
-                      navigationErrorHandlerResult.navigationBehaviorOptions,
-                    ),
-                  );
+                    );
+                  } else {
+                    this.redirectRestartCount++;
+                    const {message, cancellationCode} = redirectingNavigationError(
+                      this.urlSerializer,
+                      navigationErrorHandlerResult,
+                    );
+                    this.events.next(
+                      new NavigationCancel(
+                        overallTransitionState.id,
+                        this.urlSerializer.serialize(overallTransitionState.extractedUrl),
+                        message,
+                        cancellationCode,
+                      ),
+                    );
+                    this.events.next(
+                      new RedirectRequest(
+                        navigationErrorHandlerResult.redirectTo,
+                        navigationErrorHandlerResult.navigationBehaviorOptions,
+                      ),
+                    );
+                  }
                 } else {
+                  this.redirectRestartCount = 0;
                   this.events.next(navigationError);
                   throw e;
                 }
@@ -1001,6 +1034,7 @@ export class NavigationTransitions {
     code: NavigationCancellationCode,
   ) {
     rollbackState(t);
+    this.redirectRestartCount = 0;
     const navCancel = new NavigationCancel(
       t.id,
       this.urlSerializer.serialize(t.extractedUrl),
@@ -1009,6 +1043,41 @@ export class NavigationTransitions {
     );
     this.events.next(navCancel);
     t.resolve(false);
+  }
+
+  /**
+   * Ends a chain of navigation restarts that was caused by redirects more than
+   * `MAX_ALLOWED_REDIRECTS` times (for example, a cyclic redirect returned from a
+   * guard). This mirrors the redirect limit that is applied during route recognition:
+   * in development mode an error is raised (`RuntimeErrorCode.INFINITE_REDIRECT`),
+   * while in production the navigation is stopped rather than restarted forever.
+   */
+  private stopRedirectCycle(t: NavigationTransition, redirectTarget: UrlTree) {
+    const fromUrl = this.urlSerializer.serialize(t.extractedUrl);
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      const error = new RuntimeError(
+        RuntimeErrorCode.INFINITE_REDIRECT,
+        `Detected possible infinite redirect when redirecting from '${fromUrl}' to '${this.urlSerializer.serialize(
+          redirectTarget,
+        )}'.`,
+      );
+      this.events.next(new NavigationError(t.id, fromUrl, error, t.targetSnapshot ?? undefined));
+      if (this.options.resolveNavigationPromiseOnError) {
+        t.resolve(false);
+      } else {
+        t.reject(error);
+      }
+    } else {
+      // In production, stop restarting navigations once the limit is reached instead
+      // of failing the navigation with an error (mirroring the recognition-phase
+      // behavior of ignoring additional redirects once the limit is reached). The
+      // navigation is cancelled and resolves `false` like other cancellations, so
+      // that the application - and a server-side render waiting on the router's
+      // pending tasks - can settle. No `NavigationCancellationCode` is attached
+      // because none of the existing codes describes this reason.
+      this.events.next(new NavigationCancel(t.id, fromUrl, ''));
+      t.resolve(false);
+    }
   }
 
   /**

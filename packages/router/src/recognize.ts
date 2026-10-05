@@ -65,7 +65,7 @@ export async function recognize(
   ).recognize();
 }
 
-const MAX_ALLOWED_REDIRECTS = 31;
+export const MAX_ALLOWED_REDIRECTS = 31;
 
 export class Recognizer {
   private applyRedirects: ApplyRedirects;

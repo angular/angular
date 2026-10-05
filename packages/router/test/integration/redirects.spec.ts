@@ -6,13 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {LocationStrategy, Location, HashLocationStrategy} from '@angular/common';
+import {inject} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Router, NavigationStart, RoutesRecognized} from '../../src';
+import {
+  NavigationStart,
+  provideRouter,
+  RedirectCommand,
+  Router,
+  Routes,
+  RoutesRecognized,
+  withDisabledInitialNavigation,
+  withNavigationErrorHandler,
+} from '../../src';
 import {
   createRoot,
   RootCmp,
   BlankCmp,
   TeamCmp,
+  ThrowingCmp,
   advance,
   simulateLocationChange,
 } from './integration_helpers';
@@ -132,6 +143,117 @@ export function redirectsIntegrationSuite(browserAPI: 'history' | 'navigation') 
       location.back();
       await advance(fixture);
       expect(location.path()).toEqual('/initial');
+    });
+
+    it('should stop navigation when a guard returns a redirect cycle', async () => {
+      const router = TestBed.inject(Router);
+      const fixture = await createRoot(router, RootCmp);
+      let redirects = 0;
+
+      router.resetConfig([
+        {
+          path: 'loop',
+          canActivate: [
+            () => {
+              redirects++;
+              return inject(Router).createUrlTree(['/loop']);
+            },
+          ],
+        },
+        {path: 'team/:id', component: TeamCmp},
+      ]);
+
+      let navError: Error | undefined;
+      await router.navigateByUrl('/loop').catch((e: Error) => (navError = e));
+
+      expect(navError?.message).toMatch(/NG04016: Detected possible infinite redirect/);
+      expect(redirects).toBe(32);
+
+      // The router remains usable after the redirect cycle has been stopped.
+      await router.navigateByUrl('/team/22');
+      await advance(fixture);
+      expect(router.url).toEqual('/team/22');
+    });
+
+    it('should stop navigation when a guard returns a redirect cycle in production mode', async () => {
+      const previousNgDevMode = (globalThis as any).ngDevMode;
+      try {
+        (globalThis as any).ngDevMode = false;
+        const router = TestBed.inject(Router);
+        const fixture = await createRoot(router, RootCmp);
+        let redirects = 0;
+
+        router.resetConfig([
+          {
+            path: 'loop',
+            canActivate: [
+              () => {
+                redirects++;
+                return inject(Router).createUrlTree(['/loop']);
+              },
+            ],
+          },
+        ]);
+
+        const result = await router.navigateByUrl('/loop');
+
+        expect(result).toBeFalse();
+        expect(redirects).toBe(32);
+        await advance(fixture);
+      } finally {
+        (globalThis as any).ngDevMode = previousNgDevMode;
+      }
+    });
+
+    it('should navigate through a chain of guard redirects below the limit', async () => {
+      const router = TestBed.inject(Router);
+      const fixture = await createRoot(router, RootCmp);
+      const routes: Routes = [];
+      for (let i = 0; i < 5; i++) {
+        routes.push({
+          path: `redirect-${i}`,
+          canActivate: [() => inject(Router).createUrlTree([`/redirect-${i + 1}`])],
+        });
+      }
+      routes.push({path: 'redirect-5', component: BlankCmp});
+      router.resetConfig(routes);
+
+      await router.navigateByUrl('/redirect-0');
+      await advance(fixture);
+      expect(router.url).toEqual('/redirect-5');
+    });
+
+    it('should stop navigation when an error handler returns a redirect cycle', async () => {
+      let handled = 0;
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            [
+              {path: 'thrower', component: ThrowingCmp},
+              {path: 'ok', component: BlankCmp},
+            ],
+            withNavigationErrorHandler(() => {
+              handled++;
+              return new RedirectCommand(inject(Router).parseUrl('/thrower'));
+            }),
+            withDisabledInitialNavigation(),
+          ),
+        ],
+      });
+      const router = TestBed.inject(Router);
+      const fixture = TestBed.createComponent(RootCmp);
+      await advance(fixture);
+
+      let navError: Error | undefined;
+      await router.navigateByUrl('/thrower').catch((e: Error) => (navError = e));
+
+      expect(navError?.message).toMatch(/NG04016: Detected possible infinite redirect/);
+      expect(handled).toBe(32);
+
+      // Other navigations still work after the cycle has been stopped.
+      await router.navigateByUrl('/ok');
+      await advance(fixture);
+      expect(router.url).toEqual('/ok');
     });
   });
 }
