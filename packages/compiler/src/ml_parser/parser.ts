@@ -1030,8 +1030,9 @@ function lastOnStack(stack: any[], element: any): boolean {
  * If the string is not actually a valid/known entity then just return the original `match` string.
  */
 function decodeEntity(match: string, entity: string): string {
-  if (NAMED_ENTITIES[entity] !== undefined) {
-    return NAMED_ENTITIES[entity] || match;
+  const resolved = NAMED_ENTITIES.get(entity);
+  if (resolved) {
+    return resolved;
   }
   if (/^#x[a-f0-9]+$/i.test(entity)) {
     return String.fromCodePoint(parseInt(entity.slice(2), 16));
