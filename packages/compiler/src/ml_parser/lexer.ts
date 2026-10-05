@@ -743,7 +743,7 @@ class _Tokenizer {
       } else {
         const name = this._cursor.getChars(nameStart);
         this._cursor.advance();
-        const char = Object.hasOwn(NAMED_ENTITIES, name) && NAMED_ENTITIES[name];
+        const char = NAMED_ENTITIES.get(name);
         if (!char) {
           throw this._createError(_unknownEntityErrorMsg(name), this._cursor.getSpan(start));
         }
