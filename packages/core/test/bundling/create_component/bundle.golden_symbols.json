@@ -701,6 +701,7 @@
       "trackMovedView",
       "uniqueIdCounter",
       "unregisterLView",
+      "unregisterLViewTree",
       "unwrapRNode",
       "updateAncestorTraversalFlagsOnAttach",
       "updateMicroTaskStatus",

@@ -847,6 +847,7 @@
       "triggerTransitionsFailed",
       "uniqueIdCounter",
       "unregisterLView",
+      "unregisterLViewTree",
       "unregisteredTrigger",
       "unsupportedTriggerEvent",
       "unwrapRNode",

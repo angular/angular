@@ -1051,6 +1051,7 @@
       "trackMovedView",
       "uniqueIdCounter",
       "unregisterLView",
+      "unregisterLViewTree",
       "untracked",
       "untracked2",
       "unwrapRNode",
