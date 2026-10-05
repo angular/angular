@@ -11,7 +11,6 @@ import {testData} from '../../test-data';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   template: `
     <table>
       <tbody>
