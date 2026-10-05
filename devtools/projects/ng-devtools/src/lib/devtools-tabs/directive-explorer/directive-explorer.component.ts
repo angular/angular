@@ -119,13 +119,13 @@ export class DirectiveExplorerComponent {
 
   readonly signalsOpen = signal(false);
 
-  private _clickedElement: IndexedNode | null = null;
-  private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
+  private clickedElement: IndexedNode | null = null;
+  private refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
 
-  private readonly _appOperations = inject(ApplicationOperations);
-  private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
-  private readonly _propResolver = inject(ElementPropertyResolver);
-  private readonly _frameManager = inject(FrameManager);
+  private readonly appOperations = inject(ApplicationOperations);
+  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  private readonly propResolver = inject(ElementPropertyResolver);
+  private readonly frameManager = inject(FrameManager);
 
   private readonly settings = inject(Settings);
   private readonly platform = inject(Platform);
@@ -176,7 +176,7 @@ export class DirectiveExplorerComponent {
   }
 
   private isNonTopLevelFirefoxFrame() {
-    return this.platform.FIREFOX && !this._frameManager.topLevelFrameIsActive();
+    return this.platform.FIREFOX && !this.frameManager.topLevelFrameIsActive();
   }
 
   handleNodeSelection(node: IndexedNode | null): void {
@@ -185,47 +185,47 @@ export class DirectiveExplorerComponent {
       // That's possible if the user has selected an NgForOf and after that
       // they select another NgForOf instance. In this case, we don't want to diff the props
       // we want to render from scratch.
-      if (this._clickedElement && !sameDirectives(this._clickedElement, node)) {
-        this._propResolver.clearProperties();
+      if (this.clickedElement && !sameDirectives(this.clickedElement, node)) {
+        this.propResolver.clearProperties();
       }
-      this._clickedElement = node;
-      this._messageBus.emit('setSelectedComponent', [node.position]);
+      this.clickedElement = node;
+      this.messageBus.emit('setSelectedComponent', [node.position]);
       this.refresh();
     } else {
-      this._clickedElement = null;
+      this.clickedElement = null;
       this.currentSelectedElement.set(null);
     }
   }
 
   subscribeToBackendEvents(): void {
-    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
+    this.messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest.set(view.forest);
 
-      this.currentSelectedElement.set(this._clickedElement);
-      if (view.properties && this._clickedElement) {
-        this._propResolver.setProperties(this._clickedElement, view.properties);
+      this.currentSelectedElement.set(this.clickedElement);
+      if (view.properties && this.clickedElement) {
+        this.propResolver.setProperties(this.clickedElement, view.properties);
       }
     });
 
-    this._messageBus.on('componentTreeDirty', () => this.refresh());
+    this.messageBus.on('componentTreeDirty', () => this.refresh());
 
-    this._messageBus.on('latestCdData', (cdData) => this.cdData.set(cdData));
+    this.messageBus.on('latestCdData', (cdData) => this.cdData.set(cdData));
   }
 
   refresh(): void {
-    const success = this._messageBus.emit('getLatestComponentExplorerView', [
-      this._constructViewQuery(),
+    const success = this.messageBus.emit('getLatestComponentExplorerView', [
+      this.constructViewQuery(),
     ]);
-    this._messageBus.emit('getRoutes');
+    this.messageBus.emit('getRoutes');
     // If the event was not throttled, we no longer need to retry.
     if (success) {
-      this._refreshRetryTimeout && clearTimeout(this._refreshRetryTimeout);
-      this._refreshRetryTimeout = null;
+      this.refreshRetryTimeout && clearTimeout(this.refreshRetryTimeout);
+      this.refreshRetryTimeout = null;
       return;
     }
     // If the event was throttled and we haven't scheduled a retry yet.
-    if (!this._refreshRetryTimeout) {
-      this._refreshRetryTimeout = setTimeout(() => this.refresh(), 500);
+    if (!this.refreshRetryTimeout) {
+      this.refreshRetryTimeout = setTimeout(() => this.refresh(), 500);
     }
   }
 
@@ -237,20 +237,20 @@ export class DirectiveExplorerComponent {
     const directiveIndex =
       selectedEl.directives?.findIndex((directive) => directive.name === directiveName) ?? -1;
 
-    const selectedFrame = this._frameManager.selectedFrame();
-    if (!this._frameManager.activeFrameHasUniqueUrl()) {
+    const selectedFrame = this.frameManager.selectedFrame();
+    if (!this.frameManager.activeFrameHasUniqueUrl()) {
       const error = `The currently inspected frame does not have a unique url on this page. Cannot view source.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
     if (this.isNonTopLevelFirefoxFrame()) {
       const error = `Viewing source is not supported in Firefox when the inspected frame is not the top-level frame.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
     } else {
-      this._appOperations.viewSource(
+      this.appOperations.viewSource(
         selectedEl.position,
         selectedFrame!,
         directiveIndex !== -1 ? directiveIndex : undefined,
@@ -259,20 +259,20 @@ export class DirectiveExplorerComponent {
   }
 
   handleSelectDomElement(node: IndexedNode): void {
-    const selectedFrame = this._frameManager.selectedFrame();
-    if (!this._frameManager.activeFrameHasUniqueUrl()) {
+    const selectedFrame = this.frameManager.selectedFrame();
+    if (!this.frameManager.activeFrameHasUniqueUrl()) {
       const error = `The currently inspected frame does not have a unique url on this page. Cannot select DOM element.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
     if (this.isNonTopLevelFirefoxFrame()) {
       const error = `Inspecting a component's DOM element is not supported in Firefox when the inspected frame is not the top-level frame.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
     } else {
-      this._appOperations.selectDomElement(node.position, selectedFrame!);
+      this.appOperations.selectDomElement(node.position, selectedFrame!);
     }
   }
 
@@ -280,32 +280,32 @@ export class DirectiveExplorerComponent {
     if (!node.hasNativeElement) {
       return;
     }
-    this._messageBus.emit('createHighlightOverlay', [node.position]);
+    this.messageBus.emit('createHighlightOverlay', [node.position]);
   }
 
   unhighlight(): void {
-    this._messageBus.emit('removeHighlightOverlay');
+    this.messageBus.emit('removeHighlightOverlay');
   }
 
-  private _constructViewQuery(): ComponentExplorerViewQuery | undefined {
-    if (!this._clickedElement) {
+  private constructViewQuery(): ComponentExplorerViewQuery | undefined {
+    if (!this.clickedElement) {
       return;
     }
     return {
-      selectedElement: this._clickedElement.position,
-      propertyQuery: this._getPropertyQuery(),
+      selectedElement: this.clickedElement.position,
+      propertyQuery: this.getPropertyQuery(),
     };
   }
 
-  private _getPropertyQuery(): PropertyQuery {
+  private getPropertyQuery(): PropertyQuery {
     // Here we handle the case when a given element has already been selected.
     // We check if we're dealing with the same instance (i.e., if we have the same
     // set of directives and component on it), if we do, we want to get the same
     // set of properties which are already expanded.
     if (
-      !this._clickedElement ||
+      !this.clickedElement ||
       !this.currentSelectedElement() ||
-      !sameDirectives(this._clickedElement, this.currentSelectedElement()!)
+      !sameDirectives(this.clickedElement, this.currentSelectedElement()!)
     ) {
       return {
         type: PropertyQueryTypes.All,
@@ -313,16 +313,16 @@ export class DirectiveExplorerComponent {
     }
     return {
       type: PropertyQueryTypes.Specified,
-      properties: this._propResolver.getExpandedProperties() || {},
+      properties: this.propResolver.getExpandedProperties() || {},
     };
   }
 
   highlightComponent(position: ElementPosition): void {
-    this._messageBus.emit('createHighlightOverlay', [position]);
+    this.messageBus.emit('createHighlightOverlay', [position]);
   }
 
   removeComponentHighlight(): void {
-    this._messageBus.emit('removeHighlightOverlay');
+    this.messageBus.emit('removeHighlightOverlay');
   }
 
   handleSelect(node: FlatNode): void {
@@ -342,21 +342,21 @@ export class DirectiveExplorerComponent {
   }): void {
     const objectPath = constructPathOfKeysToPropertyValue(node.prop);
 
-    const selectedFrame = this._frameManager.selectedFrame();
+    const selectedFrame = this.frameManager.selectedFrame();
 
-    if (!this._frameManager.activeFrameHasUniqueUrl()) {
+    if (!this.frameManager.activeFrameHasUniqueUrl()) {
       const error = `The currently inspected frame does not have a unique URL on this page. Cannot inspect object.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
     }
 
     if (this.isNonTopLevelFirefoxFrame()) {
       const error = `Inspecting object is not supported in Firefox when the inspected frame is not the top-level frame.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
-      this._messageBus.emit('log', [{level: 'warn', message: error}]);
+      this.messageBus.emit('log', [{level: 'warn', message: error}]);
     } else {
-      this._appOperations.inspect(directivePosition, objectPath, selectedFrame!);
+      this.appOperations.inspect(directivePosition, objectPath, selectedFrame!);
     }
   }
 

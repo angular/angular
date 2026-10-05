@@ -21,19 +21,19 @@ import {DirectivePropertyResolver} from './directive-property-resolver';
 
 @Injectable()
 export class ElementPropertyResolver {
-  private _directivePropertiesController = new Map<string, DirectivePropertyResolver>();
+  private directivePropertiesController = new Map<string, DirectivePropertyResolver>();
 
-  constructor(private _messageBus: MessageBus<Events>) {}
+  constructor(private messageBus: MessageBus<Events>) {}
 
   clearProperties(): void {
-    this._directivePropertiesController = new Map();
+    this.directivePropertiesController = new Map();
   }
 
   setProperties(indexedNode: IndexedNode, data: DirectivesProperties): void {
-    this._flushDeletedProperties(data);
+    this.flushDeletedProperties(data);
 
     Object.keys(data).forEach((key) => {
-      const controller = this._directivePropertiesController.get(key);
+      const controller = this.directivePropertiesController.get(key);
       if (controller) {
         controller.updateProperties(data[key]);
         return;
@@ -45,27 +45,27 @@ export class ElementPropertyResolver {
       if (!indexedNode.component || indexedNode.component.name !== key) {
         position.directive = indexedNode.directives?.findIndex((d) => d.name === key) ?? -1;
       }
-      this._directivePropertiesController.set(
+      this.directivePropertiesController.set(
         key,
-        new DirectivePropertyResolver(this._messageBus, data[key], position),
+        new DirectivePropertyResolver(this.messageBus, data[key], position),
       );
     });
   }
 
-  private _flushDeletedProperties(data: DirectivesProperties): void {
-    const currentProps = [...this._directivePropertiesController.keys()];
+  private flushDeletedProperties(data: DirectivesProperties): void {
+    const currentProps = [...this.directivePropertiesController.keys()];
     const incomingProps = new Set(Object.keys(data));
     for (const prop of currentProps) {
       if (!incomingProps.has(prop)) {
-        this._directivePropertiesController.delete(prop);
+        this.directivePropertiesController.delete(prop);
       }
     }
   }
 
   getExpandedProperties(): ComponentExplorerViewProperties {
     const result: ComponentExplorerViewProperties = {};
-    for (const [directive] of this._directivePropertiesController) {
-      const controller = this._directivePropertiesController.get(directive);
+    for (const [directive] of this.directivePropertiesController) {
+      const controller = this.directivePropertiesController.get(directive);
       if (!controller) {
         console.error('Unable to find nested properties controller for', directive);
         continue;
@@ -76,6 +76,6 @@ export class ElementPropertyResolver {
   }
 
   getDirectiveController(directive: string): DirectivePropertyResolver | undefined {
-    return this._directivePropertiesController.get(directive);
+    return this.directivePropertiesController.get(directive);
   }
 }

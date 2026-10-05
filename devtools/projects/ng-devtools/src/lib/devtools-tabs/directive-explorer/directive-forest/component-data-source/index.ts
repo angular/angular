@@ -112,29 +112,29 @@ const getVisibleNodes = (nodes: FlatNode[], isExpanded: (node: FlatNode) => bool
 };
 
 export class ComponentDataSource extends DataSource<FlatNode> {
-  private _differ = new DefaultIterableDiffer<FlatNode>(trackBy);
-  private _expandedData = new BehaviorSubject<FlatNode[]>([]);
-  private _flattenedData = new BehaviorSubject<FlatNode[]>([]);
-  private _nodeToFlat = new WeakMap<IndexedNode, FlatNode>();
+  private differ = new DefaultIterableDiffer<FlatNode>(trackBy);
+  private expandedData = new BehaviorSubject<FlatNode[]>([]);
+  private flattenedData = new BehaviorSubject<FlatNode[]>([]);
+  private nodeToFlat = new WeakMap<IndexedNode, FlatNode>();
 
-  constructor(private _expansionModel: ExpansionModel<FlatNode>) {
+  constructor(private expansionModel: ExpansionModel<FlatNode>) {
     super();
   }
 
   /** Flattens the forest into a list of nodes in depth-first order. */
-  private _flattenNodes(nodes: IndexedNode[], level = 0, result: FlatNode[] = []): FlatNode[] {
+  private flattenNodes(nodes: IndexedNode[], level = 0, result: FlatNode[] = []): FlatNode[] {
     for (const node of nodes) {
-      const flatNode = this._toFlatNode(node, level);
+      const flatNode = this.toFlatNode(node, level);
       result.push(flatNode);
       if (flatNode.expandable) {
-        this._flattenNodes(node.children, level + 1, result);
+        this.flattenNodes(node.children, level + 1, result);
       }
     }
     return result;
   }
 
-  private _toFlatNode(node: IndexedNode, level: number): FlatNode {
-    const existingNode = this._nodeToFlat.get(node);
+  private toFlatNode(node: IndexedNode, level: number): FlatNode {
+    const existingNode = this.nodeToFlat.get(node);
     if (existingNode) {
       return existingNode;
     }
@@ -153,20 +153,20 @@ export class ComponentDataSource extends DataSource<FlatNode> {
       hasNativeElement: node.hasNativeElement,
       collapsedByDefault: node.children.every((n) => n.static),
     };
-    this._nodeToFlat.set(node, flatNode);
+    this.nodeToFlat.set(node, flatNode);
     return flatNode;
   }
 
   get data(): FlatNode[] {
-    return this._flattenedData.value;
+    return this.flattenedData.value;
   }
 
   get expandedDataValues(): FlatNode[] {
-    return this._expandedData.value;
+    return this.expandedData.value;
   }
 
   getFlatNodeFromIndexedNode(indexedNode: IndexedNode): FlatNode | undefined {
-    return this._nodeToFlat.get(indexedNode);
+    return this.nodeToFlat.get(indexedNode);
   }
 
   getFlatNodeByPosition(position: number[]): FlatNode | undefined {
@@ -203,46 +203,42 @@ export class ComponentDataSource extends DataSource<FlatNode> {
       indexedForest = filterCommentNodes(indexedForest);
     }
 
-    const flattenedCollection = this._flattenNodes(indexedForest);
+    const flattenedCollection = this.flattenNodes(indexedForest);
 
     this.data.forEach((i) => (i.newItem = false));
 
     const expandedNodes: Record<string, boolean> = {};
     this.data.forEach((item) => {
-      expandedNodes[item.id] = this._expansionModel.isExpanded(item);
+      expandedNodes[item.id] = this.expansionModel.isExpanded(item);
     });
 
     const {newItems, movedItems, removedItems} = diff<FlatNode>(
-      this._differ,
+      this.differ,
       this.data,
       flattenedCollection,
     );
-    this._flattenedData.next(this.data);
+    this.flattenedData.next(this.data);
 
     movedItems.forEach((i) => {
-      this._nodeToFlat.set(i.original, i);
+      this.nodeToFlat.set(i.original, i);
       if (expandedNodes[i.id]) {
-        this._expansionModel.expand(i);
+        this.expansionModel.expand(i);
       }
     });
     newItems.forEach((i) => (i.newItem = true));
-    removedItems.forEach((i) => this._nodeToFlat.delete(i.original));
+    removedItems.forEach((i) => this.nodeToFlat.delete(i.original));
 
     return {newItems, movedItems, removedItems};
   }
 
   override connect(collectionViewer: CollectionViewer): Observable<FlatNode[]> {
-    const changes = [
-      collectionViewer.viewChange,
-      this._expansionModel.changed,
-      this._flattenedData,
-    ];
+    const changes = [collectionViewer.viewChange, this.expansionModel.changed, this.flattenedData];
     return merge<unknown[]>(...changes).pipe(
       map(() => {
-        this._expandedData.next(
-          getVisibleNodes(this.data, (node) => this._expansionModel.isExpanded(node)),
+        this.expandedData.next(
+          getVisibleNodes(this.data, (node) => this.expansionModel.isExpanded(node)),
         );
-        return this._expandedData.value;
+        return this.expandedData.value;
       }),
     );
   }

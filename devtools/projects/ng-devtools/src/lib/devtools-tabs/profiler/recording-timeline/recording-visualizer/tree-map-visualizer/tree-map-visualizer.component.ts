@@ -28,51 +28,51 @@ import {TreeMapFormatter, TreeMapNode} from '../../record-formatter/tree-map-for
   styleUrls: ['./tree-map-visualizer.component.scss'],
 })
 export class TreeMapVisualizerComponent implements OnDestroy {
-  private _formatter = new TreeMapFormatter();
+  private formatter = new TreeMapFormatter();
 
   readonly frame = input.required<ProfilerFrame>();
 
   private resize$ = new Subject<void>();
-  private _throttledResizeSubscription!: Subscription;
+  private throttledResizeSubscription!: Subscription;
 
-  private _resizeObserver: ResizeObserver = new ResizeObserver(() => this.resize$.next());
+  private resizeObserver: ResizeObserver = new ResizeObserver(() => this.resize$.next());
   private readonly treeMapRecords = computed<TreeMapNode>(() => {
     // first element in data is the Application node
-    return this._formatter.formatFrame(this.frame());
+    return this.formatter.formatFrame(this.frame());
   });
 
   readonly tree = viewChild.required<ElementRef<HTMLElement>>('webTree');
 
   constructor() {
     effect(() => {
-      if (this.tree()) this._renderTree();
+      if (this.tree()) this.renderTree();
     });
 
     afterNextRender({
       read: () => {
-        this._throttledResizeSubscription = this.resize$
+        this.throttledResizeSubscription = this.resize$
           .pipe(debounceTime(100))
-          .subscribe(() => this._renderTree());
-        this._resizeObserver.observe(this.tree().nativeElement);
+          .subscribe(() => this.renderTree());
+        this.resizeObserver.observe(this.tree().nativeElement);
       },
     });
   }
 
   ngOnDestroy(): void {
-    this._throttledResizeSubscription.unsubscribe();
-    this._resizeObserver.unobserve(this.tree().nativeElement);
+    this.throttledResizeSubscription.unsubscribe();
+    this.resizeObserver.unobserve(this.tree().nativeElement);
   }
 
-  private _renderTree(): void {
-    this._removeTree();
-    this._createTree();
+  private renderTree(): void {
+    this.removeTree();
+    this.createTree();
   }
 
-  private _removeTree(): void {
+  private removeTree(): void {
     Array.from(this.tree().nativeElement.children).forEach((child) => child.remove());
   }
 
-  private _createTree(): void {
+  private createTree(): void {
     render(this.tree().nativeElement, this.treeMapRecords(), {
       padding: [20, 5, 5, 5],
       caption: (node) => `${node.id}: ${node.size.toFixed(1)} ms`,

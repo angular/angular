@@ -48,67 +48,67 @@ const TOPIC_REQUEST: TopicSequence = {
 };
 
 export class PriorityAwareMessageBus extends MessageBus<Events> {
-  private _throttled: ThrottledTopics = {};
-  private _inProgress: TopicsInProgress = {};
+  private throttled: ThrottledTopics = {};
+  private inProgress: TopicsInProgress = {};
 
   constructor(
-    private _bus: MessageBus<Events>,
+    private bus: MessageBus<Events>,
     // Binding is necessary to ensure that `setTimeout` is called in the global context.
     // an doesn't throw "Illegal invocation" error.
-    private _setTimeout: typeof setTimeout = setTimeout.bind(globalThis),
+    private setTimeout: typeof globalThis.setTimeout = globalThis.setTimeout.bind(globalThis),
   ) {
     super();
   }
 
   override on<E extends Topic>(topic: E, cb: Events[E]): () => void {
-    return this._bus.on(topic, (...args: any) => {
+    return this.bus.on(topic, (...args: any) => {
       (cb as any)(...args);
-      this._afterMessage(topic);
+      this.afterMessage(topic);
     });
   }
 
   override once<E extends Topic>(topic: E, cb: Events[E]): void {
-    return this._bus.once(topic, (...args: any) => {
+    return this.bus.once(topic, (...args: any) => {
       (cb as any)(...args);
-      this._afterMessage(topic);
+      this.afterMessage(topic);
     });
   }
 
   override emit<E extends Topic>(topic: E, args?: Parameters<Events[E]>): boolean {
-    if (this._throttled[topic]) {
+    if (this.throttled[topic]) {
       return false;
     }
     if (TOPIC_RESPONSE[topic]) {
-      this._inProgress[topic] = true;
+      this.inProgress[topic] = true;
     }
     const blockedBy = TOPIC_BLOCK_SEQUENCE[topic];
     if (blockedBy) {
       // The source code here is safe.
       // TypeScript type inference ignores the null check here.
       for (const blocker of blockedBy!) {
-        if (this._inProgress[blocker]) {
+        if (this.inProgress[blocker]) {
           return false;
         }
       }
     }
     if (THROTTLE_METHODS[topic]) {
-      this._throttled[topic] = true;
-      this._setTimeout(() => (this._throttled[topic] = false), THROTTLE_METHODS[topic]);
+      this.throttled[topic] = true;
+      this.setTimeout(() => (this.throttled[topic] = false), THROTTLE_METHODS[topic]);
     }
-    return this._bus.emit(topic, args);
+    return this.bus.emit(topic, args);
   }
 
   override destroy(): void {
-    this._bus.destroy();
+    this.bus.destroy();
   }
 
-  private _afterMessage(topic: Topic): void {
+  private afterMessage(topic: Topic): void {
     const request = TOPIC_REQUEST[topic];
     if (!request) {
       return;
     }
-    if (this._inProgress[request]) {
-      this._inProgress[request] = false;
+    if (this.inProgress[request]) {
+      this.inProgress[request] = false;
     }
   }
 }

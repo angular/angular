@@ -17,24 +17,24 @@ import {Observable} from 'rxjs';
  * deprecated `FlatTreeControl`.
  */
 export class ExpansionModel<T> {
-  private readonly _expanded = new SelectionModel<T>(true);
+  private readonly expanded = new SelectionModel<T>(true);
 
   /** Emits whenever nodes are expanded or collapsed. */
-  readonly changed: Observable<SelectionChange<T>> = this._expanded.changed;
+  readonly changed: Observable<SelectionChange<T>> = this.expanded.changed;
 
   expand(node: T): void {
-    this._expanded.select(node);
+    this.expanded.select(node);
   }
 
   collapse(node: T): void {
-    this._expanded.deselect(node);
+    this.expanded.deselect(node);
   }
 
   toggle(node: T): void {
-    this._expanded.toggle(node);
+    this.expanded.toggle(node);
   }
 
   isExpanded(node: T): boolean {
-    return this._expanded.isSelected(node);
+    return this.expanded.isSelected(node);
   }
 }
