@@ -8,6 +8,7 @@
 
 import {
   Component,
+  ElementRef,
   EnvironmentInjector,
   ErrorHandler,
   Input,
@@ -16,6 +17,7 @@ import {
   ViewContainerRef,
   effect,
   signal,
+  viewChild,
 } from '@angular/core';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
 import {ErrorBoundaryWrappedError, ErrorDetails} from '../../src/error_handler';
@@ -312,12 +314,12 @@ describe('Error Boundary Runtime Interception', () => {
           @boundary {
             <child-cmp-defer></child-cmp-defer>
           } @error (let err) {
-            <div id="fallback">Fallback: {{err.message}}</div>
+            <div id="fallback">Fallback: {{ err.message }}</div>
           }
         } @loading {
           <div id="loading">Loading...</div>
         }
-    `,
+      `,
       imports: [ChildCmpDefer],
     })
     class AppDeferTest {
@@ -517,7 +519,7 @@ describe('Error Boundary Runtime Interception', () => {
         @boundary {
           <ul>
             @for (item of items(); track trackFn(item)) {
-              <li>{{item}}</li>
+              <li>{{ item }}</li>
             }
           </ul>
         } @error {
@@ -581,7 +583,7 @@ describe('@boundary runtime instructions (JIT)', () => {
           <throwing-ctor></throwing-ctor>
           Main Content
         } @error (let err) {
-          Error: {{err.message}}
+          Error: {{ err.message }}
         }
       `,
       imports: [ThrowingCtor],
@@ -602,7 +604,7 @@ describe('@boundary runtime instructions (JIT)', () => {
           <throwing-hook [shouldThrow]="triggerError()"></throwing-hook>
           Main Content
         } @error (let err) {
-          Error: {{err.message}}
+          Error: {{ err.message }}
         }
       `,
       imports: [ThrowingHook],
@@ -629,7 +631,7 @@ describe('@boundary runtime instructions (JIT)', () => {
           {{ throwInBinding() }}
           Main Content
         } @error (let err) {
-          Error: {{err.message}}
+          Error: {{ err.message }}
         }
       `,
     })
@@ -662,7 +664,7 @@ describe('@boundary runtime instructions (JIT)', () => {
           }
           Main Content
         } @error (let err) {
-          Error: {{err.message}}
+          Error: {{ err.message }}
         }
       `,
       imports: [ThrowingCtor],
@@ -787,7 +789,7 @@ describe('@boundary runtime instructions (JIT)', () => {
             Main Content
           }
         } @error (let err, r = $reset) {
-          Error: {{err.message}}
+          Error: {{ err.message }}
           <button (click)="r()">Reset</button>
         }
       `,
@@ -822,7 +824,7 @@ describe('@boundary runtime instructions (JIT)', () => {
         @boundary {
           {{ throwError() }}
         } @error (let err) {
-          Error: {{err.message}}
+          Error: {{ err.message }}
           <button (click)="$reset()">Reset</button>
         }
       `,
@@ -866,7 +868,7 @@ describe('@boundary runtime instructions (JIT)', () => {
             Main Content
           }
         } @error {
-          Error: {{$error.message}}
+          Error: {{ $error.message }}
         }
       `,
     })
@@ -893,7 +895,7 @@ describe('@boundary runtime instructions (JIT)', () => {
             Main Content
           }
         } @error (let err, r = $reset) {
-          Error: {{err.message}}
+          Error: {{ err.message }}
           <button (click)="handleReset(r)">Reset Later</button>
         }
       `,
@@ -944,10 +946,10 @@ describe('@boundary runtime instructions (JIT)', () => {
             Main Content
           }
         } @error (let err; r = $reset; when isChartError(err)) {
-          Chart Error: {{err.message}}
+          Chart Error: {{ err.message }}
           <button id="reset-chart" (click)="r()">Reset</button>
         } @error (let error; r = $reset) {
-          Generic Error: {{error.message}}
+          Generic Error: {{ error.message }}
           <button id="reset-generic" (click)="r()">Reset</button>
         }
       `,
@@ -1002,7 +1004,7 @@ describe('@boundary runtime instructions (JIT)', () => {
             {{ throwError() }}
           }
         } @error (let err; when isChartError(err)) {
-          Chart Error: {{err.message}}
+          Chart Error: {{ err.message }}
         }
       `,
     })
@@ -1039,10 +1041,10 @@ describe('@boundary runtime instructions (JIT)', () => {
     @Component({
       template: `
         @boundary {
-          <throwing-effect/>
+          <throwing-effect />
           Main Content
         } @error (let err) {
-          Error: {{err.message}}
+          Error: {{ err.message }}
         }
       `,
       imports: [ThrowingEffect],
@@ -1102,5 +1104,55 @@ describe('@boundary runtime instructions (JIT)', () => {
     expect(capturedDetails.boundary).toBeDefined();
     expect(capturedDetails.boundary!.type).toBe(Host);
     expect(typeof capturedDetails.boundary!.reset).toBe('function');
+  });
+
+  it('should allow signal writes in ErrorHandler and view queries when a view inside @boundary throws', async () => {
+    const errors = signal<unknown[]>([]);
+
+    class SignalWritingErrorHandler implements ErrorHandler {
+      handleError(error: unknown) {
+        errors.update((list) => [...list, error]);
+      }
+    }
+
+    @Component({
+      selector: 'app-throws',
+      template: '{{ boom() }}',
+    })
+    class Throws {
+      boom(): string {
+        throw new Error('original');
+      }
+    }
+
+    @Component({
+      template: `
+        @boundary {
+          @if (true) {
+            <app-throws />
+          }
+        } @error {
+          <p>{{ $error.message }}</p>
+        }
+        <div #anchor></div>
+      `,
+      imports: [Throws],
+    })
+    class App {
+      anchor = viewChild<ElementRef>('anchor');
+    }
+
+    TestBed.configureTestingModule({
+      providers: [{provide: ErrorHandler, useClass: SignalWritingErrorHandler}],
+    });
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    // The error should have been caught and the @error block should be rendered.
+    expect(fixture.nativeElement.textContent).toContain('original');
+    // The signal writing ErrorHandler should have successfully written to the signal
+    expect(errors().length).toBe(1);
+    expect((errors()[0] as Error).message).toBe('original');
   });
 });
