@@ -21,8 +21,10 @@ type AiSignalGraph = Omit<DebugSignalGraph, 'nodes'> & {
  */
 export const signalGraphTool: ToolDefinition<{target: HTMLElement}, AiSignalGraph> = {
   name: 'angular:signal_graph',
-  // tslint:disable-next-line:no-toplevel-property-access
-  description: `
+  description:
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? // tslint:disable-next-line:no-toplevel-property-access
+        `
 Exposes the Angular signal dependency graph for a given DOM element.
 
 This tool extracts the reactive dependency graph (signals, computeds, and effects) that
@@ -49,7 +51,8 @@ Returns:
 
 Example: An edge with \`{consumer: 2, producer: 0}\` means that \`nodes[2]\` (e.g. an
 \`effect\`) reads the value of \`nodes[0]\` (e.g. a \`signal\`).
-  `.trim(),
+  `.trim()
+      : '',
   inputSchema: {
     type: 'object',
     properties: {

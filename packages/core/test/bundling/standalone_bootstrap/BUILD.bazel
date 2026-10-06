@@ -1,8 +1,31 @@
 load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
-load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+load("//tools:defaults.bzl", "esbuild", "jasmine_test", "ts_project")
 load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
 
 package(default_visibility = ["//visibility:public"])
+
+# Check tree shaking without the Angular CLI's additional optimizer passes.
+esbuild(
+    name = "esbuild_bundle",
+    config = {
+        "define": {
+            "ngDevMode": "false",
+            "ngJitMode": "false",
+            "ngServerMode": "false",
+        },
+    },
+    entry_point = "main.ts",
+    minify = True,
+    output = "esbuild_bundle.js",
+    tsconfig = "tsconfig.esbuild.json",
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//packages/core/test/bundling:node_modules/@angular/common",
+        "//packages/core/test/bundling:node_modules/@angular/core",
+        "//packages/core/test/bundling:node_modules/@angular/platform-browser",
+    ],
+)
 
 optimize_angular_app(
     name = "bundles",
@@ -37,6 +60,7 @@ jasmine_test(
     name = "test",
     data = [
         ":bundles",
+        ":esbuild_bundle",
         ":test_lib",
     ],
 )

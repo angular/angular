@@ -105,10 +105,13 @@ const signalDebugNodeMap = new Map<
  * Finalization registry that destroys and cleans up a `DebugWatchNode` automatically if the target
  * `ReactiveNode` is garbage-collected while being watched.
  */
-const watchCleanupRegistry = new FinalizationRegistry<{id: string}>(({id}) => {
-  unwatchSignal(id);
-  signalDebugNodeMap.delete(id);
-});
+const watchCleanupRegistry =
+  typeof ngDevMode === 'undefined' || ngDevMode
+    ? new FinalizationRegistry<{id: string}>(({id}) => {
+        unwatchSignal(id);
+        signalDebugNodeMap.delete(id);
+      })
+    : null;
 let counter = 0;
 
 function isWatched(id: string): boolean {
@@ -139,7 +142,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
     if (isComputedNode(consumer)) {
       if (!signalDebugNodeMap.has(id)) {
         signalDebugNodeMap.set(id, {node: new WeakRef(consumer)});
-        watchCleanupRegistry.register(consumer, {id});
+        watchCleanupRegistry?.register(consumer, {id});
       }
       debugSignalGraphNodes.push({
         label: consumer.debugName,
@@ -153,7 +156,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
     } else if (isSignalNode(consumer)) {
       if (!signalDebugNodeMap.has(id)) {
         signalDebugNodeMap.set(id, {node: new WeakRef(consumer)});
-        watchCleanupRegistry.register(consumer, {id});
+        watchCleanupRegistry?.register(consumer, {id});
       }
       debugSignalGraphNodes.push({
         label: consumer.debugName,
@@ -177,7 +180,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
     } else if (isLinkedSignalNode(consumer)) {
       if (!signalDebugNodeMap.has(id)) {
         signalDebugNodeMap.set(id, {node: new WeakRef(consumer)});
-        watchCleanupRegistry.register(consumer, {id});
+        watchCleanupRegistry?.register(consumer, {id});
       }
       debugSignalGraphNodes.push({
         label: consumer.debugName,

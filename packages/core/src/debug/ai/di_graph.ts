@@ -22,8 +22,10 @@ import {NullInjector} from '../../di/null_injector';
 /** Tool that exposes Angular's DI graph to AI agents. */
 export const diGraphTool: ToolDefinition<{}, DiGraph> = {
   name: 'angular:di_graph',
-  // tslint:disable-next-line:no-toplevel-property-access
-  description: `
+  description:
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? // tslint:disable-next-line:no-toplevel-property-access
+        `
 Exposes the Angular Dependency Injection (DI) graph of the application.
 
 This tool extracts both the element injector tree (associated with DOM elements and components)
@@ -48,7 +50,8 @@ Returns:
     - \`token\`: The DI token.
     - \`value\`: The resolved value of that provider if it was instantiated.
   - \`children\`: Array of child environment injectors.
-  `.trim(),
+  `.trim()
+      : '',
   inputSchema: {
     type: 'object',
     properties: {},
