@@ -11,13 +11,13 @@ import type {} from 'zone.js';
 
 import {firstValueFrom} from 'rxjs';
 import {Component, EventEmitter, NgZone, provideZoneChangeDetection} from '../../src/core';
-import {TestBed, fakeAsync, flush, flushMicrotasks, inject, waitForAsync} from '../../testing';
+import {TestBed, fakeAsync, flush, flushMicrotasks, waitForAsync} from '../../testing';
 import {Log} from '../../testing/src/testing_internal';
 
+import {isBrowser} from '@angular/private/testing';
 import {scheduleCallbackWithRafRace as scheduler} from '../../src/util/callback_scheduler';
 import {global} from '../../src/util/global';
 import {NoopNgZone} from '../../src/zone/ng_zone';
-import {isBrowser} from '@angular/private/testing';
 
 const resultTimer = 1000;
 // Schedules a macrotask (using a timer)
@@ -90,7 +90,10 @@ describe('NgZone', () => {
 
     it('should produce long stack traces', (done) => {
       macroTask(() => {
-        const {promise, resolve} = Promise.withResolvers<any>();
+        let resolve: (result: any) => void;
+        const promise: Promise<any> = new Promise((res) => {
+          resolve = res;
+        });
 
         _zone.run(() => {
           setTimeout(() => {
@@ -111,7 +114,10 @@ describe('NgZone', () => {
 
     it('should produce long stack traces (when using microtasks)', (done) => {
       macroTask(() => {
-        const {promise, resolve} = Promise.withResolvers<any>();
+        let resolve: (result: any) => void;
+        const promise: Promise<any> = new Promise((res) => {
+          resolve = res;
+        });
 
         _zone.run(() => {
           queueMicrotask(() => {
@@ -144,7 +150,10 @@ describe('NgZone', () => {
 
     it('should disable long stack traces', (done) => {
       macroTask(() => {
-        const {promise, resolve} = Promise.withResolvers<any>();
+        let resolve: (result: any) => void;
+        const promise: Promise<any> = new Promise((res) => {
+          resolve = res;
+        });
 
         _zone.run(() => {
           setTimeout(() => {
@@ -515,8 +524,12 @@ function commonTests() {
 
       runNgZoneNoLog(() => {
         macroTask(() => {
-          ({promise: aPromise, resolve: aResolve} = Promise.withResolvers<string>());
-          ({promise: bPromise, resolve: bResolve} = Promise.withResolvers<string>());
+          aPromise = new Promise((res) => {
+            aResolve = res;
+          });
+          bPromise = new Promise((res) => {
+            bResolve = res;
+          });
 
           _log.add('run start');
           aPromise.then(_log.fn('a then'));
@@ -556,7 +569,9 @@ function commonTests() {
 
       macroTask(() => {
         NgZone.assertNotInAngularZone();
-        ({promise, resolve} = Promise.withResolvers<string | null>());
+        promise = new Promise<string | null>((res) => {
+          resolve = res;
+        });
       });
 
       runNgZoneNoLog(() => {
@@ -733,8 +748,12 @@ function commonTests() {
 
       runNgZoneNoLog(() => {
         macroTask(() => {
-          ({promise: aPromise, resolve: aResolve} = Promise.withResolvers<string | null>());
-          ({promise: bPromise, resolve: bResolve} = Promise.withResolvers<string | null>());
+          aPromise = new Promise<string | null>((res) => {
+            aResolve = res;
+          });
+          bPromise = new Promise<string | null>((res) => {
+            bResolve = res;
+          });
           aPromise.then(_log.fn('a then'));
           bPromise.then(_log.fn('b then'));
           _log.add('run start');
@@ -862,10 +881,10 @@ function commonTests() {
     describe('#10503', () => {
       let ngZone: NgZone;
 
-      beforeEach(inject([NgZone], (_ngZone: NgZone) => {
+      beforeEach(() => {
         // Create a zone outside the fakeAsync.
-        ngZone = _ngZone;
-      }));
+        ngZone = TestBed.inject(NgZone);
+      });
 
       it('should fakeAsync even if the NgZone was created outside.', fakeAsync(() => {
         let result: string = null!;

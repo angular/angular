@@ -129,7 +129,6 @@ describe('internal utilities', () => {
 
     it('should get the name from a node placed inside a dynamically-created component through createComponent', () => {
       @Component({
-        selector: 'comp',
         template: `<section><div class="target"></div></section>`,
       })
       class Comp {}

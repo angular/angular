@@ -7,24 +7,17 @@
  */
 
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  provideZoneChangeDetection,
-} from '../../src/core';
+import {ChangeDetectionStrategy, Component, inject} from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('attribute creation', () => {
   it('should create an element', () => {
     @Component({
       template: `<div id="test" title="Hello"></div>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
     const div = fixture.debugElement.query(By.css('div')).nativeElement;
@@ -35,12 +28,10 @@ describe('attribute creation', () => {
   it('should allow for setting xlink namespaced attributes', () => {
     @Component({
       template: `<div id="test" xlink:href="bar" title="Hello"></div>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -62,22 +53,15 @@ describe('attribute creation', () => {
 });
 
 describe('attribute binding', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
   it('should set attribute values', () => {
     @Component({
       template: `<a [attr.href]="url"></a>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       url = 'https://angular.io/robots.txt';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -89,7 +73,6 @@ describe('attribute binding', () => {
   it('should be able to bind multiple attribute values per element', () => {
     @Component({
       template: `<a [attr.id]="id" [attr.href]="url" [attr.tabindex]="'-1'"></a>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -97,7 +80,6 @@ describe('attribute binding', () => {
       id = 'my-link';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -111,7 +93,6 @@ describe('attribute binding', () => {
   it('should be able to bind multiple attributes in the presence of other bindings', () => {
     @Component({
       template: `<a [id]="id" [attr.href]="url" [title]="'hello'"></a>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -119,7 +100,6 @@ describe('attribute binding', () => {
       id = 'my-link';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -137,7 +117,6 @@ describe('attribute binding', () => {
         [attr.title]="title"
         attr.tabindex="{{ 1 + 3 + 7 }}"
       ></button>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -145,7 +124,6 @@ describe('attribute binding', () => {
       id = 'custom';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -163,7 +141,6 @@ describe('attribute binding', () => {
           <span attr.title="span-{{ title }}" id="custom-span" [attr.tabindex]="-1"></span>
         </button>
       `,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
@@ -171,7 +148,6 @@ describe('attribute binding', () => {
       id = 'custom';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -187,19 +163,17 @@ describe('attribute binding', () => {
     expect(span.getAttribute('title')).toBe('span-hello');
   });
 
-  it('should sanitize attribute values', () => {
+  it('should sanitize attribute values', async () => {
     @Component({
       template: `<a [attr.href]="badUrl"></a>`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       badUrl: string | SafeUrl = 'javascript:true';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const a = fixture.debugElement.query(By.css('a')).nativeElement;
     // NOTE: different browsers will add `//` into the URI.
@@ -209,7 +183,8 @@ describe('attribute binding', () => {
     fixture.componentInstance.badUrl = domSanitizer.bypassSecurityTrustUrl(
       'javascript:alert("this is fine")',
     );
-    fixture.detectChanges();
+    fixture.changeDetectorRef.markForCheck();
+    await fixture.whenStable();
 
     // should not start with `unsafe:`.
     expect(a.href.indexOf('unsafe:')).toBe(-1);
@@ -248,7 +223,6 @@ describe('attribute interpolation', () => {
         <div attr.title="a{{ a }}b"></div>
         <div attr.title="{{ a }}"></div>
       `,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -263,9 +237,6 @@ describe('attribute interpolation', () => {
       i = 9;
     }
 
-    TestBed.configureTestingModule({
-      declarations: [App],
-    });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 

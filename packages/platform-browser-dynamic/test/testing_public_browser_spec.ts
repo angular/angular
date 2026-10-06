@@ -14,7 +14,7 @@ import {
   NgModule,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {isBrowser} from '@angular/private/testing';
@@ -45,22 +45,16 @@ class FancyService {
 if (isBrowser) {
   describe('test APIs for the browser', () => {
     describe('using the async helper', () => {
-      let actuallyDone: boolean;
-
-      beforeEach(() => {
-        actuallyDone = false;
-      });
-
-      afterEach(() => {
+      it('should run async tests with ResourceLoaders', async () => {
+        let actuallyDone = false;
+        const resourceLoader = new ResourceLoaderImpl();
+        await resourceLoader
+          .get('/packages/platform-browser/test/static_assets/test.html')
+          .then(() => {
+            actuallyDone = true;
+          });
         expect(actuallyDone).toEqual(true);
       });
-
-      it('should run async tests with ResourceLoaders', waitForAsync(() => {
-        const resourceLoader = new ResourceLoaderImpl();
-        resourceLoader.get('/packages/platform-browser/test/static_assets/test.html').then(() => {
-          actuallyDone = true;
-        });
-      }), 10000); // Long timeout here because this test makes an actual ResourceLoader.
     });
 
     describe('using the test injector with the inject helper', () => {
@@ -80,23 +74,20 @@ if (isBrowser) {
           });
         });
 
-        it('provides a real ResourceLoader instance', inject(
-          [ResourceLoader],
-          (resourceLoader: ResourceLoader) => {
-            expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
-          },
-        ));
+        it('provides a real ResourceLoader instance', () => {
+          const resourceLoader = TestBed.inject(ResourceLoader);
+          expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
+        });
 
-        it('should allow the use of fakeAsync', fakeAsync(
-          inject([FancyService], (service: FancyService) => {
-            let value: string | undefined;
-            service.getAsyncValue().then(function (val: string) {
-              value = val;
-            });
-            tick();
-            expect(value).toEqual('async value');
-          }),
-        ));
+        it('should allow the use of fakeAsync', fakeAsync(() => {
+          const service = TestBed.inject(FancyService);
+          let value: string | undefined;
+          service.getAsyncValue().then(function (val: string) {
+            value = val;
+          });
+          tick();
+          expect(value).toEqual('async value');
+        }));
 
         afterEach(() => {
           getPlatform()?.destroy();
@@ -145,13 +136,15 @@ if (isBrowser) {
 
         it('should fail with an error from a promise', async () => {
           @Component({
-            selector: 'bad-template-comp',
             templateUrl: 'non-existent.html',
             standalone: false,
           })
           class BadTemplateUrl {}
 
-          TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
+          TestBed.configureTestingModule({
+            declarations: [BadTemplateUrl],
+          });
+
           await expectAsync(TestBed.compileComponents()).toBeRejectedWith(
             'Failed to load non-existent.html',
           );
@@ -180,15 +173,16 @@ if (isBrowser) {
         }
 
         @Component({
-          selector: 'external-template-comp',
           templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html',
           standalone: false,
         })
         class ExternalTemplateComp {}
 
-        TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
         TestBed.configureCompiler({
           providers: [{provide: ResourceLoader, useClass: MockResourceLoader}],
+        });
+        TestBed.configureTestingModule({
+          declarations: [ExternalTemplateComp],
         });
 
         await TestBed.compileComponents();

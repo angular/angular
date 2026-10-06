@@ -26,7 +26,7 @@ import {
 } from '../../src';
 import {createRoot, RootCmp, BlankCmp, UserCmp, advance, expectEvents} from './integration_helpers';
 
-export function routerEventsIntegrationSuite() {
+export async function routerEventsIntegrationSuite() {
   describe('route events', () => {
     it('should fire matching (Child)ActivationStart/End events', async () => {
       const router: Router = TestBed.inject(Router);

@@ -6478,7 +6478,6 @@ describe('field directive', () => {
     const {promise, resolve} = Promise.withResolvers<void>();
 
     @Component({
-      selector: 'app-form',
       imports: [FormField],
       template: `
         <form>
@@ -6494,7 +6493,6 @@ describe('field directive', () => {
     }
 
     @Component({
-      selector: 'app-root',
       template: ``,
     })
     class App {

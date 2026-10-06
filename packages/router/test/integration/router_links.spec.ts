@@ -5,32 +5,32 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Component} from '@angular/core';
 import {Location} from '@angular/common';
-import {TestBed, ComponentFixture} from '@angular/core/testing';
+import {Component} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {Router} from '../../src';
 import {expect} from '@angular/private/testing/matchers';
+import {Router, RouterLink, RouterOutlet} from '../../src';
 import {
-  RootCmp,
-  BlankCmp,
-  TeamCmp,
-  StringLinkCmp,
-  SimpleCmp,
-  StringLinkButtonCmp,
   AbsoluteLinkCmp,
-  RelativeLinkCmp,
-  RelativeLinkInIfCmp,
+  advance,
+  BlankCmp,
+  createRoot,
+  DivLinkWithBrowserUrl,
+  DivLinkWithState,
+  LinkWithBrowserUrl,
   LinkWithQueryParamsAndFragment,
   LinkWithState,
-  DivLinkWithState,
-  createRoot,
-  advance,
-  DivLinkWithBrowserUrl,
-  LinkWithBrowserUrl,
+  RelativeLinkCmp,
+  RelativeLinkInIfCmp,
+  RootCmp,
+  SimpleCmp,
+  StringLinkButtonCmp,
+  StringLinkCmp,
+  TeamCmp,
 } from './integration_helpers';
 
-export function routerLinkIntegrationSpec() {
+export async function routerLinkIntegrationSpec() {
   describe('router links', () => {
     it('should support skipping location update for anchor router links', async () => {
       const router: Router = TestBed.inject(Router);
@@ -94,13 +94,11 @@ export function routerLinkIntegrationSpec() {
 
     it('should not preserve query params and fragment by default', async () => {
       @Component({
-        selector: 'someRoot',
         template: `<router-outlet></router-outlet><a routerLink="/home">Link</a>`,
-        standalone: false,
+        imports: [RouterLink, RouterOutlet],
       })
       class RootCmpWithLink {}
 
-      TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
       const router: Router = TestBed.inject(Router);
 
       const fixture = await createRoot(router, RootCmpWithLink);
@@ -116,17 +114,15 @@ export function routerLinkIntegrationSpec() {
 
     it('should not throw when commands is null or undefined', async () => {
       @Component({
-        selector: 'someCmp',
         template: `<router-outlet></router-outlet>
           <a [routerLink]="null">Link</a>
           <button [routerLink]="null">Button</button>
           <a [routerLink]="undefined">Link</a>
           <button [routerLink]="undefined">Button</button> `,
-        standalone: false,
+        imports: [RouterLink, RouterOutlet],
       })
       class CmpWithLink {}
 
-      TestBed.configureTestingModule({declarations: [CmpWithLink]});
       const router: Router = TestBed.inject(Router);
 
       let fixture: ComponentFixture<CmpWithLink> = await createRoot(router, CmpWithLink);
@@ -141,14 +137,11 @@ export function routerLinkIntegrationSpec() {
 
     it('should not throw when some command is null', async () => {
       @Component({
-        selector: 'someCmp',
         template: `<router-outlet></router-outlet><a [routerLink]="[null]">Link</a
           ><button [routerLink]="[null]">Button</button>`,
-        standalone: false,
+        imports: [RouterLink, RouterOutlet],
       })
       class CmpWithLink {}
-
-      TestBed.configureTestingModule({declarations: [CmpWithLink]});
       const router: Router = TestBed.inject(Router);
 
       expect(async () => await createRoot(router, CmpWithLink)).not.toThrow();
@@ -156,14 +149,12 @@ export function routerLinkIntegrationSpec() {
 
     it('should not throw when some command is undefined', async () => {
       @Component({
-        selector: 'someCmp',
         template: `<router-outlet></router-outlet><a [routerLink]="[undefined]">Link</a
           ><button [routerLink]="[undefined]">Button</button>`,
-        standalone: false,
+        imports: [RouterLink, RouterOutlet],
       })
       class CmpWithLink {}
 
-      TestBed.configureTestingModule({declarations: [CmpWithLink]});
       const router: Router = TestBed.inject(Router);
 
       expect(async () => await createRoot(router, CmpWithLink)).not.toThrow();
@@ -171,13 +162,12 @@ export function routerLinkIntegrationSpec() {
 
     it('should update hrefs when query params or fragment change', async () => {
       @Component({
-        selector: 'someRoot',
         template: `<router-outlet></router-outlet
           ><a routerLink="/home" queryParamsHandling="preserve" preserveFragment>Link</a>`,
-        standalone: false,
+        imports: [RouterLink, RouterOutlet],
       })
       class RootCmpWithLink {}
-      TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+
       const router: Router = TestBed.inject(Router);
       const fixture = await createRoot(router, RootCmpWithLink);
 
@@ -200,13 +190,12 @@ export function routerLinkIntegrationSpec() {
 
     it('should correctly use the preserve strategy', async () => {
       @Component({
-        selector: 'someRoot',
         template: `<router-outlet></router-outlet
           ><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="preserve">Link</a>`,
-        standalone: false,
+        imports: [RouterLink, RouterOutlet],
       })
       class RootCmpWithLink {}
-      TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+
       const router: Router = TestBed.inject(Router);
       const fixture = await createRoot(router, RootCmpWithLink);
 
@@ -221,7 +210,6 @@ export function routerLinkIntegrationSpec() {
 
     it('should correctly use the merge strategy', async () => {
       @Component({
-        selector: 'someRoot',
         template: `<router-outlet></router-outlet
           ><a
             routerLink="/home"
@@ -229,10 +217,10 @@ export function routerLinkIntegrationSpec() {
             queryParamsHandling="merge"
             >Link</a
           >`,
-        standalone: false,
+        imports: [RouterLink, RouterOutlet],
       })
       class RootCmpWithLink {}
-      TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+
       const router: Router = TestBed.inject(Router);
       const fixture = await createRoot(router, RootCmpWithLink);
 
@@ -468,13 +456,11 @@ export function routerLinkIntegrationSpec() {
 
     it('should set href on area elements', async () => {
       @Component({
-        selector: 'someRoot',
         template: `<router-outlet></router-outlet><map><area routerLink="/home" /></map>`,
-        standalone: false,
+        imports: [RouterLink, RouterOutlet],
       })
       class RootCmpWithArea {}
 
-      TestBed.configureTestingModule({declarations: [RootCmpWithArea]});
       const router: Router = TestBed.inject(Router);
 
       const fixture = await createRoot(router, RootCmpWithArea);

@@ -6,15 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Location} from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  NgModule,
-  ɵConsole as Console,
-  makeEnvironmentProviders,
-  signal,
-} from '@angular/core';
+import {CommonModule, Location} from '@angular/common';
+import {Component, ɵConsole as Console, makeEnvironmentProviders, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {
@@ -31,15 +24,21 @@ import {
   ResolveEnd,
   ResolveStart,
   Router,
-  RouterModule,
   RoutesRecognized,
 } from '../../index';
 
+import {useAutoTick} from '@angular/private/testing';
 import {provideRouter, withExperimentalPlatformNavigation} from '../../src/provide_router';
+import {RouterTestingHarness} from '../../testing';
+import {duplicateInFlightNavigationsIntegrationSuite} from './duplicate_in_flight_navigations.spec';
+import {eagerUrlUpdateStrategyIntegrationSuite} from './eager_url_update_strategy.spec';
+import {guardsIntegrationSuite} from './guards.spec';
 import {
+  advance,
   BlankCmp,
   CollectParamsCmp,
   ComponentRecordingRoutePathAndUrl,
+  createRoot,
   EmptyQueryParamsCmp,
   expectEvents,
   onlyNavigationStartAndEnd,
@@ -52,28 +51,21 @@ import {
   RouteCmp,
   ROUTER_DIRECTIVES,
   SimpleCmp,
+  simulateLocationChange,
   TeamCmp,
   TestModule,
   TwoOutletsCmp,
   UserCmp,
-  createRoot,
-  advance,
-  simulateLocationChange,
 } from './integration_helpers';
-import {guardsIntegrationSuite} from './guards.spec';
 import {lazyLoadingIntegrationSuite} from './lazy_loading.spec';
+import {navigationIntegrationTestSuite} from './navigation.spec';
+import {navigationErrorsIntegrationSuite} from './navigation_errors.spec';
+import {redirectsIntegrationSuite} from './redirects.spec';
 import {routeDataIntegrationSuite} from './route_data.spec';
 import {routeReuseIntegrationSuite} from './route_reuse_strategy.spec';
-import {routerLinkActiveIntegrationSuite} from './router_link_active.spec';
 import {routerEventsIntegrationSuite} from './router_events.spec';
-import {redirectsIntegrationSuite} from './redirects.spec';
+import {routerLinkActiveIntegrationSuite} from './router_link_active.spec';
 import {routerLinkIntegrationSpec} from './router_links.spec';
-import {navigationIntegrationTestSuite} from './navigation.spec';
-import {eagerUrlUpdateStrategyIntegrationSuite} from './eager_url_update_strategy.spec';
-import {duplicateInFlightNavigationsIntegrationSuite} from './duplicate_in_flight_navigations.spec';
-import {navigationErrorsIntegrationSuite} from './navigation_errors.spec';
-import {useAutoTick} from '@angular/private/testing';
-import {RouterTestingHarness} from '../../testing';
 
 for (const browserAPI of ['navigation', 'history'] as const) {
   describe(`${browserAPI}-based routing`, () => {
@@ -121,26 +113,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
     it('Should work inside ChangeDetectionStrategy.OnPush components', async () => {
       @Component({
-        selector: 'root-cmp',
         template: `<router-outlet></router-outlet>`,
-        standalone: false,
+        imports: [ROUTER_DIRECTIVES],
       })
       class OnPushOutlet {}
 
       @Component({
-        selector: 'need-cd',
         template: `{{ 'it works!' }}`,
-        standalone: false,
       })
       class NeedCdCmp {}
-
-      @NgModule({
-        declarations: [OnPushOutlet, NeedCdCmp],
-        imports: [RouterModule.forRoot([])],
-      })
-      class TestModule {}
-
-      TestBed.configureTestingModule({imports: [TestModule]});
 
       const router: Router = TestBed.inject(Router);
       const fixture = await createRoot(router, RootCmp);
@@ -214,16 +195,14 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
     it('should work when an outlet is added/removed', async () => {
       @Component({
-        selector: 'someRoot',
         template: `[
           <div *ngIf="cond()"><router-outlet></router-outlet></div>
           ]`,
-        standalone: false,
+        imports: [CommonModule, ROUTER_DIRECTIVES],
       })
       class RootCmpWithLink {
         cond = signal(true);
       }
-      TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
 
       const router: Router = TestBed.inject(Router);
 
@@ -250,7 +229,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     it('should update location when navigating', async () => {
       @Component({
         template: `record`,
-        standalone: false,
       })
       class RecordLocationCmp {
         private storedPath: string;
@@ -258,11 +236,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           this.storedPath = loc.path();
         }
       }
-
-      @NgModule({declarations: [RecordLocationCmp]})
-      class TestModule {}
-
-      TestBed.configureTestingModule({imports: [TestModule]});
 
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
@@ -897,12 +870,11 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
     it('should emit an event when an outlet gets activated', async () => {
       @Component({
-        selector: 'container',
         template: `<router-outlet
           (activate)="recordActivate($event)"
           (deactivate)="recordDeactivate($event)"
         ></router-outlet>`,
-        standalone: false,
+        imports: [ROUTER_DIRECTIVES],
       })
       class Container {
         activations: any[] = [];
@@ -916,8 +888,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           this.deactivations.push(component);
         }
       }
-
-      TestBed.configureTestingModule({declarations: [Container]});
 
       const router: Router = TestBed.inject(Router);
 

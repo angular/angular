@@ -215,6 +215,7 @@ describe('platform-server full application hydration integration', () => {
       it('should serialize input values correctly for both null and normal non-empty values during SSR', async () => {
         @Component({
           selector: 'app',
+
           template: `
             <input id="input-null" [value]="nullValue" />
             <input id="input-normal" [value]="normalValue" />
@@ -583,6 +584,7 @@ describe('platform-server full application hydration integration', () => {
         it('should support element containers with *ngIf', async () => {
           @Component({
             selector: 'cmp',
+
             template: 'Hi!',
           })
           class Cmp {}
@@ -956,6 +958,7 @@ describe('platform-server full application hydration integration', () => {
           it('should support hydration on <ng-container> nodes', async () => {
             @Component({
               selector: 'nested-cmp',
+
               imports: [NgIf],
               template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
@@ -991,6 +994,7 @@ describe('platform-server full application hydration integration', () => {
           it('should support hydration on element nodes', async () => {
             @Component({
               selector: 'nested-cmp',
+
               imports: [NgIf],
               template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
@@ -1026,6 +1030,7 @@ describe('platform-server full application hydration integration', () => {
           it('should support hydration for nested components', async () => {
             @Component({
               selector: 'nested-cmp',
+
               imports: [NgIf],
               template: ` <h1 *ngIf="true">Hello World!</h1> `,
             })
@@ -1033,6 +1038,7 @@ describe('platform-server full application hydration integration', () => {
 
             @Component({
               selector: 'other-nested-cmp',
+
               imports: [NgComponentOutlet],
               template: ` <ng-container *ngComponentOutlet="NestedComponent" />`,
             })
@@ -1291,15 +1297,17 @@ describe('platform-server full application hydration integration', () => {
 
           it('should hydrate dynamically created components using root component as an anchor (with nested components)', async () => {
             @Component({
-              imports: [CommonModule],
               selector: 'nested-dynamic-a',
+
+              imports: [CommonModule],
               template: ` <p>NestedDynamicComponentA</p> `,
             })
             class NestedDynamicComponentA {}
 
             @Component({
-              imports: [CommonModule],
               selector: 'nested-dynamic-b',
+
+              imports: [CommonModule],
               template: ` <p>NestedDynamicComponentB</p> `,
             })
             class NestedDynamicComponentB {}
@@ -1396,6 +1404,7 @@ describe('platform-server full application hydration integration', () => {
             async () => {
               @Component({
                 selector: 'another-dynamic',
+
                 template: `<span>This is a content of another dynamic component.</span>`,
               })
               class AnotherDynamicComponent {
@@ -1695,6 +1704,7 @@ describe('platform-server full application hydration integration', () => {
         it('should append skip hydration flag if component uses i18n blocks and no `withI18nSupport()` call present', async () => {
           @Component({
             selector: 'app',
+
             template: '<div i18n>Hi!</div>',
           })
           class SimpleComponent {
@@ -2154,6 +2164,7 @@ describe('platform-server full application hydration integration', () => {
         it('should support using translated views as view container anchors', async () => {
           @Component({
             selector: 'dynamic-cmp',
+
             template: `DynamicComponent content`,
           })
           class DynamicComponent {}
@@ -3515,6 +3526,7 @@ describe('platform-server full application hydration integration', () => {
         async () => {
           @Component({
             selector: 'dynamic-cmp',
+
             template: `DynamicComponent content`,
           })
           class DynamicComponent {}
@@ -5606,6 +5618,7 @@ describe('platform-server full application hydration integration', () => {
       it('should support projecting contents outside of a current host element', async () => {
         @Component({
           selector: 'dynamic-cmp',
+
           template: `<div #target></div>`,
         })
         class DynamicComponent {
@@ -5787,6 +5800,7 @@ describe('platform-server full application hydration integration', () => {
 
         @Component({
           selector: 'app',
+
           imports: [NgIf, NgFor],
           template: `
             <div #target></div>
@@ -5838,6 +5852,7 @@ describe('platform-server full application hydration integration', () => {
 
         @Component({
           selector: 'app',
+
           imports: [NgIf, NgFor],
           template: `
             <div #target></div>
@@ -5893,6 +5908,7 @@ describe('platform-server full application hydration integration', () => {
 
         @Component({
           selector: 'app',
+
           template: `<div #anchor></div>`,
         })
         class SimpleComponent {
@@ -6538,6 +6554,7 @@ describe('platform-server full application hydration integration', () => {
       it('should if there are any third-party scripts that manipulate the DOM', async () => {
         @Component({
           selector: 'app',
+
           template: `<div>Original content</div>`,
         })
         class SimpleComponent {
@@ -6872,6 +6889,7 @@ describe('platform-server full application hydration integration', () => {
 
         @Component({
           selector: 'app',
+
           imports: [CommonModule, ProjectorComponent],
           template: `
             <projector-cmp>
@@ -7060,6 +7078,7 @@ describe('platform-server full application hydration integration', () => {
 
         @Component({
           selector: 'app',
+
           template: `Hi!`,
         })
         class SimpleComponent {

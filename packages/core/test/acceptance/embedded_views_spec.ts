@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NgIf} from '@angular/common';
 import {Component, Input} from '../../src/core';
 import {TestBed} from '../../testing';
 
@@ -16,15 +17,14 @@ describe('embedded views', () => {
     @Component({
       selector: 'child-cmp',
       template: 'Child',
-      standalone: false,
     })
     class ChildCmp {
       @Input() addItemFn: Function | undefined;
     }
 
     @Component({
+      imports: [NgIf, ChildCmp],
       template: `<child-cmp *ngIf="true" [addItemFn]="addItem.bind(this)"></child-cmp>`,
-      standalone: false,
     })
     class TestCmp {
       item: string = 'CmpItem';
@@ -33,7 +33,6 @@ describe('embedded views', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [ChildCmp, TestCmp]});
     const fixture = TestBed.createComponent(TestCmp);
     fixture.detectChanges();
 
@@ -47,12 +46,11 @@ describe('embedded views', () => {
 
   it('should resolve template input variables through the implicit receiver', () => {
     @Component({
+      imports: [NgIf],
       template: `<ng-template let-a [ngIf]="true">{{ a }}</ng-template>`,
-      standalone: false,
     })
     class TestCmp {}
 
-    TestBed.configureTestingModule({declarations: [TestCmp]});
     const fixture = TestBed.createComponent(TestCmp);
     fixture.detectChanges();
 
@@ -61,16 +59,14 @@ describe('embedded views', () => {
 
   it('should component instance variables through the implicit receiver', () => {
     @Component({
+      imports: [NgIf],
       template: ` <ng-template [ngIf]="true">
         <ng-template [ngIf]="true">{{ this.myProp }}{{ myProp }}</ng-template>
       </ng-template>`,
-      standalone: false,
     })
     class TestCmp {
       myProp = 'Hello';
     }
-
-    TestBed.configureTestingModule({declarations: [TestCmp]});
     const fixture = TestBed.createComponent(TestCmp);
     fixture.detectChanges();
 

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CommonModule} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {
   Component,
@@ -24,33 +25,27 @@ describe('@angular/common integration', () => {
   describe('NgForOf', () => {
     @Directive({
       selector: '[dir]',
-      standalone: false,
     })
     class MyDirective {}
 
     @Component({
       selector: 'app-child',
       template: '<div dir>comp text</div>',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [MyDirective],
     })
     class ChildComponent {}
 
     @Component({
-      selector: 'app-root',
       template: '',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule, ChildComponent],
     })
     class AppComponent {
       items: string[] = ['first', 'second'];
     }
-
-    beforeEach(() => {
-      TestBed.configureTestingModule({declarations: [AppComponent, ChildComponent, MyDirective]});
-    });
 
     it('should update a loop', () => {
       TestBed.overrideTemplate(
@@ -153,14 +148,13 @@ describe('@angular/common integration', () => {
 
     it('should retain parent view listeners when the NgFor destroy views', () => {
       @Component({
-        selector: 'app-toggle',
         template: `<button (click)="toggle()">Toggle List</button>
           <ul>
             <li *ngFor="let item of items">{{ item }}</li>
           </ul>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class ToggleComponent {
         private _data: number[] = [1, 2, 3];
@@ -175,7 +169,6 @@ describe('@angular/common integration', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [ToggleComponent]});
       const fixture = TestBed.createComponent(ToggleComponent);
       fixture.detectChanges();
 
@@ -208,7 +201,6 @@ describe('@angular/common integration', () => {
 
     it('should support multiple levels of embedded templates', () => {
       @Component({
-        selector: 'app-multi',
         template: `<ul>
           <li *ngFor="let row of items">
             <span *ngFor="let cell of row.data"
@@ -216,9 +208,9 @@ describe('@angular/common integration', () => {
             >
           </li>
         </ul>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class MultiLevelComponent {
         items: any[] = [
@@ -227,7 +219,6 @@ describe('@angular/common integration', () => {
         ];
       }
 
-      TestBed.configureTestingModule({declarations: [MultiLevelComponent]});
       const fixture = TestBed.createComponent(MultiLevelComponent);
       fixture.detectChanges();
 
@@ -286,16 +277,15 @@ describe('@angular/common integration', () => {
 
     it('should support multiple levels of embedded templates with listeners', () => {
       @Component({
-        selector: 'app-multi',
         template: `<div *ngFor="let row of items">
           <p *ngFor="let cell of row.data">
             <span (click)="onClick(row.value, name)"></span>
             {{ row.value }} - {{ name }}
           </p>
         </div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class MultiLevelWithListenerComponent {
         items: any[] = [{data: ['1'], value: 'first'}];
@@ -307,7 +297,6 @@ describe('@angular/common integration', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [MultiLevelWithListenerComponent]});
       const fixture = TestBed.createComponent(MultiLevelWithListenerComponent);
       fixture.detectChanges();
 
@@ -329,15 +318,14 @@ describe('@angular/common integration', () => {
 
     it('should support skipping contexts', () => {
       @Component({
-        selector: 'app-multi',
         template: `<div *ngFor="let row of items">
           <div *ngFor="let cell of row">
             <span *ngFor="let span of cell.data">{{ cell.value }} - {{ name }}</span>
           </div>
         </div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class SkippingContextComponent {
         name = 'app';
@@ -350,7 +338,6 @@ describe('@angular/common integration', () => {
         ];
       }
 
-      TestBed.configureTestingModule({declarations: [SkippingContextComponent]});
       const fixture = TestBed.createComponent(SkippingContextComponent);
       fixture.detectChanges();
 
@@ -371,7 +358,6 @@ describe('@angular/common integration', () => {
 
     it('should support context for 9+ levels of embedded templates', () => {
       @Component({
-        selector: 'app-multi',
         template: `<div *ngFor="let item0 of items">
           <span *ngFor="let item1 of item0.data">
             <span *ngFor="let item2 of item1.data">
@@ -395,9 +381,9 @@ describe('@angular/common integration', () => {
             </span>
           </span>
         </div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class NineLevelsComponent {
         value = 'App';
@@ -505,7 +491,6 @@ describe('@angular/common integration', () => {
         ];
       }
 
-      TestBed.configureTestingModule({declarations: [NineLevelsComponent]});
       const fixture = TestBed.createComponent(NineLevelsComponent);
       fixture.detectChanges();
 
@@ -529,14 +514,13 @@ describe('@angular/common integration', () => {
   describe('ngIf', () => {
     it('should support sibling ngIfs', () => {
       @Component({
-        selector: 'app-multi',
         template: `
           <div *ngIf="showing">{{ valueOne }}</div>
           <div *ngIf="showing">{{ valueTwo }}</div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class SimpleConditionComponent {
         showing = true;
@@ -544,7 +528,6 @@ describe('@angular/common integration', () => {
         valueTwo = 'two';
       }
 
-      TestBed.configureTestingModule({declarations: [SimpleConditionComponent]});
       const fixture = TestBed.createComponent(SimpleConditionComponent);
       fixture.detectChanges();
 
@@ -562,15 +545,14 @@ describe('@angular/common integration', () => {
 
     it('should handle nested ngIfs with no intermediate context vars', () => {
       @Component({
-        selector: 'app-multi',
         template: `<div *ngIf="showing">
           <div *ngIf="outerShowing">
             <div *ngIf="innerShowing">{{ name }}</div>
           </div>
         </div> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class NestedConditionsComponent {
         showing = true;
@@ -579,7 +561,6 @@ describe('@angular/common integration', () => {
         name = 'App name';
       }
 
-      TestBed.configureTestingModule({declarations: [NestedConditionsComponent]});
       const fixture = TestBed.createComponent(NestedConditionsComponent);
       fixture.detectChanges();
 
@@ -596,18 +577,16 @@ describe('@angular/common integration', () => {
   describe('NgTemplateOutlet', () => {
     it('should create and remove embedded views (ng-template)', () => {
       @Component({
-        selector: 'app-multi',
         template: `<ng-template #tpl>from tpl</ng-template>
           <ng-template [ngTemplateOutlet]="showing ? tpl : null"></ng-template> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class EmbeddedViewsComponent {
         showing = false;
       }
 
-      TestBed.configureTestingModule({declarations: [EmbeddedViewsComponent]});
       const fixture = TestBed.createComponent(EmbeddedViewsComponent);
       fixture.detectChanges();
 
@@ -624,18 +603,16 @@ describe('@angular/common integration', () => {
 
     it('should create and remove embedded views (ng-container)', () => {
       @Component({
-        selector: 'app-multi',
         template: `<ng-template #tpl>from tpl</ng-template>
           <ng-container [ngTemplateOutlet]="showing ? tpl : null"></ng-container> `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class NgContainerComponent {
         showing = false;
       }
 
-      TestBed.configureTestingModule({declarations: [NgContainerComponent]});
       const fixture = TestBed.createComponent(NgContainerComponent);
       fixture.detectChanges();
 

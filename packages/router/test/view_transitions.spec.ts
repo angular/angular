@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {Component, destroyPlatform} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
-import {withBody, isNode} from '@angular/private/testing';
+import {isNode, withBody} from '@angular/private/testing';
 import {
   Event,
   NavigationEnd,
@@ -59,7 +59,6 @@ describe('view transitions', () => {
 
   it('should have the correct event order when using view transitions', async () => {
     @Component({
-      selector: 'component-b',
       template: `b`,
     })
     class ComponentB {}

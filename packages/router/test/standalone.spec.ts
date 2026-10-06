@@ -114,7 +114,6 @@ describe('standalone in Router API', () => {
 
       @Component({
         template: `{{ service.value }}`,
-        standalone: false,
       })
       class MyComponent {
         constructor(readonly service: Service) {}
@@ -124,7 +123,6 @@ describe('standalone in Router API', () => {
         imports: [
           RouterModule.forRoot([{path: 'home', providers: [Service], component: MyComponent}]),
         ],
-        declarations: [MyComponent],
       });
       const root = TestBed.createComponent(RootCmp);
 
@@ -146,7 +144,6 @@ describe('standalone in Router API', () => {
 
       @Component({
         template: `{{ service.value }}`,
-        standalone: false,
       })
       class MyComponent {
         constructor(readonly service: Service) {}
@@ -158,7 +155,6 @@ describe('standalone in Router API', () => {
             {path: 'home', loadChildren: () => LazyModule, component: MyComponent},
           ]),
         ],
-        declarations: [MyComponent],
       });
       const fixture = TestBed.createComponent(RootCmp);
 
@@ -175,14 +171,12 @@ describe('standalone in Router API', () => {
 
       @Component({
         template: `{{ service.value }}`,
-        standalone: false,
       })
       class MyComponent {
         constructor(readonly service: Service) {}
       }
       @NgModule({
         providers: [Service],
-        declarations: [MyComponent],
         imports: [RouterModule.forChild([{path: '', component: MyComponent}])],
       })
       class LazyModule {}
@@ -225,14 +219,13 @@ describe('standalone in Router API', () => {
 
       @Component({
         template: `parent<router-outlet></router-outlet>`,
-        standalone: false,
+        imports: [RouterModule],
       })
       class ParentCmp {
         constructor(readonly service: ServiceBase) {}
       }
       @Component({
         template: `child`,
-        standalone: false,
       })
       class ChildCmp {
         constructor(readonly service: ServiceBase) {}
@@ -240,14 +233,12 @@ describe('standalone in Router API', () => {
 
       @Component({
         template: `child2`,
-        standalone: false,
       })
       class ChildCmp2 {
         constructor(readonly service: ServiceBase) {}
       }
       @NgModule({
         providers: [{provide: ServiceBase, useClass: Service2}],
-        declarations: [ChildCmp, ChildCmp2],
         imports: [
           RouterModule.forChild([
             {
@@ -281,7 +272,6 @@ describe('standalone in Router API', () => {
             },
           ]),
         ],
-        declarations: [ParentCmp],
       });
       const root = TestBed.createComponent(RootCmp);
 
@@ -548,5 +538,5 @@ describe('standalone in Router API', () => {
 
 async function advanceAsync(fixture: ComponentFixture<unknown>) {
   await timeout();
-  fixture.detectChanges();
+  await fixture.whenStable();
 }

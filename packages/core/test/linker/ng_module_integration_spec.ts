@@ -31,7 +31,7 @@ import {
 import {ɵɵdefineInjectable} from '../../src/di/interface/defs';
 import {NgModuleType} from '../../src/render3';
 import {getNgModuleDef} from '../../src/render3/def_getters';
-import {ComponentFixture, inject, TestBed} from '../../testing';
+import {ComponentFixture, TestBed} from '../../testing';
 
 import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
@@ -113,10 +113,10 @@ describe('NgModule', () => {
   let compiler: Compiler;
   let injector: Injector;
 
-  beforeEach(inject([Compiler, Injector], (_compiler: Compiler, _injector: Injector) => {
-    compiler = _compiler;
-    injector = _injector;
-  }));
+  beforeEach(() => {
+    compiler = TestBed.inject(Compiler);
+    injector = TestBed.inject(Injector);
+  });
 
   function createModuleFactory<T>(moduleType: Type<T>): NgModuleFactory<T> {
     return compiler.compileModuleSync(moduleType);
@@ -385,7 +385,6 @@ describe('NgModule', () => {
 
       it('should be supported in nested components', () => {
         @Component({
-          selector: 'parent',
           template: '<comp></comp>',
           standalone: false,
         })

@@ -502,7 +502,6 @@ describe('ControlValueAccessor', () => {
     }
 
     @Component({
-      selector: 'app-root',
       imports: [CustomControl, FormField],
       template: `<signal-custom-control [formField]="f" />`,
     })
@@ -521,7 +520,6 @@ describe('ControlValueAccessor', () => {
 
   it('should pick custom CVA over default CVA when both are present', () => {
     @Component({
-      selector: 'app-root',
       // Import ReactiveFormsModule to provide the non-standalone DefaultValueAccessor directive.
       // The selector for DefaultValueAccessor matches `[ngDefaultControl]`.
       imports: [FormField, CustomControl, ReactiveFormsModule],

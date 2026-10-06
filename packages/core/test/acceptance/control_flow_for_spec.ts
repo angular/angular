@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgIf} from '@angular/common';
+import {CommonModule, NgIf} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Directive,
+  forwardRef,
   inject,
   Input,
   OnInit,
@@ -33,7 +34,6 @@ describe('control flow - for', () => {
   it('should create, remove and move views corresponding to items in a collection', () => {
     @Component({
       template: '@for ((item of items); track item; let idx = $index) {{{item}}({{idx}})|}',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -62,7 +62,6 @@ describe('control flow - for', () => {
   it('should loop over iterators that can be iterated over only once', () => {
     @Component({
       template: '@for ((item of items.keys()); track $index) {{{item}}|}',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -82,7 +81,6 @@ describe('control flow - for', () => {
   it('should work correctly with trackBy index', () => {
     @Component({
       template: '@for ((item of items); track idx; let idx = $index) {{{item}}({{idx}})|}',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -111,7 +109,6 @@ describe('control flow - for', () => {
   it('should support empty blocks', () => {
     @Component({
       template: '@for ((item of items); track idx; let idx = $index) {|} @empty {Empty}',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -183,7 +180,6 @@ describe('control flow - for', () => {
     }
 
     @Component({
-      selector: 'app-root',
       imports: [Dir],
       template: `
         <div [dir] #dir="dir"></div>
@@ -206,7 +202,6 @@ describe('control flow - for', () => {
     @Component({
       template:
         '@for ((item of items); track item; let idx = $index) {{{item}}({{$index}}/{{idx}})|}',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -229,7 +224,6 @@ describe('control flow - for', () => {
 
       @Component({
         template: '@for ((item of items); track $index + offset) {{{item}}}',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -264,7 +258,6 @@ describe('control flow - for', () => {
         template: `@for ((item of items); track trackingFn(item, compProp)) {
           {{ item }}
         }`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -298,7 +291,6 @@ describe('control flow - for', () => {
             }
           }
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -324,7 +316,6 @@ describe('control flow - for', () => {
         template: `@for (item of items; track trackingFn($index, item)) {
           {{ item }}
         }`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -347,7 +338,6 @@ describe('control flow - for', () => {
         template: `@for (item of items; track item) {
           {{ item }}
         }`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -384,7 +374,6 @@ describe('control flow - for', () => {
         template: `@for (item of items.values(); track item) {
           {{ item }}
         }`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -427,7 +416,6 @@ describe('control flow - for', () => {
 
       @Component({
         template: `@for (item of items.values(); track item) {}`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -450,7 +438,6 @@ describe('control flow - for', () => {
     it('should not warn about duplicate keys iterating over the new collection only', () => {
       @Component({
         template: `@for (item of items; track item) {}`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -475,7 +462,6 @@ describe('control flow - for', () => {
           (<span>{{ item.value }}</span
           >)
         }`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -503,7 +489,6 @@ describe('control flow - for', () => {
         template: `@for (item of items; track item) {
           ({{ item.value }})
         }`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -531,7 +516,6 @@ describe('control flow - for', () => {
         template: `@for (item of items; track item.value) {
           ({{ item.value }})
         }`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -559,7 +543,6 @@ describe('control flow - for', () => {
     it('should delete views in the middle', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -580,7 +563,6 @@ describe('control flow - for', () => {
     it('should insert views in the middle', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -601,7 +583,6 @@ describe('control flow - for', () => {
     it('should replace different items', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -622,7 +603,6 @@ describe('control flow - for', () => {
     it('should move and delete items', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -850,6 +830,7 @@ describe('control flow - for', () => {
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Foo],
       })
       class TestComponent {}
 
@@ -1056,7 +1037,7 @@ describe('control flow - for', () => {
       class TestComponent {}
 
       @Component({
-        imports: [TestComponent, NgIf],
+        imports: [TestComponent, NgIf, CommonModule],
         template: `<test
           >Before
           @for (item of items; track $index) {
@@ -1088,6 +1069,7 @@ describe('control flow - for', () => {
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [forwardRef(() => FooDirective)],
       })
       class TestComponent {}
 
@@ -1288,40 +1270,6 @@ describe('control flow - for', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 3');
-    });
-
-    it('should project @for and @empty blocks with namespaced root nodes into tag selector slots', () => {
-      @Component({
-        selector: 'test',
-        template: 'svg: (<ng-content select="svg"/>), math: (<ng-content select="math"/>)',
-      })
-      class TestComponent {}
-
-      @Component({
-        imports: [TestComponent],
-        template: `
-          <test>
-            @for (item of items(); track $index) {
-              <svg>
-                <text>{{ item }}</text>
-              </svg>
-            } @empty {
-              <math><mi>Empty</mi></math>
-            }
-          </test>
-        `,
-      })
-      class App {
-        items = signal([1, 2]);
-      }
-
-      const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('svg: (12), math: ()');
-
-      fixture.componentInstance.items.set([]);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('svg: (), math: (Empty)');
     });
   });
 

@@ -6,14 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {By} from '@angular/platform-browser';
 import {
   AfterViewChecked,
   AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Directive,
   ElementRef,
   EventEmitter,
+  forwardRef,
   inject,
   Inject,
   InjectionToken,
@@ -28,10 +31,8 @@ import {
   ViewContainerRef,
   ɵɵdefineDirective,
   ɵɵHostDirectivesFeature,
-  ChangeDetectionStrategy,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
 
 import {getComponent, getDirectives} from '../../src/render3/util/discovery_utils';
 
@@ -45,7 +46,7 @@ describe('host directives', () => {
   function createRootComponent<T>(componentType: Type<T>) {
     @Component({
       template: '<ng-container #insertionPoint></ng-container>',
-      standalone: false,
+
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
@@ -53,7 +54,6 @@ describe('host directives', () => {
     }
 
     TestBed.configureTestingModule({
-      declarations: [App, componentType],
       errorOnUnknownProperties: true,
     });
 
@@ -80,7 +80,6 @@ describe('host directives', () => {
       selector: '[dir]',
       host: {'host-attr': '', 'class': 'dir', 'style': 'width: 50px'},
       hostDirectives: [HostDir],
-      standalone: false,
     })
     class Dir {
       constructor() {
@@ -90,13 +89,12 @@ describe('host directives', () => {
 
     @Component({
       template: '<div dir></div>',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir],
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [App, Dir]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -123,7 +121,6 @@ describe('host directives', () => {
       static ɵdir = ɵɵdefineDirective({
         type: Dir,
         selectors: [['', 'dir', '']],
-        standalone: false,
         features: [ɵɵHostDirectivesFeature(() => [HostDir, {directive: OtherHostDir}])],
       });
 
@@ -148,13 +145,11 @@ describe('host directives', () => {
 
     @Component({
       template: '<div dir></div>',
-      standalone: false,
-
+      imports: [Dir],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [App, Dir]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -176,7 +171,6 @@ describe('host directives', () => {
       static ɵdir = ɵɵdefineDirective({
         type: Dir,
         selectors: [['', 'dir', '']],
-        standalone: false,
         hostAttrs: ['one', 'override', 'two', 'override'],
         features: [ɵɵHostDirectivesFeature(() => [HostDir, {directive: OtherHostDir}])],
       });
@@ -198,13 +192,11 @@ describe('host directives', () => {
 
     @Component({
       template: '<div dir></div>',
-      standalone: false,
-
+      imports: [Dir],
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [App, Dir]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -298,7 +290,6 @@ describe('host directives', () => {
       template: '',
       hostDirectives: [Chain1, Chain2, Chain3],
       providers: [{provide: token, useValue: 'host value'}],
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -318,7 +309,6 @@ describe('host directives', () => {
     @Directive({
       selector: '[selector-matched-dir]',
       hostDirectives: [SelectorMatchedHostDir],
-      standalone: false,
     })
     class SelectorMatchedDir {
       constructor() {
@@ -328,13 +318,12 @@ describe('host directives', () => {
 
     @Component({
       template: '<my-comp selector-matched-dir></my-comp>',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [MyComp, SelectorMatchedDir],
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [App, MyComp, SelectorMatchedDir]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -378,7 +367,6 @@ describe('host directives', () => {
     @Directive({
       selector: '[dir]',
       hostDirectives: [FirstHostDir],
-      standalone: false,
     })
     class Host {
       constructor() {
@@ -388,16 +376,15 @@ describe('host directives', () => {
 
     @Component({
       template: '<div dir></div>',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Host],
     })
     class App {
       @ViewChild(FirstHostDir) firstHost!: FirstHostDir;
       @ViewChild(SecondHostDir) secondHost!: SecondHostDir;
     }
 
-    TestBed.configureTestingModule({declarations: [App, Host]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -423,7 +410,6 @@ describe('host directives', () => {
     @Directive({
       selector: '[dir]',
       hostDirectives: [FirstHostDir],
-      standalone: false,
     })
     class Host {}
 
@@ -433,13 +419,12 @@ describe('host directives', () => {
           {{ firstHost.name }} | {{ secondHost.name }}
         </div>
       `,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Host],
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [App, Host]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -509,7 +494,6 @@ describe('host directives', () => {
     @Directive({
       selector: '[dir]',
       hostDirectives: [HostDir_1, HostDir_2],
-      standalone: false,
     })
     class Dir extends Parent {
       constructor() {
@@ -520,13 +504,12 @@ describe('host directives', () => {
 
     @Component({
       template: '<div dir></div>',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Dir],
     })
     class App {}
 
-    TestBed.configureTestingModule({declarations: [App, Dir]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -580,7 +563,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir, OtherHostDir],
-        standalone: false,
       })
       class Dir implements OnInit, AfterViewInit, AfterViewChecked {
         ngOnInit() {
@@ -598,12 +580,12 @@ describe('host directives', () => {
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -653,7 +635,7 @@ describe('host directives', () => {
       @Component({
         selector: 'child',
         hostDirectives: [ChildHostDir, OtherChildHostDir],
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child extends LogsLifecycles {
@@ -674,8 +656,9 @@ describe('host directives', () => {
         selector: 'parent',
         hostDirectives: [ParentHostDir, OtherParentHostDir],
         template: '<child plain-dir="PlainDir on child"></child>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Child, forwardRef(() => PlainDir)],
       })
       class Parent extends LogsLifecycles {
         override name = 'Parent';
@@ -683,7 +666,6 @@ describe('host directives', () => {
 
       @Directive({
         selector: '[plain-dir]',
-        standalone: false,
       })
       class PlainDir extends LogsLifecycles {
         @Input('plain-dir') override name = '';
@@ -691,12 +673,12 @@ describe('host directives', () => {
 
       @Component({
         template: '<parent plain-dir="PlainDir on parent"></parent>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Parent, PlainDir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Parent, Child, PlainDir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -750,7 +732,7 @@ describe('host directives', () => {
           {directive: HostDir, inputs: ['someInput']},
           {directive: OtherHostDir, inputs: ['someInput']},
         ],
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HostComp extends LogsLifecycles {
@@ -759,7 +741,6 @@ describe('host directives', () => {
 
       @Directive({
         selector: '[plain-dir]',
-        standalone: false,
       })
       class PlainDir extends LogsLifecycles {
         override name = 'PlainDir';
@@ -767,14 +748,14 @@ describe('host directives', () => {
 
       @Component({
         template: '<host-comp plain-dir="PlainDir" [someInput]="inputValue"></host-comp>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [HostComp, PlainDir],
       })
       class App {
         inputValue = 'hello';
       }
 
-      TestBed.configureTestingModule({declarations: [App, HostComp, PlainDir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -822,7 +803,6 @@ describe('host directives', () => {
         selector: '[dir]',
         host: {'host-attr': 'true', '(click)': 'handleClick()'},
         hostDirectives: [HostDir, OtherHostDir],
-        standalone: false,
       })
       class Dir {
         handleClick() {
@@ -832,12 +812,12 @@ describe('host directives', () => {
 
       @Component({
         template: '<button dir></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -864,18 +844,17 @@ describe('host directives', () => {
         selector: '[dir]',
         host: {'id': 'host'},
         hostDirectives: [HostDir, OtherHostDir],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -906,7 +885,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [FirstHostDir],
-        standalone: false,
       })
       class Host {
         firstHostDir = inject(FirstHostDir);
@@ -919,12 +897,12 @@ describe('host directives', () => {
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Host],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Host]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -942,7 +920,7 @@ describe('host directives', () => {
       @Component({
         selector: 'child',
         template: '',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Child {
@@ -960,8 +938,9 @@ describe('host directives', () => {
         selector: 'host',
         template: '<child></child>',
         hostDirectives: [HostDir],
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Child],
       })
       class Host {
         @ViewChild(Child) child!: Child;
@@ -969,14 +948,14 @@ describe('host directives', () => {
 
       @Component({
         template: '<host></host>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Host],
       })
       class App {
         @ViewChild(Host) host!: Host;
       }
 
-      TestBed.configureTestingModule({declarations: [App, Host, Child]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const injectedInstance = fixture.componentInstance.host.child.hostDir;
@@ -1011,7 +990,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [FirstHostDir],
-        standalone: false,
       })
       class Host {
         constructor() {
@@ -1021,12 +999,12 @@ describe('host directives', () => {
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Host],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Host]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1069,7 +1047,6 @@ describe('host directives', () => {
         selector: '[dir]',
         hostDirectives: [FirstHostDir],
         providers: [{provide: token, useValue: 'HostDir'}],
-        standalone: false,
       })
       class Host {
         tokenValue = inject(token);
@@ -1081,12 +1058,12 @@ describe('host directives', () => {
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Host],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Host]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1115,7 +1092,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [FirstHostDir],
-        standalone: false,
       })
       class Host {
         firstTokenValue = inject(firstToken);
@@ -1124,14 +1100,14 @@ describe('host directives', () => {
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Host],
       })
       class App {
         @ViewChild(Host) host!: Host;
       }
 
-      TestBed.configureTestingModule({declarations: [App, Host]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1151,14 +1127,14 @@ describe('host directives', () => {
         hostDirectives: [HostDir],
         providers: [{provide: token, useValue: 'host'}],
         template: '<span child></span>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [forwardRef(() => Child)],
       })
       class Host {}
 
       @Directive({
         selector: '[child]',
-        standalone: false,
       })
       class Child {
         constructor() {
@@ -1168,12 +1144,12 @@ describe('host directives', () => {
 
       @Component({
         template: '<host></host>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Host],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Host, Child]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1196,19 +1172,19 @@ describe('host directives', () => {
         hostDirectives: [HostDir],
         viewProviders: [{provide: token, useValue: 'host'}],
         template: '',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Host {}
 
       @Component({
         template: '<host></host>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Host],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Host]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1224,7 +1200,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir],
-        standalone: false,
       })
       class Host {
         hostDir = inject(HostDir);
@@ -1232,12 +1207,12 @@ describe('host directives', () => {
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Host],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Host]});
       expect(() => TestBed.createComponent(App)).toThrowError(
         /NG0200: Circular dependency detected for `HostDir`/,
       );
@@ -1255,7 +1230,7 @@ describe('host directives', () => {
         selector: 'my-comp',
         hostDirectives: [HostDir],
         template: '',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
@@ -1264,15 +1239,15 @@ describe('host directives', () => {
 
       @Component({
         template: '<my-comp></my-comp>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Comp],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         @ViewChild(Comp) comp!: Comp;
       }
 
-      TestBed.configureTestingModule({declarations: [App, Comp]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1323,7 +1298,6 @@ describe('host directives', () => {
       class CompWithHostDirective {}
 
       @Component({
-        selector: 'app-root',
         template: '<comp-with-host-directive providesExisting/>',
         imports: [ProvidesExisting, CompWithHostDirective],
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -1354,20 +1328,19 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir (hasBeenClicked)="spy()"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         spy = jasmine.createSpy('click spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1392,20 +1365,19 @@ describe('host directives', () => {
             outputs: ['hasBeenClicked'],
           },
         ],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         spy = jasmine.createSpy('click spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1424,7 +1396,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked: wasClicked']}],
-        standalone: false,
       })
       class Dir {}
 
@@ -1434,15 +1405,15 @@ describe('host directives', () => {
           (wasClicked)="validSpy($event)"
           (hasBeenClicked)="invalidSpy($event)"
         ></button>`,
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         validSpy = jasmine.createSpy('valid spy');
         invalidSpy = jasmine.createSpy('invalid spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1462,7 +1433,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['wasClicked: clickOccurred']}],
-        standalone: false,
       })
       class Dir {}
 
@@ -1472,15 +1442,15 @@ describe('host directives', () => {
           (clickOccurred)="validSpy($event)"
           (hasBeenClicked)="invalidSpy($event)"
         ></button>`,
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         validSpy = jasmine.createSpy('valid spy');
         invalidSpy = jasmine.createSpy('invalid spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1501,7 +1471,6 @@ describe('host directives', () => {
         selector: '[dir]',
         hostDirectives: [HostDir],
         host: {'(click)': 'hasBeenClicked.emit("Dir")'},
-        standalone: false,
       })
       class Dir {
         @Output() hasBeenClicked = new EventEmitter<string>();
@@ -1509,14 +1478,14 @@ describe('host directives', () => {
 
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         spy = jasmine.createSpy('click spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1536,7 +1505,6 @@ describe('host directives', () => {
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked']}],
         host: {'(click)': 'hasBeenClicked.emit("Dir")'},
-        standalone: false,
       })
       class Dir {
         @Output() hasBeenClicked = new EventEmitter<string>();
@@ -1544,14 +1512,14 @@ describe('host directives', () => {
 
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         spy = jasmine.createSpy('click spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1573,7 +1541,6 @@ describe('host directives', () => {
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked: wasClicked']}],
         host: {'(click)': 'wasClicked.emit("Dir")'},
-        standalone: false,
       })
       class Dir {
         @Output() wasClicked = new EventEmitter<string>();
@@ -1581,14 +1548,14 @@ describe('host directives', () => {
 
       @Component({
         template: '<button dir (wasClicked)="spy($event)"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         spy = jasmine.createSpy('click spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1609,20 +1576,19 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked', 'hasBeenClicked']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         spy = jasmine.createSpy('click spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1635,7 +1601,6 @@ describe('host directives', () => {
     it('should emit to an inherited output of a host directive', () => {
       @Directive({
         host: {'(click)': 'hasBeenClicked.emit("hello")'},
-        standalone: false,
       })
       class ParentDir {
         @Output() hasBeenClicked = new EventEmitter<string>();
@@ -1647,20 +1612,19 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['hasBeenClicked']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         spy = jasmine.createSpy('click spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1687,20 +1651,19 @@ describe('host directives', () => {
           {directive: ExposedHostDir, outputs: ['hasBeenClicked']},
           UnExposedHostDir,
         ],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         spy = jasmine.createSpy('click spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1732,20 +1695,19 @@ describe('host directives', () => {
           {directive: FirstHostDir, outputs: ['firstHasBeenClicked: wasClicked']},
           {directive: SecondHostDir, outputs: ['secondHasBeenClicked: wasClicked']},
         ],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir (wasClicked)="spy($event)"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         spy = jasmine.createSpy('click spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1770,26 +1732,24 @@ describe('host directives', () => {
             outputs: ['hasBeenClicked'],
           },
         ],
-        standalone: false,
       })
       class Parent {}
 
       @Directive({
         selector: '[dir]',
-        standalone: false,
       })
       class Dir extends Parent {}
 
       @Component({
         template: '<button dir (hasBeenClicked)="spy($event)"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         spy = jasmine.createSpy('click spy');
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -1810,20 +1770,20 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir [color]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir], errorOnUnknownProperties: true});
+      TestBed.configureTestingModule({errorOnUnknownProperties: true});
 
       expect(() => {
         const fixture = TestBed.createComponent(App);
@@ -1840,21 +1800,20 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir [color]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
@@ -1873,21 +1832,20 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir [buttonColor]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
@@ -1906,21 +1864,20 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir [buttonColor]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
@@ -1939,7 +1896,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir],
-        standalone: false,
       })
       class Dir {
         @Input() color?: string;
@@ -1947,8 +1903,9 @@ describe('host directives', () => {
 
       @Component({
         template: '<button dir [color]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(Dir) dir!: Dir;
@@ -1956,7 +1913,6 @@ describe('host directives', () => {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const {dir, hostDir} = fixture.componentInstance;
@@ -1980,7 +1936,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color']}],
-        standalone: false,
       })
       class Dir {
         @Input() color?: string;
@@ -1988,8 +1943,9 @@ describe('host directives', () => {
 
       @Component({
         template: '<button dir [color]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(Dir) dir!: Dir;
@@ -1997,7 +1953,6 @@ describe('host directives', () => {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const {dir, hostDir} = fixture.componentInstance;
@@ -2021,7 +1976,6 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}],
-        standalone: false,
       })
       class Dir {
         @Input() buttonColor?: string;
@@ -2029,8 +1983,9 @@ describe('host directives', () => {
 
       @Component({
         template: '<button dir [buttonColor]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(Dir) dir!: Dir;
@@ -2038,7 +1993,6 @@ describe('host directives', () => {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const {dir, hostDir} = fixture.componentInstance;
@@ -2065,21 +2019,20 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir [color]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2105,14 +2058,14 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: ExposedHostDir, inputs: ['color']}, UnExposedHostDir],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir [color]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(ExposedHostDir) exposedHostDir!: ExposedHostDir;
@@ -2120,7 +2073,6 @@ describe('host directives', () => {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const {exposedHostDir, unExposedHostDir} = fixture.componentInstance;
@@ -2152,14 +2104,14 @@ describe('host directives', () => {
           {directive: FirstHostDir, inputs: ['firstColor: buttonColor']},
           {directive: SecondHostDir, inputs: ['secondColor: buttonColor']},
         ],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir [buttonColor]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(FirstHostDir) firstHostDir!: FirstHostDir;
@@ -2167,7 +2119,6 @@ describe('host directives', () => {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const {firstHostDir, secondHostDir} = fixture.componentInstance;
@@ -2191,20 +2142,19 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir color="red"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2220,20 +2170,19 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir color="red"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
@@ -2248,20 +2197,19 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir buttonColor="red"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
@@ -2276,20 +2224,19 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir buttonColor="red"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
@@ -2309,21 +2256,20 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: ExposedHostDir, inputs: ['color']}, UnExposedHostDir],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir color="red"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(ExposedHostDir) exposedHostDir!: ExposedHostDir;
         @ViewChild(UnExposedHostDir) unExposedHostDir!: UnExposedHostDir;
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2348,14 +2294,14 @@ describe('host directives', () => {
           {directive: FirstHostDir, inputs: ['firstColor: buttonColor']},
           {directive: SecondHostDir, inputs: ['secondColor: buttonColor']},
         ],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir buttonColor="red"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(FirstHostDir) firstHostDir!: FirstHostDir;
@@ -2363,7 +2309,6 @@ describe('host directives', () => {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2423,27 +2368,25 @@ describe('host directives', () => {
 
       @Directive({
         hostDirectives: [{directive: HostDir, inputs: ['color']}],
-        standalone: false,
       })
       class Parent {}
 
       @Directive({
         selector: '[dir]',
-        standalone: false,
       })
       class Dir extends Parent {}
 
       @Component({
         template: '<button dir [color]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         @ViewChild(HostDir) hostDir!: HostDir;
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.hostDir.color).toBe('red');
@@ -2483,20 +2426,19 @@ describe('host directives', () => {
           {directive: FirstHostDir, inputs: ['color']},
           {directive: SecondHostDir, inputs: ['color']},
         ],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir [color]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2571,20 +2513,19 @@ describe('host directives', () => {
           {directive: FirstHostDir, inputs: ['firstAlias: buttonColor']},
           {directive: SecondHostDir, inputs: ['secondAlias: buttonColor']},
         ],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir [buttonColor]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2656,20 +2597,19 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [FirstHostDir, {directive: SecondHostDir, inputs: ['color']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir [color]="color"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {
         color = 'red';
       }
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2714,18 +2654,17 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<button dir buttonColor="red"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2763,7 +2702,6 @@ describe('host directives', () => {
 
       @Directive({
         selector: '[plain-dir]',
-        standalone: false,
       })
       class PlainDir {
         constructor() {
@@ -2775,19 +2713,19 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir, OtherHostDir],
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {}
 
       @Component({
         template: '<comp plain-dir></comp>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [PlainDir, Comp],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Comp, PlainDir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const componentHost = fixture.nativeElement.querySelector('comp');
@@ -2812,7 +2750,7 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir],
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
@@ -2823,12 +2761,12 @@ describe('host directives', () => {
 
       @Component({
         template: '<comp></comp>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Comp],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Comp]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const componentHost = fixture.nativeElement.querySelector('comp');
@@ -2847,7 +2785,7 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir],
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
@@ -2858,12 +2796,12 @@ describe('host directives', () => {
 
       @Component({
         template: '<comp></comp>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Comp],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Comp]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const node = fixture.debugElement.query(By.css('comp'));
@@ -2880,7 +2818,7 @@ describe('host directives', () => {
         selector: 'comp',
         template: '',
         hostDirectives: [HostDir],
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Comp {
@@ -2889,14 +2827,14 @@ describe('host directives', () => {
 
       @Component({
         template: '<comp></comp>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Comp],
       })
       class App {
         @ViewChild(Comp) compInstance!: Comp;
       }
 
-      TestBed.configureTestingModule({declarations: [App, Comp]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const expected = fixture.componentInstance.compInstance.elementRef.nativeElement;
@@ -2924,7 +2862,7 @@ describe('host directives', () => {
         host: {'host-attr': '', 'class': 'dir', 'style': 'width: 50px'},
         hostDirectives: [HostDir],
         template: '',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HostComp {
@@ -2978,7 +2916,7 @@ describe('host directives', () => {
       @Component({
         template: '',
         hostDirectives: [HostDir, OtherHostDir],
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HostComp implements OnInit, AfterViewInit, AfterViewChecked {
@@ -3039,7 +2977,7 @@ describe('host directives', () => {
             '[attr.shadowed-attr]': 'value',
           },
           hostDirectives: [HostDir, OtherHostDir],
-          standalone: false,
+
           changeDetection: ChangeDetectionStrategy.Eager,
         })
         class HostComp {
@@ -3085,10 +3023,8 @@ describe('host directives', () => {
         }
 
         @Component({
-          selector: 'host-comp',
           host: {'(click)': 'handleClick()'},
           hostDirectives: [HostDir, OtherHostDir],
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3117,7 +3053,6 @@ describe('host directives', () => {
           template: '',
           host: {'id': 'host'},
           hostDirectives: [HostDir, OtherHostDir],
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3145,7 +3080,6 @@ describe('host directives', () => {
         @Component({
           hostDirectives: [HostDir],
           template: '',
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3170,7 +3104,6 @@ describe('host directives', () => {
         @Component({
           hostDirectives: [HostDir],
           template: '',
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3214,7 +3147,6 @@ describe('host directives', () => {
           template: '',
           hostDirectives: [FirstHostDir],
           providers: [{provide: token, useValue: 'HostDir'}],
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3253,7 +3185,6 @@ describe('host directives', () => {
         @Component({
           template: '',
           hostDirectives: [FirstHostDir],
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3292,7 +3223,6 @@ describe('host directives', () => {
         }
 
         @Component({
-          selector: 'host-comp',
           hostDirectives: [
             {
               directive: HostDir,
@@ -3303,7 +3233,6 @@ describe('host directives', () => {
               inputs: ['color'],
             },
           ],
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3338,14 +3267,12 @@ describe('host directives', () => {
         }
 
         @Component({
-          selector: 'host-comp',
           hostDirectives: [
             {
               directive: HostDir,
               inputs: ['color'],
             },
           ],
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3377,9 +3304,7 @@ describe('host directives', () => {
         }
 
         @Component({
-          selector: 'host-comp',
           hostDirectives: [HostDir],
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3412,14 +3337,12 @@ describe('host directives', () => {
         }
 
         @Component({
-          selector: 'host-comp',
           hostDirectives: [
             {
               directive: HostDir,
               inputs: ['alias: customAlias'],
             },
           ],
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3457,9 +3380,7 @@ describe('host directives', () => {
         }
 
         @Component({
-          selector: 'host-comp',
           hostDirectives: [{directive: HostDir, inputs: ['alias: customAlias']}],
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3545,13 +3466,13 @@ describe('host directives', () => {
 
       // Note: the definition order in `imports` seems to affect the
       // directive matching order so we test both scenarios.
-      @Component({...baseAppMetadata, imports: [Comp, HostDir], selector: 'app-one'})
+      @Component({...baseAppMetadata, imports: [Comp, HostDir]})
       class App1 {}
       TestBed.createComponent(App1);
       expect(createCount).toBe(1);
 
       createCount = 0;
-      @Component({...baseAppMetadata, imports: [HostDir, Comp], selector: 'app-two'})
+      @Component({...baseAppMetadata, imports: [HostDir, Comp]})
       class App2 {}
       TestBed.createComponent(App2);
       expect(createCount).toBe(1);
@@ -3573,17 +3494,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir, DuplicateHostDir],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
+        imports: [Dir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       TestBed.createComponent(App);
       expect(creationCount).toBe(1);
     });
@@ -3607,17 +3527,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir],
-        standalone: false,
       })
       class Dir extends Parent {}
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
+        imports: [Dir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
       TestBed.createComponent(App);
       expect(creationCount).toBe(1);
     });
@@ -3640,7 +3559,7 @@ describe('host directives', () => {
 
       @Component({
         hostDirectives: [Dir],
-        standalone: false,
+        template: '',
       })
       class HostComp {}
 
@@ -3668,7 +3587,6 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        selector: 'my-comp',
         template:
           '<div dir [value]="greeting" [valueAlias]="greeting" [otherAlias]="greeting"></div>',
         imports: [HostDir, Dir],
@@ -3715,7 +3633,6 @@ describe('host directives', () => {
       class Dir {}
 
       @Component({
-        selector: 'my-comp',
         template:
           '<div dir (eventOne)="callback($event)" (oneAlias)="callback($event)" (twoAlias)="callback($event)"></div>',
         imports: [HostDir, Dir],
@@ -3762,7 +3679,6 @@ describe('host directives', () => {
       class DirTwo {}
 
       @Component({
-        selector: 'my-comp',
         template: '<div dir [value]="greeting" [otherAlias]="greeting"></div>',
         imports: [DirOne, DirTwo],
       })
@@ -3803,7 +3719,6 @@ describe('host directives', () => {
       class DirTwo {}
 
       @Component({
-        selector: 'my-comp',
         template: '<div dir [value]="greeting"></div>',
         imports: [DirOne, DirTwo],
       })
@@ -3850,7 +3765,6 @@ describe('host directives', () => {
       class DirTwo {}
 
       @Component({
-        selector: 'my-comp',
         template: '<div dir (myEvent)="callback($event)" (otherAlias)="callback($event)"></div>',
         imports: [DirOne, DirTwo],
       })
@@ -3899,7 +3813,6 @@ describe('host directives', () => {
       class DirTwo {}
 
       @Component({
-        selector: 'my-comp',
         template: '<div dir (myEvent)="callback($event)"></div>',
         imports: [DirOne, DirTwo],
       })
@@ -3926,18 +3839,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0307: Could not resolve metadata for host directive HostDir. ' +
@@ -3952,18 +3863,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostDir],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0308: Host directive HostDir must be standalone.',
@@ -3973,7 +3882,7 @@ describe('host directives', () => {
     it('should throw an error if a host directive is a component', () => {
       @Component({
         template: '',
-        selector: 'host-comp',
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HostComp {}
@@ -3981,18 +3890,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [HostComp],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0310: Host directive HostComp cannot be a component.',
@@ -4013,18 +3920,16 @@ describe('host directives', () => {
             outputs: ['doesNotExist'],
           },
         ],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0311: Directive HostDir does not have an output with a public name of doesNotExist.',
@@ -4045,18 +3950,16 @@ describe('host directives', () => {
             outputs: ['foo'],
           },
         ],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0311: Directive HostDir does not have an output with a public name of foo.',
@@ -4077,18 +3980,16 @@ describe('host directives', () => {
             inputs: ['doesNotExist'],
           },
         ],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0311: Directive HostDir does not have an input with a public name of doesNotExist.',
@@ -4104,18 +4005,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['foo']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         template: '<div dir></div>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Dir],
       })
       class App {}
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0311: Directive HostDir does not have an input with a public name of foo.',
@@ -4132,19 +4031,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColor']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir buttonColor="red"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => {
         const fixture = TestBed.createComponent(App);
@@ -4165,19 +4061,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['colorAlias: buttonColorAlias']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir buttonColorAlias="red"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => {
         const fixture = TestBed.createComponent(App);
@@ -4197,19 +4090,16 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, inputs: ['color: buttonColor']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir buttonColor="red"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {}
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => {
         const fixture = TestBed.createComponent(App);
@@ -4227,21 +4117,18 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['clickedAlias: tappedAlias']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir (tappedAlias)="handleTap()"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         handleTap() {}
       }
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => {
         const fixture = TestBed.createComponent(App);
@@ -4261,21 +4148,18 @@ describe('host directives', () => {
       @Directive({
         selector: '[dir]',
         hostDirectives: [{directive: HostDir, outputs: ['clicked: wasClicked']}],
-        standalone: false,
       })
       class Dir {}
 
       @Component({
         imports: [Dir, HostDir],
         template: '<button dir (wasClicked)="handleClick()"></button>',
-        standalone: false,
+
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         handleClick() {}
       }
-
-      TestBed.configureTestingModule({declarations: [App, Dir]});
 
       expect(() => {
         const fixture = TestBed.createComponent(App);

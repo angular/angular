@@ -8,9 +8,9 @@
 
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserModule, createApplication} from '../../index';
-import {expect} from '@angular/private/testing/matchers';
 import {isNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
+import {BrowserModule, createApplication} from '../../index';
 
 describe('ShadowDOM Support', () => {
   if (isNode) {
@@ -235,15 +235,12 @@ describe('ShadowDOM Support', () => {
 });
 
 @Component({
-  selector: 'shadow-comp',
   template: 'Hello World',
   encapsulation: ViewEncapsulation.ShadowDom,
-  standalone: false,
 })
 class ShadowComponent {}
 
 @Component({
-  selector: 'styled-shadow-comp',
   template: '<div class="red"></div>',
   encapsulation: ViewEncapsulation.ShadowDom,
   styles: [
@@ -256,30 +253,30 @@ class ShadowComponent {}
       }
     `,
   ],
-  standalone: false,
 })
 class StyledShadowComponent {}
 
 @Component({
-  selector: 'shadow-slot-comp',
   template: '<slot></slot>',
   encapsulation: ViewEncapsulation.ShadowDom,
-  standalone: false,
 })
 class ShadowSlotComponent {}
 
 @Component({
-  selector: 'shadow-slots-comp',
   template:
     '<header><slot name="header"></slot></header><article><slot name="article"></slot></article>',
   encapsulation: ViewEncapsulation.ShadowDom,
-  standalone: false,
 })
 class ShadowSlotsComponent {}
 
 @NgModule({
-  imports: [BrowserModule],
-  declarations: [ShadowComponent, ShadowSlotComponent, ShadowSlotsComponent, StyledShadowComponent],
+  imports: [
+    BrowserModule,
+    ShadowComponent,
+    ShadowSlotComponent,
+    ShadowSlotsComponent,
+    StyledShadowComponent,
+  ],
 })
 class TestModule {
   ngDoBootstrap() {}

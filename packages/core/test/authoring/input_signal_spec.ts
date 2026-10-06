@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, effect, input} from '../../src/core';
 import {SIGNAL} from '../../primitives/signals';
+import {Component, computed, effect, input} from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('input signal', () => {
   it('should properly notify live consumers (effect)', () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class TestCmp {
       input = input(0);

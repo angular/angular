@@ -684,7 +684,6 @@ describe('Image directive', () => {
     inputs.forEach(([inputName, value]) => {
       it(`should throw if the \`${inputName}\` input changed after directive initialized the input`, async () => {
         @Component({
-          selector: 'test-cmp',
           template: `<img
             [ngSrc]="ngSrc"
             [width]="width"
@@ -731,7 +730,6 @@ describe('Image directive', () => {
     });
     it(`should not throw if ngSrc changed after directive is initialized`, async () => {
       @Component({
-        selector: 'test-cmp',
         template: `<img
           [ngSrc]="ngSrc"
           [width]="width"
@@ -760,7 +758,6 @@ describe('Image directive', () => {
     });
     it('should accept a safeUrl ngSrc value', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `<img [ngSrc]="bypassImage" width="400" height="600" />`,
         imports: [NgOptimizedImage],
       })
@@ -1885,7 +1882,6 @@ describe('Image directive', () => {
 
     it('should use the image loader to update `src` if `ngSrc` updated', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `<img [ngSrc]="ngSrc" width="300" height="300" />`,
         imports: [NgOptimizedImage],
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -1910,7 +1906,6 @@ describe('Image directive', () => {
 
     it('should use the image loader to update `srcset` if `ngSrc` updated', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `<img [ngSrc]="ngSrc" width="300" height="300" sizes="100vw" />`,
         imports: [NgOptimizedImage],
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -1972,7 +1967,6 @@ describe('Image directive', () => {
 
     it('should pass nested data payloads from loaderParams to custom image loaders', async () => {
       @Component({
-        selector: 'test-cmp',
         template: `<img
           [ngSrc]="ngSrc"
           [width]="width"
@@ -2112,7 +2106,6 @@ describe('Image directive', () => {
 
     it('should pass height to custom image loaders', async () => {
       @Component({
-        selector: 'test-cmp',
         imports: [NgOptimizedImage],
         template: `<img [ngSrc]="ngSrc" width="300" height="150" sizes="100vw" />`,
       })
@@ -2164,7 +2157,6 @@ describe('Image directive', () => {
         const loaderWithPath = createImageLoader(createImgUrl);
 
         @Component({
-          selector: 'test-cmp',
           template: '<img ngSrc="a.png" width="100" height="50" priority>',
           providers: [loaderWithPath('https://component.io')],
           imports: [NgOptimizedImage],

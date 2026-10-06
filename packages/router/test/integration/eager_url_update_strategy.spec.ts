@@ -34,7 +34,7 @@ import {
 } from './integration_helpers';
 import {timeout} from '@angular/private/testing';
 
-export function eagerUrlUpdateStrategyIntegrationSuite() {
+export async function eagerUrlUpdateStrategyIntegrationSuite() {
   describe('"eager" urlUpdateStrategy', () => {
     @Injectable()
     class AuthGuard {

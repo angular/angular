@@ -91,8 +91,9 @@ function getStandaloneBootstrapFn(
 
 function createMyServerApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: `Works!`,
   })
   class MyServerApp {}
@@ -111,8 +112,8 @@ export class MyServerAppModule {}
 
 function createAppWithPendingTask(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+    standalone,
     template: `Completed: {{ completed() }}`,
   })
   class PendingTasksApp {
@@ -349,6 +350,7 @@ function createAsyncServerModule(zoneless: boolean) {
 function createSVGComponent(standalone: boolean) {
   @Component({
     selector: 'app',
+
     template: '<svg><use xlink:href="#clear"></use></svg>',
     standalone,
   })
@@ -369,8 +371,8 @@ class SVGServerModule {}
 
 function createMyAnimationApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+    standalone,
     template: ` <div [@myAnimation]="state">
       <svg *ngIf="true"></svg>
       {{ text }}
@@ -415,8 +417,8 @@ class AnimationServerModule {}
 
 function createMyStylesApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+    standalone,
     template: ` <div>Works!</div>`,
     styles: ['div {color: blue; } :host { color: red; }'],
   })
@@ -437,8 +439,9 @@ class ExampleStylesModule {}
 
 function createMyTransferStateApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: ` <div>Works!</div>`,
   })
   class MyStylesApp {
@@ -514,8 +517,8 @@ class ImageExampleModule {}
 
 function createShadowDomEncapsulationApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+    standalone,
     template: 'Shadow DOM works',
     encapsulation: ViewEncapsulation.ShadowDom,
     styles: [':host { color: red; }'],
@@ -548,8 +551,9 @@ function createFalseAttributesComponents(standalone: boolean) {
   }
 
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: '<my-child [attr]="false"></my-child>',
     imports: standalone ? [MyChildComponent] : [],
   })
@@ -573,8 +577,9 @@ class FalseAttributesModule {}
 
 function createMyInputComponent(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: '<input [name]="name">',
   })
   class MyInputComponent {
@@ -596,8 +601,9 @@ class NameModule {}
 
 function createHTMLTypesApp(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: '<div [innerHTML]="html"></div>',
   })
   class HTMLTypesApp {
@@ -621,8 +627,9 @@ class HTMLTypesModule {}
 
 function createMyHiddenComponent(standalone: boolean) {
   @Component({
-    standalone,
     selector: 'app',
+
+    standalone,
     template: '<input [hidden]="true"><input [hidden]="false">',
   })
   class MyHiddenComponent {
@@ -971,7 +978,11 @@ class HiddenModule {}
               // to throw. Previously this was silently swallowed, causing the server
               // to return a 200 OK without the <script id="ng-state"> tag.
               function createCircularTransferStateApp(s: boolean) {
-                @Component({standalone: s, selector: 'app', template: ''})
+                @Component({
+                  selector: 'app',
+                  standalone: s,
+                  template: '',
+                })
                 class CircularApp {
                   constructor() {
                     const circular: Record<string, unknown> = {};
@@ -1044,6 +1055,7 @@ class HiddenModule {}
             async () => {
               @Component({
                 selector: 'app',
+
                 template: ``,
               })
               class SimpleApp {}
@@ -1342,8 +1354,9 @@ class HiddenModule {}
               }
 
               @Component({
-                standalone: isStandalone,
                 selector: 'app',
+
+                standalone: isStandalone,
                 template: `Works!`,
               })
               class MyServerFailingConstructorApp {
@@ -1386,6 +1399,7 @@ class HiddenModule {}
 
         @Component({
           selector: 'lazy',
+
           template: `LazyCmp content`,
         })
         class LazyCmp {}
@@ -1404,12 +1418,12 @@ class HiddenModule {}
         ];
 
         @Component({
-          standalone: false,
           selector: 'app',
           template: `
             Works!
             <router-outlet />
           `,
+          standalone: false,
         })
         class MyServerApp {}
 

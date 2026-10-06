@@ -245,7 +245,6 @@ describe('NgStyle', () => {
 
   it('should be available as a standalone directive', async () => {
     @Component({
-      selector: 'test-component',
       imports: [NgStyle],
       template: `<div [ngStyle]="{'width.px': expr}"></div>`,
       changeDetection: ChangeDetectionStrategy.Eager,
@@ -262,7 +261,6 @@ describe('NgStyle', () => {
 });
 
 @Component({
-  selector: 'test-cmp',
   template: '',
   imports: [NgStyle],
   changeDetection: ChangeDetectionStrategy.Eager,

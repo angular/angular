@@ -42,7 +42,6 @@ describe('LowerCasePipe', () => {
 
   it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [LowerCasePipe],
       template: '{{ value | lowercase }}',
     })
@@ -133,7 +132,6 @@ describe('TitleCasePipe', () => {
 
   it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [TitleCasePipe],
       template: '{{ value | titlecase }}',
     })
@@ -181,7 +179,6 @@ describe('UpperCasePipe', () => {
 
   it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [UpperCasePipe],
       template: '{{ value | uppercase }}',
     })

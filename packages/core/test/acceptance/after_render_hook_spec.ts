@@ -13,7 +13,6 @@ import {
 import {
   AfterRenderRef,
   ApplicationRef,
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ErrorHandler,
@@ -22,22 +21,23 @@ import {
   PLATFORM_ID,
   Type,
   ViewContainerRef,
-  afterNextRender,
   afterEveryRender,
+  afterNextRender,
   computed,
   createComponent,
   effect,
   inject,
-  signal,
   provideZoneChangeDetection,
+  signal,
 } from '../../src/core';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 import {TestBed} from '../../testing';
 
+import {forwardRef} from '@angular/core';
+import {timeout} from '@angular/private/testing';
 import {firstValueFrom} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {EnvironmentInjector, Injectable} from '../../src/di';
-import {timeout} from '@angular/private/testing';
 
 function createAndAttachComponent<T>(component: Type<T>) {
   const componentRef = createComponent(component, {
@@ -63,10 +63,7 @@ describe('after render hooks', () => {
 
     describe('afterRender', () => {
       it('should run with the correct timing', () => {
-        @Component({
-          selector: 'dynamic-comp',
-          standalone: false,
-        })
+        @Component({})
         class DynamicComp {
           afterRenderCount = 0;
 
@@ -78,8 +75,7 @@ describe('after render hooks', () => {
         }
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           afterRenderCount = 0;
@@ -93,10 +89,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         const component = createAndAttachComponent(Comp);
         const compInstance = component.instance;
         const viewContainerRef = compInstance.viewContainerRef;
@@ -129,10 +121,7 @@ describe('after render hooks', () => {
       });
 
       it('should run with ComponentFixture.detectChanges', () => {
-        @Component({
-          selector: 'dynamic-comp',
-          standalone: false,
-        })
+        @Component({})
         class DynamicComp {
           afterRenderCount = 0;
 
@@ -144,8 +133,7 @@ describe('after render hooks', () => {
         }
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           afterRenderCount = 0;
@@ -159,10 +147,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         const fixture = TestBed.createComponent(Comp);
         const compInstance = fixture.componentInstance;
         const viewContainerRef = compInstance.viewContainerRef;
@@ -197,7 +181,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'child-comp',
-          standalone: false,
+          imports: [forwardRef(() => ParentComp)],
         })
         class ChildComp {
           constructor() {
@@ -210,7 +194,7 @@ describe('after render hooks', () => {
         @Component({
           selector: 'parent',
           template: `<child-comp></child-comp>`,
-          standalone: false,
+          imports: [forwardRef(() => ChildComp)],
         })
         class ParentComp {
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -228,10 +212,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [ChildComp, ParentComp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(ParentComp);
         expect(log).toEqual([]);
 
@@ -271,8 +251,7 @@ describe('after render hooks', () => {
         let afterRenderCount = 0;
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -282,10 +261,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Comp);
         expect(afterRenderCount).toBe(0);
 
@@ -304,8 +279,7 @@ describe('after render hooks', () => {
         const zoneLog: boolean[] = [];
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -315,10 +289,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Comp);
 
         expect(zoneLog).toEqual([]);
@@ -340,7 +310,7 @@ describe('after render hooks', () => {
 
         @Component({
           template: '',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -363,7 +333,6 @@ describe('after render hooks', () => {
         }
 
         TestBed.configureTestingModule({
-          declarations: [Comp],
           providers: [COMMON_PROVIDERS, {provide: ErrorHandler, useClass: FakeErrorHandler}],
         });
         createAndAttachComponent(Comp);
@@ -379,13 +348,13 @@ describe('after render hooks', () => {
         @Component({
           selector: 'root',
           template: `<comp-a></comp-a><comp-b></comp-b>`,
-          standalone: false,
+          imports: [forwardRef(() => CompA), forwardRef(() => CompB)],
         })
         class Root {}
 
         @Component({
           selector: 'comp-a',
-          standalone: false,
+          imports: [forwardRef(() => Root), forwardRef(() => CompB)],
         })
         class CompA {
           constructor() {
@@ -417,7 +386,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp-b',
-          standalone: false,
+          imports: [forwardRef(() => Root), forwardRef(() => CompA)],
         })
         class CompB {
           constructor() {
@@ -447,10 +416,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Root, CompA, CompB],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Root);
 
         expect(log).toEqual([]);
@@ -471,8 +436,7 @@ describe('after render hooks', () => {
         const log: string[] = [];
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -497,10 +461,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Comp);
 
         expect(log).toEqual([]);
@@ -518,8 +478,7 @@ describe('after render hooks', () => {
         const log: string[] = [];
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -547,10 +506,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Comp);
 
         expect(log).toEqual([]);
@@ -567,7 +522,6 @@ describe('after render hooks', () => {
         it('inside template effect', () => {
           @Component({
             template: `{{ someFn() }}`,
-            standalone: false,
           })
           class TestCmp {
             someFn() {
@@ -594,7 +548,6 @@ describe('after render hooks', () => {
         it('inside effect', () => {
           @Component({
             template: ``,
-            standalone: false,
           })
           class TestCmp {
             constructor() {
@@ -632,7 +585,7 @@ describe('after render hooks', () => {
         let afterRenderRef: AfterRenderRef | null = null;
         let count = 0;
 
-        @Component({selector: 'comp', template: '', standalone: false})
+        @Component({selector: 'comp', template: '', imports: [forwardRef(() => App)]})
         class Comp {
           constructor() {
             afterRenderRef = afterEveryRender(() => count++, {manualCleanup: true});
@@ -641,7 +594,6 @@ describe('after render hooks', () => {
 
         @Component({
           imports: [Comp],
-          standalone: false,
           template: `
             @if (shouldShow) {
               <comp />
@@ -652,10 +604,6 @@ describe('after render hooks', () => {
           shouldShow = true;
         }
 
-        TestBed.configureTestingModule({
-          declarations: [App, Comp],
-          ...COMMON_CONFIGURATION,
-        });
         const component = createAndAttachComponent(App);
         const appRef = TestBed.inject(ApplicationRef);
         expect(count).toBe(0);
@@ -679,10 +627,7 @@ describe('after render hooks', () => {
 
     describe('afterNextRender', () => {
       it('should run with the correct timing', () => {
-        @Component({
-          selector: 'dynamic-comp',
-          standalone: false,
-        })
+        @Component({})
         class DynamicComp {
           afterRenderCount = 0;
 
@@ -694,8 +639,7 @@ describe('after render hooks', () => {
         }
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           afterRenderCount = 0;
@@ -709,10 +653,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         const component = createAndAttachComponent(Comp);
         const compInstance = component.instance;
         const viewContainerRef = compInstance.viewContainerRef;
@@ -786,7 +726,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'child-comp',
-          standalone: false,
+          imports: [forwardRef(() => ParentComp)],
         })
         class ChildComp {
           constructor() {
@@ -799,7 +739,7 @@ describe('after render hooks', () => {
         @Component({
           selector: 'parent',
           template: `<child-comp></child-comp>`,
-          standalone: false,
+          imports: [forwardRef(() => ChildComp)],
         })
         class ParentComp {
           changeDetectorRef = inject(ChangeDetectorRef);
@@ -817,10 +757,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [ChildComp, ParentComp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(ParentComp);
         expect(log).toEqual([]);
 
@@ -833,8 +769,7 @@ describe('after render hooks', () => {
         let afterRenderCount = 0;
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -844,10 +779,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Comp);
         expect(afterRenderCount).toBe(0);
 
@@ -864,8 +795,7 @@ describe('after render hooks', () => {
         }
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           appRef = inject(ApplicationRef);
@@ -882,7 +812,6 @@ describe('after render hooks', () => {
         }
 
         TestBed.configureTestingModule({
-          declarations: [Comp],
           ...COMMON_CONFIGURATION,
           providers: [
             {provide: ErrorHandler, useClass: RethrowErrorHandler},
@@ -897,9 +826,8 @@ describe('after render hooks', () => {
 
       it('should process inner hook within same tick with CD in between', () => {
         @Component({
-          selector: 'comp',
-          standalone: false,
           template: `{{ outerHookCount() }}:{{ innerHookCount }}`,
+          imports: [],
         })
         class Comp {
           injector = inject(Injector);
@@ -919,10 +847,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         const ref = createAndAttachComponent(Comp);
         const instance = ref.instance;
 
@@ -949,7 +873,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'inner',
-          standalone: false,
+          imports: [forwardRef(() => Outer)],
         })
         class Inner {
           constructor() {
@@ -961,17 +885,12 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'outer',
-          standalone: false,
           template: '<inner></inner>',
+          imports: [forwardRef(() => Inner)],
         })
         class Outer {
           changeDetectorRef = inject(ChangeDetectorRef);
         }
-
-        TestBed.configureTestingModule({
-          declarations: [Inner, Outer],
-          ...COMMON_CONFIGURATION,
-        });
 
         const ref = createAndAttachComponent(Outer);
         ref.instance.changeDetectorRef.detach();
@@ -998,8 +917,7 @@ describe('after render hooks', () => {
         const zoneLog: boolean[] = [];
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -1009,10 +927,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Comp);
 
         expect(zoneLog).toEqual([]);
@@ -1033,7 +947,7 @@ describe('after render hooks', () => {
 
         @Component({
           template: '',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -1056,7 +970,6 @@ describe('after render hooks', () => {
         }
 
         TestBed.configureTestingModule({
-          declarations: [Comp],
           providers: [COMMON_PROVIDERS, {provide: ErrorHandler, useClass: FakeErrorHandler}],
         });
         createAndAttachComponent(Comp);
@@ -1072,13 +985,13 @@ describe('after render hooks', () => {
         @Component({
           selector: 'root',
           template: `<comp-a></comp-a><comp-b></comp-b>`,
-          standalone: false,
+          imports: [forwardRef(() => CompA), forwardRef(() => CompB)],
         })
         class Root {}
 
         @Component({
           selector: 'comp-a',
-          standalone: false,
+          imports: [forwardRef(() => Root), forwardRef(() => CompB)],
         })
         class CompA {
           constructor() {
@@ -1110,7 +1023,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp-b',
-          standalone: false,
+          imports: [forwardRef(() => Root), forwardRef(() => CompA)],
         })
         class CompB {
           constructor() {
@@ -1140,10 +1053,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Root, CompA, CompB],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Root);
 
         expect(log).toEqual([]);
@@ -1165,7 +1074,7 @@ describe('after render hooks', () => {
 
         @Component({
           template: '',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -1186,10 +1095,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Comp);
 
         expect(log).toEqual([]);
@@ -1204,7 +1109,7 @@ describe('after render hooks', () => {
 
         @Component({
           template: '',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -1229,10 +1134,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Comp);
 
         expect(log).toEqual([]);
@@ -1261,7 +1162,6 @@ describe('after render hooks', () => {
       const counter = signal(0);
 
       @Component({
-        selector: 'test-component',
         template: ` {{ counter() }} `,
       })
       class TestCmp {
@@ -1289,7 +1189,6 @@ describe('after render hooks', () => {
 
     it('allows updating state and calling markForCheck in afterRender', async () => {
       @Component({
-        selector: 'test-component',
         template: ` {{ counter }} `,
       })
       class TestCmp {
@@ -1320,7 +1219,6 @@ describe('after render hooks', () => {
     it('allows updating state and calling markForCheck in afterRender, outside of change detection', async () => {
       const counter = signal(0);
       @Component({
-        selector: 'test-component',
         template: `{{ counter() }}`,
       })
       class TestCmp {
@@ -1361,7 +1259,6 @@ describe('after render hooks', () => {
       const counter = signal(0);
 
       @Component({
-        selector: 'test-component',
         template: ` {{ counter() }} `,
       })
       class TestCmp {
@@ -1402,7 +1299,7 @@ describe('after render hooks', () => {
       let hookRef: AfterRenderRef | null = null;
       let afterRenderCount = 0;
 
-      @Component({selector: 'comp', standalone: false})
+      @Component({imports: []})
       class Comp {
         constructor() {
           hookRef = afterNextRender(() => {
@@ -1411,10 +1308,6 @@ describe('after render hooks', () => {
         }
       }
 
-      TestBed.configureTestingModule({
-        declarations: [Comp],
-        ...COMMON_CONFIGURATION,
-      });
       createAndAttachComponent(Comp);
       const appRef = TestBed.inject(ApplicationRef);
       const destroySpy = spyOn(hookRef!, 'destroy').and.callThrough();
@@ -1451,8 +1344,7 @@ describe('after render hooks', () => {
         let afterRenderCount = 0;
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -1462,10 +1354,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Comp);
         TestBed.inject(ApplicationRef).tick();
         expect(afterRenderCount).toBe(0);
@@ -1477,8 +1365,7 @@ describe('after render hooks', () => {
         let afterRenderCount = 0;
 
         @Component({
-          selector: 'comp',
-          standalone: false,
+          imports: [],
         })
         class Comp {
           constructor() {
@@ -1488,10 +1375,6 @@ describe('after render hooks', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [Comp],
-          ...COMMON_CONFIGURATION,
-        });
         createAndAttachComponent(Comp);
         TestBed.inject(ApplicationRef).tick();
         expect(afterRenderCount).toBe(0);

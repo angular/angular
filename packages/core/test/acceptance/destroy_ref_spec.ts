@@ -88,7 +88,6 @@ describe('DestroyRef', () => {
       let destroyed = false;
 
       @Component({
-        selector: 'test',
         template: ``,
 
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -119,7 +118,6 @@ describe('DestroyRef', () => {
       }
 
       @Component({
-        selector: 'test',
         imports: [WithCleanupDirective],
         // note: we are trying to register a LView-level cleanup _before_ TView-level one (event
         // listener)
@@ -153,7 +151,6 @@ describe('DestroyRef', () => {
       }
 
       @Component({
-        selector: 'test',
         imports: [WithCleanupDirective, NgIf],
         template: `<ng-template [ngIf]="show"><div withCleanup></div></ng-template>`,
 
@@ -207,7 +204,6 @@ describe('DestroyRef', () => {
     let destroyed = false;
 
     @Component({
-      selector: 'test',
       template: ``,
 
       changeDetection: ChangeDetectionStrategy.Eager,
@@ -234,7 +230,6 @@ describe('DestroyRef', () => {
     const onDestroyCallback = () => onDestroyCalls++;
 
     @Component({
-      selector: 'test',
       template: ``,
 
       changeDetection: ChangeDetectionStrategy.Eager,
@@ -263,7 +258,6 @@ describe('DestroyRef', () => {
 
   it('should throw when trying to register destroy callback on destroyed LView', () => {
     @Component({
-      selector: 'test',
       template: ``,
 
       changeDetection: ChangeDetectionStrategy.Eager,
@@ -285,7 +279,6 @@ describe('DestroyRef', () => {
     const destroyedLog: string[] = [];
 
     @Component({
-      selector: 'test',
       template: ``,
 
       changeDetection: ChangeDetectionStrategy.Eager,

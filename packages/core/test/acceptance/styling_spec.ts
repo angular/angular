@@ -171,7 +171,6 @@ describe('styling', () => {
 
     it('should apply style properties that require quote wrapping', () => {
       @Component({
-        selector: 'test-style-quoting',
         template: `
           <div style='content: "foo"'></div>
           <div style='content: "foo"'></div>
@@ -1002,7 +1001,6 @@ describe('styling', () => {
     }
 
     @Component({
-      selector: 'app-comp',
       template: `<ng-template styleDir></ng-template>`,
     })
     class MyApp {}
@@ -1655,7 +1653,6 @@ describe('styling', () => {
       }
 
       @Component({
-        selector: 'app',
         imports: [NgClass, NgIf, ChildDir, TestDir],
         template: `
           <div class="my-class" [ngClass]="classMap" test-dir>
