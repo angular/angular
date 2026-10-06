@@ -96,7 +96,6 @@ describe('NgModule', () => {
   describe('standalone components, directives, and pipes', () => {
     it('should throw when a standalone component is added to NgModule declarations', () => {
       @Component({
-        selector: 'my-comp',
         template: '',
       })
       class MyComp {}
@@ -122,7 +121,6 @@ describe('NgModule', () => {
       class MyDir {}
 
       @Component({
-        selector: 'my-comp',
         template: '',
         standalone: false,
       })
@@ -149,7 +147,6 @@ describe('NgModule', () => {
       class MyPipe {}
 
       @Component({
-        selector: 'my-comp',
         template: '',
         standalone: false,
       })
@@ -171,7 +168,6 @@ describe('NgModule', () => {
 
     it('should throw a testing specific error when a standalone component is added to the configureTestingModule declarations', () => {
       @Component({
-        selector: 'my-comp',
         template: '',
       })
       class MyComp {}
@@ -227,7 +223,6 @@ describe('NgModule', () => {
   describe('schemas', () => {
     it('should log an error on unknown props if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
-        selector: 'my-comp',
         template: `
           <ng-container *ngIf="condition">
             <div [unknown-prop]="true"></div>
@@ -257,7 +252,6 @@ describe('NgModule', () => {
 
     it('should log an error on unknown props of `ng-template` if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
-        selector: 'my-comp',
         template: ` <ng-template *ngIf="condition"></ng-template> `,
         standalone: false,
       })
@@ -283,7 +277,6 @@ describe('NgModule', () => {
 
     it('should log an error on unknown props of `ng-container` if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
-        selector: 'my-comp',
         template: ` <ng-container *ngIf="condition"></ng-container> `,
         standalone: false,
       })
@@ -309,7 +302,6 @@ describe('NgModule', () => {
 
     it('should log an error on unknown props of `ng-content` if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
-        selector: 'my-comp',
         template: ` <ng-content *ngIf="condition"></ng-content> `,
         standalone: false,
       })
@@ -335,7 +327,6 @@ describe('NgModule', () => {
 
     it('should throw an error with errorOnUnknownProperties on unknown props if NO_ERRORS_SCHEMA is absent', () => {
       @Component({
-        selector: 'my-comp',
         template: `
           <ng-container *ngIf="condition">
             <div [unknown-prop]="true"></div>
@@ -365,7 +356,6 @@ describe('NgModule', () => {
 
     it('should not throw on unknown props if NO_ERRORS_SCHEMA is present', () => {
       @Component({
-        selector: 'my-comp',
         template: `
           <ng-container *ngIf="condition">
             <div [unknown-prop]="true"></div>
@@ -394,7 +384,6 @@ describe('NgModule', () => {
 
     it('should not throw on unknown props with errorOnUnknownProperties if NO_ERRORS_SCHEMA is present', () => {
       @Component({
-        selector: 'my-comp',
         template: `
           <ng-container *ngIf="condition">
             <div [unknown-prop]="true"></div>
@@ -579,7 +568,6 @@ describe('NgModule', () => {
       class MaybeWebComp {}
 
       @Component({
-        selector: 'my-comp',
         template: `<may-be-web-component [unknownProp]="condition"></may-be-web-component>`,
         standalone: false,
       })

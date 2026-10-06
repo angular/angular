@@ -374,7 +374,6 @@ describe('DefaultDomRendererV2', () => {
     describe('with provided namespace', () => {
       it('should replace `%NS%` in styles for `Emulated` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-emulated',
           template: '',
           styles: `
             :host {
@@ -397,7 +396,6 @@ describe('DefaultDomRendererV2', () => {
 
       it('should replace `%NS%` in styles for `None` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-none',
           template: '',
           styles: `
             :host {
@@ -420,7 +418,6 @@ describe('DefaultDomRendererV2', () => {
 
       it('should replace `%NS%` in styles for `ShadowDom` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-shadow',
           template: '',
           styles: `
             :host {
@@ -451,7 +448,6 @@ describe('DefaultDomRendererV2', () => {
     describe('with default (empty) namespace', () => {
       it('should replace `%NS%` in styles for `Emulated` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-emulated',
           template: '',
           styles: `
             :host {
@@ -474,7 +470,6 @@ describe('DefaultDomRendererV2', () => {
 
       it('should replace `%NS%` in styles for `None` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-none',
           template: '',
           styles: `
             :host {
@@ -497,7 +492,6 @@ describe('DefaultDomRendererV2', () => {
 
       it('should replace `%NS%` in styles for `ShadowDom` encapsulation', async () => {
         @Component({
-          selector: 'cmp-namespace-shadow',
           template: '',
           styles: `
             :host {
@@ -528,7 +522,6 @@ describe('DefaultDomRendererV2', () => {
     describe('style property bindings namespacing', () => {
       it('should namespace style property bindings starting with `--`', async () => {
         @Component({
-          selector: 'cmp-style-prop-namespace',
           template: `<div [style.--foo]="'blue'"></div>`,
           standalone: true,
         })
@@ -549,7 +542,6 @@ describe('DefaultDomRendererV2', () => {
       // TODO: Enforce this in v23.
       xit('should throw an error if style property binding starts with `--global-` with a single hyphen', () => {
         @Component({
-          selector: 'cmp-style-prop-error',
           template: `<div [style.--global-foo]="'blue'"></div>`,
           standalone: true,
         })
@@ -565,7 +557,6 @@ describe('DefaultDomRendererV2', () => {
 
       it('should namespace styles set via Renderer2.setStyle/removeStyle', () => {
         @Component({
-          selector: 'cmp-renderer-set-style',
           template: '',
           standalone: true,
         })
@@ -762,7 +753,6 @@ class CmpEncapsulationShadow {}
 class CmpEncapsulationIsolatedShadowWithChildren {}
 
 @Component({
-  selector: 'some-app',
   template: `
     <cmp-shadow></cmp-shadow>
     <cmp-emulated></cmp-emulated>
@@ -774,7 +764,6 @@ class CmpEncapsulationIsolatedShadowWithChildren {}
 export class SomeApp {}
 
 @Component({
-  selector: 'shadow-parent-app-with-children',
   template: ` <cmp-shadow-children></cmp-shadow-children> `,
   imports: [CmpEncapsulationIsolatedShadowWithChildren],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -782,7 +771,6 @@ export class SomeApp {}
 export class IsolatedShadowComponentParentApp {}
 
 @Component({
-  selector: 'test-cmp',
   template: '',
   changeDetection: ChangeDetectionStrategy.Eager,
 })
@@ -791,7 +779,6 @@ class TestCmp {
 }
 
 @Component({
-  selector: 'some-app',
   template: `
     <cmp-emulated *ngIf="!componentOneInstanceHidden && showEmulatedComponents"></cmp-emulated>
     <cmp-emulated *ngIf="!componentTwoInstanceHidden && showEmulatedComponents"></cmp-emulated>

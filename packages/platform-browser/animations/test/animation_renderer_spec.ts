@@ -17,6 +17,7 @@ import {
   ɵAnimationEngine as AnimationEngine,
   ɵAnimationRendererFactory as AnimationRendererFactory,
 } from '@angular/animations/browser';
+import {CommonModule} from '@angular/common';
 import {ChangeDetectionStrategy} from '@angular/compiler';
 import {
   APP_INITIALIZER,
@@ -41,7 +42,7 @@ import {
   ɵInjectableAnimationEngine as InjectableAnimationEngine,
 } from '../index';
 
-(function () {
+(async function () {
   if (isNode) return;
   describe('AnimationRenderer', () => {
     let element: any;
@@ -159,9 +160,8 @@ import {
       // these tests are only meant to be run within the DOM
       if (isNode) return;
 
-      it('should flush and fire callbacks when the zone becomes stable', (async) => {
+      it('should flush and fire callbacks when the zone becomes stable', async () => {
         @Component({
-          selector: 'my-cmp',
           template: '<div [@myAnimation]="exp" (@myAnimation.start)="onStart($event)"></div>',
           animations: [
             trigger('myAnimation', [
@@ -171,7 +171,6 @@ import {
               ]),
             ]),
           ],
-          standalone: false,
         })
         class Cmp {
           exp: any;
@@ -183,28 +182,23 @@ import {
 
         TestBed.configureTestingModule({
           providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-          declarations: [Cmp],
         });
 
         const engine = TestBed.inject(AnimationEngine);
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.exp = 'state';
-        fixture.detectChanges();
-        fixture.whenStable().then(() => {
-          expect(cmp.event.triggerName).toEqual('myAnimation');
-          expect(cmp.event.phaseName).toEqual('start');
-          cmp.event = null;
+        await fixture.whenStable();
+        expect(cmp.event.triggerName).toEqual('myAnimation');
+        expect(cmp.event.phaseName).toEqual('start');
+        cmp.event = null;
 
-          engine.flush();
-          expect(cmp.event).toBeFalsy();
-          async();
-        });
+        engine.flush();
+        expect(cmp.event).toBeFalsy();
       });
 
-      it('should properly insert/remove nodes through the animation renderer that do not contain animations', (async) => {
+      it('should properly insert/remove nodes through the animation renderer that do not contain animations', async () => {
         @Component({
-          selector: 'my-cmp',
           template: '<div #elm *ngIf="exp"></div>',
           animations: [
             trigger('someAnimation', [
@@ -214,8 +208,9 @@ import {
               ]),
             ]),
           ],
-          standalone: false,
+
           changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [CommonModule],
         })
         class Cmp {
           exp: any;
@@ -227,30 +222,25 @@ import {
             {provide: AnimationEngine, useClass: InjectableAnimationEngine},
             provideZoneChangeDetection(),
           ],
-          declarations: [Cmp],
         });
 
         const fixture = TestBed.createComponent(Cmp);
         const cmp = fixture.componentInstance;
         cmp.exp = true;
         fixture.detectChanges();
+        await fixture.whenStable();
 
-        fixture.whenStable().then(() => {
-          cmp.exp = false;
-          const element = cmp.element;
-          expect(element.nativeElement.parentNode).toBeTruthy();
+        cmp.exp = false;
+        const element = cmp.element;
+        expect(element.nativeElement.parentNode).toBeTruthy();
 
-          fixture.detectChanges();
-          fixture.whenStable().then(() => {
-            expect(element.nativeElement.parentNode).toBeFalsy();
-            async();
-          });
-        });
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(element.nativeElement.parentNode).toBeFalsy();
       });
 
-      it('should only queue up dom removals if the element itself contains a valid leave animation', () => {
+      it('should only queue up dom removals if the element itself contains a valid leave animation', async () => {
         @Component({
-          selector: 'my-cmp',
           template: `
             <div #elm1 *ngIf="exp1"></div>
             <div #elm2 @animation1 *ngIf="exp2"></div>
@@ -260,8 +250,9 @@ import {
             trigger('animation1', [transition('a => b', [])]),
             trigger('animation2', [transition(':leave', [])]),
           ],
-          standalone: false,
+
           changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [CommonModule],
         })
         class Cmp {
           exp1: any = true;
@@ -280,7 +271,6 @@ import {
             {provide: AnimationEngine, useClass: InjectableAnimationEngine},
             provideZoneChangeDetection(),
           ],
-          declarations: [Cmp],
         });
 
         const engine = TestBed.inject(AnimationEngine);
@@ -340,10 +330,8 @@ import {
 
     it('should provide hooks at the start and end of change detection', () => {
       @Component({
-        selector: 'my-cmp',
         template: ` <div [@myAnimation]="exp"></div> `,
         animations: [trigger('myAnimation', [])],
-        standalone: false,
       })
       class Cmp {
         public exp: any;
@@ -351,7 +339,6 @@ import {
 
       TestBed.configureTestingModule({
         providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-        declarations: [Cmp],
       });
 
       const renderer = TestBed.inject(RendererFactory2) as ExtendedAnimationRendererFactory;

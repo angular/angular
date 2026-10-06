@@ -16,14 +16,12 @@ describe('RouterLink', () => {
   it('does not modify tabindex if already set on non-anchor element', async () => {
     @Component({
       template: `<div [routerLink]="link" tabindex="1"></div>`,
-      standalone: false,
     })
     class LinkComponent {
       link: string | null | undefined = '/';
     }
     TestBed.configureTestingModule({
       imports: [RouterModule.forRoot([])],
-      declarations: [LinkComponent],
     });
     const fixture = TestBed.createComponent(LinkComponent);
     await fixture.whenStable();
@@ -45,7 +43,7 @@ describe('RouterLink', () => {
           [replaceUrl]="replaceUrl()"
         ></div>
       `,
-      standalone: false,
+      imports: [RouterLink],
     })
     class LinkComponent {
       link = signal<string | null | undefined>('/');
@@ -60,7 +58,6 @@ describe('RouterLink', () => {
     beforeEach(async () => {
       TestBed.configureTestingModule({
         imports: [RouterModule.forRoot([])],
-        declarations: [LinkComponent],
       });
       fixture = TestBed.createComponent(LinkComponent);
       await fixture.whenStable();
@@ -127,7 +124,7 @@ describe('RouterLink', () => {
             [replaceUrl]="replaceUrl()"
           ></a>
         `,
-        standalone: false,
+        imports: [RouterLink],
       })
       class LinkComponent {
         link = signal<string | null | undefined>('/');
@@ -141,7 +138,6 @@ describe('RouterLink', () => {
       beforeEach(async () => {
         TestBed.configureTestingModule({
           imports: [RouterModule.forRoot([])],
-          declarations: [LinkComponent],
         });
         fixture = TestBed.createComponent(LinkComponent);
         await fixture.whenStable();
@@ -190,13 +186,12 @@ describe('RouterLink', () => {
     it('should handle routerLink in svg templates', async () => {
       @Component({
         template: `<svg><a routerLink="test"></a></svg>`,
-        standalone: false,
+        imports: [RouterLink],
       })
       class LinkComponent {}
 
       TestBed.configureTestingModule({
         imports: [RouterModule.forRoot([])],
-        declarations: [LinkComponent],
       });
       const fixture = TestBed.createComponent(LinkComponent);
       await fixture.whenStable();
@@ -246,7 +241,7 @@ describe('RouterLink', () => {
 
       @Component({
         template: ` <custom-anchor [routerLink]="link()"></custom-anchor> `,
-        standalone: false,
+        imports: [RouterLink],
       })
       class LinkComponent {
         link = signal<string | null | undefined>('/');
@@ -257,7 +252,6 @@ describe('RouterLink', () => {
       beforeEach(async () => {
         TestBed.configureTestingModule({
           imports: [RouterModule.forRoot([])],
-          declarations: [LinkComponent],
         });
         fixture = TestBed.createComponent(LinkComponent);
         await fixture.whenStable();

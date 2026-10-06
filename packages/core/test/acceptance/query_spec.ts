@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
+import {By} from '@angular/platform-browser';
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ContentChild,
   ContentChildren,
@@ -16,66 +18,33 @@ import {
   ElementRef,
   EventEmitter,
   forwardRef,
-  inject,
   InjectionToken,
-  Injector,
   Input,
-  provideZoneChangeDetection,
   QueryList,
+  signal,
   TemplateRef,
   Type,
   ViewChild,
   ViewChildren,
   ViewContainerRef,
   ViewRef,
-  ChangeDetectionStrategy,
 } from '../../src/core';
-import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
+import {DehydratedView} from '../../src/hydration/interfaces';
 import {
   createContainerRef,
   enableLocateOrCreateContainerRefImpl,
 } from '../../src/linker/view_container_ref';
 import {getLContext} from '../../src/render3/context_discovery';
-import {DehydratedView} from '../../src/hydration/interfaces';
 import {
+  TContainerNode,
   TElementContainerNode,
   TElementNode,
-  TContainerNode,
   TNodeType,
 } from '../../src/render3/interfaces/node';
 import {HYDRATION, TVIEW} from '../../src/render3/interfaces/view';
+import {TestBed} from '../../testing';
 
 describe('query logic', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        AppComp,
-        QueryComp,
-        SimpleCompA,
-        SimpleCompB,
-        StaticViewQueryComp,
-        TextDirective,
-        SubclassStaticViewQueryComp,
-        StaticContentQueryComp,
-        SubclassStaticContentQueryComp,
-        QueryCompWithChanges,
-        StaticContentQueryDir,
-        SuperDirectiveQueryTarget,
-        SuperDirective,
-        SubComponent,
-        TestComponentWithToken,
-        TestInjectionTokenContentQueries,
-        TestInjectionTokenQueries,
-      ],
-    });
-  });
-
   describe('view queries', () => {
     it('should return Component instances when Components are labeled and retrieved', () => {
       const template = `
@@ -245,15 +214,11 @@ describe('query logic', () => {
       }
 
       @Component({
-        selector: 'sub-comp',
         template: '<div #foo></div>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class SubComp extends MyComp {}
-
-      TestBed.configureTestingModule({declarations: [SubComp]});
 
       const fixture = TestBed.createComponent(SubComp);
       fixture.detectChanges();
@@ -268,15 +233,11 @@ describe('query logic', () => {
       class MyComp extends MySuperComp {}
 
       @Component({
-        selector: 'sub-comp',
         template: '<div #foo></div>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class SubComp extends MyComp {}
-
-      TestBed.configureTestingModule({declarations: [SubComp]});
 
       const fixture = TestBed.createComponent(SubComp);
       fixture.detectChanges();
@@ -286,7 +247,6 @@ describe('query logic', () => {
     it('should support ViewChildren query inherited from undecorated superclasses', () => {
       @Directive({
         selector: '[some-dir]',
-        standalone: false,
       })
       class SomeDir {}
 
@@ -295,18 +255,15 @@ describe('query logic', () => {
       }
 
       @Component({
-        selector: 'sub-comp',
         template: `
           <div some-dir></div>
           <div some-dir></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [SomeDir],
       })
       class SubComp extends MyComp {}
-
-      TestBed.configureTestingModule({declarations: [SubComp, SomeDir]});
 
       const fixture = TestBed.createComponent(SubComp);
       fixture.detectChanges();
@@ -317,7 +274,6 @@ describe('query logic', () => {
     it('should support ViewChildren query inherited from undecorated grand superclasses', () => {
       @Directive({
         selector: '[some-dir]',
-        standalone: false,
       })
       class SomeDir {}
 
@@ -328,18 +284,15 @@ describe('query logic', () => {
       class MyComp extends MySuperComp {}
 
       @Component({
-        selector: 'sub-comp',
         template: `
           <div some-dir></div>
           <div some-dir></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [SomeDir],
       })
       class SubComp extends MyComp {}
-
-      TestBed.configureTestingModule({declarations: [SubComp, SomeDir]});
 
       const fixture = TestBed.createComponent(SubComp);
       fixture.detectChanges();
@@ -351,7 +304,6 @@ describe('query logic', () => {
       @Component({
         selector: 'required',
         template: '',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -360,9 +312,9 @@ describe('query logic', () => {
       @Component({
         selector: 'insertion',
         template: `<ng-container [ngTemplateOutlet]="content"></ng-container>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule],
       })
       class Insertion {
         @Input() content!: TemplateRef<{}>;
@@ -375,9 +327,9 @@ describe('query logic', () => {
           </ng-template>
           <insertion [content]="template"></insertion>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Required, Insertion],
       })
       class App {
         @ViewChild(Required) requiredEl!: Required;
@@ -388,22 +340,17 @@ describe('query logic', () => {
         }
       }
 
-      const fixture = TestBed.configureTestingModule({
-        declarations: [App, Insertion, Required],
-      }).createComponent(App);
+      const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.viewChildAvailableInAfterViewInit).toBe(true);
     });
 
-    it('should destroy QueryList when the containing view is destroyed', () => {
+    it('should destroy QueryList when the containing view is destroyed', async () => {
       let queryInstance: QueryList<any>;
 
       @Component({
         selector: 'comp-with-view-query',
         template: '<div #foo>Content</div>',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ComponentWithViewQuery {
         @ViewChildren('foo')
@@ -416,32 +363,25 @@ describe('query logic', () => {
       }
 
       @Component({
-        selector: 'root',
         template: `
-          <ng-container *ngIf="condition">
+          <ng-container *ngIf="condition()">
             <comp-with-view-query></comp-with-view-query>
           </ng-container>
         `,
-        standalone: false,
 
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [NgIf, ComponentWithViewQuery],
       })
       class Root {
-        condition = true;
+        condition = signal(true);
       }
 
-      TestBed.configureTestingModule({
-        declarations: [Root, ComponentWithViewQuery],
-        imports: [CommonModule],
-      });
-
       const fixture = TestBed.createComponent(Root);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       expect((queryInstance!.changes as EventEmitter<any>).closed).toBeFalsy();
 
-      fixture.componentInstance.condition = false;
-      fixture.detectChanges();
+      fixture.componentInstance.condition.set(false);
+      await fixture.whenStable();
 
       expect((queryInstance!.changes as EventEmitter<any>).closed).toBeTruthy();
     });
@@ -686,7 +626,6 @@ describe('query logic', () => {
       @Component({
         selector: 'sub-comp',
         template: '<ng-content></ng-content>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -694,15 +633,14 @@ describe('query logic', () => {
 
       @Component({
         template: '<sub-comp><div #foo></div></sub-comp>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [SubComp],
       })
       class App {
         @ViewChild(SubComp) subComp!: SubComp;
       }
 
-      TestBed.configureTestingModule({declarations: [App, SubComp]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -719,7 +657,6 @@ describe('query logic', () => {
       @Component({
         selector: 'sub-comp',
         template: '<ng-content></ng-content>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -727,15 +664,14 @@ describe('query logic', () => {
 
       @Component({
         template: '<sub-comp><div #foo></div></sub-comp>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [SubComp],
       })
       class App {
         @ViewChild(SubComp) subComp!: SubComp;
       }
 
-      TestBed.configureTestingModule({declarations: [App, SubComp]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -745,7 +681,6 @@ describe('query logic', () => {
     it('should support ContentChildren query inherited from undecorated superclasses', () => {
       @Directive({
         selector: '[some-dir]',
-        standalone: false,
       })
       class SomeDir {}
 
@@ -756,7 +691,6 @@ describe('query logic', () => {
       @Component({
         selector: 'sub-comp',
         template: '<ng-content></ng-content>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -769,15 +703,14 @@ describe('query logic', () => {
             <div some-dir></div>
           </sub-comp>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [SomeDir, SubComp],
       })
       class App {
         @ViewChild(SubComp) subComp!: SubComp;
       }
 
-      TestBed.configureTestingModule({declarations: [App, SubComp, SomeDir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -788,7 +721,6 @@ describe('query logic', () => {
     it('should support ContentChildren query inherited from undecorated grand superclasses', () => {
       @Directive({
         selector: '[some-dir]',
-        standalone: false,
       })
       class SomeDir {}
 
@@ -801,7 +733,6 @@ describe('query logic', () => {
       @Component({
         selector: 'sub-comp',
         template: '<ng-content></ng-content>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -814,15 +745,14 @@ describe('query logic', () => {
             <div some-dir></div>
           </sub-comp>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [SomeDir, SubComp],
       })
       class App {
         @ViewChild(SubComp) subComp!: SubComp;
       }
 
-      TestBed.configureTestingModule({declarations: [App, SubComp, SomeDir]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -830,50 +760,40 @@ describe('query logic', () => {
       expect(fixture.componentInstance.subComp.foo.length).toBe(2);
     });
 
-    it('should match shallow content queries in views inserted / removed by ngIf', () => {
+    it('should match shallow content queries in views inserted / removed by ngIf', async () => {
       @Component({
-        selector: 'test-comp',
         template: `
           <shallow-comp>
-            <div *ngIf="showing" #foo></div>
+            <div *ngIf="showing()" #foo></div>
           </shallow-comp>
         `,
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [NgIf, forwardRef(() => ShallowComp)],
       })
       class TestComponent {
-        showing = false;
+        showing = signal(false);
       }
 
       @Component({
         selector: 'shallow-comp',
         template: '',
-        standalone: false,
-
-        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ShallowComp {
         @ContentChildren('foo', {descendants: false}) foos!: QueryList<ElementRef>;
       }
 
-      TestBed.configureTestingModule({
-        declarations: [TestComponent, ShallowComp],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const shallowComp = fixture.debugElement.query(By.directive(ShallowComp)).componentInstance;
       const queryList = shallowComp!.foos;
       expect(queryList.length).toBe(0);
 
-      fixture.componentInstance.showing = true;
-      fixture.detectChanges();
+      fixture.componentInstance.showing.set(true);
+      await fixture.whenStable();
       expect(queryList.length).toBe(1);
 
-      fixture.componentInstance.showing = false;
-      fixture.detectChanges();
+      fixture.componentInstance.showing.set(false);
+      await fixture.whenStable();
       expect(queryList.length).toBe(0);
     });
 
@@ -882,7 +802,6 @@ describe('query logic', () => {
 
       @Directive({
         selector: '[with-content]',
-        standalone: false,
       })
       class DirWithContentQuery {
         constructor() {
@@ -904,7 +823,6 @@ describe('query logic', () => {
       }
 
       @Component({
-        selector: 'comp',
         template: `
           <ng-container *ngFor="let item of items">
             <div with-content>
@@ -912,18 +830,14 @@ describe('query logic', () => {
             </div>
           </ng-container>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, DirWithContentQuery],
       })
       class Root {
         items = [1, 2, 3];
       }
 
-      TestBed.configureTestingModule({
-        declarations: [Root, DirWithContentQuery],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(Root);
       fixture.detectChanges();
 
@@ -1242,14 +1156,12 @@ describe('query logic', () => {
     it('should match directives on elements that used to be wrapped by a required parent in HTML parser', () => {
       @Directive({
         selector: '[myDef]',
-        standalone: false,
       })
       class MyDef {}
 
       @Component({
         selector: 'my-container',
         template: ``,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -1257,15 +1169,13 @@ describe('query logic', () => {
         @ContentChildren(MyDef) myDefs!: QueryList<MyDef>;
       }
       @Component({
-        selector: 'test-cmpt',
         template: `<my-container><tr myDef></tr></my-container>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDef, MyContainer],
       })
       class TestCmpt {}
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, MyContainer, MyDef]});
       const fixture = TestBed.createComponent(TestCmpt);
       const cmptWithQuery = fixture.debugElement.children[0].injector.get(MyContainer);
 
@@ -1277,7 +1187,6 @@ describe('query logic', () => {
       @Component({
         selector: 'needs-target',
         template: ``,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -1285,7 +1194,6 @@ describe('query logic', () => {
         @ContentChildren('target') targets!: QueryList<ElementRef>;
       }
       @Component({
-        selector: 'test-cmpt',
         template: `
           <needs-target>
             <ng-container>
@@ -1293,13 +1201,12 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [NeedsTarget],
       })
       class TestCmpt {}
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, NeedsTarget]});
       const fixture = TestBed.createComponent(TestCmpt);
       const cmptWithQuery = fixture.debugElement.children[0].injector.get(NeedsTarget);
 
@@ -1312,7 +1219,6 @@ describe('query logic', () => {
       @Component({
         selector: 'needs-target',
         template: ``,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -1321,7 +1227,6 @@ describe('query logic', () => {
       }
 
       @Component({
-        selector: 'test-cmpt',
         template: `
           <needs-target>
             <ng-container>
@@ -1333,13 +1238,12 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [NeedsTarget],
       })
       class TestCmpt {}
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, NeedsTarget]});
       const fixture = TestBed.createComponent(TestCmpt);
       const cmptWithQuery = fixture.debugElement.children[0].injector.get(NeedsTarget);
 
@@ -1351,14 +1255,12 @@ describe('query logic', () => {
     it('should match directives inside <ng-container>', () => {
       @Directive({
         selector: '[targetDir]',
-        standalone: false,
       })
       class TargetDir {}
 
       @Component({
         selector: 'needs-target',
         template: ``,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -1367,7 +1269,6 @@ describe('query logic', () => {
       }
 
       @Component({
-        selector: 'test-cmpt',
         template: `
           <needs-target>
             <ng-container>
@@ -1375,13 +1276,12 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [TargetDir, NeedsTarget],
       })
       class TestCmpt {}
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, NeedsTarget, TargetDir]});
       const fixture = TestBed.createComponent(TestCmpt);
       const cmptWithQuery = fixture.debugElement.children[0].injector.get(NeedsTarget);
 
@@ -1393,14 +1293,12 @@ describe('query logic', () => {
     it('should match directives inside nested <ng-container>', () => {
       @Directive({
         selector: '[targetDir]',
-        standalone: false,
       })
       class TargetDir {}
 
       @Component({
         selector: 'needs-target',
         template: ``,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -1409,7 +1307,6 @@ describe('query logic', () => {
       }
 
       @Component({
-        selector: 'test-cmpt',
         template: `
           <needs-target>
             <ng-container>
@@ -1421,13 +1318,12 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [TargetDir, NeedsTarget],
       })
       class TestCmpt {}
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, NeedsTarget, TargetDir]});
       const fixture = TestBed.createComponent(TestCmpt);
       const cmptWithQuery = fixture.debugElement.children[0].injector.get(NeedsTarget);
 
@@ -1439,20 +1335,17 @@ describe('query logic', () => {
     it('should cross child ng-container when query is declared on ng-container', () => {
       @Directive({
         selector: '[targetDir]',
-        standalone: false,
       })
       class TargetDir {}
 
       @Directive({
         selector: '[needs-target]',
-        standalone: false,
       })
       class NeedsTarget {
         @ContentChildren(TargetDir) targets!: QueryList<HTMLElement>;
       }
 
       @Component({
-        selector: 'test-cmpt',
         template: `
           <ng-container targetDir>
             <ng-container needs-target>
@@ -1462,13 +1355,12 @@ describe('query logic', () => {
             </ng-container>
           </ng-container>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [TargetDir, NeedsTarget],
       })
       class TestCmpt {}
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, NeedsTarget, TargetDir]});
       const fixture = TestBed.createComponent(TestCmpt);
       const cmptWithQuery = fixture.debugElement.children[0].injector.get(NeedsTarget);
 
@@ -1480,14 +1372,12 @@ describe('query logic', () => {
     it('should match nodes when using structural directives (*syntax) on <ng-container>', () => {
       @Directive({
         selector: '[targetDir]',
-        standalone: false,
       })
       class TargetDir {}
 
       @Component({
         selector: 'needs-target',
         template: ``,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -1497,7 +1387,6 @@ describe('query logic', () => {
       }
 
       @Component({
-        selector: 'test-cmpt',
         template: `
           <needs-target>
             <ng-container *ngIf="true">
@@ -1506,13 +1395,12 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, TargetDir, NeedsTarget],
       })
       class TestCmpt {}
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, NeedsTarget, TargetDir]});
       const fixture = TestBed.createComponent(TestCmpt);
       const cmptWithQuery = fixture.debugElement.children[0].injector.get(NeedsTarget);
 
@@ -1526,14 +1414,12 @@ describe('query logic', () => {
     it('should match directives on <ng-container> when crossing nested <ng-container>', () => {
       @Directive({
         selector: '[targetDir]',
-        standalone: false,
       })
       class TargetDir {}
 
       @Component({
         selector: 'needs-target',
         template: ``,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -1542,7 +1428,6 @@ describe('query logic', () => {
       }
 
       @Component({
-        selector: 'test-cmpt',
         template: `
           <needs-target>
             <ng-container>
@@ -1554,13 +1439,12 @@ describe('query logic', () => {
             </ng-container>
           </needs-target>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [TargetDir, NeedsTarget],
       })
       class TestCmpt {}
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, NeedsTarget, TargetDir]});
       const fixture = TestBed.createComponent(TestCmpt);
       const cmptWithQuery = fixture.debugElement.children[0].injector.get(NeedsTarget);
 
@@ -1777,55 +1661,6 @@ describe('query logic', () => {
       expect(qList.first).toBeInstanceOf(ViewContainerRef);
     });
 
-    it('should read Injector from element nodes when explicitly asked for', () => {
-      @Component({
-        template: `<div #foo></div>`,
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class TestCmp {
-        @ViewChild('foo', {read: Injector}) query?: Injector;
-      }
-
-      const fixture = TestBed.createComponent(TestCmp);
-      fixture.detectChanges();
-
-      const injector = fixture.componentInstance.query!;
-      expect(injector).toBeDefined();
-      // The returned value behaves like an injector rooted at the queried node.
-      expect(injector.get(ElementRef).nativeElement).toBe(
-        fixture.debugElement.children[0].nativeElement,
-      );
-    });
-
-    it('should read the node injector of the queried element', () => {
-      const TOKEN = new InjectionToken<string>('TOKEN');
-
-      @Directive({
-        selector: '[provider]',
-        providers: [{provide: TOKEN, useValue: 'from directive'}],
-      })
-      class ProviderDir {}
-
-      @Component({
-        imports: [ProviderDir],
-        template: `<div #foo provider></div>`,
-        changeDetection: ChangeDetectionStrategy.Eager,
-      })
-      class TestCmp {
-        @ViewChild('foo', {read: Injector}) injector?: Injector;
-        ownInjector = inject(Injector);
-      }
-
-      const fixture = TestBed.createComponent(TestCmp);
-      fixture.detectChanges();
-
-      const queried = fixture.componentInstance.injector!;
-      // The queried injector sees the provider declared on the element's directive...
-      expect(queried.get(TOKEN)).toBe('from directive');
-      // ...which is not visible from the component's own injector.
-      expect(fixture.componentInstance.ownInjector.get(TOKEN, null)).toBeNull();
-    });
-
     it('should not throw when hydration metadata has no serialized container data', () => {
       @Component({
         template: `<div #foo></div>`,
@@ -1980,7 +1815,7 @@ describe('query logic', () => {
       class ChildDirective {}
 
       @Component({
-        imports: [ChildDirective],
+        imports: [ChildDirective, Child],
         template: `<div #foo="child" child></div>`,
 
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -2028,7 +1863,7 @@ describe('query logic', () => {
       class ChildDir {}
 
       @Component({
-        imports: [ChildDir],
+        imports: [ChildDir, Child],
         template: `<div child #foo="child" #bar="child"></div>`,
 
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -2048,12 +1883,10 @@ describe('query logic', () => {
 
     it('should query multiple locals on the same element', () => {
       @Component({
-        selector: 'multiple-local-refs',
         template: `
           <div #foo #bar id="target"></div>
           <div></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -2083,7 +1916,7 @@ describe('query logic', () => {
       class ChildDir {}
 
       @Component({
-        imports: [ChildDir],
+        imports: [ChildDir, Child],
         template: `<div child #foo="child"></div>`,
 
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -2105,7 +1938,7 @@ describe('query logic', () => {
       class ChildDir {}
 
       @Component({
-        imports: [ChildDir],
+        imports: [ChildDir, Child],
         template: `<div #foo #bar="child" child></div>`,
 
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -2152,7 +1985,7 @@ describe('query logic', () => {
       class OtherChildDir {}
 
       @Component({
-        imports: [Child],
+        imports: [Child, ChildDir],
         template: `<div child></div>`,
 
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -2251,10 +2084,10 @@ describe('query logic', () => {
   });
 
   describe('observable interface', () => {
-    it('should allow observing changes to query list', () => {
+    it('should allow observing changes to query list', async () => {
       const fixture = TestBed.createComponent(QueryCompWithChanges);
       let changes = 0;
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       fixture.componentInstance.foos.changes.subscribe((value: any) => {
         changes += 1;
@@ -2262,23 +2095,21 @@ describe('query logic', () => {
       });
 
       // refresh without setting dirty - no emit
-      fixture.detectChanges();
+      await fixture.whenStable();
       expect(changes).toBe(0);
 
       // refresh with setting dirty - emit
-      fixture.componentInstance.showing = true;
-      fixture.detectChanges();
+      fixture.componentInstance.showing.set(true);
+      await fixture.whenStable();
       expect(changes).toBe(1);
     });
 
-    it('should only fire if the content of the query changes', () => {
+    it('should only fire if the content of the query changes', async () => {
       // When views are inserted/removed the content query need to be recomputed.
       // Recomputing the query may result in no changes to the query (the item added/removed was
       // not part of the query). This tests asserts that the query does not fire when no changes
       // occur.
-      TestBed.configureTestingModule({
-        declarations: [QueryCompWithStrictChangeEmitParent, QueryCompWithNoChanges],
-      });
+
       const fixture = TestBed.createComponent(QueryCompWithNoChanges);
       let changesStrict = 0;
       const componentInstance = fixture.componentInstance.queryComp;
@@ -2290,20 +2121,20 @@ describe('query logic', () => {
       });
 
       // First verify that the subscription is working.
-      fixture.componentInstance.innerShowing = false;
-      fixture.detectChanges();
+      fixture.componentInstance.innerShowing.set(false);
+      await fixture.whenStable();
       expect(changesStrict).toBe(1); // We detected a change
       expect(componentInstance.foos.toArray().length).toEqual(1);
 
       // now verify that removing a view does not needlessly fire subscription
-      fixture.componentInstance.showing = false;
-      fixture.detectChanges();
+      fixture.componentInstance.showing.set(false);
+      await fixture.whenStable();
       expect(changesStrict).toBe(1); // We detected a change
       expect(componentInstance.foos.toArray().length).toEqual(1);
 
       // now verify that adding a view does not needlessly fire subscription
-      fixture.componentInstance.showing = true;
-      fixture.detectChanges();
+      fixture.componentInstance.showing.set(true);
+      await fixture.whenStable();
       expect(changesStrict).toBe(1); // We detected a change
       // Note: even though the `showing` is `true` and the second `<div>` is displayed, the
       // child element of that <div> is hidden because the `innerShowing` flag is still `false`,
@@ -2317,7 +2148,6 @@ describe('query logic', () => {
       @Directive({
         selector: '[vc]',
         exportAs: 'vc',
-        standalone: false,
       })
       class ViewContainerManipulatorDirective {
         constructor(private _vcRef: ViewContainerRef) {}
@@ -2335,71 +2165,62 @@ describe('query logic', () => {
         }
       }
 
-      it('should report results in views inserted / removed by ngIf', () => {
+      it('should report results in views inserted / removed by ngIf', async () => {
         @Component({
-          selector: 'test-comp',
           template: `
-            <ng-template [ngIf]="value">
+            <ng-template [ngIf]="value()">
               <div #foo></div>
             </ng-template>
           `,
-          standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [NgIf],
         })
         class TestComponent {
-          value: boolean = false;
+          value = signal(false);
           @ViewChildren('foo') query!: QueryList<any>;
         }
 
-        TestBed.configureTestingModule({declarations: [TestComponent]});
-
         const fixture = TestBed.createComponent(TestComponent);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const queryList = fixture.componentInstance.query;
         expect(queryList.length).toBe(0);
 
-        fixture.componentInstance.value = true;
-        fixture.detectChanges();
+        fixture.componentInstance.value.set(true);
+        await fixture.whenStable();
         expect(queryList.length).toBe(1);
 
-        fixture.componentInstance.value = false;
-        fixture.detectChanges();
+        fixture.componentInstance.value.set(false);
+        await fixture.whenStable();
         expect(queryList.length).toBe(0);
       });
 
-      it('should report results in views inserted / removed by ngFor', () => {
+      it('should report results in views inserted / removed by ngFor', async () => {
         @Component({
-          selector: 'test-comp',
           template: `
-            <ng-template ngFor let-item [ngForOf]="value">
+            <ng-template ngFor let-item [ngForOf]="value()">
               <div #foo [id]="item"></div>
             </ng-template>
           `,
-          standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [NgForOf],
         })
         class TestComponent {
-          value: string[] | undefined;
+          value = signal<string[] | undefined>(undefined);
           @ViewChildren('foo') query!: QueryList<any>;
         }
 
-        TestBed.configureTestingModule({declarations: [TestComponent]});
         const fixture = TestBed.createComponent(TestComponent);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const queryList = fixture.componentInstance.query;
         expect(queryList.length).toBe(0);
 
-        fixture.componentInstance.value = ['a', 'b', 'c'];
-        fixture.detectChanges();
+        fixture.componentInstance.value.set(['a', 'b', 'c']);
+        await fixture.whenStable();
         expect(queryList.length).toBe(3);
 
         // Remove the "b" element from the value.
-        fixture.componentInstance.value.splice(1, 1);
-        fixture.detectChanges();
+        fixture.componentInstance.value.set(['a', 'c']);
+        await fixture.whenStable();
         expect(queryList.length).toBe(2);
 
         // make sure that the "b" element has been removed from query results
@@ -2417,14 +2238,13 @@ describe('query logic', () => {
        */
       it('should NOT notify on changes when a given view is removed and re-inserted at the same index', () => {
         @Component({
-          selector: 'test-comp',
           template: `
             <ng-template #tpl><div #foo>match</div></ng-template>
             <ng-template vc></ng-template>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [ViewContainerManipulatorDirective],
         })
         class TestComponent implements AfterViewInit {
           queryListNotificationCounter = 0;
@@ -2438,9 +2258,6 @@ describe('query logic', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [ViewContainerManipulatorDirective, TestComponent],
-        });
         const fixture = TestBed.createComponent(TestComponent);
         fixture.detectChanges();
 
@@ -2458,10 +2275,9 @@ describe('query logic', () => {
         expect(fixture.componentInstance.queryListNotificationCounter).toBe(1);
       });
 
-      it('should support a mix of content queries from the declaration and embedded view', () => {
+      it('should support a mix of content queries from the declaration and embedded view', async () => {
         @Directive({
           selector: '[query-for-lots-of-content]',
-          standalone: false,
         })
         class QueryForLotsOfContent {
           @ContentChildren('foo', {descendants: true}) foos1!: QueryList<ElementRef>;
@@ -2470,37 +2286,29 @@ describe('query logic', () => {
 
         @Directive({
           selector: '[query-for-content]',
-          standalone: false,
         })
         class QueryForContent {
           @ContentChildren('foo') foos!: QueryList<ElementRef>;
         }
 
         @Component({
-          selector: 'test-comp',
           template: `
             <div query-for-lots-of-content>
-              <ng-template ngFor let-item [ngForOf]="items">
+              <ng-template ngFor let-item [ngForOf]="items()">
                 <div query-for-content>
                   <span #foo></span>
                 </div>
               </ng-template>
             </div>
           `,
-          standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [NgForOf, QueryForLotsOfContent, QueryForContent],
         })
         class TestComponent {
-          items = [1, 2];
+          items = signal([1, 2]);
         }
 
-        TestBed.configureTestingModule({
-          declarations: [TestComponent, QueryForContent, QueryForLotsOfContent],
-        });
-
         const fixture = TestBed.createComponent(TestComponent);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const lotsOfContentEl = fixture.debugElement.query(By.directive(QueryForLotsOfContent));
         const lotsOfContentInstance = lotsOfContentEl.injector.get(QueryForLotsOfContent);
@@ -2512,8 +2320,8 @@ describe('query logic', () => {
         expect(lotsOfContentInstance.foos2.length).toBe(2);
         expect(contentInstance.foos.length).toBe(1);
 
-        fixture.componentInstance.items = [];
-        fixture.detectChanges();
+        fixture.componentInstance.items.set([]);
+        await fixture.whenStable();
         expect(lotsOfContentInstance.foos1.length).toBe(0);
         expect(lotsOfContentInstance.foos2.length).toBe(0);
       });
@@ -2521,7 +2329,6 @@ describe('query logic', () => {
       // https://stackblitz.com/edit/angular-rrmmuf?file=src/app/app.component.ts
       it('should report results when different instances of TemplateRef are inserted into one ViewContainerRefs', () => {
         @Component({
-          selector: 'test-comp',
           template: `
             <ng-template #tpl1 let-idx="idx">
               <div #foo [id]="'foo1_' + idx"></div>
@@ -2535,9 +2342,9 @@ describe('query logic', () => {
 
             <ng-template vc></ng-template>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [ViewContainerManipulatorDirective],
         })
         class TestComponent {
           @ViewChild(ViewContainerManipulatorDirective) vc!: ViewContainerManipulatorDirective;
@@ -2546,9 +2353,6 @@ describe('query logic', () => {
           @ViewChildren('foo') query!: QueryList<any>;
         }
 
-        TestBed.configureTestingModule({
-          declarations: [ViewContainerManipulatorDirective, TestComponent],
-        });
         const fixture = TestBed.createComponent(TestComponent);
         fixture.detectChanges();
 
@@ -2600,7 +2404,6 @@ describe('query logic', () => {
       // https://stackblitz.com/edit/angular-xzwp6n
       it('should report results when the same TemplateRef is inserted into different ViewContainerRefs', () => {
         @Component({
-          selector: 'test-comp',
           template: `
             <ng-template #tpl let-idx="idx" let-container_idx="container_idx">
               <div #foo [id]="'foo_' + container_idx + '_' + idx"></div>
@@ -2609,9 +2412,9 @@ describe('query logic', () => {
             <ng-template vc #vi0="vc"></ng-template>
             <ng-template vc #vi1="vc"></ng-template>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [ViewContainerManipulatorDirective],
         })
         class TestComponent {
           @ViewChild('tpl') tpl!: TemplateRef<any>;
@@ -2620,9 +2423,6 @@ describe('query logic', () => {
           @ViewChildren('foo') query!: QueryList<any>;
         }
 
-        TestBed.configureTestingModule({
-          declarations: [ViewContainerManipulatorDirective, TestComponent],
-        });
         const fixture = TestBed.createComponent(TestComponent);
         fixture.detectChanges();
 
@@ -2653,39 +2453,35 @@ describe('query logic', () => {
       });
 
       // https://stackblitz.com/edit/angular-wpd6gv?file=src%2Fapp%2Fapp.component.ts
-      it('should report results from views inserted in a lifecycle hook', () => {
+      it('should report results from views inserted in a lifecycle hook', async () => {
         @Component({
-          selector: 'my-app',
           template: `
             <ng-template #tpl>
               <span #foo id="from_tpl"></span>
             </ng-template>
 
-            <ng-template [ngTemplateOutlet]="show ? tpl : null"></ng-template>
+            <ng-template [ngTemplateOutlet]="show() ? tpl : null"></ng-template>
           `,
-          standalone: false,
-
-          changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [NgTemplateOutlet],
         })
         class MyApp {
-          show = false;
+          show = signal(false);
           @ViewChildren('foo') query!: QueryList<any>;
         }
 
-        TestBed.configureTestingModule({declarations: [MyApp], imports: [CommonModule]});
         const fixture = TestBed.createComponent(MyApp);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const queryList = fixture.componentInstance.query;
         expect(queryList.length).toBe(0);
 
-        fixture.componentInstance.show = true;
-        fixture.detectChanges();
+        fixture.componentInstance.show.set(true);
+        await fixture.whenStable();
         expect(queryList.length).toBe(1);
         expect(queryList.first.nativeElement.id).toBe('from_tpl');
 
-        fixture.componentInstance.show = false;
-        fixture.detectChanges();
+        fixture.componentInstance.show.set(false);
+        await fixture.whenStable();
         expect(queryList.length).toBe(0);
       });
     });
@@ -2695,31 +2491,27 @@ describe('query logic', () => {
     it('should query by provider super-type in an embedded view', () => {
       @Directive({
         selector: '[child]',
-        standalone: false,
       })
       class Child {}
 
       @Directive({
         selector: '[parent]',
         providers: [{provide: Child, useExisting: Parent}],
-        standalone: false,
       })
       class Parent extends Child {}
 
       @Component({
-        selector: 'test-cmpt',
         template: `<ng-template [ngIf]="true"
           ><ng-template [ngIf]="true"><div parent></div></ng-template
         ></ng-template>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, Parent],
       })
       class TestCmpt {
         @ViewChildren(Child) instances!: QueryList<Child>;
       }
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, Parent, Child]});
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
 
@@ -2735,24 +2527,21 @@ describe('query logic', () => {
         providers: [
           {provide: MyClass, useExisting: forwardRef(() => WithMultiProvider), multi: true},
         ],
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class WithMultiProvider {}
 
       @Component({
-        selector: 'test-cmpt',
         template: `<with-multi-provider></with-multi-provider>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [WithMultiProvider],
       })
       class TestCmpt {
         @ViewChildren(MyClass) queryResults!: QueryList<WithMultiProvider>;
       }
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, WithMultiProvider]});
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
 
@@ -2769,27 +2558,24 @@ describe('query logic', () => {
         providers: [
           {provide: MyClass, useExisting: forwardRef(() => WithMultiProvider), multi: true},
         ],
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class WithMultiProvider {}
 
       @Component({
-        selector: 'test-cmpt',
         template: `
           <ng-template [ngIf]="true"><with-multi-provider></with-multi-provider></ng-template>
           <with-multi-provider></with-multi-provider>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, WithMultiProvider],
       })
       class TestCmpt {
         @ViewChildren(MyClass) queryResults!: QueryList<WithMultiProvider>;
       }
 
-      TestBed.configureTestingModule({declarations: [TestCmpt, WithMultiProvider]});
       const fixture = TestBed.createComponent(TestCmpt);
       fixture.detectChanges();
 
@@ -2801,14 +2587,12 @@ describe('query logic', () => {
     it('should allow undefined provider value in a [View/Content]Child queries', () => {
       @Directive({
         selector: '[group]',
-        standalone: false,
       })
       class GroupDir {}
 
       @Directive({
         selector: '[undefinedGroup]',
         providers: [{provide: GroupDir, useValue: undefined}],
-        standalone: false,
       })
       class UndefinedGroup {}
 
@@ -2819,18 +2603,14 @@ describe('query logic', () => {
             <div undefinedGroup></div>
           </ng-template>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, GroupDir, UndefinedGroup],
       })
       class App {
         @ViewChild(GroupDir) group!: GroupDir;
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, GroupDir, UndefinedGroup],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2840,21 +2620,18 @@ describe('query logic', () => {
     it('should allow null / undefined provider value in a [View/Content]Children queries', () => {
       @Directive({
         selector: '[group]',
-        standalone: false,
       })
       class GroupDir {}
 
       @Directive({
         selector: '[nullGroup]',
         providers: [{provide: GroupDir, useValue: null}],
-        standalone: false,
       })
       class NullGroup {}
 
       @Directive({
         selector: '[undefinedGroup]',
         providers: [{provide: GroupDir, useValue: undefined}],
-        standalone: false,
       })
       class UndefinedGroup {}
 
@@ -2868,18 +2645,14 @@ describe('query logic', () => {
             <div undefinedGroup></div>
           </ng-template>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, GroupDir, NullGroup, UndefinedGroup],
       })
       class App {
         @ViewChildren(GroupDir) groups!: QueryList<GroupDir>;
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, GroupDir, NullGroup, UndefinedGroup],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2897,22 +2670,20 @@ describe('query logic', () => {
     @Directive({
       selector: '[text-token]',
       providers: [{provide: 'Token', useExisting: TextTokenDirective}],
-      standalone: false,
     })
     class TextTokenDirective {}
 
     it('should match string injection token in a ViewChild query', () => {
       @Component({
         template: '<div text-token></div>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [TextTokenDirective],
       })
       class App {
         @ViewChild('Token') token: any;
       }
 
-      TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.token).toBeInstanceOf(TextTokenDirective);
@@ -2921,15 +2692,14 @@ describe('query logic', () => {
     it('should give precedence to local reference if both a reference and a string injection token provider match a ViewChild query', () => {
       @Component({
         template: '<div text-token #Token></div>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [TextTokenDirective],
       })
       class App {
         @ViewChild('Token') token: any;
       }
 
-      TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.token).toBeInstanceOf(ElementRef);
@@ -2938,15 +2708,14 @@ describe('query logic', () => {
     it('should match string injection token in a ViewChildren query', () => {
       @Component({
         template: '<div text-token></div>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [TextTokenDirective],
       })
       class App {
         @ViewChildren('Token') tokens!: QueryList<any>;
       }
 
-      TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2958,15 +2727,14 @@ describe('query logic', () => {
     it('should match both string injection token and local reference inside a ViewChildren query', () => {
       @Component({
         template: '<div text-token #Token></div>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [TextTokenDirective],
       })
       class App {
         @ViewChildren('Token') tokens!: QueryList<any>;
       }
 
-      TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2980,7 +2748,6 @@ describe('query logic', () => {
       @Component({
         selector: 'has-query',
         template: '<ng-content></ng-content>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -2990,15 +2757,14 @@ describe('query logic', () => {
 
       @Component({
         template: '<has-query><div text-token></div></has-query>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [HasQuery, TextTokenDirective],
       })
       class App {
         @ViewChild(HasQuery) queryComp!: HasQuery;
       }
 
-      TestBed.configureTestingModule({declarations: [App, HasQuery, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -3009,7 +2775,6 @@ describe('query logic', () => {
       @Component({
         selector: 'has-query',
         template: '<ng-content></ng-content>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -3019,15 +2784,14 @@ describe('query logic', () => {
 
       @Component({
         template: '<has-query><div text-token #Token></div></has-query>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [HasQuery, TextTokenDirective],
       })
       class App {
         @ViewChild(HasQuery) queryComp!: HasQuery;
       }
 
-      TestBed.configureTestingModule({declarations: [App, HasQuery, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -3038,7 +2802,6 @@ describe('query logic', () => {
       @Component({
         selector: 'has-query',
         template: '<ng-content></ng-content>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -3048,15 +2811,14 @@ describe('query logic', () => {
 
       @Component({
         template: '<has-query><div text-token></div></has-query>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [HasQuery, TextTokenDirective],
       })
       class App {
         @ViewChild(HasQuery) queryComp!: HasQuery;
       }
 
-      TestBed.configureTestingModule({declarations: [App, HasQuery, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -3069,7 +2831,6 @@ describe('query logic', () => {
       @Component({
         selector: 'has-query',
         template: '<ng-content></ng-content>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -3079,15 +2840,14 @@ describe('query logic', () => {
 
       @Component({
         template: '<has-query><div text-token #Token></div></has-query>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [HasQuery, TextTokenDirective],
       })
       class App {
         @ViewChild(HasQuery) queryComp!: HasQuery;
       }
 
-      TestBed.configureTestingModule({declarations: [App, HasQuery, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -3100,15 +2860,14 @@ describe('query logic', () => {
     it('should match string token specified through the `read` option of a view query', () => {
       @Component({
         template: '<div text-token #Token></div>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [TextTokenDirective],
       })
       class App {
         @ViewChild('Token', {read: 'Token'}) token: any;
       }
 
-      TestBed.configureTestingModule({declarations: [App, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       expect(fixture.componentInstance.token).toBeInstanceOf(TextTokenDirective);
@@ -3118,7 +2877,6 @@ describe('query logic', () => {
       @Component({
         selector: 'has-query',
         template: '<ng-content></ng-content>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -3128,15 +2886,14 @@ describe('query logic', () => {
 
       @Component({
         template: '<has-query><div text-token #Token></div></has-query>',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [HasQuery, TextTokenDirective],
       })
       class App {
         @ViewChild(HasQuery) queryComp!: HasQuery;
       }
 
-      TestBed.configureTestingModule({declarations: [App, HasQuery, TextTokenDirective]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -3155,9 +2912,9 @@ function initWithTemplate(compType: Type<any>, template: string) {
 @Component({
   selector: 'local-ref-query-component',
   template: '<ng-content></ng-content>',
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [forwardRef(() => SimpleCompA), forwardRef(() => SimpleCompB)],
 })
 class QueryComp {
   @ViewChild('viewQuery') viewChild!: any;
@@ -3168,18 +2925,25 @@ class QueryComp {
 }
 
 @Component({
-  selector: 'app-comp',
   template: ``,
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [
+    QueryComp,
+    forwardRef(() => SimpleCompA),
+    forwardRef(() => SimpleCompB),
+    forwardRef(() => TextDirective),
+    forwardRef(() => StaticViewQueryComp),
+    forwardRef(() => StaticContentQueryComp),
+    forwardRef(() => StaticContentQueryDir),
+    forwardRef(() => SubclassStaticContentQueryComp),
+  ],
 })
 class AppComp {}
 
 @Component({
   selector: 'simple-comp-a',
   template: '',
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
 })
@@ -3188,7 +2952,6 @@ class SimpleCompA {}
 @Component({
   selector: 'simple-comp-b',
   template: '',
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
 })
@@ -3196,7 +2959,6 @@ class SimpleCompB {}
 
 @Directive({
   selector: '[text]',
-  standalone: false,
 })
 class TextDirective {
   @Input() text = '';
@@ -3208,9 +2970,9 @@ class TextDirective {
     <div [text]="text"></div>
     <span #foo></span>
   `,
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [TextDirective],
 })
 class StaticViewQueryComp {
   private _textDir!: TextDirective;
@@ -3241,7 +3003,6 @@ class StaticViewQueryComp {
 }
 
 @Component({
-  selector: 'subclass-static-view-query-comp',
   template: `
     <div [text]="text"></div>
     <span #foo></span>
@@ -3249,9 +3010,9 @@ class StaticViewQueryComp {
     <div #bar></div>
     <span #baz></span>
   `,
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [TextDirective],
 })
 class SubclassStaticViewQueryComp extends StaticViewQueryComp {
   @ViewChild('bar', {static: true}) bar!: ElementRef;
@@ -3262,7 +3023,6 @@ class SubclassStaticViewQueryComp extends StaticViewQueryComp {
 @Component({
   selector: 'static-content-query-comp',
   template: `<ng-content></ng-content>`,
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
 })
@@ -3294,7 +3054,6 @@ class StaticContentQueryComp {
 
 @Directive({
   selector: '[staticContentQueryDir]',
-  standalone: false,
 })
 class StaticContentQueryDir {
   private _textDir!: TextDirective;
@@ -3325,7 +3084,6 @@ class StaticContentQueryDir {
 @Component({
   selector: 'subclass-static-content-query-comp',
   template: `<ng-content></ng-content>`,
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
 })
@@ -3337,15 +3095,14 @@ class SubclassStaticContentQueryComp extends StaticContentQueryComp {
 
 @Component({
   selector: 'query-with-changes',
-  template: ` <div *ngIf="showing" #foo></div> `,
-  standalone: false,
+  template: ` <div *ngIf="showing()" #foo></div> `,
 
-  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [NgIf],
 })
 export class QueryCompWithChanges {
   @ViewChildren('foo') foos!: QueryList<any>;
 
-  showing = false;
+  showing = signal(false);
 }
 
 @Component({
@@ -3353,28 +3110,23 @@ export class QueryCompWithChanges {
   template: `
     <query-component>
       <div *ngIf="true" #foo></div>
-      <div *ngIf="showing">
+      <div *ngIf="showing()">
         Showing me should not change the content of the query
-        <div *ngIf="innerShowing" #foo></div>
+        <div *ngIf="innerShowing()" #foo></div>
       </div>
     </query-component>
   `,
-  standalone: false,
-
-  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [NgIf, forwardRef(() => QueryCompWithStrictChangeEmitParent)],
 })
 export class QueryCompWithNoChanges {
-  showing: boolean = true;
-  innerShowing: boolean = true;
+  showing = signal(true);
+  innerShowing = signal(true);
   queryComp!: QueryCompWithStrictChangeEmitParent;
 }
 
 @Component({
   selector: 'query-component',
   template: `<ng-content></ng-content>`,
-  standalone: false,
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class QueryCompWithStrictChangeEmitParent {
   @ContentChildren('foo', {
@@ -3391,15 +3143,11 @@ export class QueryCompWithStrictChangeEmitParent {
 @Component({
   selector: 'query-target',
   template: '<ng-content></ng-content>',
-  standalone: false,
-
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SuperDirectiveQueryTarget {}
 
 @Directive({
   selector: '[super-directive]',
-  standalone: false,
 })
 class SuperDirective {
   @ViewChildren(SuperDirectiveQueryTarget) headers!: QueryList<SuperDirectiveQueryTarget>;
@@ -3410,9 +3158,7 @@ class SuperDirective {
     <query-target>One</query-target>
     <query-target>Two</query-target>
   `,
-  standalone: false,
-
-  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [SuperDirectiveQueryTarget],
 })
 class SubComponent extends SuperDirective {}
 
@@ -3422,7 +3168,6 @@ const MY_OPTION_TOKEN = new InjectionToken<TestComponentWithToken>('ComponentWit
   selector: 'my-option',
   template: 'Option',
   providers: [{provide: MY_OPTION_TOKEN, useExisting: TestComponentWithToken}],
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
 })
@@ -3435,9 +3180,9 @@ class TestComponentWithToken {}
     <my-option></my-option>
     <ng-content></ng-content>
   `,
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [TestComponentWithToken],
 })
 class TestInjectionTokenQueries {
   @ViewChild(MY_OPTION_TOKEN) viewFirstOption!: TestComponentWithToken;
@@ -3453,8 +3198,8 @@ class TestInjectionTokenQueries {
       <my-option></my-option>
     </test-injection-token>
   `,
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [TestComponentWithToken, TestInjectionTokenQueries],
 })
 class TestInjectionTokenContentQueries {}

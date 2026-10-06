@@ -9,26 +9,11 @@
 // below. This would normally be done inside the application `polyfills.ts` file.
 import '@angular/localize/init';
 
-import {
-  AfterContentInit,
-  AfterViewInit,
-  Component,
-  ContentChildren,
-  Directive,
-  Input,
-  QueryList,
-  ViewChildren,
-} from '../../src/core';
-import {TestBed} from '../../testing';
 import {expect} from '@angular/private/testing/matchers';
+import {AfterViewInit, Component, Directive, Input, QueryList, ViewChildren} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('<ng-container>', function () {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [MyComp, NeedsContentChildren, NeedsViewChildren, TextDirective, Simple],
-    });
-  });
-
   it('should support the "i18n" attribute', () => {
     const template = '<ng-container i18n>foo</ng-container>';
     TestBed.overrideComponent(MyComp, {set: {template}});
@@ -42,7 +27,7 @@ describe('<ng-container>', function () {
 
   it('should work with static content projection', () => {
     const template = `<simple><ng-container><p>1</p><p>2</p></ng-container></simple>`;
-    TestBed.overrideComponent(MyComp, {set: {template}});
+    TestBed.overrideComponent(MyComp, {set: {template, imports: [Simple]}});
     const fixture = TestBed.createComponent(MyComp);
 
     fixture.detectChanges();
@@ -53,7 +38,7 @@ describe('<ng-container>', function () {
 
   it('should support injecting the container from children', () => {
     const template = `<ng-container [text]="'container'"><p></p></ng-container>`;
-    TestBed.overrideComponent(MyComp, {set: {template}});
+    TestBed.overrideComponent(MyComp, {set: {template, imports: [TextDirective]}});
     const fixture = TestBed.createComponent(MyComp);
 
     fixture.detectChanges();
@@ -65,7 +50,9 @@ describe('<ng-container>', function () {
 
   it('should contain all child directives in a <ng-container> (view dom)', () => {
     const template = '<needs-view-children #q></needs-view-children>';
-    TestBed.overrideComponent(MyComp, {set: {template}});
+    TestBed.overrideComponent(MyComp, {
+      set: {template, imports: [NeedsViewChildren, TextDirective]},
+    });
     const fixture = TestBed.createComponent(MyComp);
 
     fixture.detectChanges();
@@ -79,30 +66,15 @@ describe('<ng-container>', function () {
 
 @Directive({
   selector: '[text]',
-  standalone: false,
 })
 class TextDirective {
   @Input() public text: string | null = null;
 }
 
 @Component({
-  selector: 'needs-content-children',
-  template: '',
-  standalone: false,
-})
-class NeedsContentChildren implements AfterContentInit {
-  @ContentChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
-  numberOfChildrenAfterContentInit: number | undefined;
-
-  ngAfterContentInit() {
-    this.numberOfChildrenAfterContentInit = this.textDirChildren.length;
-  }
-}
-
-@Component({
   selector: 'needs-view-children',
   template: '<div text></div>',
-  standalone: false,
+  imports: [TextDirective],
 })
 class NeedsViewChildren implements AfterViewInit {
   @ViewChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
@@ -116,14 +88,11 @@ class NeedsViewChildren implements AfterViewInit {
 @Component({
   selector: 'simple',
   template: 'SIMPLE(<ng-content></ng-content>)',
-  standalone: false,
 })
 class Simple {}
 
 @Component({
-  selector: 'my-comp',
   template: '',
-  standalone: false,
 })
 class MyComp {
   ctxBoolProp: boolean = false;

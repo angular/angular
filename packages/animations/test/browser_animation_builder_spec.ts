@@ -6,21 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {
-  animate,
-  AnimationBuilder,
-  style,
-  ɵBrowserAnimationBuilder as BrowserAnimationBuilder,
-} from '../src/animations';
-import {AnimationDriver} from '../browser';
-import {MockAnimationDriver} from '../browser/testing';
-import {
   Component,
-  NgZone,
-  RendererFactory2,
-  ViewChild,
   DOCUMENT,
   NgModule,
+  NgZone,
   provideZonelessChangeDetection,
+  RendererFactory2,
+  ViewChild,
 } from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
@@ -28,6 +20,14 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ɵAsyncAnimationRendererFactory as AsyncAnimationRendererFactory} from '@angular/platform-browser/animations/async';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {isNode} from '@angular/private/testing';
+import {AnimationDriver} from '../browser';
+import {MockAnimationDriver} from '../browser/testing';
+import {
+  animate,
+  AnimationBuilder,
+  ɵBrowserAnimationBuilder as BrowserAnimationBuilder,
+  style,
+} from '../src/animations';
 
 @NgModule({
   providers: [provideZonelessChangeDetection()],
@@ -47,30 +47,24 @@ describe('BrowserAnimationBuilder', () => {
     });
   });
 
-  it('should inject AnimationBuilder into a component', () => {
+  it('should inject AnimationBuilder into a component', async () => {
     @Component({
-      selector: 'ani-cmp',
       template: '...',
-      standalone: false,
     })
     class Cmp {
       constructor(public builder: AnimationBuilder) {}
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
-
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;
 
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(cmp.builder instanceof BrowserAnimationBuilder).toBeTruthy();
   });
 
   it("should listen on start and done on the animation builder's player after it has been reset", fakeAsync(() => {
     @Component({
-      selector: 'ani-cmp',
       template: '...',
-      standalone: false,
     })
     class Cmp {
       @ViewChild('target') public target: any;
@@ -86,8 +80,6 @@ describe('BrowserAnimationBuilder', () => {
         return definition.create(this.target);
       }
     }
-
-    TestBed.configureTestingModule({declarations: [Cmp]});
 
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;
@@ -139,9 +131,7 @@ describe('BrowserAnimationBuilder', () => {
 
   it("should listen on start and done on the animation builder's player", fakeAsync(() => {
     @Component({
-      selector: 'ani-cmp',
       template: '...',
-      standalone: false,
     })
     class Cmp {
       @ViewChild('target') public target: any;
@@ -157,8 +147,6 @@ describe('BrowserAnimationBuilder', () => {
         return definition.create(this.target);
       }
     }
-
-    TestBed.configureTestingModule({declarations: [Cmp]});
 
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;
@@ -202,9 +190,7 @@ describe('BrowserAnimationBuilder', () => {
 
   it('should update `hasStarted()` on `play()` and `reset()`', fakeAsync(() => {
     @Component({
-      selector: 'ani-another-cmp',
       template: '...',
-      standalone: false,
     })
     class CmpAnother {
       @ViewChild('target') public target: any;
@@ -220,8 +206,6 @@ describe('BrowserAnimationBuilder', () => {
         return definition.create(this.target);
       }
     }
-
-    TestBed.configureTestingModule({declarations: [CmpAnother]});
 
     const fixture = TestBed.createComponent(CmpAnother);
     const cmp = fixture.componentInstance;
@@ -287,11 +271,9 @@ describe('BrowserAnimationBuilder', () => {
       });
     });
 
-    it('should be able to build', () => {
+    it('should be able to build', async () => {
       @Component({
-        selector: 'ani-cmp',
         template: '...',
-        standalone: false,
       })
       class Cmp {
         @ViewChild('target') public target: any;
@@ -305,11 +287,9 @@ describe('BrowserAnimationBuilder', () => {
         }
       }
 
-      TestBed.configureTestingModule({declarations: [Cmp]});
-
       const fixture = TestBed.createComponent(Cmp);
       const cmp = fixture.componentInstance;
-      fixture.detectChanges();
+      await fixture.whenStable();
       cmp.build();
     });
   });

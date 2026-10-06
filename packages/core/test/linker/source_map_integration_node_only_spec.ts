@@ -7,14 +7,14 @@
  */
 
 import {
-  ResourceLoader,
-  SourceMap,
-  JitEvaluator,
   CompilerFacadeImpl,
   escapeRegExp,
+  JitEvaluator,
+  ResourceLoader,
+  SourceMap,
 } from '@angular/compiler';
-import {Attribute, Component, Directive, ErrorHandler} from '../../src/core';
 import {CompilerFacade, ExportedCompilerFacade} from '../../src/compiler/compiler_facade';
+import {Attribute, Component, Directive, ErrorHandler, forwardRef} from '../../src/core';
 import {resolveComponentResources} from '../../src/metadata/resource_loading';
 import {TestBed} from '../../testing';
 
@@ -102,13 +102,12 @@ describe('jit source mapping', () => {
 
         @Component({
           ...templateDecorator(template),
-          standalone: false,
+          imports: [forwardRef(() => SomeDir)],
         })
         class MyComp {}
 
         @Directive({
           selector: '[someDir]',
-          standalone: false,
         })
         class SomeDir {
           constructor() {
@@ -116,7 +115,6 @@ describe('jit source mapping', () => {
           }
         }
 
-        TestBed.configureTestingModule({declarations: [SomeDir]});
         let error: any;
         try {
           await resolveCompileAndCreateComponent(MyComp, template);
@@ -136,13 +134,13 @@ describe('jit source mapping', () => {
 
         @Component({
           ...templateDecorator(template),
-          standalone: false,
+
+          imports: [forwardRef(() => SomeDir)],
         })
         class MyComp {}
 
         @Directive({
           selector: '[someDir]',
-          standalone: false,
         })
         class SomeDir {
           constructor(@Attribute('someDir') someDir: string) {
@@ -152,7 +150,6 @@ describe('jit source mapping', () => {
           }
         }
 
-        TestBed.configureTestingModule({declarations: [SomeDir]});
         let error: any;
         try {
           await resolveCompileAndCreateComponent(MyComp, template);

@@ -147,7 +147,6 @@ withEachNg1Version(() => {
         scope = new mockScope();
 
         @Component({
-          selector: 'comp',
           template: '',
           standalone: false,
         })

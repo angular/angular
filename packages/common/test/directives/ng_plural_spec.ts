@@ -143,7 +143,6 @@ describe('ngPlural', () => {
 
   it('should be available as a standalone directive', async () => {
     @Component({
-      selector: 'test-component',
       imports: [NgPlural, NgPluralCase],
       template:
         '<ul [ngPlural]="switchValue">' +
@@ -178,7 +177,6 @@ class TestLocalization extends NgLocalization {
 }
 
 @Component({
-  selector: 'test-cmp',
   template: '',
   imports: [NgPlural, NgPluralCase],
   providers: [{provide: NgLocalization, useClass: TestLocalization}],

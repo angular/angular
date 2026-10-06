@@ -252,7 +252,6 @@ describe('insert/remove', () => {
     class HelloWorldComp {}
 
     @Component({
-      selector: 'test-component',
       imports: [NgComponentOutlet],
       template: ` <ng-container *ngComponentOutlet="component"></ng-container> `,
     })
@@ -364,7 +363,6 @@ describe('inputs', () => {
 
 const TEST_TOKEN = new InjectionToken('TestToken');
 @Component({
-  selector: 'injected-component',
   template: 'foo',
   changeDetection: ChangeDetectionStrategy.Eager,
 })
@@ -373,7 +371,6 @@ class InjectedComponent {
 }
 
 @Component({
-  selector: 'injected-component-again',
   template: 'bar',
   changeDetection: ChangeDetectionStrategy.Eager,
 })
@@ -388,7 +385,6 @@ const TEST_CMP_TEMPLATE = `<ng-template *ngComponentOutlet="
       ngModule: ngModule;
     "></ng-template>`;
 @Component({
-  selector: 'test-cmp',
   template: TEST_CMP_TEMPLATE,
   imports: [NgComponentOutlet],
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -450,7 +446,6 @@ class Module3InjectedComponent {}
 export class TestModule3 {}
 
 @Component({
-  selector: 'cmp-with-inputs',
   template: `foo: {{ foo }}, bar: {{ bar }}, baz: {{ baz }}`,
 })
 class ComponentWithInputs {
@@ -460,7 +455,6 @@ class ComponentWithInputs {
 }
 
 @Component({
-  selector: 'another-cmp-with-inputs',
   template: `[ANOTHER] foo: {{ foo }}, bar: {{ bar }}, baz: {{ baz }}`,
 })
 class AnotherComponentWithInputs {
@@ -470,7 +464,6 @@ class AnotherComponentWithInputs {
 }
 
 @Component({
-  selector: 'test-cmp',
   imports: [NgComponentOutlet],
   template: `<ng-template *ngComponentOutlet="currentComponent; inputs: inputs"></ng-template>`,
   changeDetection: ChangeDetectionStrategy.Eager,

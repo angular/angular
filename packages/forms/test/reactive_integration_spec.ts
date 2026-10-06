@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵgetDOM as getDOM} from '@angular/common';
+import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -80,7 +80,6 @@ function createValidatorClass(selector: string) {
         multi: true,
       },
     ],
-    standalone: false,
   })
   class CustomValidator implements Validator {
     validate(control: AbstractControl) {
@@ -101,7 +100,6 @@ function createAsyncValidatorClass(selector: string) {
         multi: true,
       },
     ],
-    standalone: false,
   })
   class CustomValidator implements AsyncValidator {
     validate(control: AbstractControl) {
@@ -122,7 +120,6 @@ function createControlValueAccessor(selector: string) {
         multi: true,
       },
     ],
-    standalone: false,
   })
   class CustomValueAccessor implements ControlValueAccessor {
     writeValue(value: any) {}
@@ -151,9 +148,11 @@ describe('reactive forms integration tests', () => {
 
   function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
     TestBed.configureTestingModule({
-      declarations: [component, ...directives],
       imports: [FormsModule, ReactiveFormsModule],
     });
+    if (directives.length > 0) {
+      TestBed.overrideComponent(component, {add: {imports: directives}});
+    }
     return TestBed.createComponent(component);
   }
 
@@ -162,9 +161,11 @@ describe('reactive forms integration tests', () => {
     ...directives: Type<any>[]
   ): ComponentFixture<T> {
     TestBed.configureTestingModule({
-      declarations: [component, ...directives],
       imports: [ReactiveFormsModule],
     });
+    if (directives.length > 0) {
+      TestBed.overrideComponent(component, {add: {imports: directives}});
+    }
     return TestBed.createComponent(component);
   }
 
@@ -391,12 +392,12 @@ describe('reactive forms integration tests', () => {
 
     it('should sync the disabled state if it changes right after a group is re-bound', async () => {
       @Component({
+        imports: [FormsModule, ReactiveFormsModule, CommonModule],
         template: `
           <form [formGroup]="form">
             <input formControlName="input" />
           </form>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -642,7 +643,7 @@ describe('reactive forms integration tests', () => {
   describe('template pipeline integration', () => {
     it('should not crash when a control directive is applied to an element inside an @if block', async () => {
       @Component({
-        selector: 'my-app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <div [formGroup]="form">
             @if (true) {
@@ -650,7 +651,6 @@ describe('reactive forms integration tests', () => {
             }
           </div>
         `,
-        standalone: false,
       })
       class App {
         form = new FormGroup({name: new FormControl('Angular')});
@@ -837,6 +837,7 @@ describe('reactive forms integration tests', () => {
     describe('dynamic change of FormGroup and FormArray shapes', () => {
       it('should handle FormControl and FormGroup swap', async () => {
         @Component({
+          imports: [ReactiveFormsModule, CommonModule],
           template: `
             <form [formGroup]="form">
               <input formControlName="name" id="standalone-id" *ngIf="!showAsGroup" />
@@ -845,7 +846,6 @@ describe('reactive forms integration tests', () => {
               </ng-container>
             </form>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -902,6 +902,7 @@ describe('reactive forms integration tests', () => {
 
       it('should handle FormControl and FormArray swap', async () => {
         @Component({
+          imports: [ReactiveFormsModule, CommonModule],
           template: `
             <form [formGroup]="form">
               <input formControlName="name" id="standalone-id" *ngIf="!showAsArray" />
@@ -910,7 +911,6 @@ describe('reactive forms integration tests', () => {
               </ng-container>
             </form>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -967,6 +967,7 @@ describe('reactive forms integration tests', () => {
 
       it('should handle FormGroup and FormArray swap', async () => {
         @Component({
+          imports: [ReactiveFormsModule, CommonModule],
           template: `
             <form [formGroup]="form">
               <ng-container formGroupName="name" *ngIf="!showAsArray">
@@ -977,7 +978,6 @@ describe('reactive forms integration tests', () => {
               </ng-container>
             </form>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -1566,13 +1566,12 @@ describe('reactive forms integration tests', () => {
 
     it('formArray should emit an event when resetting a form', async () => {
       @Component({
-        selector: 'form-array-comp',
+        imports: [ReactiveFormsModule, CommonModule],
         template: ` <form #formElement [formArray]="form" (ngSubmit)="event = $event">
           @for (_ of controls; track $index) {
             <input type="text" [formControlName]="$index" />
           }
         </form>`,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormArrayComp {
@@ -1694,9 +1693,8 @@ describe('reactive forms integration tests', () => {
   describe('setting status classes', () => {
     it('should not assign status on standalone <form> element', async () => {
       @Component({
-        selector: 'form-comp',
+        imports: [ReactiveFormsModule, CommonModule],
         template: ` <form></form> `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormComp {}
@@ -1712,13 +1710,12 @@ describe('reactive forms integration tests', () => {
 
     it('should not assign status on standalone <form> element with form control inside', async () => {
       @Component({
-        selector: 'form-comp',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <form>
             <input type="text" [formControl]="control" />
           </form>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormComp {
@@ -2227,13 +2224,13 @@ describe('reactive forms integration tests', () => {
 
       it('should be able to remove a control as a result of another control being reset', async () => {
         @Component({
+          imports: [ReactiveFormsModule, CommonModule],
           template: `
             <form [formGroup]="form">
               <input formControlName="name" />
               <input formControlName="surname" />
             </form>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3039,7 +3036,6 @@ describe('reactive forms integration tests', () => {
 
       it('should warn once for each instance when global provider is provided with "always"', async () => {
         TestBed.configureTestingModule({
-          declarations: [FormControlNgModel],
           imports: [ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'always'})],
         });
 
@@ -3057,7 +3053,6 @@ describe('reactive forms integration tests', () => {
 
       it('should silence warnings when global provider is provided with "never"', async () => {
         TestBed.configureTestingModule({
-          declarations: [FormControlNgModel],
           imports: [ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'})],
         });
 
@@ -3613,7 +3608,7 @@ describe('reactive forms integration tests', () => {
     describe('enabling validators conditionally', () => {
       it('should not activate minlength and maxlength validators if input is null', async () => {
         @Component({
-          selector: 'min-max-length-null',
+          imports: [ReactiveFormsModule, CommonModule],
           template: `
             <form [formGroup]="form">
               <input
@@ -3624,7 +3619,6 @@ describe('reactive forms integration tests', () => {
               />
             </form>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -3712,7 +3706,7 @@ describe('reactive forms integration tests', () => {
 
       it('should not activate min and max validators if input is null', async () => {
         @Component({
-          selector: 'min-max-null',
+          imports: [ReactiveFormsModule, CommonModule],
           template: `
             <form [formGroup]="form">
               <input
@@ -3724,7 +3718,6 @@ describe('reactive forms integration tests', () => {
               />
             </form>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -4131,7 +4124,6 @@ describe('reactive forms integration tests', () => {
           providers: [
             {provide: NG_VALIDATORS, useExisting: forwardRef(() => NoOpValidator), multi: true},
           ],
-          standalone: false,
         })
         class NoOpValidator implements Validator {
           @Input() validatorInput = '';
@@ -4154,7 +4146,6 @@ describe('reactive forms integration tests', () => {
               multi: true,
             },
           ],
-          standalone: false,
         })
         class NoOpAsyncValidator implements AsyncValidator {
           @Input() validatorInput = '';
@@ -4169,7 +4160,7 @@ describe('reactive forms integration tests', () => {
         }
 
         @Component({
-          selector: 'ng-model-noop-validation',
+          imports: [ReactiveFormsModule, CommonModule],
           template: `
             <form
               [formGroup]="fooGroup"
@@ -4180,7 +4171,6 @@ describe('reactive forms integration tests', () => {
               <input type="text" formControlName="fooInput" />
             </form>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -4961,11 +4951,10 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <input *ngIf="visible" type="text" [formControl]="control" cva-a validators-a />
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -5041,12 +5030,11 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <input type="text" [formControl]="control" cva-a validators-a *ngIf="visible" />
           <input type="text" [formControl]="control" cva-b />
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -5117,14 +5105,13 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <div [formGroup]="group">
             <input type="text" formControlName="control" cva-a validators-a *ngIf="visible" />
             <input type="text" formControlName="control" cva-b />
           </div>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -5199,7 +5186,7 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <ng-container *ngIf="visible">
             <div [formGroup]="group" validators-b>
@@ -5207,7 +5194,6 @@ describe('reactive forms integration tests', () => {
             </div>
           </ng-container>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -5305,13 +5291,12 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <div [formGroup]="group" validators-b>
             <input *ngIf="visible" type="text" [formControl]="control" cva-a validators-a />
           </div>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -5387,7 +5372,7 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <div [formGroup]="group" validators-b *ngIf="visible">
             <ng-container *ngFor="let login of logins">
@@ -5395,7 +5380,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -5502,7 +5486,7 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <div [formGroup]="group" validators-c>
             <ng-container formArrayName="arr" validators-b>
@@ -5510,7 +5494,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -5602,7 +5585,7 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <div [formGroup]="group" validators-c>
             <ng-container *ngIf="visible" formArrayName="arr" validators-b>
@@ -5610,7 +5593,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -5728,7 +5710,7 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <div [formGroup]="group" validators-c *ngIf="visible">
             <ng-container formArrayName="arr" validators-b>
@@ -5736,7 +5718,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -5860,7 +5841,7 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <div [formGroup]="group" validators-c>
             <ng-container formArrayName="arr" validators-b *ngIf="visible">
@@ -5870,7 +5851,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -6008,7 +5988,7 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <div [formGroup]="root" validators-c>
             <ng-container formGroupName="group" validators-b *ngIf="visible">
@@ -6016,7 +5996,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -6106,7 +6085,7 @@ describe('reactive forms integration tests', () => {
       });
 
       @Component({
-        selector: 'app',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <div [formGroup]="root" validators-c *ngIf="visible">
             <ng-container formGroupName="group" validators-b>
@@ -6114,7 +6093,6 @@ describe('reactive forms integration tests', () => {
             </ng-container>
           </div>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -6183,13 +6161,12 @@ describe('reactive forms integration tests', () => {
     // See https://github.com/angular/angular/issues/40521.
     it('should properly clean up when FormControlName has no CVA', async () => {
       @Component({
-        selector: 'no-cva-compo',
+        imports: [ReactiveFormsModule, CommonModule],
         template: `
           <form [formGroup]="form">
             <div formControlName="control"></div>
           </form>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NoCVAComponent {
@@ -6210,13 +6187,12 @@ describe('reactive forms integration tests', () => {
 
     describe('formArray support', () => {
       @Component({
-        selector: 'form-array-comp',
+        imports: [ReactiveFormsModule, CommonModule],
         template: ` <form #formElement [formArray]="form" (ngSubmit)="event = $event">
           @for (_ of controls; track $index) {
             <input type="text" [formControlName]="$index" />
           }
         </form>`,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormArrayComp {
@@ -6314,6 +6290,7 @@ describe('reactive forms integration tests', () => {
 
       it('should support formArrayName', async () => {
         @Component({
+          imports: [ReactiveFormsModule, CommonModule],
           template: `
             <form [formArray]="form">
               <form formArrayName="1">
@@ -6321,7 +6298,6 @@ describe('reactive forms integration tests', () => {
               </form>
             </form>
           `,
-          standalone: false,
 
           changeDetection: ChangeDetectionStrategy.Eager,
         })
@@ -6384,7 +6360,6 @@ function loginIsEmptyGroupValidator(c: FormGroup) {
 @Directive({
   selector: '[login-is-empty-validator]',
   providers: [{provide: NG_VALIDATORS, useValue: loginIsEmptyGroupValidator, multi: true}],
-  standalone: false,
 })
 class LoginIsEmptyValidator {}
 
@@ -6393,7 +6368,6 @@ class LoginIsEmptyValidator {}
   providers: [
     {provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => UniqLoginValidator), multi: true},
   ],
-  standalone: false,
 })
 class UniqLoginValidator implements AsyncValidator {
   @Input('uniq-login-validator') expected: any;
@@ -6404,9 +6378,8 @@ class UniqLoginValidator implements AsyncValidator {
 }
 
 @Component({
-  selector: 'form-control-comp',
+  imports: [ReactiveFormsModule, CommonModule],
   template: `<input type="text" [formControl]="control" />`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlComp {
@@ -6414,11 +6387,10 @@ class FormControlComp {
 }
 
 @Component({
-  selector: 'form-group-comp',
+  imports: [FormsModule, ReactiveFormsModule, CommonModule],
   template: ` <form [formGroup]="form" (ngSubmit)="event = $event">
     <input type="text" formControlName="login" />
   </form>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormGroupComp {
@@ -6428,7 +6400,7 @@ class FormGroupComp {
 }
 
 @Component({
-  selector: 'nested-form-group-name-comp',
+  imports: [ReactiveFormsModule, CommonModule],
   template: ` <form [formGroup]="form">
     <div formGroupName="signin" login-is-empty-validator>
       <input formControlName="login" />
@@ -6436,7 +6408,6 @@ class FormGroupComp {
     </div>
     <input *ngIf="form.contains('email')" formControlName="email" />
   </form>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedFormGroupNameComp {
@@ -6444,7 +6415,7 @@ class NestedFormGroupNameComp {
 }
 
 @Component({
-  selector: 'form-array-comp',
+  imports: [ReactiveFormsModule, CommonModule],
   template: ` <form [formGroup]="form">
     <div formArrayName="cities">
       <div *ngFor="let city of cityArray.controls; let i = index">
@@ -6452,7 +6423,6 @@ class NestedFormGroupNameComp {
       </div>
     </div>
   </form>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormArrayComp {
@@ -6461,7 +6431,7 @@ class FormArrayComp {
 }
 
 @Component({
-  selector: 'nested-form-array-name-comp',
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <form [formGroup]="form">
       <div formArrayName="arr">
@@ -6469,7 +6439,6 @@ class FormArrayComp {
       </div>
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedFormArrayNameComp {
@@ -6477,7 +6446,7 @@ class NestedFormArrayNameComp {
 }
 
 @Component({
-  selector: 'form-array-nested-group',
+  imports: [ReactiveFormsModule, CommonModule],
   template: ` <div [formGroup]="form">
     <div formArrayName="cities">
       <div *ngFor="let city of cityArray.controls; let i = index" [formGroupName]="i">
@@ -6486,7 +6455,6 @@ class NestedFormArrayNameComp {
       </div>
     </div>
   </div>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormArrayNestedGroup {
@@ -6495,12 +6463,11 @@ class FormArrayNestedGroup {
 }
 
 @Component({
-  selector: 'form-group-ng-model',
+  imports: [ReactiveFormsModule, CommonModule],
   template: ` <form [formGroup]="form">
     <input type="text" formControlName="login" [(ngModel)]="login" />
     <input type="text" formControlName="password" [(ngModel)]="password" />
   </form>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormGroupNgModel {
@@ -6510,12 +6477,11 @@ class FormGroupNgModel {
 }
 
 @Component({
-  selector: 'form-control-ng-model',
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <input type="text" [formControl]="control" [(ngModel)]="login" />
     <input type="text" [formControl]="passwordControl" [(ngModel)]="password" />
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlNgModel {
@@ -6526,14 +6492,13 @@ class FormControlNgModel {
 }
 
 @Component({
-  selector: 'login-is-empty-wrapper',
+  imports: [ReactiveFormsModule, CommonModule],
   template: ` <div [formGroup]="form" login-is-empty-validator>
     <input type="text" formControlName="login" required />
     <input type="text" formControlName="min" minlength="3" />
     <input type="text" formControlName="max" maxlength="3" />
     <input type="text" formControlName="pattern" pattern=".{3,}" />
   </div>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class LoginIsEmptyWrapper {
@@ -6541,14 +6506,13 @@ class LoginIsEmptyWrapper {
 }
 
 @Component({
-  selector: 'validation-bindings-form',
+  imports: [ReactiveFormsModule, CommonModule],
   template: ` <div [formGroup]="form">
     <input name="required" type="text" formControlName="login" [required]="required" />
     <input name="minlength" type="text" formControlName="min" [minlength]="minLen" />
     <input name="maxlength" type="text" formControlName="max" [maxlength]="maxLen" />
     <input name="pattern" type="text" formControlName="pattern" [pattern]="pattern" />
   </div>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ValidationBindingsForm {
@@ -6560,9 +6524,8 @@ class ValidationBindingsForm {
 }
 
 @Component({
-  selector: 'form-control-checkbox-validator',
+  imports: [ReactiveFormsModule, CommonModule],
   template: `<input type="checkbox" [formControl]="control" />`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlCheckboxRequiredValidator {
@@ -6570,11 +6533,10 @@ class FormControlCheckboxRequiredValidator {
 }
 
 @Component({
-  selector: 'uniq-login-wrapper',
+  imports: [ReactiveFormsModule, CommonModule],
   template: ` <div [formGroup]="form">
     <input type="text" formControlName="login" uniq-login-validator="expected" />
   </div>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class UniqLoginWrapper {
@@ -6582,13 +6544,12 @@ class UniqLoginWrapper {
 }
 
 @Component({
-  selector: 'form-group-with-validators',
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <div [formGroup]="form" validators-a>
       <input type="text" formControlName="login" />
     </div>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormGroupWithValidators {
@@ -6596,13 +6557,12 @@ class FormGroupWithValidators {
 }
 
 @Component({
-  selector: 'form-control-with-validators',
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <div [formGroup]="form">
       <input type="text" formControlName="login" />
     </div>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlWithAsyncValidatorFn {
@@ -6617,13 +6577,12 @@ class FormControlWithAsyncValidatorFn {
 }
 
 @Component({
-  selector: 'form-control-with-validators',
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <div [formGroup]="form">
       <input type="text" formControlName="login" validators-a />
     </div>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlWithValidators {
@@ -6631,7 +6590,7 @@ class FormControlWithValidators {
 }
 
 @Component({
-  selector: 'ngfor-form-controls-with-validators',
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <div [formGroup]="formA">
       <input type="radio" formControlName="login" validators-a />
@@ -6640,7 +6599,6 @@ class FormControlWithValidators {
       <input type="text" formControlName="login" validators-a id="login" />
     </div>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MultipleFormControls {
@@ -6650,7 +6608,7 @@ class MultipleFormControls {
 }
 
 @Component({
-  selector: 'ngfor-form-controls-with-validators',
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <div [formGroup]="form">
       <ng-container *ngFor="let login of logins">
@@ -6658,7 +6616,6 @@ class MultipleFormControls {
       </ng-container>
     </div>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgForFormControlWithValidators {
@@ -6667,11 +6624,10 @@ class NgForFormControlWithValidators {
 }
 
 @Component({
-  selector: 'min-max-form-control-name',
+  imports: [ReactiveFormsModule, CommonModule],
   template: ` <div [formGroup]="form">
     <input type="number" formControlName="pin" [max]="max" [min]="min" />
   </div>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MinMaxFormControlNameComp {
@@ -6682,11 +6638,10 @@ class MinMaxFormControlNameComp {
 }
 
 @Component({
-  selector: 'min-max-form-control',
+  imports: [ReactiveFormsModule, CommonModule],
   template: ` <div [formGroup]="form">
     <input type="number" [formControl]="control" [max]="max" [min]="min" />
   </div>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MinMaxFormControlComp {
@@ -6697,6 +6652,7 @@ class MinMaxFormControlComp {
 }
 
 @Component({
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <dialog open>
       <form #form method="dialog" [formGroup]="formGroup">
@@ -6704,7 +6660,6 @@ class MinMaxFormControlComp {
       </form>
     </dialog>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NativeDialogForm {
@@ -6713,14 +6668,13 @@ class NativeDialogForm {
 }
 
 @Component({
-  selector: 'radio-form',
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <form [formGroup]="form">
       <input type="radio" formControlName="choice" value="one" [attr.disabled]="true" /> One
       <input type="radio" formControlName="choice" value="two" /> Two
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class RadioForm {

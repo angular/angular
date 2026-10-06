@@ -462,7 +462,6 @@ describe('binding to CSS class list', () => {
 
     it('should mix class and ngClass bindings with the same value', async () => {
       @Component({
-        selector: 'test-component',
         imports: [NgClass],
         template: `<div class="{{ 'option-' + level }}" [ngClass]="'option-' + level"></div>`,
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -484,7 +483,6 @@ describe('binding to CSS class list', () => {
 
     it('should be available as a standalone directive', async () => {
       @Component({
-        selector: 'test-component',
         imports: [NgClass],
         template: `<div trailing-space [ngClass]="{foo: applyClasses}"></div>`,
       })
@@ -501,7 +499,6 @@ describe('binding to CSS class list', () => {
 });
 
 @Component({
-  selector: 'test-cmp',
   template: '',
   imports: [NgClass, NgFor],
   changeDetection: ChangeDetectionStrategy.Eager,

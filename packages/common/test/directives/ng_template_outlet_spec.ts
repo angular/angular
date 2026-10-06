@@ -400,7 +400,6 @@ describe('NgTemplateOutlet', () => {
 
   it('should be available as a standalone directive', async () => {
     @Component({
-      selector: 'test-component',
       imports: [NgTemplateOutlet],
       template: `
         <ng-template #tpl>Hello World</ng-template>
@@ -519,16 +518,7 @@ class NestingCounter {
 }
 
 @Component({
-  selector: 'test-cmp',
   template: '',
-  imports: [
-    CaptureTplRefs,
-    DestroyableCmpt,
-    InjectValueComponent,
-    NestingCounter,
-    NgTemplateOutlet,
-    ProvideValueComponent,
-  ],
   providers: [DestroyedSpyService],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
@@ -544,6 +534,17 @@ function createTestComponent(
   providers: Provider[] = [],
 ): ComponentFixture<TestComponent> {
   return TestBed.overrideComponent(TestComponent, {
-    set: {template, providers: [DestroyedSpyService, ...providers]},
+    set: {
+      template,
+      providers: [DestroyedSpyService, ...providers],
+      imports: [
+        CaptureTplRefs,
+        DestroyableCmpt,
+        InjectValueComponent,
+        NestingCounter,
+        NgTemplateOutlet,
+        ProvideValueComponent,
+      ],
+    },
   }).createComponent(TestComponent);
 }
