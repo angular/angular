@@ -383,7 +383,12 @@ export function refreshView<T>(
             declarationType,
             caughtBy: onError,
           };
-          onError(encapsulateBoundaryError(errorToHandle), details);
+          const prevConsumer = setActiveConsumer(null);
+          try {
+            onError(encapsulateBoundaryError(errorToHandle), details);
+          } finally {
+            setActiveConsumer(prevConsumer);
+          }
           handled = true;
           break;
         } catch (boundaryError) {
