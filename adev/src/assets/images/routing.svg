@@ -1,11 +1,11 @@
 <svg
   width="226"
-  height="284"
-  viewBox="0 -12 226 284"
+  height="291"
+  viewBox="0 -19 226 291"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
   class="routing-svg"
-  style="max-height: 130px"
+  style="max-height: 133px; overflow: visible"
 >
   <path
     d="M37.2906 46.6111H184.604V68.2037H37.2906V84.9254V87.5397H184.604V103.805H37.2906V120.514V120.958H184.604V140.639H37.2906V162.577"
@@ -176,7 +176,7 @@
     fill="black"
   />
   <defs><linearGradient id="routing-angie-linear-gradient" x1="673.48" y1="917.02" x2="673.48" y2="747.23" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#eadbe7"/><stop offset=".36" stop-color="#e8d9e5"/><stop offset=".49" stop-color="#e4d2e1"/><stop offset=".58" stop-color="#dcc6da"/><stop offset=".61" stop-color="#d8c0d6"/></linearGradient><linearGradient id="routing-angie-linear-gradient-2" x1="480.27" y1="918.07" x2="480.27" y2="749.04" href="#routing-angie-linear-gradient"/><linearGradient id="routing-angie-linear-gradient-3" x1="386.17" y1="302.74" x2="664.61" y2="785.02" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#f637e3"/><stop offset="0" stop-color="#f535de"/><stop offset=".08" stop-color="#f228bd"/><stop offset=".15" stop-color="#ef1ca1"/><stop offset=".23" stop-color="#ec138a"/><stop offset=".33" stop-color="#eb0c79"/><stop offset=".45" stop-color="#e9076d"/><stop offset=".6" stop-color="#e90465"/><stop offset=".99" stop-color="#e90464"/></linearGradient><linearGradient id="routing-angie-linear-gradient-4" x1="740.64" y1="183.72" x2="740.64" y2="842.08" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#e90464"/><stop offset=".29" stop-color="#e00362"/><stop offset=".75" stop-color="#c90160"/><stop offset="1" stop-color="#ba005e"/></linearGradient><radialGradient id="routing-angie-radial-gradient" cx="583.02" cy="618.37" fx="583.02" fy="618.37" r="219.14" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#eadbe7"/><stop offset=".52" stop-color="#e8d8e5"/><stop offset=".76" stop-color="#e3d1e0"/><stop offset=".96" stop-color="#dac4d8"/><stop offset="1" stop-color="#d8c0d6"/></radialGradient></defs>
-  <g transform="translate(118.70 -17.51) scale(0.06678)">
+  <g transform="translate(103.17 -42.03) scale(0.09349)">
   <path fill="none" stroke="#eadbe7" stroke-linecap="round" stroke-linejoin="round" stroke-width="68.81" d="M847.85,710.84s91.34-36.44,3.59-107.68"/>
   <path fill="url(#routing-angie-linear-gradient)" d="M627.77,904.49c0,6.92,5.61,12.53,12.53,12.53h39s26.49-45.51,39.88-146.52h0c-20.22-27.68-60.19-31.24-84.98-7.57h0c-4.11,3.92-6.43,9.35-6.43,15.03v126.52Z"/>
   <path fill="#e90464" d="M678.31,862.35h2.7c22.1,0,40.04,17.94,40.04,40.04v1.57c0,7.78-6.32,14.1-14.1,14.1h-62.09c-3.64,0-6.59-2.95-6.59-6.59v-9.08c0-22.1,17.94-40.04,40.04-40.04Z"/>
