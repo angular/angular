@@ -30,7 +30,6 @@ describe('property bindings', () => {
   it('should support bindings to properties', () => {
     @Component({
       template: `<span [id]="id"></span>`,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -38,7 +37,6 @@ describe('property bindings', () => {
       id: string | undefined;
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     const spanEl = fixture.nativeElement.querySelector('span');
 
@@ -79,7 +77,6 @@ describe('property bindings', () => {
   it('should update bindings when value changes', () => {
     @Component({
       template: `<a [title]="title"></a>`,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -87,7 +84,6 @@ describe('property bindings', () => {
       title = 'Hello';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
     let a = fixture.debugElement.query(By.css('a')).nativeElement;
@@ -101,7 +97,6 @@ describe('property bindings', () => {
   it('should not update bindings when value does not change', () => {
     @Component({
       template: `<a [title]="title"></a>`,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -109,7 +104,6 @@ describe('property bindings', () => {
       title = 'Hello';
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
     let a = fixture.debugElement.query(By.css('a')).nativeElement;
@@ -371,7 +365,6 @@ describe('property bindings', () => {
   it('should use the sanitizer in bound properties', () => {
     @Component({
       template: ` <a [href]="url"> </a> `,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -379,7 +372,6 @@ describe('property bindings', () => {
       url: string | SafeUrl = 'javascript:alert("haha, I am taking over your computer!!!");';
     }
 
-    TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const a = fixture.nativeElement.querySelector('a');
@@ -398,7 +390,6 @@ describe('property bindings', () => {
   it('should not stringify non-string values', () => {
     @Component({
       template: `<input [required]="isRequired" />`,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -406,7 +397,6 @@ describe('property bindings', () => {
       isRequired = false;
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
 
@@ -416,7 +406,6 @@ describe('property bindings', () => {
   it('should support interpolation for properties', () => {
     @Component({
       template: `<span id="{{ '_' + id + '_' }}"></span>`,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -424,7 +413,6 @@ describe('property bindings', () => {
       id: string | undefined;
     }
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     const spanEl = fixture.nativeElement.querySelector('span');
 
@@ -440,7 +428,6 @@ describe('property bindings', () => {
   describe('input properties', () => {
     @Directive({
       selector: '[myButton]',
-      standalone: false,
     })
     class MyButton {
       @Input() disabled: boolean | undefined;
@@ -448,7 +435,6 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[otherDir]',
-      standalone: false,
     })
     class OtherDir {
       @Input() id: number | undefined;
@@ -457,7 +443,6 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[otherDisabledDir]',
-      standalone: false,
     })
     class OtherDisabledDir {
       @Input() disabled: boolean | undefined;
@@ -465,7 +450,6 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[idDir]',
-      standalone: false,
     })
     class IdDir {
       @Input('id') idNumber: string | undefined;
@@ -474,16 +458,15 @@ describe('property bindings', () => {
     it('should check input properties before setting (directives)', () => {
       @Component({
         template: `<button myButton otherDir [id]="id" [disabled]="isDisabled">Click me</button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyButton, OtherDir],
       })
       class App {
         id = 0;
         isDisabled = true;
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyButton, OtherDir]});
       const fixture = TestBed.createComponent(App);
       const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
       const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
@@ -512,16 +495,15 @@ describe('property bindings', () => {
     it('should support mixed element properties and input properties', () => {
       @Component({
         template: `<button myButton [id]="id" [disabled]="isDisabled">Click me</button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyButton],
       })
       class App {
         isDisabled = true;
         id = 0;
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyButton]});
       const fixture = TestBed.createComponent(App);
       const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
       const buttonEl = fixture.nativeElement.children[0];
@@ -544,7 +526,6 @@ describe('property bindings', () => {
       @Component({
         selector: 'comp',
         template: '',
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
       })
@@ -554,15 +535,14 @@ describe('property bindings', () => {
 
       @Component({
         template: `<comp [id]="id"></comp>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [Comp],
       })
       class App {
         id = 1;
       }
 
-      TestBed.configureTestingModule({declarations: [App, Comp]});
       const fixture = TestBed.createComponent(App);
       const compDebugEl = fixture.debugElement.query(By.directive(Comp));
       fixture.detectChanges();
@@ -580,15 +560,14 @@ describe('property bindings', () => {
     it('should support two input properties with the same name', () => {
       @Component({
         template: `<button myButton otherDisabledDir [disabled]="isDisabled">Click me</button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyButton, OtherDisabledDir],
       })
       class App {
         isDisabled = true;
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyButton, OtherDisabledDir]});
       const fixture = TestBed.createComponent(App);
       const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
       const otherDisabledDir = fixture.debugElement
@@ -612,9 +591,9 @@ describe('property bindings', () => {
     it('should set input property if there is an output first', () => {
       @Component({
         template: `<button otherDir [id]="id" (click)="onClick()">Click me</button>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [OtherDir],
       })
       class App {
         id = 1;
@@ -622,7 +601,6 @@ describe('property bindings', () => {
         onClick = () => this.counter++;
       }
 
-      TestBed.configureTestingModule({declarations: [App, OtherDir]});
       const fixture = TestBed.createComponent(App);
       const otherDir = fixture.debugElement.query(By.directive(OtherDir)).injector.get(OtherDir);
       const buttonEl = fixture.nativeElement.children[0];
@@ -646,9 +624,9 @@ describe('property bindings', () => {
           <button *ngIf="condition" [id]="id2">Click me too (2)</button>
           <button *ngIf="!condition" otherDir [id]="id3">Click me too (3)</button>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, OtherDir, IdDir],
       })
       class App {
         condition = true;
@@ -657,10 +635,6 @@ describe('property bindings', () => {
         id3 = 3;
       }
 
-      TestBed.configureTestingModule({
-        declarations: [App, IdDir, OtherDir],
-        imports: [CommonModule],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       let buttonElements = fixture.nativeElement.querySelectorAll('button');
@@ -721,7 +695,6 @@ describe('property bindings', () => {
     @Directive({
       selector: '[myDir]',
       exportAs: 'myDir',
-      standalone: false,
     })
     class MyDir {
       @Input() role: string | undefined;
@@ -731,7 +704,6 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[myDirB]',
-      standalone: false,
     })
     class MyDirB {
       @Input('role') roleB: string | undefined;
@@ -740,13 +712,12 @@ describe('property bindings', () => {
     it('should set input property based on attribute if existing', () => {
       @Component({
         template: `<div role="button" myDir></div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
@@ -760,15 +731,14 @@ describe('property bindings', () => {
     it('should set input property and attribute if both defined', () => {
       @Component({
         template: `<div role="button" [role]="role" myDir></div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir],
       })
       class App {
         role = 'listbox';
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
@@ -785,13 +755,12 @@ describe('property bindings', () => {
     it('should set two directive input properties based on same attribute', () => {
       @Component({
         template: `<div role="button" myDir myDirB></div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir, MyDirB],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
@@ -806,13 +775,12 @@ describe('property bindings', () => {
     it('should process two attributes on same directive', () => {
       @Component({
         template: `<div role="button" dir="rtl" myDir></div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
@@ -827,16 +795,15 @@ describe('property bindings', () => {
     it('should process attributes and outputs properly together', () => {
       @Component({
         template: `<div role="button" (change)="onChange()" myDir></div>`,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir],
       })
       class App {
         counter = 0;
         onChange = () => this.counter++;
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const divElement = fixture.nativeElement.children[0];
@@ -855,13 +822,12 @@ describe('property bindings', () => {
           <div role="button" dir="rtl" myDir></div>
           <div role="listbox" myDirB></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [MyDir, MyDirB],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
       const fixture = TestBed.createComponent(App);
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
       const myDirB = fixture.debugElement.query(By.directive(MyDirB)).injector.get(MyDirB);
@@ -889,15 +855,14 @@ describe('property bindings', () => {
           <div role="button" myDirB *ngIf="condition"></div>
           <div role="menu" *ngIf="!condition"></div>
         `,
-        standalone: false,
 
         changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule, MyDir, MyDirB],
       })
       class App {
         condition = true;
       }
 
-      TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB], imports: [CommonModule]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       const myDir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
@@ -927,9 +892,9 @@ describe('property bindings', () => {
       @Component({
         selector: 'comp',
         template: `<div role="button" myDir #dir="myDir"></div>role: {{dir.role}}`,
-        standalone: false,
+        
       
-        changeDetection: ChangeDetectionStrategy.Eager,})
+        changeDetection: ChangeDetectionStrategy.Eager, imports: [MyDir]})
       class Comp {}
 
       // prettier-ignore
@@ -937,12 +902,11 @@ describe('property bindings', () => {
         template: `
           <comp *ngFor="let i of [0, 1]"></comp>
         `,
-        standalone: false,
+        
       
-        changeDetection: ChangeDetectionStrategy.Eager,})
+        changeDetection: ChangeDetectionStrategy.Eager, imports: [CommonModule, Comp]})
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, MyDir, Comp], imports: [CommonModule]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -973,7 +937,6 @@ describe('property bindings', () => {
       template: '',
       animations: [trigger('trigger', [state('void', style({opacity: 0}))])],
       host: {'[@trigger]': '"void"'},
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -981,7 +944,6 @@ describe('property bindings', () => {
 
     @Directive({
       selector: '[my-dir]',
-      standalone: false,
     })
     class MyDir {
       constructor(public viewContainerRef: ViewContainerRef) {}
@@ -989,14 +951,13 @@ describe('property bindings', () => {
 
     @Component({
       template: '<my-comp my-dir></my-comp>',
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [MyComp, MyDir],
     })
     class App {}
 
     TestBed.configureTestingModule({
-      declarations: [App, MyDir, MyComp],
       imports: [NoopAnimationsModule],
     });
 
@@ -1009,13 +970,11 @@ describe('property bindings', () => {
   it('should allow quoted binding syntax inside property binding', () => {
     @Component({
       template: `<span [id]="'{{ id }}'"></span>`,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('span').id).toBe('{{ id }}');
@@ -1024,13 +983,11 @@ describe('property bindings', () => {
   it('should allow quoted binding syntax with escaped quotes inside property binding', () => {
     @Component({
       template: `<span [id]="'{{ \\' }}'"></span>`,
-      standalone: false,
 
       changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
-    TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('span').id).toBe("{{ ' }}");

@@ -213,7 +213,6 @@ describe('component input binding', () => {
   it('sets component inputs from matching query params', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input() language?: string;
@@ -242,7 +241,6 @@ describe('component input binding', () => {
   it('omits binding undefined to inputs not available in router data if never available', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input() language: string | undefined = 'default';
@@ -271,7 +269,6 @@ describe('component input binding', () => {
   it('does not set component inputs from matching query params when queryParam inputs are disabled', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input() language?: string;
@@ -294,7 +291,6 @@ describe('component input binding', () => {
   it('sets component inputs from resolved and static data', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input() resolveA?: string;
@@ -326,7 +322,6 @@ describe('component input binding', () => {
   it('sets component inputs from path params', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input() language?: string;
@@ -346,7 +341,6 @@ describe('component input binding', () => {
   it('when keys conflict, sets inputs based on priority: data > path params > query params', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input() result?: string;
@@ -391,7 +385,6 @@ describe('component input binding', () => {
   it('when keys conflict, sets inputs based on priority: data > path params > query params, with queryParams disabled', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input() result?: string;
@@ -437,7 +430,6 @@ describe('component input binding', () => {
     let resultLog: Array<string | undefined> = [];
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input()
@@ -497,7 +489,6 @@ describe('component input binding', () => {
   it('when keys conflict, sets inputs based on priority: resources > resolvers > data', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input() result?: any;
@@ -505,7 +496,6 @@ describe('component input binding', () => {
 
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponentWithoutResource {
       @Input() result?: any;
@@ -513,7 +503,6 @@ describe('component input binding', () => {
 
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponentWithoutResolver {
       @Input() result?: any;
@@ -571,7 +560,6 @@ describe('component input binding', () => {
   it('binds the actual resource object for non-blocking resources', async () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input() result?: any;
@@ -607,7 +595,6 @@ describe('component input binding', () => {
 
     @Component({
       template: '',
-      standalone: false,
     })
     class MyComponent {
       @Input() result?: string;
@@ -615,7 +602,6 @@ describe('component input binding', () => {
 
     @Component({
       template: '',
-      standalone: false,
     })
     class OtherComponent {}
 
@@ -744,9 +730,9 @@ describe('injectors', () => {
       providers: [provideRouter([{path: 'a', component: Child}])],
     });
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+    await fixture.whenStable();
     await TestBed.inject(Router).navigateByUrl('/a');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(childTokenValue).toEqual(null);
   });
 
@@ -777,12 +763,12 @@ describe('injectors', () => {
       ],
     });
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+    await fixture.whenStable();
     await TestBed.inject(Router).navigateByUrl('/a');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(childTokenValue).toEqual('a value');
     await TestBed.inject(Router).navigateByUrl('/b');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(childTokenValue).toEqual(null);
   });
 });
@@ -803,7 +789,7 @@ describe('router outlet data', () => {
 
     const fixture = TestBed.createComponent(App);
     await TestBed.inject(Router).navigateByUrl('/');
-    fixture.detectChanges();
+    await fixture.whenStable();
     const routedComponent = fixture.debugElement.query(
       (v) => v.componentInstance instanceof MyComponent,
     ).componentInstance as MyComponent;
@@ -903,7 +889,7 @@ describe('router outlet data', () => {
 
 async function advance(fixture: ComponentFixture<unknown>, millis = 0): Promise<void> {
   await timeout(millis);
-  fixture.detectChanges();
+  await fixture.whenStable();
 }
 
 async function createRoot<T>(router: Router, type: Type<T>): Promise<ComponentFixture<T>> {

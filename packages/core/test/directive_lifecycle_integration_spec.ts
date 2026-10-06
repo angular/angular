@@ -17,28 +17,15 @@ import {
   DoCheck,
   OnChanges,
   OnInit,
-  provideZoneChangeDetection,
 } from '../src/core';
-import {inject, TestBed} from '../testing';
+import {TestBed} from '../testing';
 import {Log} from '../testing/src/testing_internal';
 
 describe('directive lifecycle integration spec', () => {
-  let log: Log;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [LifecycleCmp, LifecycleDir, MyComp5],
-      providers: [provideZoneChangeDetection(), Log],
-    }).overrideComponent(MyComp5, {set: {template: '<div [field]="123" lifecycle></div>'}});
-  });
-
-  beforeEach(inject([Log], (_log: any) => {
-    log = _log;
-  }));
-
-  it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked', () => {
+  it('should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked', async () => {
+    const log = TestBed.inject(Log);
     const fixture = TestBed.createComponent(MyComp5);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(log.result()).toEqual(
       'ngOnChanges; ngOnInit; ngDoCheck; ngAfterContentInit; ngAfterContentChecked; child_ngDoCheck; ' +
@@ -46,7 +33,8 @@ describe('directive lifecycle integration spec', () => {
     );
 
     log.clear();
-    fixture.detectChanges();
+    fixture.changeDetectorRef.markForCheck();
+    await fixture.whenStable();
 
     expect(log.result()).toEqual(
       'ngDoCheck; ngAfterContentChecked; child_ngDoCheck; ngAfterViewChecked',
@@ -56,7 +44,6 @@ describe('directive lifecycle integration spec', () => {
 
 @Directive({
   selector: '[lifecycle-dir]',
-  standalone: false,
 })
 class LifecycleDir implements DoCheck {
   constructor(private _log: Log) {}
@@ -69,7 +56,7 @@ class LifecycleDir implements DoCheck {
   selector: '[lifecycle]',
   inputs: ['field'],
   template: `<div lifecycle-dir></div>`,
-  standalone: false,
+  imports: [LifecycleDir],
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class LifecycleCmp
@@ -115,8 +102,8 @@ class LifecycleCmp
 }
 
 @Component({
-  selector: 'my-comp',
-  standalone: false,
+  imports: [LifecycleCmp],
+  template: '<div [field]="123" lifecycle></div>',
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MyComp5 {}

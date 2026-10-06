@@ -46,7 +46,7 @@ describe('render3 jit', () => {
   it('compiles a component', () => {
     @Component({
       template: 'test',
-      selector: 'test-cmp',
+
       standalone: false,
     })
     class SomeCmp {}
@@ -398,7 +398,6 @@ describe('render3 jit', () => {
 
   it('should add @Input properties to a component', () => {
     @Component({
-      selector: 'input-comp',
       template: 'test',
       standalone: false,
     })
@@ -479,7 +478,6 @@ describe('render3 jit', () => {
 
   it('should compile ViewChild query on a component', () => {
     @Component({
-      selector: 'test',
       template: '',
       standalone: false,
     })
@@ -492,7 +490,6 @@ describe('render3 jit', () => {
 
   it('should compile ViewChildren query on a component', () => {
     @Component({
-      selector: 'test',
       template: '',
       standalone: false,
     })
@@ -564,7 +561,6 @@ describe('render3 jit', () => {
     it('should error when foreignImports is specified on a component in JIT mode', () => {
       expect(() => {
         @Component({
-          selector: 'test-cmp',
           template: 'test',
           // @ts-ignore
           foreignImports: [fooImport(FooComponent)],
@@ -579,7 +575,6 @@ describe('render3 jit', () => {
 
     it('should error when a foreign component is imported via imports array in JIT mode', () => {
       @Component({
-        selector: 'test-cmp',
         template: 'test',
         imports: [fooImport(FooComponent) as any],
       })

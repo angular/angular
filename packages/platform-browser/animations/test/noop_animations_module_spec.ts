@@ -7,10 +7,11 @@
  */
 import {animate, style, transition, trigger} from '@angular/animations';
 import {ɵAnimationEngine} from '@angular/animations/browser';
+import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserAnimationsModule, NoopAnimationsModule, provideNoopAnimations} from '../index';
 import {isNode} from '@angular/private/testing';
+import {BrowserAnimationsModule, NoopAnimationsModule, provideNoopAnimations} from '../index';
 
 describe('NoopAnimationsModule', () => {
   beforeEach(() => {
@@ -47,7 +48,6 @@ function noopAnimationTests() {
     }
 
     @Component({
-      selector: 'my-cmp',
       template:
         '<div [@myAnimation]="exp" (@myAnimation.start)="onStart($event)" (@myAnimation.done)="onDone($event)"></div>',
       animations: [
@@ -58,7 +58,6 @@ function noopAnimationTests() {
           ]),
         ]),
       ],
-      standalone: false,
     })
     class Cmp {
       exp: any;
@@ -71,8 +70,6 @@ function noopAnimationTests() {
         this.doneEvent = event;
       }
     }
-
-    TestBed.configureTestingModule({declarations: [Cmp]});
 
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;
@@ -95,7 +92,6 @@ function noopAnimationTests() {
     }
 
     @Component({
-      selector: 'my-cmp',
       template:
         '<div *ngIf="exp" @myAnimation (@myAnimation.start)="onStart($event)" (@myAnimation.done)="onDone($event)"></div>',
       animations: [
@@ -103,7 +99,8 @@ function noopAnimationTests() {
           transition(':leave', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))]),
         ]),
       ],
-      standalone: false,
+
+      imports: [CommonModule],
     })
     class Cmp {
       exp: any;
@@ -117,7 +114,6 @@ function noopAnimationTests() {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [Cmp]});
     const engine = TestBed.inject(ɵAnimationEngine);
     const fixture = TestBed.createComponent(Cmp);
     const cmp = fixture.componentInstance;

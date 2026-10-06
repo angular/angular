@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, NgIf} from '@angular/common';
+import {CommonModule, DOCUMENT, NgIf} from '@angular/common';
 import {expect} from '@angular/private/testing/matchers';
 import {
   ApplicationRef,
@@ -49,7 +49,6 @@ describe('component', () => {
         selector: 'comp-with-on-destroy',
         template: '',
         providers: [{provide: testToken, useExisting: ParentWithOnDestroy}],
-        standalone: false,
       })
       class ParentWithOnDestroy {
         ngOnDestroy() {
@@ -60,7 +59,6 @@ describe('component', () => {
       @Component({
         selector: 'child',
         template: '',
-        standalone: false,
       })
       class ChildComponent {
         // We need to inject the parent so the provider is instantiated.
@@ -73,11 +71,11 @@ describe('component', () => {
             <child></child>
           </comp-with-on-destroy>
         `,
-        standalone: false,
+
+        imports: [ParentWithOnDestroy, ChildComponent],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, ParentWithOnDestroy, ChildComponent]});
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       fixture.destroy();
@@ -91,7 +89,6 @@ describe('component', () => {
       @Component({
         selector: 'comp-with-destroy',
         template: ``,
-        standalone: false,
       })
       class ComponentWithOnDestroy implements OnDestroy {
         ngOnDestroy() {
@@ -104,13 +101,12 @@ describe('component', () => {
       // child of the root view, then the onDestroy hook on the child view will never be called
       // when the view tree is torn down following the destruction of that root view.
       @Component({
-        selector: `test-app`,
         template: `<comp-with-destroy></comp-with-destroy>`,
-        standalone: false,
+
+        imports: [ComponentWithOnDestroy],
       })
       class TestApp {}
 
-      TestBed.configureTestingModule({declarations: [ComponentWithOnDestroy, TestApp]});
       const fixture = TestBed.createComponent(TestApp);
       fixture.detectChanges();
       fixture.destroy();
@@ -124,14 +120,12 @@ describe('component', () => {
   it('should be able to dynamically insert a component into a view container at the root of a component', () => {
     @Component({
       template: 'hello',
-      standalone: false,
     })
     class HelloComponent {}
 
     @Component({
       selector: 'wrapper',
       template: '<ng-content></ng-content>',
-      standalone: false,
     })
     class Wrapper {}
 
@@ -141,13 +135,13 @@ describe('component', () => {
           <div #insertionPoint></div>
         </wrapper>
       `,
-      standalone: false,
+
+      imports: [Wrapper],
     })
     class App {
       @ViewChild('insertionPoint', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
     }
 
-    TestBed.configureTestingModule({declarations: [App, Wrapper, HelloComponent]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -160,19 +154,16 @@ describe('component', () => {
   it('should not throw when calling `detectChanges` on the ChangeDetectorRef of a destroyed view', () => {
     @Component({
       template: 'hello',
-      standalone: false,
     })
     class HelloComponent {}
 
     @Component({
       template: `<div #insertionPoint></div>`,
-      standalone: false,
     })
     class App {
       @ViewChild('insertionPoint', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
     }
 
-    TestBed.configureTestingModule({declarations: [App, HelloComponent]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -186,6 +177,7 @@ describe('component', () => {
   });
 
   // TODO: add tests with Native once tests run in real browser (domino doesn't support shadow root)
+  // TODO: Investigate why making those tests standalone, brakes them.
   describe('encapsulation', () => {
     @Component({
       selector: 'wrapper',
@@ -286,7 +278,6 @@ describe('component', () => {
     @Component({
       selector: '[comp]',
       template: 'comp content',
-      standalone: false,
     })
     class DynamicComponent {
       ngOnDestroy() {
@@ -295,13 +286,11 @@ describe('component', () => {
     }
 
     @Component({
-      selector: 'button',
       template: `
         <div class="wrapper"></div>
         <div id="app-root"></div>
         <div class="wrapper"></div>
       `,
-      standalone: false,
     })
     class App {
       componentRef!: ComponentRef<DynamicComponent>;
@@ -326,7 +315,6 @@ describe('component', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [App, DynamicComponent]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -369,14 +357,11 @@ describe('component', () => {
           @Component({
             selector: '[comp]',
             template: 'comp content',
-            standalone: false,
           })
           class DynamicComponent {}
 
           @Component({
-            selector: 'button',
             template: '<div id="app-root" #anchor></div>',
-            standalone: false,
           })
           class App {
             @ViewChild('anchor', {read: ViewContainerRef}) anchor!: ViewContainerRef;
@@ -401,7 +386,6 @@ describe('component', () => {
             }
           }
 
-          TestBed.configureTestingModule({declarations: [App, DynamicComponent]});
           const fixture = TestBed.createComponent(App);
           fixture.detectChanges();
 
@@ -421,18 +405,16 @@ describe('component', () => {
       @Component({
         selector: 'ng-container',
         template: '...',
-        standalone: false,
       })
       class Comp {}
 
       @Component({
-        selector: 'root',
         template: '<ng-container></ng-container>',
-        standalone: false,
+
+        imports: [Comp],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Comp]});
       expect(() => TestBed.createComponent(App)).toThrowError(
         /"ng-container" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/,
       );
@@ -442,18 +424,16 @@ describe('component', () => {
       @Component({
         selector: 'ng-template',
         template: '...',
-        standalone: false,
       })
       class Comp {}
 
       @Component({
-        selector: 'root',
         template: '<ng-template></ng-template>',
-        standalone: false,
+
+        imports: [Comp],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Comp]});
       expect(() => TestBed.createComponent(App)).toThrowError(
         /"ng-template" tags cannot be used as component hosts. Please use a different tag to activate the Comp component/,
       );
@@ -463,24 +443,22 @@ describe('component', () => {
       @Component({
         selector: 'comp',
         template: '...',
-        standalone: false,
       })
       class CompA {}
 
       @Component({
         selector: 'comp',
         template: '...',
-        standalone: false,
       })
       class CompB {}
 
       @Component({
         template: '<comp></comp>',
-        standalone: false,
+
+        imports: [CompA, CompB],
       })
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, CompA, CompB]});
       expect(() => TestBed.createComponent(App)).toThrowError(
         /NG0300: Multiple components match node with tagname comp: CompA and CompB/,
       );
@@ -490,7 +468,7 @@ describe('component', () => {
       @Component({
         selector: 'comp',
         template: '<comp *ngIf="recurse"/>hello',
-        imports: [Comp, NgIf],
+        imports: [Comp, NgIf, CommonModule],
       })
       class Comp {
         @Input() recurse = false;
@@ -518,7 +496,7 @@ describe('component', () => {
       @Component({
         selector: 'comp',
         template: '<comp *ngIf="recurse"/>hello',
-        imports: [forwardRef(() => Comp), NgIf],
+        imports: [forwardRef(() => Comp), NgIf, CommonModule],
       })
       class Comp {
         @Input() recurse = false;
@@ -549,7 +527,8 @@ describe('component', () => {
       template: '<parent-comp></parent-comp>',
       styles: [':host { color: red; }'], // `styles` must exist for encapsulation to apply.
       encapsulation: ViewEncapsulation.Emulated,
-      standalone: false,
+
+      imports: [forwardRef(() => ParentComponent)],
     })
     class AppRoot {}
 
@@ -558,7 +537,6 @@ describe('component', () => {
       template: '',
       styles: [':host { color: orange; }'], // `styles` must exist for encapsulation to apply.
       encapsulation: ViewEncapsulation.Emulated,
-      standalone: false,
     })
     class ParentComponent {
       constructor(elementRef: ElementRef, renderer: Renderer2) {
@@ -567,7 +545,6 @@ describe('component', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [AppRoot, ParentComponent]});
     const fixture = TestBed.createComponent(AppRoot);
     fixture.detectChanges();
 
@@ -595,7 +572,6 @@ describe('component', () => {
       template: '',
       styles: [':host { color: red; }'],
       encapsulation: ViewEncapsulation.Emulated,
-      standalone: false,
     })
     class Child {
       constructor(public renderer: Renderer2) {}
@@ -605,14 +581,14 @@ describe('component', () => {
       template: '<child></child>',
       styles: [':host { color: orange; }'],
       encapsulation: ViewEncapsulation.Emulated,
-      standalone: false,
+
+      imports: [Child],
     })
     class Parent {
       @ViewChild(Child) childInstance!: Child;
       constructor(public renderer: Renderer2) {}
     }
 
-    TestBed.configureTestingModule({declarations: [Parent, Child]});
     const fixture = TestBed.createComponent(Parent);
     const componentInstance = fixture.componentInstance;
     fixture.detectChanges();
@@ -627,7 +603,6 @@ describe('component', () => {
   it('components should not share the same context when creating with a root element', () => {
     const log: string[] = [];
     @Component({
-      selector: 'comp-a',
       template: '<div>{{ a }}</div>',
       standalone: false,
     })
@@ -639,7 +614,6 @@ describe('component', () => {
     }
 
     @Component({
-      selector: 'comp-b',
       template: '<div>{{ b }}</div>',
       standalone: false,
     })
@@ -713,7 +687,6 @@ describe('component', () => {
     @Component({
       selector: '[foo]',
       template: '',
-      standalone: false,
     })
     class AttSelectorCmp {}
 
@@ -726,7 +699,6 @@ describe('component', () => {
     @Component({
       selector: '[foo],div:not(.bar)',
       template: '',
-      standalone: false,
     })
     class ComplexSelectorCmp {}
 
@@ -739,12 +711,10 @@ describe('component', () => {
     @Component({
       selector: 'dynamic-comp',
       template: 'DynamicComponent Content',
-      standalone: false,
     })
     class DynamicComponent {}
 
     @Component({
-      selector: 'app',
       template: `
         <div id="dynamic-comp-root-a">
           Existing content in slot A, which <b><i>includes</i> some HTML elements</b>.
@@ -753,7 +723,6 @@ describe('component', () => {
           <p>Existing content in slot B, which includes some HTML elements.</p>
         </div>
       `,
-      standalone: false,
     })
     class App {
       constructor(public injector: EnvironmentInjector) {}
@@ -773,7 +742,6 @@ describe('component', () => {
     }
 
     TestBed.configureTestingModule({
-      declarations: [App, DynamicComponent],
       providers: [{provide: DOCUMENT, useFactory: _document, deps: []}],
     });
 

@@ -56,21 +56,21 @@ export function onlyNavigationStartAndEnd(e: Event): e is NavigationStart | Navi
 @Component({
   selector: 'link-cmp',
   template: `<a routerLink="/team/33/simple" [target]="'_self'">link</a>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class StringLinkCmp {}
 
 @Component({
   selector: 'link-cmp',
   template: `<button routerLink="/team/33/simple">link</button>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class StringLinkButtonCmp {}
 
 @Component({
   selector: 'link-cmp',
   template: `<router-outlet></router-outlet><a [routerLink]="['/team/33/simple']">link</a>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class AbsoluteLinkCmp {}
 
@@ -92,7 +92,7 @@ export class AbsoluteLinkCmp {}
     >
       button
     </button> `,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class DummyLinkCmp {
   private exact: boolean;
@@ -110,63 +110,61 @@ export class DummyLinkCmp {
 @Component({
   selector: 'link-cmp',
   template: `<a [routerLink]="['/simple']">link</a>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class AbsoluteSimpleLinkCmp {}
 
 @Component({
   selector: 'link-cmp',
   template: `<a [routerLink]="['../simple']">link</a>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class RelativeLinkCmp {}
 
 @Component({
   selector: 'link-cmp',
   template: `<a [routerLink]="['../simple']" [queryParams]="{q: '1'}" fragment="f">link</a>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class LinkWithQueryParamsAndFragment {}
 
 @Component({
   selector: 'link-cmp',
   template: `<a id="link" [routerLink]="['../simple']" [state]="{foo: 'bar'}">link</a>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class LinkWithState {}
 
 @Component({
   selector: 'div-link-cmp',
   template: `<div id="link" [routerLink]="['../simple']" [state]="{foo: 'bar'}">link</div>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class DivLinkWithState {}
 
 @Component({
   selector: 'link-cmp',
   template: `<a id="link" [routerLink]="['../simple']" [browserUrl]="'/custom'">link</a>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class LinkWithBrowserUrl {}
 
 @Component({
   selector: 'div-link-cmp',
   template: `<div id="link" [routerLink]="['../simple']" [browserUrl]="'/custom'">link</div>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class DivLinkWithBrowserUrl {}
 
 @Component({
   selector: 'simple-cmp',
   template: `simple`,
-  standalone: false,
 })
 export class SimpleCmp {}
 
 @Component({
   selector: 'collect-params-cmp',
   template: `collect-params`,
-  standalone: false,
 })
 export class CollectParamsCmp {
   private params: Params[] = [];
@@ -185,7 +183,6 @@ export class CollectParamsCmp {
 @Component({
   selector: 'blank-cmp',
   template: ``,
-  standalone: false,
 })
 export class BlankCmp {}
 
@@ -199,7 +196,7 @@ export class ModuleWithBlankCmpAsRoute {}
     '[ <router-outlet></router-outlet>, right: <router-outlet name="right"></router-outlet> ]' +
     '<a [routerLink]="routerLink()" skipLocationChange></a>' +
     '<button [routerLink]="routerLink()" skipLocationChange></button>',
-  standalone: false,
+  imports: [CommonModule, ROUTER_DIRECTIVES],
 })
 export class TeamCmp {
   id: Observable<string>;
@@ -219,14 +216,14 @@ export class TeamCmp {
 @Component({
   selector: 'two-outlets-cmp',
   template: `[ <router-outlet></router-outlet>, aux: <router-outlet name="aux"></router-outlet> ]`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class TwoOutletsCmp {}
 
 @Component({
   selector: 'user-cmp',
   template: `user {{ name | async }}`,
-  standalone: false,
+  imports: [CommonModule],
 })
 export class UserCmp {
   name: Observable<string>;
@@ -245,14 +242,14 @@ export class UserCmp {
 @Component({
   selector: 'wrapper',
   template: `<router-outlet></router-outlet>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class WrapperCmp {}
 
 @Component({
   selector: 'query-cmp',
   template: `query: {{ name | async }} fragment: {{ fragment | async }}`,
-  standalone: false,
+  imports: [CommonModule],
 })
 export class QueryParamsAndFragmentCmp {
   name: Observable<string | null>;
@@ -277,7 +274,6 @@ export class QueryParamsAndFragmentCmp {
 @Component({
   selector: 'empty-query-cmp',
   template: ``,
-  standalone: false,
 })
 export class EmptyQueryParamsCmp {
   recordedParams: Params[] = [];
@@ -290,7 +286,6 @@ export class EmptyQueryParamsCmp {
 @Component({
   selector: 'route-cmp',
   template: `route`,
-  standalone: false,
 })
 export class RouteCmp {
   constructor(public route: ActivatedRoute) {}
@@ -300,7 +295,7 @@ export class RouteCmp {
   selector: 'link-cmp',
   template: `<div *ngIf="show()"><a [routerLink]="['./simple']">link</a></div>
     <router-outlet></router-outlet>`,
-  standalone: false,
+  imports: [CommonModule, ROUTER_DIRECTIVES],
 })
 export class RelativeLinkInIfCmp {
   show = signal(false);
@@ -309,7 +304,7 @@ export class RelativeLinkInIfCmp {
 @Component({
   selector: 'child',
   template: '<div *ngIf="alwaysTrue"><router-outlet></router-outlet></div>',
-  standalone: false,
+  imports: [CommonModule, ROUTER_DIRECTIVES],
 })
 export class OutletInNgIf {
   alwaysTrue = true;
@@ -321,7 +316,7 @@ export class OutletInNgIf {
     <div id="link-parent" routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
       <div ngClass="{one: 'true'}"><a [routerLink]="['./']">link</a></div>
     </div>`,
-  standalone: false,
+  imports: [CommonModule, ROUTER_DIRECTIVES],
 })
 export class DummyLinkWithParentCmp {
   protected exact: boolean;
@@ -333,7 +328,6 @@ export class DummyLinkWithParentCmp {
 @Component({
   selector: 'cmp',
   template: '',
-  standalone: false,
 })
 export class ComponentRecordingRoutePathAndUrl {
   public path: ActivatedRoute[];
@@ -348,14 +342,14 @@ export class ComponentRecordingRoutePathAndUrl {
 @Component({
   selector: 'root-cmp',
   template: `<router-outlet></router-outlet>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class RootCmp {}
 
 @Component({
   selector: 'root-cmp-on-init',
   template: `<router-outlet></router-outlet>`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class RootCmpWithOnInit {
   constructor(private router: Router) {}
@@ -371,21 +365,20 @@ export class RootCmpWithOnInit {
       name="right"
     ></router-outlet
     >]`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class RootCmpWithTwoOutlets {}
 
 @Component({
   selector: 'root-cmp',
   template: `main [<router-outlet name="main"></router-outlet>]`,
-  standalone: false,
+  imports: [ROUTER_DIRECTIVES],
 })
 export class RootCmpWithNamedOutlet {}
 
 @Component({
   selector: 'throwing-cmp',
   template: '',
-  standalone: false,
 })
 export class ThrowingCmp {
   constructor() {
@@ -395,7 +388,6 @@ export class ThrowingCmp {
 @Component({
   selector: 'conditional-throwing-cmp',
   template: 'conditional throwing',
-  standalone: false,
 })
 export class ConditionalThrowingCmp {
   static throwError = true;
@@ -425,14 +417,13 @@ export async function createRoot<T>(router: Router, type: Type<T>): Promise<Comp
 @Component({
   selector: 'lazy',
   template: 'lazy-loaded',
-  standalone: false,
 })
 export class LazyComponent {}
 
 @NgModule({
-  imports: [CommonModule, ...ROUTER_DIRECTIVES],
-
-  exports: [
+  imports: [
+    CommonModule,
+    ...ROUTER_DIRECTIVES,
     BlankCmp,
     SimpleCmp,
     TwoOutletsCmp,
@@ -465,12 +456,11 @@ export class LazyComponent {}
     ThrowingCmp,
     ConditionalThrowingCmp,
   ],
-
-  declarations: [
+  exports: [
     BlankCmp,
     SimpleCmp,
-    TeamCmp,
     TwoOutletsCmp,
+    TeamCmp,
     UserCmp,
     StringLinkCmp,
     DummyLinkCmp,

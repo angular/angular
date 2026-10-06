@@ -14,7 +14,6 @@ import {form, FormField, validateAsync} from '../../public_api';
 describe('debounced inside validateAsync bug', () => {
   it('should not throw a cycle error when using debounced in validateAsync factory', async () => {
     @Component({
-      selector: 'debounce-bug',
       template: ` <input [formField]="form.hello" /> `,
       imports: [FormField],
     })

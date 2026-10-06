@@ -116,16 +116,13 @@ describe('setProfiler', () => {
     class MyService {}
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
       providers: [MyService],
-      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService);
     }
 
-    TestBed.configureTestingModule({declarations: [MyComponent]});
     const fixture = TestBed.createComponent(MyComponent);
     const myComp = fixture.componentInstance;
 
@@ -165,10 +162,8 @@ describe('setProfiler', () => {
     class MyServiceC {}
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
       providers: [MyService, {provide: MyServiceB, useValue: 0}],
-      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService, {self: true});
@@ -178,7 +173,6 @@ describe('setProfiler', () => {
 
     TestBed.configureTestingModule({
       providers: [MyServiceB, MyServiceC, {provide: MyServiceB, useValue: 1}],
-      declarations: [MyComponent],
     });
     TestBed.createComponent(MyComponent);
 
@@ -209,7 +203,6 @@ describe('setProfiler', () => {
     class MyServiceE {}
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
       providers: [
         MyService,
@@ -218,13 +211,11 @@ describe('setProfiler', () => {
         {provide: MyServiceD, useValue: 'hello world'},
         {provide: MyServiceE, useClass: class MyExampleClass {}},
       ],
-      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService);
     }
 
-    TestBed.configureTestingModule({declarations: [MyComponent]});
     TestBed.createComponent(MyComponent);
 
     // MyService should have been configured
@@ -264,20 +255,16 @@ describe('setProfiler', () => {
     class MyService {}
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
       providers: [
         {provide: MyService, useClass: MyService, multi: true},
         {provide: MyService, useFactory: () => new MyService(), multi: true},
         {provide: MyService, useValue: 'hello world', multi: true},
       ],
-      standalone: false,
     })
     class MyComponent {
       myService = inject(MyService);
     }
-
-    TestBed.configureTestingModule({declarations: [MyComponent]});
     TestBed.createComponent(MyComponent);
 
     // MyService should have been configured
@@ -309,9 +296,7 @@ describe('setProfiler', () => {
     });
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
-      standalone: false,
     })
     class MyComponent {
       rootService = inject(RootService);
@@ -320,7 +305,6 @@ describe('setProfiler', () => {
       fromPlatform = inject(providedInPlatformToken);
     }
 
-    TestBed.configureTestingModule({declarations: [MyComponent]});
     TestBed.createComponent(MyComponent);
 
     // MyService should have been configured
@@ -571,15 +555,13 @@ describe('getInjectorProviders', () => {
   it('should be able to get the providers from a components injector', () => {
     class MyService {}
     @Component({
-      selector: 'my-comp',
       template: ` {{ b | percent: '4.3-5' }} `,
       providers: [MyService],
-      standalone: false,
+      imports: [PercentPipe],
     })
     class MyComponent {
       b = 1.3495;
     }
-    TestBed.configureTestingModule({declarations: [MyComponent], imports: [PercentPipe]});
     const fixture = TestBed.createComponent(MyComponent);
 
     const providers = getInjectorProviders(fixture.debugElement.injector);
@@ -593,15 +575,13 @@ describe('getInjectorProviders', () => {
   it('should be able to get determine if a provider is a view provider', () => {
     class MyService {}
     @Component({
-      selector: 'my-comp',
       template: ` {{ b | percent: '4.3-5' }} `,
       viewProviders: [MyService],
-      standalone: false,
+      imports: [PercentPipe],
     })
     class MyComponent {
       b = 1.3495;
     }
-    TestBed.configureTestingModule({declarations: [MyComponent], imports: [PercentPipe]});
     const fixture = TestBed.createComponent(MyComponent);
 
     const providers = getInjectorProviders(fixture.debugElement.injector);
@@ -653,7 +633,6 @@ describe('getInjectorProviders', () => {
     class ModuleD {}
 
     @Component({
-      selector: 'my-comp',
       template: 'hello world',
       standalone: false,
     })
@@ -831,7 +810,6 @@ describe('getInjectorProviders', () => {
     }
 
     @Component({
-      selector: 'my-comp',
       template: `<router-outlet />`,
       imports: [MyStandaloneComponentB, RouterOutlet],
     })
@@ -894,7 +872,6 @@ describe('getInjectorProviders', () => {
     }
 
     @Component({
-      selector: 'my-comp',
       template: `<router-outlet />`,
       imports: [MyStandaloneComponentB, RouterOutlet],
     })
@@ -954,7 +931,6 @@ describe('getInjectorProviders', () => {
     }
 
     @Component({
-      selector: 'my-comp',
       template: ` <item-cmp *ngFor="let item of items"></item-cmp> `,
       imports: [ItemComponent, NgForOf],
     })
@@ -992,7 +968,6 @@ describe('getInjectorProviders', () => {
     }
 
     @Component({
-      selector: 'my-comp',
       template: `
         @for (item of items; track item) {
           <item-cmp></item-cmp>
@@ -1027,12 +1002,9 @@ describe('getInjectorProviders', () => {
 
   it('should include special providers in NodeInjector', () => {
     @Component({
-      selector: 'my-comp',
       template: 'hello',
-      standalone: false,
     })
     class MyComponent {}
-    TestBed.configureTestingModule({declarations: [MyComponent]});
     const fixture = TestBed.createComponent(MyComponent);
 
     const providers = getInjectorProviders(fixture.debugElement.injector);
@@ -1276,7 +1248,7 @@ describe('getDependenciesFromInjectable', () => {
     @NgModule({imports: [ModuleB, ModuleC]})
     class ModuleD {}
 
-    @Component({selector: 'my-comp', template: 'hello world', imports: [ModuleD]})
+    @Component({template: 'hello world', imports: [ModuleD]})
     class MyStandaloneComponent {
       myService = inject(MyService);
     }

@@ -323,7 +323,6 @@ describe('Signal Forms WebMCP Integration', () => {
 
     it('should not throw an error when reading the model', async () => {
       @Component({
-        selector: 'app-root',
         template: ``,
       })
       class App {

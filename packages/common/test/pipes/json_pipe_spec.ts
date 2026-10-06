@@ -56,7 +56,6 @@ describe('JsonPipe', () => {
 
   describe('integration', () => {
     @Component({
-      selector: 'test-comp',
       template: '{{data | json}}',
       imports: [JsonPipe],
       changeDetection: ChangeDetectionStrategy.Eager,
@@ -81,7 +80,6 @@ describe('JsonPipe', () => {
 
   it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [JsonPipe],
       template: '{{ value | json }}',
     })

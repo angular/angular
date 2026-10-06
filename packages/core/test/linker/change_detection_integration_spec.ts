@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CommonModule} from '@angular/common';
 import {ResourceLoader} from '@angular/compiler';
 import {By} from '@angular/platform-browser';
 import {isTextNode} from '@angular/private/testing';
@@ -23,6 +24,7 @@ import {
   Directive,
   DoCheck,
   EventEmitter,
+  forwardRef,
   HostBinding,
   Injectable,
   Input,
@@ -60,11 +62,22 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
   function createCompFixture<T>(template: string, compType: Type<T>): ComponentFixture<T>;
   function createCompFixture<T>(
     template: string,
+    compType: Type<T>,
+    components: any[],
+  ): ComponentFixture<T>;
+  function createCompFixture<T>(
+    template: string,
     compType: Type<T> = <any>TestComponent,
+    components: any[] = [],
   ): ComponentFixture<T> {
     TestBed.overrideComponent(compType, {
       set: new Component({template, changeDetection: ChangeDetectionStrategy.Eager}),
     });
+    if (components.length > 0) {
+      TestBed.overrideComponent(compType, {
+        add: {imports: components},
+      });
+    }
 
     initHelpers();
 
@@ -115,31 +128,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS});
       TestBed.configureTestingModule({
         imports: [NoopAnimationsModule],
-        declarations: [
-          TestData,
-          TestDirective,
-          TestComponent,
-          AnotherComponent,
-          TestLocals,
-          CompWithRef,
-          WrapCompWithRef,
-          EmitterDirective,
-          PushComp,
-          OnDestroyDirective,
-          OrderCheckDirective2,
-          OrderCheckDirective0,
-          OrderCheckDirective1,
-          Gh9882,
-          Uninitialized,
-          Person,
-          PersonHolder,
-          PersonHolderHolder,
-          CountingPipe,
-          CountingImpurePipe,
-          MultiArgPipe,
-          PipeWithOnDestroy,
-          IdentityPipe,
-        ],
+
         providers: [RenderLog, DirectiveLog, provideZoneChangeDetection()],
       });
     });
@@ -1185,13 +1174,12 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       it('should throw when a record gets changed after it has been checked', () => {
         @Directive({
           selector: '[changed]',
-          standalone: false,
         })
         class ChangingDirective {
           @Input() changed: any;
         }
 
-        TestBed.configureTestingModule({declarations: [ChangingDirective]});
+        TestBed.overrideComponent(TestData, {add: {imports: [ChangingDirective]}});
 
         const ctx = createCompFixture('<div [id]="a" [changed]="b"></div>', TestData);
 
@@ -1203,13 +1191,12 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       it('should throw when a record gets changed after the first change detection pass', () => {
         @Directive({
           selector: '[changed]',
-          standalone: false,
         })
         class ChangingDirective {
           @Input() changed: any;
         }
 
-        TestBed.configureTestingModule({declarations: [ChangingDirective]});
+        TestBed.overrideComponent(TestData, {add: {imports: [ChangingDirective]}});
 
         const ctx = createCompFixture('<div [id]="a" [changed]="b"></div>', TestData);
 
@@ -1343,13 +1330,12 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
         @Component({
           selector: 'nested',
           template: '{{name}}',
-          standalone: false,
         })
         class Nested {
           name = 'Tom';
         }
 
-        TestBed.configureTestingModule({declarations: [Nested]});
+        TestBed.overrideComponent(TestComponent, {add: {imports: [Nested]}});
 
         const ctx = createCompFixture('<nested></nested>');
         ctx.detectChanges();
@@ -1359,7 +1345,6 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       it('should recurse into nested view containers even if there are no bindings in the component view', () => {
         @Component({
           template: '<ng-template #vc>{{name}}</ng-template>',
-          standalone: false,
         })
         class Comp {
           name = 'Tom';
@@ -1367,7 +1352,6 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           @ViewChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
         }
 
-        TestBed.configureTestingModule({declarations: [Comp]});
         initHelpers();
 
         const ctx = TestBed.createComponent(Comp);
@@ -1384,20 +1368,19 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
         @Directive({
           selector: '[i]',
-          standalone: false,
         })
         class DummyDirective {
           @Input() i: any;
         }
 
         @Component({
-          selector: 'main-cmp',
           template: `<span [i]="log('start')"></span
             ><outer-cmp
               ><ng-template><span [i]="log('tpl')"></span></ng-template
             ></outer-cmp>`,
-          standalone: false,
+
           changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [DummyDirective, forwardRef(() => OuterComp)],
         })
         class MainComp {
           constructor(public cdRef: ChangeDetectorRef) {}
@@ -1412,8 +1395,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
             ><inner-cmp [outerTpl]="tpl"
               ><ng-template><span [i]="log('tpl')"></span></ng-template
             ></inner-cmp>`,
-          standalone: false,
+
           changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [DummyDirective, forwardRef(() => InnerComp)],
         })
         class OuterComp {
           @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;
@@ -1430,8 +1414,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
               [ngTemplateOutlet]="outerTpl"
             ></ng-container
             ><ng-container [ngTemplateOutlet]="tpl"></ng-container>`,
-          standalone: false,
+
           changeDetection: ChangeDetectionStrategy.Eager,
+          imports: [CommonModule, DummyDirective],
         })
         class InnerComp {
           @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;
@@ -1450,9 +1435,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
         beforeEach(() => {
           log = [];
-          ctx = TestBed.configureTestingModule({
-            declarations: [MainComp, OuterComp, InnerComp, DummyDirective],
-          }).createComponent(MainComp);
+          ctx = TestBed.createComponent(MainComp);
           mainComp = ctx.componentInstance;
           outerComp = ctx.debugElement.query(By.directive(OuterComp)).injector.get(OuterComp);
           innerComp = ctx.debugElement.query(By.directive(InnerComp)).injector.get(InnerComp);
@@ -1522,7 +1505,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       it('should coordinate class attribute and class host binding', () => {
         @Component({
           template: `<div class="{{ initClasses }}" someDir></div>`,
-          standalone: false,
+
+          imports: [forwardRef(() => SomeDir)],
         })
         class Comp {
           initClasses = 'init';
@@ -1530,15 +1514,12 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
         @Directive({
           selector: '[someDir]',
-          standalone: false,
         })
         class SomeDir {
           @HostBinding('class.foo') fooClass = true;
         }
 
-        const ctx = TestBed.configureTestingModule({declarations: [Comp, SomeDir]}).createComponent(
-          Comp,
-        );
+        const ctx = TestBed.createComponent(Comp);
 
         ctx.detectChanges();
 
@@ -1601,7 +1582,6 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           @Component({
             selector: 'my-child',
             template: '',
-            standalone: false,
           })
           class MyChild {
             private thrown = LifetimeMethods.None;
@@ -1650,7 +1630,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           @Component({
             selector: 'my-component',
             template: `<my-child [inp]="true" (outp)="onOutp()"></my-child>`,
-            standalone: false,
+
+            imports: [MyChild],
           })
           class MyComponent {
             constructor(private changeDetectionRef: ChangeDetectorRef) {}
@@ -1677,9 +1658,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
             }
           }
 
-          TestBed.configureTestingModule({declarations: [MyChild, MyComponent]});
-
-          return createCompFixture(`<my-component></my-component>`);
+          return createCompFixture(`<my-component></my-component>`, TestComponent, [MyComponent]);
         }
 
         function ensureOneInit(options: Options) {
@@ -1800,7 +1779,6 @@ class DirectiveLog {
 
 @Pipe({
   name: 'countingPipe',
-  standalone: false,
 })
 class CountingPipe implements PipeTransform {
   state: number = 0;
@@ -1812,7 +1790,6 @@ class CountingPipe implements PipeTransform {
 @Pipe({
   name: 'countingImpurePipe',
   pure: false,
-  standalone: false,
 })
 class CountingImpurePipe implements PipeTransform {
   state: number = 0;
@@ -1823,7 +1800,6 @@ class CountingImpurePipe implements PipeTransform {
 
 @Pipe({
   name: 'pipeWithOnDestroy',
-  standalone: false,
 })
 class PipeWithOnDestroy implements PipeTransform, OnDestroy {
   constructor(private directiveLog: DirectiveLog) {}
@@ -1839,7 +1815,6 @@ class PipeWithOnDestroy implements PipeTransform, OnDestroy {
 
 @Pipe({
   name: 'identityPipe',
-  standalone: false,
 })
 class IdentityPipe implements PipeTransform {
   transform(value: any) {
@@ -1849,7 +1824,6 @@ class IdentityPipe implements PipeTransform {
 
 @Pipe({
   name: 'multiArgPipe',
-  standalone: false,
 })
 class MultiArgPipe implements PipeTransform {
   transform(value: any, arg1: any, arg2: any, arg3 = 'default') {
@@ -1858,9 +1832,23 @@ class MultiArgPipe implements PipeTransform {
 }
 
 @Component({
-  selector: 'test-cmp',
   template: 'empty',
-  standalone: false,
+
+  imports: [
+    CommonModule,
+    CountingPipe,
+    CountingImpurePipe,
+    PipeWithOnDestroy,
+    IdentityPipe,
+    MultiArgPipe,
+    forwardRef(() => AnotherComponent),
+    forwardRef(() => CompWithRef),
+    forwardRef(() => WrapCompWithRef),
+    forwardRef(() => PushComp),
+    forwardRef(() => TestDirective),
+    forwardRef(() => OnDestroyDirective),
+    forwardRef(() => TestLocals),
+  ],
 })
 class TestComponent {
   value: any;
@@ -1871,7 +1859,8 @@ class TestComponent {
 @Component({
   selector: 'other-cmp',
   template: 'empty',
-  standalone: false,
+
+  imports: [forwardRef(() => TestDirective)],
 })
 class AnotherComponent {}
 
@@ -1879,7 +1868,8 @@ class AnotherComponent {}
   selector: 'comp-with-ref',
   template: '<div (event)="noop()" emitterDirective></div>{{value}}',
   host: {'event': 'noop()'},
-  standalone: false,
+
+  imports: [forwardRef(() => EmitterDirective)],
 })
 class CompWithRef {
   @Input() public value: any;
@@ -1892,7 +1882,8 @@ class CompWithRef {
 @Component({
   selector: 'wrap-comp-with-ref',
   template: '<comp-with-ref></comp-with-ref>',
-  standalone: false,
+
+  imports: [CompWithRef],
 })
 class WrapCompWithRef {
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
@@ -1902,7 +1893,8 @@ class WrapCompWithRef {
   selector: 'push-cmp',
   template: '<div (event)="noop()" emitterDirective></div>{{value}}{{renderIncrement}}',
   host: {'(event)': 'noop()'},
-  standalone: false,
+
+  imports: [forwardRef(() => EmitterDirective)],
 })
 class PushComp {
   @Input() public value: any;
@@ -1920,7 +1912,6 @@ class PushComp {
 
 @Directive({
   selector: '[emitterDirective]',
-  standalone: false,
 })
 class EmitterDirective {
   @Output('event') emitter = new EventEmitter<string>();
@@ -1928,7 +1919,6 @@ class EmitterDirective {
 
 @Directive({
   selector: '[gh9882]',
-  standalone: false,
 })
 class Gh9882 implements AfterContentInit {
   constructor(
@@ -1944,7 +1934,6 @@ class Gh9882 implements AfterContentInit {
 @Directive({
   selector: '[testDirective]',
   exportAs: 'testDirective',
-  standalone: false,
 })
 class TestDirective
   implements
@@ -2040,7 +2029,6 @@ class InjectableWithLifecycle {
 
 @Directive({
   selector: '[onDestroyDirective]',
-  standalone: false,
 })
 class OnDestroyDirective implements OnDestroy {
   @Output('destroy') emitter = new EventEmitter<string>(false);
@@ -2052,7 +2040,6 @@ class OnDestroyDirective implements OnDestroy {
 
 @Directive({
   selector: '[orderCheck0]',
-  standalone: false,
 })
 class OrderCheckDirective0 {
   private _name: string | undefined;
@@ -2068,7 +2055,6 @@ class OrderCheckDirective0 {
 
 @Directive({
   selector: '[orderCheck1]',
-  standalone: false,
 })
 class OrderCheckDirective1 {
   private _name: string | undefined;
@@ -2087,7 +2073,6 @@ class OrderCheckDirective1 {
 
 @Directive({
   selector: '[orderCheck2]',
-  standalone: false,
 })
 class OrderCheckDirective2 {
   private _name: string | undefined;
@@ -2110,7 +2095,6 @@ class TestLocalsContext {
 
 @Directive({
   selector: '[testLocals]',
-  standalone: false,
 })
 class TestLocals {
   constructor(templateRef: TemplateRef<TestLocalsContext>, vcRef: ViewContainerRef) {
@@ -2119,9 +2103,9 @@ class TestLocals {
 }
 
 @Component({
-  selector: 'root',
   template: 'empty',
-  standalone: false,
+
+  imports: [CommonModule, CountingPipe, CountingImpurePipe, IdentityPipe, MultiArgPipe],
 })
 class Person {
   age: number | undefined;
@@ -2182,18 +2166,16 @@ class Address {
 }
 
 @Component({
-  selector: 'root',
   template: 'empty',
-  standalone: false,
 })
 class Uninitialized {
   value: any = null;
 }
 
 @Component({
-  selector: 'root',
   template: 'empty',
-  standalone: false,
+
+  imports: [Gh9882],
 })
 class TestData {
   a: any;
@@ -2205,15 +2187,11 @@ class Holder<T> {
 }
 
 @Component({
-  selector: 'root',
   template: 'empty',
-  standalone: false,
 })
 class PersonHolder extends Holder<Person> {}
 
 @Component({
-  selector: 'root',
   template: 'empty',
-  standalone: false,
 })
 class PersonHolderHolder extends Holder<Holder<Person>> {}

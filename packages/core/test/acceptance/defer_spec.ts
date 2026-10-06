@@ -39,8 +39,8 @@ import {
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
 } from '../../src/core';
-import {IDLE_SERVICE, IdleService, provideIdleServiceWith} from '../../src/defer/idle_service';
 import {IdleScheduler} from '../../src/defer/idle_scheduler';
+import {IDLE_SERVICE, IdleService, provideIdleServiceWith} from '../../src/defer/idle_service';
 import {TimerScheduler} from '../../src/defer/timer_scheduler';
 import {formatRuntimeErrorCode, RuntimeErrorCode} from '../../src/errors';
 import {provideNgReflectAttributes} from '../../src/ng_reflect';
@@ -196,7 +196,6 @@ function createFixture(template: string) {
   }
 
   @Component({
-    selector: 'simple-app',
     imports: [NestedCmp],
     template,
 
@@ -610,7 +609,6 @@ describe('@defer', () => {
 
     it('should produce a message into a console about eagerly loaded deps', async () => {
       @Component({
-        selector: 'simple-app',
         template: `
           @defer (when true) {
             Defer block #1
@@ -650,7 +648,6 @@ describe('@defer', () => {
 
     it('should not produce a message about eagerly loaded deps if no defer blocks are present', () => {
       @Component({
-        selector: 'simple-app',
         template: `No defer blocks`,
 
         changeDetection: ChangeDetectionStrategy.Eager,
@@ -1185,7 +1182,6 @@ describe('@defer', () => {
       class NestedCmp {}
 
       @Component({
-        selector: 'simple-app',
         imports: [NestedCmp],
         template: `
           @defer (when isVisible) {
@@ -1687,7 +1683,6 @@ describe('@defer', () => {
       class CmpA {}
 
       @Component({
-        selector: 'root-app',
         imports: [CmpA],
         template: `
           @defer (on immediate) {
@@ -2850,7 +2845,6 @@ describe('@defer', () => {
 
     it('should clear idle handlers when defer block is triggered', async () => {
       @Component({
-        selector: 'root-app',
         template: `
           @defer (when isVisible; on idle; prefetch on idle) {
             Hello world!
@@ -3407,7 +3401,6 @@ describe('@defer', () => {
 
     it('should prefetch resources on interaction', async () => {
       @Component({
-        selector: 'root-app',
         template: `
           @defer (when isLoaded; prefetch on interaction(trigger)) {
             Main content
@@ -3454,7 +3447,6 @@ describe('@defer', () => {
 
     it('should prefetch resources on interaction with an implicit trigger', async () => {
       @Component({
-        selector: 'root-app',
         template: `
           @defer (when isLoaded; prefetch on interaction) {
             Main content
@@ -3719,7 +3711,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        selector: 'root-app',
         template: `
           @defer (when isLoaded; prefetch on hover(trigger)) {
             Main content
@@ -3772,7 +3763,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        selector: 'root-app',
         template: `
           @defer (when isLoaded; prefetch on hover) {
             Main content
@@ -4053,7 +4043,6 @@ describe('@defer', () => {
       const clearSpy = spyOn(globalThis, 'clearTimeout');
 
       @Component({
-        selector: 'root-app',
         template: `
           @defer (when isVisible; on timer(200ms); prefetch on timer(100ms)) {
             Hello world!
@@ -4444,7 +4433,6 @@ describe('@defer', () => {
 
     it('should prefetch resources when the trigger comes into the viewport', async () => {
       @Component({
-        selector: 'root-app',
         template: `
           @defer (when isLoaded; prefetch on viewport(trigger)) {
             Main content
@@ -4492,7 +4480,6 @@ describe('@defer', () => {
 
     it('should prefetch resources when an implicit trigger comes into the viewport', async () => {
       @Component({
-        selector: 'root-app',
         template: `
           @defer (when isLoaded; prefetch on viewport) {
             Main content
@@ -4920,7 +4907,6 @@ describe('@defer', () => {
       }
 
       @Component({
-        selector: 'app-root',
         template: `
           <parent-cmp>
             @defer (when isVisible) {
@@ -5003,7 +4989,6 @@ describe('@defer', () => {
         class Dialog {}
 
         @Component({
-          selector: 'app-root',
           providers: [{provide: TokenA, useValue: 'TokenA from RootCmp'}],
           template: ` <div #container></div> `,
 
@@ -5104,7 +5089,6 @@ describe('@defer', () => {
       class ChartCollectionComponent {}
 
       @Component({
-        selector: 'app-root',
         template: `
           @for (item of items; track $index) {
             @defer (when isVisible) {
