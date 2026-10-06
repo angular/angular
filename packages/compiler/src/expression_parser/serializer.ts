@@ -87,7 +87,7 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
       case 'undefined':
         return 'undefined';
       case 'string':
-        return `'${ast.value.replace(/'/g, `\\'`)}'`;
+        return `'${ast.value.replaceAll("'", `\\'`)}'`;
       default:
         throw new Error(`Unsupported primitive type: ${ast.value}`);
     }

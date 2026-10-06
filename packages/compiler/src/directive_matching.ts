@@ -162,7 +162,7 @@ export class CssSelector {
    * @returns the escaped string.
    */
   escapeAttribute(attr: string): string {
-    return attr.replace(/\\/g, '\\\\').replace(/\$/g, '\\$');
+    return attr.replaceAll('\\', '\\\\').replaceAll('$', '\\$');
   }
 
   isElementSelector(): boolean {

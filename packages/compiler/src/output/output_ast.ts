@@ -827,11 +827,11 @@ export interface CookedRawString {
   range: ParseSourceSpan | null;
 }
 
-const escapeSlashes = (str: string): string => str.replace(/\\/g, '\\\\');
+const escapeSlashes = (str: string): string => str.replaceAll('\\', '\\\\');
 const escapeStartingColon = (str: string): string => str.replace(/^:/, '\\:');
-const escapeColons = (str: string): string => str.replace(/:/g, '\\:');
+const escapeColons = (str: string): string => str.replaceAll(':', '\\:');
 const escapeForTemplateLiteral = (str: string): string =>
-  str.replace(/`/g, '\\`').replace(/\${/g, '$\\{');
+  str.replaceAll('`', '\\`').replaceAll('${', '$\\{');
 
 /**
  * Creates a `{cooked, raw}` object from the `metaBlock` and `messagePart`.
@@ -2106,7 +2106,7 @@ function tagToString(tag: JSDocTag): string {
     if (tag.text.match(/\/\*|\*\//)) {
       throw new Error('JSDoc text cannot contain "/*" and "*/"');
     }
-    out += ' ' + tag.text.replace(/@/g, '\\@');
+    out += ' ' + tag.text.replaceAll('@', '\\@');
   }
   return out;
 }
@@ -2123,7 +2123,7 @@ function serializeTags(tags: JSDocTag[]): string {
   for (const tag of tags) {
     out += ' *';
     // If the tagToString is multi-line, insert " * " prefixes on lines.
-    out += tagToString(tag).replace(/\n/g, '\n * ');
+    out += tagToString(tag).replaceAll('\n', '\n * ');
     out += '\n';
   }
   out += ' ';

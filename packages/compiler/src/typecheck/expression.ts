@@ -430,7 +430,7 @@ class TcbExprTranslator implements AstVisitor {
   }
 
   private escapeTemplateLiteral(value: string) {
-    return value.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\${/g, '$\\{');
+    return value.replaceAll('\\', '\\\\').replaceAll('`', '\\`').replaceAll('${', '$\\{');
   }
 
   private isStrictSafeNavigationChain(ast: AST): boolean {
