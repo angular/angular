@@ -17,6 +17,9 @@ This is the source code for the Angular framework. This guide outlines standard 
 
 ## Testing
 
+- Create standalone component/directives by default, DO NOT introduce new NgModules/non-standalone components even if sibling tests use them.
+- Prefer current best practices over existing authoring styles in the same file
+- Test components usually do not need selectors unless they are used in templates
 - **Zoneless & Async-First:** Assume a zoneless environment where state changes schedule updates asynchronously.
   - **Do NOT** use `fixture.detectChanges()` to manually trigger updates.
   - **ALWAYS** use the "Act, Wait, Assert" pattern:
@@ -28,6 +31,7 @@ This is the source code for the Angular framework. This guide outlines standard 
 - When waiting is necessary, use real async tests (`it('...', async () => { ... })`) along with:
   - `await timeout(ms)` (from `packages/private/testing/src/utils.ts`) to wait a specific number of milliseconds.
   - `await fixture.whenStable()` to wait for framework stability.
+  - Use the `waitFor` helper function exposed by `@angular/private/testing`
 
 ## Pull Requests
 
