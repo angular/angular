@@ -229,6 +229,17 @@ describe('runtime i18n', () => {
 }-->!</div>`);
   });
 
+  it('should strip replacement characters in translations', () => {
+    loadTranslations({
+      [computeMsgId('Hello {$START_TAG_SPAN}world{$CLOSE_TAG_SPAN}!', '')]:
+        'Bonjour \uFFFD#100\uFFFD \uFFFD0\uFFFD {$START_TAG_SPAN}monde{$CLOSE_TAG_SPAN}!',
+    });
+    const fixture = initWithTemplate(AppComp, `<div i18n>Hello <span>world</span>!</div>`);
+    expect(fixture.nativeElement.innerHTML).toEqual(
+      `<div>Bonjour #100 0 <span>monde</span>!</div>`,
+    );
+  });
+
   it('should support multiple i18n blocks', () => {
     loadTranslations({
       [computeMsgId('trad {$INTERPOLATION}')]: 'traduction {$INTERPOLATION}',
