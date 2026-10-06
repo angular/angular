@@ -76,7 +76,7 @@ import {
 } from './integration_helpers';
 import {timeout} from '@angular/private/testing';
 
-export function guardsIntegrationSuite() {
+export async function guardsIntegrationSuite() {
   describe('guards', () => {
     describe('CanActivate', () => {
       describe('guard completes before emitting a value', () => {
@@ -1196,10 +1196,10 @@ export function guardsIntegrationSuite() {
         })
         class OuterCmp {}
 
-        @Component({selector: 'inner1', template: '', standalone: true})
+        @Component({template: '', standalone: true})
         class Inner1Cmp {}
 
-        @Component({selector: 'inner2', template: '', standalone: true})
+        @Component({template: '', standalone: true})
         class Inner2Cmp {}
 
         const router: Router = TestBed.inject(Router);

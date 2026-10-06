@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NgIf} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   Directive,
   DoCheck,
+  forwardRef,
   Input,
   OnChanges,
   OnInit,
@@ -20,18 +22,6 @@ import {
 import {TestBed} from '../../testing';
 
 describe('exports', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        AppComp,
-        ComponentToReference,
-        DirToReference,
-        DirToReferenceWithPreOrderHooks,
-        DirWithCompInput,
-      ],
-    });
-  });
-
   it('should support export of DOM element', () => {
     const fixture = initWithTemplate(AppComp, '<input value="one" #myInput> {{ myInput.value }}');
     fixture.detectChanges();
@@ -243,7 +233,6 @@ function initWithTemplate(compType: Type<any>, template: string) {
 @Component({
   selector: 'comp-to-ref',
   template: '',
-  standalone: false,
 
   changeDetection: ChangeDetectionStrategy.Eager,
 })
@@ -252,11 +241,15 @@ class ComponentToReference {
 }
 
 @Component({
-  selector: 'app-comp',
   template: ``,
-  standalone: false,
-
   changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [
+    ComponentToReference,
+    forwardRef(() => DirToReference),
+    forwardRef(() => DirWithCompInput),
+    forwardRef(() => DirToReferenceWithPreOrderHooks),
+    NgIf,
+  ],
 })
 class AppComp {
   outer = false;
@@ -266,7 +259,6 @@ class AppComp {
 @Directive({
   selector: '[dir]',
   exportAs: 'dir',
-  standalone: false,
 })
 class DirToReference {
   name = 'Drew';
@@ -274,7 +266,6 @@ class DirToReference {
 
 @Directive({
   selector: '[dirWithInput]',
-  standalone: false,
 })
 class DirWithCompInput {
   @Input('dirWithInput') comp: ComponentToReference | null = null;
@@ -284,7 +275,6 @@ class DirWithCompInput {
   selector: '[dir-on-change]',
   exportAs: 'dirOnChange',
   host: {'[title]': 'name'},
-  standalone: false,
 })
 class DirToReferenceWithPreOrderHooks implements OnInit, OnChanges, DoCheck {
   @Input() in: any = null;

@@ -72,7 +72,7 @@ describe('all migrations', () => {
     });
   }
 
-  function createTests(migrationName: string) {
+  async function createTests(migrationName: string) {
     // Regression test for: https://github.com/angular/angular/issues/36346.
     it('should not throw if non-existent symbols are imported with rootDirs', async () => {
       writeFile(

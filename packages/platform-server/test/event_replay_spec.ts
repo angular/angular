@@ -97,6 +97,7 @@ describe('event replay', () => {
 
     @Component({
       selector: 'app',
+
       template: `<button id="btn" (click)="onClick()"></button>`,
     })
     class AppComponent {
@@ -142,6 +143,7 @@ describe('event replay', () => {
 
     @Component({
       selector: 'app',
+
       template: ` <button id="btn" (click)="onClick()" #localRef></button> `,
     })
     class AppComponent {
@@ -174,6 +176,7 @@ describe('event replay', () => {
 
     @Component({
       selector: 'app-2',
+
       template: ` <button id="btn-2" (click)="onClick()"></button> `,
     })
     class AppComponent_2 {
@@ -223,6 +226,7 @@ describe('event replay', () => {
   it('should cleanup `window._ejsas[appId]` once app is destroyed', async () => {
     @Component({
       selector: 'app',
+
       template: ` <button id="btn" (click)="onClick()"></button> `,
     })
     class AppComponent {
@@ -429,6 +433,7 @@ describe('event replay', () => {
   it('should remove jsaction attributes, but continue listening to events.', async () => {
     @Component({
       selector: 'app',
+
       template: `
         <div (click)="onClick()" id="1">
           <div (click)="onClick()" id="2"></div>
@@ -483,6 +488,7 @@ describe('event replay', () => {
 
     @Component({
       selector: 'app',
+
       template: ` <button id="btn" (click)="onClick()"></button> `,
     })
     class AppComponent {
@@ -539,6 +545,7 @@ describe('event replay', () => {
       const onClickSpy = jasmine.createSpy();
       @Component({
         selector: 'app',
+
         template: `
           <div id="top" (click)="onClick()">
             <div id="bottom" (click)="onClick()"></div>
@@ -570,6 +577,7 @@ describe('event replay', () => {
     it('should not propagate events if stopPropagation is called', async () => {
       @Component({
         selector: 'app',
+
         template: `
           <div id="top" (click)="onClick($event)">
             <div id="bottom" (click)="onClick($event)"></div>
@@ -603,6 +611,7 @@ describe('event replay', () => {
       let latestCurrentTarget: EventTarget | null = null;
       @Component({
         selector: 'app',
+
         template: `
           <div id="top" (click)="onClick($event)">
             <div id="bottom" (click)="onClick($event)"></div>
@@ -644,6 +653,7 @@ describe('event replay', () => {
     it('should not be present on a page when hydration is disabled', async () => {
       @Component({
         selector: 'app',
+
         template: '<input (click)="onClick()" />',
       })
       class SimpleComponent {
@@ -660,6 +670,7 @@ describe('event replay', () => {
     it('should not be present on a page if there are no events to replay', async () => {
       @Component({
         selector: 'app',
+
         template: 'Some text',
       })
       class SimpleComponent {}
@@ -687,6 +698,7 @@ describe('event replay', () => {
     it('should not replay mouse events', async () => {
       @Component({
         selector: 'app',
+
         template: '<div (mouseenter)="doThing()"><div>',
       })
       class SimpleComponent {
@@ -704,6 +716,7 @@ describe('event replay', () => {
     it('should not be present on a page where event replay is not enabled', async () => {
       @Component({
         selector: 'app',
+
         template: '<input (click)="onClick()" />',
       })
       class SimpleComponent {
@@ -725,6 +738,7 @@ describe('event replay', () => {
     it('should be retained if there are events to replay', async () => {
       @Component({
         selector: 'app',
+
         template: '<input (click)="onClick()" />',
       })
       class SimpleComponent {
@@ -753,6 +767,7 @@ describe('event replay', () => {
     it('should be empty on init', async () => {
       @Component({
         selector: 'app',
+
         template: '<input (click)="onClick()" />',
       })
       class SimpleComponent {
@@ -773,6 +788,7 @@ describe('event replay', () => {
     it('should be different for different apps', async () => {
       @Component({
         selector: 'app',
+
         template: '<input (click)="onClick()" />',
       })
       class SimpleComponent {

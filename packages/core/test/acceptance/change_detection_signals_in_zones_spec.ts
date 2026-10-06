@@ -465,7 +465,6 @@ describe('OnPush components with signals', () => {
 
     @Component({
       template: `<child />`,
-
       imports: [ChildCmp],
     })
     class ParentCmp {}
@@ -496,7 +495,6 @@ describe('OnPush components with signals', () => {
 
     @Component({
       template: `<child /> {{ parentSignalValue() }}`,
-
       imports: [ChildCmp],
       selector: 'parent',
     })
@@ -507,7 +505,6 @@ describe('OnPush components with signals', () => {
     // Wrapper component so we can effectively test ParentCmp being marked dirty
     @Component({
       template: `<parent />`,
-
       imports: [ParentCmp],
     })
     class TestWrapper {}
@@ -550,7 +547,6 @@ describe('OnPush components with signals', () => {
     }
 
     @Component({
-      selector: 'test-component',
       imports: [MisunderstoodDir],
       template: `
         {{ counter() }}
@@ -584,7 +580,6 @@ describe('OnPush components with signals', () => {
     }
 
     @Component({
-      selector: 'test-component',
       imports: [MisunderstoodDir],
       template: `
         {{ counter() }}
@@ -692,8 +687,6 @@ describe('OnPush components with signals', () => {
 
     it('refreshes an embedded view in a component', () => {
       @Component({
-        selector: 'signal-component',
-
         imports: [NgIf],
         template: `<div *ngIf="true">{{ value() }}</div>`,
       })
@@ -710,8 +703,6 @@ describe('OnPush components with signals', () => {
 
     it('refreshes multiple embedded views in a component', () => {
       @Component({
-        selector: 'signal-component',
-
         imports: [NgFor],
         template: `<div *ngFor="let i of [1, 2, 3]">{{ value() }}</div>`,
       })
@@ -728,8 +719,6 @@ describe('OnPush components with signals', () => {
 
     it('refreshes entire component, including embedded views, when signal updates', () => {
       @Component({
-        selector: 'signal-component',
-
         imports: [NgIf],
         template: `
           {{ componentSignal() }}
@@ -758,8 +747,6 @@ describe('OnPush components with signals', () => {
 
     it('re-executes deep embedded template if signal updates', () => {
       @Component({
-        selector: 'signal-component',
-
         imports: [NgIf],
         template: `
           <div *ngIf="true">
@@ -846,7 +833,6 @@ describe('OnPush components with signals', () => {
   describe('shielded by non-dirty OnPush', () => {
     @Component({
       selector: 'signal-component',
-
       template: `{{ value() }}`,
     })
     class SignalComponent {
@@ -859,10 +845,8 @@ describe('OnPush components with signals', () => {
     }
 
     @Component({
-      selector: 'on-push-parent',
       template: ` <signal-component></signal-component>
         {{ incrementChecks() }}`,
-
       imports: [SignalComponent],
     })
     class OnPushParent {

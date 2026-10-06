@@ -55,7 +55,6 @@ describe('element discovery', () => {
     class ChildComp {}
 
     @Component({
-      selector: 'parent-comp',
       imports: [ChildComp],
       template: `
         <section>
@@ -116,7 +115,6 @@ describe('element discovery', () => {
 
   it('should return a context object from a given dom node', () => {
     @Component({
-      selector: 'structured-comp',
       template: `
         <section></section>
         <div></div>
@@ -144,7 +142,6 @@ describe('element discovery', () => {
 
   it('should cache the element context on a element was preemptively monkey-patched', () => {
     @Component({
-      selector: 'structured-comp',
       template: ` <section></section> `,
     })
     class StructuredComp {}
@@ -166,7 +163,6 @@ describe('element discovery', () => {
 
   it("should cache the element context on an intermediate element that isn't preemptively monkey-patched", () => {
     @Component({
-      selector: 'structured-comp',
       template: `
         <section>
           <p></p>
@@ -191,7 +187,6 @@ describe('element discovery', () => {
 
   it('should be able to pull in element context data even if the element is decorated using styling', () => {
     @Component({
-      selector: 'structured-comp',
       template: ` <section></section> `,
     })
     class StructuredComp {}
@@ -242,7 +237,6 @@ describe('element discovery', () => {
     class ProjectorComp {}
 
     @Component({
-      selector: 'parent-comp',
       imports: [ProjectorComp],
       template: `
         <section>
@@ -305,7 +299,6 @@ describe('element discovery', () => {
 
   it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular', () => {
     @Component({
-      selector: 'structured-comp',
       template: ` <section></section> `,
     })
     class StructuredComp {}
@@ -323,7 +316,6 @@ describe('element discovery', () => {
 
   it('should by default monkey-patch the bootstrap component with context details', () => {
     @Component({
-      selector: 'structured-comp',
       template: ``,
     })
     class StructuredComp {}
@@ -383,7 +375,6 @@ describe('element discovery', () => {
     }
 
     @Component({
-      selector: 'structured-comp',
       imports: [MyDir1, MyDir2, MyDir3],
       template: `
         <div my-dir-1 my-dir-2></div>
@@ -468,7 +459,6 @@ describe('element discovery', () => {
     }
 
     @Component({
-      selector: 'parent-comp',
       imports: [ChildComp, MyDir1, MyDir2],
       template: ` <child-comp my-dir-1 my-dir-2></child-comp> `,
     })
@@ -530,7 +520,6 @@ describe('element discovery', () => {
     class ChildComp {}
 
     @Component({
-      selector: 'parent-comp',
       imports: [ChildComp],
       template: `
         <section>
@@ -566,7 +555,6 @@ describe('element discovery', () => {
 describe('sanitization', () => {
   it('should sanitize data using the provided sanitization interface', () => {
     @Component({
-      selector: 'sanitize-this',
       template: ` <a [href]="href"></a> `,
       changeDetection: ChangeDetectionStrategy.Eager,
     })
@@ -619,7 +607,6 @@ describe('sanitization', () => {
     }
 
     @Component({
-      selector: 'sanitize-this',
       imports: [UnsafeUrlHostBindingDir],
       template: ` <a unsafeUrlHostBindingDir>text</a> `,
       changeDetection: ChangeDetectionStrategy.Eager,
@@ -652,7 +639,6 @@ describe('sanitization', () => {
 
   it('should throw when binding to animate element with attributeName="href"', () => {
     @Component({
-      selector: 'test-comp',
       template: `<svg><animate attributeName="href" [to]="'foo'"></animate></svg>`,
     })
     class TestComp {}
@@ -677,7 +663,6 @@ describe('sanitization', () => {
   for (const attr of ['attributeName', 'attributename', 'attributenAme']) {
     it(`should throw when binding to set element with ${attr}="href"`, () => {
       @Component({
-        selector: 'test-comp',
         template: `<svg><set ${attr}="href" [attr.to]="'foo'"></set></svg>`,
       })
       class TestComp {}
@@ -850,7 +835,6 @@ describe('sanitization', () => {
 
   it('should not throw when binding to animate element when attributeName is not href', () => {
     @Component({
-      selector: 'test-comp',
       template: `<svg><animate attributeName="display" [to]="'foo'"></animate></svg>`,
     })
     class TestComp {}

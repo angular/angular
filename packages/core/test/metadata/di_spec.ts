@@ -21,14 +21,16 @@ import {TestBed} from '../../testing';
 describe('ViewChild', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ViewChildTypeSelectorComponent, ViewChildStringSelectorComponent, Simple],
       schemas: [NO_ERRORS_SCHEMA],
     });
   });
 
   it('should support type selector', () => {
     TestBed.overrideComponent(ViewChildTypeSelectorComponent, {
-      set: {template: `<simple [marker]="'1'"></simple><simple [marker]="'2'"></simple>`},
+      set: {
+        template: `<simple [marker]="'1'"></simple><simple [marker]="'2'"></simple>`,
+        imports: [Simple],
+      },
     });
     const view = TestBed.createComponent(ViewChildTypeSelectorComponent);
 
@@ -39,7 +41,7 @@ describe('ViewChild', () => {
 
   it('should support string selector', () => {
     TestBed.overrideComponent(ViewChildStringSelectorComponent, {
-      set: {template: `<simple #child></simple>`},
+      set: {template: `<simple #child></simple>`, imports: [Simple]},
     });
     const view = TestBed.createComponent(ViewChildStringSelectorComponent);
 
@@ -51,18 +53,13 @@ describe('ViewChild', () => {
 describe('ViewChildren', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        ViewChildrenTypeSelectorComponent,
-        ViewChildrenStringSelectorComponent,
-        Simple,
-      ],
       schemas: [NO_ERRORS_SCHEMA],
     });
   });
 
   it('should support type selector', () => {
     TestBed.overrideComponent(ViewChildrenTypeSelectorComponent, {
-      set: {template: `<simple></simple><simple></simple>`},
+      set: {template: `<simple></simple><simple></simple>`, imports: [Simple]},
     });
 
     const view = TestBed.createComponent(ViewChildrenTypeSelectorComponent);
@@ -73,11 +70,9 @@ describe('ViewChildren', () => {
 
   it('should support string selector', () => {
     TestBed.overrideComponent(ViewChildrenStringSelectorComponent, {
-      set: {template: `<simple #child1></simple><simple #child2></simple>`},
+      set: {template: `<simple #child1></simple><simple #child2></simple>`, imports: [Simple]},
     });
-    const view = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(
-      ViewChildrenStringSelectorComponent,
-    );
+    const view = TestBed.createComponent(ViewChildrenStringSelectorComponent);
     view.detectChanges();
     expect(view.componentInstance.children).toBeDefined();
     expect(view.componentInstance.children.length).toBe(2);
@@ -86,43 +81,34 @@ describe('ViewChildren', () => {
 
 @Directive({
   selector: 'simple',
-  standalone: false,
 })
 class Simple {
   @Input() marker: string | undefined;
 }
 
 @Component({
-  selector: 'view-child-type-selector',
   template: '',
-  standalone: false,
 })
 class ViewChildTypeSelectorComponent {
   @ViewChild(Simple) child!: Simple;
 }
 
 @Component({
-  selector: 'view-child-string-selector',
   template: '',
-  standalone: false,
 })
 class ViewChildStringSelectorComponent {
   @ViewChild('child') child!: ElementRef;
 }
 
 @Component({
-  selector: 'view-children-type-selector',
   template: '',
-  standalone: false,
 })
 class ViewChildrenTypeSelectorComponent {
   @ViewChildren(Simple) children!: QueryList<Simple>;
 }
 
 @Component({
-  selector: 'view-child-string-selector',
   template: '',
-  standalone: false,
 })
 class ViewChildrenStringSelectorComponent {
   // Allow comma separated selector (with spaces).

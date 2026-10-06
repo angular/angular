@@ -48,9 +48,11 @@ describe('template-driven forms integration tests', () => {
 
   function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
     TestBed.configureTestingModule({
-      declarations: [component, ...directives],
       imports: [FormsModule, CommonModule],
     });
+    if (directives.length > 0) {
+      TestBed.overrideComponent(component, {add: {imports: directives}});
+    }
     return TestBed.createComponent(component);
   }
 
@@ -89,15 +91,14 @@ describe('template-driven forms integration tests', () => {
       // (template does not contain binding to `checked` explicitly)
       // https://github.com/angular/angular/issues/33695
       @Component({
-        selector: 'app-root',
+        imports: [FormsModule, CommonModule, forwardRef(() => NgAsyncValidator)],
         template: `<input type="radio" value="one" [(ngModel)]="active" />`,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         active = 'one';
       }
-      TestBed.configureTestingModule({imports: [FormsModule], declarations: [AppComponent]});
+      TestBed.configureTestingModule({imports: [FormsModule]});
       const fixture = TestBed.createComponent(AppComponent);
       // NgModel writes data asynchronously into the DOM.
       await fixture.whenStable();
@@ -343,6 +344,7 @@ describe('template-driven forms integration tests', () => {
 
     it('should keep track of the ngModel value when together used with an ngFor inside a form', async () => {
       @Component({
+        imports: [FormsModule, CommonModule],
         template: `
           <form>
             <div *ngFor="let item of items; index as i">
@@ -350,7 +352,6 @@ describe('template-driven forms integration tests', () => {
             </div>
           </form>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -399,6 +400,7 @@ describe('template-driven forms integration tests', () => {
 
     it('should keep track of the ngModel value when together used with an ngFor inside an ngModelGroup', async () => {
       @Component({
+        imports: [FormsModule, CommonModule],
         template: `
           <form>
             <ng-container ngModelGroup="group">
@@ -408,7 +410,6 @@ describe('template-driven forms integration tests', () => {
             </ng-container>
           </form>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
@@ -1994,7 +1995,6 @@ describe('template-driven forms integration tests', () => {
             useExisting: forwardRef(() => MyCustomComponentDirective),
           },
         ],
-        standalone: false,
       })
       class MyCustomComponentDirective implements ControlValueAccessor {
         @Input() min!: number;
@@ -2006,12 +2006,12 @@ describe('template-driven forms integration tests', () => {
       }
 
       @Component({
+        imports: [FormsModule, CommonModule, MyCustomComponentDirective],
         template: `
           <!-- no min/max validators should be matched on these elements -->
           <my-custom-component name="min" ngModel [min]="min"></my-custom-component>
           <my-custom-component name="max" ngModel [max]="max"></my-custom-component>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {}
@@ -2032,8 +2032,8 @@ describe('template-driven forms integration tests', () => {
 
     it('should not include the min and max validators for inputs with type range', async () => {
       @Component({
+        imports: [FormsModule, CommonModule],
         template: '<input type="range" min="10" max="20">',
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {}
@@ -2057,9 +2057,9 @@ describe('template-driven forms integration tests', () => {
     describe('enabling validators conditionally', () => {
       it('should not include the minLength and maxLength validators for null', async () => {
         @Component({
+          imports: [FormsModule, CommonModule],
           template:
             '<form><input name="amount" ngModel [minlength]="minlen" [maxlength]="maxlen"></form>',
-          standalone: false,
           changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MinLengthMaxLengthComponent {
@@ -2146,9 +2146,9 @@ describe('template-driven forms integration tests', () => {
 
       it('should not include the min and max validators for null', async () => {
         @Component({
+          imports: [FormsModule, CommonModule],
           template:
             '<form><input type="number" name="minmaxinput" ngModel [min]="minlen" [max]="maxlen"></form>',
-          standalone: false,
           changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MinLengthMaxLengthComponent {
@@ -2451,7 +2451,6 @@ describe('template-driven forms integration tests', () => {
         providers: [
           {provide: NG_VALIDATORS, useExisting: forwardRef(() => NoOpValidator), multi: true},
         ],
-        standalone: false,
       })
       class NoOpValidator implements Validator {
         @Input() validatorInput = '';
@@ -2474,7 +2473,6 @@ describe('template-driven forms integration tests', () => {
             multi: true,
           },
         ],
-        standalone: false,
       })
       class NoOpAsyncValidator implements AsyncValidator {
         @Input() validatorInput = '';
@@ -2489,7 +2487,7 @@ describe('template-driven forms integration tests', () => {
       }
 
       @Component({
-        selector: 'ng-model-noop-validation',
+        imports: [FormsModule, CommonModule, NoOpValidator, NoOpAsyncValidator],
         template: `
           <form>
             <div
@@ -2502,7 +2500,6 @@ describe('template-driven forms integration tests', () => {
             </div>
           </form>
         `,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NgModelNoOpValidation {
@@ -2654,7 +2651,6 @@ describe('template-driven forms integration tests', () => {
       it('should warn with FormGroupDirective name when ngModel cannot reach parent FormGroupDirective via @Host()', async () => {
         const warnSpy = spyOn(console, 'warn');
         TestBed.configureTestingModule({
-          declarations: [NgModelCrossComponentFormGroupParent, NgModelCrossComponentFormGroupChild],
           imports: [FormsModule, ReactiveFormsModule, CommonModule],
         });
         const fixture = TestBed.createComponent(NgModelCrossComponentFormGroupParent);
@@ -2700,10 +2696,6 @@ describe('template-driven forms integration tests', () => {
       it('should not warn when ngModel in a child component uses [ngModelOptions]="{standalone: true}"', async () => {
         const warnSpy = spyOn(console, 'warn');
         TestBed.configureTestingModule({
-          declarations: [
-            NgModelCrossComponentParentStandaloneOpt,
-            NgModelCrossComponentChildStandaloneOpt,
-          ],
           imports: [FormsModule],
         });
         const fixture = TestBed.createComponent(NgModelCrossComponentParentStandaloneOpt);
@@ -2714,7 +2706,6 @@ describe('template-driven forms integration tests', () => {
       it('should not warn when ngModel inside a ControlValueAccessor uses [ngModelOptions]="{standalone: true}"', async () => {
         const warnSpy = spyOn(console, 'warn');
         TestBed.configureTestingModule({
-          declarations: [NgModelCvaHostParent, NgModelCvaWithInternalNgModel],
           imports: [FormsModule],
         });
         const fixture = TestBed.createComponent(NgModelCvaHostParent);
@@ -2726,9 +2717,8 @@ describe('template-driven forms integration tests', () => {
 });
 
 @Component({
-  selector: 'standalone-ng-model',
+  imports: [FormsModule, CommonModule],
   template: ` <input type="text" [(ngModel)]="name" /> `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class StandaloneNgModel {
@@ -2736,13 +2726,12 @@ class StandaloneNgModel {
 }
 
 @Component({
-  selector: 'ng-model-form',
+  imports: [FormsModule, CommonModule],
   template: `
     <form (ngSubmit)="event = $event" (reset)="onReset()">
       <input name="name" [(ngModel)]="name" minlength="10" [ngModelOptions]="options" />
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelForm {
@@ -2754,15 +2743,14 @@ class NgModelForm {
 }
 
 @Component({
-  selector: 'ng-model-native-validate-form',
+  imports: [FormsModule, CommonModule],
   template: `<form ngNativeValidate></form>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNativeValidateForm {}
 
 @Component({
-  selector: 'ng-model-group-form',
+  imports: [FormsModule, CommonModule],
   template: `
     <form>
       <div ngModelGroup="name">
@@ -2772,7 +2760,6 @@ class NgModelNativeValidateForm {}
       <input name="email" [(ngModel)]="email" [ngModelOptions]="options" />
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelGroupForm {
@@ -2784,7 +2771,7 @@ class NgModelGroupForm {
 }
 
 @Component({
-  selector: 'ng-model-valid-binding',
+  imports: [FormsModule, CommonModule],
   template: `
     <form>
       <div ngModelGroup="name" #group="ngModelGroup">
@@ -2793,7 +2780,6 @@ class NgModelGroupForm {
       </div>
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelValidBinding {
@@ -2801,7 +2787,7 @@ class NgModelValidBinding {
 }
 
 @Component({
-  selector: 'ng-model-ngif-form',
+  imports: [FormsModule, CommonModule],
   template: `
     <form>
       <div ngModelGroup="name" *ngIf="groupShowing">
@@ -2810,7 +2796,6 @@ class NgModelValidBinding {
       <input name="email" [(ngModel)]="email" *ngIf="emailShowing" />
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNgIfForm {
@@ -2821,7 +2806,7 @@ class NgModelNgIfForm {
 }
 
 @Component({
-  selector: 'ng-model-nested',
+  imports: [FormsModule, CommonModule],
   template: `
     <form>
       <div ngModelGroup="contact-info">
@@ -2832,7 +2817,6 @@ class NgModelNgIfForm {
       </div>
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNestedForm {
@@ -2841,38 +2825,35 @@ class NgModelNestedForm {
 }
 
 @Component({
-  selector: 'ng-no-form',
+  imports: [FormsModule, CommonModule],
   template: `
     <form ngNoForm>
       <input name="name" />
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgNoFormComp {}
 
 @Component({
-  selector: 'invalid-ng-model-noname',
+  imports: [FormsModule, CommonModule],
   template: `
     <form>
       <input [(ngModel)]="name" />
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class InvalidNgModelNoName {}
 
 @Component({
-  selector: 'ng-model-options-standalone',
+  imports: [FormsModule, CommonModule],
   template: `
     <form [ngFormOptions]="formOptions">
       <input name="one" [(ngModel)]="one" />
       <input [(ngModel)]="two" [ngModelOptions]="options" />
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelOptionsStandalone {
@@ -2883,7 +2864,7 @@ class NgModelOptionsStandalone {
 }
 
 @Component({
-  selector: 'ng-model-validation-bindings',
+  imports: [FormsModule, CommonModule],
   template: `
     <form>
       <input name="required" ngModel [required]="required" />
@@ -2892,7 +2873,6 @@ class NgModelOptionsStandalone {
       <input name="pattern" ngModel [pattern]="pattern" />
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelValidationBindings {
@@ -2903,7 +2883,7 @@ class NgModelValidationBindings {
 }
 
 @Component({
-  selector: 'ng-model-multiple-validators',
+  imports: [FormsModule, CommonModule],
   template: `
     <form>
       <input
@@ -2915,7 +2895,6 @@ class NgModelValidationBindings {
       />
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMultipleValidators {
@@ -2925,11 +2904,10 @@ class NgModelMultipleValidators {
 }
 
 @Component({
-  selector: 'ng-model-checkbox-validator',
+  imports: [FormsModule, CommonModule],
   template: `<form>
     <input type="checkbox" [(ngModel)]="accepted" [required]="required" name="checkbox" />
   </form>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelCheckboxRequiredValidator {
@@ -2938,9 +2916,8 @@ class NgModelCheckboxRequiredValidator {
 }
 
 @Component({
-  selector: 'ng-model-email',
+  imports: [FormsModule, CommonModule],
   template: `<form><input type="email" ngModel [email]="validatorEnabled" name="email" /></form>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelEmailValidator {
@@ -2952,7 +2929,6 @@ class NgModelEmailValidator {
   providers: [
     {provide: NG_ASYNC_VALIDATORS, useExisting: forwardRef(() => NgAsyncValidator), multi: true},
   ],
-  standalone: false,
 })
 class NgAsyncValidator implements AsyncValidator {
   validate(c: AbstractControl) {
@@ -2962,21 +2938,19 @@ class NgAsyncValidator implements AsyncValidator {
 }
 
 @Component({
-  selector: 'ng-model-async-validation',
+  imports: [FormsModule, CommonModule, forwardRef(() => NgAsyncValidator)],
   template: `<input name="async" ngModel ng-async-validator />`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelAsyncValidation {}
 
 @Component({
-  selector: 'ng-model-changes-form',
+  imports: [FormsModule, CommonModule],
   template: `
     <form>
       <input name="async" [ngModel]="name" (ngModelChange)="log()" [ngModelOptions]="options" />
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelChangesForm {
@@ -2990,11 +2964,10 @@ class NgModelChangesForm {
 }
 
 @Component({
-  selector: 'ng-model-change-state',
+  imports: [FormsModule, CommonModule],
   template: `
     <input #ngModel="ngModel" ngModel [maxlength]="4" (ngModelChange)="onNgModelChange(ngModel)" />
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelChangeState {
@@ -3002,9 +2975,8 @@ class NgModelChangeState {
 }
 
 @Component({
-  selector: 'ng-model-max',
+  imports: [FormsModule, CommonModule],
   template: `<form><input name="max" type="number" ngModel [max]="max" /></form>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMaxValidator {
@@ -3012,9 +2984,8 @@ class NgModelMaxValidator {
 }
 
 @Component({
-  selector: 'ng-model-min',
+  imports: [FormsModule, CommonModule],
   template: `<form><input name="min" type="number" ngModel [min]="min" /></form>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMinValidator {
@@ -3022,9 +2993,8 @@ class NgModelMinValidator {
 }
 
 @Component({
-  selector: 'ng-model-min-max',
+  imports: [FormsModule, CommonModule],
   template: ` <form><input name="min_max" type="number" ngModel [min]="min" [max]="max" /></form>`,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMinMaxValidator {
@@ -3034,7 +3004,6 @@ class NgModelMinMaxValidator {
 
 @Directive({
   selector: '[myDir]',
-  standalone: false,
 })
 class CustomDirective {
   @Input() min!: number;
@@ -3042,14 +3011,13 @@ class CustomDirective {
 }
 
 @Component({
-  selector: 'ng-model-no-min-max',
+  imports: [FormsModule, CommonModule],
   template: `
     <form>
       <input name="min" type="text" ngModel [min]="min" myDir />
       <input name="max" type="text" ngModel [max]="max" myDir />
     </form>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNoMinMaxValidator {
@@ -3059,7 +3027,7 @@ class NgModelNoMinMaxValidator {
 }
 
 @Component({
-  selector: 'ng-model-nested',
+  imports: [FormsModule, CommonModule],
   template: `
     <dialog open>
       <form #form method="dialog">
@@ -3067,7 +3035,6 @@ class NgModelNoMinMaxValidator {
       </form>
     </dialog>
   `,
-  standalone: false,
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NativeDialogForm {
@@ -3075,18 +3042,18 @@ class NativeDialogForm {
 }
 
 @Component({
+  imports: [FormsModule, CommonModule],
   selector: 'ng-model-cross-component-child',
   template: `<input type="text" name="child" [(ngModel)]="value" />`,
-  standalone: false,
 })
 class NgModelCrossComponentChild {
   value = '';
 }
 
 @Component({
+  imports: [FormsModule, CommonModule],
   selector: 'ng-model-cross-component-child-vp',
   template: `<input type="text" name="child" [(ngModel)]="value" />`,
-  standalone: false,
   viewProviders: [{provide: ControlContainer, useExisting: NgForm}],
 })
 class NgModelCrossComponentChildWithViewProviders {
@@ -3094,66 +3061,72 @@ class NgModelCrossComponentChildWithViewProviders {
 }
 
 @Component({
-  selector: 'ng-model-cross-component-parent',
+  imports: [FormsModule, CommonModule, forwardRef(() => NgModelCrossComponentChild)],
   template: `
     <form>
       <input type="text" name="parent" [(ngModel)]="value" />
       <ng-model-cross-component-child></ng-model-cross-component-child>
     </form>
   `,
-  standalone: false,
 })
 class NgModelCrossComponentParent {
   value = '';
 }
 
 @Component({
-  selector: 'ng-model-cross-component-parent-vp',
+  imports: [
+    FormsModule,
+    CommonModule,
+    forwardRef(() => NgModelCrossComponentChildWithViewProviders),
+  ],
   template: `
     <form>
       <input type="text" name="parent" [(ngModel)]="value" />
       <ng-model-cross-component-child-vp></ng-model-cross-component-child-vp>
     </form>
   `,
-  standalone: false,
 })
 class NgModelCrossComponentParentWithViewProviders {
   value = '';
 }
 
 @Component({
+  imports: [FormsModule, CommonModule],
   selector: 'ng-model-cross-component-form-group-child',
   template: `<input type="text" name="child" [(ngModel)]="value" />`,
-  standalone: false,
 })
 class NgModelCrossComponentFormGroupChild {
   value = '';
 }
 
 @Component({
-  selector: 'ng-model-cross-component-form-group-parent',
+  imports: [
+    FormsModule,
+    CommonModule,
+    ReactiveFormsModule,
+    forwardRef(() => NgModelCrossComponentFormGroupChild),
+  ],
   template: `
     <div [formGroup]="form">
       <ng-model-cross-component-form-group-child></ng-model-cross-component-form-group-child>
     </div>
   `,
-  standalone: false,
 })
 class NgModelCrossComponentFormGroupParent {
   form = new FormGroup({});
 }
 
 @Component({
+  imports: [FormsModule, CommonModule],
   selector: 'ng-model-cross-component-group-child',
   template: `<input type="text" name="child" [(ngModel)]="value" />`,
-  standalone: false,
 })
 class NgModelCrossComponentGroupChild {
   value = '';
 }
 
 @Component({
-  selector: 'ng-model-cross-component-group-parent',
+  imports: [FormsModule, CommonModule, forwardRef(() => NgModelCrossComponentGroupChild)],
   template: `
     <form>
       <div ngModelGroup="group">
@@ -3161,32 +3134,30 @@ class NgModelCrossComponentGroupChild {
       </div>
     </form>
   `,
-  standalone: false,
 })
 class NgModelCrossComponentGroupParent {}
 
 @Component({
+  imports: [FormsModule, CommonModule],
   selector: 'ng-model-cross-component-child-standalone-opt',
   template: `<input type="text" [ngModelOptions]="{standalone: true}" ngModel />`,
-  standalone: false,
 })
 class NgModelCrossComponentChildStandaloneOpt {}
 
 @Component({
-  selector: 'ng-model-cross-component-parent-standalone-opt',
+  imports: [FormsModule, CommonModule, forwardRef(() => NgModelCrossComponentChildStandaloneOpt)],
   template: `
     <form>
       <ng-model-cross-component-child-standalone-opt></ng-model-cross-component-child-standalone-opt>
     </form>
   `,
-  standalone: false,
 })
 class NgModelCrossComponentParentStandaloneOpt {}
 
 @Component({
+  imports: [FormsModule, CommonModule],
   selector: 'ng-model-cva-with-internal-ng-model',
   template: `<input type="text" [(ngModel)]="internal" [ngModelOptions]="{standalone: true}" />`,
-  standalone: false,
   providers: [
     {provide: NG_VALUE_ACCESSOR, useExisting: NgModelCvaWithInternalNgModel, multi: true},
   ],
@@ -3201,12 +3172,11 @@ class NgModelCvaWithInternalNgModel implements ControlValueAccessor {
 }
 
 @Component({
-  selector: 'ng-model-cva-host-parent',
+  imports: [FormsModule, CommonModule, forwardRef(() => NgModelCvaWithInternalNgModel)],
   template: `
     <form>
       <ng-model-cva-with-internal-ng-model name="x" ngModel></ng-model-cva-with-internal-ng-model>
     </form>
   `,
-  standalone: false,
 })
 class NgModelCvaHostParent {}

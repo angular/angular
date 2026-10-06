@@ -586,7 +586,6 @@ describe('queries as signals', () => {
     it('should return empty results for content queries of dynamically created components', () => {
       // https://github.com/angular/angular/issues/54450
       @Component({
-        selector: 'query-cmp',
         template: ``,
       })
       class QueryComponent {

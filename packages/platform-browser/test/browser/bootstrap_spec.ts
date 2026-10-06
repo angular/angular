@@ -47,7 +47,7 @@ import {
   Type,
   VERSION,
 } from '@angular/core';
-import {inject, ɵLog as Log, TestBed} from '@angular/core/testing';
+import {ɵLog as Log, TestBed} from '@angular/core/testing';
 import {isNode, withBody} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {provideAnimations, provideNoopAnimations} from '../../animations';
@@ -197,7 +197,8 @@ describe('bootstrap factory method', () => {
     TestBed.configureTestingModule({providers: [Log]});
   });
 
-  beforeEach(inject([DOCUMENT], (doc: any) => {
+  beforeEach(() => {
+    const doc = TestBed.inject(DOCUMENT);
     destroyPlatform();
     compilerConsole = new DummyConsole();
     testProviders = [{provide: Console, useValue: compilerConsole}];
@@ -214,7 +215,7 @@ describe('bootstrap factory method', () => {
     doc.body.appendChild(el2);
     el.appendChild(lightDom);
     lightDom.textContent = 'loading';
-  }));
+  });
 
   afterEach(destroyPlatform);
 
@@ -554,13 +555,14 @@ describe('bootstrap factory method', () => {
     expect(state).toBeInstanceOf(TransferState);
   });
 
-  it('should retrieve sanitizer', inject([Injector], (injector: Injector) => {
+  it('should retrieve sanitizer', () => {
+    const injector = TestBed.inject(Injector);
     const sanitizer: Sanitizer | null = injector.get(Sanitizer, null);
     // We don't want to have sanitizer in DI. We use DI only to overwrite the
     // sanitizer, but not for default one. The default one is pulled in by the Ivy
     // instructions as needed.
     expect(sanitizer).toBe(null);
-  }));
+  });
 
   it('should throw if no element is found', (done) => {
     const logger = new MockConsole();
@@ -744,31 +746,28 @@ describe('bootstrap factory method', () => {
     }, done.fail);
   });
 
-  it('should run platform initializers', (done) => {
-    inject([Log], (log: Log) => {
-      const p = createPlatformFactory(platformBrowser, 'someName', [
-        {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init1'), multi: true},
-        {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init2'), multi: true},
-      ])();
+  it('should run platform initializers', async () => {
+    const log = TestBed.inject(Log);
+    const p = createPlatformFactory(platformBrowser, 'someName', [
+      {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init1'), multi: true},
+      {provide: PLATFORM_INITIALIZER, useValue: log.fn('platform_init2'), multi: true},
+    ])();
 
-      @NgModule({
-        imports: [BrowserModule],
-        providers: [
-          {provide: APP_INITIALIZER, useValue: log.fn('app_init1'), multi: true},
-          {provide: APP_INITIALIZER, useValue: log.fn('app_init2'), multi: true},
-        ],
-      })
-      class SomeModule {
-        ngDoBootstrap() {}
-      }
+    @NgModule({
+      imports: [BrowserModule],
+      providers: [
+        {provide: APP_INITIALIZER, useValue: log.fn('app_init1'), multi: true},
+        {provide: APP_INITIALIZER, useValue: log.fn('app_init2'), multi: true},
+      ],
+    })
+    class SomeModule {
+      ngDoBootstrap() {}
+    }
 
-      expect(log.result()).toEqual('platform_init1; platform_init2');
-      log.clear();
-      p.bootstrapModule(SomeModule).then(() => {
-        expect(log.result()).toEqual('app_init1; app_init2');
-        done();
-      }, done.fail);
-    })();
+    expect(log.result()).toEqual('platform_init1; platform_init2');
+    log.clear();
+    await p.bootstrapModule(SomeModule);
+    expect(log.result()).toEqual('app_init1; app_init2');
   });
 
   it('should allow provideZoneChangeDetection in bootstrapModule', async () => {
@@ -875,38 +874,32 @@ describe('bootstrap factory method', () => {
       }
     }
 
-    it('should be triggered for all bootstrapped components in case change happens in one of them', (done) => {
+    it('should be triggered for all bootstrapped components in case change happens in one of them', async () => {
       @NgModule({
         imports: [BrowserModule],
         declarations: [CompA, CompB],
         bootstrap: [CompA, CompB],
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
         providers: [provideZoneChangeDetection()],
       })
       class TestModuleA {}
-      platformBrowser()
-        .bootstrapModule(TestModuleA)
-        .then((ref) => {
-          log.length = 0;
-          el.querySelectorAll<HTMLElement>('#button-a')[0].click();
-          expect(log).toContain('CompA:onClick');
-          expect(log).toContain('CompA:ngDoCheck');
-          expect(log).toContain('CompB:ngDoCheck');
+      await platformBrowser().bootstrapModule(TestModuleA);
+      log.length = 0;
+      el.querySelectorAll<HTMLElement>('#button-a')[0].click();
+      expect(log).toContain('CompA:onClick');
+      expect(log).toContain('CompA:ngDoCheck');
+      expect(log).toContain('CompB:ngDoCheck');
 
-          log.length = 0;
-          el2.querySelectorAll<HTMLElement>('#button-b')[0].click();
-          expect(log).toContain('CompB:onClick');
-          expect(log).toContain('CompA:ngDoCheck');
-          expect(log).toContain('CompB:ngDoCheck');
-
-          done();
-        }, done.fail);
+      log.length = 0;
+      el2.querySelectorAll<HTMLElement>('#button-b')[0].click();
+      expect(log).toContain('CompB:onClick');
+      expect(log).toContain('CompA:ngDoCheck');
+      expect(log).toContain('CompB:ngDoCheck');
     });
 
-    it('should work in isolation for each component bootstrapped individually', (done) => {
+    it('should work in isolation for each component bootstrapped individually', async () => {
       const refPromise1 = bootstrap(CompA);
       const refPromise2 = bootstrap(CompB);
-      Promise.all([refPromise1, refPromise2]).then((refs) => {
+      await Promise.all([refPromise1, refPromise2]).then((refs) => {
         log.length = 0;
         el.querySelectorAll<HTMLElement>('#button-a')[0].click();
         expect(log).toContain('CompA:onClick');
@@ -918,9 +911,7 @@ describe('bootstrap factory method', () => {
         expect(log).toContain('CompB:onClick');
         expect(log).toContain('CompB:ngDoCheck');
         expect(log).not.toContain('CompA:ngDoCheck');
-
-        done();
-      }, done.fail);
+      });
     });
   });
 });

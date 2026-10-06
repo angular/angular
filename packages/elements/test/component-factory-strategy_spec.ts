@@ -371,7 +371,6 @@ export class CdTrackerDir {
 }
 
 @Component({
-  selector: 'fake-component',
   imports: [CdTrackerDir],
   template: `
     <ng-container cdTracker></ng-container>

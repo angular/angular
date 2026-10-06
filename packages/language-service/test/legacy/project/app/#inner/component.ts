@@ -11,6 +11,5 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'inner',
   templateUrl: './inner.html',
-  standalone: false,
 })
 export class InnerComponent {}

@@ -2287,7 +2287,7 @@ describe('platform-server partial hydration integration', () => {
       class SimpleComponent {}
 
       const fixture = TestBed.createComponent(SimpleComponent);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       // Verify that `hydrate when true` doesn't trigger rendering of the main
       // content in client-only use-cases (expecting to see placeholder content).
@@ -2957,7 +2957,7 @@ describe('platform-server partial hydration integration', () => {
         // Represents content created dynamically via `ViewContainerRef.createComponent()`
         // -- NOT a `@defer` block -- so its dehydrated view carries no `DEFER_BLOCK_ID`.
         @Component({
-          selector: 'dynamic-cmp',
+          selector: 'app',
           template: `<p id="dynamic-content">Dynamically created</p>`,
         })
         class DynamicCmp {}
@@ -3038,7 +3038,10 @@ describe('platform-server partial hydration integration', () => {
       'should not remove a dehydrated view that a PendingTasks-guarded ' +
         'createComponent() inside the hydrating @defer block is about to claim',
       async () => {
-        @Component({selector: 'late-cmp', template: `<p id="late-content">Late content</p>`})
+        @Component({
+          selector: 'app',
+          template: `<p id="late-content">Late content</p>`,
+        })
         class LateCmp {}
 
         // Creates `LateCmp` after a slow dynamic import, holding a pending task the whole time.
@@ -3372,7 +3375,10 @@ describe('platform-server partial hydration integration', () => {
       'should not remove the server-rendered DOM of a lazy route that is still loading ' +
         'when a @defer block in the app shell hydrates',
       async () => {
-        @Component({selector: 'routed-page', template: `<p id="routed-content">Routed page</p>`})
+        @Component({
+          selector: 'app',
+          template: `<p id="routed-content">Routed page</p>`,
+        })
         class RoutedPage {}
 
         @Component({

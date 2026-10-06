@@ -85,7 +85,6 @@ describe('DatePipe', () => {
 
     it('should use format provided in component as default format when no format is passed in', async () => {
       @Component({
-        selector: 'test-component',
         imports: [DatePipe],
         template: '{{ value | date }}',
         providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {dateFormat: 'shortDate'}}],
@@ -103,7 +102,6 @@ describe('DatePipe', () => {
 
     it('should use format provided in module as default format when no format is passed in', async () => {
       @Component({
-        selector: 'test-component',
         imports: [DatePipe],
         template: '{{ value | date }}',
       })
@@ -173,7 +171,6 @@ describe('DatePipe', () => {
 
     it('should use timezone provided in component as default timezone when no format is passed in', async () => {
       @Component({
-        selector: 'test-component',
         imports: [DatePipe],
         template: '{{ value | date }}',
         providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone: '-1200'}}],
@@ -191,7 +188,6 @@ describe('DatePipe', () => {
 
     it('should use timezone provided in module as default timezone when no format is passed in', async () => {
       @Component({
-        selector: 'test-component',
         imports: [DatePipe],
         template: '{{ value | date }}',
       })
@@ -213,7 +209,6 @@ describe('DatePipe', () => {
 
   it('should be available as a standalone pipe', async () => {
     @Component({
-      selector: 'test-component',
       imports: [DatePipe],
       template: '{{ value | date }}',
     })

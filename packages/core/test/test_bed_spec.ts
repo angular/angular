@@ -44,7 +44,6 @@ import {
   PLATFORM_ID,
   provideZoneChangeDetection,
   provideZonelessChangeDetection,
-  Service,
   ɵsetClassMetadata as setClassMetadata,
   ɵɵsetNgModuleScope as setNgModuleScope,
   signal,
@@ -207,7 +206,6 @@ describe('TestBed (isolated)', () => {
     TestBedImpl.INSTANCE.globalCompilationChecked = false;
 
     @Component({
-      selector: 'root',
       template: '<div dirA></div>',
       standalone: false,
     })
@@ -261,7 +259,6 @@ describe('TestBed with Standalone types', () => {
     class MockDep {}
 
     @Component({
-      selector: 'app-root',
       imports: [MainDep],
       template: '<dep />',
     })
@@ -461,7 +458,12 @@ describe('TestBed with Standalone types', () => {
 
     @Component({
       template: '<div dir>{{ name | pipe }}</div>',
-      imports: [MyStandalonePipeA, MyStandaloneDirectiveA],
+      imports: [
+        MyStandalonePipeA,
+        MyStandaloneDirectiveA,
+        MyStandaloneDirectiveB,
+        MyStandalonePipeB,
+      ],
     })
     class MyStandaloneComp {
       name = 'MyStandaloneComp';
@@ -540,8 +542,7 @@ describe('TestBed with Standalone types', () => {
     class TestNgModule {}
 
     @Component({
-      selector: 'test-component',
-      imports: [TestNgModule],
+      imports: [TestNgModule, TestPipe],
       template: `{{ 'original value' | testPipe }}`,
     })
     class TestComponent {}
@@ -584,7 +585,6 @@ describe('TestBed with Standalone types', () => {
     class TestModule {}
 
     @Component({
-      selector: 'app-root',
       template: `<test-cmp #testCmpCtrl></test-cmp>`,
       imports: [TestModule],
     })
@@ -658,13 +658,11 @@ describe('TestBed', () => {
 
   it('should not allow overrides of the `standalone` field', () => {
     @Component({
-      selector: 'standalone-comp',
       template: '...',
     })
     class StandaloneComponent {}
 
     @Component({
-      selector: 'non-standalone-comp',
       template: '...',
       standalone: false,
     })
@@ -964,7 +962,6 @@ describe('TestBed', () => {
     class TestModule {}
 
     @Component({
-      selector: 'app-root',
       template: `<test-cmp #testCmpCtrl></test-cmp>`,
       standalone: false,
     })
@@ -1054,7 +1051,6 @@ describe('TestBed', () => {
     // AppModule content:
 
     @Component({
-      selector: 'app',
       template: `
         <comp-a></comp-a>
         <comp-b></comp-b>
@@ -1434,16 +1430,13 @@ describe('TestBed', () => {
     class MyProvider {}
 
     @Component({
-      selector: 'my-comp',
       template: ``,
-      standalone: false,
     })
     class MyComp {
       constructor(@Inject(MY_TOKEN) public myProviders: MyProvider[]) {}
     }
 
     TestBed.configureTestingModule({
-      declarations: [MyComp],
       providers: [{provide: MY_TOKEN, useValue: {value: 'old provider'}, multi: true}],
     });
 
@@ -1464,9 +1457,7 @@ describe('TestBed', () => {
   it('should not trigger change detection for ComponentA while calling TestBed.createComponent for ComponentB', () => {
     const log: string[] = [];
     @Component({
-      selector: 'comp-a',
       template: '...',
-      standalone: false,
     })
     class CompA {
       @Input() inputA: string = '';
@@ -1476,9 +1467,7 @@ describe('TestBed', () => {
     }
 
     @Component({
-      selector: 'comp-b',
       template: '...',
-      standalone: false,
     })
     class CompB {
       @Input() inputB: string = '';
@@ -1486,8 +1475,6 @@ describe('TestBed', () => {
         log.push('CompB:ngOnInit', this.inputB);
       }
     }
-
-    TestBed.configureTestingModule({declarations: [CompA, CompB]});
 
     log.length = 0;
     const appA = TestBed.createComponent(CompA);
@@ -1535,9 +1522,7 @@ describe('TestBed', () => {
 
   it('should throw errors in CD', () => {
     @Component({
-      selector: 'my-comp',
       template: '',
-      standalone: false,
     })
     class MyComp {
       name!: {hello: string};
@@ -1547,8 +1532,6 @@ describe('TestBed', () => {
         this.name.hello = 'hello';
       }
     }
-
-    TestBed.configureTestingModule({declarations: [MyComp]});
 
     expect(() => {
       const fixture = TestBed.createComponent(MyComp);
@@ -1561,9 +1544,7 @@ describe('TestBed', () => {
   // change to completely fix (since simple re-throwing breaks handlers in ngrx, etc).
   xit('should throw errors in listeners', () => {
     @Component({
-      selector: 'my-comp',
       template: '<button (click)="onClick()">Click me</button>',
-      standalone: false,
     })
     class MyComp {
       name!: {hello: string};
@@ -1574,7 +1555,6 @@ describe('TestBed', () => {
       }
     }
 
-    TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
@@ -1620,7 +1600,7 @@ describe('TestBed', () => {
 
     @Component({
       template: '<outer></outer>',
-      selector: 'fixture',
+
       standalone: false,
     })
     class Fixture {}
@@ -2106,7 +2086,6 @@ describe('TestBed', () => {
       @Directive({
         selector: '[dir]',
         providers: [{provide: A, useValue: 'A'}],
-        standalone: false,
       })
       class SomeDir {
         constructor(
@@ -2157,7 +2136,7 @@ describe('TestBed', () => {
 
       @Component({
         template: '<comp></comp>',
-        selector: 'fixture',
+
         standalone: false,
       })
       class TestFixture {}
@@ -2204,7 +2183,6 @@ describe('TestBed', () => {
       }
 
       @Component({
-        selector: 'comp',
         template: 'someText',
         standalone: false,
       })
@@ -2318,7 +2296,6 @@ describe('TestBed', () => {
       class ChildCmp {}
 
       @Component({
-        selector: 'root',
         template: '<child></child>',
         standalone: false,
       })
@@ -2734,7 +2711,6 @@ describe('TestBed module teardown', () => {
   it('should re-throw errors that were thrown during fixture cleanup', () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class ThrowsOnDestroy {
       ngOnDestroy() {
@@ -2743,7 +2719,6 @@ describe('TestBed module teardown', () => {
     }
 
     TestBed.configureTestingModule({
-      declarations: [ThrowsOnDestroy],
       teardown: {destroyAfterEach: true},
     });
     TestBed.createComponent(ThrowsOnDestroy);
@@ -2758,7 +2733,6 @@ describe('TestBed module teardown', () => {
   it('should not interrupt fixture destruction if an error is thrown', () => {
     @Component({
       template: '',
-      standalone: false,
     })
     class ThrowsOnDestroy {
       ngOnDestroy() {
@@ -2767,7 +2741,6 @@ describe('TestBed module teardown', () => {
     }
 
     TestBed.configureTestingModule({
-      declarations: [ThrowsOnDestroy],
       teardown: {destroyAfterEach: true},
     });
 
@@ -2792,7 +2765,6 @@ describe('TestBed module teardown', () => {
 
     @Component({
       template: '',
-      standalone: false,
     })
     class App {
       constructor(_service: ThrowsOnDestroy) {}
@@ -2800,7 +2772,7 @@ describe('TestBed module teardown', () => {
 
     TestBed.configureTestingModule({
       providers: [ThrowsOnDestroy],
-      declarations: [App],
+
       teardown: {destroyAfterEach: true},
     });
     TestBed.createComponent(App);
@@ -2818,7 +2790,6 @@ describe('TestBed module teardown', () => {
 
     @Component({
       template: '',
-      standalone: false,
     })
     class App {
       constructor(_service: ThrowsOnDestroy) {}
@@ -2826,7 +2797,7 @@ describe('TestBed module teardown', () => {
 
     TestBed.configureTestingModule({
       providers: [ThrowsOnDestroy],
-      declarations: [App],
+
       teardown: {destroyAfterEach: true, rethrowErrors: false},
     });
     TestBed.createComponent(App);
@@ -2846,7 +2817,6 @@ describe('TestBed module teardown', () => {
           }
         `,
       ],
-      standalone: false,
     })
     class StyledComp1 {}
 
@@ -2859,12 +2829,10 @@ describe('TestBed module teardown', () => {
           }
         `,
       ],
-      standalone: false,
     })
     class StyledComp2 {}
 
     TestBed.configureTestingModule({
-      declarations: [StyledComp1, StyledComp2],
       teardown: {destroyAfterEach: true},
     });
 
@@ -2963,217 +2931,5 @@ describe('TestBed module `errorOnUnknownProperties`', () => {
     expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(true);
     TestBed.resetTestingModule();
     expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(false);
-  });
-});
-
-describe('TestBed.createDirective', () => {
-  beforeEach(() => {
-    TestBed.resetTestingModule();
-  });
-
-  it('should be able to create a directive', () => {
-    @Directive({
-      host: {'class': 'foo'},
-    })
-    class Dir {}
-
-    const fixture = TestBed.createDirective(Dir, {tagName: 'div'});
-    fixture.detectChanges();
-
-    expect(fixture.directiveInstance).toBeInstanceOf(Dir);
-    expect(fixture.nativeElement.classList.contains('foo')).toBe(true);
-  });
-
-  it('should be able to attach an input binding to the directive', () => {
-    @Directive()
-    class Dir {
-      @Input() value = 'initial';
-    }
-
-    const value = signal('override');
-    const fixture = TestBed.createDirective(Dir, {
-      tagName: 'div',
-      bindings: [inputBinding('value', value)],
-    });
-    fixture.detectChanges();
-    expect(fixture.directiveInstance.value).toBe('override');
-
-    value.set('override-changed');
-    fixture.detectChanges();
-    expect(fixture.directiveInstance.value).toBe('override-changed');
-  });
-
-  it('should be able to attach an output binding to the directive', () => {
-    @Directive()
-    class Dir {
-      @Output() event = new EventEmitter<void>();
-    }
-
-    let emitCount = 0;
-    const fixture = TestBed.createDirective(Dir, {
-      tagName: 'div',
-      bindings: [outputBinding('event', () => emitCount++)],
-    });
-    fixture.detectChanges();
-    expect(emitCount).toBe(0);
-
-    fixture.directiveInstance.event.emit();
-    fixture.detectChanges();
-    expect(emitCount).toBe(1);
-  });
-
-  it('should be able to set the tag name of the host element', () => {
-    @Directive({selector: 'hello-world'})
-    class Dir {}
-
-    const fixture = TestBed.createDirective(Dir, {tagName: 'my-dir'});
-    expect(fixture.nativeElement.tagName).toBe('MY-DIR');
-  });
-
-  it('should infer the tag name from the selector by default', () => {
-    @Directive({selector: 'my-inferred-tag[hello-world]'})
-    class Dir {}
-
-    const fixture = TestBed.createDirective(Dir);
-    expect(fixture.nativeElement.tagName).toBe('MY-INFERRED-TAG');
-  });
-
-  it('should throw if the directive selector does not set a tag name and `tagName` is not specified', () => {
-    @Directive({selector: '[dir]'})
-    class Dir {}
-
-    expect(() => TestBed.createDirective(Dir)).toThrowError(
-      /Cannot determine tag name for Dir, because one was not set in the options object and the selector for Dir does not include a tag name/,
-    );
-  });
-
-  it('should throw if the directive selector specifies multiple tag name', () => {
-    @Directive({selector: 'button[my-dir], a[my-dir]'})
-    class Dir {}
-
-    expect(() => TestBed.createDirective(Dir)).toThrowError(
-      /Directive Dir specifies multiple tag names in its selector \(button, a\)/,
-    );
-  });
-
-  it('should be able to create non-standalone directive declared in an imported module', () => {
-    @Directive({
-      standalone: false,
-      selector: '[dir]',
-      host: {
-        '[class.foo]': 'isFoo',
-      },
-    })
-    class Dir {
-      @Input() value = 'initial';
-      isFoo = true;
-    }
-
-    TestBed.configureTestingModule({declarations: [Dir]});
-
-    const fixture = TestBed.createDirective(Dir, {
-      tagName: 'div',
-      bindings: [inputBinding('value', () => 'hello')],
-    });
-    fixture.detectChanges();
-
-    expect(fixture.directiveInstance).toBeInstanceOf(Dir);
-    expect(fixture.directiveInstance.value).toBe('hello');
-    expect(fixture.nativeElement.classList.contains('foo')).toBe(true);
-  });
-
-  it('should be able to use dependency injection', () => {
-    @Service()
-    class SomeService {
-      readonly value = 'hello';
-    }
-
-    @Directive()
-    class Dir {
-      readonly service = inject(SomeService);
-    }
-
-    const fixture = TestBed.createDirective(Dir, {tagName: 'div'});
-    expect(fixture.directiveInstance.service.value).toBe('hello');
-  });
-
-  it('should be able to inject provider from the test module', () => {
-    @Injectable()
-    class MyService {
-      readonly message = 'hello';
-    }
-
-    @Directive({
-      standalone: false,
-      selector: '[dir]',
-    })
-    class Dir {
-      readonly service = inject(MyService);
-    }
-
-    TestBed.configureTestingModule({
-      declarations: [Dir],
-      providers: [MyService],
-    });
-
-    const fixture = TestBed.createDirective(Dir, {tagName: 'div'});
-    fixture.detectChanges();
-
-    expect(fixture.directiveInstance.service.message).toBe('hello');
-  });
-
-  it('should be able to inject provider from an imported module', () => {
-    @Injectable()
-    class ModuleService {
-      value = 'hello-module';
-    }
-
-    @Injectable()
-    class DirProvidedService {
-      value = 'hello-directive';
-    }
-
-    @Directive({
-      standalone: false,
-      selector: '[dir]',
-      providers: [DirProvidedService],
-    })
-    class Dir {
-      readonly moduleService = inject(ModuleService);
-      readonly dirService = inject(DirProvidedService);
-    }
-
-    @NgModule({
-      declarations: [Dir],
-      exports: [Dir],
-      providers: [ModuleService],
-    })
-    class DirModule {}
-
-    TestBed.configureTestingModule({imports: [DirModule]});
-    const fixture = TestBed.createDirective(Dir, {tagName: 'div'});
-    const dir = fixture.directiveInstance;
-
-    expect(dir.moduleService.value).toBe('hello-module');
-    expect(dir.dirService.value).toBe('hello-directive');
-  });
-
-  it('should invoke destroy callbacks when the fixture is destroyed', () => {
-    const callbacks: string[] = [];
-
-    @Directive()
-    class Dir {
-      ngOnDestroy() {
-        callbacks.push('directive: ngOnDestroy');
-      }
-    }
-
-    const fixture = TestBed.createDirective(Dir, {tagName: 'div'});
-    fixture.onDestroy(() => callbacks.push('fixture: onDestroy'));
-    fixture.detectChanges();
-    expect(callbacks).toEqual([]);
-
-    fixture.destroy();
-    expect(callbacks).toEqual(['directive: ngOnDestroy', 'fixture: onDestroy']);
   });
 });

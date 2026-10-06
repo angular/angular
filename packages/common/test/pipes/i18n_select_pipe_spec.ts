@@ -56,7 +56,6 @@ describe('I18nSelectPipe', () => {
 
     it('should be available as a standalone pipe', async () => {
       @Component({
-        selector: 'test-component',
         imports: [I18nSelectPipe],
         template: '{{ value | i18nSelect:mapping }}',
       })

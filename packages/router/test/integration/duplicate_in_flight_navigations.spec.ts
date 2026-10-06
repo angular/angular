@@ -26,7 +26,9 @@ import {
 } from './integration_helpers';
 import {timeout} from '@angular/private/testing';
 
-export function duplicateInFlightNavigationsIntegrationSuite(browserAPI: 'history' | 'navigation') {
+export async function duplicateInFlightNavigationsIntegrationSuite(
+  browserAPI: 'history' | 'navigation',
+) {
   describe('duplicate in-flight navigations', () => {
     @Injectable()
     class RedirectingGuard {

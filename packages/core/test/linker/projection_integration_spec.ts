@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵgetDOM as getDOM} from '@angular/common';
+import {ɵgetDOM as getDOM, CommonModule} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
@@ -26,11 +26,12 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
+  forwardRef,
 } from '../../src/core';
 import {ComponentFixture, TestBed} from '../../testing';
 
 describe('projection', () => {
-  beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
+  beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should support simple components', () => {
     const template = '<simple><div>A</div></simple>';
@@ -87,21 +88,29 @@ describe('projection', () => {
   });
 
   it('should not show the light dom even if there is no content tag', () => {
-    TestBed.configureTestingModule({declarations: [Empty]});
-    TestBed.overrideComponent(MainComp, {set: {template: '<empty>A</empty>'}});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: '<empty>A</empty>',
+        imports: [forwardRef(() => OtherComp), forwardRef(() => Simple), forwardRef(() => Empty)],
+      },
+    });
     const main = TestBed.createComponent(MainComp);
 
     expect(main.nativeElement).toHaveText('');
   });
 
   it('should project a single class-based tag', () => {
-    TestBed.configureTestingModule({declarations: [SingleContentTagComponent]});
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
           '<single-content-tag>' +
           '<div class="target">I AM PROJECTED</div>' +
           '</single-content-tag>',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => SingleContentTagComponent),
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -110,7 +119,6 @@ describe('projection', () => {
   });
 
   it('should support multiple content tags', () => {
-    TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
@@ -119,6 +127,11 @@ describe('projection', () => {
           '<div>C</div>' +
           '<div class="left">A</div>' +
           '</multiple-content-tags>',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => MultipleContentTagsComponent),
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -130,11 +143,9 @@ describe('projection', () => {
     @Component({
       selector: 'multiple-content-tags',
       template: '(<ng-content SELECT="h1"></ng-content>, <ng-content></ng-content>)',
-      standalone: false,
     })
     class MultipleContentTagsComponent {}
 
-    TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
     const injector: Injector = TestBed.inject(Injector);
 
     expect(reflectComponentType(MultipleContentTagsComponent)?.ngContentSelectors).toEqual([
@@ -152,7 +163,6 @@ describe('projection', () => {
   });
 
   it('should redistribute only direct children', () => {
-    TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
@@ -160,6 +170,11 @@ describe('projection', () => {
           '<div>B<div class="left">A</div></div>' +
           '<div>C</div>' +
           '</multiple-content-tags>',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => MultipleContentTagsComponent),
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -168,9 +183,6 @@ describe('projection', () => {
   });
 
   it('should redistribute direct child viewcontainers when the light dom changes', () => {
-    TestBed.configureTestingModule({
-      declarations: [MultipleContentTagsComponent, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
@@ -178,6 +190,12 @@ describe('projection', () => {
           '<ng-template manual class="left"><div>A1</div></ng-template>' +
           '<div>B</div>' +
           '</multiple-content-tags>',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => MultipleContentTagsComponent),
+          forwardRef(() => ManualViewportDirective),
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -198,7 +216,6 @@ describe('projection', () => {
   });
 
   it('should support nested components', () => {
-    TestBed.configureTestingModule({declarations: [OuterWithIndirectNestedComponent]});
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
@@ -206,6 +223,11 @@ describe('projection', () => {
           '<div>A</div>' +
           '<div>B</div>' +
           '</outer-with-indirect-nested>',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => OuterWithIndirectNestedComponent),
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -214,9 +236,6 @@ describe('projection', () => {
   });
 
   it('should support nesting with content being direct child of a nested component', () => {
-    TestBed.configureTestingModule({
-      declarations: [InnerComponent, InnerInnerComponent, OuterComponent, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
@@ -225,6 +244,12 @@ describe('projection', () => {
           '<div>B</div>' +
           '<div>C</div>' +
           '</outer>',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => OuterComponent),
+          forwardRef(() => ManualViewportDirective),
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -240,9 +265,6 @@ describe('projection', () => {
   });
 
   it('should redistribute when the shadow dom changes', () => {
-    TestBed.configureTestingModule({
-      declarations: [ConditionalContentComponent, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
@@ -251,6 +273,11 @@ describe('projection', () => {
           '<div>B</div>' +
           '<div>C</div>' +
           '</conditional-content>',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => ConditionalContentComponent),
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -276,29 +303,29 @@ describe('projection', () => {
       template: `<ng-content></ng-content>(<ng-template [ngIf]="showing"
           ><ng-content select="div"></ng-content></ng-template
         >)`,
-      standalone: false,
+
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule],
     })
     class Child {
       @Input() showing!: boolean;
     }
 
     @Component({
-      selector: 'app',
       template: `<child [showing]="showing">
         <div>A</div>
         <span>B</span>
         <div>A</div>
         <span>B</span>
       </child>`,
-      standalone: false,
+
       changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [Child],
     })
     class App {
       showing = false;
     }
 
-    TestBed.configureTestingModule({declarations: [App, Child]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -346,7 +373,6 @@ describe('projection', () => {
 
     @Directive({
       selector: '[manual]',
-      standalone: false,
     })
     class ManualViewportDirective {
       constructor(public templateRef: TemplateRef<Object>) {
@@ -354,9 +380,6 @@ describe('projection', () => {
       }
     }
 
-    TestBed.configureTestingModule({
-      declarations: [Empty, ProjectDirective, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
@@ -364,6 +387,13 @@ describe('projection', () => {
           ' <ng-template manual><div>A</div></ng-template>' +
           '</empty>' +
           'START(<div project></div>)END',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => Empty),
+          forwardRef(() => ProjectDirective),
+          ManualViewportDirective,
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -379,14 +409,17 @@ describe('projection', () => {
   });
 
   it('should support moving projected light dom around', () => {
-    TestBed.configureTestingModule({
-      declarations: [Empty, ProjectDirective, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
           '<simple><ng-template manual><div>A</div></ng-template></simple>' +
           'START(<div project></div>)END',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => ProjectDirective),
+          forwardRef(() => ManualViewportDirective),
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -404,9 +437,6 @@ describe('projection', () => {
   });
 
   it('should support moving ng-content around', () => {
-    TestBed.configureTestingModule({
-      declarations: [ConditionalContentComponent, ProjectDirective, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
@@ -415,6 +445,12 @@ describe('projection', () => {
           '<div>B</div>' +
           '</conditional-content>' +
           'START(<div project></div>)END',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => ConditionalContentComponent),
+          forwardRef(() => ProjectDirective),
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -440,8 +476,12 @@ describe('projection', () => {
   // is still important as we are merging proto views independent of
   // the presence of ng-content elements!
   it('should still allow to implement a recursive trees', () => {
-    TestBed.configureTestingModule({declarations: [Tree, ManualViewportDirective]});
-    TestBed.overrideComponent(MainComp, {set: {template: '<tree></tree>'}});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: '<tree></tree>',
+        imports: [forwardRef(() => OtherComp), forwardRef(() => Simple), forwardRef(() => Tree)],
+      },
+    });
     const main = TestBed.createComponent(MainComp);
 
     main.detectChanges();
@@ -458,10 +498,17 @@ describe('projection', () => {
   // is still important as we are merging proto views independent of
   // the presence of ng-content elements!
   it('should still allow to implement a recursive trees via multiple components', () => {
-    TestBed.configureTestingModule({declarations: [Tree, Tree2, ManualViewportDirective]});
-    TestBed.overrideComponent(MainComp, {set: {template: '<tree></tree>'}});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: '<tree></tree>',
+        imports: [forwardRef(() => OtherComp), forwardRef(() => Simple), forwardRef(() => Tree)],
+      },
+    });
     TestBed.overrideComponent(Tree, {
-      set: {template: 'TREE({{depth}}:<tree2 *manual [depth]="depth+1"></tree2>)'},
+      set: {
+        template: 'TREE({{depth}}:<tree2 *manual [depth]="depth+1"></tree2>)',
+        imports: [forwardRef(() => ManualViewportDirective), forwardRef(() => Tree2)],
+      },
     });
     const main = TestBed.createComponent(MainComp);
 
@@ -488,12 +535,17 @@ describe('projection', () => {
 
   if (!isNode) {
     it('should support shadow dom content projection and isolate styles per component', () => {
-      TestBed.configureTestingModule({declarations: [SimpleShadowDom1, SimpleShadowDom2]});
       TestBed.overrideComponent(MainComp, {
         set: {
           template:
             '<simple-shadow-dom1><div>A</div></simple-shadow-dom1>' +
             '<simple-shadow-dom2><div>B</div></simple-shadow-dom2>',
+          imports: [
+            forwardRef(() => OtherComp),
+            forwardRef(() => Simple),
+            forwardRef(() => SimpleShadowDom1),
+            forwardRef(() => SimpleShadowDom2),
+          ],
         },
       });
       const main = TestBed.createComponent(MainComp);
@@ -507,7 +559,6 @@ describe('projection', () => {
 
   if (getDOM().supportsDOMEvents) {
     it('should support non emulated styles', () => {
-      TestBed.configureTestingModule({declarations: [OtherComp]});
       TestBed.overrideComponent(MainComp, {
         set: {
           template: '<div class="redStyle"></div>',
@@ -527,7 +578,6 @@ describe('projection', () => {
     });
 
     it('should support emulated style encapsulation', () => {
-      TestBed.configureTestingModule({declarations: [OtherComp]});
       TestBed.overrideComponent(MainComp, {
         set: {
           template: '<div></div>',
@@ -547,11 +597,15 @@ describe('projection', () => {
   }
 
   it('should support nested conditionals that contain ng-contents', () => {
-    TestBed.configureTestingModule({
-      declarations: [ConditionalTextComponent, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
-      set: {template: `<conditional-text>a</conditional-text>`},
+      set: {
+        template: `<conditional-text>a</conditional-text>`,
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => ConditionalTextComponent),
+        ],
+      },
     });
     const main = TestBed.createComponent(MainComp);
 
@@ -567,8 +621,17 @@ describe('projection', () => {
   });
 
   it('should allow to switch the order of nested components via ng-content', () => {
-    TestBed.configureTestingModule({declarations: [CmpA, CmpB, CmpD, CmpC]});
-    TestBed.overrideComponent(MainComp, {set: {template: `<cmp-a><cmp-b></cmp-b></cmp-a>`}});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: `<cmp-a><cmp-b></cmp-b></cmp-a>`,
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => CmpA),
+          forwardRef(() => CmpB),
+        ],
+      },
+    });
     const main = TestBed.createComponent(MainComp);
 
     main.detectChanges();
@@ -578,8 +641,17 @@ describe('projection', () => {
   });
 
   it('should create nested components in the right order', () => {
-    TestBed.configureTestingModule({declarations: [CmpA1, CmpA2, CmpB11, CmpB12, CmpB21, CmpB22]});
-    TestBed.overrideComponent(MainComp, {set: {template: `<cmp-a1></cmp-a1><cmp-a2></cmp-a2>`}});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: `<cmp-a1></cmp-a1><cmp-a2></cmp-a2>`,
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => CmpA1),
+          forwardRef(() => CmpA2),
+        ],
+      },
+    });
     const main = TestBed.createComponent(MainComp);
 
     main.detectChanges();
@@ -593,15 +665,20 @@ describe('projection', () => {
     @Component({
       selector: 'content-in-template',
       template: `(<ng-template manual><ng-content select="[id=left]"></ng-content></ng-template>)`,
-      standalone: false,
+
+      imports: [forwardRef(() => ManualViewportDirective)],
     })
     class ContentInATemplateComponent {}
 
-    TestBed.configureTestingModule({
-      declarations: [ContentInATemplateComponent, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
-      set: {template: `<content-in-template><div id="left">A</div></content-in-template>`},
+      set: {
+        template: `<content-in-template><div id="left">A</div></content-in-template>`,
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          ContentInATemplateComponent,
+        ],
+      },
     });
 
     const main = TestBed.createComponent(MainComp);
@@ -620,16 +697,19 @@ describe('projection', () => {
       template: `<ng-content></ng-content>(<ng-template manual
           ><ng-content select="[id=left]"></ng-content></ng-template
         >)`,
-      standalone: false,
+
+      imports: [forwardRef(() => ManualViewportDirective)],
     })
     class ContentInMainAndTemplateComponent {}
 
-    TestBed.configureTestingModule({
-      declarations: [ContentInMainAndTemplateComponent, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
       set: {
         template: `<content-in-main-and-template><div id="left">A</div>B</content-in-main-and-template>`,
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          ContentInMainAndTemplateComponent,
+        ],
       },
     });
 
@@ -644,9 +724,6 @@ describe('projection', () => {
   });
 
   it('should project view containers', () => {
-    TestBed.configureTestingModule({
-      declarations: [SingleContentTagComponent, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
@@ -655,6 +732,12 @@ describe('projection', () => {
           '<ng-template manual class="target">B</ng-template>' +
           '<div class="target">C</div>' +
           '</single-content-tag>',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => SingleContentTagComponent),
+          forwardRef(() => ManualViewportDirective),
+        ],
       },
     });
 
@@ -671,9 +754,6 @@ describe('projection', () => {
   });
 
   it('should project filled view containers into a view container', () => {
-    TestBed.configureTestingModule({
-      declarations: [ConditionalContentComponent, ManualViewportDirective],
-    });
     TestBed.overrideComponent(MainComp, {
       set: {
         template:
@@ -683,6 +763,12 @@ describe('projection', () => {
           '<div class="left">C</div>' +
           '<div>D</div>' +
           '</conditional-content>',
+        imports: [
+          forwardRef(() => OtherComp),
+          forwardRef(() => Simple),
+          forwardRef(() => ConditionalContentComponent),
+          forwardRef(() => ManualViewportDirective),
+        ],
       },
     });
     const main = TestBed.createComponent(MainComp);
@@ -717,18 +803,14 @@ describe('projection', () => {
 
   describe('projectable nodes', () => {
     @Component({
-      selector: 'test',
       template: '',
-      standalone: false,
     })
     class TestComponent {
       constructor(public vcr: ViewContainerRef) {}
     }
 
     @Component({
-      selector: 'with-content',
       template: '',
-      standalone: false,
     })
     class WithContentCmpt {
       @ViewChild('ref', {static: true}) directiveRef: any;
@@ -737,13 +819,11 @@ describe('projection', () => {
     @Component({
       selector: 're-project',
       template: '<ng-content></ng-content>',
-      standalone: false,
     })
     class ReProjectCmpt {}
 
     @Directive({
       selector: '[insert]',
-      standalone: false,
     })
     class InsertTplRef implements OnInit {
       constructor(
@@ -759,7 +839,6 @@ describe('projection', () => {
     @Directive({
       selector: '[delayedInsert]',
       exportAs: 'delayedInsert',
-      standalone: false,
     })
     class DelayedInsertTplRef {
       constructor(
@@ -779,17 +858,12 @@ describe('projection', () => {
     function createCmptInstance(
       tpl: string,
       projectableNodes: any[][],
+      components: any[] = [],
     ): ComponentRef<WithContentCmpt> {
-      TestBed.configureTestingModule({
-        declarations: [
-          WithContentCmpt,
-          InsertTplRef,
-          DelayedInsertTplRef,
-          ReProjectCmpt,
-          TestComponent,
-        ],
-      });
       TestBed.overrideTemplate(WithContentCmpt, tpl);
+      if (components.length > 0) {
+        TestBed.overrideComponent(WithContentCmpt, {add: {imports: components}});
+      }
 
       fixture = TestBed.createComponent(TestComponent);
       const vcr = fixture.componentInstance.vcr;
@@ -841,6 +915,7 @@ describe('projection', () => {
       const cmptRef = createCmptInstance(
         'A<ng-template insert>(<ng-content></ng-content>)</ng-template>C',
         [[document.createTextNode('B')]],
+        [InsertTplRef],
       );
       expect(cmptRef.location.nativeElement).toHaveText('A(B)C');
     });
@@ -849,6 +924,7 @@ describe('projection', () => {
       const cmptRef = createCmptInstance(
         'A(<ng-template #ref="delayedInsert" delayedInsert>[<ng-content></ng-content>]</ng-template>)C',
         [[document.createTextNode('B')]],
+        [DelayedInsertTplRef],
       );
       expect(cmptRef.location.nativeElement).toHaveText('A()C');
 
@@ -876,7 +952,8 @@ describe('projection', () => {
 @Component({
   selector: 'main',
   template: '',
-  standalone: false,
+
+  imports: [forwardRef(() => OtherComp), forwardRef(() => Simple)],
 })
 class MainComp {
   text: string = '';
@@ -885,7 +962,6 @@ class MainComp {
 @Component({
   selector: 'other',
   template: '',
-  standalone: false,
 })
 class OtherComp {
   text: string = '';
@@ -895,7 +971,6 @@ class OtherComp {
   selector: 'simple',
   inputs: ['stringProp'],
   template: 'SIMPLE(<ng-content></ng-content>)',
-  standalone: false,
 })
 class Simple {
   stringProp: string = '';
@@ -906,7 +981,6 @@ class Simple {
   template: 'SIMPLE1(<slot></slot>)',
   encapsulation: ViewEncapsulation.ShadowDom,
   styles: ['div {color: red}'],
-  standalone: false,
 })
 class SimpleShadowDom1 {}
 
@@ -915,34 +989,29 @@ class SimpleShadowDom1 {}
   template: 'SIMPLE2(<slot></slot>)',
   encapsulation: ViewEncapsulation.ShadowDom,
   styles: ['div {color: blue}'],
-  standalone: false,
 })
 class SimpleShadowDom2 {}
 
 @Component({
   selector: 'empty',
   template: '',
-  standalone: false,
 })
 class Empty {}
 
 @Component({
   selector: 'multiple-content-tags',
   template: '(<ng-content SELECT=".left"></ng-content>, <ng-content></ng-content>)',
-  standalone: false,
 })
 class MultipleContentTagsComponent {}
 
 @Component({
   selector: 'single-content-tag',
   template: '<ng-content SELECT=".target"></ng-content>',
-  standalone: false,
 })
 class SingleContentTagComponent {}
 
 @Directive({
   selector: '[manual]',
-  standalone: false,
 })
 class ManualViewportDirective {
   constructor(
@@ -959,7 +1028,6 @@ class ManualViewportDirective {
 
 @Directive({
   selector: '[project]',
-  standalone: false,
 })
 class ProjectDirective {
   constructor(public vc: ViewContainerRef) {}
@@ -974,7 +1042,8 @@ class ProjectDirective {
 @Component({
   selector: 'outer-with-indirect-nested',
   template: 'OUTER(<simple><div><ng-content></ng-content></div></simple>)',
-  standalone: false,
+
+  imports: [Simple],
 })
 class OuterWithIndirectNestedComponent {}
 
@@ -982,7 +1051,8 @@ class OuterWithIndirectNestedComponent {}
   selector: 'outer',
   template:
     'OUTER(<inner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></inner>)',
-  standalone: false,
+
+  imports: [forwardRef(() => InnerComponent)],
 })
 class OuterComponent {}
 
@@ -990,14 +1060,14 @@ class OuterComponent {}
   selector: 'inner',
   template:
     'INNER(<innerinner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></innerinner>)',
-  standalone: false,
+
+  imports: [forwardRef(() => InnerInnerComponent)],
 })
 class InnerComponent {}
 
 @Component({
   selector: 'innerinner',
   template: 'INNERINNER(<ng-content select=".left"></ng-content>,<ng-content></ng-content>)',
-  standalone: false,
 })
 class InnerInnerComponent {}
 
@@ -1005,7 +1075,8 @@ class InnerInnerComponent {}
   selector: 'conditional-content',
   template:
     '<div>(<div *manual><ng-content select=".left"></ng-content></div>, <ng-content></ng-content>)</div>',
-  standalone: false,
+
+  imports: [ManualViewportDirective],
 })
 class ConditionalContentComponent {}
 
@@ -1013,14 +1084,16 @@ class ConditionalContentComponent {}
   selector: 'conditional-text',
   template:
     'MAIN(<ng-template manual>FIRST(<ng-template manual>SECOND(<ng-content></ng-content>)</ng-template>)</ng-template>)',
-  standalone: false,
+
+  imports: [ManualViewportDirective],
 })
 class ConditionalTextComponent {}
 
 @Component({
   selector: 'tab',
   template: '<div><div *manual>TAB(<ng-content></ng-content>)</div></div>',
-  standalone: false,
+
+  imports: [ManualViewportDirective],
 })
 class Tab {}
 
@@ -1028,7 +1101,8 @@ class Tab {}
   selector: 'tree2',
   inputs: ['depth'],
   template: 'TREE2({{depth}}:<tree *manual [depth]="depth+1"></tree>)',
-  standalone: false,
+
+  imports: [ManualViewportDirective, forwardRef(() => Tree)],
 })
 class Tree2 {
   depth = 0;
@@ -1038,7 +1112,8 @@ class Tree2 {
   selector: 'tree',
   inputs: ['depth'],
   template: 'TREE({{depth}}:<tree *manual [depth]="depth+1"></tree>)',
-  standalone: false,
+
+  imports: [ManualViewportDirective],
 })
 class Tree {
   depth = 0;
@@ -1047,7 +1122,6 @@ class Tree {
 @Component({
   selector: 'cmp-d',
   template: `<i>{{ tagName }}</i>`,
-  standalone: false,
 })
 class CmpD {
   tagName: string;
@@ -1059,7 +1133,6 @@ class CmpD {
 @Component({
   selector: 'cmp-c',
   template: `<b>{{ tagName }}</b>`,
-  standalone: false,
 })
 class CmpC {
   tagName: string;
@@ -1071,55 +1144,55 @@ class CmpC {
 @Component({
   selector: 'cmp-b',
   template: `<ng-content></ng-content><cmp-d></cmp-d>`,
-  standalone: false,
+
+  imports: [CmpD],
 })
 class CmpB {}
 
 @Component({
   selector: 'cmp-a',
   template: `<ng-content></ng-content><cmp-c></cmp-c>`,
-  standalone: false,
+
+  imports: [CmpC],
 })
 class CmpA {}
 
 @Component({
   selector: 'cmp-b11',
   template: `{{ 'b11' }}`,
-  standalone: false,
 })
 class CmpB11 {}
 
 @Component({
   selector: 'cmp-b12',
   template: `{{ 'b12' }}`,
-  standalone: false,
 })
 class CmpB12 {}
 
 @Component({
   selector: 'cmp-b21',
   template: `{{ 'b21' }}`,
-  standalone: false,
 })
 class CmpB21 {}
 
 @Component({
   selector: 'cmp-b22',
   template: `{{ 'b22' }}`,
-  standalone: false,
 })
 class CmpB22 {}
 
 @Component({
   selector: 'cmp-a1',
   template: `{{ 'a1' }}<cmp-b11></cmp-b11><cmp-b12></cmp-b12>`,
-  standalone: false,
+
+  imports: [CmpB11, CmpB12],
 })
 class CmpA1 {}
 
 @Component({
   selector: 'cmp-a2',
   template: `{{ 'a2' }}<cmp-b21></cmp-b21><cmp-b22></cmp-b22>`,
-  standalone: false,
+
+  imports: [CmpB21, CmpB22],
 })
 class CmpA2 {}
