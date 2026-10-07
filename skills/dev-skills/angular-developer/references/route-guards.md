@@ -29,7 +29,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 
 ## Applying Guards
 
-Add them to the route configuration as an array. They execute in order.
+Add them to the route configuration as an array. Asynchronous guards (returning a `Promise` or `Observable`) in the same array start together and run concurrently; the router does not wait for one to finish before starting the next. Array order only sets priority: if any guard does not return `true`, the result of the first such guard in the array is used. Do not make a guard depend on work done by an earlier guard in the same array (for example, loading the current user); share that work through a service or combine the checks into one guard.
 
 ```ts
 {

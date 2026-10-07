@@ -165,7 +165,11 @@ For more information, check out the [API docs for CanMatchFn](api/router/CanMatc
 
 Once you've created your route guards, you need to configure them in your route definitions.
 
-Guards are specified as arrays in the route configuration in order to allow you to apply multiple guards to a single route. They are executed in the order they appear in the array.
+Guards are specified as arrays in the route configuration in order to allow you to apply multiple guards to a single route. The router starts the guards in the order they appear in the array, but it does not wait for one guard to finish before starting the next. Guards that return a `Promise` or an `Observable` therefore run concurrently.
+
+The array order determines which result takes priority. Navigation continues only if every guard returns `true`. Otherwise the router uses the result of the first guard in the array that did not return `true`, even if a later guard finished earlier.
+
+NOTE: Because asynchronous guards run concurrently, a guard must not rely on work done by an earlier guard in the same array, such as loading the current user. Put that work in a service that both guards use, or combine the checks into a single guard.
 
 ```ts
 import {Routes} from '@angular/router';
