@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "paths": {
+      "@angular/core": ["./mock_packages/@angular/core/types/core.d.ts"],
+      "@angular/core/*": ["./mock_packages/@angular/core/*"]
+    }
+  },
+  "include": ["*.ts"]
+}

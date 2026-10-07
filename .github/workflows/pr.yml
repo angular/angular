@@ -86,6 +86,8 @@ jobs:
           # Ensures Aspect lock files are up-to-date.
           # TODO(devversion): Remove when removing pnpm.
           ASPECT_RULES_JS_FROZEN_PNPM_LOCK: '1'
+      # TODO(atscott): Enable preprocessor language service tests (pnpm test:ngp:language-service).
+      # TODO(atscott): Enable preprocessor VS Code extension tests (pnpm test:ngp:vscode).
       - name: Upload GRPC logs (for debugging of RBE issues)
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

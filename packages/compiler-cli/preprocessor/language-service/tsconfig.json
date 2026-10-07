@@ -1,0 +1,16 @@
+// Module settings match tsconfig.build.json: `ng-exp-compiler` ships ESM only, and the
+// language service is emitted into it as the ./language-service entrypoint. Compiling
+// this half as CommonJS also put `src/analyzer_loader.ts` — reached from
+// tests/test_helpers.ts via NapiAnalyzer — into a program where `import.meta` is
+// illegal.
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "..",
+    "module": "esnext",
+    "moduleResolution": "bundler"
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["tests/test-workspace/**/*.ts"]
+}

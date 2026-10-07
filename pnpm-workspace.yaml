@@ -31,6 +31,10 @@ packages:
   - vscode-ng-language-service
   - vscode-ng-language-service/server
   - vscode-ng-language-service/integration/project
+  - packages/compiler-cli/preprocessor/language-service
+  - ngp-vscode-ng-language-service
+  - ngp-vscode-ng-language-service/client
+  - ngp-vscode-ng-language-service/server
 
 allowBuilds:
   '@bazel/concatjs': false

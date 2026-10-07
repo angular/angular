@@ -1,0 +1,14 @@
+// Inherits module/moduleResolution (esnext + bundler) from ../tsconfig.json rather
+// than overriding to CommonJS. The CommonJS override put `src/analyzer_loader.ts` —
+// reached from server.ts via NapiAnalyzer — into a program where `import.meta` is
+// illegal. This project is typecheck-only; the shipped server is bundled by build.js
+// with esbuild, which reads the TypeScript directly and rewrites `import.meta.url`
+// itself.
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/tsc/ng-language-service/server",
+    "rootDir": "../../"
+  },
+  "include": ["src/**/*.ts"]
+}

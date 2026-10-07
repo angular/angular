@@ -1,0 +1,46 @@
+{
+  "name": "@angular/ngp",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - Hybrid Preprocessor",
+  "type": "module",
+  "bin": {
+    "ngp": "./main.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./api.d.ts",
+      "default": "./api.js"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    }
+  },
+  "dependencies": {
+    "magic-string": "^1.0.0",
+    "vscode-uri": "^3.1.0"
+  },
+  "peerDependencies": {
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
+    "typescript": ">=6.0 <6.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/compiler-cli/preprocessor"
+  },
+  "keywords": [
+    "angular",
+    "compiler",
+    "ngp",
+    "preprocessor"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "homepage": "https://github.com/angular/angular/tree/main/packages/compiler-cli/preprocessor"
+}

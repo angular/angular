@@ -1,0 +1,38 @@
+# /tsconfig.json
+```json
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "moduleResolution": "node"
+  },
+  "files": [
+    "style_binding_sanitizer.ts"
+  ],
+  "angularCompilerOptions": {}
+}
+```
+
+# /style_binding_sanitizer.ts
+```ts
+import {Component} from '@angular/core';
+
+@Component({
+    template: `
+    <div style.background="url({{ myUrl1 }})"
+         style.borderImage="url({{ myUrl2 }}) {{ myRepeat }} auto"
+         style.boxShadow="{{ myBoxX }} {{ myBoxY }} {{ myBoxWidth }} black"></div>
+  `,
+    standalone: false
+})
+export class MyComponent {
+  myUrl1 = '...';
+  myUrl2 = '...';
+  myBoxX = '0px';
+  myBoxY = '0px';
+  myBoxWidth = '100px';
+  myRepeat = 'no-repeat';
+}
+```

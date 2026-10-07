@@ -1,0 +1,172 @@
+{
+  "name": "ngp-vscode-ng-language-service",
+  "displayName": "Angular Hybrid Language Service Prototype",
+  "description": "Prototype for Angular Language Service using hybrid preprocessor",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "publisher": "atscott",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "grammars": [
+      {
+        "path": "./syntaxes/inline-template.json",
+        "scopeName": "inline-template.ng",
+        "injectTo": [
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html.derivative": "html",
+          "source.css": "css",
+          "source.js": "javascript"
+        }
+      },
+      {
+        "path": "./syntaxes/inline-styles.json",
+        "scopeName": "inline-styles.ng",
+        "injectTo": [
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "source.css.scss": "scss"
+        }
+      },
+      {
+        "path": "./syntaxes/template.json",
+        "scopeName": "template.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html": "html",
+          "source.css": "css",
+          "expression.ng": "javascript"
+        }
+      },
+      {
+        "path": "./syntaxes/template-blocks.json",
+        "scopeName": "template.blocks.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html": "html",
+          "control.block.expression.ng": "javascript",
+          "control.block.body.ng": "html"
+        }
+      },
+      {
+        "path": "./syntaxes/let-declaration.json",
+        "scopeName": "template.let.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ]
+      },
+      {
+        "path": "./syntaxes/host-object-literal.json",
+        "scopeName": "host-object-literal.ng",
+        "injectTo": [
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html.derivative": "html",
+          "expression.ng": "javascript",
+          "source.ts": "typescript"
+        }
+      },
+      {
+        "path": "./syntaxes/template-tag.json",
+        "scopeName": "template.tag.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "template.tag.ng": "angular-tag-comment"
+        }
+      },
+      {
+        "path": "./syntaxes/expression.json",
+        "scopeName": "expression.ng"
+      }
+    ],
+    "languages": [
+      {
+        "id": "angular-tag-comment",
+        "configuration": "./syntaxes/template-tag-language-configuration.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "angular.getTemplateTcb",
+        "title": "View Template Typecheck Block",
+        "category": "Angular"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "angular.submenu",
+        "label": "Angular"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "angular.getTemplateTcb",
+          "when": "!virtualWorkspace"
+        }
+      ],
+      "editor/context": [
+        {
+          "submenu": "angular.submenu",
+          "group": "angular"
+        }
+      ],
+      "angular.submenu": [
+        {
+          "when": "(resourceLangId == html || resourceLangId == typescript) && !virtualWorkspace",
+          "command": "angular.getTemplateTcb",
+          "group": "debug"
+        }
+      ]
+    }
+  },
+  "activationEvents": [
+    "onLanguage:html",
+    "onLanguage:typescript",
+    "onStartupFinished"
+  ],
+  "main": "./dist/client/extension.js",
+  "scripts": {
+    "compile": "tsc -p client --noEmit && tsc -p server --noEmit && node build.js",
+    "typecheck": "tsc -p client --noEmit && tsc -p server --noEmit && tsc -p tests --noEmit",
+    "test:lsp": "pnpm run compile && node tests/run_jasmine.mjs",
+    "test": "pnpm run compile && pnpm run test:lsp && node e2e/build-tests.js && node e2e/runTests.js",
+    "watch": "pnpm --prefix client run watch & pnpm --prefix server run watch"
+  },
+  "dependencies": {
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "vscode-languageclient": "^10.1.0",
+    "vscode-languageserver": "^10.1.0",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-jsonrpc": "^9.0.1",
+    "vscode-uri": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^6.0.0",
+    "@types/node": "^20.14.8",
+    "@types/vscode": "^1.125.0",
+    "@vscode/test-electron": "^3.1.0",
+    "esbuild": "^0.25.0",
+    "jasmine": "^7.0.0",
+    "typescript": "5.9.3"
+  }
+}

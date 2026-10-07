@@ -1,0 +1,37 @@
+# /tsconfig.json
+```json
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "moduleResolution": "node"
+  },
+  "files": [
+    "nested_template_context_many_bindings.ts"
+  ],
+  "angularCompilerOptions": {}
+}
+```
+
+# /nested_template_context_many_bindings.ts
+```ts
+import {Component, NgModule} from '@angular/core';
+
+@Component({
+    selector: 'my-component',
+    template: `
+    <div *ngFor="let d of _data; let i = index" (click)="_handleClick(d, i)"></div>
+  `,
+    standalone: false
+})
+export class MyComponent {
+  _data = [1, 2, 3];
+  _handleClick(d: any, i: any) {}
+}
+
+@NgModule({declarations: [MyComponent]})
+export class MyModule {
+}
+```

@@ -1,0 +1,35 @@
+# /tsconfig.json
+```json
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "moduleResolution": "node"
+  },
+  "files": [
+    "mixed_variants.ts"
+  ],
+  "angularCompilerOptions": {}
+}
+```
+
+# /mixed_variants.ts
+```ts
+import {Directive, EventEmitter, Output, output} from '@angular/core';
+import {outputFromObservable} from '@angular/core/rxjs-interop';
+
+@Directive()
+export class TestDir {
+  click1 = output();
+  click2 = output<boolean>();
+  click3 = outputFromObservable(new EventEmitter<number>());
+  _bla = output<void>({alias: 'decoratorPublicName'});
+  _bla2 = outputFromObservable(new EventEmitter(), {alias: 'decoratorPublicName2'});
+
+  @Output() clickDecorator1 = new EventEmitter();
+  @Output() clickDecorator2 = new EventEmitter<boolean>();
+  @Output('decoratorPublicName3') _blaDecorator = new EventEmitter<void>();
+}
+```

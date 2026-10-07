@@ -1,0 +1,39 @@
+# /tsconfig.json
+```json
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "moduleResolution": "node"
+  },
+  "files": [
+    "mixed_input_types.ts"
+  ],
+  "angularCompilerOptions": {}
+}
+```
+
+# /mixed_input_types.ts
+```ts
+import {Directive, Input, input} from '@angular/core';
+
+function convertToBoolean(value: string|boolean) {
+  return value === true || value !== '';
+}
+
+@Directive({
+})
+export class TestDir {
+  counter = input(0);
+  signalWithTransform = input(false, {transform: convertToBoolean});
+  signalWithTransformAndAlias =
+      input(false, {alias: 'publicNameSignal', transform: convertToBoolean});
+
+  @Input() decoratorInput = true;
+  @Input('publicNameDecorator') decoratorInputWithAlias = true;
+  @Input({alias: 'publicNameDecorator2', transform: convertToBoolean})
+  decoratorInputWithTransformAndAlias = true;
+}
+```

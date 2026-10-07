@@ -1,0 +1,360 @@
+# /out/src/apps/dashboard.component.ts
+```ts
+import { Component } from '@angular/core';
+import { FilterBarComponent } from '../widgets/filter_bar.component';
+import { FilterDirective } from '../widgets/filter.directive';
+import { LocalConfigComponent } from '../widgets/local_config.component';
+import { NestedViewComponent } from '../widgets/nested_view.component';
+// @ts-ignore
+import * as i0 from '@angular/core';
+
+export class DashboardComponent {
+  config: any;
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<DashboardComponent, never> =
+    function DashboardComponent_Factory(__ngFactoryType__: any): any {
+      return new (__ngFactoryType__ || DashboardComponent)();
+    };
+  // @ts-ignore
+  static ɵcmp: i0.ɵɵComponentDeclaration<
+    DashboardComponent,
+    'dashboard-app',
+    never,
+    {},
+    {},
+    never,
+    never,
+    true,
+    never
+  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: DashboardComponent,
+    selectors: [['dashboard-app']],
+    decls: 4,
+    vars: 4,
+    consts: [
+      [3, 'config'],
+      [3, 'filterDir'],
+      [3, 'viewData'],
+    ],
+    template: function DashboardComponent_Template(rf: number, ctx: any): any {
+      if (rf & 1) {
+        i0.ɵɵelement(0, 'filter-bar', 0)(1, 'div', 1)(2, 'local-config-comp', 0)(
+          3,
+          'nested-view',
+          2,
+        );
+      }
+      if (rf & 2) {
+        i0.ɵɵproperty('config', ctx.config);
+        i0.ɵɵadvance();
+        i0.ɵɵproperty('filterDir', ctx.config);
+        i0.ɵɵadvance();
+        i0.ɵɵproperty('config', ctx.config);
+        i0.ɵɵadvance();
+        i0.ɵɵproperty('viewData', ctx.config);
+      }
+    },
+    dependencies: i0.ɵɵgetComponentDepsFactory(DashboardComponent, [
+      FilterBarComponent,
+      FilterDirective,
+      LocalConfigComponent,
+      NestedViewComponent,
+    ]),
+    encapsulation: 2,
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        DashboardComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: 'dashboard-app',
+                imports: [
+                  FilterBarComponent,
+                  FilterDirective,
+                  LocalConfigComponent,
+                  NestedViewComponent,
+                ],
+                template: `
+        <filter-bar [config]="config"></filter-bar>
+        <div [filterDir]="config"></div>
+        <local-config-comp [config]="config"></local-config-comp>
+        <nested-view [viewData]="config"></nested-view>
+      `,
+                standalone: true,
+              },
+            ],
+          },
+        ],
+        null,
+        null,
+      );
+  }
+}
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(DashboardComponent, {
+      className: 'DashboardComponent',
+      filePath: 'src/apps/dashboard.component.ts',
+      lineNumber: 23,
+    });
+})();
+
+```
+
+# /out/src/widgets/filter_bar.component.ts
+```ts
+import { Component, Input } from '@angular/core';
+import { FilterConfig } from './filter_model';
+// @ts-ignore
+import * as i0 from '@angular/core';
+
+export class FilterBarComponent<T, P extends FilterConfig<T> = FilterConfig<T>> {
+  config!: P;
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<FilterBarComponent<any, any>, never> =
+    function FilterBarComponent_Factory(__ngFactoryType__: any): any {
+      return new (__ngFactoryType__ || FilterBarComponent)();
+    };
+  // @ts-ignore
+  static ɵcmp: i0.ɵɵComponentDeclaration<
+    FilterBarComponent<any, any>,
+    'filter-bar',
+    never,
+    { 'config': { 'alias': 'config'; 'required': false } },
+    {},
+    never,
+    never,
+    true,
+    never
+  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: FilterBarComponent,
+    selectors: [['filter-bar']],
+    inputs: { config: 'config' },
+    decls: 0,
+    vars: 0,
+    template: function FilterBarComponent_Template(rf: number, ctx: any): any {},
+    encapsulation: 2,
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        FilterBarComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: 'filter-bar',
+                template: '',
+                standalone: true,
+              },
+            ],
+          },
+        ],
+        null,
+        { config: [{ type: Input }] },
+      );
+  }
+}
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(FilterBarComponent, {
+      className: 'FilterBarComponent',
+      filePath: 'src/widgets/filter_bar.component.ts',
+      lineNumber: 9,
+    });
+})();
+
+```
+
+# /out/src/widgets/filter.directive.ts
+```ts
+import { Directive, Input } from '@angular/core';
+import { FilterConfig } from './filter_model';
+// @ts-ignore
+import * as i0 from '@angular/core';
+
+export class FilterDirective<T, P extends FilterConfig<T> = FilterConfig<T>> {
+  filterCfg!: P;
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<FilterDirective<any, any>, never> =
+    function FilterDirective_Factory(__ngFactoryType__: any): any {
+      return new (__ngFactoryType__ || FilterDirective)();
+    };
+  // @ts-ignore
+  static ɵdir: i0.ɵɵDirectiveDeclaration<
+    FilterDirective<any, any>,
+    '[filterDir]',
+    never,
+    { 'filterCfg': { 'alias': 'filterDir'; 'required': false } },
+    {},
+    never,
+    never,
+    true,
+    never
+  > = /*@__PURE__*/ i0.ɵɵdefineDirective({
+    type: FilterDirective,
+    selectors: [['', 'filterDir', '']],
+    inputs: { filterCfg: [0, 'filterDir', 'filterCfg'] },
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        FilterDirective,
+        [
+          {
+            type: Directive,
+            args: [
+              {
+                selector: '[filterDir]',
+                standalone: true,
+              },
+            ],
+          },
+        ],
+        null,
+        { filterCfg: [{ type: Input, args: ['filterDir'] }] },
+      );
+  }
+}
+
+```
+
+# /out/src/widgets/local_config.component.ts
+```ts
+import { Component, Input } from '@angular/core';
+// @ts-ignore
+import * as i0 from '@angular/core';
+
+export interface LocalConfig {
+  count: number;
+}
+
+export class LocalConfigComponent<T extends LocalConfig = LocalConfig> {
+  config!: T;
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<LocalConfigComponent<any>, never> =
+    function LocalConfigComponent_Factory(__ngFactoryType__: any): any {
+      return new (__ngFactoryType__ || LocalConfigComponent)();
+    };
+  // @ts-ignore
+  static ɵcmp: i0.ɵɵComponentDeclaration<
+    LocalConfigComponent<any>,
+    'local-config-comp',
+    never,
+    { 'config': { 'alias': 'config'; 'required': false } },
+    {},
+    never,
+    never,
+    true,
+    never
+  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: LocalConfigComponent,
+    selectors: [['local-config-comp']],
+    inputs: { config: 'config' },
+    decls: 0,
+    vars: 0,
+    template: function LocalConfigComponent_Template(rf: number, ctx: any): any {},
+    encapsulation: 2,
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        LocalConfigComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: 'local-config-comp',
+                template: '',
+                standalone: true,
+              },
+            ],
+          },
+        ],
+        null,
+        { config: [{ type: Input }] },
+      );
+  }
+}
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(LocalConfigComponent, {
+      className: 'LocalConfigComponent',
+      filePath: 'src/widgets/local_config.component.ts',
+      lineNumber: 12,
+    });
+})();
+
+```
+
+# /out/src/widgets/nested_view.component.ts
+```ts
+import { Component, Input } from '@angular/core';
+import { NestedData } from './nested/index';
+// @ts-ignore
+import * as i0 from '@angular/core';
+
+export class NestedViewComponent<T extends NestedData<string> = NestedData<string>> {
+  viewData!: T;
+  // @ts-ignore
+  static ɵfac: i0.ɵɵFactoryDeclaration<NestedViewComponent<any>, never> =
+    function NestedViewComponent_Factory(__ngFactoryType__: any): any {
+      return new (__ngFactoryType__ || NestedViewComponent)();
+    };
+  // @ts-ignore
+  static ɵcmp: i0.ɵɵComponentDeclaration<
+    NestedViewComponent<any>,
+    'nested-view',
+    never,
+    { 'viewData': { 'alias': 'viewData'; 'required': false } },
+    {},
+    never,
+    never,
+    true,
+    never
+  > = /*@__PURE__*/ i0.ɵɵdefineComponent({
+    type: NestedViewComponent,
+    selectors: [['nested-view']],
+    inputs: { viewData: 'viewData' },
+    decls: 0,
+    vars: 0,
+    template: function NestedViewComponent_Template(rf: number, ctx: any): any {},
+    encapsulation: 2,
+  });
+  static {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      i0.ɵsetClassMetadata(
+        NestedViewComponent,
+        [
+          {
+            type: Component,
+            args: [
+              {
+                selector: 'nested-view',
+                template: '',
+                standalone: true,
+              },
+            ],
+          },
+        ],
+        null,
+        { viewData: [{ type: Input }] },
+      );
+  }
+}
+((): any => {
+  (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    i0.ɵsetClassDebugInfo(NestedViewComponent, {
+      className: 'NestedViewComponent',
+      filePath: 'src/widgets/nested_view.component.ts',
+      lineNumber: 9,
+    });
+})();
+
+```

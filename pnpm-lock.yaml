@@ -29,7 +29,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 22.3.0-next.1
-        version: 22.3.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))(less@4.9.1(supports-color@11.0.0))(postcss@8.5.28)(rollup@4.64.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.8.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)
+        version: 22.3.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))(less@4.9.1(supports-color@11.0.0))(postcss@8.5.28)(rollup@4.64.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.8.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)
       '@angular/cdk':
         specifier: 22.3.0-next.0
         version: 22.3.0-next.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -188,7 +188,7 @@ importers:
         version: 2.1.3
       karma-jasmine:
         specifier: ^5.0.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
       karma-sourcemap-loader:
         specifier: ^0.4.0
         version: 0.4.0
@@ -288,7 +288,7 @@ importers:
         version: 16.1.1(bufferutil@4.1.0)
       firebase-tools:
         specifier: ^15.0.0
-        version: 15.32.1(@types/node@20.19.43)(bufferutil@4.1.0)(encoding@0.1.13)(supports-color@11.0.0)
+        version: 15.32.1(@types/node@20.19.43)(bufferutil@4.1.0)(encoding@0.1.13)(supports-color@11.0.0)(utf-8-validate@6.0.6)
       get-tsconfig:
         specifier: ^4.10.1
         version: 4.14.3
@@ -306,7 +306,7 @@ importers:
         version: 2.2.1(supports-color@11.0.0)
       karma-jasmine-html-reporter:
         specifier: ^2.2.0
-        version: 2.3.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
+        version: 2.3.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
       prettier:
         specifier: ^3.8.0
         version: 3.9.9
@@ -555,10 +555,10 @@ importers:
         version: 2.2.1(supports-color@11.0.0)
       karma-jasmine:
         specifier: 5.1.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
       karma-jasmine-html-reporter:
         specifier: 2.3.0
-        version: 2.3.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
+        version: 2.3.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
       marked:
         specifier: 18.0.14
         version: 18.0.14
@@ -896,6 +896,81 @@ importers:
         specifier: 0.16.3
         version: 0.16.3
 
+  ngp-vscode-ng-language-service:
+    dependencies:
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20260707.2
+        version: 7.0.0-dev.20260707.2
+      vscode-jsonrpc:
+        specifier: ^9.0.1
+        version: 9.0.3
+      vscode-languageclient:
+        specifier: ^10.1.0
+        version: 10.1.2
+      vscode-languageserver:
+        specifier: ^10.1.0
+        version: 10.1.2
+      vscode-languageserver-textdocument:
+        specifier: ^1.0.12
+        version: 1.0.15
+      vscode-uri:
+        specifier: ^3.1.0
+        version: 3.2.0
+    devDependencies:
+      '@types/jasmine':
+        specifier: ^6.0.0
+        version: 6.0.0
+      '@types/node':
+        specifier: ^20.14.8
+        version: 20.19.43
+      '@types/vscode':
+        specifier: ^1.125.0
+        version: 1.140.0
+      '@vscode/test-electron':
+        specifier: ^3.1.0
+        version: 3.1.0(supports-color@11.0.0)
+      esbuild:
+        specifier: ^0.25.0
+        version: 0.25.12
+      jasmine:
+        specifier: ^7.0.0
+        version: 7.0.0
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
+  ngp-vscode-ng-language-service/client:
+    dependencies:
+      vscode-languageclient:
+        specifier: ^10.1.0
+        version: 10.1.2
+    devDependencies:
+      '@types/vscode':
+        specifier: ^1.125.0
+        version: 1.140.0
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
+  ngp-vscode-ng-language-service/server:
+    dependencies:
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20260707.2
+        version: 7.0.0-dev.20260707.2
+      vscode-languageserver:
+        specifier: ^10.1.0
+        version: 10.1.2
+      vscode-languageserver-textdocument:
+        specifier: ^1.0.12
+        version: 1.0.15
+      vscode-uri:
+        specifier: ^3.1.0
+        version: 3.2.0
+    devDependencies:
+      typescript:
+        specifier: 6.0.2
+        version: 6.0.2
+
   packages/animations:
     dependencies:
       '@angular/core':
@@ -981,6 +1056,28 @@ importers:
         specifier: workspace:*
         version: link:../../..
 
+  packages/compiler-cli/preprocessor/language-service:
+    dependencies:
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20260707.2
+        version: 7.0.0-dev.20260707.2
+      vscode-jsonrpc:
+        specifier: ^9.0.1
+        version: 9.0.3
+      vscode-languageserver:
+        specifier: ^10.1.0
+        version: 10.1.2
+      vscode-languageserver-textdocument:
+        specifier: ^1.0.12
+        version: 1.0.15
+      vscode-uri:
+        specifier: ^3.1.0
+        version: 3.2.0
+    devDependencies:
+      typescript:
+        specifier: 6.0.2
+        version: 6.0.2
+
   packages/core:
     dependencies:
       '@angular/compiler':
@@ -1013,7 +1110,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 22.3.0-next.1
-        version: 22.3.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))(less@4.9.1(supports-color@11.0.0))(postcss@8.5.28)(rollup@4.64.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.8.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)
+        version: 22.3.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))(less@4.9.1(supports-color@11.0.0))(postcss@8.5.28)(rollup@4.64.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.8.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -2138,16 +2235,34 @@ packages:
   '@emnapi/wasi-threads@1.2.1':
     resolution: {integrity: sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w==}
 
+  '@esbuild/aix-ppc64@0.25.12':
+    resolution: {integrity: sha512-Hhmwd6CInZ3dwpuGTF8fJG6yoWmsToE+vYgD4nytZVxcu1ulHpUQRAB1UJ8+N1Am3Mz4+xOByoQoSZf4D+CpkA==}
+    engines: {node: '>=18'}
+    cpu: [ppc64]
+    os: [aix]
+
   '@esbuild/aix-ppc64@0.28.2':
     resolution: {integrity: sha512-XExcO+dvLKvVtNTibSTBej1NCAbaGhWn9Ww1ZPx80qsahhPFe/8jgWP0IchNe0F3HwkU7n8ejhH8bjonqht8mQ==}
     engines: {node: '>=18'}
     cpu: [ppc64]
     os: [aix]
 
+  '@esbuild/android-arm64@0.25.12':
+    resolution: {integrity: sha512-6AAmLG7zwD1Z159jCKPvAxZd4y/VTO0VkprYy+3N2FtJ8+BQWFXU+OxARIwA46c5tdD9SsKGZ/1ocqBS/gAKHg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [android]
+
   '@esbuild/android-arm64@0.28.2':
     resolution: {integrity: sha512-5YfKeeI8qWfBZIX+u2xZC3Zlb3Os/gLS2sbEKM+I4ZOcsWmHS2WLysCcQZDAFRslDUU5Oiq44gf6PYN1vGwG5A==}
     engines: {node: '>=18'}
     cpu: [arm64]
+    os: [android]
+
+  '@esbuild/android-arm@0.25.12':
+    resolution: {integrity: sha512-VJ+sKvNA/GE7Ccacc9Cha7bpS8nyzVv0jdVgwNDaR4gDMC/2TTRc33Ip8qrNYUcpkOHUT5OZ0bUcNNVZQ9RLlg==}
+    engines: {node: '>=18'}
+    cpu: [arm]
     os: [android]
 
   '@esbuild/android-arm@0.28.2':
@@ -2156,16 +2271,34 @@ packages:
     cpu: [arm]
     os: [android]
 
+  '@esbuild/android-x64@0.25.12':
+    resolution: {integrity: sha512-5jbb+2hhDHx5phYR2By8GTWEzn6I9UqR11Kwf22iKbNpYrsmRB18aX/9ivc5cabcUiAT/wM+YIZ6SG9QO6a8kg==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [android]
+
   '@esbuild/android-x64@0.28.2':
     resolution: {integrity: sha512-O387ite7SzUyCcy3JQX4P4bLtEA7bLLkx+esve5JHnyYfNTxcVpXZo9jhdB0lTKN44gztELTdU7nS8Nr16Fs1Q==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [android]
 
+  '@esbuild/darwin-arm64@0.25.12':
+    resolution: {integrity: sha512-N3zl+lxHCifgIlcMUP5016ESkeQjLj/959RxxNYIthIg+CQHInujFuXeWbWMgnTo4cp5XVHqFPmpyu9J65C1Yg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [darwin]
+
   '@esbuild/darwin-arm64@0.28.2':
     resolution: {integrity: sha512-n4KqkOQrraxHJcgjM1RvwbigfQKIKJVpM7xp+KsxiyUSrRdIXnt73VhrPAx0fV44hgfmIVKjxMN9J1t5jySVkw==}
     engines: {node: '>=18'}
     cpu: [arm64]
+    os: [darwin]
+
+  '@esbuild/darwin-x64@0.25.12':
+    resolution: {integrity: sha512-HQ9ka4Kx21qHXwtlTUVbKJOAnmG1ipXhdWTmNXiPzPfWKpXqASVcWdnf2bnL73wgjNrFXAa3yYvBSd9pzfEIpA==}
+    engines: {node: '>=18'}
+    cpu: [x64]
     os: [darwin]
 
   '@esbuild/darwin-x64@0.28.2':
@@ -2174,10 +2307,22 @@ packages:
     cpu: [x64]
     os: [darwin]
 
+  '@esbuild/freebsd-arm64@0.25.12':
+    resolution: {integrity: sha512-gA0Bx759+7Jve03K1S0vkOu5Lg/85dou3EseOGUes8flVOGxbhDDh/iZaoek11Y8mtyKPGF3vP8XhnkDEAmzeg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [freebsd]
+
   '@esbuild/freebsd-arm64@0.28.2':
     resolution: {integrity: sha512-n+I0BTSRIoy+d6RPKnEVwql5UwBJolytvY4mAOIEJorKlqgPII8ix6slVVrfZ5Tnj7glIZvloylbB/EJPMWEXw==}
     engines: {node: '>=18'}
     cpu: [arm64]
+    os: [freebsd]
+
+  '@esbuild/freebsd-x64@0.25.12':
+    resolution: {integrity: sha512-TGbO26Yw2xsHzxtbVFGEXBFH0FRAP7gtcPE7P5yP7wGy7cXK2oO7RyOhL5NLiqTlBh47XhmIUXuGciXEqYFfBQ==}
+    engines: {node: '>=18'}
+    cpu: [x64]
     os: [freebsd]
 
   '@esbuild/freebsd-x64@0.28.2':
@@ -2186,10 +2331,22 @@ packages:
     cpu: [x64]
     os: [freebsd]
 
+  '@esbuild/linux-arm64@0.25.12':
+    resolution: {integrity: sha512-8bwX7a8FghIgrupcxb4aUmYDLp8pX06rGh5HqDT7bB+8Rdells6mHvrFHHW2JAOPZUbnjUpKTLg6ECyzvas2AQ==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [linux]
+
   '@esbuild/linux-arm64@0.28.2':
     resolution: {integrity: sha512-pW4AC0P3it8c7do9MVM4p51FzHzdM/TZrerurgRcHJ2WTa1VQ1CIq18xncfpBJw4ojkiZZrKW2yIBWBP92j6Ug==}
     engines: {node: '>=18'}
     cpu: [arm64]
+    os: [linux]
+
+  '@esbuild/linux-arm@0.25.12':
+    resolution: {integrity: sha512-lPDGyC1JPDou8kGcywY0YILzWlhhnRjdof3UlcoqYmS9El818LLfJJc3PXXgZHrHCAKs/Z2SeZtDJr5MrkxtOw==}
+    engines: {node: '>=18'}
+    cpu: [arm]
     os: [linux]
 
   '@esbuild/linux-arm@0.28.2':
@@ -2198,10 +2355,22 @@ packages:
     cpu: [arm]
     os: [linux]
 
+  '@esbuild/linux-ia32@0.25.12':
+    resolution: {integrity: sha512-0y9KrdVnbMM2/vG8KfU0byhUN+EFCny9+8g202gYqSSVMonbsCfLjUO+rCci7pM0WBEtz+oK/PIwHkzxkyharA==}
+    engines: {node: '>=18'}
+    cpu: [ia32]
+    os: [linux]
+
   '@esbuild/linux-ia32@0.28.2':
     resolution: {integrity: sha512-CYbnj78HsIeA+DhgUKgFCfvNsTHFhMMrinUrMZpDXJXKN8T3XViTZ/+wtHeVxEWY8ewSzTFN+nRmSwO2tZaLUQ==}
     engines: {node: '>=18'}
     cpu: [ia32]
+    os: [linux]
+
+  '@esbuild/linux-loong64@0.25.12':
+    resolution: {integrity: sha512-h///Lr5a9rib/v1GGqXVGzjL4TMvVTv+s1DPoxQdz7l/AYv6LDSxdIwzxkrPW438oUXiDtwM10o9PmwS/6Z0Ng==}
+    engines: {node: '>=18'}
+    cpu: [loong64]
     os: [linux]
 
   '@esbuild/linux-loong64@0.28.2':
@@ -2210,10 +2379,22 @@ packages:
     cpu: [loong64]
     os: [linux]
 
+  '@esbuild/linux-mips64el@0.25.12':
+    resolution: {integrity: sha512-iyRrM1Pzy9GFMDLsXn1iHUm18nhKnNMWscjmp4+hpafcZjrr2WbT//d20xaGljXDBYHqRcl8HnxbX6uaA/eGVw==}
+    engines: {node: '>=18'}
+    cpu: [mips64el]
+    os: [linux]
+
   '@esbuild/linux-mips64el@0.28.2':
     resolution: {integrity: sha512-ZVykbDyk7519VwiNb9Lcj9m8XM6v5V9uKPvrEMkkEedVewf+0itkhahp4HDpgERXhwLRpWFypsGbG/J8s0QjJA==}
     engines: {node: '>=18'}
     cpu: [mips64el]
+    os: [linux]
+
+  '@esbuild/linux-ppc64@0.25.12':
+    resolution: {integrity: sha512-9meM/lRXxMi5PSUqEXRCtVjEZBGwB7P/D4yT8UG/mwIdze2aV4Vo6U5gD3+RsoHXKkHCfSxZKzmDssVlRj1QQA==}
+    engines: {node: '>=18'}
+    cpu: [ppc64]
     os: [linux]
 
   '@esbuild/linux-ppc64@0.28.2':
@@ -2222,10 +2403,22 @@ packages:
     cpu: [ppc64]
     os: [linux]
 
+  '@esbuild/linux-riscv64@0.25.12':
+    resolution: {integrity: sha512-Zr7KR4hgKUpWAwb1f3o5ygT04MzqVrGEGXGLnj15YQDJErYu/BGg+wmFlIDOdJp0PmB0lLvxFIOXZgFRrdjR0w==}
+    engines: {node: '>=18'}
+    cpu: [riscv64]
+    os: [linux]
+
   '@esbuild/linux-riscv64@0.28.2':
     resolution: {integrity: sha512-GeXCej4IQtU1B+QlDV8W/RRvbzI3O/Stss+/bCXv4lZls5WGRtu2a+3JkA3i4qIUlMXpcHebWpF8AkJhATowuA==}
     engines: {node: '>=18'}
     cpu: [riscv64]
+    os: [linux]
+
+  '@esbuild/linux-s390x@0.25.12':
+    resolution: {integrity: sha512-MsKncOcgTNvdtiISc/jZs/Zf8d0cl/t3gYWX8J9ubBnVOwlk65UIEEvgBORTiljloIWnBzLs4qhzPkJcitIzIg==}
+    engines: {node: '>=18'}
+    cpu: [s390x]
     os: [linux]
 
   '@esbuild/linux-s390x@0.28.2':
@@ -2234,16 +2427,34 @@ packages:
     cpu: [s390x]
     os: [linux]
 
+  '@esbuild/linux-x64@0.25.12':
+    resolution: {integrity: sha512-uqZMTLr/zR/ed4jIGnwSLkaHmPjOjJvnm6TVVitAa08SLS9Z0VM8wIRx7gWbJB5/J54YuIMInDquWyYvQLZkgw==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [linux]
+
   '@esbuild/linux-x64@0.28.2':
     resolution: {integrity: sha512-4xTZr1FUmSoQW4XIWmit3tzQrUTZM+N3P0XV8xROKYF50XfI7xeO90+1bZvNwxIufQ9hDQVRJH5YhgPVF8A/HQ==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
 
+  '@esbuild/netbsd-arm64@0.25.12':
+    resolution: {integrity: sha512-xXwcTq4GhRM7J9A8Gv5boanHhRa/Q9KLVmcyXHCTaM4wKfIpWkdXiMog/KsnxzJ0A1+nD+zoecuzqPmCRyBGjg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [netbsd]
+
   '@esbuild/netbsd-arm64@0.28.2':
     resolution: {integrity: sha512-sSATRjPeDBg3pdgHoQfoYBob11Kk1FGa9lui5RIHZCoCkJa9QKlvl3/vKz2usCmYYjs7ymJR/2Nnsqe+Hjt5nw==}
     engines: {node: '>=18'}
     cpu: [arm64]
+    os: [netbsd]
+
+  '@esbuild/netbsd-x64@0.25.12':
+    resolution: {integrity: sha512-Ld5pTlzPy3YwGec4OuHh1aCVCRvOXdH8DgRjfDy/oumVovmuSzWfnSJg+VtakB9Cm0gxNO9BzWkj6mtO1FMXkQ==}
+    engines: {node: '>=18'}
+    cpu: [x64]
     os: [netbsd]
 
   '@esbuild/netbsd-x64@0.28.2':
@@ -2252,10 +2463,22 @@ packages:
     cpu: [x64]
     os: [netbsd]
 
+  '@esbuild/openbsd-arm64@0.25.12':
+    resolution: {integrity: sha512-fF96T6KsBo/pkQI950FARU9apGNTSlZGsv1jZBAlcLL1MLjLNIWPBkj5NlSz8aAzYKg+eNqknrUJ24QBybeR5A==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [openbsd]
+
   '@esbuild/openbsd-arm64@0.28.2':
     resolution: {integrity: sha512-AL2qJILH7lNjrDmCQDvdxMfAUIv8KMNZOvrwAQ8i8//ntL9FflhOyMJ8OZSMBb8/AWXe3/5v5S20y3zCoZWKoQ==}
     engines: {node: '>=18'}
     cpu: [arm64]
+    os: [openbsd]
+
+  '@esbuild/openbsd-x64@0.25.12':
+    resolution: {integrity: sha512-MZyXUkZHjQxUvzK7rN8DJ3SRmrVrke8ZyRusHlP+kuwqTcfWLyqMOE3sScPPyeIXN/mDJIfGXvcMqCgYKekoQw==}
+    engines: {node: '>=18'}
+    cpu: [x64]
     os: [openbsd]
 
   '@esbuild/openbsd-x64@0.28.2':
@@ -2264,11 +2487,23 @@ packages:
     cpu: [x64]
     os: [openbsd]
 
+  '@esbuild/openharmony-arm64@0.25.12':
+    resolution: {integrity: sha512-rm0YWsqUSRrjncSXGA7Zv78Nbnw4XL6/dzr20cyrQf7ZmRcsovpcRBdhD43Nuk3y7XIoW2OxMVvwuRvk9XdASg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [openharmony]
+
   '@esbuild/openharmony-arm64@0.28.2':
     resolution: {integrity: sha512-WkhYDmpTjLvGlScA1rwjRUmhl4k8oXR3cIbtqWmELgU/dFeHHlEllxDvdWcNJV9rbzCexB5vz8gtNewWLgCT7Q==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [openharmony]
+
+  '@esbuild/sunos-x64@0.25.12':
+    resolution: {integrity: sha512-3wGSCDyuTHQUzt0nV7bocDy72r2lI33QL3gkDNGkod22EsYl04sMf0qLb8luNKTOmgF/eDEDP5BFNwoBKH441w==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [sunos]
 
   '@esbuild/sunos-x64@0.28.2':
     resolution: {integrity: sha512-GPMSkTOtMnv2U2F8gxe4Io6qmVs+YKyp832Etqqxr0hFngmXQ3rzwytelm3GIn7T4VviRUlf3sOgBOiTdvaf7g==}
@@ -2276,16 +2511,34 @@ packages:
     cpu: [x64]
     os: [sunos]
 
+  '@esbuild/win32-arm64@0.25.12':
+    resolution: {integrity: sha512-rMmLrur64A7+DKlnSuwqUdRKyd3UE7oPJZmnljqEptesKM8wx9J8gx5u0+9Pq0fQQW8vqeKebwNXdfOyP+8Bsg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [win32]
+
   '@esbuild/win32-arm64@0.28.2':
     resolution: {integrity: sha512-PIhhEkE9uPBleRBrQEJpUn7MBnibZzbGzYWPmY3x+YoVg/95zbjB4CxPPOQ8l5tYYM4mMaCthF8/1DIfBQQyWQ==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [win32]
 
+  '@esbuild/win32-ia32@0.25.12':
+    resolution: {integrity: sha512-HkqnmmBoCbCwxUKKNPBixiWDGCpQGVsrQfJoVGYLPT41XWF8lHuE5N6WhVia2n4o5QK5M4tYr21827fNhi4byQ==}
+    engines: {node: '>=18'}
+    cpu: [ia32]
+    os: [win32]
+
   '@esbuild/win32-ia32@0.28.2':
     resolution: {integrity: sha512-YmJbfTlvU7Sdn9BB+4PRES4oB6pxgS37MAONj+hBr/cpXS1aBPKXxNnDbu+QCWPj0o9dgyxeq79g6c5P8KeuYA==}
     engines: {node: '>=18'}
     cpu: [ia32]
+    os: [win32]
+
+  '@esbuild/win32-x64@0.25.12':
+    resolution: {integrity: sha512-alJC0uCZpTFrSL0CCDjcgleBXPnCrEAhTBILpeAp7M/OFgoqtAetfBzX0xM00MUsVVPpVjlPuMbREqnZCXaTnA==}
+    engines: {node: '>=18'}
+    cpu: [x64]
     os: [win32]
 
   '@esbuild/win32-x64@0.28.2':
@@ -4616,6 +4869,53 @@ packages:
   '@types/yarnpkg__lockfile@1.1.9':
     resolution: {integrity: sha512-GD4Fk15UoP5NLCNor51YdfL9MSdldKCqOC9EssrRw3HVfar9wUZ5y8Lfnp+qVD6hIinLr8ygklDYnmlnlQo12Q==}
 
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-wny2pgKjGbiZtnOIHVa3tXC1UfDqxNEFzyPGmiqybedG8hipG2Nfp0l5UxbaKCjkLacUpH/W5bP2hBOMVhCOzg==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-Afc7M5zOwo+GpfcYwz5Z8HMB2tPVsui7nNIqEuuFB73MPdVqNn/Wmpe4tP4MRri0AtJnJknoHBaTJ/VDAp/Jhw==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-iITBa2WjjTI5N9t5l7Z4KoOSI+2zBlhbvFzsD/f8qX8QoKjz/Y4DPyBDgezYi8nkqjjksbgSOJ3/ykzhwrB9cg==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-hJm/UOqZTr9FHmR7uNm8VGX4oKtfWk0Jem0zPeJFNC8ckGUfSBueyiEYMZB+XmRc1aG4x1E46y3CplP4CLHvGQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm]
+    os: [linux]
+
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-du0dzi6y97Po5vDNdPJTyyijHCpaS22JLRnKZEJXBDaO9gCIymOv/5QQokFRuOlQm0bWl3i9PF4OVdGP6uAOQA==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-SsAwfhyHJ1akgBc+99z4+hwdbHsdWaKB8EwCNIMA6JfSLMeUjffrYvxu+vfMyxVtOVOz7RrRXRoiDiu4a2sCtg==}
+    engines: {node: '>=16.20.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-DL4u27stv0fo71sVhOzHSwE+YMZsbBijVI+kg5dLDLilSH79WFTJ8RSQ46vJrCMt+Gjlv/JOZP1PuLJDfioYeQ==}
+    engines: {node: '>=16.20.0'}
+    cpu: [x64]
+    os: [win32]
+
+  '@typescript/native-preview@7.0.0-dev.20260707.2':
+    resolution: {integrity: sha512-oUGp+Rep/hqMhPunyinsALUwSlzHINSxitifPiSaeqoKOKD2OlR9NE3TaPqwsl4NlGslsOSUXI1JotWQzpYCPg==}
+    engines: {node: '>=16.20.0'}
+    hasBin: true
+
   '@typescript/vfs@1.6.5':
     resolution: {integrity: sha512-gobLHQLmvQGJInFk31NvgMd1uYzRXsd8qgnOssyLD055R2QPnw1ubRbBQ4+T+5qC7IQVuYXdvNDE2G7tMDVHgw==}
     peerDependencies:
@@ -6652,6 +6952,11 @@ packages:
   esbuild-plugin-umd-wrapper@3.0.0:
     resolution: {integrity: sha512-Ht3jrO7r8oF8FgPIhMnfNQvYLHhz2QA1ggPqfBhoVq0VfYNczqJ6nwQ4PhO5UvrUymn+Q0Nc50xpiDbxI+KR2Q==}
 
+  esbuild@0.25.12:
+    resolution: {integrity: sha512-bbPBYYrtZbkt6Os6FiTLCTFxvq4tt3JKall1vRwshA3fdVztsLAatFaZobhkBC8/BrPetoa0oksYoKXoG4ryJg==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   esbuild@0.28.2:
     resolution: {integrity: sha512-HKVLS8dvII+xoKW9kmqxbRKrnWEXfJJr/FZhhJmiqIB0e053QNYFqOBouTMO/k5sID4MvCiUCvv8b9M4h32wIA==}
     engines: {node: '>=18'}
@@ -7913,6 +8218,9 @@ packages:
   jasmine-core@6.3.0:
     resolution: {integrity: sha512-eMm5qBovNjNoGOcgE/W207+wrcK5zrQv0Rg/rWGboUJUmZp0dFCpHTyjpuDAfCwRCqg7f9U2q2jtv/aUuzdCQg==}
 
+  jasmine-core@7.0.2:
+    resolution: {integrity: sha512-YMVijt84KPQQFm1db1AQAxTXfq0k3wU06OkepLViljURFqiRQ7EYYX2eUAshhUv9fA9t1E2N65GrdqvupA9VPQ==}
+
   jasmine-reporters@2.5.2:
     resolution: {integrity: sha512-qdewRUuFOSiWhiyWZX8Yx3YNQ9JG51ntBEO4ekLQRpktxFTwUHy24a86zD/Oi2BRTKksEdfWQZcQFqzjqIkPig==}
 
@@ -7922,6 +8230,10 @@ packages:
 
   jasmine@6.3.0:
     resolution: {integrity: sha512-u6L7yYtrtS1JALlp7f4k7Wz7o7ZKXauSKKkXc0L3qUkKrdaxYvNiMHhHp5gtTuVZZXVihXRxS7bWwDBX1wJ7EQ==}
+    hasBin: true
+
+  jasmine@7.0.0:
+    resolution: {integrity: sha512-rnjiyg1LAhFZMoyU8ei/Wqyvti5oCzFhW7ZtkD6o+CSx3LpU9aYurPrh5BKyX3coGvmdEVYPC2HYh1rrBvZoWg==}
     hasBin: true
 
   jasminewd2@2.2.0:
@@ -9456,7 +9768,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -10650,6 +10961,16 @@ packages:
   typedarray@0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
 
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+  typescript@6.0.2:
+    resolution: {integrity: sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   typescript@6.0.3:
     resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
@@ -10974,12 +11295,23 @@ packages:
     resolution: {integrity: sha512-C+r0eKJUIfiDIfwJhria30+TYWPtuHJXHtI7J0YlOmKAo7ogxP20T0zxB7HZQIFhIyvoBPwWskjxrvAtfjyZfA==}
     engines: {node: '>=14.0.0'}
 
+  vscode-jsonrpc@9.0.3:
+    resolution: {integrity: sha512-qETYf9PCl1lVfwR+oBmMfc4vP2nqLNA35ABxorw3j06+xlKRgDVxbLgKm4Y/xPL0YWdeDjLoI4ImICIT3nB0zQ==}
+    engines: {node: '>=14.0.0'}
+
+  vscode-languageclient@10.1.2:
+    resolution: {integrity: sha512-cOv5SMvtAhfVeo5m2r9L2rVHAD0J5CFOsmvH1WgNmPaI61VYjJNc3XUDLOKeFSDtWoAXIEoK6KetuBEL/3hErg==}
+    engines: {vscode: ^1.91.0}
+
   vscode-languageclient@9.0.1:
     resolution: {integrity: sha512-JZiimVdvimEuHh5olxhxkht09m3JzUGwggb5eRUkzzJhZ2KjCN0nh55VfiED9oez9DyF8/fz1g1iBV3h+0Z2EA==}
     engines: {vscode: ^1.82.0}
 
   vscode-languageserver-protocol@3.17.5:
     resolution: {integrity: sha512-mb1bvRJN8SVznADSGWM9u/b07H7Ecg0I3OgXDuLdn307rl/J3A9YD6/eYOssqhecL27hK1IPZAsaqh00i/Jljg==}
+
+  vscode-languageserver-protocol@3.18.4:
+    resolution: {integrity: sha512-CCXbyr99dafRJzJH/0Ryk7ly5T8XPmSR0//OuF2w4m+9JiOin7zcAT5iET8GRE7Z9taFBejb3GbM0a0mbjdbrg==}
 
   vscode-languageserver-textdocument@1.0.15:
     resolution: {integrity: sha512-Gsfr9S8LU3S6885cS+NaleasJ0n3V5y/SOTqHCifQiXWFw3G9w9/YItDfwHrlCz+dSZWWZ8ilYVMcJe7Sz7Sxw==}
@@ -10989,6 +11321,10 @@ packages:
 
   vscode-languageserver-types@3.18.4:
     resolution: {integrity: sha512-nQsacoiijvl0fRf2q28uFDrAVwRhdCa3QveiF7/CX0r18mLR5FU/1WskSsCKOjmEbtteKUnY8x8Yzxop+k0zwg==}
+
+  vscode-languageserver@10.1.2:
+    resolution: {integrity: sha512-pXPWde3RytdeBVEs6PulOOT5OpeXC5GkWRpcT11f5rNn41jviQsAYPyAqJ/0oVGETQLKPJtYbHNiMPlfLb0NTQ==}
+    hasBin: true
 
   vscode-languageserver@9.0.1:
     resolution: {integrity: sha512-woByF3PDpkHFUreUa7Hos7+pUWdeWMXRd26+ZX2A8cFx6v/JPTtd4/uN0/jB6XQHYaOlHbio03NTHCqrgG5n7g==}
@@ -11599,7 +11935,7 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@angular/build@22.3.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))(less@4.9.1(supports-color@11.0.0))(postcss@8.5.28)(rollup@4.64.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.8.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)':
+  '@angular/build@22.3.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@22.3.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.43)(istanbul-lib-instrument@6.0.3(supports-color@11.0.0))(jiti@1.21.7)(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))(less@4.9.1(supports-color@11.0.0))(postcss@8.5.28)(rollup@4.64.0)(supports-color@11.0.0)(tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1))(tslib@2.8.1)(tsx@4.23.15)(typescript@6.0.3)(yaml@2.9.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2203.0-next.1(chokidar@5.0.0)
@@ -12460,79 +12796,157 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
+  '@esbuild/aix-ppc64@0.25.12':
+    optional: true
+
   '@esbuild/aix-ppc64@0.28.2':
+    optional: true
+
+  '@esbuild/android-arm64@0.25.12':
     optional: true
 
   '@esbuild/android-arm64@0.28.2':
     optional: true
 
+  '@esbuild/android-arm@0.25.12':
+    optional: true
+
   '@esbuild/android-arm@0.28.2':
+    optional: true
+
+  '@esbuild/android-x64@0.25.12':
     optional: true
 
   '@esbuild/android-x64@0.28.2':
     optional: true
 
+  '@esbuild/darwin-arm64@0.25.12':
+    optional: true
+
   '@esbuild/darwin-arm64@0.28.2':
+    optional: true
+
+  '@esbuild/darwin-x64@0.25.12':
     optional: true
 
   '@esbuild/darwin-x64@0.28.2':
     optional: true
 
+  '@esbuild/freebsd-arm64@0.25.12':
+    optional: true
+
   '@esbuild/freebsd-arm64@0.28.2':
+    optional: true
+
+  '@esbuild/freebsd-x64@0.25.12':
     optional: true
 
   '@esbuild/freebsd-x64@0.28.2':
     optional: true
 
+  '@esbuild/linux-arm64@0.25.12':
+    optional: true
+
   '@esbuild/linux-arm64@0.28.2':
+    optional: true
+
+  '@esbuild/linux-arm@0.25.12':
     optional: true
 
   '@esbuild/linux-arm@0.28.2':
     optional: true
 
+  '@esbuild/linux-ia32@0.25.12':
+    optional: true
+
   '@esbuild/linux-ia32@0.28.2':
+    optional: true
+
+  '@esbuild/linux-loong64@0.25.12':
     optional: true
 
   '@esbuild/linux-loong64@0.28.2':
     optional: true
 
+  '@esbuild/linux-mips64el@0.25.12':
+    optional: true
+
   '@esbuild/linux-mips64el@0.28.2':
+    optional: true
+
+  '@esbuild/linux-ppc64@0.25.12':
     optional: true
 
   '@esbuild/linux-ppc64@0.28.2':
     optional: true
 
+  '@esbuild/linux-riscv64@0.25.12':
+    optional: true
+
   '@esbuild/linux-riscv64@0.28.2':
+    optional: true
+
+  '@esbuild/linux-s390x@0.25.12':
     optional: true
 
   '@esbuild/linux-s390x@0.28.2':
     optional: true
 
+  '@esbuild/linux-x64@0.25.12':
+    optional: true
+
   '@esbuild/linux-x64@0.28.2':
+    optional: true
+
+  '@esbuild/netbsd-arm64@0.25.12':
     optional: true
 
   '@esbuild/netbsd-arm64@0.28.2':
     optional: true
 
+  '@esbuild/netbsd-x64@0.25.12':
+    optional: true
+
   '@esbuild/netbsd-x64@0.28.2':
+    optional: true
+
+  '@esbuild/openbsd-arm64@0.25.12':
     optional: true
 
   '@esbuild/openbsd-arm64@0.28.2':
     optional: true
 
+  '@esbuild/openbsd-x64@0.25.12':
+    optional: true
+
   '@esbuild/openbsd-x64@0.28.2':
+    optional: true
+
+  '@esbuild/openharmony-arm64@0.25.12':
     optional: true
 
   '@esbuild/openharmony-arm64@0.28.2':
     optional: true
 
+  '@esbuild/sunos-x64@0.25.12':
+    optional: true
+
   '@esbuild/sunos-x64@0.28.2':
+    optional: true
+
+  '@esbuild/win32-arm64@0.25.12':
     optional: true
 
   '@esbuild/win32-arm64@0.28.2':
     optional: true
 
+  '@esbuild/win32-ia32@0.25.12':
+    optional: true
+
   '@esbuild/win32-ia32@0.28.2':
+    optional: true
+
+  '@esbuild/win32-x64@0.25.12':
     optional: true
 
   '@esbuild/win32-x64@0.28.2':
@@ -15057,6 +15471,37 @@ snapshots:
 
   '@types/yarnpkg__lockfile@1.1.9': {}
 
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20260707.2':
+    optional: true
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20260707.2':
+    optional: true
+
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20260707.2':
+    optional: true
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20260707.2':
+    optional: true
+
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20260707.2':
+    optional: true
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20260707.2':
+    optional: true
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20260707.2':
+    optional: true
+
+  '@typescript/native-preview@7.0.0-dev.20260707.2':
+    optionalDependencies:
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20260707.2
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20260707.2
+
   '@typescript/vfs@1.6.5(supports-color@11.0.0)(typescript@6.0.3)':
     dependencies:
       debug: 4.4.3(supports-color@11.0.0)
@@ -17102,6 +17547,35 @@ snapshots:
 
   esbuild-plugin-umd-wrapper@3.0.0: {}
 
+  esbuild@0.25.12:
+    optionalDependencies:
+      '@esbuild/aix-ppc64': 0.25.12
+      '@esbuild/android-arm': 0.25.12
+      '@esbuild/android-arm64': 0.25.12
+      '@esbuild/android-x64': 0.25.12
+      '@esbuild/darwin-arm64': 0.25.12
+      '@esbuild/darwin-x64': 0.25.12
+      '@esbuild/freebsd-arm64': 0.25.12
+      '@esbuild/freebsd-x64': 0.25.12
+      '@esbuild/linux-arm': 0.25.12
+      '@esbuild/linux-arm64': 0.25.12
+      '@esbuild/linux-ia32': 0.25.12
+      '@esbuild/linux-loong64': 0.25.12
+      '@esbuild/linux-mips64el': 0.25.12
+      '@esbuild/linux-ppc64': 0.25.12
+      '@esbuild/linux-riscv64': 0.25.12
+      '@esbuild/linux-s390x': 0.25.12
+      '@esbuild/linux-x64': 0.25.12
+      '@esbuild/netbsd-arm64': 0.25.12
+      '@esbuild/netbsd-x64': 0.25.12
+      '@esbuild/openbsd-arm64': 0.25.12
+      '@esbuild/openbsd-x64': 0.25.12
+      '@esbuild/openharmony-arm64': 0.25.12
+      '@esbuild/sunos-x64': 0.25.12
+      '@esbuild/win32-arm64': 0.25.12
+      '@esbuild/win32-ia32': 0.25.12
+      '@esbuild/win32-x64': 0.25.12
+
   esbuild@0.28.2:
     optionalDependencies:
       '@esbuild/aix-ppc64': 0.28.2
@@ -17478,7 +17952,7 @@ snapshots:
       object.pick: 1.3.0
       parse-filepath: 1.0.2
 
-  firebase-tools@15.32.1(@types/node@20.19.43)(bufferutil@4.1.0)(encoding@0.1.13)(supports-color@11.0.0):
+  firebase-tools@15.32.1(@types/node@20.19.43)(bufferutil@4.1.0)(encoding@0.1.13)(supports-color@11.0.0)(utf-8-validate@6.0.6):
     dependencies:
       '@apphosting/common': 0.0.8
       '@electric-sql/pglite': 0.3.16
@@ -18721,6 +19195,8 @@ snapshots:
 
   jasmine-core@6.3.0: {}
 
+  jasmine-core@7.0.2: {}
+
   jasmine-reporters@2.5.2:
     dependencies:
       '@xmldom/xmldom': 0.8.15
@@ -18737,6 +19213,12 @@ snapshots:
       '@jasminejs/reporters': 1.1.0
       glob: 13.0.6
       jasmine-core: 6.3.0
+
+  jasmine@7.0.0:
+    dependencies:
+      '@jasminejs/reporters': 1.1.0
+      glob: 13.0.6
+      jasmine-core: 7.0.2
 
   jasminewd2@2.2.0: {}
 
@@ -19248,13 +19730,13 @@ snapshots:
       is-wsl: 2.2.0
       which: 3.0.1
 
-  karma-jasmine-html-reporter@2.3.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)):
+  karma-jasmine-html-reporter@2.3.0(jasmine-core@6.3.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
     dependencies:
       jasmine-core: 6.3.0
       karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
-      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0))
+      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6))
 
-  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)):
+  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)):
     dependencies:
       jasmine-core: 4.6.1
       karma: 6.4.4(bufferutil@4.1.0)(debug@4.4.3(supports-color@11.0.0))(supports-color@11.0.0)(utf-8-validate@6.0.6)
@@ -22060,6 +22542,10 @@ snapshots:
 
   typedarray@0.0.6: {}
 
+  typescript@5.9.3: {}
+
+  typescript@6.0.2: {}
+
   typescript@6.0.3: {}
 
   ua-parser-js@0.7.41: {}
@@ -22403,6 +22889,15 @@ snapshots:
 
   vscode-jsonrpc@8.2.0: {}
 
+  vscode-jsonrpc@9.0.3: {}
+
+  vscode-languageclient@10.1.2:
+    dependencies:
+      minimatch: 10.2.6
+      semver: 7.8.5
+      vscode-languageserver-protocol: 3.18.4
+      vscode-languageserver-textdocument: 1.0.15
+
   vscode-languageclient@9.0.1:
     dependencies:
       minimatch: 5.1.9
@@ -22414,11 +22909,20 @@ snapshots:
       vscode-jsonrpc: 8.2.0
       vscode-languageserver-types: 3.17.5
 
+  vscode-languageserver-protocol@3.18.4:
+    dependencies:
+      vscode-jsonrpc: 9.0.3
+      vscode-languageserver-types: 3.18.4
+
   vscode-languageserver-textdocument@1.0.15: {}
 
   vscode-languageserver-types@3.17.5: {}
 
   vscode-languageserver-types@3.18.4: {}
+
+  vscode-languageserver@10.1.2:
+    dependencies:
+      vscode-languageserver-protocol: 3.18.4
 
   vscode-languageserver@9.0.1:
     dependencies:
