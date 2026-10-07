@@ -61,11 +61,11 @@ If the `params` computation returns `undefined`, the loader function does not ru
 
 Some asynchronous data sources produce multiple values over time instead of returning a single result. Examples include WebSockets, Server-Sent Events (SSE), and Firestore `onSnapshot` listeners.
 
-Use `stream` for these continuously updating data sources. Unlike `loader`, which resolves once for each request, `stream` should return a signal representing a continuously updating data source. The resource uses the signal's value as its current value and updates when the signal changes.
+Use `stream` for these continuously updating data sources. Unlike `loader`, which resolves once for each request, `stream` returns a signal whose value can continue to update as new data becomes available.
 
 Use `loader` for one-time asynchronous operations, such as fetching data from an HTTP endpoint.
 
-In this example, `userUpdates` simulates an external source such as a WebSocket or SSE connection. The resource reads the signal's value and updates its own value whenever the signal changes.
+In this example, `userUpdates` simulates an external source such as a WebSocket or SSE connection.
 
 ```typescript
 const userUpdates = signal({value: 'Alice'});
