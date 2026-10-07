@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        [
+            "**/*_spec.ts",
+            "*.ts",
+        ],
+        exclude = ["golden/**"],
+    ),
+    deps = [
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+        "//:node_modules/diff",
+        "//:node_modules/prettier",
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli/preprocessor",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    timeout = "long",
+    data = [
+        ":test_lib",
+        "//packages/common:npm_package",
+        "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_wasm",
+        "//packages/compiler-cli/preprocessor/ng-analyze:package_json",
+        "//packages/core:npm_package",
+    ] + glob(["golden/**"]),
+    shard_count = 4,
+)

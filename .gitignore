@@ -6,6 +6,10 @@
 *.log
 node_modules/
 modules/ssr-benchmarks/node_modules/
+/ngp-vscode-ng-language-service/dist/
+/.vscode-test/
+/.vscode-test-user-data/
+.jasmine_build/
 
 # Include when developing application packages.
 pubspec.lock
@@ -57,3 +61,6 @@ baseline.json
 
 # pnpm store
 .pnpm-store
+
+# Cargo target directory
+target/

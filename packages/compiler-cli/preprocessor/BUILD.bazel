@@ -1,0 +1,43 @@
+load("//tools:defaults.bzl", "npm_package", "ts_config", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+    deps = [
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_project(
+    name = "preprocessor",
+    srcs = glob(
+        include = [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = [
+            "src/diagnostics.ts",
+        ],
+    ),
+    tsconfig = ":tsconfig",
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/magic-string",
+        "//:node_modules/typescript",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+        "//packages/compiler-cli/private",
+    ],
+)
+
+npm_package(
+    srcs = [
+        "package.json",
+        ":preprocessor",
+    ],
+    package = "@angular/compiler-cli/preprocessor",
+)

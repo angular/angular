@@ -130,7 +130,8 @@
       "./devtools/projects/ng-devtools/src/lib/vendor/**/*",
 
       // Ignore vendored code
-      "./third_party/**/*"
+      "./third_party/**/*",
+      "./packages/compiler-cli/preprocessor/ng-analyze-wasm/**/*"
     ]
   }
 }

@@ -1,0 +1,19 @@
+{
+  "name": "vscode-ng-language-service-server",
+  "version": "0.0.1",
+  "private": true,
+  "main": "out/server.js",
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -p . -w"
+  },
+  "dependencies": {
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "vscode-languageserver": "^10.1.0",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-uri": "^3.1.0"
+  },
+  "devDependencies": {
+    "typescript": "6.0.2"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "vscode-ng-language-service-client",
+  "version": "0.0.1",
+  "private": true,
+  "main": "out/extension.js",
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -p . -w"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^10.1.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.125.0",
+    "typescript": "5.9.3"
+  }
+}

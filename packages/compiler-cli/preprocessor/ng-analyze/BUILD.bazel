@@ -1,0 +1,111 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_shared_library", "rust_test")
+load("@rules_rust_wasm_bindgen//:defs.bzl", "rust_wasm_bindgen")
+load("//tools:defaults.bzl", "copy_to_bin")
+
+package(default_visibility = ["//visibility:public"])
+
+rust_shared_library(
+    name = "ng_analyze_wasm_lib",
+    srcs = glob(
+        include = ["src/**/*.rs"],
+        exclude = ["src/main.rs"],
+    ),
+    crate_name = "ng_analyze",
+    edition = "2021",
+    proc_macro_deps = [
+        "@crates//:oxc-miette-derive",
+    ],
+    target_compatible_with = ["@platforms//cpu:wasm32"],
+    deps = [
+        "@crates//:futures",
+        "@crates//:glob",
+        "@crates//:js-sys",
+        "@crates//:json-strip-comments",
+        "@crates//:oxc_allocator",
+        "@crates//:oxc_ast",
+        "@crates//:oxc_ast_visit",
+        "@crates//:oxc_diagnostics",
+        "@crates//:oxc_parser",
+        "@crates//:oxc_resolver",
+        "@crates//:oxc_semantic",
+        "@crates//:oxc_span",
+        "@crates//:oxc_syntax",
+        "@crates//:pathdiff",
+        "@crates//:regex",
+        "@crates//:self_cell",
+        "@crates//:serde",
+        "@crates//:serde_json",
+        "@crates//:wasm-bindgen",
+    ],
+)
+
+rust_wasm_bindgen(
+    name = "ng_analyze_wasm",
+    target = "nodejs",
+    wasm_file = ":ng_analyze_wasm_lib",
+)
+
+copy_to_bin(
+    name = "package_json",
+    srcs = ["package.json"],
+)
+
+js_library(
+    name = "wasm",
+    srcs = [
+        ":ng_analyze_wasm",
+        ":package_json",
+    ],
+)
+
+rust_library(
+    name = "ng_analyze",
+    srcs = glob(
+        include = ["src/**/*.rs"],
+        exclude = ["src/main.rs"],
+    ),
+    edition = "2021",
+    proc_macro_deps = [
+        "@crates//:oxc-miette-derive",
+    ],
+    deps = [
+        "@crates//:futures",
+        "@crates//:glob",
+        "@crates//:json-strip-comments",
+        "@crates//:oxc_allocator",
+        "@crates//:oxc_ast",
+        "@crates//:oxc_ast_visit",
+        "@crates//:oxc_diagnostics",
+        "@crates//:oxc_parser",
+        "@crates//:oxc_resolver",
+        "@crates//:oxc_semantic",
+        "@crates//:oxc_span",
+        "@crates//:oxc_syntax",
+        "@crates//:pathdiff",
+        "@crates//:regex",
+        "@crates//:self_cell",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
+
+rust_binary(
+    name = "ng_analyze_bin",
+    srcs = ["src/main.rs"],
+    edition = "2021",
+    deps = [
+        ":ng_analyze",
+        "@crates//:futures",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
+
+rust_test(
+    name = "test",
+    crate = ":ng_analyze",
+    deps = [
+        "@crates//:tempfile",
+    ],
+)

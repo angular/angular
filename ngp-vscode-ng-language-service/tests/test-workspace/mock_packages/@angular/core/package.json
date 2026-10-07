@@ -1,0 +1,103 @@
+{
+  "name": "@angular/core",
+  "version": "22.3.0-next.0+sha-95e8dec",
+  "description": "Angular - the core framework",
+  "author": "angular",
+  "license": "MIT",
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
+  "exports": {
+    "./schematics/*": {
+      "default": "./schematics/*.js"
+    },
+    "./event-dispatch-contract.min.js": {
+      "default": "./event-dispatch-contract.min.js"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./types/core.d.ts",
+      "default": "./fesm2022/core.mjs"
+    },
+    "./primitives/di": {
+      "types": "./types/primitives-di.d.ts",
+      "default": "./fesm2022/primitives-di.mjs"
+    },
+    "./primitives/event-dispatch": {
+      "types": "./types/primitives-event-dispatch.d.ts",
+      "default": "./fesm2022/primitives-event-dispatch.mjs"
+    },
+    "./primitives/signals": {
+      "types": "./types/primitives-signals.d.ts",
+      "default": "./fesm2022/primitives-signals.mjs"
+    },
+    "./rxjs-interop": {
+      "types": "./types/rxjs-interop.d.ts",
+      "default": "./fesm2022/rxjs-interop.mjs"
+    },
+    "./testing": {
+      "types": "./types/testing.d.ts",
+      "default": "./fesm2022/testing.mjs"
+    }
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@mcp-b/webmcp-polyfill": "^5.0.0",
+    "@mcp-b/webmcp-types": "^5.0.0",
+    "@modelcontextprotocol/server": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@angular/compiler": "22.3.0-next.0+sha-95e8dec",
+    "rxjs": "^6.5.3 || ^7.4.0",
+    "zone.js": "~0.15.0 || ~0.16.0"
+  },
+  "peerDependenciesMeta": {
+    "@angular/compiler": {
+      "optional": true
+    },
+    "zone.js": {
+      "optional": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/core"
+  },
+  "ng-update": {
+    "migrations": "./schematics/migrations.json",
+    "packageGroup": [
+      "@angular/core",
+      "@angular/bazel",
+      "@angular/common",
+      "@angular/compiler",
+      "@angular/compiler-cli",
+      "@angular/animations",
+      "@angular/elements",
+      "@angular/platform-browser",
+      "@angular/platform-browser-dynamic",
+      "@angular/forms",
+      "@angular/platform-server",
+      "@angular/upgrade",
+      "@angular/router",
+      "@angular/language-service",
+      "@angular/localize",
+      "@angular/service-worker"
+    ]
+  },
+  "angular": {
+    "bestPractices": {
+      "format": "markdown",
+      "path": "./resources/best-practices.md"
+    }
+  },
+  "schematics": "./schematics/collection.json",
+  "sideEffects": false,
+  "module": "./fesm2022/core.mjs",
+  "typings": "./types/core.d.ts",
+  "type": "module"
+}

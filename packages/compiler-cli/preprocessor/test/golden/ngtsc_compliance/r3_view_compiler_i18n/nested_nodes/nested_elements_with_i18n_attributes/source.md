@@ -1,0 +1,59 @@
+# /tsconfig.json
+```json
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "moduleResolution": "node"
+  },
+  "files": [
+    "nested_elements_with_i18n_attributes.ts"
+  ],
+  "angularCompilerOptions": {}
+}
+```
+
+# /nested_elements_with_i18n_attributes.ts
+```ts
+import {Component, NgModule, Pipe} from '@angular/core';
+
+@Pipe({
+    name: 'uppercase',
+    standalone: false
+})
+export class UppercasePipe {
+  transform(v: any) {}
+}
+
+@Component({
+    selector: 'my-component',
+    template: `
+  <div i18n>
+  My i18n block #1 with value: {{ valueA }}
+  <span i18n-title title="Span title {{ valueB }} and {{ valueC }}">
+    Plain text in nested element (block #1)
+  </span>
+</div>
+<div i18n>
+  My i18n block #2 with value {{ valueD | uppercase }}
+  <span i18n-title title="Span title {{ valueE }}">
+    Plain text in nested element (block #2)
+  </span>
+</div>
+`,
+    standalone: false
+})
+export class MyComponent {
+  valueA!: any;
+  valueB!: any;
+  valueC!: any;
+  valueD!: any;
+  valueE!: any;
+}
+
+@NgModule({declarations: [UppercasePipe, MyComponent]})
+export class MyModule {
+}
+```

@@ -80,6 +80,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Run CI tests for framework
         run: pnpm test:ci
+      # TODO(atscott): Enable preprocessor language service tests (pnpm test:ngp:language-service).
+      # TODO(atscott): Enable preprocessor VS Code extension tests (pnpm test:ngp:vscode).
 
   integration-tests:
     runs-on: ubuntu-latest
