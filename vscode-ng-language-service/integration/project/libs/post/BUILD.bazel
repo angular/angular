@@ -6,7 +6,7 @@ package(default_visibility = ["//vscode-ng-language-service/integration:__subpac
 ng_library(
     name = "post",
     ng_config = "//vscode-ng-language-service/integration/project:ng_config",
-    node_modules = "//:node_modules",
+    node_modules = "//vscode-ng-language-service/integration/project:node_modules",
 )
 
 copy_to_bin(
