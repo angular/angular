@@ -62014,7 +62014,7 @@ var GitClient = class _GitClient {
       Log.debug(`"git push" is not able to be run in dryRun mode.`);
       throw new DryRunError();
     }
-    args = ["-c", "credential.helper=", ...args];
+    args = ["-c", "credential.helper=", "-c", "core.hooksPath=/dev/null", ...args];
     Log.debug("Executing: git", this.sanitizeConsoleOutput(args.join(" ")));
     const result = spawnSync2(this.gitBinPath, args, {
       cwd: this.baseDir,
@@ -62704,10 +62704,6 @@ var miscLabels = createTypedObject(MiscLabel)({
   RENOVATE_MANAGED: {
     name: "renovate managed",
     description: "Label noting that a pull request will automatically be managed and rebased by renovate"
-  },
-  GEMINI_TRIAGED: {
-    name: "gemini-triaged",
-    description: "Label noting that an issue has been triaged by gemini"
   }
 });
 var allLabels = {
@@ -65725,7 +65721,7 @@ content-type/dist/index.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-332UMTLR.mjs:
+@angular/ng-dev/bundles/chunk-Q55SMVIO.mjs:
   (*! Bundled license information:
   
   content-type/dist/index.js:
