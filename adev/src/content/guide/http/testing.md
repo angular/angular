@@ -186,6 +186,11 @@ The `HttpTestingController` can retrieve the request instance that can then be i
 
 ```ts
 const service = TestBed.inject(AuthService);
+const http = TestBed.inject(HttpClient);
+
+// Make an HTTP request.
+const response = firstValueFrom(http.get('/api/config'));
+
 const req = httpTesting.expectOne('/api/config');
 
 expect(req.request.headers.get('X-Authentication-Token')).toEqual(service.getAuthToken());
