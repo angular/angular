@@ -157,7 +157,7 @@ Use the `ngAccordionContent` directive on an `ng-template` to defer rendering co
 </div>
 ```
 
-By default, content remains in the DOM after the panel collapses. Set `[preserveContent]="false"` to remove the content from the DOM when the panel closes.
+By default, content is removed from the DOM when the panel collapses. Set `[preserveContent]="true"` to keep the content in the DOM when the panel closes.
 
 ## Testing
 

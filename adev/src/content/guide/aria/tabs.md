@@ -190,7 +190,7 @@ Use the `ngTabContent` directive on an `ng-template` to defer rendering tab pane
 </div>
 ```
 
-By default, content remains in the DOM after the panel is hidden. Set `[preserveContent]="false"` to remove content when the panel is deactivated.
+By default, content is removed from the DOM when the panel is hidden. Set `[preserveContent]="true"` to keep the content in the DOM when the panel is deactivated.
 
 ### Disabled tabs
 
