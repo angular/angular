@@ -12,8 +12,8 @@ IMPORTANT: We recommend using your local environment for this step of the tutori
 
 ## What you'll learn
 
-- Your app has a form into which users can enter data that is sent to your app's service.
-- The service writes the data from the form to the browser's console log.
+- Your app will have a form into which users can enter data that is sent to your app's service.
+- The service will write the data from the form to the browser's console log.
 
 <docs-workflow>
 
