@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {HousingLocation} from '../housing-location/housing-location';
 import {HousingLocationInfo} from '../housinglocation';
-import {HousingService} from '../housing.service';
+import {HousingService} from '../housing-service';
 
 @Component({
   selector: 'app-home',

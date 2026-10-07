@@ -150,19 +150,19 @@ If you have any trouble with your configuration, you can find more details in th
 <docs-step title="Update service to use web server instead of local array">
 The data source has been configured, the next step is to update your web app to connect to it use the data.
 
-1.  In `src/app/housing.service.ts`, make the following changes:
+1.  In `src/app/housing-service.ts`, make the following changes:
 
 1.  Update the code to remove `housingLocationList` property and the array containing the data, as well as the `baseUrl` property.
 
 1.  Add a string property called `url` and set its value to `'http://localhost:3000/locations'`
 
-    <docs-code header="Add url property to housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[6]"/>
+    <docs-code header="Add url property to housing-service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing-service.ts" visibleLines="[6]"/>
 
     This code will result in errors in the rest of the file because it depends on the `housingLocationList` property. We're going to update the service methods next.
 
 1.  Update the `getAllHousingLocations` function to make a call to the web server you configured.
 
-     <docs-code header="Update the getAllHousingLocations method in housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[8,11]"/>
+     <docs-code header="Update the getAllHousingLocations method in housing-service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing-service.ts" visibleLines="[8,11]"/>
 
     The code now uses asynchronous code to make a **GET** request over HTTP.
 
@@ -172,11 +172,11 @@ The data source has been configured, the next step is to update your web app to 
 
     HELPFUL: Notice the `fetch` URL now appends the `id` as a path segment (`${this.url}/${id}`) to request the location with a matching `id` property value.
 
-     <docs-code header="Update the getHousingLocationById method in housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[13,17]"/>
+     <docs-code header="Update the getHousingLocationById method in housing-service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing-service.ts" visibleLines="[13,17]"/>
 
 1.  Once all the updates are complete, your updated service should match the following code.
 
-     <docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,25]" />
+     <docs-code header="Final version of housing-service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing-service.ts" visibleLines="[1,25]" />
 
 </docs-step>
 
