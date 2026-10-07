@@ -390,8 +390,7 @@ function walkProviderTreeToDiscoverImportPaths(
         let containerDef = getInjectorDef(container);
         if (!containerDef) {
           const ngModule: Type<unknown> | undefined = (container as any).ngModule as
-            | Type<unknown>
-            | undefined;
+            Type<unknown> | undefined;
           containerDef = getInjectorDef(ngModule);
         }
 
@@ -683,7 +682,24 @@ function getModuleInjectorOfNodeInjector(injector: NodeInjector): Injector {
   }
 
   const inj = lView[INJECTOR] as R3Injector | ChainedInjector;
-  const moduleInjector = inj instanceof ChainedInjector ? inj.parentInjector : inj.parent;
+  let moduleInjector: Injector | null =
+    inj instanceof ChainedInjector ? inj.parentInjector : inj.parent;
+
+  // Walk up the parent chain to find a non-NodeInjector. This handles cases
+  // where the lView's injector has a NodeInjector parent (e.g. when a custom
+  // element is created with a NodeInjector via @angular/elements). Without this
+  // guard, getInjectorResolutionPathHelper would infinitely recurse between the
+  // custom element's NodeInjector and the host app's NodeInjector.
+  while (moduleInjector instanceof NodeInjector) {
+    const parentLView = getNodeInjectorLView(moduleInjector);
+    const parentInj = parentLView[INJECTOR] as R3Injector | ChainedInjector | null;
+    if (parentInj == null) {
+      moduleInjector = null;
+      break;
+    }
+    moduleInjector = parentInj instanceof ChainedInjector ? parentInj.parentInjector : parentInj;
+  }
+
   if (!moduleInjector) {
     throwError('NodeInjector must have some connection to the module injector tree');
   }
