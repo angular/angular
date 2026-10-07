@@ -7,9 +7,9 @@
  */
 
 import {
-  generateIndexerAnalysis,
-  IndexedComponent,
-  IndexingContext,
+  producedIndexerAnalysis,
+  IndexComponent,
+  IndexContext,
   LEGACY_OPTIONAL_CHAINING_DEFAULT,
   NodeAdapter,
   TypeCheckingConfig,
