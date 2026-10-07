@@ -43,7 +43,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
       </section>
     </article>
   `,
-  styleUrls: ['./details.css'],
+  styleUrl: './details.css',
 })
 export class Details {
   private readonly changeDetectorRef = inject(ChangeDetectorRef);

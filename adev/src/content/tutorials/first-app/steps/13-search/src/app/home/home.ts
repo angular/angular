@@ -19,7 +19,7 @@ import {HousingService} from '../housing.service';
       }
     </section>
   `,
-  styleUrls: ['./home.css'],
+  styleUrl: './home.css',
 })
 export class Home {
   housingLocationList: HousingLocationInfo[] = [];
