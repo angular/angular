@@ -1,6 +1,6 @@
 # WebMCP
 
-Web Model Context Protocol (WebMCP) is an [emerging web standard](https://github.com/webmachinelearning/webmcp/) that allows web applications to expose structured tools directly to AI agents running natively in the browser. Tools defined by an application allow AI assistants to interact with it directly, providing additional capabilities to the agent and reducing the need for DOM interactions.
+WebMCP is a [proposed web standard](https://github.com/webmachinelearning/webmcp/) that allows web applications to expose structured tools directly to AI agents running natively in the browser. Tools defined by an application allow AI assistants to interact with it directly, providing additional capabilities to the agent and reducing the need for DOM interactions.
 
 For example, an application to register a new user might provide a WebMCP tool for a browser's AI agent to create the user directly rather than requiring the agent to go through a complex wizard UI via DOM interactions.
 
