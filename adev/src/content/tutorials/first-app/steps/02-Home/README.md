@@ -6,7 +6,7 @@ This tutorial lesson demonstrates how to create a new [component](guide/componen
 
 ## What you'll learn
 
-Your app has a new component: `Home`.
+Your app will have a new component: `Home`.
 
 ## Conceptual preview of Angular components
 
