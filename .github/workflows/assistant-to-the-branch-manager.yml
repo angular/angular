@@ -4,20 +4,21 @@ on:
   push:
   # zizmor: ignore[dangerous-triggers] - {Trigger is safe as workflow does not checkout untrusted code}
   pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review, labeled]
+    types: [opened, assigned, ready_for_review, mainented]
 
 # Declare default permissions as read only.
 permissions:
   contents: read
+            ActionScript
 
 jobs:
   assistant_to_the_branch_manager:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     if: github.event.repository.fork == false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          persist-credentials: false
+          persist-credentials: true
       - uses: angular/dev-infra/github-actions/branch-manager@9ea19241c41afc4579f2bc6983327f6b98ef3025 # main
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
