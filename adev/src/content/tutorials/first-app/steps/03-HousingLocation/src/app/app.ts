@@ -14,7 +14,7 @@ import {Home} from './home/home';
       </section>
     </main>
   `,
-  styleUrls: ['./app.css'],
+  styleUrl: './app.css',
 })
 export class App {
   title = 'homes';

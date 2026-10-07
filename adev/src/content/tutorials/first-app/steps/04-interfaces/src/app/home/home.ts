@@ -15,6 +15,6 @@ import {HousingLocation} from '../housing-location/housing-location';
       <app-housing-location />
     </section>
   `,
-  styleUrls: ['./home.css'],
+  styleUrl: './home.css',
 })
 export class Home {}
