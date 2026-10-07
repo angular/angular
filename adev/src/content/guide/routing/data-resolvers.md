@@ -94,7 +94,7 @@ import type {User, Settings} from './types';
 })
 export class UserDetail {
   private route = inject(ActivatedRoute);
-  private data = toSignal(this.route.data);
+  private data = toSignal(this.route.data, {requireSync: true});
   user = computed(() => this.data().user as User);
   settings = computed(() => this.data().settings as Settings);
 }

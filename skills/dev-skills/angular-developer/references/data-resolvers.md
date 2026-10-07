@@ -34,7 +34,7 @@ Add the resolver under the `resolve` key.
 
 ```ts
 private readonly route = inject(ActivatedRoute);
-protected readonly data = toSignal(this.route.data);
+protected readonly data = toSignal(this.route.data, {requireSync: true});
 protected readonly user = computed(() => this.data().user);
 ```
 
