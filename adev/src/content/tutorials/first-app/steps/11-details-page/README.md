@@ -96,9 +96,6 @@ To access the data you will add a call to the `HousingService`.
 
    and save your changes
 
-1. In `Details` use the just created `details.css` file as the source for the styles:
-   <docs-code language="angular-ts" header="Update details.ts to use the created css file" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[30]"/>
-
 1. In the browser refresh the page and confirm that when you click on the "Learn More" link for a given housing location the details page displays the correct information based on the data for that selected item.
 
 <img alt="Details page listing home info" src="assets/images/tutorials/first-app/homes-app-lesson-11-step-3.png">

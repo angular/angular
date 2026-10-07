@@ -20,7 +20,7 @@ When you create your `Home`, you use these properties:
 - `selector`: to describe how Angular refers to the component in templates.
 - `imports`: to describe the component's dependencies.
 - `template`: to describe the component's HTML markup and layout.
-- `styleUrls`: to list the URLs of the CSS files that the component uses in an array.
+- `styleUrl`: to specify the URL of the CSS file that the component uses.
 
 <docs-pill-row>
   <docs-pill href="api/core/Component" title="Learn more about Components"/>
