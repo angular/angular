@@ -7,7 +7,7 @@
  */
 
 import {HostTree} from '@angular-devkit/schematics';
-import {UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
+import {UnitTestTree} from '@angular-devkit/schematics/testing';
 import {migrate} from './index';
 
 function parseConfig(tree: UnitTestTree, path: string) {
