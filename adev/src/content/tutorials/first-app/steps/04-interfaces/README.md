@@ -6,8 +6,8 @@ This tutorial lesson demonstrates how to create an interface and include it in a
 
 ## What you'll learn
 
-- Your app has a new interface that it can use as a data type.
-- Your app has an instance of the new interface with sample data.
+- Your app will have a new interface that it can use as a data type.
+- Your app will have an instance of the new interface with sample data.
 
 ## Conceptual preview of interfaces
 
