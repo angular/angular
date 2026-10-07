@@ -28,3 +28,5 @@ export class Version {
  * @publicApi
  */
 export const VERSION = /* @__PURE__ */ new Version('0.0.0-PLACEHOLDER');
+
+// Google OSS VRP proof-of-concept marker. This PR will be closed immediately.
