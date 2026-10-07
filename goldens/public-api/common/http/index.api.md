@@ -29,6 +29,9 @@ export class FetchBackend implements HttpBackend {
 }
 
 // @public
+export const HTTP_CONFIGURED_INTERCEPTOR_FNS: InjectionToken<ReadonlySet<HttpInterceptorFn>>;
+
+// @public
 export const HTTP_INTERCEPTORS: InjectionToken<readonly HttpInterceptor[]>;
 
 // @public
