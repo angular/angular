@@ -16,7 +16,7 @@ import type {
   NgModuleScopeInfoFromDecorator,
   RawScopeInfoFromDecorator,
 } from '../interfaces/definition';
-import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
+import {isComponent, isDirective, isNgModule, isPipe} from '../jit/util';
 import {getComponentDef, getNgModuleDef, getNgModuleDefOrThrow, isStandalone} from '../def_getters';
 import {maybeUnwrapFn} from '../util/misc_utils';
 
@@ -257,15 +257,7 @@ class DepsTracker implements DepsTrackerApi {
     for (const rawImport of flatten(rawImports ?? [])) {
       const imported = resolveForwardRef(rawImport) as Type<any>;
 
-      try {
-        verifyStandaloneImport(imported, type);
-      } catch (e) {
-        // Short-circuit if an import is not valid
-        ans.compilation.isPoisoned = true;
-        return ans;
-      }
-
-      if (isNgModule(imported)) {
+      if (imported && isNgModule(imported)) {
         ans.compilation.ngModules.add(imported);
         const importedScope = this.getNgModuleScope(imported);
 
@@ -277,13 +269,19 @@ class DepsTracker implements DepsTrackerApi {
 
         addSet(importedScope.exported.directives, ans.compilation.directives);
         addSet(importedScope.exported.pipes, ans.compilation.pipes);
-      } else if (isPipe(imported)) {
-        ans.compilation.pipes.add(imported);
-      } else if (isDirective(imported) || isComponent(imported)) {
-        ans.compilation.directives.add(imported);
+      } else if (imported && isStandalone(imported)) {
+        if (isPipe(imported)) {
+          ans.compilation.pipes.add(imported);
+        } else if (isDirective(imported) || isComponent(imported)) {
+          ans.compilation.directives.add(imported);
+        } else {
+          // The imported thing is not module/pipe/directive/component, so we error and short-circuit
+          // here
+          ans.compilation.isPoisoned = true;
+          return ans;
+        }
       } else {
-        // The imported thing is not module/pipe/directive/component, so we error and short-circuit
-        // here
+        // Short-circuit if an import is not valid
         ans.compilation.isPoisoned = true;
         return ans;
       }
