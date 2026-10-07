@@ -25,6 +25,7 @@ export abstract class NgElement extends HTMLElement {
 // @public
 export interface NgElementConfig {
     injector: Injector;
+    reflectProperties?: boolean;
     strategyFactory?: NgElementStrategyFactory;
 }
 
