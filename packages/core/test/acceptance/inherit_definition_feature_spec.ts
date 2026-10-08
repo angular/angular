@@ -750,7 +750,6 @@ describe('inheritance', () => {
       // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
       it('should inherit inputs', () => {
-        // TODO: Investigate why making this test standalone is breaking it.
         class SuperDirective {
           @Input() foo = '';
 
@@ -761,7 +760,6 @@ describe('inheritance', () => {
 
         @Directive({
           selector: '[sub-dir]',
-          standalone: false,
         })
         class SubDirective extends SuperDirective {
           @Input() override baz = '';
@@ -771,7 +769,7 @@ describe('inheritance', () => {
 
         @Component({
           template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`,
-          standalone: false,
+          imports: [SubDirective],
         })
         class App {
           a = 'a';
@@ -780,9 +778,6 @@ describe('inheritance', () => {
           d = 'd';
         }
 
-        TestBed.configureTestingModule({
-          declarations: [App, SubDirective],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
 
@@ -1868,10 +1863,8 @@ describe('inheritance', () => {
       // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
       it('should inherit inputs', () => {
-        // TODO: Investigate why making this test standalone is breaking it.
         @Directive({
           selector: '[super-dir]',
-          standalone: false,
         })
         class SuperSuperDirective {
           @Input() foo = '';
@@ -1885,7 +1878,6 @@ describe('inheritance', () => {
 
         @Directive({
           selector: '[sub-dir]',
-          standalone: false,
         })
         class SubDirective extends SuperDirective {
           @Input() override baz = '';
@@ -1894,9 +1886,8 @@ describe('inheritance', () => {
         }
 
         @Component({
-          selector: 'my-app',
           template: `<p sub-dir [foo]="a" [bar]="b" [baz]="c" [qux]="d"></p>`,
-          standalone: false,
+          imports: [SubDirective],
         })
         class App {
           a = 'a';
@@ -1905,9 +1896,6 @@ describe('inheritance', () => {
           d = 'd';
         }
 
-        TestBed.configureTestingModule({
-          declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
 
@@ -1929,10 +1917,8 @@ describe('inheritance', () => {
       // TODO: add test where super has an @Input() on the property, and sub does not
 
       it('should inherit outputs', () => {
-        // TODO: Investigate why making this test standalone is breaking it.
         @Directive({
           selector: '[super-dir]',
-          standalone: false,
         })
         class SuperSuperDirective {
           @Output() foo = new EventEmitter<string>();
@@ -1944,7 +1930,6 @@ describe('inheritance', () => {
 
         @Directive({
           selector: '[sub-dir]',
-          standalone: false,
         })
         class SubDirective extends SuperDirective {
           ngOnInit() {
@@ -1955,7 +1940,7 @@ describe('inheritance', () => {
 
         @Component({
           template: ` <div sub-dir (foo)="handleFoo($event)" (bar)="handleBar($event)"></div> `,
-          standalone: false,
+          imports: [SubDirective],
         })
         class App {
           foo = '';
@@ -1971,9 +1956,6 @@ describe('inheritance', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         const app = fixture.componentInstance;
@@ -1987,10 +1969,8 @@ describe('inheritance', () => {
       // TODO: sub and super HostBinding same property but different bindings
       // TODO: sub and super HostBinding same binding on two different properties
       it('should compose host bindings for styles', () => {
-        // TODO: Investigate why this is broken when standalone
         @Directive({
           selector: '[super-dir]',
-          standalone: false,
         })
         class SuperSuperDirective {
           @HostBinding('style.color') color = 'red';
@@ -2002,19 +1982,15 @@ describe('inheritance', () => {
 
         @Directive({
           selector: '[sub-dir]',
-          standalone: false,
         })
         class SubDirective extends SuperDirective {}
 
         @Component({
           template: ` <p sub-dir>test</p> `,
-          standalone: false,
+          imports: [SubDirective],
         })
         class App {}
 
-        TestBed.configureTestingModule({
-          declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         const queryResult = fixture.debugElement.query(By.directive(SubDirective));
@@ -2029,10 +2005,8 @@ describe('inheritance', () => {
       // TODO: sub and super HostBinding same property but different bindings
       // TODO: sub and super HostBinding same binding on two different properties
       it('should compose host bindings (non-style related)', () => {
-        // TODO: Investigate why this is broken when standalone
         @Directive({
           selector: '[super-dir]',
-          standalone: false,
         })
         class SuperSuperDirective {
           @HostBinding('title')
@@ -2054,18 +2028,14 @@ describe('inheritance', () => {
 
         @Directive({
           selector: '[sub-dir]',
-          standalone: false,
         })
         class SubDirective extends SuperDirective {}
         @Component({
           template: ` <p sub-dir superTitle="test1" superAccessKey="test2">test</p> `,
-          standalone: false,
+          imports: [SubDirective],
         })
         class App {}
 
-        TestBed.configureTestingModule({
-          declarations: [App, SubDirective, SuperDirective, SuperSuperDirective],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         const p: HTMLParagraphElement = fixture.debugElement.query(
@@ -2078,25 +2048,21 @@ describe('inheritance', () => {
     });
 
     it('should inherit ContentChildren queries', () => {
-      // TODO: Investigate why this is broken when standalone
       let foundChildDir1s: QueryList<ChildDir1>;
       let foundChildDir2s: QueryList<ChildDir2>;
 
       @Directive({
         selector: '[child-dir-one]',
-        standalone: false,
       })
       class ChildDir1 {}
 
       @Directive({
         selector: '[child-dir-two]',
-        standalone: false,
       })
       class ChildDir2 {}
 
       @Directive({
         selector: '[super-dir]',
-        standalone: false,
       })
       class SuperSuperDirective {
         @ContentChildren(ChildDir1) childDir1s!: QueryList<ChildDir1>;
@@ -2108,7 +2074,6 @@ describe('inheritance', () => {
 
       @Directive({
         selector: '[sub-dir]',
-        standalone: false,
       })
       class SubDirective extends SuperDirective {
         ngAfterViewInit() {
@@ -2125,13 +2090,10 @@ describe('inheritance', () => {
             <li child-dir-two>three</li>
           </ul>
         `,
-        standalone: false,
+        imports: [ChildDir1, ChildDir2, SubDirective],
       })
       class App {}
 
-      TestBed.configureTestingModule({
-        declarations: [App, SubDirective, ChildDir1, SuperDirective],
-      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -3598,10 +3560,8 @@ describe('inheritance', () => {
       // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
       it('should inherit inputs', () => {
-        // TODO: Investigate why this is broken when standalone
         @Directive({
           selector: '[super-dir]',
-          standalone: false,
         })
         class SuperDirective {
           @Input() foo = '';
@@ -3616,7 +3576,6 @@ describe('inheritance', () => {
         @Component({
           selector: 'my-comp',
           template: `<p>test</p>`,
-          standalone: false,
         })
         class MyComponent extends BareClass {
           @Input() override baz = '';
@@ -3626,7 +3585,7 @@ describe('inheritance', () => {
 
         @Component({
           template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`,
-          standalone: false,
+          imports: [MyComponent],
         })
         class App {
           a = 'a';
@@ -3635,9 +3594,6 @@ describe('inheritance', () => {
           d = 'd';
         }
 
-        TestBed.configureTestingModule({
-          declarations: [App, MyComponent, BareClass, SuperDirective],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
 
@@ -3741,10 +3697,8 @@ describe('inheritance', () => {
       // TODO: sub and super HostBinding same property but different bindings
       // TODO: sub and super HostBinding same binding on two different properties
       it('should compose host bindings (non-style related)', () => {
-        // TODO: Investigate why this is broken when standalone
         @Directive({
           selector: '[super-dir]',
-          standalone: false,
         })
         class SuperDirective {
           @HostBinding('title')
@@ -3767,18 +3721,14 @@ describe('inheritance', () => {
         @Component({
           selector: 'my-comp',
           template: `<p>test</p>`,
-          standalone: false,
         })
         class MyComponent extends BareClass {}
         @Component({
           template: ` <my-comp superTitle="test1" superAccessKey="test2">test</my-comp> `,
-          standalone: false,
+          imports: [MyComponent],
         })
         class App {}
 
-        TestBed.configureTestingModule({
-          declarations: [App, SuperDirective, BareClass, MyComponent],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         const queryResult = fixture.debugElement.query(By.directive(MyComponent));
@@ -4981,11 +4931,9 @@ describe('inheritance', () => {
       // TODO: add test where super has an @Input('alias') on the property and sub has no alias
 
       it('should inherit inputs', () => {
-        // TODO: Investigate why this is broken when standalone
         @Component({
           selector: 'super-comp',
           template: `<p>super</p>`,
-          standalone: false,
         })
         class SuperSuperComponent {
           @Input() foo = '';
@@ -5000,7 +4948,6 @@ describe('inheritance', () => {
         @Component({
           selector: 'my-comp',
           template: `<p>test</p>`,
-          standalone: false,
         })
         class MyComponent extends BareClass {
           @Input() override baz = '';
@@ -5010,7 +4957,7 @@ describe('inheritance', () => {
 
         @Component({
           template: `<my-comp [foo]="a" [bar]="b" [baz]="c" [qux]="d"></my-comp>`,
-          standalone: false,
+          imports: [MyComponent],
         })
         class App {
           a = 'a';
@@ -5019,9 +4966,6 @@ describe('inheritance', () => {
           d = 'd';
         }
 
-        TestBed.configureTestingModule({
-          declarations: [App, MyComponent, SuperSuperComponent, BareClass],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
 
@@ -5043,11 +4987,9 @@ describe('inheritance', () => {
       // TODO: add test where super has an @Input() on the property, and sub does not
 
       it('should inherit outputs', () => {
-        // TODO: Investigate why making this test standalone is breaking it.
         @Component({
           selector: 'super-comp',
           template: `<p>super</p>`,
-          standalone: false,
         })
         class SuperSuperComponent {
           @Output() foo = new EventEmitter<string>();
@@ -5060,7 +5002,6 @@ describe('inheritance', () => {
         @Component({
           selector: 'my-comp',
           template: `<p>test</p>`,
-          standalone: false,
         })
         class MyComponent extends SuperComponent {
           ngOnInit() {
@@ -5071,7 +5012,7 @@ describe('inheritance', () => {
 
         @Component({
           template: ` <my-comp (foo)="handleFoo($event)" (bar)="handleBar($event)"></my-comp> `,
-          standalone: false,
+          imports: [MyComponent],
         })
         class App {
           foo = '';
@@ -5087,9 +5028,6 @@ describe('inheritance', () => {
           }
         }
 
-        TestBed.configureTestingModule({
-          declarations: [App, MyComponent, SuperComponent, SuperSuperComponent],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         const app = fixture.componentInstance;
@@ -5118,11 +5056,9 @@ describe('inheritance', () => {
           opacityExp = 'opacity';
         }
 
-        @Component({
-          selector: 'intermediate-comp',
-          template: '...',
-        })
-        class IntermediateComponent extends SuperComponent {}
+        class IntermediateComponent extends SuperComponent {
+          @Input() bar = '';
+        }
 
         @Component({
           selector: 'my-comp',
@@ -5160,16 +5096,54 @@ describe('inheritance', () => {
         expect(queryResult.nativeElement.style.opacity).toBe('0.5');
         expect(queryResult.nativeElement.style.backgroundColor).toBe('green');
       });
+
+      it('should inherit animations when intermediate class is an abstract directive', () => {
+        @Component({
+          selector: 'super-comp',
+          template: '...',
+          animations: [trigger('animation1', [state('color', style({color: 'red'}))])],
+        })
+        class SuperComponent {}
+
+        @Directive()
+        class IntermediateDirective extends SuperComponent {
+          @Input() bar = '';
+        }
+
+        @Component({
+          selector: 'my-comp',
+          template: '<div>my-comp</div>',
+          host: {
+            '[@animation1]': 'colorExp',
+          },
+        })
+        class MyComponent extends IntermediateDirective {
+          colorExp = 'color';
+        }
+
+        @Component({
+          template: '<my-comp>app</my-comp>',
+          imports: [MyComponent],
+        })
+        class App {}
+
+        TestBed.configureTestingModule({
+          imports: [NoopAnimationsModule],
+        });
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+        const queryResult = fixture.debugElement.query(By.css('my-comp'));
+
+        expect(queryResult.nativeElement.style.color).toBe('red');
+      });
     });
     describe('host bindings (style related)', () => {
       // TODO: sub and super HostBinding same property but different bindings
       // TODO: sub and super HostBinding same binding on two different properties
       it('should compose host bindings for styles', () => {
-        // TODO: Investigate why this is broken when standalone
         @Component({
           selector: 'super-comp',
           template: `<p>super</p>`,
-          standalone: false,
         })
         class SuperSuperComponent {
           @HostBinding('style.color') color = 'red';
@@ -5182,19 +5156,15 @@ describe('inheritance', () => {
         @Component({
           selector: 'my-comp',
           template: `<p>test</p>`,
-          standalone: false,
         })
         class MyComponent extends SuperComponent {}
 
         @Component({
           template: ` <my-comp>test</my-comp> `,
-          standalone: false,
+          imports: [MyComponent],
         })
         class App {}
 
-        TestBed.configureTestingModule({
-          declarations: [App, MyComponent, SuperComponent, SuperSuperComponent],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         const queryResult = fixture.debugElement.query(By.directive(MyComponent));
@@ -5209,11 +5179,9 @@ describe('inheritance', () => {
       // TODO: sub and super HostBinding same property but different bindings
       // TODO: sub and super HostBinding same binding on two different properties
       it('should compose host bindings (non-style related)', () => {
-        // TODO: Investigate why this is broken when standalone
         @Component({
           selector: 'super-comp',
           template: `<p>super</p>`,
-          standalone: false,
         })
         class SuperSuperComponent {
           @HostBinding('title')
@@ -5236,18 +5204,14 @@ describe('inheritance', () => {
         @Component({
           selector: 'my-comp',
           template: `<p>test</p>`,
-          standalone: false,
         })
         class MyComponent extends SuperComponent {}
         @Component({
           template: ` <my-comp superTitle="test1" superAccessKey="test2">test</my-comp> `,
-          standalone: false,
+          imports: [MyComponent],
         })
         class App {}
 
-        TestBed.configureTestingModule({
-          declarations: [App, MyComponent, SuperComponent, SuperSuperComponent],
-        });
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
         const queryResult = fixture.debugElement.query(By.directive(MyComponent));
