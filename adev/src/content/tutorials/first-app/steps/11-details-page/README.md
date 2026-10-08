@@ -107,7 +107,7 @@ In a previous lesson you updated the `App` template to include a `routerLink`. A
 
 1.  Confirm that your code matches the following:
 
-      <docs-code language="angular-ts" header="Confirm the routerLink in app.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[8,19]"/>
+      <docs-code language="angular-ts" header="Confirm the routerLink in app.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[7,18]"/>
 
     Your code should already be up-to-date but confirm to be sure.
 
