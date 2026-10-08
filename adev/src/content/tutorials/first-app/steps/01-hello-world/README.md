@@ -96,7 +96,7 @@ In your IDE:
 1. Next, open `first-app/src/app/app.ts`.
 1. In `app.ts`, in the `@Component` definition, replace the `template` line with this code to change the text in the app component.
 
-   <docs-code language="angular-ts" header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[6,8]"/>
+   <docs-code language="angular-ts" header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[6]"/>
 
 1. In `app.ts`, in the `App` class definition, replace the `title` line with this code to change the component title.
 
