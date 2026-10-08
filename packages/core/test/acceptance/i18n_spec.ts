@@ -1813,7 +1813,6 @@ describe('runtime i18n', () => {
           }</div>
         `,
         standalone: false,
-      
         changeDetection: ChangeDetectionStrategy.Eager,})
       class AppComponent {
         type = 'A';
@@ -1866,7 +1865,7 @@ describe('runtime i18n', () => {
           <div i18n="@@idA">{count$ | async, select, 1 {{{count$ | async}} item} 2 {two items}}</div>
         `,
         standalone: false,
-      
+
         changeDetection: ChangeDetectionStrategy.Eager,})
       class AppComponent {
         count$ = new BehaviorSubject<number>(1);
@@ -3312,7 +3311,6 @@ describe('runtime i18n', () => {
             <div i18n>before|<div myDir>inside</div>|after</div>
           `,
         standalone: false,
-      
         changeDetection: ChangeDetectionStrategy.Eager,})
       class MyApp {}
 
@@ -3397,7 +3395,6 @@ describe('runtime i18n', () => {
       <div i18n [title]="null | async"><div>A</div></div>
       <div i18n>{{(null | async)||'B'}}<div></div></div>`,
       standalone: false,
-    
       changeDetection: ChangeDetectionStrategy.Eager,})
     class MyApp {}
 
@@ -3419,7 +3416,6 @@ describe('runtime i18n', () => {
           </middle>
         </parent>`,
       standalone: false,
-    
       changeDetection: ChangeDetectionStrategy.Eager,})
     class MyApp {}
 
@@ -3773,6 +3769,25 @@ describe('runtime i18n', () => {
         );
         const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
         expect(input.getAttribute('formaction')).toMatch(/^unsafe:/);
+      });
+
+      it('should not be vulnerable to DOM clobbering of nodeName/tagName in ICU expressions', () => {
+        loadTranslations({
+          [computeMsgId('{VAR_PLURAL, plural, other {other}}')]:
+            '{VAR_PLURAL, plural, other {<input name=nodeName form=x><input name=tagName form=x>hello<form id=x></form>}}',
+        });
+        const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural, other {other}}</div>`);
+        expect(fixture.nativeElement.textContent).toBe('hello');
+      });
+
+      it('should not enter an infinite loop when nextSibling or firstChild is clobbered in ICU expressions', () => {
+        loadTranslations({
+          [computeMsgId('{VAR_PLURAL, plural, other {other}}')]:
+            '{VAR_PLURAL, plural, other {<input name=nextSibling form=x>hello<form id=x></form>}}',
+        });
+        expect(() => {
+          initWithTemplate(AppComp, `<div i18n>{count, plural, other {other}}</div>`);
+        }).toThrowError(/Action failed because the element is clobbered/);
       });
     }
   });
