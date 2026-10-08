@@ -17,8 +17,10 @@ import {
   addToAnimationQueue,
   removeAnimationsFromQueue,
   removeFromAnimationQueue,
+  AnimationQueue,
+  ANIMATION_QUEUE,
 } from '../animation/queue';
-import {Injector, INJECTOR} from '../di';
+import {Injector} from '../di';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {TNode, TNodeType} from './interfaces/node';
 import {RElement} from './interfaces/renderer_dom';
@@ -132,12 +134,14 @@ function runLeaveAnimationsWithCallbackImpl(
   injector: Injector,
   callback: Function,
 ) {
+  let animationQueue: AnimationQueue;
+
   // It's possible that the AppRef has been destroyed, which would also destroy
   // the injector tree. If this happens, we will get an error when we try to
   // get the injector, so we catch it here and avoid the error and return
   // safely.
   try {
-    injector.get(INJECTOR);
+    animationQueue = injector.get(ANIMATION_QUEUE);
   } catch {
     return callback(false);
   }
@@ -146,7 +150,7 @@ function runLeaveAnimationsWithCallbackImpl(
 
   // regarding the TNode index to see if it is the same element.
   if (animations?.enter?.has(tNode.index)) {
-    removeAnimationsFromQueue(injector, animations.enter.get(tNode.index)!.animateFns);
+    removeAnimationsFromQueue(animationQueue, animations.enter.get(tNode.index)!.animateFns);
   }
 
   // get all nodes in the current view that are descendants of tNode and have leave animations
@@ -163,6 +167,7 @@ function runLeaveAnimationsWithCallbackImpl(
   if (lView) allLeavingAnimations.add(lView[ID]);
 
   addToAnimationQueue(
+    animationQueue,
     injector,
     () => executeLeaveAnimations(lView, tNode, animations, nodesWithExitAnimations, callback),
     animations,
