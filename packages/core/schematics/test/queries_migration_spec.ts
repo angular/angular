@@ -71,6 +71,41 @@ describe('signal queries migration', () => {
     expect(content).toContain("readonly ref = contentChild.required<ElementRef>('ref');");
   });
 
+  it('should migrate a query once when its file is part of multiple tsconfigs', async () => {
+    writeFile('/tsconfig.spec.json', '{}');
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {
+          t: {
+            root: '',
+            architect: {
+              build: {options: {tsConfig: './tsconfig.json'}},
+              test: {options: {tsConfig: './tsconfig.spec.json'}},
+            },
+          },
+        },
+      }),
+    );
+    writeFile(
+      '/index.ts',
+      `
+      import {ContentChild, ElementRef, Directive} from '@angular/core';
+
+      @Directive({})
+      export class SomeDirective {
+        @ContentChild('ref') ref!: ElementRef;
+      }`,
+    );
+
+    await runMigration();
+
+    const content = tree.readContent('/index.ts');
+    expect(content.match(/contentChild\.required/g)?.length).toBe(1);
+    expect(content.match(/from '@angular\/core'/g)?.length).toBe(1);
+  });
+
   it('should report correct statistics', async () => {
     writeFile(`node_modules/@tsconfig/strictest/tsconfig.json`, `{}`);
     writeFile(
