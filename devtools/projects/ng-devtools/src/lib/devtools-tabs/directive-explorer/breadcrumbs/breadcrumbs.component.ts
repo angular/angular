@@ -8,8 +8,8 @@
 
 import {afterRenderEffect, Component, input, output, untracked, viewChild} from '@angular/core';
 
-import {FlatNode} from '../component-data-source';
-import {HorizontalScrollerComponent} from '../../../../shared/horizontal-scroller/horizontal-scroller.component';
+import {FlatNode} from '../directive-forest/component-data-source';
+import {HorizontalScrollerComponent} from '../../../shared/horizontal-scroller/horizontal-scroller.component';
 
 @Component({
   selector: 'ng-breadcrumbs',
