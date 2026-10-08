@@ -109,7 +109,7 @@ export function setTNodeInsertBeforeIndex(tNode: TNode, index: number) {
       index,
     ];
   } else {
-    assertEqual(Array.isArray(insertBeforeIndex), true, 'Expecting array here');
+    ngDevMode && assertEqual(Array.isArray(insertBeforeIndex), true, 'Expecting array here');
     (insertBeforeIndex as number[]).push(index);
   }
 }
