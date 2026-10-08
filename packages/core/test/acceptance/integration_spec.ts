@@ -3928,6 +3928,32 @@ describe('acceptance integration tests', () => {
       expect(fixture.nativeElement.textContent).toContain('Result: 1013');
     });
 
+    it('should not leak the parameters of a nested arrow function into the scope of its parent', () => {
+      @Component({
+        template: `
+          Result: {{ ((x) => twice((y) => y * 2) + y)(1) }} /
+          {{ ((x) => twice((y) => y) + twice((z) => y))(1) }}
+        `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class App {
+        y = 100;
+
+        twice(fn: (value: number) => number) {
+          return fn(1) * 2;
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: 104 / 202');
+
+      fixture.componentInstance.y = 5;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: 9 / 12');
+    });
+
     it('should support an arrow function using safe accesses', () => {
       @Component({
         template: `
