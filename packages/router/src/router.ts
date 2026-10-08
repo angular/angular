@@ -414,6 +414,17 @@ export class Router {
     // operator and the observable completes before emitting a value,
     // RxJS will throw an error.
     this._events.unsubscribe();
+    // question(Andrew S):
+    // this is covering a real production case (not something speculatively found by AI)
+    // note that this is re-createted explicitly because subscribing to a "closed" subject throws
+    // this is more a design question, so do we:
+    // - allow RxJS throwing `ObjectUnsubscribedError` if `events` are subscribed after `dispose()` is called?
+    // - allow throwing but something meaningful?
+    // - keep this subject re-created?
+    // I think consumers should not care about these internals
+    // and we should not break rendering when `events` is not subscribable anymore
+    // well, if `events` subject is "closed", then we _might want_ to act as no-op
+    this._events = new Subject<Event>();
     this.navigationTransitions.complete();
     this.nonRouterCurrentEntryChangeSubscription?.unsubscribe();
     this.nonRouterCurrentEntryChangeSubscription = undefined;
