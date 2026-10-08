@@ -1,5 +1,4 @@
-<docs-decorative-header title="Tabs">
-</docs-decorative-header>
+# Tabs
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" title="Tabs ARIA pattern"/>
