@@ -6,6 +6,5 @@ forms that keeps signals at its core, and interoperates with the existing `@angu
 
 ## Not yet supported
 
-- Debouncing validation
 - Dynamic objects
 - Tuples
