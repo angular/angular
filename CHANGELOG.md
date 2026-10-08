@@ -1,3 +1,47 @@
+<a name="22.3.0-next.1"></a>
+# 22.3.0-next.1 (2026-10-08)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ff0dbf1cd4](https://github.com/angular/angular/commit/ff0dbf1cd47bb2a252ae87719dd193a8fbb064e2) | fix | avoid leaking ::ng-deep detection state between rules |
+| [0bd78b80b9](https://github.com/angular/angular/commit/0bd78b80b9682d8db54d66620158f820c21f0796) | fix | avoid prototype lookups when resolving entities |
+| [a9d6b2fff9](https://github.com/angular/angular/commit/a9d6b2fff90827338127710d513760e1f4ee1b42) | fix | correctly match directives on `&lt;ng-template&gt;` nested in various namespaces |
+| [439d495aaa](https://github.com/angular/angular/commit/439d495aaa53ebce35e46464a08b5fb10a5ecd61) | fix | ignore `@let` declarations in the control flow content projection diagnostic |
+| [0244a1cb31](https://github.com/angular/angular/commit/0244a1cb312835e500ea6003f54ead9b2347dc28) | fix | match namespaced root nodes of control flow blocks against ng-content tag selectors |
+| [97e6aa4a55](https://github.com/angular/angular/commit/97e6aa4a5579e7c968231b0864a3b3890c348863) | fix | strip script elements regardless of namespace |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8dd33e726b](https://github.com/angular/angular/commit/8dd33e726b465167f5c5bc455267b0e7b133a1ad) | fix | don&apos;t mark constructor parameter properties as inherited |
+| [b9f7c1fe82](https://github.com/angular/angular/commit/b9f7c1fe827e1fe79499a051e9f3722aa9c23dde) | perf | optimize missing directive extended checks |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [61fd731e6a](https://github.com/angular/angular/commit/61fd731e6a524a0568e99a5b5ea49f8786825895) | feat | add `scrollMargin` to `@defer` viewport options |
+| [e332260d73](https://github.com/angular/angular/commit/e332260d73e6e8672694ded25439ef95b1c91070) | fix | defer afterRenderEffect sequences registered while hooks run |
+| [17f689bf58](https://github.com/angular/angular/commit/17f689bf58283e4721df6e206062c110f54e8b5e) | fix | strip reserved character from translations |
+| [3be586f930](https://github.com/angular/angular/commit/3be586f930dd8d0fc2a544de82604670c18f28f9) | fix | untrack `onError` handler to prevent signal write exceptions |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fc3dc890aa](https://github.com/angular/angular/commit/fc3dc890aadca8ad4bfa109343c144b5f4530598) | fix | don&apos;t crash when control is missing in setUpValidators |
+| [c0dc8c4bbe](https://github.com/angular/angular/commit/c0dc8c4bbeea70879aef54e9fcc7888359dfd1a5) | fix | skip class bindings for orphaned fields |
+| [e118e15527](https://github.com/angular/angular/commit/e118e155271b8c8b94cd08cb471635a461faf592) | fix | use `Object.is` when comparing control bindings in signal forms |
+| [c58464d13e](https://github.com/angular/angular/commit/c58464d13edc71cfbe00f1853fb0c23e6eca4e9f) | fix | write a pending debounced value when its control is destroyed |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a7381e14b5](https://github.com/angular/angular/commit/a7381e14b5616b423be4b6a28257cc4b1a561db2) | feat | add smart selection ranges for templates |
+| [73858905a2](https://github.com/angular/angular/commit/73858905a277fe2938efff030a686a61c3a38fab) | fix | add missing options to angularCompilerOptions schema |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a1bffc29dd](https://github.com/angular/angular/commit/a1bffc29dda1d2ead36cf21cfd6f5c7dd39e629c) | fix | fall back when serializing protocol-relative URLs |
+| [ed24615af8](https://github.com/angular/angular/commit/ed24615af8f30c088bc25be734efa71955500acb) | fix | remove the navigate event abort listener once it fires |
+| [f591d36fa7](https://github.com/angular/angular/commit/f591d36fa7acf519d0b2cc53879dce17dd691895) | fix | reset internal state on error handler redirect after state commit |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.2.2"></a>
 # 22.2.2 (2026-10-08)
 ### compiler
