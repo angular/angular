@@ -1,5 +1,4 @@
-<docs-decorative-header title="Select">
-</docs-decorative-header>
+# Select
 
 ## Overview
 

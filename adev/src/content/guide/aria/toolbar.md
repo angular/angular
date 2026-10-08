@@ -1,5 +1,4 @@
-<docs-decorative-header title="Toolbar">
-</docs-decorative-header>
+# Toolbar
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/" title="Toolbar ARIA pattern"/>

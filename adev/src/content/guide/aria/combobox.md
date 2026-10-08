@@ -1,5 +1,4 @@
-<docs-decorative-header title="Combobox">
-</docs-decorative-header>
+# Combobox
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" title="Combobox ARIA pattern"/>
