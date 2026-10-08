@@ -197,7 +197,7 @@ export function outputBinding<T>(eventName: string, listener: (event: T) => unkn
 
 /**
  * Creates a two-way binding.
- * @param eventName Public name of the two-way compatible input.
+ * @param publicName Public name of the two-way compatible input.
  * @param value Writable signal from which to get the current value and to which to write new
  * values.
  *

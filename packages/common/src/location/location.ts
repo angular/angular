@@ -258,8 +258,9 @@ export class Location implements OnDestroy {
    * Note: `Location.go()` does not trigger the `popState` event in the browser. Use
    * `Location.onUrlChange()` to subscribe to URL changes instead.
    *
-   * @param value Event that is triggered when the state history changes.
-   * @param exception The exception to throw.
+   * @param onNext Callback invoked with the event that is triggered when the state history changes.
+   * @param onThrow Callback invoked with the exception if an error occurs.
+   * @param onReturn Callback invoked when the subscription completes.
    *
    * @see [onpopstate](https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onpopstate)
    *
