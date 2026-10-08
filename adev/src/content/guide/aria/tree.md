@@ -1,5 +1,4 @@
-<docs-decorative-header title="Tree">
-</docs-decorative-header>
+# Tree
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" title="Tree ARIA pattern"/>

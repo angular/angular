@@ -1,5 +1,4 @@
-<docs-decorative-header title="Accordion">
-</docs-decorative-header>
+# Accordion
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/" title="Accordion ARIA pattern"/>
