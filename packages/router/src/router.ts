@@ -20,7 +20,7 @@ import {
   untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
 } from '@angular/core';
-import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
+import {NEVER, Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
 import {standardizeConfig} from './components/empty_outlet';
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
@@ -116,6 +116,12 @@ export class Router {
    * An event stream for routing events.
    */
   public get events(): Observable<Event> {
+    // `NEVER` is explicit because this is covering a legal case, since dispose()
+    // unsubscribes `_events` subject, subscribing AFTER `dispose()` would throw an
+    // `ObjectUnsubscribedError`.
+    if (this.disposed) {
+      return NEVER;
+    }
     // TODO(atscott): This _should_ be events.asObservable(). However, this change requires internal
     // cleanup: tests are doing `(route.events as Subject<Event>).next(...)`. This isn't
     // allowed/supported but we still have to fix these or file bugs against the teams before making
