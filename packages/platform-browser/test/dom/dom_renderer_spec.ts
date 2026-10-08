@@ -102,6 +102,45 @@ describe('DefaultDomRendererV2', () => {
     });
   });
 
+  describe('with a clobbered `style` property', () => {
+    function createFormWithClobberedStyle(): {form: HTMLFormElement; control: HTMLButtonElement} {
+      const form = document.createElement('form');
+      const control = document.createElement('button');
+      control.setAttribute('name', 'style');
+      form.appendChild(control);
+      document.body.appendChild(form);
+
+      // `HTMLFormElement` exposes its controls as own properties, so the control above makes
+      // `form.style` resolve to it instead of to the inline style declaration.
+      expect(form.style as unknown).toBe(control);
+
+      return {form, control};
+    }
+
+    it('should not write a style onto the control', () => {
+      const {form, control} = createFormWithClobberedStyle();
+
+      try {
+        renderer.setStyle(form, 'innerHTML', '<img src="#">');
+        expect(control.innerHTML).toBe('');
+      } finally {
+        form.remove();
+      }
+    });
+
+    it('should not clear a property of the control when removing a style', () => {
+      const {form, control} = createFormWithClobberedStyle();
+      control.textContent = 'Save';
+
+      try {
+        renderer.removeStyle(form, 'innerHTML');
+        expect(control.innerHTML).toBe('Save');
+      } finally {
+        form.remove();
+      }
+    });
+  });
+
   it('should style non-descendant components correctly with different types of encapsulation', async () => {
     const fixture = TestBed.createComponent(SomeApp);
     await fixture.whenStable();

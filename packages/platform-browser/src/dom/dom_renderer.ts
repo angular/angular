@@ -436,27 +436,44 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setStyle(el: any, style: string, value: any, flags: RendererStyleFlags2): void {
+    // A form-associated control named `style` shadows the `style` property of its `<form>`, so
+    // `el.style` can resolve to that control instead of the inline style declaration. Writing a
+    // style through it assigns to the control, which turns `innerHTML` and `outerHTML` into HTML
+    // sinks, so leave elements whose `style` is not a declaration alone.
+    const declaration = el.style;
+    if (!declaration || typeof declaration.setProperty !== 'function') {
+      return;
+    }
     const isVariable = style.startsWith('--');
     if (isVariable) {
       style = style.replace('%NS%', this.cssVarNamespace);
     }
     if (isVariable || flags & (RendererStyleFlags2.DashCase | RendererStyleFlags2.Important)) {
-      el.style.setProperty(style, value, flags & RendererStyleFlags2.Important ? 'important' : '');
+      declaration.setProperty(
+        style,
+        value,
+        flags & RendererStyleFlags2.Important ? 'important' : '',
+      );
     } else {
-      el.style[style] = value;
+      declaration[style] = value;
     }
   }
 
   removeStyle(el: any, style: string, flags: RendererStyleFlags2): void {
+    // See the note in `setStyle` about a clobbered `style` property.
+    const declaration = el.style;
+    if (!declaration || typeof declaration.setProperty !== 'function') {
+      return;
+    }
     const isVariable = style.startsWith('--');
     if (isVariable) {
       style = style.replace('%NS%', this.cssVarNamespace);
     }
     if (isVariable || flags & RendererStyleFlags2.DashCase) {
       // removeProperty has no effect when used on camelCased properties.
-      el.style.removeProperty(style);
+      declaration.removeProperty(style);
     } else {
-      el.style[style] = '';
+      declaration[style] = '';
     }
   }
 
