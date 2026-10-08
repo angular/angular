@@ -1748,7 +1748,7 @@ describe('runtime i18n', () => {
       // Spacing will break the ICU parsing
       // prettier-ignore
       @Component({
-        
+
         template: `
           <div i18n="@@idA">{
             type, select,
@@ -1761,9 +1761,8 @@ describe('runtime i18n', () => {
               other {}
           }</div>
         `,
-        
-      
-        changeDetection: ChangeDetectionStrategy.Eager,})
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
       class AppComponent {
         type = 'A';
         count = 1;
@@ -1808,13 +1807,13 @@ describe('runtime i18n', () => {
       // Spacing will break the ICU parsing
       // prettier-ignore
       @Component({
-        
+
         template: `
           <div i18n="@@idA">{count$ | async, select, 1 {{{count$ | async}} item} 2 {two items}}</div>
         `,
-        
-      
-        changeDetection: ChangeDetectionStrategy.Eager, imports: [CommonModule]})
+        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [CommonModule]
+      })
       class AppComponent {
         count$ = new BehaviorSubject<number>(1);
       }
@@ -3174,9 +3173,9 @@ describe('runtime i18n', () => {
         template: `
             <div i18n>before|<div myDir>inside</div>|after</div>
           `,
-        
-      
-        changeDetection: ChangeDetectionStrategy.Eager, imports: [forwardRef(() => MyDir)]})
+        changeDetection: ChangeDetectionStrategy.Eager,
+        imports: [forwardRef(() => MyDir)]
+      })
       class MyApp {}
 
       @Directive({
@@ -3254,9 +3253,9 @@ describe('runtime i18n', () => {
       template: `
       <div i18n [title]="null | async"><div>A</div></div>
       <div i18n>{{(null | async)||'B'}}<div></div></div>`,
-      
-    
-      changeDetection: ChangeDetectionStrategy.Eager, imports: [CommonModule]})
+      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [CommonModule]
+    })
     class MyApp {}
 
     const fixture = TestBed.createComponent(MyApp);
@@ -3275,9 +3274,9 @@ describe('runtime i18n', () => {
             <child>Text</child>
           </middle>
         </parent>`,
-      
-    
-      changeDetection: ChangeDetectionStrategy.Eager, imports: [forwardRef(() => Parent), forwardRef(() => Middle), forwardRef(() => Child)]})
+      changeDetection: ChangeDetectionStrategy.Eager,
+      imports: [forwardRef(() => Parent), forwardRef(() => Middle), forwardRef(() => Child)]
+    })
     class MyApp {}
 
     @Component({
@@ -3615,6 +3614,25 @@ describe('runtime i18n', () => {
         );
         const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
         expect(input.getAttribute('formaction')).toMatch(/^unsafe:/);
+      });
+
+      it('should not be vulnerable to DOM clobbering of nodeName/tagName in ICU expressions', () => {
+        loadTranslations({
+          [computeMsgId('{VAR_PLURAL, plural, other {other}}')]:
+            '{VAR_PLURAL, plural, other {<input name=nodeName form=x><input name=tagName form=x>hello<form id=x></form>}}',
+        });
+        const fixture = initWithTemplate(AppComp, `<div i18n>{count, plural, other {other}}</div>`);
+        expect(fixture.nativeElement.textContent).toBe('hello');
+      });
+
+      it('should not enter an infinite loop when nextSibling or firstChild is clobbered in ICU expressions', () => {
+        loadTranslations({
+          [computeMsgId('{VAR_PLURAL, plural, other {other}}')]:
+            '{VAR_PLURAL, plural, other {<input name=nextSibling form=x>hello<form id=x></form>}}',
+        });
+        expect(() => {
+          initWithTemplate(AppComp, `<div i18n>{count, plural, other {other}}</div>`);
+        }).toThrowError(/Action failed because the element is clobbered/);
       });
     }
   });
