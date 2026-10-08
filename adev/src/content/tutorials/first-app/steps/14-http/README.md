@@ -200,7 +200,7 @@ The server is now reading data from the HTTP request but the components that rel
 
 NOTE: This lesson relies on the `fetch` browser API. For the support of interceptors, please refer to the [HTTP client documentation](/guide/http)
 
-SUMMARY: In this lesson, you updated your app to use a local web server (`json-server`), and use asynchronous service methods to retrieve data.
+SUMMARY: In this lesson, you used a local web server (`json-server`) and asynchronous service methods to retrieve data.
 
 Congratulations! You've successfully completed this tutorial and are ready to continue your journey with building even more complex Angular Apps.
 
