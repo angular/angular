@@ -59,7 +59,9 @@ export function ɵɵInheritDefinitionFeature(
     if (isComponentDef(definition)) {
       superDef = cmpDef ?? dirDef;
     } else {
-      if (cmpDef) {
+      // Abstract directives (and undecorated base classes compiled as such)
+      // may extend components without throwing.
+      if (cmpDef && definition.selectors && definition.selectors.length > 0) {
         throw new RuntimeError(
           RuntimeErrorCode.INVALID_INHERITANCE,
           ngDevMode &&
@@ -68,7 +70,7 @@ export function ɵɵInheritDefinitionFeature(
             )} is attempting to extend component ${stringifyForError(superType)}`,
         );
       }
-      superDef = dirDef;
+      superDef = cmpDef ?? dirDef;
     }
 
     if (superDef) {
@@ -96,12 +98,10 @@ export function ɵɵInheritDefinitionFeature(
         fillProperties(definition.outputs, superDef.outputs);
 
         // Merge animations metadata.
-        // If `superDef` is a Component, the `data` field is present (defaults to an empty object).
-        if (isComponentDef(superDef) && superDef.data.animation) {
-          // If super def is a Component, the `definition` is also a Component, since Directives can
-          // not inherit Components (we throw an error above and cannot reach this code).
-          const defData = (definition as ComponentDef<any>).data;
-          defData.animation = (defData.animation || []).concat(superDef.data.animation);
+        const superAnimation = (superDef as ComponentDef<any>).data?.animation;
+        if (superAnimation) {
+          const defData = ((definition as Writable<ComponentDef<any>>).data ??= {});
+          defData.animation = (defData.animation || []).concat(superAnimation);
         }
       }
 
