@@ -77,6 +77,11 @@ export type RelativeInjectorLocation = number & {
 export const enum RelativeInjectorLocationFlags {
   InjectorIndexMask = 0b11111111111111111111,
   ViewOffsetShift = 20,
+  /**
+   * Largest supported declaration view offset. Together with the 20 index bits this keeps the
+   * packed value below 2^30, so it remains a small integer in V8.
+   */
+  MaxViewOffset = 0b1111111111,
   NO_PARENT = -1,
 }
 
