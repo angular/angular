@@ -134,8 +134,9 @@ import {run} from './ngp.js';
 
       try {
         await fs.access(ngAnalyzeDir);
+      } catch {
         ngAnalyzeDir = path.resolve(__dirname, '../../ng-analyze');
-      } catch {}
+      }
 
       innerAnalyzer = await NapiAnalyzer.create(tsconfigPath, {
         optimize,
