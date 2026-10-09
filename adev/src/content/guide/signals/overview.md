@@ -275,3 +275,8 @@ isWritableSignal(doubled); // false
 ## Using signals with RxJS
 
 See [RxJS interop with Angular signals](ecosystem/rxjs-interop) for details on interoperability between signals and RxJS.
+
+## Debugging signals
+
+Angular DevTools can visualize the signal graph of a component or directive, showing how its signals, computeds, effects, and other reactive nodes depend on each other.
+See [Debug the signal graph](tools/devtools/signals) to learn how to open, read, and inspect the graph.
