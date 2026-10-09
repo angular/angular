@@ -542,8 +542,6 @@ export function prepareTcbTargets(
   content: string,
   config: TypeCheckingConfig,
   classes?: nga.ClassMetadata[],
-  _workspaceName?: string,
-  _rootDirs?: string[],
 ): PreparedTcbData | null {
   if (tcbTargets.length === 0) return null;
 

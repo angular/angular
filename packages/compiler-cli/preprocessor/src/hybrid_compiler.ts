@@ -58,8 +58,6 @@ import {
   ParsedTemplate,
   ParseTemplateOptions,
   TcbDirectiveMetadata,
-  TypeCheckingConfig,
-  TmplAstHostElement,
   BoundTarget,
   MatchSource,
   LEGACY_OPTIONAL_CHAINING_DEFAULT,
@@ -533,8 +531,6 @@ export class HybridCompiler {
       content,
       this.tcbConfig,
       result.classes,
-      this.workspaceName,
-      this.rootDirs,
     );
     if (prepared) {
       fileAnalysis.preparedTcbData = prepared;

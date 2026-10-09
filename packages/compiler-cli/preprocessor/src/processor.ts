@@ -43,7 +43,6 @@ import {
   SchemaMetadata,
   R3ComponentMetadata,
   R3TemplateDependency,
-  ChangeDetectionStrategy,
   compileComponentClassMetadata,
   R3ClassDebugInfo,
   R3ClassMetadataCtorParameter,
@@ -77,6 +76,8 @@ import {
   buildHostDirectives,
   stripIife,
   makeClassKey,
+  refName,
+  refToExpression,
 } from './compiler-utils.js';
 import {ExpressionPrinter, RawSource} from './output_ast_printer.js';
 import MagicString from 'magic-string';
@@ -108,8 +109,6 @@ interface HybridCompilerContext {
   eagerlyUsedDeclarations?: Map<string, nga.DeclarationMetadata[]>;
   rootDir?: string;
   complianceMode?: boolean;
-  workspaceName?: string;
-  rootDirs?: string[];
 }
 
 // These are const enums, so they're not available at runtime - use literal values
@@ -1603,15 +1602,7 @@ export async function processFile(
       : [];
   const prepared =
     ctx.optimize && tcbTargets.length > 0
-      ? prepareTcbTargets(
-          filePath,
-          tcbTargets,
-          content,
-          ctx.tcbConfig,
-          classes,
-          ctx.workspaceName,
-          ctx.rootDirs,
-        )
+      ? prepareTcbTargets(filePath, tcbTargets, content, ctx.tcbConfig, classes)
       : null;
   const tcb = prepared
     ? (generateTcbCode(filePath, prepared, ctx.tcbConfig) ?? undefined)
@@ -2069,26 +2060,8 @@ function generateSetClassDebugInfo(
 }
 
 /**
- * The identifier a reference resolves to in the file being emitted: the binding this file
- * already has, else the name its module exports it under (which a generated namespace import
- * will dereference).
- */
-function refName(ref: nga.ReferenceMetadata): string {
-  const name = ref.localAlias ?? ref.consumerImport?.symbol ?? ref.typecheckImport?.symbol;
-  if (name === undefined) {
-    // The analyzer guarantees one or the other: a symbol with no import path is declared
-    // here and therefore bound here. Emitting a guess would produce a dangling identifier.
-    throw new Error('ReferenceMetadata has neither a local binding nor an import path');
-  }
-  return name;
-}
-
-/**
- * Resolves `symbolName`, `importPath`, and `isDefaultImport` for a deferrable dependency from the
- * consuming file's own `ImportDeclaration` (matching ngtsc's `getImportOfIdentifier`), rather than
- * from the resolved target declaration (which may differ when re-exported under an alias or barrel:
- * `import {NgFor}` resolves to `NgForOf`, and naming the callback parameter after the declaration
- * would leave `imports: [NgFor]` unbound once its import is removed, TS2552).
+ * How a deferrable dependency is named and reached, taken from the `import` declaration the
+ * consuming file already has for it rather than from the declaration that import resolves to.
  *
  * Uses the specifier's exported name (`{Cmp as Alias}` -> `Cmp`), or the local binding for default
  * imports (since `symbolName` doubles as the `ɵsetClassMetadataAsync` callback parameter, where
@@ -2133,20 +2106,6 @@ function deferredDepKey(importPath: string, symbolName: string): string {
   return JSON.stringify([importPath, symbolName]);
 }
 
-function refToExpression(ref: nga.ReferenceMetadata): o.Expression {
-  // A binding in this file wins: reusing it avoids a redundant import, and for a `forwardRef`
-  // cycle it is the only form that works.
-  if (ref.localAlias) {
-    return o.variable(ref.localAlias);
-  }
-  if (ref.consumerImport) {
-    return new o.ExternalExpr({
-      moduleName: ref.consumerImport.specifier,
-      name: ref.consumerImport.symbol,
-    } as any);
-  }
-  return o.variable(refName(ref));
-}
 function compileNgModuleDef(
   className: string,
   ngModule: nga.NgModuleMetadata,
@@ -2697,7 +2656,7 @@ function createStaticField(
   //
   // TODO(parity): `// @ts-ignore` only covers the initializer's first line, so properties emitted
   // after multi-line `hostBindings` or `template` functions land on uncovered continuation lines
-  // (see `tests/emit_suppressions.test.ts`).
+  // (see `test/emit_suppressions_spec.ts`).
   return `  ${nocollapse}// @ts-ignore\n  static ${name}${typeSuffix} = ${pureComment}${value};\n`;
 }
 

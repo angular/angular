@@ -499,11 +499,6 @@ export interface ImportDeclarationMetadata {
   bindings: Array<ImportBindingMetadata>;
 }
 
-export interface ImportViaMetadata {
-  moduleSpecifier: string;
-  symbol?: string;
-}
-
 export interface InjectableMetadata {
   decoratorName?: string;
   providedIn?: ProviderField;

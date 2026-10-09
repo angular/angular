@@ -8,7 +8,6 @@
 
 /**
  * Shared compiler utilities for Angular template compilation.
- * Used by both ngp.ts and tests/utils.ts.
  */
 
 import {
