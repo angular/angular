@@ -363,6 +363,7 @@ impl DirectiveData {
             Read::Pending => return false,
             Read::Invalid(message) => {
                 self.io_issues.push(ValueIssue {
+                    code: "1010",
                     span: array.span,
                     message,
                 });
@@ -429,6 +430,7 @@ impl DirectiveData {
             },
         };
         self.io_issues.push(ValueIssue {
+            code: "1010",
             span: options.decorator_span,
             message: issue,
         });

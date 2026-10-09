@@ -86,6 +86,7 @@ fn evaluate_member_argument<T>(
         }
         Read::Invalid(message) => {
             out.issues.push(ValueIssue {
+                code: "1010",
                 span: decorator_span,
                 message,
             });
@@ -313,6 +314,7 @@ fn signal_options(arg: Option<&Argument>, out: &mut MemberIo) -> InputOptions {
     };
     let Expression::ObjectExpression(obj) = arg else {
         out.issues.push(ValueIssue {
+            code: "1010",
             span: arg.span(),
             message: "Argument needs to be an object literal that is statically analyzable."
                 .to_string(),
@@ -331,6 +333,7 @@ fn signal_options(arg: Option<&Argument>, out: &mut MemberIo) -> InputOptions {
         alias = extract_literal_string(&p.value);
         if alias.is_none() {
             out.issues.push(ValueIssue {
+                code: "1010",
                 span: p.value.span(),
                 message: "Alias needs to be a string that is statically analyzable.".to_string(),
             });
@@ -443,8 +446,10 @@ pub fn extract_inputs_outputs<'a>(
     };
     let mut out = MemberIo::default();
     let mut static_coerced = Vec::new();
+    let class_name = class.id.as_ref().map_or("", |id| id.name.as_str());
 
     for element in &class.body.body {
+        let fields_before = out.fields.len();
         match element {
             oxc_ast::ast::ClassElement::PropertyDefinition(prop) => {
                 let Some(prop_name) = extract_property_key(&prop.key).map(|n| n.into_owned())
@@ -508,6 +513,37 @@ pub fn extract_inputs_outputs<'a>(
                 );
             }
             _ => {}
+        }
+
+        let (is_static, span) = match element {
+            oxc_ast::ast::ClassElement::PropertyDefinition(p) => (p.r#static, p.span),
+            oxc_ast::ast::ClassElement::MethodDefinition(m) => (m.r#static, m.span),
+            oxc_ast::ast::ClassElement::AccessorProperty(a) => (a.r#static, a.span),
+            _ => continue,
+        };
+        if !is_static {
+            continue;
+        }
+        for field in &out.fields[fields_before..] {
+            let (span, message) = match field {
+                AngularField::Input(i) => (
+                    span,
+                    format!(
+                        "Input \"{}\" is incorrectly declared as static member of \"{class_name}\".",
+                        i.name
+                    ),
+                ),
+                AngularField::Output(o) => (
+                    o.decorator_span.unwrap_or(span),
+                    "Output is incorrectly declared on a static class member.".to_string(),
+                ),
+                _ => continue,
+            };
+            out.issues.push(ValueIssue {
+                code: "1100",
+                span,
+                message,
+            });
         }
     }
 

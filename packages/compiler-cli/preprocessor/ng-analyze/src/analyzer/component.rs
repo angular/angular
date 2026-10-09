@@ -495,6 +495,7 @@ pub(crate) fn load_style_urls<Fs: ResourceResolverFs>(
             } => {
                 let Some(url) = url.get_optional() else {
                     issues.push(ValueIssue {
+                        code: "1010",
                         span: *span,
                         message: "styleUrl must be a string".to_string(),
                     });
@@ -512,6 +513,7 @@ pub(crate) fn load_style_urls<Fs: ResourceResolverFs>(
             StyleUrlSource::List { urls, span } => {
                 let Some(urls) = urls.get_optional() else {
                     issues.push(ValueIssue {
+                        code: "1010",
                         span: *span,
                         message: "styleUrls must be an array of strings".to_string(),
                     });

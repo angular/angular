@@ -1863,6 +1863,129 @@ fn test_missing_directive_selector_diagnostic_ng2004() {
 }
 
 #[test]
+fn test_static_input_diagnostic_ng1100() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["test.directive.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/test.directive.ts".to_string(),
+        r#"
+            import { Directive, Input } from '@angular/core';
+
+            @Directive({
+                selector: '[staticInput]',
+            })
+            export class StaticInputDirective {
+                @Input() static foo = 'bar';
+            }
+        "#
+        .to_string(),
+    );
+
+    let options = AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    };
+
+    let analyzer = Analyzer::new(options).unwrap();
+    let res = analyzer.get_metadata_for_file("/project/test.directive.ts".to_string());
+    let meta = res.expect("test.directive.ts metadata");
+    assert_eq!(meta.diagnostics.len(), 1);
+    let diag = &meta.diagnostics[0];
+    assert_eq!(diag.code, 1100);
+    assert_eq!(diag.category, 1);
+    assert!(diag.message_text.contains(
+        "Input \"foo\" is incorrectly declared as static member of \"StaticInputDirective\"."
+    ));
+}
+
+#[test]
+fn test_static_signal_input_diagnostic_ng1100() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["test.directive.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/test.directive.ts".to_string(),
+        r#"
+            import { Directive, input } from '@angular/core';
+
+            @Directive({
+                selector: '[staticSignalInput]',
+            })
+            export class StaticSignalInputDirective {
+                static foo = input('bar');
+            }
+        "#
+        .to_string(),
+    );
+
+    let options = AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    };
+
+    let analyzer = Analyzer::new(options).unwrap();
+    let res = analyzer.get_metadata_for_file("/project/test.directive.ts".to_string());
+    let meta = res.expect("test.directive.ts metadata");
+    assert_eq!(meta.diagnostics.len(), 1);
+    let diag = &meta.diagnostics[0];
+    assert_eq!(diag.code, 1100);
+    assert_eq!(diag.category, 1);
+    assert!(diag.message_text.contains(
+        "Input \"foo\" is incorrectly declared as static member of \"StaticSignalInputDirective\"."
+    ));
+}
+
+#[test]
+fn test_static_output_diagnostic_ng1100() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["test.directive.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/test.directive.ts".to_string(),
+        r#"
+            import { Directive, Output, EventEmitter } from '@angular/core';
+
+            @Directive({
+                selector: '[staticOutput]',
+            })
+            export class StaticOutputDirective {
+                @Output() static foo = new EventEmitter<void>();
+            }
+        "#
+        .to_string(),
+    );
+
+    let options = AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    };
+
+    let analyzer = Analyzer::new(options).unwrap();
+    let res = analyzer.get_metadata_for_file("/project/test.directive.ts".to_string());
+    let meta = res.expect("test.directive.ts metadata");
+    assert_eq!(meta.diagnostics.len(), 1);
+    let diag = &meta.diagnostics[0];
+    assert_eq!(diag.code, 1100);
+    assert_eq!(diag.category, 1);
+    assert!(diag
+        .message_text
+        .contains("Output is incorrectly declared on a static class member."));
+}
+
+#[test]
 fn test_cross_file_selector_in_optimized_mode() {
     let mut virtual_files = HashMap::new();
     virtual_files.insert(
@@ -4671,4 +4794,84 @@ fn test_streaming_includes_files_reached_through_dynamic_import() {
             "{mode}"
         );
     }
+}
+
+#[test]
+fn test_duplicate_binding_name_diagnostic_ng1054() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["test.directive.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/test.directive.ts".to_string(),
+        r#"
+            import { Directive, Input } from '@angular/core';
+
+            @Directive({
+                selector: '[dup]',
+            })
+            export class DupDirective {
+                @Input() foo = '';
+                @Input('foo') bar = '';
+            }
+        "#
+        .to_string(),
+    );
+
+    let options = AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    };
+
+    let analyzer = Analyzer::new(options).unwrap();
+    let res = analyzer.get_metadata_for_file("/project/test.directive.ts".to_string());
+    let meta = res.expect("test.directive.ts metadata");
+    assert_eq!(meta.diagnostics.len(), 1);
+    let diag = &meta.diagnostics[0];
+    assert_eq!(diag.code, 1054);
+    assert!(diag
+        .message_text
+        .contains("Input 'foo' is bound to both 'foo' and 'bar'."));
+}
+
+#[test]
+fn test_distinct_and_shared_binding_names_report_nothing() {
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["test.directive.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/test.directive.ts".to_string(),
+        r#"
+            import { Directive, Input, Output, EventEmitter, model } from '@angular/core';
+
+            @Directive({
+                selector: '[dup]',
+                inputs: ['declared'],
+            })
+            export class DupDirective {
+                @Input() declared = '';
+                @Input('shared') a = '';
+                @Output('shared') b = new EventEmitter<void>();
+                value = model('');
+            }
+        "#
+        .to_string(),
+    );
+
+    let options = AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    };
+
+    let analyzer = Analyzer::new(options).unwrap();
+    let res = analyzer.get_metadata_for_file("/project/test.directive.ts".to_string());
+    let meta = res.expect("test.directive.ts metadata");
+    assert!(meta.diagnostics.is_empty(), "{:?}", meta.diagnostics);
 }

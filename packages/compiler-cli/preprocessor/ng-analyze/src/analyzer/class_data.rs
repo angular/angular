@@ -495,10 +495,12 @@ impl ComponentData {
         )
     }
 }
-/// A decorator value that evaluated to the wrong shape: ngtsc's `VALUE_HAS_WRONG_TYPE`
-/// (`NG1010`), reported by `validate()` on `span` with ngtsc's message.
+/// A decorator value ngtsc rejects while extracting metadata, reported by `validate()` on `span`
+/// with ngtsc's message under `code`: `VALUE_HAS_WRONG_TYPE` (`NG1010`) for a value of the wrong
+/// shape, `INCORRECTLY_DECLARED_ON_STATIC_MEMBER` (`NG1100`) for a static input or output.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ValueIssue {
+    pub code: &'static str,
     pub span: oxc_span::Span,
     pub message: String,
 }
@@ -1464,10 +1466,51 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "1010",
+                issue.code,
                 issue.span,
                 issue.message.clone(),
             );
+        }
+
+        let mut input_bindings: std::collections::HashMap<&str, &str> = Default::default();
+        let mut output_bindings: std::collections::HashMap<&str, &str> = Default::default();
+        for field in &d.fields {
+            let (kind, name, alias, span, bindings) = match field {
+                AngularField::Input(i) => (
+                    "Input",
+                    &i.name,
+                    &i.alias,
+                    i.property_span.or(i.decorator_span),
+                    &mut input_bindings,
+                ),
+                AngularField::Output(o) => (
+                    "Output",
+                    &o.name,
+                    &o.alias,
+                    o.property_span.or(o.decorator_span),
+                    &mut output_bindings,
+                ),
+                _ => continue,
+            };
+            let binding = alias.as_deref().unwrap_or(name);
+            match bindings.get(binding) {
+                Some(first) if first != name => {
+                    if let Some(span) = span {
+                        push_error(
+                            diagnostics,
+                            file_path,
+                            converter,
+                            "1054",
+                            span,
+                            format!("{kind} '{binding}' is bound to both '{first}' and '{name}'."),
+                        );
+                    }
+                }
+                Some(_) => {}
+                None => {
+                    bindings.insert(binding, name);
+                }
+            }
         }
 
         // ngtsc evaluates `exportAs` and rejects anything that is not statically a string.
@@ -1611,7 +1654,7 @@ impl ClassData {
                 diagnostics,
                 file_path,
                 converter,
-                "1010",
+                issue.code,
                 issue.span,
                 issue.message.clone(),
             );
