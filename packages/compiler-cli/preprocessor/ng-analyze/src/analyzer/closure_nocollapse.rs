@@ -12,7 +12,6 @@ use oxc_span::GetSpan;
 
 const NOCOLLAPSE_TAG: &str = "nocollapse";
 
-/// Text to insert at a byte offset of the source.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct NoCollapseInsertion {
     pub position: u32,
@@ -75,10 +74,8 @@ fn is_valid_closure_property_name(name: &str) -> bool {
         && chars.all(|c| c.is_ascii_alphanumeric() || c == '_')
 }
 
-/// The edit tagging the member at `member_start`, or `None` if its JSDoc already has the tag.
-///
-/// tsickle only reads the *last* leading JSDoc, so the tag is merged into an existing JSDoc
-/// rather than added as a separate comment.
+/// tsickle only reads the *last* leading JSDoc, so `@nocollapse` is merged into an existing
+/// JSDoc rather than added as a separate comment.
 fn nocollapse_insertion(member_start: u32, semantic: &Semantic<'_>) -> Option<NoCollapseInsertion> {
     let trivia = ts_leading_trivia(member_start, semantic);
     let Some(jsdoc) = trivia.last_jsdoc else {

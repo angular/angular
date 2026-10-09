@@ -5,14 +5,8 @@ use std::path::{Path, PathBuf};
 pub trait ResourceResolverFs: FileSystem {
     fn root_dirs(&self) -> Vec<PathBuf>;
 
-    /// Per-run cache backing `detect_is_core` (directory -> is-`@angular/core`). Scoping the cache
-    /// to the filesystem instance keeps it correct across independent analyses: the production
-    /// `OverlayFileSystem` overrides this with a per-instance cache shared (via `Arc`) between the
-    /// visitor and the evaluator driver, so a single run reads each directory's `package.json` once
-    /// while separate runs (and tests, which each build a fresh filesystem) stay isolated.
-    ///
-    /// The default falls back to a process-global cache; it exists only for mock filesystems that
-    /// never invoke `detect_is_core`, so its cross-run sharing is never exercised.
+    /// Per-instance cache backing `detect_is_core` (directory -> is-`@angular/core`), keeping
+    /// separate analyzer runs isolated. The process-global default is only used by mock filesystems.
     fn is_core_cache(&self) -> &std::sync::RwLock<std::collections::HashMap<PathBuf, bool>> {
         use std::sync::{OnceLock, RwLock};
         static GLOBAL: OnceLock<RwLock<std::collections::HashMap<PathBuf, bool>>> = OnceLock::new();
@@ -20,7 +14,7 @@ pub trait ResourceResolverFs: FileSystem {
     }
 }
 
-/// Robust resource path resolver for ngtsc reimplementation.
+/// Resource path resolver for component templates and stylesheets.
 pub struct ResourceResolver<'a, Fs: ResourceResolverFs> {
     fs: &'a Fs,
     resolver: &'a ResolverGeneric<Fs>,

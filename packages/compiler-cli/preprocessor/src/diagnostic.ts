@@ -15,6 +15,4 @@ export interface Diagnostic {
   readonly message: string;
   readonly start: number;
   readonly end: number;
-
-  // TODO: probably needs source file as well.
 }

@@ -4,7 +4,7 @@
   "compilerOptions": {
     "strict": true
   },
-  "files": ["shared.ts", "app.component.ts", "app.module.ts"]
+  "files": ["shared.ts", "more.ts", "app.component.ts", "app.module.ts"]
 }
 ```
 
@@ -24,11 +24,16 @@ export class SharedDirective {}
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders<SharedModule> {
-    return { ngModule: SharedModule };
+    return { ngModule: SharedModule, providers: [] };
   }
 }
+```
 
-export const SHARED_IMPORTS = [SharedModule];
+# /more.ts
+```ts
+import { SharedModule } from './shared';
+
+export const MORE = [SharedModule.forRoot()];
 ```
 
 # /app.component.ts
@@ -47,14 +52,15 @@ export class AppComponent {}
 ```ts
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
-import { SharedModule, SHARED_IMPORTS } from './shared';
+import { SharedModule } from './shared';
+import { MORE } from './more';
 
-// LOCAL mode emits `ɵinj.imports` as the verbatim, entry-by-entry concatenation of the
-// `imports` array elements: a ModuleWithProviders call (`SharedModule.forRoot()`) and a
-// spread (`...SHARED_IMPORTS`) both survive unresolved. Mirrors ngtsc handler.ts#L670-L688:
-// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L670-L688
+// `SharedModule.forRoot()` is reached twice along sibling paths: directly, and through the
+// `MORE` const. Each occurrence evaluates independently (as in ngtsc's `StaticInterpreter`),
+// so `SharedModule` is in the module's compilation scope and `AppComponent` depends on
+// `SharedDirective`.
 @NgModule({
-  imports: [SharedModule.forRoot(), ...SHARED_IMPORTS],
+  imports: [SharedModule.forRoot(), ...MORE],
   declarations: [AppComponent],
 })
 export class AppModule {}

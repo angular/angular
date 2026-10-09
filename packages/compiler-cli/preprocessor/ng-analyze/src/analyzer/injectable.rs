@@ -181,7 +181,7 @@ fn parse_dep_single(expr: &Expression) -> DependencyData {
 /// `core.Optional` is *not* a qualifier for ngtsc (`ts.isIdentifier` fails), it is just a token,
 /// so it is deliberately not matched here either. `Host` and `Attribute` are likewise unsupported
 /// in `deps`.
-/// https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/src/injectable.ts#L427-L482
+/// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/src/injectable.ts#L427-L482
 fn extract_decorator_info<'a>(
     expr: &'a Expression<'a>,
     semantic: &Semantic<'a>,

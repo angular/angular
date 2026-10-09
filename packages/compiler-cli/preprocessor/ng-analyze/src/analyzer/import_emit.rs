@@ -3,8 +3,7 @@ use crate::types::analysis::Reference;
 use crate::types::metadata::{ImportableRef, ReferenceMetadata};
 use std::path::{Path, PathBuf};
 
-/// Extension stripper helper handling multi-part TS/JS extensions.
-/// Strips `.d.ts`, `.d.mts`, `.d.cts`, `.ts`, `.tsx`, `.mts`, `.cts`, `.js`, `.jsx`, `.mjs`, `.cjs`.
+/// Strip a TypeScript or JavaScript file extension (including multi-part `.d.ts` forms).
 pub fn strip_extension_str(s: &str) -> &str {
     for ext in [
         ".d.ts", ".d.mts", ".d.cts", ".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs",
@@ -21,17 +20,16 @@ pub fn strip_extension_str(s: &str) -> &str {
 /// and is not published at all; an absent key was never resolved by the pre-pass.
 pub type DeclaringExportNames = std::collections::HashMap<(FileId, String), Option<String>>;
 
-/// Trait governing how symbol references and module specifiers are emitted.
-/// Inspired by ngtsc's `ReferenceEmitter` and `ReferenceEmitStrategy`.
+/// Strategy for emitting symbol references and module specifiers (after ngtsc's
+/// `ReferenceEmitter` / `ReferenceEmitStrategy`).
 pub trait ReferenceEmitStrategy: Send + Sync {
     /// Emits reference metadata describing how to refer to `reference` both in-situ
-    /// (within `consumer_path`) and for type-checking (.ngtypecheck.ts).
+    /// (within `consumer_path`) and for type-checking (`.ngtypecheck.ts`).
     ///
-    /// `declaring_export_name` is what the declaring file itself publishes the symbol under
-    /// (`findExportedNameOfNode`), or `None` when it publishes
-    /// nothing. This is resolved by the caller: it needs the query engine, and `emit` is
-    /// synchronous. A strategy that imports straight from the declaring file has no other
-    /// legal name to write, so `None` makes it decline.
+    /// `declaring_export_name` is the name the declaring file itself publishes the symbol under
+    /// (`findExportedNameOfNode`), or `None` when unexported. Resolved by the caller because it
+    /// requires the query engine while `emit` is synchronous. A strategy that imports directly
+    /// from the declaring file declines when this is `None`.
     fn emit(
         &self,
         reference: &Reference,

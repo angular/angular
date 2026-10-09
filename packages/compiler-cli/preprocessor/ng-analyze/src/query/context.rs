@@ -52,8 +52,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
-    // --- Typed accessors moved from QueryEngine ---
-
     pub async fn analyze_file_semantic(&self, file_id: FileId) -> Arc<FileData> {
         let key = QueryKey::AnalyzeFileSemantic(file_id);
         let cached = self.engine.query(key).await;
@@ -78,9 +76,8 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
-    /// The file's analysis with its declaration metadata evaluated across files
-    /// ([`QueryKey::AnalyzeFileEvaluated`]): the symbol table to read a template dependency's
-    /// selector, pipe name, `exportAs` and inputs/outputs from.
+    /// The file's analysis with declaration metadata evaluated across files
+    /// ([`QueryKey::AnalyzeFileEvaluated`]).
     pub async fn analyze_file_evaluated(&self, file_id: FileId) -> Arc<FileData> {
         let key = QueryKey::AnalyzeFileEvaluated(file_id);
         let cached = self.engine.query(key).await;
@@ -93,8 +90,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
-    /// Resolve [`crate::analyzer::WireContext::declaring_exports`] for `file_data`: one syntax
-    /// query per declaring file, then a purely local lookup in each.
+    /// Resolve [`crate::analyzer::WireContext::declaring_exports`] for `file_data`.
     pub async fn declaring_export_names(
         &self,
         file_data: &FileData,
@@ -114,7 +110,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         out
     }
 
-    /// The name `reference`'s declaring file publishes it under, `None` when it publishes none.
+    /// The name `reference`'s declaring file publishes it under, or `None` if unexported.
     pub async fn declaring_export_name(
         &self,
         reference: &crate::types::analysis::Reference,
@@ -151,8 +147,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
-    /// The export map of a package entry point, built once per entry point and shared by every
-    /// declaration that resolves through it — upstream's `moduleExportsCache`.
+    /// Cached export map of a package entry point (upstream's `moduleExportsCache`).
     pub async fn module_export_map(
         &self,
         file_id: FileId,
@@ -195,8 +190,7 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryContext<Fs> {
         }
     }
 
-    /// The program's files: the tsconfig roots plus their import closure, dynamic imports
-    /// included (see [`QueryKey::ProgramFiles`]). Records every file the closure was built from.
+    /// Tsconfig roots plus their import closure, including dynamic imports ([`QueryKey::ProgramFiles`]).
     pub async fn program_files(&self) -> Arc<Vec<FileId>> {
         let key = QueryKey::ProgramFiles;
         let cached = self.engine.query(key).await;

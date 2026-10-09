@@ -47,8 +47,6 @@ fn main() {
 
     for line in stdin.lock().lines() {
         let Ok(line) = line else {
-            // stdout is the JSON-RPC channel, so transport-level failures have to go to
-            // stderr instead.
             #[allow(clippy::print_stderr)]
             {
                 eprintln!("Error reading stdin");
@@ -61,9 +59,7 @@ fn main() {
         }
 
         let Ok(req) = serde_json::from_str::<RpcRequest>(&line) else {
-            // The request did not deserialize, so no `id` can be trusted for a reply and
-            // there is no well-formed RPC response to write.
-            // TODO: the client's pending promise is left unresolved by this path.
+            // TODO(sidecar): send an error response so the client's pending promise does not hang.
             #[allow(clippy::print_stderr)]
             {
                 eprintln!("Failed to parse RPC request");
@@ -72,8 +68,7 @@ fn main() {
         };
 
         let response = handle_rpc_request(req, &mut analyzer);
-        // stdout IS the JSON-RPC response channel for the sidecar; this is the protocol,
-        // not logging. `send_notification` below writes the async half of the same channel.
+        // stdout is the JSON-RPC response channel.
         #[allow(clippy::print_stdout)]
         {
             println!("{}", serde_json::to_string(&response).unwrap());

@@ -109,29 +109,18 @@ fn get_search_root(
     }
 }
 
-/// Recursively walks `root`, invoking `visit` for every file and consulting
+/// Recursively walks `root` via [`PhysicalFs`], invoking `visit` for every file and consulting
 /// `descend` before entering a directory.
 ///
-/// Replaces `ignore::WalkBuilder`, which walks the process's real filesystem directly
-/// and so cannot see the JavaScript-hosted filesystem the WebAssembly engine uses.
-/// Behaviour is matched deliberately on two points and changed on a third:
-///
-/// - Hidden entries are visited (the old builder set `hidden(false)`).
-/// - Symlinks are not followed for the purposes of *descending* (the builder defaulted
-///   to `follow_links(false)`), but a symlink pointing at a file is still collected,
-///   because the previous filter used `Path::is_file`, which follows links.
-/// - `.gitignore` and friends are **no longer consulted**. `tsc` does not consult them
-///   when expanding `include`, so honouring them was a parity bug; it also could not be
-///   reproduced on the host filesystem.
-///
-/// `descend` prunes a directory without recursing, mirroring `filter_entry`.
+/// Hidden entries are visited, symlinked files are collected (`fs.is_file` follows links),
+/// symlinked directories are not traversed (`entry.is_dir` does not follow links), and
+/// `.gitignore` is not consulted (matching `tsc`'s `include` expansion).
 fn walk_source_tree(
     root: &Path,
     fs: &std::sync::Arc<dyn crate::physical_fs::PhysicalFs>,
     visit: &mut dyn FnMut(&Path),
     descend: &mut dyn FnMut(&Path) -> bool,
 ) {
-    // `WalkBuilder` yields the root itself before descending.
     if fs.is_file(root) {
         visit(root);
         return;

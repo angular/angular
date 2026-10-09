@@ -456,6 +456,6 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     classPropertyName: string,
     aliases: string[],
   ): void {
-    // Dummy implementation to satisfy interface
+    // TODO(parity): report ngtsc's CONFLICTING_HOST_DIRECTIVE_BINDING (-8024) diagnostic.
   }
 }

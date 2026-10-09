@@ -1,18 +1,11 @@
-//! The physical filesystem layer beneath [`crate::fs::OverlayFileSystem`].
-//!
-//! `OverlayFileSystem` resolves virtual (in-memory) files first and otherwise falls
-//! through to "the real filesystem". What *real* means depends on the build:
-//!
+//! The physical filesystem layer beneath [`crate::fs::OverlayFileSystem`]:
 //! - **native** — [`NativeFs`], a direct pass-through to [`std::fs`].
-//! - **wasm32-unknown-unknown** — [`HostFs`], which calls back into the JavaScript host.
-//!   The bare wasm target has no OS beneath it, so `std::fs` compiles but fails at
-//!   runtime for every call; without a host bridge the engine can only ever see
-//!   virtual files.
+//! - **wasm32-unknown-unknown** — [`HostFs`], which calls back into the JavaScript host
+//!   (`std::fs` compiles there but fails at runtime).
 //!
-//! Every method is synchronous because [`oxc_resolver::FileSystem`] is a synchronous
-//! trait and the entire query engine is built on it. On wasm that means the host must
-//! expose synchronous primitives (`fs.readFileSync` and friends), which is why the
-//! wasm engine targets Node rather than the browser.
+//! Methods are synchronous because [`oxc_resolver::FileSystem`] is; on wasm the host must expose
+//! sync primitives (`fs.readFileSync`, ...), which is why the wasm engine targets Node rather than
+//! browsers.
 
 use oxc_resolver::FileMetadata;
 use std::io::Result;
@@ -29,9 +22,6 @@ pub struct DirEntry {
 }
 
 /// Synchronous access to the underlying (non-virtual) filesystem.
-///
-/// `Send + Sync` is required transitively: `OverlayFileSystem` implements
-/// [`oxc_resolver::FileSystem`], which is `Send + Sync`, and holds one of these.
 pub trait PhysicalFs: Send + Sync {
     fn read(&self, path: &Path) -> Result<Vec<u8>>;
     fn read_to_string(&self, path: &Path) -> Result<String>;
@@ -53,10 +43,6 @@ pub trait PhysicalFs: Send + Sync {
         self.metadata(path).map(|m| m.is_dir()).unwrap_or(false)
     }
 }
-
-// ---------------------------------------------------------------------------
-// Native
-// ---------------------------------------------------------------------------
 
 /// Pass-through to [`std::fs`]. Used on every non-wasm target.
 #[cfg(not(target_arch = "wasm32"))]
@@ -107,21 +93,13 @@ impl PhysicalFs for NativeFs {
     }
 }
 
-// ---------------------------------------------------------------------------
-// Wasm host bridge
-// ---------------------------------------------------------------------------
-
-/// The JavaScript-backed filesystem used by the `wasm32-unknown-unknown` build.
+/// JavaScript-backed filesystem for `wasm32-unknown-unknown`.
 ///
-/// Owns its host handle, so each analyzer can be given a different filesystem — two
-/// `WasmAnalyzer`s in one process do not interfere.
-///
-/// This satisfies the `Send + Sync` bound that `oxc_resolver::FileSystem` imposes
-/// without any `unsafe`: wasm-bindgen implements `Send`/`Sync` for `JsValue` when the
-/// build has no atomics, which is the case for this single-threaded target. (Under
-/// `+atomics` those impls disappear, and this would stop compiling rather than
-/// silently becoming unsound.) An `Arc` alone is enough — no `Mutex` — because every
-/// host call takes `&self`.
+/// Owns its host handle so multiple `WasmAnalyzer` instances remain isolated.
+/// `JsValue` implements `Send + Sync` on single-threaded wasm (without `+atomics`),
+/// so `Arc` satisfies `oxc_resolver::FileSystem`'s `Send + Sync` bound without `unsafe`; under
+/// `+atomics` those impls vanish and this fails to compile rather than becoming unsound. No
+/// `Mutex` is needed: every host call takes `&self`.
 #[cfg(target_arch = "wasm32")]
 #[derive(Clone)]
 pub struct HostFs {

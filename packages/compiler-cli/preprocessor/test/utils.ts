@@ -109,7 +109,7 @@ function resolvePackagePath(pkg: string): string | null {
 }
 
 let syntheticNodeModules: string | null = null;
-function getOrCreateSyntheticNodeModules(): string | null {
+export function getOrCreateSyntheticNodeModules(): string | null {
   if (syntheticNodeModules) return syntheticNodeModules;
   const corePath = resolvePackagePath('core');
   if (!corePath) return null;
@@ -276,13 +276,11 @@ export async function runPipeline(
     nodeModulesPath = getOrCreateSyntheticNodeModules() || candidatePath;
   }
 
-  // Convert source files to virtual file entries
   const virtualFiles: Record<string, string> = {};
   for (const f of sourceFiles) {
     virtualFiles[f.path] = f.content;
   }
 
-  // Find tsconfig path
   const tsconfigFile = sourceFiles.find((f) => f.path.endsWith('tsconfig.json'));
   if (!tsconfigFile) {
     throw new Error('tsconfig.json must be provided in source files');
@@ -394,7 +392,6 @@ export async function runPipeline(
         processedFiles++;
       }
 
-      // Get content from virtual files
       const content = virtualFileMap.get(normalizePathKey(filePath));
       if (!content) continue;
 
@@ -408,7 +405,6 @@ export async function runPipeline(
         );
         const emitted = processed.magicString.toString();
 
-        // Compute output path
         const outPath = '/out/' + filePath.replace(/\\/g, '/').replace(/^\//, '');
 
         if (emitted !== content) {

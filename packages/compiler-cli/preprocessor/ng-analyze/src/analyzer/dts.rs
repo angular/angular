@@ -63,8 +63,6 @@ pub fn analyze_dts(
 
     for stmt in &program.body {
         match stmt {
-            // export declare class Foo { static ɵdir: ... }
-            // export declare class Foo { static ɵdir: ... }
             Statement::ExportDeclaration(export) => {
                 if let Declaration::ClassDeclaration(class) = &export.declaration {
                     // `class_index` holds every `declare class`, exported or not (arm below); the export
@@ -100,7 +98,6 @@ pub fn analyze_dts(
                     }
                 }
             }
-            // export { foo, bar }
             Statement::ExportNamedDeclaration(export) => {
                 let decl_is_type = export.export_kind.is_type();
                 for spec in &export.specifiers {
@@ -111,7 +108,6 @@ pub fn analyze_dts(
                     });
                 }
             }
-            // export { foo, bar } from './z'
             Statement::ExportFromDeclaration(export) => {
                 let decl_is_type = export.export_kind.is_type();
                 for spec in &export.specifiers {
@@ -126,7 +122,6 @@ pub fn analyze_dts(
                     });
                 }
             }
-            // export * from './z'
             Statement::ExportAllDeclaration(decl) => {
                 if let Some(exported) = &decl.exported {
                     // `export * as ns from './z'` publishes one binding, `ns`. Filing it as a
@@ -146,7 +141,6 @@ pub fn analyze_dts(
                     });
                 }
             }
-            // export default class Foo { ... } / export default Foo
             Statement::ExportDefaultDeclaration(export) => {
                 let local_name = match &export.declaration {
                     ExportDefaultDeclarationKind::ClassDeclaration(class) => {
@@ -184,7 +178,6 @@ pub fn analyze_dts(
             }
             // `export = Foo` publishes no named export, so nothing here may be imported by name.
             Statement::TSExportAssignment(_) => {}
-            // declare class Foo { static ɵdir: ... } (non-exported)
             Statement::ClassDeclaration(class) => {
                 let symbol_id = class
                     .id
@@ -301,10 +294,8 @@ fn extract_class_metadata(
                     continue;
                 }
 
-                // ngtsc ignores `ngAcceptInputType_` in .d.ts (relying on TS resolution).
-                // In our hybrid setup, we extract them here so the TCB generator emits
-                // `typeof Class.ngAcceptInputType_prop`, which TS resolves. This avoids
-                // the need for what ngtsc does: use the ReflectionHost to eventually land on the same result.
+                // Extract `ngAcceptInputType_` fields so the TCB generator can emit
+                // `typeof Class.ngAcceptInputType_prop` without TS ReflectionHost queries.
                 if let Some(input_name) = prop_name.strip_prefix("ngAcceptInputType_") {
                     coerced_input_fields.push(input_name.to_string());
                     continue;
@@ -731,7 +722,7 @@ fn extract_string_from_type_argument(
 }
 
 /// Extract ngContentSelectors from position 7 (index 6) of: i0.ɵɵComponentDeclaration<T, "[selector]", ..., NgContentSelectors, ...>
-/// https://github.com/angular/angular/blob/b918beda323eefef17bf1de03fde3d402a3d4af0/packages/core/src/render3/interfaces/public_definitions.ts#L49
+/// https://github.com/angular/angular/blob/b918bed/packages/core/src/render3/interfaces/public_definitions.ts#L49
 fn extract_ng_content_selectors_from_type(
     type_ann: &Option<oxc_allocator::Box<TSTypeAnnotation>>,
 ) -> Option<Vec<String>> {

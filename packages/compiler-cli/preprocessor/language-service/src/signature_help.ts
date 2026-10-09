@@ -123,13 +123,11 @@ export async function getSignatureHelp(
   return cleanupSignatureHelp(res);
 }
 
+// Strip TCB import prefixes (i0.) and temporary variables (_t1).
 function cleanTcbText(text: string): string {
   let cleaned = text;
-  // Remove TCB import prefixes like i0., i1., etc.
   cleaned = cleaned.replace(/\bi[0-9]+\./g, '');
-  // Remove TCB temporary variable prefixes like _t1., _t2., etc.
   cleaned = cleaned.replace(/\b_t[0-9]+\./g, '');
-  // Replace standalone _t1, _t2 if any
   cleaned = cleaned.replace(/\b_t[0-9]+\b/g, '');
   return cleaned;
 }

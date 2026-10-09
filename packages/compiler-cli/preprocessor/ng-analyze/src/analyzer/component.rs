@@ -19,7 +19,6 @@ use super::utils::{
     extract_bool, extract_property_key, extract_schemas, extract_string, resolve_local_expression,
 };
 
-/// Parse a @Component decorator
 #[allow(clippy::too_many_arguments)]
 pub fn parse_decorator<'a, Fs: ResourceResolverFs>(
     decorator: &Decorator<'a>,
@@ -83,7 +82,7 @@ pub fn parse_decorator<'a, Fs: ResourceResolverFs>(
     )
 }
 
-// TODO(#60): To achieve full feature parity with `@angular/compiler-cli`, we will eventually need to use the `Semantic` model to follow static identifier references (e.g., `const myAnimations = [...]`). For now, falling back to dynamic is fine.
+// TODO(#60): Evaluate animation trigger expressions across files instead of only resolving local identifiers.
 fn collect_animation_triggers<'a>(
     expr: &'a Expression<'a>,
     static_trigger_names: &mut Vec<String>,
@@ -132,14 +131,12 @@ fn collect_animation_triggers<'a>(
     }
 }
 
-/// The source span of an inline template's text when the `template` expression is itself a
-/// string literal or a no-substitution template literal, excluding the delimiters.
+/// Source span of an inline template's text (excluding delimiters) when `template` is written
+/// directly as a string literal or no-substitution template literal.
 ///
-/// Mirrors ngtsc's `extractTemplate`, which parses exactly these two node kinds straight out of
-/// the component file (`getTemplateRange`, with `escapedString: true`) and maps their spans
-/// `direct`ly. The check is on the expression as written — a parenthesized literal, an `as`
-/// cast, an identifier or a template literal with substitutions is evaluated instead, and its
-/// spans refer to the resolved string (`indirect`).
+/// Mirrors ngtsc's `extractTemplate` (`getTemplateRange`), which maps these two node kinds
+/// `direct`ly into the component file. Any other expression (parenthesized, cast, identifier, or
+/// substituted template literal) is evaluated instead and uses `indirect` span mapping.
 fn direct_template_content_span(expr: &Expression<'_>) -> Option<oxc_span::Span> {
     let literal_span = match expr {
         Expression::StringLiteral(literal) => literal.span,
@@ -152,8 +149,7 @@ fn direct_template_content_span(expr: &Expression<'_>) -> Option<oxc_span::Span>
     ))
 }
 
-/// Represents a URL parsed directly from the component decorator that has not yet been resolved
-/// to an absolute filesystem path or checked for existence.
+/// A URL parsed from the component decorator before filesystem resolution.
 struct UnresolvedUrl {
     url: String,
     string_literal_span: Option<oxc_span::Span>,
@@ -726,8 +722,6 @@ mod tests {
 
     #[test]
     fn keeps_valid_entries_with_any_callee_identifier() {
-        // Any identifier callee is accepted (not just `frameworkImport`); each valid entry keeps
-        // the argument identifier as `name` and the whole call span for verbatim re-emission.
         let (got, issues) = extract("[frameworkImport(FancyButton), myImport(OtherCmp)]");
         assert_eq!(
             got.unwrap(),
@@ -744,9 +738,6 @@ mod tests {
 
     #[test]
     fn records_issue_per_malformed_entry() {
-        // Not a call, non-identifier callee, wrong arity, and non-identifier argument each
-        // record the issue ngtsc reports NG1010 for, on the node ngtsc reports it on; the
-        // surrounding valid entries are still kept.
         let (got, issues) =
             extract("[bad, two(A, B), obj.member(C), fn(x.y), frameworkImport(Kept)]");
         assert_eq!(

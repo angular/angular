@@ -16,7 +16,6 @@ use std::collections::{HashMap, HashSet};
 /// [`crate::analyzer::ClassData`] wrapper so Stage-2 resolution can chase each component's
 /// `imports: [...]`. Internal to Rust — never serialized.
 #[derive(Clone, Debug)]
-// TODO: Feature Parity: Track original exported name for alias imports (e.g. import { MyComponent as CustomComponent }) to correctly resolve them during correlation.
 pub struct ImportInfo {
     pub local_name: String,
     pub imported_name: Option<String>,
@@ -312,7 +311,7 @@ pub struct ImportBindingInfo {
     /// `NG8014`) want this; [`Self::eagerly_referenced`] tells the emitter whether a deferrable
     /// declaration can be removed outright or must have its non-type specifiers converted to
     /// `type` specifiers so type annotations stay valid.
-    /// https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/imports/src/deferred_symbol_tracker.ts
+    /// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/imports/src/deferred_symbol_tracker.ts
     pub value_referenced: bool,
     /// `import type { X }` / `import { type X }`: the binding exists only in type position, so a
     /// re-export of it cannot back a value reference.
@@ -870,7 +869,7 @@ pub struct AngularImports {
     /// This backs the name-agnostic "did this come from `@angular/core`?" question, which ngtsc
     /// answers with `decorator.import.from === '@angular/core'` (`isAngularCore`) rather than by
     /// comparing against a list of known names.
-    /// https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L107-L109
+    /// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L107-L109
     pub core_bindings: HashSet<SymbolId>,
     /// Whether the file being analyzed is part of the `@angular/core` package itself. Mirrors
     /// ngtsc's `isCore`, under which a decorator matches on its local name alone because core
@@ -957,7 +956,7 @@ fn parse_package_is_core(contents: &str) -> bool {
 /// per-file/delta model. Walking up to the nearest `package.json` manifest (`name === "@angular/core"`)
 /// provides an accurate, stateless equivalent that is immune to `rootDirs`/path aliasing. Findings
 /// and intermediate directories are memoized on [`ResourceResolverFs`].
-/// https://github.com/angular/angular/blob/c1829f6d7cc37aec73217a53da1e8314690c8c79/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L1724-L1758
+/// https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/core/src/compiler.ts#L1724-L1758
 pub fn detect_is_core<Fs: ResourceResolverFs>(path: &std::path::Path, fs: &Fs) -> bool {
     let Some(start_dir) = path.parent() else {
         return false;

@@ -48,44 +48,34 @@ impl TextInsertionMetadata {
 pub struct ImportBindingMetadata {
     /// Source span of the individual specifier (`Foo`, `Foo as Bar`, `type Foo`, or `* as ns`).
     pub span: SpanMetadata,
-    /// The identifier this declaration binds in the importing file.
+    /// Identifier bound in the importing file.
     pub local: String,
-    /// The name the module exports this binding under: the named export, the reserved key
-    /// `"default"` for a default import, or absent for a namespace import (`import * as ns`),
-    /// which binds the module object itself rather than any one export.
+    /// Exported symbol name (`"default"` for default imports, `None` for namespace imports).
     pub imported: Option<String>,
-    /// Whether a reference to `local` survives the edits this compiler makes to the file, so
-    /// the binding must keep its import. References inside a component's `imports: [...]` array
-    /// do not count — the decorator is stripped from the output.
+    /// True when `local` is referenced outside stripped decorator metadata (`@Component.imports`).
     pub eagerly_referenced: bool,
-    /// Whether any such surviving reference is in value position, i.e. would still be there if
-    /// this compiler emitted JavaScript. ngtsc decides deferrability on this narrower set;
-    /// `eagerly_referenced` tells the emitter whether a deferrable declaration can be deleted
-    /// outright or must have its non-type specifiers converted to `type` specifiers.
+    /// True when `local` has a surviving value-position reference; ngtsc decides `@defer`
+    /// eligibility on this. `eagerly_referenced` then decides whether a deferrable import is
+    /// deleted outright or has its non-type specifiers converted to `type`.
     pub value_referenced: bool,
-    /// `import type { X }` / `import { type X }`: the binding exists only in type position.
-    /// ngtsc ignores these entirely when deciding whether a declaration can be deferred.
+    /// True for `import type { X }` / `import { type X }` (ignored by ngtsc's deferrability check).
     pub is_type: bool,
 }
 
-/// A static `import` declaration: enough to decide whether it may be dropped in favour of the
-/// dynamic `import()`s a `@defer` block emits, and the exact range to delete when it may.
-///
-/// Deferral is all-or-nothing per declaration, matching ngtsc's `DeferredSymbolTracker`.
+/// Static `import` declaration metadata used for `@defer` import pruning; deferral is
+/// all-or-nothing per declaration (`DeferredSymbolTracker`).
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ImportDeclarationMetadata {
-    /// The declaration's own span, for anchoring a diagnostic on the statement.
+    /// Statement span for diagnostic anchoring.
     pub span: SpanMetadata,
-    /// `span` extended over a trailing line terminator, so deleting it leaves no blank line
-    /// behind. Only removal wants the extension; a diagnostic underlining it would drag the
-    /// squiggle onto the next line.
+    /// `span` extended over any trailing line terminator for clean removal (diagnostics use `span`
+    /// so the squiggle stays on one line).
     pub removal_span: SpanMetadata,
-    /// The module specifier, verbatim (unresolved).
+    /// Raw module specifier.
     pub specifier: String,
-    /// Every binding the declaration introduces, including type-only ones. A bare
-    /// `import './side-effect'` introduces none, and can never be removed.
+    /// Introduced bindings (empty for bare side-effect imports).
     pub bindings: Vec<ImportBindingMetadata>,
 }
 
@@ -114,26 +104,21 @@ impl ImportDeclarationMetadata {
     }
 }
 
-/// Where to add a signal's implicit `debugName`: the edit ngtsc's `signalMetadataTransform`
-/// makes to one signal-creating call.
-/// https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/transform/src/implicit_signal_debug_name_transform.ts
+/// Implicit signal `debugName` insertion (`signalMetadataTransform`).
+/// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/transform/src/implicit_signal_debug_name_transform.ts#L11-L93
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SignalDebugNameMetadata {
-    /// Insertion offset: just after the options object literal's `{` when spreading into it,
-    /// else the end of the call's last argument, or its `)` when it has none.
+    /// UTF-16 insertion offset (after `{` when spreading into options, or at the end of the call's arguments).
     pub position: u32,
-    /// The name, unescaped: the declared name's source text, or the assigned property's name.
+    /// Unescaped variable or property name.
     pub debug_name: String,
-    /// Spread the `debugName` into the existing options object literal, rather than append it
-    /// as a new spread argument.
+    /// Spread `debugName` into the existing options object literal instead of appending an argument.
     pub into_options: bool,
-    /// The insertion sits next to existing code and needs a `, `: after it when spreading into
-    /// a non-empty options literal, before it when appending to a call that has arguments.
+    /// Whether a `, ` separator is needed (after when spreading into non-empty options, before when appending).
     pub needs_separator: bool,
-    /// When appending: pass `undefined` for the initial value ahead of the options, because
-    /// the call has no arguments but its options are not its first parameter.
+    /// Prepend `undefined, ` when appending options to a zero-argument call whose first parameter is the initial value.
     pub prepend_undefined: bool,
 }
 
@@ -306,13 +291,11 @@ pub struct HostDirectiveMetadata {
     pub is_forward_ref: bool,
 }
 
+/// URL resource (template or stylesheet) referenced in a component decorator, with its resolved
+/// path and literal span (used for Kythe cross-references).
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
-/// `UrlMetadata` represents a URL resource (like a template or style sheet URL) referenced in a component decorator.
-/// It tracks the raw URL string, the resolved absolute file path, and the exact text span of the string literal
-/// in the source file. This is crucial for the Kythe indexer to establish cross-references (links) from the
-/// TypeScript source files to the external HTML/CSS files.
 pub struct UrlMetadata {
     pub url: String,
     pub resolved_path: String,
@@ -329,20 +312,12 @@ pub struct ComponentMetadata {
     pub selector: Option<String>,
     pub imports: Option<Vec<ReferenceMetadata>>,
     pub template: Option<String>,
-    /// The source text of an inline template declared as a string literal or a
-    /// no-substitution template literal, between (excluding) the literal's delimiters
-    /// (ngtsc's `getTemplateRange`). Present only for such a literal, which is parsed out of
-    /// the component file's source text with escape sequences decoded by the template lexer
-    /// (`sourceMapping.type === 'direct'`); absent for external templates and for inline
-    /// templates computed by any other expression (`'indirect'`), whose spans are offsets into
-    /// the resolved `template` string rather than into the component file.
+    /// Span of an inline string/template literal's content (excluding delimiters; `getTemplateRange`
+    /// for `sourceMapping.type === 'direct'`). `None` for external or indirectly computed templates.
     pub template_content_span: Option<SpanMetadata>,
-    /// The inline `template` property's value expression span — the node ngtsc anchors
-    /// template-attributed diagnostics on when the template is declared inline.
+    /// Span of the inline `template` expression (used to anchor template diagnostics).
     pub template_span: Option<SpanMetadata>,
-    /// True when an inline `template` was present but not statically resolvable
-    /// (dynamic template literal). Signals the processor to fall back to JIT / error
-    /// rather than emit an empty template.
+    /// True when an inline `template` is present but not statically resolvable.
     pub template_dynamic: bool,
     pub template_url: Option<UrlMetadata>,
     pub styles: Option<Vec<String>>,
@@ -353,21 +328,15 @@ pub struct ComponentMetadata {
     pub export_as: Option<Vec<String>>,
     pub schemas: Option<Vec<String>>,
     pub raw_imports_span: Option<SpanMetadata>,
-    /// Preserved copy of `@Component.imports` expression span, unaffected by same-file scope
-    /// resolution. Required by local compilation mode for runtime dependency resolution.
+    /// Preserved `@Component.imports` expression span for local compilation mode.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub imports_factory_span: Option<SpanMetadata>,
     pub resolved_declarations: Option<Vec<DeclarationMetadata>>,
-    /// The component's own `hostDirectives`, resolved in its own frame: the directives the
-    /// type-check block places on the component's host element ahead of the component itself.
+    /// The component's own `hostDirectives`, resolved in its own frame for the type-check block.
     pub resolved_host_directives: Option<Vec<ResolvedHostDirectiveMetadata>>,
-    /// Module specifiers to emit as bare side-effect imports (`import '<specifier>';`) in
-    /// local compilation mode, mirroring ngtsc's `LocalCompilationExtraImportsTracker`.
-    ///
-    /// Only populated for a non-standalone `@Component` whose declaring `@NgModule` lives in a
-    /// different file: those are the files ngtsc marks via `markFileForExtraImportGeneration`.
-    /// The specifiers are already projected into this component file's frame by Rust; the
-    /// emitter must use them verbatim.
+    /// Bare side-effect import specifiers (`import '<specifier>';`) for non-standalone components
+    /// whose declaring `@NgModule` is in another file (`LocalCompilationExtraImportsTracker`).
+    /// Already projected into this file's frame by Rust; emit verbatim.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub local_compilation_extra_imports: Option<Vec<String>>,
     /// Syntax of the `host` object literal, for the type-check block.
@@ -383,10 +352,8 @@ pub struct ComponentMetadata {
     pub host_directives: Option<Vec<HostDirectiveMetadata>>,
     pub providers_span: Option<SpanMetadata>,
     pub view_providers_span: Option<SpanMetadata>,
-    /// `encapsulation` resolved to its numeric `ViewEncapsulation` member value, mirroring
-    /// ngtsc's `resolveEnumValue`, with its textual local-compilation resolver
-    /// (`resolveEncapsulationEnumValueLocally`) as the fallback. `None` when absent or
-    /// unresolved — consumers default to `Emulated`.
+    /// `encapsulation` resolved to its numeric `ViewEncapsulation` value (`None` when absent or
+    /// unresolved; consumers default to `Emulated`).
     /// https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L532-L542
     #[serde(skip_serializing_if = "Option::is_none")]
     pub encapsulation: Option<i32>,
@@ -434,10 +401,8 @@ pub struct HostPropertyMetadata {
     pub value: ExpressionValueMetadata,
 }
 
-/// One entry of the `host` object as the partial evaluator reduced it. Mirror of ngtsc's
-/// `hostMetadata: Record<string, string | Expression>`, whose values are either a folded
-/// string or a `WrappedNodeExpr` over an unevaluable node:
-/// https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2021-L2047
+/// One entry of the `host` object reduced by the partial evaluator (`Record<string, string | Expression>`).
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2021-L2047
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -545,13 +510,10 @@ pub struct QueryMetadata {
     pub property_name: String,
     pub first: bool,
     pub is_forward_ref: bool,
-    /// The predicate expression with `forwardRef` removed. The query definition emits it
-    /// verbatim when the predicate has no selectors. A signal query's class metadata is always
-    /// built from it (ngtsc's `memberMetadataFromSignalQuery`).
+    /// Predicate expression with `forwardRef` stripped (emitted verbatim when `predicate_selectors`
+    /// is `None`, and used for signal query class metadata).
     pub predicate_span: SpanMetadata,
-    /// The selector strings, when the predicate is a list of them (the `string[]` arm of
-    /// ngtsc's `R3QueryMetadata.predicate`). Each is kept whole; the compiler splits it on
-    /// commas.
+    /// Selector strings when the predicate evaluated to `string[]` (unsplit on commas).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub predicate_selectors: Option<Vec<String>>,
     pub descendants: bool,
@@ -665,16 +627,16 @@ pub struct ImportViaMetadata {
 pub struct ImportableRef {
     /// Module specifier to import from.
     pub specifier: String,
-    /// The name `specifier` exports the symbol under — not necessarily its declared name, since
-    /// a barrel may rename on the way through, nor its name in the consuming file.
+    /// Exported symbol name on `specifier`.
     pub symbol: String,
 }
 
-/// How a consuming file can refer to a symbol. The two fields are independent facts, not a
-/// two-state choice: a cross-file symbol the consumer already imports has both, and callers
-/// pick per use — an eager reference wants the local binding, while a `@defer` block writes
 /// How a consuming file can refer to a symbol. Encodes how to reference the target both in-situ
-/// (within the consumer file) and for type-checking (.ngtypecheck.ts).
+/// (within the consumer file) and for type-checking (`.ngtypecheck.ts`).
+///
+/// Fields are independent, not alternatives: a cross-file symbol the consumer already imports has
+/// both `local_alias` and an import. Callers pick per use: expressions prefer the local binding,
+/// while emits that need a specifier (e.g. extra side-effect imports) read `consumer_import`.
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -722,15 +684,13 @@ impl ReferenceMetadata {
 pub struct NgModuleMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub decorator_name: Option<String>,
-    /// True when any declaration or import of this NgModule came from a `forwardRef`-like
-    /// foreign resolver, so the runtime value may not be available when `ɵɵsetComponentScope`
-    /// runs and remote-scope arrays must be wrapped in a closure.
-    /// https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L705-L706
+    /// True when any declaration or import came from a `forwardRef`-like foreign resolver, so
+    /// remote-scope arrays must be wrapped in a closure.
+    /// https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L719-L720
     pub remote_scopes_may_require_cycle_protection: bool,
     pub declarations: Option<Vec<ReferenceMetadata>>,
-    /// The subset of `declarations` this NgModule also lists in `exports`, in declaration
-    /// order: ngtsc's `exportedDeclarations`, which `onlyPublishPublicTypingsForNgModules`
-    /// narrows the declarations tuple of the `ɵmod` type to.
+    /// Subset of `declarations` also listed in `exports`, in declaration order (`exportedDeclarations`
+    /// for `onlyPublishPublicTypingsForNgModules`).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub public_declarations: Option<Vec<ReferenceMetadata>>,
     pub imports: Option<Vec<ReferenceMetadata>>,

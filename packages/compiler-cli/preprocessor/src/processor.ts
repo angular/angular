@@ -180,7 +180,7 @@ export function buildTcbTargets(
 
       // 9. Collect component for TCB generation (optimize mode only)
       tcbTargets.push({
-        // TODO: maybe remove duplicated info from tcbTargets and have downstream access through classMeta
+        // TODO(cleanup): access fields mirrored from `classMeta` directly instead of duplicating them on `TcbTargetInput`.
         classMeta: cls,
         className,
         template: component.template || '',
@@ -422,11 +422,8 @@ export async function processFile(
     // Use empty array for no-arg constructors (null means "inherit from parent")
     const deps = buildDeps(constructorParams, classMeta.usesInheritance, o, s);
 
-    // Track if a factory has already been generated for the current class.
-    // This is necessary to avoid duplicate ɵfac generation when a class has multiple decorators.
-    // Angular handles this generically by checking if a result with the same name already exists
-    // in the compiled results array.
-    // See: https://github.com/angular/angular/blob/d27e2c24e1aa6eaf60cfdf61ba812ff9c7f933c2/packages/compiler-cli/src/ngtsc/transform/src/compilation.ts#L716
+    // Avoid duplicate `ɵfac` generation when a class carries multiple decorators (e.g. `@Component` + `@Injectable`).
+    // https://github.com/angular/angular/blob/d27e2c2/packages/compiler-cli/src/ngtsc/transform/src/compilation.ts#L710-L718
     let factoryGenerated = false;
 
     // NgModule side-effect statements, emitted after `ɵsetClassMetadata` (see below).
@@ -449,7 +446,6 @@ export async function processFile(
         argsSpan: pipe.argsSpan ?? undefined,
       });
       factoryGenerated = true;
-      // 1. Generate ɵfac (Factory)
       const factoryRes = compileFactoryFunction({
         name: className,
         type: {
@@ -463,7 +459,6 @@ export async function processFile(
 
       const compiledFactory = compileFactoryField(factoryRes, printer, ctx);
 
-      // 2. Generate ɵpipe (PipeDef)
       const def = compilePipeFromMetadata({
         name: className,
         type: {
@@ -484,7 +479,6 @@ export async function processFile(
         ctx.isClosureCompilerEnabled,
       );
 
-      // Insert at classEnd - 1 (before the closing brace)
       s.appendLeft(span.end - 1, compiledFactory + compiledPipe);
     }
 
@@ -534,7 +528,7 @@ export async function processFile(
       // the resolved resource URLs are emitted via the `ɵɵExternalStylesFeature(...)` so the
       // runtime can fetch them. Inline styles are likewise treated as external URLs. Mirrors
       // the reference component handler.
-      // https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L888-L964
+      // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L868-L978
       const externalRuntimeStyles = !!ctx.externalRuntimeStyles;
 
       // Collect styles in precedence order (least to greatest priority => array start to end):
@@ -542,7 +536,7 @@ export async function processFile(
       // 2. <link> from template (parsed.styleUrls)
       // 3. styles from @Component (component.styles)
       // 4. <style> from template (parsed.styles)
-      // https://github.com/angular/angular/blob/0eeb1b5f03/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L837-L839
+      // https://github.com/angular/angular/blob/0eeb1b5/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L837-L839
       const allStyles: string[] = [];
       const externalStyles: string[] = [];
       if (externalRuntimeStyles) {
@@ -841,7 +835,7 @@ export async function processFile(
           return true; // Keep NgModules eager!
         }
         if (hasDeferredImportsField) {
-          // If explicit deferredImports is used, anything not deferred in any defer block remains eager (commit 443104adb4)
+          // With explicit `deferredImports`, anything not deferred in any block remains eager.
           if (!allDeferredDecls.has(d)) {
             return true;
           }
@@ -925,7 +919,7 @@ export async function processFile(
         // component listing the same symbol still references it eagerly — including one whose
         // dependencies this compiler could not resolve, which is every component under local
         // compilation.
-        // https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/imports/src/deferred_symbol_tracker.ts
+        // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/imports/src/deferred_symbol_tracker.ts
         for (const ref of component?.imports ?? []) {
           const local = ref.localAlias;
           if (local === undefined || deferredHere.has(local)) continue;
@@ -1229,7 +1223,7 @@ export async function processFile(
         // Local compilation cannot inspect dependencies, so it always assumes directive
         // dependencies exist (avoiding the DOM-only fast path). In global compilation, a
         // standalone component only has dependencies when its template uses a directive:
-        // https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1380-L1393
+        // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1385-L1400
         hasDirectiveDependencies: isLocalCompilation ? true : !standalone || templateUsesDirectives,
         declarations: depMeta.declarations,
         defer: deferMeta,
@@ -1245,7 +1239,7 @@ export async function processFile(
         // Project-relative path of the file the template's text lives in: the `templateUrl`
         // resource, or this file for an inline template. Only `ɵɵattachSourceLocations` reads it,
         // and only under `enableTemplateSourceLocations`.
-        // https://github.com/angular/angular/blob/b3b9f39/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L815-L825
+        // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L812-L822
         relativeTemplatePath: getProjectRelativePath(
           component.templateUrl?.resolvedPath ?? filePath,
           ctx.rootDir,
@@ -1443,7 +1437,7 @@ export async function processFile(
 
       // Angular's `@Injectable` decorator evaluates arguments with a strict precedence order.
       // We mirror the `ngtsc` else-if chain here so `compileInjectable` picks the correct one.
-      // See: https://github.com/angular/angular/blob/dea3241be626c3779df1b1f3f120024114631b79/packages/compiler-cli/src/ngtsc/annotations/src/injectable.ts#L328-L338
+      // https://github.com/angular/angular/blob/dea3241/packages/compiler-cli/src/ngtsc/annotations/src/injectable.ts#L328-L338
       if (injectable.useValue) {
         injectableMeta.useValue = wrapProviderField(injectable.useValue);
       } else if (injectable.useExisting) {
@@ -1931,8 +1925,9 @@ function buildPropDecoratorsExpr(
       {key: 'isSignal', value: o.literal(true), quoted: false},
     ];
     if (query.readSpan) {
-      // TODO: `laterDeclarationReferences` only covers decorator arguments, so a `read` that names
-      // a later declaration is not guarded and fails `tsc` inside the static block.
+      // TODO(cleanup): `laterDeclarationReferences` only covers decorator arguments, so a signal
+      // query's `read` naming a later declaration is unguarded and fails `tsc` inside the static
+      // block.
       const readStr = s.original.slice(query.readSpan.start, query.readSpan.end);
       queryOptionsProps.push({
         key: 'read',
@@ -2089,45 +2084,20 @@ function refName(ref: nga.ReferenceMetadata): string {
 }
 
 /**
- * How a deferrable dependency is named and reached, taken from the `import` declaration the
- * consuming file already has for it rather than from the declaration that import resolves to.
+ * Resolves `symbolName`, `importPath`, and `isDefaultImport` for a deferrable dependency from the
+ * consuming file's own `ImportDeclaration` (matching ngtsc's `getImportOfIdentifier`), rather than
+ * from the resolved target declaration (which may differ when re-exported under an alias or barrel:
+ * `import {NgFor}` resolves to `NgForOf`, and naming the callback parameter after the declaration
+ * would leave `imports: [NgFor]` unbound once its import is removed, TS2552).
  *
- * That distinction is the whole point. ngtsc fills these three fields from
- * `getImportOfIdentifier` on the identifier written in `@Component.imports`, which reads the
- * consumer's own `ImportDeclaration`:
+ * Uses the specifier's exported name (`{Cmp as Alias}` -> `Cmp`), or the local binding for default
+ * imports (since `symbolName` doubles as the `ɵsetClassMetadataAsync` callback parameter, where
+ * `default` is a reserved word). Returns `null` when not bound by a named/default import; callers
+ * must then treat the dependency as eager and keep its static import.
  *
- *     deferBlockDep.symbolName = importInfo.name;
- *     deferBlockDep.importPath = importInfo.from;
- *     deferBlockDep.isDefaultImport = isDefaultImport(importInfo.node);
- *
- * The two disagree whenever a module re-exports a class under another name — `import {NgFor}
- * from '@angular/common'` resolves to a class declared as `NgForOf`, and under
- * `PrefixImportStrategy` it resolves to the declaring `ng_for_of.d.ts` rather than the barrel.
- * Naming the dependency after the declaration would emit `(NgForOf: any) => …` as the
- * `ɵsetClassMetadataAsync` callback parameter, while the `@Component` metadata preserved inside
- * that callback still reads `imports: [NgFor]` — whose `import` declaration this compiler has
- * just deleted, leaving an unbound identifier (TS2552).
- *
- * The name is the *exported* name of the specifier (`{Cmp as Alias}` -> `Cmp`), since that is the
- * property the awaited module object carries, and it is also what ngtsc's `getExportedName`
- * returns. A default import has no specifier to read a name off, so it falls back to the local
- * identifier: the analyzer reports its exported name as the literal `default`, which must not
- * reach the emitter — the name doubles as the callback parameter, where `default` is a reserved
- * word and produces unparseable output. `isDefaultImport` is what redirects the module access to
- * `m.default`.
- *
- * Returns `null` for a reference this file has no `import` declaration for, and for one bound by
- * a namespace import, which names no export at all — `m.<name>` needs one. That is also every
- * reference `isRefDeferrable` rejects, since it looks the binding up in the same map, so a caller
- * that gates on it cannot reach a `null` it would then have to explain. Callers must keep the two
- * decisions together regardless: a dependency with no dynamic import to load it is one whose
- * static import has to survive.
- *
- * TODO(parity): ngtsc can defer a namespace-imported dependency —
- * `getImportOfIdentifier` resolves `ns.Cmp` through `getImportOfNamespacedIdentifier` and reports
- * the exported name `Cmp`. Reaching that here needs the analyzer to report the namespace root and
- * the member separately; it currently reports the reference's local alias as the dotted source
- * text (`ns.Cmp`), which matches no import binding, so such a dependency stays eager.
+ * TODO(parity): ngtsc can defer a namespace-imported dependency (`ns.Cmp`) via
+ * `getImportOfNamespacedIdentifier`; the analyzer currently reports `localAlias` as `"ns.Cmp"`,
+ * which matches no import binding, so namespace-imported dependencies stay eager.
  */
 function deferredImportOf(
   ref: nga.ReferenceMetadata,
@@ -2151,20 +2121,12 @@ function deferredImportOf(
 }
 
 /**
- * Identity of a deferrable dependency, for collapsing the repeats that arise when one symbol is
- * used by several `@defer` blocks of the same component.
- *
- * The module has to be part of it. Two modules may each export a symbol of the same name, and the
- * importing file can only name both by aliasing at least one — but the alias is local, so both
- * reach this point calling themselves by the same *exported* name. Keyed on that name alone they
- * collapse, and the second module never gets a loader, which leaves its component unresolvable
- * once the `@defer` block triggers.
- *
- * This is not the key the reference's `uniqueDeps` map uses, and it does not need to be: that map
- * belongs to `compileComponentClassMetadata`, which applies it downstream of this list on the way
- * into `ɵsetClassMetadataAsync`. The defer resolver function is compiled from the same list with
- * no de-duplication at all, so anything dropped here is dropped from the runtime loader too.
- * https://github.com/angular/angular/blob/main/packages/compiler/src/render3/view/compiler.ts#L780-L798
+ * Deduplication key for component-wide deferrable dependencies. Includes `importPath` because
+ * aliased imports of same-named exports from different modules share a `symbolName`. Unlike
+ * ngtsc's `symbolName`-keyed `uniqueDeps` (applied only inside `ɵsetClassMetadataAsync`), this
+ * list also feeds the defer resolver, which never deduplicates, so anything dropped loses its
+ * loader:
+ * https://github.com/angular/angular/blob/5b525f9/packages/compiler/src/render3/view/compiler.ts#L786-L803
  */
 function deferredDepKey(importPath: string, symbolName: string): string {
   // A tuple rather than a delimited string: a module specifier may contain any character.
@@ -2214,7 +2176,7 @@ function compileNgModuleDef(
   // LOCAL compilation mode emits NgModule imports/exports/declarations/bootstrap VERBATIM,
   // as `WrappedNodeExpr` of the raw AST node — no resolution/filtering/flattening — matching
   // ngtsc (ɵɵsetNgModuleScope metadata: handler.ts#L566-L603; ɵinj.imports: handler.ts#L670-L688).
-  // https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L566-L603
+  // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L566-L603
   // We reproduce "the raw node" by slicing the original source text at the captured span.
   const guards = ctx.complianceMode ? [] : (classMeta?.laterDeclarationReferences ?? []);
   const rawExprFromSpan = (span: nga.SpanMetadata | undefined | null): o.Expression | null =>
@@ -2294,7 +2256,7 @@ function compileNgModuleDef(
 
   const compiledFac = compileFactoryField(factoryRes, printer, ctx);
 
-  // https://github.com/angular/angular/blob/4c9afb6/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L554
+  // https://github.com/angular/angular/blob/4c9afb6/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L552-L591
   const sharedMeta = {
     type: {
       value: o.variable(className),
@@ -2305,7 +2267,7 @@ function compileNgModuleDef(
   };
 
   // Detect if any dependencies are forward references.
-  // https://github.com/angular/angular/blob/4c9afb6/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L546
+  // https://github.com/angular/angular/blob/4c9afb6/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L544-L550
   let containsForwardDecls = false;
   if (optimize && !emitDeclarationOnly && classMeta) {
     const allRefs = [
@@ -2357,7 +2319,7 @@ function compileNgModuleDef(
           // `onlyPublishPublicTypingsForNgModules` narrows the `ɵmod` type — which becomes the
           // `.d.ts` type once `tsc` compiles this output — to the declarations the module exports,
           // and drops its imports, which are generally private.
-          // https://github.com/angular/angular/blob/b3b9f39/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L583-L592
+          // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L583-L592
           includeImportTypes: !ctx.onlyPublishPublicTypingsForNgModules,
           publicDeclarationTypes: ctx.onlyPublishPublicTypingsForNgModules
             ? (ngModule.publicDeclarations ?? []).map((ref) => refToExpression(ref))
@@ -2484,7 +2446,7 @@ function compileNgModuleDef(
   // - LOCAL mode: the raw `imports` array elements followed by the raw `exports` array
   //   elements, each emitted verbatim (ngtsc handler.ts#L670-L688) — no resolve/filter/flatten,
   //   so ModuleWithProviders (`X.forRoot()`), spreads and non-identifier entries survive.
-  //   https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L670-L688
+  //   https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L670-L688
   // - OPTIMIZE mode: the resolved+filtered `injectorImports` with `ModuleWithProviders` and
   //   unfiltered elements spliced back in verbatim (see `buildInjectorImports`).
   const injectorImportsExprs = (): o.Expression[] => {
@@ -2571,17 +2533,12 @@ function buildInjectorImports(
 }
 
 /**
- * Report NG8014 for every `import` declaration that feeds a `@Component.deferredImports` field
- * yet survives anyway, because something else in the file still references one of its bindings.
- * The dynamic `import()`s the defer blocks emit then buy nothing — the module is pulled into the
- * eager graph by the surviving declaration regardless — so the author has almost certainly not
- * got the laziness they asked for.
+ * Reports NG8014 when an `import` declaration used by `@Component.deferredImports` cannot be
+ * elided because one of its bindings is also referenced eagerly in the same file.
+ * https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1312-L1335
  *
- * ngtsc runs this check at the top of `resolve()` and returns the diagnostic *instead of*
- * compiling the component, in both local and global compilation modes. This compiler reports and
- * carries on, as it does for the other defer diagnostics above, so a single mistake does not
- * cascade into a wave of unrelated errors from the half-emitted file.
- * https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1312-L1335
+ * Unlike ngtsc, which returns this diagnostic instead of compiling the component, we report and
+ * continue so one mistake does not cascade into errors from a half-emitted file.
  */
 function reportEagerlyImportedDeferredDependencies(
   diagnostics: nga.NgDiagnostic[],
@@ -2650,7 +2607,7 @@ function reportEagerlyImportedDeferredDependencies(
  * it is removed outright. When any binding is still referenced in a TypeScript type annotation
  * (`binding.eagerlyReferenced`), non-type specifiers are converted to `type` specifiers so
  * downstream `tsc` / `tsickle` elides the runtime import while keeping type annotations valid.
- * https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/imports/src/deferred_symbol_tracker.ts
+ * https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/imports/src/deferred_symbol_tracker.ts
  */
 function removeDeferredImports(
   s: MagicString,
@@ -2723,7 +2680,7 @@ function convertImportToTypeOnly(
 
 // Note: Angular adds pure annotations for tree-shaking.
 // See standard InvokeFunctionExpr pure flag in output AST:
-// https://github.com/angular/angular/blob/main/packages/compiler/src/output/output_ast.ts#L443
+// https://github.com/angular/angular/blob/5b525f9/packages/compiler/src/output/output_ast.ts#L445
 function createStaticField(
   name: string,
   value: string,
@@ -2738,10 +2695,9 @@ function createStaticField(
   // `static <name> =` line. Breaking after `=` would leave the guard covering the declaration
   // instead of the value it was emitted for. ngtsc emits this on one line too.
   //
-  // TODO: the guard still reaches only the initializer's first line. `hostBindings` and `template`
-  // print as multi-line functions, so anything emitted after one of them falls outside it.
-  // TypeScript has no multi-line suppression, and collapsing the initializer would swallow the
-  // `//` comments Angular prints inside it. Characterized in `tests/emit_suppressions.test.ts`.
+  // TODO(parity): `// @ts-ignore` only covers the initializer's first line, so properties emitted
+  // after multi-line `hostBindings` or `template` functions land on uncovered continuation lines
+  // (see `tests/emit_suppressions.test.ts`).
   return `  ${nocollapse}// @ts-ignore\n  static ${name}${typeSuffix} = ${pureComment}${value};\n`;
 }
 
@@ -2806,7 +2762,7 @@ function computeComponentDependencyMetadata(
     // The scope is set from the NgModule's file instead, so the definition carries no
     // `dependencies` at all. `RuntimeResolved` would emit `ɵɵgetComponentDepsFactory`, which is
     // the local-compilation runtime helper — an empty list in `Direct` mode emits no key.
-    // https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1266-L1269
+    // https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L1326-L1328
     return {
       declarations: [],
       declarationListEmitMode: DeclarationListEmitMode.Direct,

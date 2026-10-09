@@ -2,7 +2,7 @@
 //! they're assigned to), for Angular DevTools. The TS emitter splices the recorded insertions in
 //! (`insertSignalDebugNames` in `src/processor.ts`).
 //!
-//! https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/transform/src/implicit_signal_debug_name_transform.ts
+//! https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/transform/src/implicit_signal_debug_name_transform.ts
 
 use oxc_ast::ast::{
     AccessorProperty, Argument, AssignmentExpression, AssignmentOperator, AssignmentTarget,

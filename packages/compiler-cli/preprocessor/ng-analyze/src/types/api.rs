@@ -73,14 +73,9 @@ pub struct AnalyzerOptions {
     pub optimize: Option<bool>,
     pub virtual_files: Option<HashMap<String, String>>,
     pub node_modules_path_override: Option<String>,
-    /// Optional list of absolute file paths for source files (JS/TS) that the analyzer is allowed to read from the physical disk.
-    ///
-    /// If provided, physical file system access for JS/TS files will be restricted to only these paths.
-    /// This is used to enforce build boundaries (e.g., in Bazel) by blocking restricted source files,
-    /// forcing the resolver to fall back to allowed `.d.ts` files.
-    ///
-    /// Symlinks in this list are handled automatically; both the symlink path and its resolved
-    /// physical path will be allowed.
+    /// Optional allowlist of absolute JS/TS source paths that may be read from disk (used to
+    /// enforce build boundaries by falling back to `.d.ts` files). Both symlink and resolved paths
+    /// are permitted.
     pub allowed_sources: Option<Vec<String>>,
     /// Workspace name used by `PrefixImportStrategy` for module specifiers (e.g., "google3").
     pub workspace_name: Option<String>,
@@ -119,8 +114,7 @@ pub struct FileInvalidation {
 pub struct DeclarationMetadata {
     pub name: String,
     pub r#ref: crate::types::metadata::ReferenceMetadata,
-    /// The same declaration as seen from the file of the NgModule declaring this component's
-    /// owner — what remote scoping must emit, since `ɵɵsetComponentScope` is written there.
+    /// Reference projected into the declaring NgModule's file for remote scoping (`ɵɵsetComponentScope`).
     pub ref_in_declaring_module: Option<crate::types::metadata::ReferenceMetadata>,
     pub name_span: SpanMetadata,
     pub declaration_type: String, // "component", "directive", "pipe", "ngmodule"
@@ -148,13 +142,12 @@ pub struct DeclarationMetadata {
     pub has_non_exported_bounds: bool,
     pub is_explicitly_deferred: bool,
     pub deferred_blocks: Option<Vec<String>>,
-    /// This declaration's `hostDirectives`, resolved in the consuming component's frame. These
-    /// apply only where this declaration matches; they are not members of the consumer's scope.
+    /// Resolved `hostDirectives` in the consuming component's frame; they apply only where this
+    /// declaration matches and are not members of the consumer's scope.
     pub resolved_host_directives: Option<Vec<ResolvedHostDirectiveMetadata>>,
 }
 
-/// One `hostDirectives` entry resolved to the declaration of the directive it names, with the
-/// inputs and outputs its host exposes. The wire form of `ResolvedHostDirective`.
+/// Wire form of `ResolvedHostDirective`.
 #[cfg_attr(feature = "napi", napi(object))]
 #[derive(Clone, Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]

@@ -11,53 +11,53 @@ pub struct CachedResult {
 }
 
 /// Identity of a single analyzer query.
-///
-/// This is plain data and deliberately carries **no `Fs` type parameter**, so that every query —
-/// regardless of which filesystem backend the engine runs on — keys a single shared cache
-/// (`QueryCache<QueryKey, QueryValue>`). Each variant corresponds to one "question" the analyzer
-/// answers; a query may, while executing, request other queries (forming an acyclic graph).
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum QueryKey {
-    /// Semantic single-file analysis: builds on [`QueryKey::AnalyzeFileSyntax`] and additionally
-    /// publishes the file's `ClassInfo`/exports records into the shared cross-file index. Returns
-    /// the same `FileData` the syntactic query produced; drives the optimized pipeline and is the
-    /// Stage-1 input every other query builds on.
+    /// Cross-file semantic analysis for a file (Stage 2).
     AnalyzeFileSemantic(FileId),
-    /// Syntactic single-file analysis (`analyzer::analyze_file`): the complete single-file
-    /// extraction — every decorated class plus registrations, re-exports, and per-component imports
-    /// — and resource registration, with no cross-file work. The base the semantic query builds on;
-    /// also drives the plain `analyze` pipeline directly.
+    /// Single-file syntactic extraction (`analyzer::analyze_file`) and resource registration.
     AnalyzeFileSyntax(FileId),
-    /// [`QueryKey::AnalyzeFileSyntax`] with the metadata a file's *consumers* read — selectors,
-    /// pipe names, `exportAs`, evaluated input/output declarations — completed across files by
-    /// the partial evaluator, and the symbol table rebuilt from the completed classes. This is
-    /// the table other files read a template dependency's metadata from. It depends only on
-    /// the evaluator (other files' syntax and parse results), never on scopes or semantic
-    /// analysis, so reading it from any query cannot form a cycle.
+    /// [`QueryKey::AnalyzeFileSyntax`] with consumer-visible declaration metadata (selectors, pipe
+    /// names, `exportAs`, inputs/outputs) completed across files via the partial evaluator, and the
+    /// symbol table rebuilt from it; other files read template-dependency metadata from this table.
+    /// Invariant: depends only on the evaluator (syntax/parse queries), never on scopes or semantic
+    /// analysis, so any query may read it without forming a cycle.
     AnalyzeFileEvaluated(FileId),
-    /// Complete parsed AST and semantic index for a source file, managed in a self-contained arena.
+    /// Parsed AST and semantic index for a source file in a self-contained arena.
     ParseFile(FileId),
     /// All declarations (components/directives/pipes) transitively exported by an NgModule.
     NgModuleExportsScope(ReferenceId),
     /// Full compilation scope (imports + declarations) visible to templates inside an NgModule.
     NgModuleImportsScope(ReferenceId),
-    /// Which name a package entry point publishes each declaration under. Keyed by the
-    /// resolved entry point, mirroring upstream's `moduleExportsCache`.
+    /// Export map of a package entry point (upstream's `moduleExportsCache`).
     ModuleExportMap(FileId),
-    /// Singleton: the component → owning-NgModule mapping over every file of the program
-    /// ([`QueryKey::ProgramFiles`]).
+    /// Singleton: component → owning-NgModule mapping across [`QueryKey::ProgramFiles`].
     ComponentMapping,
-    /// Singleton: the program's files — the tsconfig root files plus every local TS source they
-    /// reach through static and dynamic imports (`import()` calls with a literal specifier, import
-    /// types), the closure TypeScript builds a `Program` from. Whole-program questions ("which
-    /// NgModule declares this class?") iterate this, never the root list alone: the Angular CLI's
-    /// `tsconfig.app.json` names only `main.ts`, and a lazy-loaded feature module is reached only
-    /// through `loadChildren`.
+    /// Singleton: tsconfig root files plus every local TS source reachable via static and dynamic
+    /// imports. Whole-program questions iterate this, never the roots alone: a CLI app's tsconfig
+    /// names only `main.ts`, and lazy feature modules are reached only via `loadChildren`.
     ProgramFiles,
 }
 
-/// `enumerateExportsOfModule`'s `exportMap`, keyed by `(declaring file, declared name)` — the
-/// closest stand-in oxc gives us for its `DeclarationNode` key.
+impl QueryKey {
+    /// The file this key caches a per-file result for; `None` for NgModule-scope and
+    /// whole-program keys.
+    pub fn file_id(&self) -> Option<FileId> {
+        match *self {
+            Self::AnalyzeFileSemantic(file_id)
+            | Self::AnalyzeFileSyntax(file_id)
+            | Self::AnalyzeFileEvaluated(file_id)
+            | Self::ParseFile(file_id)
+            | Self::ModuleExportMap(file_id) => Some(file_id),
+            Self::NgModuleExportsScope(_)
+            | Self::NgModuleImportsScope(_)
+            | Self::ComponentMapping
+            | Self::ProgramFiles => None,
+        }
+    }
+}
+
+/// `enumerateExportsOfModule`'s `exportMap`, keyed by `(declaring file, declared name)`.
 pub type ModuleExportMap = std::collections::HashMap<(FileId, String), String>;
 
 #[derive(Clone, Debug)]
@@ -66,20 +66,14 @@ pub struct NgModuleImportsScopeData {
     pub is_complete: bool,
 }
 
-/// The result of a query, tagged by kind.
-///
-/// Variants hold `Arc<…>` so the engine's typed accessors can hand back the inner value cheaply
-/// (a refcount bump, not a deep clone). The cache stores `Arc<QueryValue>`, so the outer tag is
-/// itself shared across all awaiters of a given key.
+/// Tagged query result stored in the query cache.
 pub enum QueryValue {
     /// Single-file analysis ([`QueryKey::AnalyzeFileSyntax`]).
     Syntax(Arc<FileData>),
     /// Single-file analysis with cross-file declaration metadata evaluated
     /// ([`QueryKey::AnalyzeFileEvaluated`]).
     Evaluated(Arc<FileData>),
-    /// Cross-file resolved analysis ([`QueryKey::AnalyzeFileSemantic`]). Internal facts; the
-    /// serialized `AnalysisResult` is projected from this at the engine boundary
-    /// (`compiler::lower`).
+    /// Cross-file resolved analysis ([`QueryKey::AnalyzeFileSemantic`]).
     Semantic(Arc<FileData>),
     /// Parsed source file ([`QueryKey::ParseFile`]).
     ParsedFile(Arc<Mutex<ParsedFile>>),

@@ -469,8 +469,6 @@ function declarationToMetadata(
   content?: string,
   consumerPath?: string,
 ): TcbDirectiveMetadata {
-  // TODO: This TcbDirectiveMetadata is largely a stub. Many properties are hardcoded
-  // to false, empty sets, or null (like isStandalone, typeParameters, ngTemplateGuards, etc).
   const isSameFile = consumerPath !== undefined && filePath === consumerPath;
   const isLocal = (requiresInline && isSameFile) || !decl.ref.typecheckImport;
   const moduleName = isLocal ? null : (decl.ref.typecheckImport?.specifier ?? null);
@@ -564,6 +562,8 @@ function declarationToMetadata(
         .filter((f) => f.kind === 'input' && f.input && !f.input.propertySpan)
         .map((f) => f.input!.name),
     ),
+    // TODO(parity): populate `publicMethods`; signal-forms type-checking uses it to detect
+    // ControlValueAccessor directives (`writeValue`, `registerOnChange`, `registerOnTouched`).
     publicMethods: new Set(),
     ngContentSelectors: decl.ngContentSelectors || null,
     animationTriggerNames: decl.animationTriggerNames || null,

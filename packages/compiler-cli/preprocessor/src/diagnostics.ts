@@ -66,7 +66,7 @@ export interface MappedLocation {
  * way TCBs are generated; those diagnostics should not be reported as type check errors of the
  * template.
  *
- * @see https://github.com/angular/angular/blob/2896c93cc1077e1306acd91f4ed62fed4204a26b/packages/compiler-cli/src/ngtsc/typecheck/src/diagnostics.ts#L46-L73
+ * @see https://github.com/angular/angular/blob/2896c93/packages/compiler-cli/src/ngtsc/typecheck/src/diagnostics.ts#L20-L32
  */
 const IGNORED_DIAGNOSTIC_CODES = new Set<number | string>([
   6133, // $var is declared but its value is never read.
@@ -101,7 +101,7 @@ function findNodeAt(sourceFile: ts.SourceFile, position: number): ts.Node | unde
  * If the position could not be translated, `null` is returned to indicate that it
  * should not be reported at all.
  *
- * @see https://github.com/angular/angular/blob/2896c93cc1077e1306acd91f4ed62fed4204a26b/packages/compiler-cli/src/ngtsc/typecheck/src/diagnostics.ts#L46-L73
+ * @see https://github.com/angular/angular/blob/2896c93/packages/compiler-cli/src/ngtsc/typecheck/src/diagnostics.ts#L42-L75
  */
 export function translatePosition(
   position: Position,

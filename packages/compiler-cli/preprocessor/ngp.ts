@@ -83,17 +83,14 @@ async function processFile(
     const outputDir = path.dirname(outputPath);
     const mapPath = outputPath + '.map';
 
-    // Create output directory
     await fs.mkdir(outputDir, {recursive: true});
 
-    // Generate source map
     const map = s.generateMap({
       source: relativeSourcePath,
       file: path.basename(outputPath),
       includeContent: true,
     });
 
-    // Add sourceMappingURL to output
     const sourceWithMap = s.toString() + `\n//# sourceMappingURL=${path.basename(mapPath)}\n`;
 
     const writePromises: Array<Promise<void>> = [
@@ -102,11 +99,8 @@ async function processFile(
     ];
 
     if (compiler.optimize && !compiler.emitDeclarationOnly) {
-      // Write TCB file for type checking.
-      // The `.ng` segment is only present in --in-place mode, where outputPath is
-      // `foo.ng.ts`; under --out it is plain `foo.ts`. Matching only `.ng.ts` made
-      // tcbPath identical to outputPath there, so the TCB clobbered the emitted
-      // component. Strip either shape before appending the TCB suffix.
+      // Strip `.ng.ts` (--in-place) or `.ts` (--out) before appending `.ngtypecheck.ts`
+      // so the TCB never clobbers `outputPath`.
       const tcbPath = outputPath.replace(/(\.ng)?\.ts$/, '.ngtypecheck.ts');
       if (tcbPath === outputPath) {
         throw new Error(
@@ -118,7 +112,6 @@ async function processFile(
       writePromises.push(fs.writeFile(tcbPath, tcbCode));
     }
 
-    // Write files in parallel
     await Promise.all(writePromises);
   } else {
     console.log(`--- ${filePath} ---`);

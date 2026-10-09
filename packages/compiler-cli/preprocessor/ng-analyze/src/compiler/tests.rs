@@ -2,7 +2,7 @@ use super::*;
 use crate::fs::OverlayFileSystem;
 use crate::types::{AnalysisResult, AnalyzerOptions, FileInvalidation, FileUpdate, FileUpdateType};
 use crate::utils::create_resolver_with_fs;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -186,7 +186,6 @@ fn run_async_compiler_test<Fs: crate::ResourceResolverFs + Clone + 'static>(
                     .expect("semantic wire projection invariant"),
             );
 
-            // Walk the file's resolved direct imports (graph edges) to discover the next files.
             for dep_path in &resolved.resolved_dependencies {
                 if seen_files.insert(dep_path.clone()) {
                     queue.push_back(dep_path.clone());
@@ -212,9 +211,7 @@ fn test_async_streaming_behavior() {
         "export class B {}".to_string(),
     );
 
-    // Delay b.ts's read so a.ts (trivial) must stream first. The delay is generous because the
-    // self-driving queries run on the *shared global* thread pool — under parallel `cargo test`
-    // load a.ts can be briefly starved, so the margin must clear that contention, not just b's read.
+    // Delay b.ts's read by 250ms so a.ts streams first even under parallel test-pool contention.
     let delayed_fs = DelayedFileSystem::new(fs, "/project/b.ts", 250);
     let resolver = Arc::new(create_resolver_with_fs(
         Path::new("/project/tsconfig.json"),
@@ -237,12 +234,10 @@ fn test_async_streaming_behavior() {
 
     let start = std::time::Instant::now();
 
-    // We expect to receive A first because B is delayed
     let first = receiver.recv().unwrap();
     let elapsed = start.elapsed();
 
     assert_eq!(first.file_path, "/project/a.ts");
-    // a.ts streamed without waiting for b.ts's 250ms-delayed read (streaming, not batch-at-end).
     assert!(
         elapsed < std::time::Duration::from_millis(250),
         "Expected a.ts to stream before b.ts's delay elapsed, but took {:?}",
@@ -286,11 +281,9 @@ fn test_invalidate_files_html_returns_affected_ts() {
     let analyzer = Analyzer::new(options).unwrap();
     let iterator = analyzer.analyze().unwrap();
 
-    // Consume the result
     let result = futures::executor::block_on(iterator.next()).unwrap();
     assert!(result.is_some());
 
-    // Invalidate the HTML file
     let affected = analyzer
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/app.component.html".to_string(),
@@ -298,12 +291,9 @@ fn test_invalidate_files_html_returns_affected_ts() {
         }])
         .unwrap();
 
-    // Check that the TS file is returned as affected
     assert_eq!(affected.len(), 1);
     assert_eq!(affected[0], "/project/app.ts");
 
-    // The TS file was NOT re-analyzed because it was just an edit (Changed),
-    // but we still have the analysis from the original cache (updated in place).
     let ts_metadata = analyzer.get_metadata_for_file("/project/app.ts".to_string());
     assert!(ts_metadata.is_some());
 }
@@ -341,7 +331,6 @@ fn test_invalidate_files_html_template_deletion_edge_case() {
     let analyzer = Analyzer::new(options).unwrap();
     let iterator = analyzer.analyze().unwrap();
 
-    // Consume the result
     let result = futures::executor::block_on(iterator.next()).unwrap();
     assert!(result.is_some());
 
@@ -355,11 +344,10 @@ fn test_invalidate_files_html_template_deletion_edge_case() {
     assert_eq!(affected.len(), 1);
     assert_eq!(affected[0], "/project/app.ts");
 
-    // Verify that the TS file WAS re-analyzed (even though the template was deleted, the TS file exists).
     let ts_metadata = analyzer.get_metadata_for_file("/project/app.ts".to_string());
     assert!(ts_metadata.is_some());
 
-    // Verify that the association is still in the registry (NGTSC behavior: references are preserved).
+    // Template associations remain registered across template deletion (matching ngtsc).
     let components_after =
         analyzer.get_ts_file_for_template("/project/app.component.html".to_string());
     assert!(components_after.is_some());
@@ -411,7 +399,6 @@ fn test_invalidate_files_html_multiple_components() {
     let analyzer = Analyzer::new(options).unwrap();
     let iterator = analyzer.analyze().unwrap();
 
-    // Consume results
     let mut count = 0;
     while futures::executor::block_on(iterator.next())
         .unwrap()
@@ -421,7 +408,6 @@ fn test_invalidate_files_html_multiple_components() {
     }
     assert_eq!(count, 2);
 
-    // Invalidate the shared HTML file
     let affected = analyzer
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/shared.component.html".to_string(),
@@ -429,7 +415,6 @@ fn test_invalidate_files_html_multiple_components() {
         }])
         .unwrap();
 
-    // Check that BOTH TS files are returned as affected
     assert_eq!(affected.len(), 2);
     assert!(affected.contains(&"/project/app.ts".to_string()));
     assert!(affected.contains(&"/project/admin.ts".to_string()));
@@ -465,11 +450,9 @@ fn test_invalidate_files_unregistered_file() {
     let analyzer = Analyzer::new(options).unwrap();
     let iterator = analyzer.analyze().unwrap();
 
-    // Consume the result
     let result = futures::executor::block_on(iterator.next()).unwrap();
     assert!(result.is_some());
 
-    // Invalidate a file that is not in the registry
     let affected = analyzer
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/random.html".to_string(),
@@ -477,7 +460,6 @@ fn test_invalidate_files_unregistered_file() {
         }])
         .unwrap();
 
-    // Check that no files are affected
     assert_eq!(affected.len(), 0);
 }
 
@@ -526,11 +508,9 @@ fn test_invalidate_files_multiple_components_in_one_file() {
     let analyzer = Analyzer::new(options).unwrap();
     let iterator = analyzer.analyze().unwrap();
 
-    // Consume results
     let result = futures::executor::block_on(iterator.next()).unwrap();
     assert!(result.is_some());
 
-    // Verify both are registered
     let app_comps = analyzer.get_ts_file_for_template("/project/app.component.html".to_string());
     assert!(app_comps.is_some());
     let app_v = app_comps.unwrap();
@@ -544,7 +524,6 @@ fn test_invalidate_files_multiple_components_in_one_file() {
     assert_eq!(admin_v.len(), 1);
     assert_eq!(admin_v[0].ts_file_path, "/project/app.ts");
 
-    // Invalidate the TS file
     let affected = analyzer
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/app.ts".to_string(),
@@ -552,11 +531,9 @@ fn test_invalidate_files_multiple_components_in_one_file() {
         }])
         .unwrap();
 
-    // Check that the TS file is returned as affected
     assert_eq!(affected.len(), 1);
     assert_eq!(affected[0], "/project/app.ts");
 
-    // Verify both templates are unregistered
     let app_comps_after =
         analyzer.get_ts_file_for_template("/project/app.component.html".to_string());
     assert!(app_comps_after.is_none());
@@ -609,11 +586,9 @@ fn test_invalidate_files_html_partial_file_invalidation() {
     let analyzer = Analyzer::new(options).unwrap();
     let iterator = analyzer.analyze().unwrap();
 
-    // Consume results
     let result = futures::executor::block_on(iterator.next()).unwrap();
     assert!(result.is_some());
 
-    // Invalidate ONLY the app HTML file
     let affected = analyzer
         .invalidate_files(vec![FileInvalidation {
             file_path: "/project/app.component.html".to_string(),
@@ -621,21 +596,107 @@ fn test_invalidate_files_html_partial_file_invalidation() {
         }])
         .unwrap();
 
-    // Check that the TS file is returned as affected
     assert_eq!(affected.len(), 1);
     assert_eq!(affected[0], "/project/app.ts");
 
-    // Verify that the TS file WAS re-analyzed
     let ts_metadata = analyzer.get_metadata_for_file("/project/app.ts".to_string());
     assert!(ts_metadata.is_some());
 
-    // Verify that BOTH templates are still registered in the registry (references preserved)
     let app_comps = analyzer.get_ts_file_for_template("/project/app.component.html".to_string());
     assert!(app_comps.is_some());
 
     let admin_comps =
         analyzer.get_ts_file_for_template("/project/admin.component.html".to_string());
     assert!(admin_comps.is_some());
+}
+
+/// File updates and invalidations report transitive dependents in wire `AnalysisResult.file_path` spelling.
+#[test]
+fn test_file_changes_report_dependents_in_wire_spelling() {
+    fn directive_source(input: &str) -> String {
+        format!(
+            r#"
+            import {{Directive, Input}} from '@angular/core';
+            @Directive({{selector: '[dir]'}})
+            export class Dir {{
+                @Input() {input}: string = '';
+            }}
+            "#
+        )
+    }
+
+    let mut virtual_files = HashMap::new();
+    virtual_files.insert(
+        "/project/tsconfig.json".to_string(),
+        r#"{"files": ["main.ts"]}"#.to_string(),
+    );
+    virtual_files.insert(
+        "/project/main.ts".to_string(),
+        "export const main = 1;".to_string(),
+    );
+    virtual_files.insert(
+        "/project/Shared/Dir.ts".to_string(),
+        directive_source("first"),
+    );
+    virtual_files.insert(
+        "/project/Dependent.ts".to_string(),
+        r#"
+            import {Component} from '@angular/core';
+            import {Dir} from './Shared/Dir';
+            @Component({
+                selector: 'app-dependent',
+                imports: [Dir],
+                template: '<div dir [first]="value"></div>'
+            })
+            export class DependentComponent {
+                value = 'x';
+            }
+        "#
+        .to_string(),
+    );
+
+    let analyzer = Analyzer::new(AnalyzerOptions {
+        tsconfig_path: "/project/tsconfig.json".to_string(),
+        optimize: Some(true),
+        virtual_files: Some(virtual_files),
+        ..Default::default()
+    })
+    .unwrap();
+
+    let wire_path = |path: &str| {
+        analyzer
+            .get_metadata_for_file(path.to_string())
+            .unwrap()
+            .file_path
+    };
+    let dependent = wire_path("/project/Dependent.ts");
+    let main = wire_path("/project/main.ts");
+
+    let affected = analyzer
+        .update_file_content(vec![FileUpdate {
+            file_path: "/project/Shared/Dir.ts".to_string(),
+            content: directive_source("second"),
+        }])
+        .unwrap();
+    assert!(affected.contains(&dependent), "{affected:?}");
+    assert!(
+        affected.contains(&"/project/Shared/Dir.ts".to_string()),
+        "{affected:?}"
+    );
+    assert!(!affected.contains(&main), "{affected:?}");
+    let unique: HashSet<&String> = affected.iter().collect();
+    assert_eq!(unique.len(), affected.len(), "{affected:?}");
+
+    // Re-populate the dependent's analysis, then delete the file it depends on.
+    assert_eq!(wire_path("/project/Dependent.ts"), dependent);
+    let affected = analyzer
+        .invalidate_files(vec![FileInvalidation {
+            file_path: "/project/Shared/Dir.ts".to_string(),
+            update_type: FileUpdateType::Deleted,
+        }])
+        .unwrap();
+    assert!(affected.contains(&dependent), "{affected:?}");
+    assert!(!affected.contains(&main), "{affected:?}");
 }
 
 #[test]
@@ -657,8 +718,6 @@ fn test_resource_registry_missing_template_file() {
         "#
         .to_string(),
     );
-    // Note: We do NOT create /project/missing.component.html
-
     let options = AnalyzerOptions {
         tsconfig_path: "/project/tsconfig.json".to_string(),
         optimize: Some(false),
@@ -669,12 +728,10 @@ fn test_resource_registry_missing_template_file() {
     let analyzer = Analyzer::new(options).unwrap();
     let iterator = analyzer.analyze().unwrap();
 
-    // Consume the result
     let result = futures::executor::block_on(iterator.next()).unwrap();
     assert!(result.is_some());
     assert_eq!(result.unwrap().files[0].file_path, "/project/app.ts");
 
-    // Verify that the association is still in the registry even though the file was missing
     let components =
         analyzer.get_ts_file_for_template("/project/missing.component.html".to_string());
     assert!(components.is_some());
@@ -697,7 +754,6 @@ fn test_analysis_cancellation() {
         fs.upsert_file(PathBuf::from(path), content.clone());
     }
 
-    // Delay a.ts by 100ms
     fs.set_delay(PathBuf::from("/project/a.ts"), 100);
 
     let options = AnalyzerOptions {
@@ -709,10 +765,8 @@ fn test_analysis_cancellation() {
 
     let analyzer = Analyzer::new_core_with_fs(options, fs).unwrap();
 
-    // Start streaming analysis
     let iterator = analyzer.analyze().unwrap();
 
-    // Trigger update to cancel while a.ts is delayed
     let update = FileUpdate {
         file_path: "/project/a.ts".to_string(),
         content: "export class A { updated = true; }".to_string(),
@@ -721,7 +775,6 @@ fn test_analysis_cancellation() {
     std::thread::sleep(std::time::Duration::from_millis(50));
     analyzer.update_file_content(vec![update]).unwrap();
 
-    // The next() call should return None because a.ts's analysis was canceled
     let result = futures::executor::block_on(iterator.next()).unwrap();
     assert!(result.is_none());
 }
@@ -748,20 +801,18 @@ fn test_dynamic_optimization_switching_no_panic() {
 
     let options = AnalyzerOptions {
         tsconfig_path: "/project/tsconfig.json".to_string(),
-        optimize: Some(false), // Explicitly initialized with unoptimized!
+        optimize: Some(false),
         virtual_files: Some(virtual_files),
         ..Default::default()
     };
 
     let analyzer = Analyzer::new(options).unwrap();
 
-    // Perform unoptimized analysis first
     let iter1 = analyzer.analyze().unwrap();
     let res1 = futures::executor::block_on(iter1.next()).unwrap();
     assert!(res1.is_some());
     assert_eq!(res1.unwrap().files[0].file_path, "/project/app.ts");
 
-    // Now dynamically switch to optimized analysis! Should NOT panic because self.compiler is always initialized.
     let iter2 = analyzer.analyze_optimized().unwrap();
     let res2 = futures::executor::block_on(iter2.next()).unwrap();
     assert!(res2.is_some());
@@ -799,24 +850,17 @@ fn test_utf16_imports_end() {
     assert!(result.is_some());
     let analysis = result.unwrap();
 
-    // Expected UTF-16 offset of the end of the import block:
-    // "// José is here 😊\n" -> 19 chars (é is 1, 😊 is 2)
-    // "import {Component} from '@angular/core';\n" -> 40 chars (without newline)
-    // The span.end of the import statement points to the character after ';', which is '\n' at index 59.
-    // Total UTF-16 offset = 59.
-    // UTF-8 offset would be 62.
+    // "// José is here 😊\n" is 19 UTF-16 code units (é = 1, 😊 = 2) + 40 for the import statement = 59 (vs 62 UTF-8 bytes).
     assert_eq!(analysis.imports_end, 59);
 }
 
-/// Slices `text` the way a JS consumer slices a string: by UTF-16 code unit offsets.
 fn slice_utf16(text: &str, start: u32, end: u32) -> String {
     let units: Vec<u16> = text.encode_utf16().collect();
     String::from_utf16(&units[start as usize..end as usize]).unwrap()
 }
 
-/// A `.d.ts` declaration's `nameSpan` reaches the TypeScript layer, which indexes the file's
-/// JS string with it, so it must be a UTF-16 offset like every other wire span. Non-ASCII
-/// text ahead of the class (a license header is typical) makes UTF-8 byte offsets diverge.
+/// `.d.ts` declaration `nameSpan` values must be UTF-16 code unit offsets even when preceded by
+/// non-ASCII text (e.g. a license header): the TS layer indexes the file's JS string with them.
 #[test]
 fn test_utf16_dts_declaration_name_span() {
     let dts_source = "// © ünïcode 🎉\nimport * as i0 from '@angular/core';\nexport declare class LibDir {\n  static ɵdir: i0.ɵɵDirectiveDeclaration<LibDir, \"[lib]\", never, {}, {}, never, never, true, never>;\n  static ɵfac: i0.ɵɵFactoryDeclaration<LibDir, never>;\n}\nexport declare class LibModule {\n  static ɵmod: i0.ɵɵNgModuleDeclaration<LibModule, never, never, never>;\n}\n";
@@ -2493,11 +2537,10 @@ fn test_dynamic_standalone_flag_diagnostic_ng1010() {
 
 #[test]
 fn test_dynamic_host_listener_args_diagnostic_ng1010() {
-    // Matches ngtsc behavior in:
-    // packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L742-L754
-    // packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L1091-L1105
-    // where isStringArrayOrDie rejects @HostListener arguments that do not statically
-    // resolve to a string array with ErrorCode.VALUE_HAS_WRONG_TYPE (NG1010).
+    // `isStringArrayOrDie` rejects `@HostListener` arguments that do not statically resolve to a
+    // string array with `NG1010`:
+    // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L743-L754
+    // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L1092-L1107
     let mut virtual_files = HashMap::new();
     virtual_files.insert(
         "/project/tsconfig.json".to_string(),
@@ -2543,10 +2586,8 @@ fn test_dynamic_host_listener_args_diagnostic_ng1010() {
 
 #[test]
 fn test_non_array_host_listener_args_diagnostic_ng1010() {
-    // Matches ngtsc behavior in:
-    // packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L742-L754
-    // where @HostListener rejects a second argument that is not a string array
-    // with ErrorCode.VALUE_HAS_WRONG_TYPE (NG1010).
+    // `@HostListener` rejects a second argument that is not a string array with `NG1010`:
+    // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L743-L754
     let mut virtual_files = HashMap::new();
     virtual_files.insert(
         "/project/tsconfig.json".to_string(),
@@ -4205,7 +4246,14 @@ fn test_update_file_content_dts_invalidates_dependents() {
             content: lib_dts("[libNew]"),
         }])
         .unwrap();
-    assert_eq!(invalidated, vec!["/project/lib.d.ts".to_string()]);
+    // The edited file, then every file whose cached analysis depended on it.
+    assert_eq!(
+        invalidated,
+        vec![
+            "/project/lib.d.ts".to_string(),
+            "/project/app.ts".to_string()
+        ]
+    );
 
     assert_eq!(
         imported_lib_dir_selector(&analyzer, "/project/app.ts").as_deref(),
@@ -4230,12 +4278,17 @@ fn test_update_file_content_non_dot_ts_sources_invalidate_dependents() {
             "{lib_file}: initial selector"
         );
 
-        analyzer
+        let invalidated = analyzer
             .update_file_content(vec![FileUpdate {
                 file_path: lib_path.clone(),
                 content: lib_source("[libNew]"),
             }])
             .unwrap();
+        assert_eq!(
+            invalidated,
+            vec![lib_path.clone(), "/project/app.ts".to_string()],
+            "{lib_file}: the edited file, then its dependents"
+        );
 
         assert_eq!(
             imported_lib_dir_selector(&analyzer, "/project/app.ts").as_deref(),
@@ -4262,6 +4315,10 @@ fn test_invalidate_files_dts_invalidates_dependents() {
         imported_lib_dir_selector(&analyzer, &app_path).as_deref(),
         Some("[libOld]")
     );
+    let app_wire_path = analyzer
+        .get_metadata_for_file(app_path.clone())
+        .unwrap()
+        .file_path;
 
     std::fs::write(&lib_path, lib_dts("[libNew]")).unwrap();
     let invalidated = analyzer
@@ -4276,8 +4333,10 @@ fn test_invalidate_files_dts_invalidates_dependents() {
         Some("[libNew]"),
         "the consumer must see the new on-disk .d.ts, not the cached parse"
     );
-    // The host drops its per-file caches for every returned path.
-    assert_eq!(invalidated, vec![lib_path_str]);
+    // The host drops its per-file caches for every returned path: the invalidated file, and each
+    // dependent in the spelling of its wire `AnalysisResult.file_path`.
+    assert_eq!(invalidated.first(), Some(&lib_path_str), "{invalidated:?}");
+    assert!(invalidated.contains(&app_wire_path), "{invalidated:?}");
 }
 
 /// The Angular CLI's `tsconfig.app.json` lists only `main.ts`; the NgModule and everything it

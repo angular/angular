@@ -29,7 +29,6 @@ pub fn resolve_local_expression<'a>(
         return expr;
     };
 
-    // Do not resolve if imported from an external module
     if scoping
         .symbol_flags(symbol_id)
         .contains(SymbolFlags::Import)
@@ -42,14 +41,12 @@ pub fn resolve_local_expression<'a>(
         return expr;
     };
 
-    // A pattern binds parts of the initializer, not the whole of it: `const [first] = STYLES`
-    // must not resolve `first` to the entire array. Only the partial evaluator walks patterns.
+    // Destructuring patterns bind parts of the initializer, not the whole expression.
     let BindingPattern::BindingIdentifier(_) = &vd.id else {
         return expr;
     };
 
     if let Some(init_expr) = &vd.init {
-        // Recursively resolve in case of chained constants (e.g. const A = B; const B = 'my-template';)
         resolve_local_expression(init_expr, semantic)
     } else {
         expr
@@ -144,11 +141,9 @@ pub fn extract_string_resolved<'a>(
         Expression::BooleanLiteral(b) => Some(b.value.to_string()),
         Expression::NullLiteral(_) => Some("null".to_string()),
         Expression::TemplateLiteral(t) => {
-            // Constant-fold the template literal: interleave the cooked quasis with
-            // each interpolated expression, requiring every `${...}` to itself
-            // resolve to a constant string. Roughly mirrors ngtsc's static evaluation
-            // of non-literal inline templates.
-            // https://github.com/angular/angular/blob/0e16bb7/packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts#L67
+            // Constant-fold template literals when all interpolated expressions resolve to
+            // constant strings.
+            // https://github.com/angular/angular/blob/0e16bb7/packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts#L219-L232
             let mut result = String::new();
             for (i, quasi) in t.quasis.iter().enumerate() {
                 let cooked = quasi
@@ -163,7 +158,6 @@ pub fn extract_string_resolved<'a>(
             }
             Some(result)
         }
-        // Constant-fold string concatenation (`'a' + greeting + 'c'`).
         Expression::BinaryExpression(b) if matches!(b.operator, BinaryOperator::Addition) => {
             let left = extract_string(&b.left, semantic)?;
             let right = extract_string(&b.right, semantic)?;
@@ -228,7 +222,7 @@ use crate::utils::ANGULAR_CORE;
 
 /// The import binding an identifier resolves to, as `(module specifier, imported name)`.
 ///
-/// https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/reflection/src/typescript.ts#L131-L143
+/// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/reflection/src/typescript.ts#L131-L143
 pub(crate) fn import_of_identifier<'a>(
     ident: &oxc_ast::ast::IdentifierReference<'a>,
     semantic: &Semantic<'a>,
@@ -245,14 +239,8 @@ pub(crate) fn import_of_identifier<'a>(
 
     let decl_node = semantic.symbol_declaration(symbol_id);
     let imported_name = match decl_node.kind() {
-        // `import {forwardRef}` / `import {forwardRef as fwd}`: `imported` is the name the
-        // module exports, which is what upstream compares against.
         AstKind::ImportSpecifier(spec) => Some(spec.imported.name().as_str()),
-        // `import * as core`: the name comes from the member access at the use site.
         AstKind::ImportNamespaceSpecifier(_) => None,
-        // Default and `import x = require(...)` bindings. Upstream's `getExportedName` falls
-        // back to the local name here, so it would accept a default import; `@angular/core`
-        // has no default export, so the difference is unreachable and not worth mirroring.
         _ => return None,
     };
 
@@ -264,23 +252,13 @@ pub(crate) fn import_of_identifier<'a>(
 }
 
 /// Whether a call's callee is `@angular/core`'s `forwardRef`, reached through an import
-/// binding.
+/// binding (without following local variable aliases, matching ngtsc's syntactic helper).
+/// The callee is matched as written: `tryUnwrapForwardRef` never unwraps it, so
+/// `(forwardRef as any)(...)`, `(forwardRef)(...)` and `(core as any).forwardRef(...)` are
+/// rejected there too.
 ///
-/// https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L224-L238
-///
-/// The callee identifier — or, for `core.forwardRef(...)`, the accessed property — must
-/// resolve to an import of `forwardRef` from `@angular/core`.
-///
-/// Note this deliberately does NOT follow local aliases such as
-/// `const fref = forwardRef;`. Upstream's syntactic helper does not either, because
-/// `getImportOfIdentifier` returns `null` for a variable declaration; the alias-resolving
-/// path is the partial evaluator's `createForwardRefResolver`, which the evaluator side
-/// (`evaluator/foreign.rs`) already mirrors.
+/// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L225-L240
 fn is_angular_forward_ref_callee<'a>(callee: &Expression<'a>, semantic: &Semantic<'a>) -> bool {
-    // Upstream: `ts.isPropertyAccessExpression(node.expression) ? node.expression.name : ...`,
-    // followed by `ts.isIdentifier(fn)`. Note it never unwraps the *callee* — `unwrapExpression`
-    // is applied to the call node and to the argument only — so `(forwardRef as any)(...)` and
-    // `(forwardRef)(...)` are rejected upstream. Match on the callee as written.
     match callee {
         Expression::Identifier(ident) => {
             matches!(
@@ -292,10 +270,8 @@ fn is_angular_forward_ref_callee<'a>(callee: &Expression<'a>, semantic: &Semanti
             if member.property.name.as_str() != "forwardRef" {
                 return false;
             }
-            // Upstream's `getFarLeftIdentifier` walks nested property accesses only, so a
-            // parenthesized or cast object (`(core as any).forwardRef`) does not resolve.
-            // TODO(parity): that walk also accepts a chain (`core.ns.forwardRef(...)`);
-            // we only handle a direct member access off the namespace import.
+            // TODO(parity): ngtsc's `getFarLeftIdentifier` also walks nested property access
+            // chains (`core.ns.forwardRef(...)`); we only match direct namespace member access.
             let Expression::Identifier(object) = &member.object else {
                 return false;
             };
@@ -308,12 +284,9 @@ fn is_angular_forward_ref_callee<'a>(callee: &Expression<'a>, semantic: &Semanti
     }
 }
 
-/// Strip what upstream's `unwrapExpression` strips: parentheses and `as` casts.
-///
-/// Narrower than oxc's [`Expression::get_inner_expression`], which also strips `x!`, `<T>x`,
-/// `satisfies` and `f<T>`. Upstream keeps those, so `@ContentChild(<any>forwardRef(() => Dep))`
-/// queries `forwardRef(() => Dep)` rather than `Dep`.
-/// https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L176-L181
+/// Strip parentheses and `as` casts, matching ngtsc's `unwrapExpression` (narrower than
+/// [`Expression::get_inner_expression`], which also strips `!`, `<T>x`, `satisfies`, and `f<T>`).
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L176-L181
 pub fn unwrap_expression<'r, 'a>(expr: &'r Expression<'a>) -> &'r Expression<'a> {
     let mut expr = expr;
     loop {
@@ -325,14 +298,14 @@ pub fn unwrap_expression<'r, 'a>(expr: &'r Expression<'a>) -> &'r Expression<'a>
     }
 }
 
-/// Strip what the partial evaluator sees through: parentheses, `as` casts and non-null
-/// assertions — one wrapper wider than [`unwrap_expression`]. `<T>x`, `x satisfies T` and `f<T>`
-/// reach `DynamicValue.fromUnsupportedSyntax` upstream instead.
-/// https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts#L142-L153
+/// Strip parentheses, `as` casts, and non-null assertions, matching the wrappers ngtsc's partial
+/// evaluator sees through.
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/partial_evaluator/src/interpreter.ts#L142-L153
 ///
-/// TODO(parity): our own `visit_expression` opens with `get_inner_expression`, so it sees through
-/// all six. `imports: [<any>forwardRef(() => Dep)]` resolves for us where ngc raises NG1010
-/// (verified). Narrowing affects every evaluated expression, so it is its own change.
+/// TODO(parity): Our evaluator's `visit_expression` uses `get_inner_expression`, which also strips
+/// `<T>x`, `satisfies`, and `f<T>` where ngtsc returns `DynamicValue.fromUnsupportedSyntax`, so
+/// e.g. `imports: [<any>forwardRef(() => Dep)]` resolves here but is NG1010 in ngc (verified).
+/// Narrowing affects every evaluated expression, so it's a separate change.
 fn unwrap_evaluated_expression<'r, 'a>(expr: &'r Expression<'a>) -> &'r Expression<'a> {
     let mut expr = expr;
     loop {
@@ -345,11 +318,9 @@ fn unwrap_evaluated_expression<'r, 'a>(expr: &'r Expression<'a>) -> &'r Expressi
     }
 }
 
-/// Unwrap `forwardRef(() => Target)` or `forwardRef(function() { return Target; })` to `Target`.
-///
-/// Mirrors upstream's *syntactic* `tryUnwrapForwardRef`. Use [`unwrap_forward_ref_evaluated`] for
-/// the positions upstream resolves with the partial evaluator instead.
-/// https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L216-L243
+/// Unwrap `forwardRef(() => Target)` or `forwardRef(function() { return Target; })` to `Target`,
+/// mirroring ngtsc's syntactic `tryUnwrapForwardRef`.
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L216-L243
 pub fn unwrap_forward_ref<'a>(
     expr: &'a Expression<'a>,
     semantic: &Semantic<'a>,
@@ -357,16 +328,14 @@ pub fn unwrap_forward_ref<'a>(
     unwrap_forward_ref_call(unwrap_expression(expr), semantic)
 }
 
-/// [`unwrap_forward_ref`] for the positions upstream resolves through the partial evaluator plus
-/// `createForwardRefResolver` — `imports` and `hostDirectives`. Only the wrapper set differs, so
-/// `imports: [forwardRef(() => Dep)!]` resolves here but not syntactically.
-/// https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L253-L268
+/// [`unwrap_forward_ref`] for positions resolved through the partial evaluator (`imports` and
+/// `hostDirectives`), which also unwrap outer non-null assertions (`!`).
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L253-L268
 ///
-/// TODO(parity): the callee is still matched as written. Upstream resolves it through the
-/// reference graph, so `(forwardRef)(() => Dep)`, `(forwardRef as any)(() => Dep)` and
-/// `const fref = forwardRef;` all resolve there and not here (verified against ngc).
-/// `evaluator/foreign.rs`'s `ForwardRefFn` already handles aliasing.
-/// https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L128-L137
+/// TODO(parity): Callee is matched syntactically here rather than through the reference graph, so
+/// `(forwardRef)(...)`, `(forwardRef as any)(...)` and `const fref = forwardRef;` resolve in ngc
+/// but not here (verified). `ForwardRefFn` in `evaluator/foreign.rs` already handles aliasing.
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L128-L137
 pub fn unwrap_forward_ref_evaluated<'a>(
     expr: &'a Expression<'a>,
     semantic: &Semantic<'a>,
@@ -374,7 +343,6 @@ pub fn unwrap_forward_ref_evaluated<'a>(
     unwrap_forward_ref_call(unwrap_evaluated_expression(expr), semantic)
 }
 
-/// The shared body of both entry points: everything after the outer wrappers are stripped.
 fn unwrap_forward_ref_call<'a>(
     expr: &'a Expression<'a>,
     semantic: &Semantic<'a>,
@@ -387,8 +355,6 @@ fn unwrap_forward_ref_call<'a>(
         return None;
     }
 
-    // Upstream expands the argument before consulting the reflector, so a call that is not
-    // shaped like `forwardRef(() => X)` short-circuits before any symbol resolution.
     let expanded = expand_forward_ref(call.arguments.first()?.as_expression()?)?;
     if !is_angular_forward_ref_callee(&call.callee, semantic) {
         return None;
@@ -397,12 +363,7 @@ fn unwrap_forward_ref_call<'a>(
 }
 
 /// Unwrap `() => X`, `() => { return X; }`, or `function () { return X; }` to `X`.
-///
-/// Upstream applies `unwrapExpression` to the argument, so `forwardRef((() => X))` expands while
-/// `forwardRef((() => X)!)` does not. Upstream shares one `expandForwardRef` between both
-/// resolvers; this is the single copy both of our paths use, including
-/// `evaluator::foreign::ForwardRefFn`, which used to disagree here.
-/// https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L183-L205
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L183-L205
 pub(crate) fn expand_forward_ref<'r, 'a>(arg: &'r Expression<'a>) -> Option<&'r Expression<'a>> {
     match unwrap_expression(arg) {
         Expression::ArrowFunctionExpression(arrow) => {
@@ -418,9 +379,8 @@ pub(crate) fn expand_forward_ref<'r, 'a>(arg: &'r Expression<'a>) -> Option<&'r 
     }
 }
 
-/// The argument of a lone `return <expr>;` statement. Upstream requires exactly one statement, so
-/// `() => { return X; log(); }` is rejected rather than expanded.
-/// https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L192-L200
+/// Returns the argument of a lone `return <expr>;` statement.
+/// https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L192-L200
 fn single_return_argument<'r, 'a>(
     statements: &'r [oxc_ast::ast::Statement<'a>],
 ) -> Option<&'r Expression<'a>> {
@@ -965,17 +925,9 @@ pub fn resolve_decorator<'a>(
     resolve_expression_symbol(&decorator.expression, semantic, angular_imports)
 }
 
-/// The name a decorator is exported under from `@angular/core`, or `None` when the decorator is
-/// not an Angular decorator this analyzer knows.
-///
-/// Mirrors ngtsc's `decorator.import.name`, which is the *exported* name rather than the local
-/// one, so `import {Component as Cmp}` and `import * as core` (`@core.Component`) both canonicalise
-/// to `"Component"`.
-///
-/// Under `isCore` (compiling `@angular/core` itself) ngtsc compares the decorator's *local* name
-/// instead, because core imports its own decorators through relative paths; the local-name branch
-/// below is that case and only that case.
-/// https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L147-L154
+/// The name a decorator is exported under from `@angular/core` (or its local name when `is_core`
+/// is true), or `None` if it is not a known Angular decorator.
+/// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L147-L154
 pub fn get_canonical_decorator_name<'a>(
     decorator: &'a Decorator<'a>,
     semantic: &Semantic<'a>,
@@ -994,10 +946,9 @@ pub fn get_canonical_decorator_name<'a>(
     .decorator_name()
 }
 
-/// The decorator's local name as written: `Cmp` for `@Cmp()`, and the rightmost identifier
-/// (`Component`) for `@core.Component()`. Mirrors ngtsc's `Decorator.name`, which is
-/// `decoratorIdentifier.text` where the identifier is `expr.name` for a namespaced decorator.
-/// https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/reflection/src/typescript.ts#L446-L447
+/// The decorator's local name as written (`Cmp` for `@Cmp()`, `Component` for `@core.Component()`),
+/// mirroring ngtsc's `Decorator.name`.
+/// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/reflection/src/typescript.ts#L446-L450
 fn decorator_local_name<'a>(decorator: &'a Decorator<'a>) -> Option<&'a str> {
     let callee = match decorator.expression.get_inner_expression() {
         Expression::CallExpression(call) => call.callee.get_inner_expression(),
@@ -1049,14 +1000,11 @@ pub fn reported_decorator_name<'a>(
     }
 }
 
-/// Whether a decorator should be treated as Angular's at all, regardless of *which* decorator it
-/// is. Mirrors ngtsc's `isAngularDecorator(decorator, isCore)`: in `isCore` mode every decorator
-/// qualifies, otherwise the decorator must resolve to a binding imported from `@angular/core`.
-///
-/// Deliberately name-agnostic, matching ngtsc — a decorator imported from `@angular/core` that
-/// this analyzer has no [`crate::analyzer::imports::AngularImportSymbol`] for still counts, so
-/// that it is emitted into `ɵsetClassMetadata` with its arguments.
-/// https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/common/src/metadata.ts#L222-L229
+/// Whether `decorator` is an Angular decorator (any decorator in `is_core` mode, or any binding
+/// imported from `@angular/core`). Name-agnostic like ngtsc, so a decorator with no
+/// [`crate::analyzer::imports::AngularImportSymbol`] still counts and is emitted into
+/// `ɵsetClassMetadata` with its arguments.
+/// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/common/src/metadata.ts#L229-L231
 pub fn is_angular_decorator<'a>(
     decorator: &'a Decorator<'a>,
     semantic: &Semantic<'a>,
@@ -1084,10 +1032,7 @@ pub fn is_angular_decorator<'a>(
 }
 
 /// Whether `decorator` is the Angular decorator exported from `@angular/core` as `name`.
-///
-/// Mirrors ngtsc's `isAngularDecorator(decorator, name, isCore)`: aliased and namespaced imports
-/// match, and an identically-named decorator from anywhere else does not.
-/// https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L147-L154
+/// https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/annotations/common/src/util.ts#L147-L154
 pub fn is_angular_decorator_named<'a>(
     decorator: &'a Decorator<'a>,
     name: &str,

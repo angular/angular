@@ -192,14 +192,10 @@ describe('emitted @ts-ignore suppressions', () => {
     expect(await typeCheck(emitted)).toEqual([]);
   });
 
-  // TODO: the guard reaches only the line the initializer starts on. `hostBindings` and `template`
-  // are emitted as inline multi-line function expressions inside the definition object literal, so
-  // any property printed after one of them lands on a continuation line the guard cannot cover.
-  // Closing this needs a suppression mechanism that spans lines, which TypeScript does not offer;
-  // `@ts-nocheck` is file-scoped, and collapsing the initializer onto one physical line would both
-  // swallow the `//` comments Angular emits inside it and strand Angular's own `/* @ts-ignore */`
-  // guards, which depend on sitting on their own line. Characterized here so the hole cannot widen
-  // silently.
+  // TODO(parity): `// @ts-ignore` only covers the line the initializer starts on, so properties
+  // emitted after multi-line `hostBindings` or `template` functions land on uncovered continuation
+  // lines. TypeScript has no multi-line suppression directive, and collapsing the initializer onto
+  // one line would break internal `//` comments and `/* @ts-ignore */` guards.
   it('does not yet reach initializer continuation lines (known limitation)', async () => {
     const withHostBindings = await emitUnformatted(COMPONENT_WITH_HOST_BINDINGS);
     const diagnostics = await typeCheck(withHostBindings);

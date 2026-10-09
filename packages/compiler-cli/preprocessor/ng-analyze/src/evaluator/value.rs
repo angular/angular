@@ -184,10 +184,8 @@ impl ResolvedValue {
     }
 }
 
-/// Insertion-ordered string-keyed map. Object literals are small; a linear-scan `Vec` preserves
-/// upstream `Map` iteration order (which matters for e.g. provider arrays) without a new
-/// dependency.
-// TODO: swap to `indexmap` if evaluated object literals ever get large enough to matter.
+/// Insertion-ordered string-keyed map preserving JS object literal iteration order.
+// TODO(perf): swap to `indexmap` if evaluated object literals ever get large enough to matter.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ValueMap {
     entries: Vec<(String, ResolvedValue)>,
@@ -247,10 +245,7 @@ pub enum DeclKind {
     Other,
 }
 
-/// Owned reference to a declaration in some file.
-///
-/// Mirror of upstream `Reference` (`imports/src/references.ts`) — carries the best-guess owning
-/// module and the `synthetic` flag for references produced through a foreign-function resolver.
+/// Owned reference to a declaration in some file (`imports/src/references.ts`).
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct ValueReference {
     /// File containing the declaration.
@@ -260,26 +255,22 @@ pub struct ValueReference {
     /// `Some("forRoot")` when this references a static class member; `name` then names the
     /// owning class and `kind` is [`DeclKind::StaticMethod`].
     pub member: Option<String>,
-    /// Hint: symbol id of the top-level symbol w.r.t. the *current parse* of `file`. Consumers
-    /// must fall back to a name lookup if the parse generation may have changed.
+    /// Hint: symbol id of the top-level symbol in the *current parse* of `file`. Consumers must
+    /// fall back to a name lookup if the parse generation may have changed.
     pub reference_id: Option<ReferenceId>,
     /// Byte span of the referenced declaration (the member's span when `member` is `Some`).
     pub span: Span,
     pub kind: DeclKind,
-    /// `bestGuessOwningModule` analogue: the package this symbol was reached through, when it
-    /// was reached through one, with that package's name for it.
+    /// Package this symbol was reached through (`bestGuessOwningModule` analogue).
     pub owning_reference: Option<crate::types::analysis::OwningReference>,
-    /// True when produced through a foreign-function resolver (upstream `Reference.synthetic`):
-    /// the runtime value of the original expression may differ from this reference, so
-    /// identity-sensitive consumers must not reuse the original identifier.
+    /// True when produced through a foreign-function resolver (`Reference.synthetic`): the
+    /// original expression's runtime value may differ, so identity-sensitive consumers must not
+    /// reuse its identifier.
     pub synthetic: bool,
-    /// The name this symbol is bound to in each file the evaluation traversed to reach it —
-    /// the importer's local name, any binding re-export hops, and the declaration itself.
-    /// A file absent from this list cannot name the symbol and must import it.
+    /// Local binding names in each file traversed to reach this symbol. A file absent from this
+    /// list cannot name the symbol and must import it.
     pub aliases: Vec<(FileId, String)>,
-    /// True when the declaring module exports this symbol under the reserved `default` key
-    /// (`export default class Foo {}`), so importers reach it as `m.default` rather than by
-    /// [`Self::name`].
+    /// True when exported under the reserved `default` key (`export default class Foo {}`).
     pub is_default_export: bool,
 }
 
@@ -333,7 +324,7 @@ impl KnownFn {
         match self {
             KnownFn::ArraySlice(receiver) => {
                 // Parity: only the zero-argument `arr.slice()` form is supported.
-                // https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/partial_evaluator/src/builtin.ts#L19-L25
+                // https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/partial_evaluator/src/builtin.ts#L19-L25
                 if args.is_empty() {
                     ResolvedValue::Array(receiver)
                 } else {
@@ -378,15 +369,14 @@ impl KnownFn {
 }
 
 /// Mirror of upstream `DynamicValue.fromDynamicInput` (`dynamic.ts`), except an inner dynamic
-/// already at `span` passes through unwrapped: spans are node identity here, so wrapping would
-/// chain the node to itself.
+/// already at `(file, span)` passes through unwrapped: spans are node identity here, so wrapping
+/// would chain the node to itself.
 pub(crate) fn chain_dynamic(file: FileId, span: Span, inner: DynamicValue) -> ResolvedValue {
     chain_dynamic_boxed(file, span, Box::new(inner))
 }
 
-/// [`chain_dynamic`] for a value that is already boxed — every caller unwrapping a
-/// `ResolvedValue::Dynamic`. Reuses that allocation instead of freeing and remaking it, which
-/// on the identity path makes the whole call free. This runs once per evaluated expression.
+/// [`chain_dynamic`] for an already-boxed [`DynamicValue`]. Reuses the allocation (free on the
+/// identity path); this runs once per evaluated expression.
 pub(crate) fn chain_dynamic_boxed(
     file: FileId,
     span: Span,
@@ -399,9 +389,8 @@ pub(crate) fn chain_dynamic_boxed(
     }
 }
 
-/// Mirror of upstream `SyntheticValue<T>` (`synthetic.ts`) as a closed enum. Like upstream,
-/// synthetic values cannot be evaluated further — property access or calls on them produce
-/// `Dynamic(SyntheticInput)`.
+/// Mirror of upstream `SyntheticValue<T>` (`synthetic.ts`). Property access or calls on synthetic
+/// values produce `Dynamic(SyntheticInput)`.
 #[derive(Clone, Debug, PartialEq)]
 pub enum SyntheticValue {
     /// `ResolvedModuleWithProviders` (`annotations/ng_module/src/module_with_providers.ts`):
@@ -474,12 +463,10 @@ pub enum DynamicReason {
     Unknown,
 }
 
-/// The reference an evaluation could not chase in the current mode: an import binding whose
-/// target lives in another file.
+/// An import binding whose target lives in another file.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct UnresolvedReference {
-    /// File containing the import binding (also the resolution context for a relative
-    /// `specifier`).
+    /// File containing the import binding (and resolution context for relative specifiers).
     pub importer: FileId,
     /// The module specifier (e.g. `./shared` or `@angular/router`).
     pub specifier: String,
@@ -491,35 +478,26 @@ pub struct UnresolvedReference {
     pub is_namespace_member: bool,
 }
 
-/// A structured hole: evaluation needed to cross a file boundary and the current mode could
-/// not. Appears *inside* the value tree (e.g. `Array([Reference(A), Incomplete{..}])`).
+/// Cross-file dependency hole inside an evaluated value tree.
 ///
-/// A tree containing any hole is non-final: element counts, spread expansion, and map keys
-/// around the hole are not trustworthy until a re-evaluation pass with the hole's
-/// [`ResolvedEnv`] entry filled.
+/// A tree containing any hole is non-final until re-evaluated or substituted with a
+/// [`ResolvedEnv`].
 #[derive(Clone, Debug, PartialEq)]
 pub struct IncompleteValue {
-    /// File in which the hole originated (= the evaluating file).
+    /// File in which the hole originated.
     pub file: FileId,
-    /// Span of the originating expression (identifier / member access / call) — for
-    /// diagnostics and dependency tracking; *not* part of the env-key identity.
+    /// Span of the originating expression (not part of env-key identity).
     pub span: Span,
     pub node_id: Option<oxc_semantic::NodeId>,
     pub dep: IncompleteDep,
-    /// True when the hole occupies a plain value position (array element, map value, root):
-    /// substituting the env entry for the hole node yields the final value directly. False
-    /// when the hole was *propagated* through a containing operation (spread, operator,
-    /// template, access on the hole, …) — the node then stands for the larger expression and
-    /// completing it requires re-running the interpreter with the env.
+    /// True when substituting the env entry yields the final value directly; false when propagated
+    /// through an enclosing operation (spread, operator, call, etc.) that requires re-evaluation.
     pub transparent: bool,
     /// Upstream `Reference.synthetic`, preserved on the hole until it is filled (e.g. `forwardRef(() => ImportedDir)`).
     pub synthetic: bool,
-    /// `Some` when the hole is a spread element (`...expr`) of an array literal or argument
-    /// list: whatever it completes to is spliced into the enclosing list rather than taking one
-    /// slot, and `node_id` is the spread's argument. A spread hole is never `transparent`.
-    ///
-    /// The env key alone cannot tell `...LIST` from `LIST[0]` — both propagate the `LIST`
-    /// import's hole — so this records which of the two the hole is.
+    /// `Some` when the hole is a spread element (`...expr`) whose completed value must be spliced
+    /// into the enclosing list; `node_id` is the spread's argument. Never `transparent`. Needed
+    /// because the env key alone cannot tell `...LIST` from `LIST[0]`.
     pub spread: Option<SpreadArgument>,
 }
 
@@ -535,10 +513,9 @@ pub enum SpreadArgument {
 }
 
 impl IncompleteValue {
-    /// Whether the env entry for [`Self::key`] is the value of the node this hole stands for,
-    /// so substituting it completes the hole. Only a hole that *is* the dependency qualifies: a
-    /// hole propagated out of `LIST[0]`, `LIST.concat(..)` or `LIST.length ? a : b` carries
-    /// the same key but stands for a different value, which only a re-evaluation can produce.
+    /// Whether the env entry for [`Self::key`] directly completes this hole without re-evaluating
+    /// an enclosing expression. A hole propagated out of `LIST[0]` or `LIST.concat(..)` shares the
+    /// key but stands for a different value, which only re-evaluation can produce.
     pub fn is_env_value(&self) -> bool {
         self.transparent || self.spread == Some(SpreadArgument::Dependency)
     }
@@ -701,14 +678,8 @@ pub fn mark_value_synthetic(value: ResolvedValue) -> ResolvedValue {
         other => other,
     }
 }
-/// Anchor a value that filled a hole onto the node the hole stood for.
-///
-/// Holes have no upstream analogue: there, the *importing* file's `visitExpression` postlude
-/// wraps whatever the imported declaration evaluated to, so the node carried by a dynamic
-/// value is always the local reference. Without this, a constant imported from another file
-/// reports a node in *that* file, which a consumer emitting the expression verbatim cannot
-/// use — and the syntax projection, where the hole is still intact, would disagree with the
-/// semantic one. `chain_dynamic` is a no-op when the value already sits at this node.
+/// Anchor a dynamic value that filled a hole onto the local referencing node `(file, span)`,
+/// matching upstream's `visitExpression` postlude.
 fn anchor_on_hole(value: ResolvedValue, (file, span): (FileId, Span)) -> ResolvedValue {
     match value {
         ResolvedValue::Dynamic(dynamic) => chain_dynamic_boxed(file, span, dynamic),
@@ -716,12 +687,8 @@ fn anchor_on_hole(value: ResolvedValue, (file, span): (FileId, Span)) -> Resolve
     }
 }
 
-/// Fill holes in place on an owned tree (no arena access).
-///
-/// A hole that is its dependency ([`IncompleteValue::is_env_value`]) takes the env entry. Any
-/// other hole stands for a larger expression over its dependency, which the env entry alone
-/// cannot complete: it takes the value the driver re-evaluated its node to (`ast_results`,
-/// keyed by the hole's span), or stays a hole for the caller to re-run.
+/// Fill holes in place on an owned tree using `env` (for [`IncompleteValue::is_env_value`] holes)
+/// or `ast_results` (for re-evaluated enclosing expressions, keyed by hole span).
 pub fn substitute(
     value: ResolvedValue,
     env: &ResolvedEnv,
@@ -732,7 +699,6 @@ pub fn substitute(
     }
     match value {
         ResolvedValue::Incomplete(ref hole) => {
-            // Where the hole stood, so a value that comes back dynamic can be anchored there.
             let anchor = (hole.file, hole.span);
             let inherit = |filled: ResolvedValue| {
                 if hole.synthetic {
@@ -827,8 +793,6 @@ fn splice_spread(value: ResolvedValue, spread_at: (FileId, Span), out: &mut Vec<
     let (file, span) = spread_at;
     match value.into_unwrapped_named() {
         ResolvedValue::Array(items) => out.extend(items),
-        // Still incomplete — possibly a different hole its re-evaluation produced — so it stays
-        // a spread of whatever it now stands for.
         ResolvedValue::Incomplete(hole) => {
             out.push(ResolvedValue::Incomplete(Box::new(
                 hole.into_spread(span, None),
@@ -852,13 +816,10 @@ pub(crate) fn first_spread_hole(items: &[ResolvedValue]) -> Option<&ResolvedValu
         .map(ResolvedValue::unwrap_named)
 }
 
-/// Rewrite every surviving [`IncompleteValue`] hole into a [`DynamicValue`].
-///
-/// Semantic-mode postcondition: `Incomplete` means "stopped at a file boundary *by design*",
-/// which is only true in Syntax mode. After the driver has attempted (and failed) resolution,
-/// the value is semantically dynamic — consumers then need exactly one fallback branch, and a
-/// lingering hole can never tempt a consumer into resolving it outside the query system
-/// (bypassing dependency recording).
+/// Rewrite every surviving [`IncompleteValue`] hole into a [`DynamicValue`] after Stage 2
+/// resolution fails. `Incomplete` is only meaningful in Syntax mode; demoting leaves consumers a
+/// single fallback branch and keeps them from resolving a hole outside the query system (which
+/// would bypass dependency recording).
 pub fn demote_incomplete_to_dynamic(value: ResolvedValue) -> ResolvedValue {
     match value {
         ResolvedValue::Incomplete(hole) => {
@@ -921,23 +882,17 @@ pub fn demote_incomplete_to_dynamic(value: ResolvedValue) -> ResolvedValue {
     }
 }
 
-/// Stamp `owning_module` onto references declared in `file` that don't have one yet, pairing
-/// it with each reference's own declared name to form its [`OwningReference`].
-///
-/// Best-guess owning module propagation: when a value was obtained *through* a package
-/// specifier (e.g. evaluating `RouterModule.forRoot()` reached via `@angular/router`),
-/// references it contains to declarations of that same package file should be importable via
-/// that specifier rather than a relative path into `node_modules`.
-// TODO(parity): upstream's bestGuessOwningModule follows package-format conventions more
-// thoroughly; this covers the resolution chain we actually walked.
+/// Stamp `owning_module` onto references declared in `file` that do not yet have one, so package
+/// declarations reached via a package specifier (e.g. `@angular/router`) remain importable via
+/// that specifier.
+// TODO(parity): follow upstream `bestGuessOwningModule` package-format conventions more closely.
 pub fn stamp_owning_reference(
     value: ResolvedValue,
     file: FileId,
     owning_module: &OwningReference,
 ) -> ResolvedValue {
-    // Only the specifier carries over. A package re-exports its declarations under their
-    // declared name, so each stamped reference is paired with its own; the renaming case can
-    // only arise on a chased chain, which carries its own `OwningReference` already.
+    // Only the specifier carries over: packages re-export declarations under their declared name,
+    // and renamed exports arise only on chased chains that already carry an `OwningReference`.
     let owning_for = |name: &str| {
         OwningReference::from_source_specifier(owning_module.specifier().to_string(), name)
     };
@@ -976,10 +931,8 @@ pub fn stamp_owning_reference(
             })
         }
         ResolvedValue::EnumValue(mut ev) => {
-            // Deliberately no `ev.enum_ref.file == file` check, unlike the arms above:
-            // upstream takes the owning module from the import site rather than from the
-            // declaring file, and published `@angular/core` declares its enums in a chunk
-            // `.d.ts` rather than in the entry point its consumers import.
+            // Take the owning module from the import site regardless of `ev.enum_ref.file`, since
+            // published `@angular/core` declares enums in a chunk `.d.ts` rather than the entry point.
             if ev.enum_ref.owning_reference.is_none() {
                 ev.enum_ref.owning_reference = Some(owning_for(&ev.enum_ref.name));
             }

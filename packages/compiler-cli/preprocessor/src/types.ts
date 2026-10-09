@@ -65,14 +65,9 @@ export interface AnalyzerOptions {
   virtualFiles?: Record<string, string>;
   nodeModulesPathOverride?: string;
   /**
-   * Optional list of absolute file paths for source files (JS/TS) that the analyzer is allowed to read from the physical disk.
-   *
-   * If provided, physical file system access for JS/TS files will be restricted to only these paths.
-   * This is used to enforce build boundaries (e.g., in Bazel) by blocking restricted source files,
-   * forcing the resolver to fall back to allowed `.d.ts` files.
-   *
-   * Symlinks in this list are handled automatically; both the symlink path and its resolved
-   * physical path will be allowed.
+   * Optional allowlist of absolute JS/TS source paths that may be read from disk (used to
+   * enforce build boundaries by falling back to `.d.ts` files). Both symlink and resolved paths
+   * are permitted.
    */
   allowedSources?: Array<string>;
   /** Workspace name used by `PrefixImportStrategy` for module specifiers (e.g., "google3"). */
@@ -158,25 +153,13 @@ export interface ComponentMetadata {
   imports?: Array<ReferenceMetadata>;
   template?: string;
   /**
-   * The source text of an inline template declared as a string literal or a
-   * no-substitution template literal, between (excluding) the literal's delimiters
-   * (ngtsc's `getTemplateRange`). Present only for such a literal, which is parsed out of
-   * the component file's source text with escape sequences decoded by the template lexer
-   * (`sourceMapping.type === 'direct'`); absent for external templates and for inline
-   * templates computed by any other expression (`'indirect'`), whose spans are offsets into
-   * the resolved `template` string rather than into the component file.
+   * Span of an inline string/template literal's content (excluding delimiters; `getTemplateRange`
+   * for `sourceMapping.type === 'direct'`). `None` for external or indirectly computed templates.
    */
   templateContentSpan?: SpanMetadata;
-  /**
-   * The inline `template` property's value expression span — the node ngtsc anchors
-   * template-attributed diagnostics on when the template is declared inline.
-   */
+  /** Span of the inline `template` expression (used to anchor template diagnostics). */
   templateSpan?: SpanMetadata;
-  /**
-   * True when an inline `template` was present but not statically resolvable
-   * (dynamic template literal). Signals the processor to fall back to JIT / error
-   * rather than emit an empty template.
-   */
+  /** True when an inline `template` is present but not statically resolvable. */
   templateDynamic: boolean;
   templateUrl?: UrlMetadata;
   styles?: Array<string>;
@@ -187,25 +170,15 @@ export interface ComponentMetadata {
   exportAs?: Array<string>;
   schemas?: Array<string>;
   rawImportsSpan?: SpanMetadata;
-  /**
-   * Preserved copy of `@Component.imports` expression span, unaffected by same-file scope
-   * resolution. Required by local compilation mode for runtime dependency resolution.
-   */
+  /** Preserved `@Component.imports` expression span for local compilation mode. */
   importsFactorySpan?: SpanMetadata;
   resolvedDeclarations?: Array<DeclarationMetadata>;
-  /**
-   * The component's own `hostDirectives`, resolved in its own frame: the directives the
-   * type-check block places on the component's host element ahead of the component itself.
-   */
+  /** The component's own `hostDirectives`, resolved in its own frame for the type-check block. */
   resolvedHostDirectives?: Array<ResolvedHostDirectiveMetadata>;
   /**
-   * Module specifiers to emit as bare side-effect imports (`import '<specifier>';`) in
-   * local compilation mode, mirroring ngtsc's `LocalCompilationExtraImportsTracker`.
-   *
-   * Only populated for a non-standalone `@Component` whose declaring `@NgModule` lives in a
-   * different file: those are the files ngtsc marks via `markFileForExtraImportGeneration`.
-   * The specifiers are already projected into this component file's frame by Rust; the
-   * emitter must use them verbatim.
+   * Bare side-effect import specifiers (`import '<specifier>';`) for non-standalone components
+   * whose declaring `@NgModule` is in another file (`LocalCompilationExtraImportsTracker`).
+   * Already projected into this file's frame by Rust; emit verbatim.
    */
   localCompilationExtraImports?: Array<string>;
   /** Syntax of the `host` object literal, for the type-check block. */
@@ -225,10 +198,8 @@ export interface ComponentMetadata {
   providersSpan?: SpanMetadata;
   viewProvidersSpan?: SpanMetadata;
   /**
-   * `encapsulation` resolved to its numeric `ViewEncapsulation` member value, mirroring
-   * ngtsc's `resolveEnumValue`, with its textual local-compilation resolver
-   * (`resolveEncapsulationEnumValueLocally`) as the fallback. `None` when absent or
-   * unresolved — consumers default to `Emulated`.
+   * `encapsulation` resolved to its numeric `ViewEncapsulation` value (`None` when absent or
+   * unresolved; consumers default to `Emulated`).
    * https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/component/src/handler.ts#L532-L542
    */
   encapsulation?: number;
@@ -273,10 +244,7 @@ export interface ConstructorParamMetadata {
 export interface DeclarationMetadata {
   name: string;
   ref: ReferenceMetadata;
-  /**
-   * The same declaration as seen from the file of the NgModule declaring this component's
-   * owner — what remote scoping must emit, since `ɵɵsetComponentScope` is written there.
-   */
+  /** Reference projected into the declaring NgModule's file for remote scoping (`ɵɵsetComponentScope`). */
   refInDeclaringModule?: ReferenceMetadata;
   nameSpan: SpanMetadata;
   declarationType: string;
@@ -303,8 +271,8 @@ export interface DeclarationMetadata {
   isExplicitlyDeferred: boolean;
   deferredBlocks?: Array<string>;
   /**
-   * This declaration's `hostDirectives`, resolved in the consuming component's frame. These
-   * apply only where this declaration matches; they are not members of the consumer's scope.
+   * Resolved `hostDirectives` in the consuming component's frame; they apply only where this
+   * declaration matches and are not members of the consumer's scope.
    */
   resolvedHostDirectives?: Array<ResolvedHostDirectiveMetadata>;
 }
@@ -466,10 +434,8 @@ export interface HostListenerMetadata {
 }
 
 /**
- * One entry of the `host` object as the partial evaluator reduced it. Mirror of ngtsc's
- * `hostMetadata: Record<string, string | Expression>`, whose values are either a folded
- * string or a `WrappedNodeExpr` over an unevaluable node:
- * https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2021-L2047
+ * One entry of the `host` object reduced by the partial evaluator (`Record<string, string | Expression>`).
+ * https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2021-L2047
  */
 export interface HostMetadataEntry {
   key: string;
@@ -491,10 +457,7 @@ export interface HostPropertyMetadata {
 export interface ImportableRef {
   /** Module specifier to import from. */
   specifier: string;
-  /**
-   * The name `specifier` exports the symbol under — not necessarily its declared name, since
-   * a barrel may rename on the way through, nor its name in the consuming file.
-   */
+  /** Exported symbol name on `specifier`. */
   symbol: string;
 }
 
@@ -502,55 +465,37 @@ export interface ImportableRef {
 export interface ImportBindingMetadata {
   /** Source span of the individual specifier (`Foo`, `Foo as Bar`, `type Foo`, or `* as ns`). */
   span: SpanMetadata;
-  /** The identifier this declaration binds in the importing file. */
+  /** Identifier bound in the importing file. */
   local: string;
-  /**
-   * The name the module exports this binding under: the named export, the reserved key
-   * `"default"` for a default import, or absent for a namespace import (`import * as ns`),
-   * which binds the module object itself rather than any one export.
-   */
+  /** Exported symbol name (`"default"` for default imports, `None` for namespace imports). */
   imported?: string;
-  /**
-   * Whether a reference to `local` survives the edits this compiler makes to the file, so
-   * the binding must keep its import. References inside a component's `imports: [...]` array
-   * do not count — the decorator is stripped from the output.
-   */
+  /** True when `local` is referenced outside stripped decorator metadata (`@Component.imports`). */
   eagerlyReferenced: boolean;
   /**
-   * Whether any such surviving reference is in value position, i.e. would still be there if
-   * this compiler emitted JavaScript. ngtsc decides deferrability on this narrower set;
-   * `eagerly_referenced` tells the emitter whether a deferrable declaration can be deleted
-   * outright or must have its non-type specifiers converted to `type` specifiers.
+   * True when `local` has a surviving value-position reference; ngtsc decides `@defer`
+   * eligibility on this. `eagerly_referenced` then decides whether a deferrable import is
+   * deleted outright or has its non-type specifiers converted to `type`.
    */
   valueReferenced: boolean;
-  /**
-   * `import type { X }` / `import { type X }`: the binding exists only in type position.
-   * ngtsc ignores these entirely when deciding whether a declaration can be deferred.
-   */
+  /** True for `import type { X }` / `import { type X }` (ignored by ngtsc's deferrability check). */
   isType: boolean;
 }
 
 /**
- * A static `import` declaration: enough to decide whether it may be dropped in favour of the
- * dynamic `import()`s a `@defer` block emits, and the exact range to delete when it may.
- *
- * Deferral is all-or-nothing per declaration, matching ngtsc's `DeferredSymbolTracker`.
+ * Static `import` declaration metadata used for `@defer` import pruning; deferral is
+ * all-or-nothing per declaration (`DeferredSymbolTracker`).
  */
 export interface ImportDeclarationMetadata {
-  /** The declaration's own span, for anchoring a diagnostic on the statement. */
+  /** Statement span for diagnostic anchoring. */
   span: SpanMetadata;
   /**
-   * `span` extended over a trailing line terminator, so deleting it leaves no blank line
-   * behind. Only removal wants the extension; a diagnostic underlining it would drag the
-   * squiggle onto the next line.
+   * `span` extended over any trailing line terminator for clean removal (diagnostics use `span`
+   * so the squiggle stays on one line).
    */
   removalSpan: SpanMetadata;
-  /** The module specifier, verbatim (unresolved). */
+  /** Raw module specifier. */
   specifier: string;
-  /**
-   * Every binding the declaration introduces, including type-only ones. A bare
-   * `import './side-effect'` introduces none, and can never be removed.
-   */
+  /** Introduced bindings (empty for bare side-effect imports). */
   bindings: Array<ImportBindingMetadata>;
 }
 
@@ -643,17 +588,15 @@ export interface NgDiagnostic {
 export interface NgModuleMetadata {
   decoratorName?: string;
   /**
-   * True when any declaration or import of this NgModule came from a `forwardRef`-like
-   * foreign resolver, so the runtime value may not be available when `ɵɵsetComponentScope`
-   * runs and remote-scope arrays must be wrapped in a closure.
-   * https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L705-L706
+   * True when any declaration or import came from a `forwardRef`-like foreign resolver, so
+   * remote-scope arrays must be wrapped in a closure.
+   * https://github.com/angular/angular/blob/c1829f6/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L719-L720
    */
   remoteScopesMayRequireCycleProtection: boolean;
   declarations?: Array<ReferenceMetadata>;
   /**
-   * The subset of `declarations` this NgModule also lists in `exports`, in declaration
-   * order: ngtsc's `exportedDeclarations`, which `onlyPublishPublicTypingsForNgModules`
-   * narrows the declarations tuple of the `ɵmod` type to.
+   * Subset of `declarations` also listed in `exports`, in declaration order (`exportedDeclarations`
+   * for `onlyPublishPublicTypingsForNgModules`).
    */
   publicDeclarations?: Array<ReferenceMetadata>;
   imports?: Array<ReferenceMetadata>;
@@ -722,16 +665,11 @@ export interface QueryMetadata {
   first: boolean;
   isForwardRef: boolean;
   /**
-   * The predicate expression with `forwardRef` removed. The query definition emits it
-   * verbatim when the predicate has no selectors. A signal query's class metadata is always
-   * built from it (ngtsc's `memberMetadataFromSignalQuery`).
+   * Predicate expression with `forwardRef` stripped (emitted verbatim when `predicate_selectors`
+   * is `None`, and used for signal query class metadata).
    */
   predicateSpan: SpanMetadata;
-  /**
-   * The selector strings, when the predicate is a list of them (the `string[]` arm of
-   * ngtsc's `R3QueryMetadata.predicate`). Each is kept whole; the compiler splits it on
-   * commas.
-   */
+  /** Selector strings when the predicate evaluated to `string[]` (unsplit on commas). */
   predicateSelectors?: Array<string>;
   descendants: boolean;
   emitDistinctChangesOnly: boolean;
@@ -749,11 +687,12 @@ export interface RawInjectorImportMetadata {
 }
 
 /**
- * How a consuming file can refer to a symbol. The two fields are independent facts, not a
- * two-state choice: a cross-file symbol the consumer already imports has both, and callers
- * pick per use — an eager reference wants the local binding, while a `@defer` block writes
  * How a consuming file can refer to a symbol. Encodes how to reference the target both in-situ
- * (within the consumer file) and for type-checking (.ngtypecheck.ts).
+ * (within the consumer file) and for type-checking (`.ngtypecheck.ts`).
+ *
+ * Fields are independent, not alternatives: a cross-file symbol the consumer already imports has
+ * both `local_alias` and an import. Callers pick per use: expressions prefer the local binding,
+ * while emits that need a specifier (e.g. extra side-effect imports) read `consumer_import`.
  */
 export interface ReferenceMetadata {
   /** How to import the target into the consumer file (in-situ), if not bound locally. */
@@ -764,10 +703,7 @@ export interface ReferenceMetadata {
   localAlias?: string;
 }
 
-/**
- * One `hostDirectives` entry resolved to the declaration of the directive it names, with the
- * inputs and outputs its host exposes. The wire form of `ResolvedHostDirective`.
- */
+/** Wire form of `ResolvedHostDirective`. */
 export interface ResolvedHostDirectiveMetadata {
   directive: DeclarationMetadata;
   inputs?: Array<HostDirectiveBinding>;
@@ -782,32 +718,19 @@ export interface ServiceMetadata {
 }
 
 /**
- * Where to add a signal's implicit `debugName`: the edit ngtsc's `signalMetadataTransform`
- * makes to one signal-creating call.
- * https://github.com/angular/angular/blob/main/packages/compiler-cli/src/ngtsc/transform/src/implicit_signal_debug_name_transform.ts
+ * Implicit signal `debugName` insertion (`signalMetadataTransform`).
+ * https://github.com/angular/angular/blob/5b525f9/packages/compiler-cli/src/ngtsc/transform/src/implicit_signal_debug_name_transform.ts#L11-L93
  */
 export interface SignalDebugNameMetadata {
-  /**
-   * Insertion offset: just after the options object literal's `{` when spreading into it,
-   * else the end of the call's last argument, or its `)` when it has none.
-   */
+  /** UTF-16 insertion offset (after `{` when spreading into options, or at the end of the call's arguments). */
   position: number;
-  /** The name, unescaped: the declared name's source text, or the assigned property's name. */
+  /** Unescaped variable or property name. */
   debugName: string;
-  /**
-   * Spread the `debugName` into the existing options object literal, rather than append it
-   * as a new spread argument.
-   */
+  /** Spread `debugName` into the existing options object literal instead of appending an argument. */
   intoOptions: boolean;
-  /**
-   * The insertion sits next to existing code and needs a `, `: after it when spreading into
-   * a non-empty options literal, before it when appending to a call that has arguments.
-   */
+  /** Whether a `, ` separator is needed (after when spreading into non-empty options, before when appending). */
   needsSeparator: boolean;
-  /**
-   * When appending: pass `undefined` for the initial value ahead of the options, because
-   * the call has no arguments but its options are not its first parameter.
-   */
+  /** Prepend `undefined, ` when appending options to a zero-argument call whose first parameter is the initial value. */
   prependUndefined: boolean;
 }
 
@@ -870,10 +793,8 @@ export interface TypeRefMetadata {
 }
 
 /**
- * `UrlMetadata` represents a URL resource (like a template or style sheet URL) referenced in a component decorator.
- * It tracks the raw URL string, the resolved absolute file path, and the exact text span of the string literal
- * in the source file. This is crucial for the Kythe indexer to establish cross-references (links) from the
- * TypeScript source files to the external HTML/CSS files.
+ * URL resource (template or stylesheet) referenced in a component decorator, with its resolved
+ * path and literal span (used for Kythe cross-references).
  */
 export interface UrlMetadata {
   url: string;

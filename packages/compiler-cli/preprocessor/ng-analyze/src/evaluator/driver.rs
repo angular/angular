@@ -1,18 +1,15 @@
-//! The Semantic-mode driver: resolves [`IncompleteValue`] holes across files and re-runs the
-//! sync interpreter until a value is complete or genuinely dynamic.
+//! Semantic-mode driver: resolves [`IncompleteValue`] holes across files and re-runs the
+//! synchronous interpreter until a value is complete or genuinely dynamic.
 //!
-//! Deliberately a plain recursive async fn (the `dts::resolver::resolve_symbol` precedent),
-//! NOT a cached query: `QueryKey::EvaluateExport` would deadlock on cyclic imports (two
-//! `SharedQuery` tasks awaiting each other park forever — barrel-file cycles are common, and
-//! on WASM's single-threaded pump a deadlock hangs the whole compiler). The expensive parts
-//! (parse, semantic build, re-export tables) are already cached queries, so per-export caching
-//! buys little.
-// TODO(query-caching): promote to QueryKey::EvaluateExport(FileId, ExportAtom) once the engine
-// grows query-level cycle detection (per-task in-flight key stack or Salsa-style recovery).
+//! Implemented as a plain recursive async function rather than a cached query so cyclic imports
+//! do not deadlock (two `SharedQuery` tasks awaiting each other would park forever — barrel-file
+//! cycles are common, and on WASM's single-threaded pump a deadlock hangs the entire compiler).
+//! Parsing, semantic analysis, and export tables are already cached queries.
+// TODO(perf): promote to `QueryKey::EvaluateExport(FileId, ExportAtom)` once the engine
+// supports query-level cycle detection.
 //!
-//! Locking discipline: the interpreter runs inside one file's `ParsedFile` lock; the lock is
-//! always dropped before any `.await` (the interpreter's outputs are owned values), and no two
-//! file locks are ever held at once.
+//! Locking discipline: the interpreter runs under a single file's `ParsedFile` lock, which is
+//! always dropped before any `.await`; no two file locks are ever held simultaneously.
 
 use crate::analyzer::{extract_import_map, ImportKind};
 use crate::evaluator::cross_file::{resolve_specifier, ChasedExport};
@@ -34,15 +31,14 @@ use futures::future::{BoxFuture, FutureExt};
 use oxc_ast::{ast::Expression, AstKind};
 use oxc_semantic::SymbolId;
 use oxc_span::Span;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 
-/// Cross-file recursion depth cap (matches ngtsc's defense against pathological chains).
+/// Cross-file recursion depth cap (mirrors ngtsc's guard against pathological chains).
 const MAX_FILE_DEPTH: usize = 64;
-/// Per-value fixpoint iteration cap. Each productive iteration strictly grows the env or
-/// changes a re-evaluated node, and the hole-key space of one expression is finite, so this
-/// is a belt-and-braces backstop.
+/// Backstop only: each productive iteration strictly grows the env or changes a re-evaluated
+/// node, and one expression's hole-key space is finite.
 const MAX_FIXPOINT_ITERS: usize = 16;
 
 async fn reevaluate_ast_expression<Fs: ResourceResolverFs + Clone + 'static>(
@@ -69,8 +65,8 @@ async fn reevaluate_ast_expression<Fs: ResourceResolverFs + Clone + 'static>(
     crate::evaluator::interpreter::evaluate_node_id(node_id, &input)
 }
 
-/// Completely resolve a `ResolvedValue` by filling all its holes from `ctx` directly.
-/// Remaining unresolvable holes are demoted to `Dynamic`.
+/// Resolves all [`IncompleteValue`] holes in `value` via `ctx`, demoting any remaining
+/// unresolvable holes to `Dynamic`.
 pub async fn evaluate_value_completely<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryContext<Fs>,
     value: &ResolvedValue,
@@ -79,14 +75,11 @@ pub async fn evaluate_value_completely<Fs: ResourceResolverFs + Clone + 'static>
     if !value.contains_incomplete() {
         return value.clone();
     }
-    let mut visited = HashSet::new();
+    let mut state = ResolutionState::default();
     let mut env = ResolvedEnv::new();
     let mut ast_results = std::collections::HashMap::new();
     let mut current = value.clone();
-    // Whether the previous round's re-evaluations changed a node's value. What they produce
-    // may be a hole whose key is already in the env (a second `Lib.forChild(..)` call
-    // site reaching the call key the first one resolved), which no new key announces but the
-    // next round's substitution fills.
+    // Re-evaluating a node can emit a hole whose key is already in `env`, requiring another substitution pass.
     let mut reevaluation_changed = false;
 
     for _ in 0..MAX_FIXPOINT_ITERS {
@@ -107,14 +100,14 @@ pub async fn evaluate_value_completely<Fs: ResourceResolverFs + Clone + 'static>
                     continue;
                 }
             }
-            let resolved = resolve_hole(ctx, hole.clone(), &mut visited, 0, foreign).await;
+            let resolved = resolve_hole(ctx, hole.clone(), &mut state, 0, foreign).await;
             env.insert(key, resolved);
             progressed = true;
         }
         if !progressed && !postponed_calls.is_empty() {
             for hole in postponed_calls {
                 let key = hole.key();
-                let resolved = resolve_hole(ctx, hole, &mut visited, 0, foreign).await;
+                let resolved = resolve_hole(ctx, hole, &mut state, 0, foreign).await;
                 env.insert(key, resolved);
             }
             progressed = true;
@@ -126,10 +119,7 @@ pub async fn evaluate_value_completely<Fs: ResourceResolverFs + Clone + 'static>
         reevaluation_changed = false;
 
         if current.contains_incomplete() {
-            // A hole that stands for more than its dependency completes only by re-evaluating
-            // the node it stands for with the env filled. Every such node is re-evaluated,
-            // including those sharing a key with another: one per key would advance one call
-            // site per round.
+            // Re-evaluate every non-transparent hole node (even if keys repeat across call sites).
             for hole in collect_reevaluation_holes(&current) {
                 let Some(reevaluated) =
                     reevaluate_ast_expression(ctx, hole.file, hole.node_id, &env, foreign).await
@@ -150,24 +140,21 @@ pub async fn evaluate_value_completely<Fs: ResourceResolverFs + Clone + 'static>
     demote_incomplete_to_dynamic(current)
 }
 
-// ==================================================================== fixpoint core
-
-/// How to (re-)produce a value inside one file's arena. Each task is re-runnable with a
-/// growing env, which is what lets non-transparent holes (spreads, operators, call argument
-/// refreshes) complete without any access-path bookkeeping.
+/// Re-runnable single-file evaluation target. Re-running with a growing env is what lets
+/// non-transparent holes (spreads, operators, call arguments) complete without access-path
+/// bookkeeping.
 enum EvalTask {
-    /// A top-level declaration of this file, identified by its binding rather than by an
-    /// export name: the name a declaration is exported under (`export { local as exported }`,
-    /// `export default local`) is not its own, and may even belong to another declaration.
+    /// Top-level declaration identified by local `SymbolId` (rather than export name, which may
+    /// be aliased via `export { local as exported }` or `export default local`).
     Declaration { symbol: SymbolId },
-    /// An `export default <expression>` with no local binding.
+    /// Unnamed `export default <expression>`.
     DefaultExpression,
-    /// A static member access on a class of this file.
+    /// Static member access on a class in this file.
     Member {
         base: ValueReference,
         member: String,
     },
-    /// A call of a function-like declaration of this file, with pre-resolved arguments.
+    /// Function/method call on a declaration in this file with pre-resolved arguments.
     Call {
         callee: ValueReference,
         args: Vec<ResolvedValue>,
@@ -175,20 +162,19 @@ enum EvalTask {
     },
 }
 
-/// Run `task` to a hole-free value in `file_id`'s frame: evaluate under the file's
-/// `ParseFile` lock, resolve the resulting holes across files (recursively), and re-run with
-/// the env until complete; demote whatever still isn't.
+/// Runs `task` to a hole-free value in `file_id`, iteratively resolving cross-file holes and
+/// re-evaluating with the populated `env` until complete (or demoting remaining holes to `Dynamic`).
 fn complete_value<'a, Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &'a QueryContext<Fs>,
     file_id: FileId,
     task: EvalTask,
     initial: Option<ResolvedValue>,
-    visited: &'a mut HashSet<(FileId, String)>,
+    state: &'a mut ResolutionState,
     depth: usize,
     foreign: &'a [&'a dyn ForeignFunctionResolver],
 ) -> BoxFuture<'a, ResolvedValue> {
     async move {
-        let parsed = ctx.parse_file(file_id).await; // cached query; records the dependency
+        let parsed = ctx.parse_file(file_id).await;
         let mut env = ResolvedEnv::new();
         let mut value =
             initial.unwrap_or_else(|| run_task_locked(&parsed, file_id, &env, &task, foreign));
@@ -205,28 +191,26 @@ fn complete_value<'a, Fs: ResourceResolverFs + Clone + 'static>(
                 if env.contains_key(&key) {
                     continue;
                 }
-                // A Call hole whose arguments still contain holes resolves on a later round:
-                // the inner holes fill first, and the re-run emits a fresh Call hole with
-                // resolved arguments (and therefore a stable fingerprint key).
+                // Defer Call holes with incomplete arguments so inner holes resolve first and
+                // produce a stable argument fingerprint on the next iteration.
                 if let IncompleteDep::Call { args, .. } = &hole.dep {
                     if args.iter().any(|arg| arg.contains_incomplete()) {
                         postponed_calls.push(hole.clone());
                         continue;
                     }
                 }
-                // resolve_hole is total: it always returns a hole-free value (worst case
-                // Dynamic), so every insertion is monotone progress.
-                let resolved = resolve_hole(ctx, hole.clone(), visited, depth, foreign).await;
+                // `resolve_hole` is total (worst case `Dynamic`), so every insertion is monotone
+                // progress.
+                let resolved = resolve_hole(ctx, hole.clone(), state, depth, foreign).await;
                 env.insert(key, resolved);
                 progressed = true;
             }
             if !progressed && !postponed_calls.is_empty() {
-                // When inner arguments remain incomplete (e.g. unresolvable elements in route arrays),
-                // do not abandon the outer Call hole. Foreign recognizers (like ModuleWithProviders)
-                // inspect only return types, ignoring arguments, and can still succeed.
+                // If inner arguments could not progress, still attempt the outer Call hole so
+                // return-type foreign recognizers (e.g. `ModuleWithProviders`) can succeed.
                 for hole in postponed_calls {
                     let key = hole.key();
-                    let resolved = resolve_hole(ctx, hole, visited, depth, foreign).await;
+                    let resolved = resolve_hole(ctx, hole, state, depth, foreign).await;
                     env.insert(key, resolved);
                 }
                 progressed = true;
@@ -234,8 +218,8 @@ fn complete_value<'a, Fs: ResourceResolverFs + Clone + 'static>(
             if !progressed {
                 break;
             }
-            // Fast path: every hole sits in a plain value position and has an env entry —
-            // owned-tree substitution completes the value with no arena access.
+            // Fast path: when all holes are transparent value positions with env entries,
+            // owned-tree substitution completes the value directly without arena re-evaluation.
             if holes
                 .iter()
                 .all(|h| h.transparent && env.contains_key(&h.key()))
@@ -250,8 +234,6 @@ fn complete_value<'a, Fs: ResourceResolverFs + Clone + 'static>(
     .boxed()
 }
 
-/// One sync evaluation pass under the file's `ParsedFile` lock. The guard never crosses an
-/// `.await`; only owned values escape.
 fn run_task_locked(
     parsed: &Arc<Mutex<ParsedFile>>,
     file_id: FileId,
@@ -285,92 +267,126 @@ fn run_task_locked(
     }
 }
 
-// ==================================================================== hole resolution
+/// Identity of a Member/Call resolution for cycle detection and memoization.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+enum ResolutionKey {
+    Member {
+        file: FileId,
+        class: String,
+        member: String,
+    },
+    Call {
+        file: FileId,
+        callee: String,
+        member: Option<String>,
+        args_fingerprint: u64,
+    },
+}
 
-/// Resolve one hole to a hole-free value. Total: failures become `Dynamic` with a reason.
+/// Per-evaluation Member/Call cycle stack and memo table across frames.
+#[derive(Default)]
+struct ResolutionState {
+    /// Keys currently being resolved on the active path, outermost first.
+    in_progress: Vec<ResolutionKey>,
+    /// Path-independent completed values (stored before stamping the caller's owning reference).
+    completed: HashMap<ResolutionKey, ResolvedValue>,
+    /// Shallowest `in_progress` depth a cycle or depth-limit cut depended on (0 = whole path).
+    shallowest_cut: Option<usize>,
+}
+
+impl ResolutionState {
+    fn cut_cycle(&mut self, key: &ResolutionKey) -> bool {
+        let Some(index) = self.in_progress.iter().position(|k| k == key) else {
+            return false;
+        };
+        self.note_cut(index + 1);
+        true
+    }
+
+    fn note_cut(&mut self, depth: usize) {
+        self.shallowest_cut = Some(self.shallowest_cut.map_or(depth, |cut| cut.min(depth)));
+    }
+
+    fn note_depth_limit(&mut self) {
+        self.note_cut(0);
+    }
+}
+
+/// Resolves one hole to a hole-free value, converting failures to `Dynamic`.
 fn resolve_hole<'a, Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &'a QueryContext<Fs>,
     hole: IncompleteValue,
-    visited: &'a mut HashSet<(FileId, String)>,
+    state: &'a mut ResolutionState,
     depth: usize,
     foreign: &'a [&'a dyn ForeignFunctionResolver],
 ) -> BoxFuture<'a, ResolvedValue> {
     async move {
         if depth >= MAX_FILE_DEPTH {
+            state.note_depth_limit();
             return ResolvedValue::dynamic(hole.file, hole.span, DynamicReason::DepthLimit);
         }
-        match hole.dep {
+        let (key, file, owning, task) = match hole.dep {
             IncompleteDep::Reference(unresolved) => {
-                resolve_import(ctx, unresolved, hole.span, visited, depth + 1, foreign).await
+                return resolve_import(ctx, unresolved, hole.span, state, depth + 1, foreign).await;
             }
-            IncompleteDep::Member { base, member } => {
-                let guard_key = (base.file, format!("member:{}::{}", base.name, member));
-                if !visited.insert(guard_key) {
-                    return ResolvedValue::dynamic(
-                        hole.file,
-                        hole.span,
-                        DynamicReason::ImportCycle,
-                    );
-                }
-                let owning = base.owning_reference.clone();
-                let base_file = base.file;
-                let value = complete_value(
-                    ctx,
-                    base_file,
-                    EvalTask::Member { base, member },
-                    None,
-                    visited,
-                    depth + 1,
-                    foreign,
-                )
-                .await;
-                apply_owning_reference(value, base_file, owning)
-            }
-            IncompleteDep::Call { callee, args } => {
-                let guard_key = (
-                    callee.file,
-                    format!(
-                        "call:{}::{}#{:x}",
-                        callee.name,
-                        callee.member.as_deref().unwrap_or(""),
-                        fingerprint_args(&args)
-                    ),
-                );
-                if !visited.insert(guard_key) {
-                    return ResolvedValue::dynamic(
-                        hole.file,
-                        hole.span,
-                        DynamicReason::ImportCycle,
-                    );
-                }
-                let owning = callee.owning_reference.clone();
-                let callee_file = callee.file;
-                let value = complete_value(
-                    ctx,
-                    callee_file,
-                    EvalTask::Call {
-                        callee,
-                        args,
-                        // NOTE: the span is the originating call in the *requesting* file;
-                        // dynamics minted in the target frame carry it for traceability.
-                        call_span: hole.span,
-                    },
-                    None,
-                    visited,
-                    depth + 1,
-                    foreign,
-                )
-                .await;
-                apply_owning_reference(value, callee_file, owning)
-            }
+            IncompleteDep::Member { base, member } => (
+                ResolutionKey::Member {
+                    file: base.file,
+                    class: base.name.clone(),
+                    member: member.clone(),
+                },
+                base.file,
+                base.owning_reference.clone(),
+                EvalTask::Member { base, member },
+            ),
+            IncompleteDep::Call { callee, args } => (
+                ResolutionKey::Call {
+                    file: callee.file,
+                    callee: callee.name.clone(),
+                    member: callee.member.clone(),
+                    args_fingerprint: fingerprint_args(&args),
+                },
+                callee.file,
+                callee.owning_reference.clone(),
+                EvalTask::Call {
+                    callee,
+                    args,
+                    // Span of the call in the requesting file, preserved on target-frame dynamics.
+                    call_span: hole.span,
+                },
+            ),
+        };
+
+        if let Some(done) = state.completed.get(&key) {
+            return apply_owning_reference(done.clone(), file, owning);
         }
+        if state.cut_cycle(&key) {
+            return ResolvedValue::dynamic(hole.file, hole.span, DynamicReason::ImportCycle);
+        }
+
+        let index = state.in_progress.len();
+        let outer_cut = state.shallowest_cut.take();
+        state.in_progress.push(key);
+        let value = complete_value(ctx, file, task, None, state, depth + 1, foreign).await;
+        let key = state
+            .in_progress
+            .pop()
+            .expect("in-progress stack is balanced across complete_value");
+        let inner_cut = state.shallowest_cut;
+        state.shallowest_cut = match (outer_cut, inner_cut) {
+            (Some(outer), Some(inner)) => Some(outer.min(inner)),
+            (outer, inner) => outer.or(inner),
+        };
+        if inner_cut.is_none_or(|cut| cut > index) {
+            state.completed.insert(key, value.clone());
+        }
+        apply_owning_reference(value, file, owning)
     }
     .boxed()
 }
 
-/// Propagate the chain's best-guess owning module onto references declared in the file the
-/// value came from (e.g. the `ngModule` of `RouterModule.forRoot()` stays importable as
-/// `@angular/router`).
+/// Stamps `owning` onto references declared in `file` (e.g. so `RouterModule.forRoot()`'s
+/// `ngModule` stays importable as `@angular/router`).
 fn apply_owning_reference(
     value: ResolvedValue,
     file: FileId,
@@ -382,12 +398,11 @@ fn apply_owning_reference(
     stamp_owning_reference(value, file, &owning)
 }
 
-/// Resolve an import binding (the reference Syntax mode couldn't chase) to a value.
 async fn resolve_import<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &QueryContext<Fs>,
     unresolved: UnresolvedReference,
     usage_span: Span,
-    visited: &mut HashSet<(FileId, String)>,
+    state: &mut ResolutionState,
     depth: usize,
     foreign: &[&dyn ForeignFunctionResolver],
 ) -> ResolvedValue {
@@ -395,9 +410,8 @@ async fn resolve_import<Fs: ResourceResolverFs + Clone + 'static>(
         ImportKind::Named(name) => name.clone(),
         ImportKind::Default => "default".to_string(),
         ImportKind::Namespace => {
-            // A namespace object used as a value (not refined by member access).
-            // TODO(parity): materialize as a Map of the module's exports (upstream
-            // ResolvedModule equivalent).
+            // TODO(parity): Materialize unrefined namespace imports as a `Map` of exports
+            // (upstream `ResolvedModule`).
             return ResolvedValue::dynamic(
                 unresolved.importer,
                 usage_span,
@@ -413,14 +427,13 @@ async fn resolve_import<Fs: ResourceResolverFs + Clone + 'static>(
         export_name,
         unresolved.clone(),
         usage_span,
-        visited,
+        state,
         depth,
         foreign,
     )
     .await;
 
-    // The import binding is the importing file's name for the symbol — the last hop of the
-    // alias chain the chase built for the files between here and the declaration.
+    // Record the importing file's local binding at the tail of the alias chain.
     if let (ResolvedValue::Reference(ref_val), Some(local_name)) =
         (&mut value, &unresolved.local_name)
     {
@@ -437,8 +450,6 @@ async fn resolve_import<Fs: ResourceResolverFs + Clone + 'static>(
     value
 }
 
-/// Resolve `export_name` of the module `specifier` (relative to `from_dir`), chasing
-/// re-exports — but for *values*, not just classes.
 #[allow(clippy::too_many_arguments)]
 fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &'a QueryContext<Fs>,
@@ -447,12 +458,13 @@ fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
     export_name: String,
     unresolved: UnresolvedReference,
     usage_span: Span,
-    visited: &'a mut HashSet<(FileId, String)>,
+    state: &'a mut ResolutionState,
     depth: usize,
     foreign: &'a [&'a dyn ForeignFunctionResolver],
 ) -> BoxFuture<'a, ResolvedValue> {
     async move {
         if depth >= MAX_FILE_DEPTH {
+            state.note_depth_limit();
             return ResolvedValue::dynamic(
                 unresolved.importer,
                 usage_span,
@@ -472,15 +484,15 @@ fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
 
         match chased_decl {
             Ok(Some(ChasedExport::DefaultExpression(default_export))) => {
-                // StaticInterpreter.visitDeclaration: an `ExportAssignment` evaluates to its
-                // expression, in the frame of the module that declares it.
+                // Parity: `visitDeclaration` evaluates an `ExportAssignment` to its expression in
+                // the declaring module's frame.
                 let decl_file_id = ctx.engine.intern_path(&default_export.file_path);
                 let completed = complete_value(
                     ctx,
                     decl_file_id,
                     EvalTask::DefaultExpression,
                     None,
-                    visited,
+                    state,
                     depth + 1,
                     foreign,
                 )
@@ -492,8 +504,7 @@ fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
 
                 let syntax = ctx.analyze_file_syntax(decl_file_id).await;
                 let parsed = ctx.parse_file(decl_file_id).await;
-                // `ClassInfo::name_span` is a UTF-16 wire span; `ValueReference::span` is a byte
-                // span, so take it from the declaration's binding in the parse itself.
+                // `ClassInfo::name_span` is UTF-16; `ValueReference::span` must be a byte span.
                 let (symbol_name, symbol_span) = {
                     let guard = parsed.lock().unwrap();
                     let dep = guard.borrow_dependent();
@@ -545,10 +556,8 @@ fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
                     evaluate_symbol_declaration(decl.symbol_id, &input)
                 };
 
-                // Re-runs evaluate the very declaration the chase resolved (and the probe
-                // evaluated), as ngtsc's `StaticInterpreter.visitDeclaration` does: looking it
-                // up again by an export name would miss it under `export { local as exported }`
-                // or `export default local`.
+                // Parity: re-run the declaration the chase resolved (as `visitDeclaration` does),
+                // not an export-name lookup.
                 let completed = complete_value(
                     ctx,
                     decl_file_id,
@@ -556,7 +565,7 @@ fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
                         symbol: decl.symbol_id,
                     },
                     Some(probe),
-                    visited,
+                    state,
                     depth + 1,
                     foreign,
                 )
@@ -589,7 +598,6 @@ fn resolve_named_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
     .boxed()
 }
 
-/// Find the expression of an `export default <expression>` declaration in this file.
 fn find_default_export_expression<'r, 'a>(
     dep: &'r crate::types::ParsedFileDependent<'a>,
 ) -> Option<&'r Expression<'a>> {
@@ -1599,6 +1607,336 @@ mod tests {
         assert_eq!(owning.export_name(), "RouterModule");
     }
 
+    /// Evaluate the `imports` of the (only) NgModule in `/app/app.module.ts` to a hole-free
+    /// value, the way the NgModule handler does (Angular's foreign-function resolvers
+    /// installed).
+    fn complete_app_module_imports(files: &[(&str, &str)]) -> ResolvedValue {
+        let engine = build_engine(files, &["/app/app.module.ts"]);
+        let ctx = QueryContext::new(engine);
+        block_on_with_timeout(async move {
+            let syntax = ctx
+                .analyze_file_syntax(ctx.engine.intern_path("/app/app.module.ts"))
+                .await;
+            let mut imports = syntax.classes[0]
+                .as_ng_module()
+                .and_then(|m| m.imports.as_ref())
+                .expect("imports evaluation must exist")
+                .clone();
+            imports
+                .complete_with(
+                    &ctx,
+                    crate::analyzer::resolvers::angular_foreign_resolvers(),
+                )
+                .await;
+            imports.raw().clone()
+        })
+    }
+
+    /// The `ngModule` class a `ModuleWithProviders`-shaped import entry names, or a panic
+    /// describing what the entry evaluated to instead.
+    fn mwp_ng_module_name(entry: &ResolvedValue) -> &str {
+        match entry.unwrap_named() {
+            ResolvedValue::Synthetic(
+                crate::evaluator::value::SyntheticValue::ModuleWithProviders { ng_module, .. },
+            ) => &ng_module.name,
+            ResolvedValue::Map(map) => {
+                let Some(ResolvedValue::Reference(ng_module)) =
+                    map.get("ngModule").map(ResolvedValue::unwrap_named)
+                else {
+                    panic!("expected an `ngModule` reference, got {entry:?}");
+                };
+                &ng_module.name
+            }
+            other => panic!("expected a ModuleWithProviders entry, got {other:?}"),
+        }
+    }
+
+    fn expect_array(value: &ResolvedValue) -> &[ResolvedValue] {
+        let ResolvedValue::Array(items) = value.unwrap_named() else {
+            panic!("expected array, got {value:?}");
+        };
+        items
+    }
+
+    fn collect_dynamic_root_reasons<'v>(
+        value: &'v ResolvedValue,
+        out: &mut Vec<&'v DynamicReason>,
+    ) {
+        match value.unwrap_named() {
+            ResolvedValue::Dynamic(d) => out.push(&d.root_cause().reason),
+            ResolvedValue::Array(items) => {
+                for item in items {
+                    collect_dynamic_root_reasons(item, out);
+                }
+            }
+            ResolvedValue::Map(map) => {
+                for (_, item) in map.iter() {
+                    collect_dynamic_root_reasons(item, out);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    const MWP_CORE_DTS: &str = r#"
+        export declare function NgModule(meta: unknown): ClassDecorator;
+        export declare interface ModuleWithProviders<T> { ngModule: T; providers?: unknown[]; }
+    "#;
+
+    const X_MODULE_WITH_FOR_ROOT: &str = r#"
+        import { NgModule, ModuleWithProviders } from '@angular/core';
+        @NgModule({})
+        export class X {
+            static forRoot(): ModuleWithProviders<X> {
+                return { ngModule: X, providers: [] };
+            }
+        }
+    "#;
+
+    const MORE_WITH_FOR_ROOT: &str = "import { X } from './x'; export const MORE = [X.forRoot()];";
+
+    #[test]
+    fn static_call_reached_on_sibling_paths_resolves_every_occurrence() {
+        // `X.forRoot()` is reached twice along sibling (non-cyclic) paths: directly, and
+        // through the `MORE` const. Each occurrence must resolve exactly as it would alone.
+        let app_module = r#"
+            import { NgModule } from '@angular/core';
+            import { X } from './x';
+            import { MORE } from './more';
+            @NgModule({ imports: [X.forRoot(), ...MORE] })
+            export class AppModule {}
+        "#;
+        let value = complete_app_module_imports(&[
+            ("/app/app.module.ts", app_module),
+            ("/app/x.ts", X_MODULE_WITH_FOR_ROOT),
+            ("/app/more.ts", MORE_WITH_FOR_ROOT),
+            ("/app/node_modules/@angular/core/index.d.ts", MWP_CORE_DTS),
+        ]);
+
+        let items = expect_array(&value);
+        assert_eq!(items.len(), 2, "got: {value:?}");
+        for entry in items {
+            assert_eq!(mwp_ng_module_name(entry), "X", "got: {value:?}");
+        }
+    }
+
+    #[test]
+    fn static_call_reached_through_several_spreads_resolves_every_occurrence() {
+        let app_module = r#"
+            import { NgModule } from '@angular/core';
+            import { X } from './x';
+            import { MORE } from './more';
+            import { MORE2 } from './more2';
+            @NgModule({ imports: [...MORE, ...MORE2, X.forRoot()] })
+            export class AppModule {}
+        "#;
+        let value = complete_app_module_imports(&[
+            ("/app/app.module.ts", app_module),
+            ("/app/x.ts", X_MODULE_WITH_FOR_ROOT),
+            ("/app/more.ts", MORE_WITH_FOR_ROOT),
+            (
+                "/app/more2.ts",
+                "import { X } from './x'; export const MORE2 = [X.forRoot()];",
+            ),
+            ("/app/node_modules/@angular/core/index.d.ts", MWP_CORE_DTS),
+        ]);
+
+        let items = expect_array(&value);
+        assert_eq!(items.len(), 3, "got: {value:?}");
+        for entry in items {
+            assert_eq!(mwp_ng_module_name(entry), "X", "got: {value:?}");
+        }
+    }
+
+    #[test]
+    fn static_member_reached_on_sibling_paths_resolves_every_occurrence() {
+        // The same diamond through a static property (a Member hole, not a Call hole). NgModule
+        // `imports` accept nested arrays, so the entries are left unspread.
+        let app_module = r#"
+            import { NgModule } from '@angular/core';
+            import { Holder } from './holder';
+            import { MORE } from './more';
+            @NgModule({ imports: [Holder.MODULES, MORE] })
+            export class AppModule {}
+        "#;
+        let holder = r#"
+            import { X } from './x';
+            export class Holder {
+                static MODULES = [X];
+            }
+        "#;
+        let value = complete_app_module_imports(&[
+            ("/app/app.module.ts", app_module),
+            ("/app/holder.ts", holder),
+            ("/app/x.ts", X_MODULE_WITH_FOR_ROOT),
+            (
+                "/app/more.ts",
+                "import { Holder } from './holder'; export const MORE = [...Holder.MODULES];",
+            ),
+            ("/app/node_modules/@angular/core/index.d.ts", MWP_CORE_DTS),
+        ]);
+
+        let items = expect_array(&value);
+        assert_eq!(items.len(), 2, "got: {value:?}");
+        for entry in items {
+            let [module] = expect_array(entry) else {
+                panic!("expected `[X]`, got {value:?}");
+            };
+            let ResolvedValue::Reference(reference) = module.unwrap_named() else {
+                panic!("expected a reference to X, got {value:?}");
+            };
+            assert_eq!(reference.name, "X", "got: {value:?}");
+        }
+    }
+
+    #[test]
+    fn repeated_static_calls_across_files_are_memoized() {
+        // A 40-level diamond chain of static calls stays linear when completed calls are memoized.
+        const LEVELS: usize = 40;
+        let mut files: Vec<(String, String)> = vec![(
+            "/app/app.module.ts".to_string(),
+            r#"
+                import { NgModule } from '@angular/core';
+                import { L0 } from './l0';
+                @NgModule({ imports: [L0.a()] })
+                export class AppModule {}
+            "#
+            .to_string(),
+        )];
+        for i in 0..LEVELS {
+            let next = i + 1;
+            files.push((
+                format!("/app/l{i}.ts"),
+                format!(
+                    "import {{ L{next} }} from './l{next}';
+                     export class L{i} {{
+                         static a() {{ return L{next}.a() + L{next}.b(); }}
+                         static b() {{ return L{next}.a(); }}
+                     }}"
+                ),
+            ));
+        }
+        files.push((
+            format!("/app/l{LEVELS}.ts"),
+            format!(
+                "export class L{LEVELS} {{ static a() {{ return 1; }} static b() {{ return 1; }} }}"
+            ),
+        ));
+        files.push((
+            "/app/node_modules/@angular/core/index.d.ts".to_string(),
+            MWP_CORE_DTS.to_string(),
+        ));
+        let file_refs: Vec<(&str, &str)> = files
+            .iter()
+            .map(|(path, source)| (path.as_str(), source.as_str()))
+            .collect();
+
+        let value = complete_app_module_imports(&file_refs);
+
+        let (mut a, mut b) = (1.0_f64, 1.0_f64);
+        for _ in 0..LEVELS {
+            (a, b) = (a + b, a);
+        }
+        let [ResolvedValue::Number(n)] = expect_array(&value) else {
+            panic!("expected [{a}], got {value:?}");
+        };
+        assert_eq!(*n, a);
+    }
+
+    #[test]
+    fn genuine_static_call_cycle_still_reports_import_cycle() {
+        // `A.m()` calls `B.n()`, which calls `A.m()` again: a real cycle, which must still be
+        // cut (and reported as one) rather than recursing until the depth limit.
+        let app_module = r#"
+            import { NgModule } from '@angular/core';
+            import { A } from './a';
+            @NgModule({ imports: [A.m()] })
+            export class AppModule {}
+        "#;
+        let value = complete_app_module_imports(&[
+            ("/app/app.module.ts", app_module),
+            (
+                "/app/a.ts",
+                "import { B } from './b'; export class A { static m() { return [B.n()]; } }",
+            ),
+            (
+                "/app/b.ts",
+                "import { A } from './a'; export class B { static n() { return [A.m()]; } }",
+            ),
+            ("/app/node_modules/@angular/core/index.d.ts", MWP_CORE_DTS),
+        ]);
+
+        let mut reasons = Vec::new();
+        collect_dynamic_root_reasons(&value, &mut reasons);
+        assert!(
+            reasons
+                .iter()
+                .any(|reason| matches!(reason, DynamicReason::ImportCycle)),
+            "a genuine member-call cycle must be cut as an ImportCycle, got: {value:?}"
+        );
+        assert!(
+            !reasons
+                .iter()
+                .any(|reason| matches!(reason, DynamicReason::DepthLimit)),
+            "the cycle must be cut before the depth limit, got: {value:?}"
+        );
+    }
+
+    #[test]
+    fn ngmodule_scope_includes_module_reached_on_sibling_paths() {
+        // Downstream effect: a single cycle-cut entry used to make the whole `imports` slot
+        // unusable, dropping the imported module's exports from the scope.
+        let x_module = r#"
+            import { NgModule, ModuleWithProviders } from '@angular/core';
+            import { FooComponent } from './foo.component';
+            @NgModule({ imports: [FooComponent], exports: [FooComponent] })
+            export class X {
+                static forRoot(): ModuleWithProviders<X> {
+                    return { ngModule: X, providers: [] };
+                }
+            }
+        "#;
+        let app_module = r#"
+            import { NgModule } from '@angular/core';
+            import { X } from './x';
+            import { MORE } from './more';
+            @NgModule({ imports: [X.forRoot(), ...MORE] })
+            export class AppModule {}
+        "#;
+        let engine = build_engine(
+            &[
+                ("/app/app.module.ts", app_module),
+                ("/app/x.ts", x_module),
+                ("/app/more.ts", MORE_WITH_FOR_ROOT),
+                ("/app/foo.component.ts", FOO_COMPONENT),
+            ],
+            &[
+                "/app/app.module.ts",
+                "/app/x.ts",
+                "/app/more.ts",
+                "/app/foo.component.ts",
+            ],
+        );
+        let ctx = QueryContext::new(engine.clone());
+        let scope = block_on_with_timeout(async move {
+            let syntax = ctx
+                .analyze_file_syntax(ctx.engine.intern_path("/app/app.module.ts"))
+                .await;
+            let app_module_symbol = syntax.classes[0].reference_id;
+            ctx.ngmodule_imports_scope(app_module_symbol).await
+        });
+
+        let names: Vec<&str> = scope
+            .declarations
+            .iter()
+            .map(|d| d.reference.name())
+            .collect();
+        assert!(
+            names.contains(&"FooComponent"),
+            "imports scope must contain X's exports: {names:?}"
+        );
+    }
+
     fn complete_lib_module_imports(app_module: String) -> ResolvedValue {
         let lib_dts = r#"
             import { ModuleWithProviders } from '@angular/core';
@@ -2130,8 +2468,8 @@ mod tests {
             is_namespace_member: false,
         };
         block_on_with_timeout(async move {
-            let mut visited = HashSet::new();
-            resolve_import(&ctx, unresolved, Span::default(), &mut visited, 0, &[]).await
+            let mut state = ResolutionState::default();
+            resolve_import(&ctx, unresolved, Span::default(), &mut state, 0, &[]).await
         })
     }
 

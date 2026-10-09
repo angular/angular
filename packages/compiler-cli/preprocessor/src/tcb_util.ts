@@ -111,7 +111,7 @@ export function requiresInlineDeclaration(meta?: {
 /**
  * Determines whether a component target requires an inline Type Check Block (TCB).
  *
- * https://github.com/angular/angular/blob/18d899e31f3ef657e302dfe24aa305c9bf10e0af/packages/compiler-cli/src/ngtsc/typecheck/src/tcb_util.ts#L102-L127
+ * https://github.com/angular/angular/blob/18d899e/packages/compiler-cli/src/ngtsc/typecheck/src/tcb_util.ts#L102-L127
  */
 export function requiresInlineTypeCheckBlock(
   target: TcbTargetInput,

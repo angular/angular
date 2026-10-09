@@ -31,19 +31,15 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
 
     let mut filtered_items = Vec::new();
     let mut raw_items: Vec<(u32, oxc_span::Span)> = Vec::new();
-    // Next position in the final ɵinj.imports list (kept refs + verbatim entries,
-    // interleaved); a filtered element advances it by the number of references it contributes.
+    // Next position in `ɵinj.imports` (kept refs + verbatim entries, interleaved).
     let mut final_len: u32 = 0;
     let mut calculating = HashSet::new();
 
-    // The whole-`imports` evaluation drives the NgModule scope; the per-element evaluations
-    // drive `ɵinj.imports`. ngtsc keeps the same two views for the same reason.
+    // Whole-`imports` evaluation drives the NgModule scope; per-element evaluations drive `ɵinj.imports`.
     if let Some(imports_resolved) = &mut ng_module.imports {
         imports_resolved.complete_with(ctx, foreign).await;
     }
     if let Some(top_level_imports) = &mut ng_module.top_level_imports {
-        // Elements are independent, so their cross-file hole resolution is driven concurrently
-        // rather than one await at a time.
         futures::future::join_all(
             top_level_imports
                 .iter_mut()
@@ -56,34 +52,21 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
         raw_items.reserve(top_level_imports.len());
         for entry in top_level_imports {
             let item = entry.resolved.raw();
-            // ngtsc keeps a top-level `imports` element verbatim in `ɵinj.imports` when it
-            // contains a `ModuleWithProviders` — it cannot filter individual references out of
-            // such an expression without dropping the providers — or when none of its
-            // references get filtered out:
+            // Keep a top-level `imports` element verbatim in `ɵinj.imports` when it contains a
+            // `ModuleWithProviders` (filtering individual references would drop its providers) or
+            // when all of its references survive filtering. Re-printing from source preserves
+            // shapes a resolved reference cannot express (aliases, ternaries, spreads).
             // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L808-L815
             // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L863-L866
-            // Re-printing the element from source is what preserves shapes a resolved
-            // reference cannot express: an identifier aliasing an array or a
-            // `ModuleWithProviders` result, a ternary, a spread argument, or a non-array
-            // `imports` value.
             if is_module_with_providers(item) {
                 raw_items.push((final_len, entry.span));
                 final_len += 1;
                 continue;
             }
-            // ngtsc never deduplicates: each top-level `imports` element is processed
-            // independently and its surviving references are appended without checking
-            // what is already in the list.
+            // ngtsc appends surviving references per top-level element without deduplicating:
             // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L808-L876
-            // Every value appended here either lowers to exactly one wire reference — so the
-            // number of appended values is the number of positions consumed — or fails to
-            // lower at all, which nulls `injector_imports` wholesale and makes the emitter
-            // skip splicing rather than trust these indices. The values that would lower to
-            // *several* references are the `ModuleWithProviders` maps, and those never reach
-            // here: they take the verbatim branch above.
-            //
-            // The walk both collects the survivors and reports whether everything survived, so
-            // the verdict costs no second pass over the element.
+            // Each non-MWP value lowers to one wire reference (or fails to lower and nulls
+            // `injector_imports` wholesale), so appended count equals positions consumed.
             let before = filtered_items.len();
             let all_kept =
                 collect_kept_imports(item, ctx, &mut calculating, &mut filtered_items).await;
@@ -96,14 +79,9 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
             final_len += (filtered_items.len() - before) as u32;
         }
     } else if let Some(imports_resolved) = &ng_module.imports {
-        // No source expressions to re-print: the module came from a `.d.ts`, where `imports` is
-        // read off the `ɵɵNgModuleDeclaration` type parameter. Those entries are always plain
-        // module references — a type parameter cannot carry a `ModuleWithProviders` call — so
-        // there is nothing to keep verbatim and `raw_items` stays empty.
-        //
-        // Belt-and-braces: the syntax query short-circuits `.d.ts` files before this stage, so
-        // no current caller reaches here. It is kept so that a `NgModuleData` without recorded
-        // syntax degrades to reference filtering instead of silently emitting no imports.
+        // Defensive fallback for an `NgModuleData` without recorded syntax (unreachable today: the
+        // syntax query returns early for `.d.ts`). Degrades to reference filtering rather than
+        // emitting no imports.
         if let ResolvedValue::Array(items) = imports_resolved.raw() {
             for item in items {
                 let _ =
@@ -115,12 +93,9 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
     if let Some(exports_resolved) = &mut ng_module.exports {
         exports_resolved.complete_with(ctx, foreign).await;
         if let ResolvedValue::Array(items) = exports_resolved.raw() {
-            // `final_len` stays put here: verbatim entries interleave only with imports, and
-            // export-derived entries always follow them.
+            // Verbatim entries interleave only with imports; export-derived entries follow them.
             for item in items {
-                // As with imports, ngtsc appends each exported NgModule without deduplicating
-                // against entries already added — a module that is both imported and exported
-                // legitimately appears twice.
+                // Exported NgModules are appended without deduplicating against imports:
                 // https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L878-L888
                 collect_exported_ng_modules(item, ctx, &mut filtered_items).await;
             }
@@ -140,18 +115,14 @@ pub async fn optimize_ng_module<Fs: ResourceResolverFs + Clone + 'static>(
         .unwrap()
         .origin;
 
-    let mut injector_imports = Resolved::from_syntax(
-        ResolvedValue::Array(Vec::new()), // Dummy initialization
-        origin,
-    );
+    let mut injector_imports = Resolved::from_syntax(ResolvedValue::Array(Vec::new()), origin);
     injector_imports.set_value(ResolvedValue::Array(filtered_items));
 
     ng_module.injector_imports = Some(injector_imports);
 }
 
-/// A value that ngtsc's `resolveTypeList` flags as `hasModuleWithProviders`: either the
-/// recognizer's synthetic form (foreign `x.forRoot()`-style calls) or the structural form a
-/// same-file provider function evaluates to (`{ngModule: SomeModule, ...}`).
+/// Whether `item` is flagged as `hasModuleWithProviders` by ngtsc's `resolveTypeList`: either the
+/// recognizer's synthetic form (foreign `x.forRoot()` calls) or the `{ngModule: ...}` map form.
 /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1257-L1267
 fn is_module_with_providers(item: &ResolvedValue) -> bool {
     match item.unwrap_named() {
@@ -162,23 +133,12 @@ fn is_module_with_providers(item: &ResolvedValue) -> bool {
     }
 }
 
-/// Appends the references of a top-level `imports` element that survive filtering, in source
-/// order. ngtsc's `resolveTypeList` flattens nested arrays into a single `resolvedReferences`
-/// list before filtering, and — once any reference has been filtered out — emits that flat list
-/// of survivors rather than the user's expression, so nested arrays never reach the output:
-/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1268-L1288
+/// Flattens nested arrays and appends surviving references of a top-level `imports` element in
+/// source order, returning `true` iff every leaf in `item` is a reference that survived (ngtsc's
+/// condition for re-printing the element verbatim instead of emitting flattened references).
+/// Non-reference leaves are kept in `out` but return `false` since they cannot be emitted verbatim.
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1269-L1288
 /// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L863-L875
-/// On the span-driven path, elements carrying a `ModuleWithProviders` never reach this function —
-/// that caller re-prints them verbatim — which is what lets it count appended values to advance
-/// `final_len`: the multi-reference values are exactly the ones routed away from here. The `.d.ts`
-/// fallback has no spans to re-print with, so it calls this on the whole array and keeps whatever
-/// survives; it does not advance `final_len` and so does not rely on the invariant.
-/// Returns whether every value in `item` is a reference that survived — ngtsc's condition for
-/// re-printing the element from source instead of using what was collected here
-/// ("All references within this top-level import should be emitted"). A non-reference value
-/// (a map, a primitive, a `DynamicValue`) is kept but reports `false`, because such an element
-/// cannot be emitted verbatim.
-/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L863-L866
 fn collect_kept_imports<'a, Fs: ResourceResolverFs + Clone + 'static>(
     item: &'a ResolvedValue,
     ctx: &'a QueryCtx<Fs>,
@@ -189,8 +149,7 @@ fn collect_kept_imports<'a, Fs: ResourceResolverFs + Clone + 'static>(
         if let ResolvedValue::Array(items) = item {
             let mut all_kept = true;
             for sub in items {
-                // Deliberately not short-circuiting: the survivors of the remaining entries
-                // still have to be collected even once the verdict is settled.
+                // Do not short-circuit: surviving references in remaining entries must still be collected.
                 all_kept &= collect_kept_imports(sub, ctx, calculating, out).await;
             }
             return all_kept;
@@ -204,22 +163,12 @@ fn collect_kept_imports<'a, Fs: ResourceResolverFs + Clone + 'static>(
     .boxed()
 }
 
-/// Appends the exported NgModules of an `exports` element, mirroring the two things ngtsc's
-/// `resolveTypeList` does before `resolve()` walks the flat `analysis.exports` list: unwrap
-/// `ModuleWithProviders` entries to their `ngModule` reference, then recurse into nested arrays.
-/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1256-L1288
-///
-/// The unwrapping is what makes `exports: [SomeModule.forRoot()]` contribute `SomeModule` to the
-/// injector imports. Unlike the `imports` field there is no `hasModuleWithProviders` bail-out
-/// here: `resolve()` only ever emits references for exports, never the user's expression
-/// (handler.ts#L878-L888), so the unwrapped reference is emitted like any other exported module.
-/// Note that the `providers` an exported `forRoot()` carries are dropped by ngtsc either way —
-/// only the module itself, and therefore that module's own `providers`, reaches the injector.
-///
-/// Unwrapping happens before the array check, matching ngtsc's statement order, so an `ngModule`
-/// that is itself an array is flattened rather than dropped. `exports` has been completed by the
-/// caller, so no value here is `Named`-wrapped (`Named` only ever wraps `Incomplete`/`Dynamic`,
-/// and `substitute` strips it once the inner value resolves).
+/// Appends the exported NgModules of an `exports` element: unwraps `ModuleWithProviders` entries
+/// to their `ngModule` reference before recursing into nested arrays, matching `resolveTypeList`.
+/// Unlike `imports` there is no verbatim `ModuleWithProviders` path: ngtsc emits only references
+/// for exports, so an exported `X.forRoot()` contributes `X` and drops its `providers`.
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1257-L1288
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L878-L888
 fn collect_exported_ng_modules<'a, Fs: ResourceResolverFs + Clone + 'static>(
     item: &'a ResolvedValue,
     ctx: &'a QueryCtx<Fs>,
@@ -242,19 +191,11 @@ fn collect_exported_ng_modules<'a, Fs: ResourceResolverFs + Clone + 'static>(
     .boxed()
 }
 
-/// The `ngModule` an entry carries, for the two `ModuleWithProviders` shapes `resolveTypeList`
-/// unwraps: the recognizer's synthetic form (a foreign `X.forRoot()` whose return type names the
-/// module) and the object-literal form a locally declared provider function evaluates to.
-/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1256-L1267
-///
-/// `None` for anything else. Like ngtsc this keys the map form off the presence of the `ngModule`
-/// property alone; an `ngModule` that is not a class reference then fails ngtsc's reference check
-/// further down `resolveTypeList` with a fatal `NG1010` that aborts the NgModule's analysis
-/// (handler.ts#L1289-L1306), whereas we simply contribute nothing. The `imports` side needs a
-/// stricter test and uses [`is_module_with_providers`] instead — see the note there.
-///
-/// A third unwrapping of these same two shapes lives in `collect_references`
-/// (`evaluator/resolved.rs`), which lowers the value list to wire references; keep them in step.
+/// Extracts the `ngModule` from a `ModuleWithProviders` value (either synthetic `X.forRoot()` or
+/// object-literal `{ngModule: ...}` form), as `resolveTypeList` does. Divergence: a non-class
+/// `ngModule` is a fatal NG1010 in ngtsc (handler.ts#L1287-L1307); we contribute nothing.
+/// `collect_references` (`evaluator/resolved.rs`) unwraps the same two shapes; keep them in step.
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L1257-L1267
 fn unwrap_module_with_providers(item: &ResolvedValue) -> Option<ResolvedValue> {
     match item.unwrap_named() {
         ResolvedValue::Synthetic(SyntheticValue::ModuleWithProviders { ng_module, .. }) => {
@@ -265,7 +206,7 @@ fn unwrap_module_with_providers(item: &ResolvedValue) -> Option<ResolvedValue> {
     }
 }
 
-/// Whether a top-level `imports` element consists purely of references that all survive
+/// Whether a single resolved import entry is kept in `ɵinj.imports`.
 async fn should_keep_import<Fs: ResourceResolverFs + Clone + 'static>(
     item: &ResolvedValue,
     ctx: &QueryCtx<Fs>,
@@ -281,12 +222,9 @@ async fn should_keep_import<Fs: ResourceResolverFs + Clone + 'static>(
     let Some(class_info) = syntax_file.symbol_index.get(&reference_id) else {
         return true;
     };
-    // ngtsc's filtering loop, in order: a directive is dropped because it cannot carry
-    // providers, a pipe likewise, a component is dropped unless it may export providers, and
-    // everything else — an NgModule above all — is kept unconditionally. Note that the
-    // provider question is asked *only* of components; an NgModule stays whether or not it
-    // declares any.
-    // https://github.com/angular/angular/blob/96b80424c7/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L826-L861
+    // Directives and pipes cannot carry providers; components are kept only if they may export
+    // providers; NgModules and other references are kept unconditionally.
+    // https://github.com/angular/angular/blob/96b8042/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L826-L861
     match class_info.class_type {
         ClassType::Directive | ClassType::Pipe => false,
         ClassType::Component => may_export_providers(class_info, ctx, calculating).await,
@@ -324,16 +262,12 @@ fn may_export_providers<'a, Fs: ResourceResolverFs + Clone + 'static>(
 
         let res = match class_info.class_type {
             ClassType::Directive | ClassType::Pipe => false,
-            // An NgModule exports providers when it declares them, or when one of its own
-            // imports does — not merely by being an NgModule.
             ClassType::NgModule => {
                 class_info.may_declare_providers
                     || imports_may_export_providers(class_info, ctx, calculating).await
             }
             ClassType::Component if class_info.is_standalone == Some(true) => {
-                // A component read from a `.d.ts` has no recorded `imports`, so the question
-                // cannot be answered there and upstream assumes yes
-                // (`assumedToExportProviders`).
+                // `.d.ts` components have no recorded `imports`, so upstream assumes yes (`assumedToExportProviders`).
                 let fp = ctx.engine.lookup_path(class_info.reference_id.file);
                 crate::utils::is_dts(&fp)
                     || imports_may_export_providers(class_info, ctx, calculating).await
@@ -347,8 +281,7 @@ fn may_export_providers<'a, Fs: ResourceResolverFs + Clone + 'static>(
     .boxed()
 }
 
-/// Whether any entry of `class_info`'s own `imports` may export providers — the recursive half
-/// of `mayExportProviders`, shared by the standalone-component and NgModule cases.
+/// Whether any entry in `class_info.raw_imports` may export providers.
 fn imports_may_export_providers<'a, Fs: ResourceResolverFs + Clone + 'static>(
     class_info: &'a ClassInfo,
     ctx: &'a QueryCtx<Fs>,

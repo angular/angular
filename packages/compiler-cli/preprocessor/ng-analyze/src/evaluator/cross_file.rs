@@ -21,19 +21,14 @@ pub struct DeclaredSymbol {
     pub symbol_id: SymbolId,
     pub flags: SymbolFlags,
     pub owning_reference: Option<OwningReference>,
-    /// The name this symbol is bound to in each file the chase passed through, declaration
-    /// file first. Only files that actually *bind* the name are recorded: a bare
-    /// `export { X } from './x'` forwards the symbol without introducing a binding, so
-    /// nothing there can name it. Consumers rely on that — an entry means "this file can
-    /// write this identifier today", and its absence means "emit an import".
+    /// Local bindings along the chase path (declaration file first). Excludes pure re-exports
+    /// (`export { X } from './x'`) that do not introduce a local binding in that file. An entry
+    /// means that file can write the identifier directly; absence means emit an import.
     pub aliases: Vec<(FileId, String)>,
-    /// Each file the chase entered from another module, declaration file first, paired with the
-    /// name it was asked for there: the name that file *exports* the symbol under. Unlike
-    /// [`Self::aliases`] this includes files that only forward the symbol, and it keeps the
-    /// exported name where a file renames (`export { X as Y }` records `Y`, `aliases` records `X`).
+    /// Files entered across module boundaries (declaration file first) paired with the exported
+    /// name requested at each hop (including pure re-exports and renamed exports).
     pub export_hops: Vec<(FileId, String)>,
-    /// True when `file_path` exports this symbol under the reserved `default` key rather
-    /// than under [`Self::symbol_id`]'s own name, i.e. importers reach it as `m.default`.
+    /// Whether `file_path` exports this symbol under `default` rather than its declared name.
     pub exported_as_default: bool,
 }
 
@@ -43,12 +38,10 @@ impl DeclaredSymbol {
     }
 }
 
-/// A module's `default` export that binds no name: `export default <expression>`. Upstream's
-/// reflection host resolves such an export to its `ExportAssignment`, which
-/// `StaticInterpreter.visitDeclaration` evaluates as the exported expression.
+/// An unnamed `export default <expression>`. Upstream resolves it to an `ExportAssignment`,
+/// which `StaticInterpreter.visitDeclaration` evaluates as the exported expression.
 #[derive(Clone, Debug)]
 pub struct DefaultExportExpression {
-    /// The module whose `export default` statement holds the expression.
     pub file_path: PathBuf,
     pub owning_reference: Option<OwningReference>,
 }
@@ -56,9 +49,7 @@ pub struct DefaultExportExpression {
 /// Where the chase for an exported name ends.
 #[derive(Clone, Debug)]
 pub enum ChasedExport {
-    /// A declared symbol: a class, function, variable, enum, …
     Symbol(DeclaredSymbol),
-    /// `export default <expression>`, which has no symbol to name.
     DefaultExpression(DefaultExportExpression),
 }
 
@@ -70,9 +61,6 @@ impl ChasedExport {
         }
     }
 
-    /// Record that the chase entered `file` asking for `name` (see
-    /// [`DeclaredSymbol::export_hops`]). An expression has no identity to project into other
-    /// files, so only symbols keep the trail.
     fn record_export_hop(&mut self, file: FileId, name: String) {
         if let Self::Symbol(symbol) = self {
             symbol.export_hops.push((file, name));
@@ -87,7 +75,7 @@ impl ChasedExport {
     }
 }
 
-/// Resolve an import specifier relative to a file using oxc_resolver's standard resolution logic.
+/// Resolves an import specifier relative to `file_path`.
 pub fn resolve_specifier<Fs: ResourceResolverFs>(
     resolver: &ResolverGeneric<Fs>,
     file_path: &Path,
@@ -100,12 +88,9 @@ pub fn resolve_specifier<Fs: ResourceResolverFs>(
         .map(|res| res.into_path_buf())
 }
 
-/// Resolve `export_name` from `specifier` relative to `file_path`, chasing re-exports across file boundaries.
-///
-/// If `specifier` is provided, it first resolves the specifier to a target file. Then it traces the symbol
-/// through import and re-export chains to locate its underlying declaration. A chase that ends at
-/// `export default <expression>` names no symbol and yields `None`; value consumers that can
-/// evaluate the expression use [`cross_file_resolve_export`].
+/// Resolves `export_name` from `specifier` (or `file_path` when `None`) through import and
+/// re-export chains to its underlying declaration. Returns `None` for unnamed `export default <expr>`
+/// (use [`cross_file_resolve_export`] when default expressions are needed).
 pub fn cross_file_resolve<'a, Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &'a crate::QueryCtx<Fs>,
     file_path: &'a Path,
@@ -121,7 +106,8 @@ pub fn cross_file_resolve<'a, Fs: ResourceResolverFs + Clone + 'static>(
     .boxed()
 }
 
-/// [`cross_file_resolve`], but also reporting a chase that ends at `export default <expression>`.
+/// Like [`cross_file_resolve`], but also returns [`ChasedExport::DefaultExpression`] for unnamed
+/// `export default <expression>`.
 pub fn cross_file_resolve_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &'a crate::QueryCtx<Fs>,
     file_path: &'a Path,
@@ -137,12 +123,8 @@ pub fn cross_file_resolve_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
                 else {
                     return Ok(None);
                 };
-                // `export_name` is what this specifier is being asked for, which is exactly
-                // the name it exports the symbol under.
-                let owning = OwningReference::is_absolute_specifier(spec).then(|| {
-                    // `spec` is the specifier text of the import/re-export being chased.
-                    OwningReference::from_source_specifier(spec, export_name.clone())
-                });
+                let owning = OwningReference::is_absolute_specifier(spec)
+                    .then(|| OwningReference::from_source_specifier(spec, export_name.clone()));
                 (resolved, owning)
             }
             _ => (file_path.to_path_buf(), None),
@@ -170,16 +152,13 @@ pub fn cross_file_resolve_export<'a, Fs: ResourceResolverFs + Clone + 'static>(
 
 const MAX_SYMBOL_CHASE_DEPTH: usize = 32;
 
-/// Whenever an absolute specifier is encountered along the export resolution chain it
-/// overwrites the current owning module with the deeper one — paired with `name_in_target`,
-/// the name that specifier exports the symbol under.
+/// Overwrites the owning module whenever a deeper absolute specifier is crossed along the chain.
 fn update_owning_reference(
     current: Option<&OwningReference>,
     specifier: &str,
     name_in_target: &str,
 ) -> Option<OwningReference> {
     if OwningReference::is_absolute_specifier(specifier) {
-        // `specifier` is the specifier text of a re-export encountered on the chain.
         return Some(OwningReference::from_source_specifier(
             specifier,
             name_in_target,
@@ -188,36 +167,25 @@ fn update_owning_reference(
     current.cloned()
 }
 
-/// Target resolution metadata extracted synchronously under mutex lock from a parsed AST.
 enum ChaseTarget {
-    /// The symbol is exported or imported from another module (`export { A } from 'spec'` or `import { A } from 'spec'`).
-    /// Points to `(original_name, source_specifier)`.
+    /// Imported or re-exported from another module (`export { A } from 'spec'` or `import { A } from 'spec'`).
     Exported {
         original_name: String,
         source: String,
-        /// True when this file also *binds* the name being chased, so code here can write it
-        /// directly. An `import` binds; a bare re-export does not.
+        /// True when this file binds the chased name locally (`import` binds; bare re-export does not).
         binds_locally: bool,
     },
-
-    /// The symbol is an alias for a distinct local identifier in the same file (`export { localName as exportedName }`).
+    /// Local export alias (`export { localName as exportedName }`).
     LocalAlias(String),
-
-    /// The symbol is not explicitly exported/imported directly, but the file has wildcard re-exports (`export * from 'spec'`).
+    /// Candidate wildcard re-export specifiers (`export * from 'spec'`).
     Wildcards(Vec<String>),
-
-    /// The symbol is declared locally in this file's root scope.
+    /// Declared locally in this file's root scope.
     LocalBinding(SymbolId, SymbolFlags),
-
-    /// The chased name is `default` and this file's `export default` binds no name
-    /// (`export default [A]`).
+    /// Unnamed `export default <expr>`.
     DefaultExpression,
-
-    /// The symbol was not found in this file.
     NotFound,
 }
 
-/// Synchronously inspect a parsed AST's module record and semantic model to extract the primary chase target for `name`.
 fn chase_symbol_in_file_inner(
     dep: &crate::parsed::ParsedFileDependent<'_>,
     name: &str,
@@ -225,13 +193,9 @@ fn chase_symbol_in_file_inner(
 ) -> ChaseTarget {
     let module_record = &dep.module_record;
 
-    // Steps 1 and 2 match export names, which only an exported lookup asks for. A local
-    // lookup names a binding of this file, and export names are a separate namespace:
-    // `export { a as SHARED, b as a }` exports `b` as `a`, but the local `a` is still `a`.
-
-    // 1. Indirect exports (`export { A as B } from 'source'`)
+    // Indirect exports and local export aliases match export names (only checked when
+    // `require_exported` is true, since `export { a as SHARED, b as a }` leaves local `a` as `a`).
     for entry in &module_record.indirect_export_entries {
-        // A type-only re-export cannot back a value reference.
         if entry.is_type {
             continue;
         }
@@ -252,8 +216,8 @@ fn chase_symbol_in_file_inner(
             return ChaseTarget::Exported {
                 original_name: local_name,
                 source: source.name.to_string(),
-                // The spec folds `import { X } from './x'; export { X };` into an indirect
-                // export entry, and there `X` *is* bound here.
+                // `import { X } from './x'; export { X };` folds into an indirect export entry,
+                // where `X` is also bound locally.
                 binds_locally: module_record
                     .import_entries
                     .iter()
@@ -262,7 +226,6 @@ fn chase_symbol_in_file_inner(
         }
     }
 
-    // 2. Local export aliases (`export { localName as exportedName }`)
     for entry in &module_record.local_export_entries {
         let exported_name = match &entry.export_name {
             ExportExportName::Name(ns) => ns.name.as_str(),
@@ -303,7 +266,6 @@ fn chase_symbol_in_file_inner(
         });
 
     if is_locally_exported {
-        // 3. Local imports (`import { A as B } from 'source'`)
         for entry in &module_record.import_entries {
             if entry.local_name.name.as_str() == name {
                 let original_name = match &entry.import_name {
@@ -319,20 +281,18 @@ fn chase_symbol_in_file_inner(
             }
         }
 
-        // 4. Local symbol binding in root scope
         if let Some(symbol_id) = dep.semantic.scoping().get_root_binding(name.into()) {
             let flags = dep.semantic.scoping().symbol_flags(symbol_id);
             return ChaseTarget::LocalBinding(symbol_id, flags);
         }
     }
 
-    // 5. Wildcard / star exports (`export * from 'source'`), which never re-export `default`.
+    // `export *` never forwards `default`.
     if name == "default" {
         return ChaseTarget::NotFound;
     }
     let mut wildcards = Vec::new();
     for entry in &module_record.star_export_entries {
-        // `export type * from 'source'` forwards no values.
         if entry.is_type {
             continue;
         }
@@ -348,22 +308,16 @@ fn chase_symbol_in_file_inner(
     ChaseTarget::NotFound
 }
 
-/// Asynchronously inspect a file's cached `AnalyzeFileSyntax` exports and semantic model to extract the primary chase target for `name`.
 async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &crate::QueryCtx<Fs>,
     file_path: &Path,
     name: &str,
     require_exported: bool,
 ) -> ChaseTarget {
-    // Step 1: Check memoized single-file syntax exports cache (QueryKey::AnalyzeFileSyntax)
     let file_id = ctx.engine.intern_path(file_path);
     let syntax = ctx.analyze_file_syntax(file_id).await;
     let exports = &syntax.file_exports;
 
-    // Steps 1 and 2 match export names, which only an exported lookup asks for (see
-    // `chase_symbol_in_file_inner`).
-
-    // 1. Indirect / named re-exports (`export { A as B } from 'source'`)
     for entry in &exports.named {
         if entry.is_type {
             continue;
@@ -377,14 +331,12 @@ async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
         }
     }
 
-    // 2. Local export aliases (`export { localName as exportedName }`)
     for entry in &exports.local_aliases {
         if require_exported && entry.exported_name == name && entry.local_name != name {
             return ChaseTarget::LocalAlias(entry.local_name.clone());
         }
     }
 
-    // Step 2: Fall back to parsed AST for local import, root binding, or wildcard lookup
     let parsed_file_arc = ctx.parse_file(file_id).await;
     let guard = parsed_file_arc.lock().unwrap();
     let inner_target = chase_symbol_in_file_inner(guard.borrow_dependent(), name, require_exported);
@@ -392,7 +344,6 @@ async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
         return inner_target;
     }
 
-    // 3. Wildcard / star exports (`export * from 'source'`), which never re-export `default`.
     if name == "default" {
         return ChaseTarget::NotFound;
     }
@@ -409,7 +360,6 @@ async fn chase_symbol_in_file<Fs: ResourceResolverFs + Clone + 'static>(
     ChaseTarget::NotFound
 }
 
-/// Trace a symbol through import and re-export chains starting from `file_path` and `name`.
 fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
     ctx: &'a crate::QueryCtx<Fs>,
     file_path: PathBuf,
@@ -420,12 +370,10 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
     require_exported: bool,
 ) -> BoxFuture<'a, Result<Option<ChasedExport>, ChaseSymbolError>> {
     async move {
-        // Depth limit detection
         if depth >= MAX_SYMBOL_CHASE_DEPTH {
             return Err(ChaseSymbolError::DepthLimitExceeded);
         }
 
-        // Cycle detection on active call stack
         let key = (
             file_path.clone(),
             if require_exported {
@@ -438,7 +386,6 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
             return Err(ChaseSymbolError::CycleDetected);
         }
 
-        // Record file dependency in query context
         let file_id = ctx.engine.intern_path(&file_path);
         ctx.record_file(file_id);
 
@@ -446,7 +393,6 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
             let target = chase_symbol_in_file(ctx, &file_path, &name, require_exported).await;
 
             match target {
-                // Branch 1: Exported or imported from another file (`export { A } from 'spec'` or `import { A } from 'spec'`).
                 ChaseTarget::Exported {
                     original_name,
                     source,
@@ -471,8 +417,7 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                             true,
                         )
                         .await?;
-                        // Recorded on the way back up, so only the chain that actually reached
-                        // a declaration contributes — abandoned wildcard branches do not.
+                        // Record on return so abandoned wildcard branches do not contribute hops.
                         let Some(chased) = resolved.as_mut() else {
                             return Ok(None);
                         };
@@ -484,7 +429,6 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                     }
                 }
 
-                // Branch 2: Local export alias (`export { localName as exportedName }`).
                 ChaseTarget::LocalAlias(alias_target) => {
                     match chase_symbol_declaration(
                         ctx,
@@ -498,11 +442,9 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                     .await
                     {
                         Ok(Some(mut res)) => {
-                            // `export default class Foo {}` binds `Foo` locally but exports it
-                            // under the reserved `default` key. Only claim that when the alias
-                            // resolved within this same file — `import {X} from './a'; export
-                            // {X as default}` declares nothing here, and `./a` still exports it
-                            // as `X`.
+                            // Only mark `exported_as_default` when the declaration lives in this
+                            // file (`import {X} from './a'; export {X as default}` leaves `./a`
+                            // exporting `X` under its declared name).
                             if let (ChasedExport::Symbol(symbol), true) =
                                 (&mut res, name == "default")
                             {
@@ -515,7 +457,6 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                     }
                 }
 
-                // Branch 3: Wildcard re-exports (`export * from 'source'`).
                 ChaseTarget::Wildcards(wildcards) => {
                     let mut type_only_fallback: Option<ChasedExport> = None;
                     let mut saw_cycle = false;
@@ -528,7 +469,6 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                             continue;
                         };
 
-                        // `export *` forwards the name unchanged.
                         let next_owning = update_owning_reference(
                             owning_reference.as_ref(),
                             wildcard_source,
@@ -570,7 +510,6 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                     }
                 }
 
-                // Branch 4: Terminal local symbol binding.
                 ChaseTarget::LocalBinding(symbol_id, flags) => {
                     return Ok(Some(ChasedExport::Symbol(DeclaredSymbol {
                         file_path,
@@ -583,7 +522,6 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                     })));
                 }
 
-                // Branch 5: Anonymous `export default <expr>` (not a bare identifier).
                 ChaseTarget::DefaultExpression => {
                     return Ok(Some(ChasedExport::DefaultExpression(
                         DefaultExportExpression {
@@ -593,7 +531,6 @@ fn chase_symbol_declaration<'a, Fs: ResourceResolverFs + Clone + 'static>(
                     )));
                 }
 
-                // Branch 6: Not found in this file.
                 ChaseTarget::NotFound => {}
             }
 

@@ -36,7 +36,6 @@ export class DefinitionBuilder {
     private readonly templateTypeChecker: TemplateTypeChecker,
   ) {}
 
-  // TODO(future): Consider fetching file content or offsets from Rust VFS instead of passing it here.
   async getDefinition(
     filePath: string,
     offset: number,

@@ -50,7 +50,6 @@ describe('Diagnostics Mapping', () => {
     `;
 
     await env.run('app_diagnostics_test.ts', appTsContent, async (ls, filePath) => {
-      // 1. Get TCB
       const doc = TextDocument.create(`file://${filePath}`, 'typescript', 0, appTsContent);
       const position = doc.positionAt(appTsContent.indexOf('nonExistent'));
       const tcb = await ls.getTcb(filePath, position);
@@ -58,8 +57,6 @@ describe('Diagnostics Mapping', () => {
 
       if (!tcb) return;
 
-      // 2. Find a span comment in TCB to simulate diagnostic position
-      // getTemplateLocationFromTcbLocation looks for /*start,end*/ comments
       const match = /\/\*(\d+),(\d+)\*\//.exec(tcb.code);
       expect(match).toBeTruthy();
       if (!match) return;
@@ -67,14 +64,13 @@ describe('Diagnostics Mapping', () => {
       const commentOffset = match.index;
       const templateStart = parseInt(match[1], 10);
 
-      // Simulate a diagnostic at the position of the comment in TCB
       const tcbDoc = TextDocument.create(tcb.filePath, 'typescript', 0, tcb.code);
       const tcbPosition = tcbDoc.positionAt(commentOffset);
 
       const mockDiagnostic = {
         range: {
           start: tcbPosition,
-          end: tcbPosition, // simplifying for test
+          end: tcbPosition,
         },
         message: 'Property nonExistent does not exist',
         severity: DiagnosticSeverity.Error,
@@ -85,10 +81,8 @@ describe('Diagnostics Mapping', () => {
         diagnostics: [mockDiagnostic],
       };
 
-      // 3. Call handleDiagnostics
       const result = await ls.handleDiagnostics(params);
 
-      // 4. Verify result
       expect(result).toBeTruthy();
       expect(Object.keys(result!).length).toBe(1);
       expect(result![filePath]).toBeTruthy();
@@ -99,7 +93,6 @@ describe('Diagnostics Mapping', () => {
       if (!mappedDiag) return;
       expect(mappedDiag.message).toBe(mockDiagnostic.message);
 
-      // The mapped range should correspond to the template start in the span comment
       const templateDoc = TextDocument.create(`file://${filePath}`, 'typescript', 0, appTsContent);
       const expectedPosition = templateDoc.positionAt(templateStart);
 

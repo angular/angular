@@ -41,7 +41,6 @@ pub struct IoMetadataArray {
 #[derive(Clone, Debug)]
 pub struct MemberIoOptions {
     pub kind: IoKind,
-    /// The decorated class member.
     pub member: String,
     pub value: Resolved<ResolvedValue>,
     /// The decorator: where ngtsc reports an argument of the wrong shape.

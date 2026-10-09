@@ -46,7 +46,7 @@ import { AModule, BModule } from './shared';
 // LOCAL mode emits the imports array VERBATIM, keeping an array hole (elision) as an empty
 // slot — matching ngtsc, whose `exp.elements.map(...)` includes the OmittedExpression, so
 // `ɵinj.imports` is `[AModule, , BModule]` (not `[AModule, BModule]`).
-// https://github.com/angular/angular/blob/e3ac727dfc/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L670-L688
+// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/ng_module/src/handler.ts#L670-L688
 @NgModule({
   imports: [AModule, , BModule],
   declarations: [AppComponent],

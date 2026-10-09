@@ -782,7 +782,6 @@ function collectAllEntitiesInScope(
 ): Map<string, {name: string; kind: CompletionItemKind; detail: string}> {
   const result = new Map<string, {name: string; kind: CompletionItemKind; detail: string}>();
 
-  // 1. If boundTarget is available, query entities in scope for the innermost scoped node
   const scopedNode = findInnermostScopedNode(nodes, offset);
   if (boundTarget) {
     const entities = boundTarget.getEntitiesInScope(scopedNode);
@@ -798,7 +797,6 @@ function collectAllEntitiesInScope(
     }
   }
 
-  // 2. Structural AST traversal to ensure all in-scope variables, references, and let declarations are captured
   function visitPath(currentNodes: TmplAstNode[]) {
     for (const node of currentNodes) {
       const span = node.sourceSpan;

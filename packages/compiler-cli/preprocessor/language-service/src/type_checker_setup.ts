@@ -32,11 +32,6 @@ export interface SetupResult {
  * Unlike reference Angular (`TemplateTypeCheckerImpl`), which uses a `ProgramDriver` to inject TCB
  * shims into a persistent TypeScript program, this queries `HybridCompiler` for the TCB code and
  * parsed template on demand and constructs a synthetic source file for `SymbolBuilder`.
- *
- * @param hybridCompiler The hybrid compiler instance to query for data.
- * @param filePath The path to the file (HTML or TS).
- * @param position The line and character position in the file.
- * @returns The setup result containing the TCB source file and mapped offsets, or null if resolution fails.
  */
 export function getSetup(
   hybridCompiler: HybridCompiler,

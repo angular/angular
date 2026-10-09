@@ -1,26 +1,17 @@
 //! [`Resolved<T>`]: a partially evaluated value whose consumer expects a `T`.
 //!
-//! State machine: created from a Syntax-mode evaluation (may contain `Incomplete` holes);
-//! Stage 2 either *completes* it (semantic driver — postcondition hole-free) or *demotes* it
-//! (holes → `Dynamic`). Reads declare the consuming field's policy:
+//! Created from a Syntax-mode evaluation (may contain `Incomplete` holes); Stage 2 either
+//! *completes* it (postcondition hole-free) or *demotes* it (holes → `Dynamic`).
 //!
-//! - [`Resolved::get_optional`] — the field is optional on the wire: `Incomplete`, `Dynamic`,
-//!   and shape mismatches all lower to `None`.
-//! - [`Resolved::get_required`] — the field is needed to compile (e.g. a component's
-//!   template): any unresolved state is an error, in **both** wire projections. The syntax
-//!   projection is the *more* failure-prone one — `Incomplete` is the normal pre-resolution
-//!   state there.
-//! - [`Resolved::get_checked`] — optional field under the semantic invariant: `Err` only on
-//!   lingering `Incomplete` (a driver bug — Stage 2 completes or demotes every field);
-//!   `Dynamic` lowers to `None`.
+//! - [`Resolved::get_optional`] — `Incomplete`, `Dynamic`, and shape mismatches lower to `None`.
+//! - [`Resolved::get_required`] — any unresolved state is an error.
+//! - [`Resolved::get_checked`] — `Err` on lingering `Incomplete` (driver bug); `Dynamic` → `None`.
 
 use std::marker::PhantomData;
 
 use crate::evaluator::value::{demote_incomplete_to_dynamic, ResolvedValue};
 
-/// Marker error: a hole-free read was performed on a value that still contains `Incomplete`
-/// holes. Always an internal invariant violation — Stage 2 must have completed or demoted
-/// every `Resolved` field before semantic projection.
+/// Marker error: a hole-free read encountered `Incomplete` holes (Stage 2 invariant violation).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct StillIncomplete;
 
@@ -42,11 +33,8 @@ pub trait FromResolved: Sized {
 }
 
 impl FromResolved for String {
-    /// Deliberately strict: only values that folded to a string. Numbers, booleans, and
-    /// `EnumValue`s are *not* coerced — this matches the scope of the legacy
-    /// `extract_string` so wire output is unchanged by the migration.
-    // TODO(parity): ngtsc accepts a wider set of statically-known string-ish values in some
-    // positions; widen per-field as those positions migrate.
+    /// Strict string match without coercing numbers, booleans, or `EnumValue`s.
+    // TODO(parity): widen per-field where ngtsc accepts string-coercible values.
     fn from_value(value: &ResolvedValue, _origin: crate::query::FileId) -> Option<Self> {
         match value.unwrap_named() {
             ResolvedValue::String(s) => Some(s.clone()),
@@ -130,10 +118,8 @@ pub struct ViewEncapsulationValue(pub i32);
 pub struct ChangeDetectionStrategyValue(pub i32);
 
 /// Read `value` as a member of the `@angular/core` enum named `enum_name`, mirroring ngtsc's
-/// `resolveEnumValue` + `isAngularCoreReferenceWithPotentialAliasing`: the value must be an
-/// `EnumValue` whose enum's declared name equals `enum_name` modulo a bundler `$N` alias
-/// suffix (`ViewEncapsulation$1`), reached through `@angular/core`, and whose member value
-/// statically resolved to a number.
+/// `resolveEnumValue` + `isAngularCoreReferenceWithPotentialAliasing` (stripping any bundler `$N`
+/// suffix and requiring `@angular/core` ownership).
 /// https://github.com/angular/angular/blob/83622ee/packages/compiler-cli/src/ngtsc/annotations/common/src/evaluation.ts#L20-L45
 fn core_enum_member_number(value: &ResolvedValue, enum_name: &str) -> Option<i32> {
     let ResolvedValue::EnumValue(ev) = value.unwrap_named() else {
@@ -152,9 +138,8 @@ fn core_enum_member_number(value: &ResolvedValue, enum_name: &str) -> Option<i32
     if stripped != enum_name {
         return None;
     }
-    // `ownedByModuleGuess === '@angular/core'`: a user enum that merely shares the name is
-    // rejected. An evaluation that never crossed a package boundary has no guess at all,
-    // which counts as not-core.
+    // `ownedByModuleGuess === '@angular/core'`: same-named user enums are rejected, and no guess
+    // (never crossed a package boundary) counts as not-core.
     let owned_by_core = ev
         .enum_ref
         .owning_reference
@@ -199,34 +184,27 @@ impl From<ChangeDetectionStrategyValue> for i32 {
     }
 }
 
-/// The value of one `host` metadata entry after partial evaluation. Mirror of the
-/// `string | Expression` union that ngtsc's `evaluateHostExpressionBindings` builds:
-/// https://github.com/angular/angular/blob/1c9c453/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2021-L2047
+/// The value of one `host` metadata entry after partial evaluation (`string | Expression`).
+/// https://github.com/angular/angular/blob/e3ac727/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L2021-L2047
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum HostMetadataValue {
-    /// The evaluator folded the entry to a string — the only shape ngtsc accepts as a value.
+    /// Folded to a string.
     Static(String),
-    /// Not statically evaluable. ngtsc keeps the offending node as
-    /// `new WrappedNodeExpr(value.node)`, so the expression is emitted verbatim; the span is
-    /// that node's, within the file named by [`Resolved::origin`].
+    /// Not statically evaluable; span of the offending node within [`Resolved::origin`] (emitted
+    /// verbatim as `WrappedNodeExpr`).
     Dynamic(oxc_span::Span),
 }
 
 /// A `host` metadata object reduced by the partial evaluator, in source order.
 ///
-/// TODO(parity): entries that resolve to neither a string nor a same-file dynamic node are
-/// dropped, where ngtsc raises `ErrorCode.VALUE_HAS_WRONG_TYPE` and emits no definition at
-/// all. There is no diagnostics channel here, and `@Directive.host` is typed
-/// `{[key: string]: string}`, so every such value is already a TypeScript type error upstream
-/// — dropping is nearer ngtsc's "no output" than inventing a value would be, but it is not
-/// the same thing.
+/// TODO(parity): entries that resolve to neither a string nor a same-file dynamic node are dropped;
+/// ngtsc raises `ErrorCode.VALUE_HAS_WRONG_TYPE` and emits no definition. Such values are already
+/// TS type errors (`host` is `{[key: string]: string}`), so dropping approximates "no output".
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct HostMetadata(pub Vec<(String, HostMetadataValue)>);
 
 impl FromResolved for HostMetadata {
     fn from_value(value: &ResolvedValue, origin: crate::query::FileId) -> Option<Self> {
-        // ngtsc requires the whole `host` field to evaluate to a map, which lets the object be
-        // reached through a constant (`host: HOST_META`) rather than written inline.
         let ResolvedValue::Map(map) = value.unwrap_named() else {
             return None;
         };
@@ -247,47 +225,38 @@ fn host_metadata_value(
 ) -> Option<HostMetadataValue> {
     match value.unwrap_named() {
         ResolvedValue::String(s) => Some(HostMetadataValue::Static(s.clone())),
-        // ngtsc resolves an enum reference to its declared value before the string check.
         ResolvedValue::EnumValue(member) => match member.resolved.unwrap_named() {
             ResolvedValue::String(s) => Some(HostMetadataValue::Static(s.clone())),
             _ => None,
         },
-        // A reference this file makes to something unevaluable. `anchor_on_hole` puts the
-        // local reference on top of anything Stage 2 pulled in from another file, so this is
-        // the normal shape for an imported constant too.
+        // `anchor_on_hole` re-anchors cross-file dynamics on the local reference, so imported
+        // constants land here too.
         ResolvedValue::Dynamic(dynamic) if dynamic.file == origin => {
             Some(HostMetadataValue::Dynamic(dynamic.span))
         }
-        // Syntax mode leaves cross-file references as holes. The syntax wire is projected
-        // before Stage 2 can close them, so the unresolved reference is emitted verbatim,
-        // exactly as the semantic wire will do once the hole demotes to `Dynamic`.
+        // The syntax wire is projected before Stage 2; emit the hole verbatim, matching what the
+        // semantic wire emits once it demotes to `Dynamic`.
         ResolvedValue::Incomplete(hole) if hole.file == origin => {
             Some(HostMetadataValue::Dynamic(hole.span))
         }
-        // TODO(parity): a dynamic node genuinely rooted in another file — an unevaluable entry
-        // inside an imported `host` object, where this file has no reference to name — is
-        // dropped. ngtsc emits the foreign node, producing a definition that refers to a
-        // binding not in scope here, so there is nothing better to copy.
+        // TODO(parity): dynamic entries inside an imported `host` object have no local span and
+        // are dropped. ngtsc emits the foreign node, which refers to a binding not in scope here.
         _ => None,
     }
 }
 
-/// A decorator query's predicate reduced by the partial evaluator to selector strings: the
-/// `string[]` arm of ngtsc's `R3QueryMetadata.predicate`, as `extractDecoratorQueryMetadata`
-/// builds it. Each selector is kept whole; `getQueryPredicate` splits it on commas at compile
-/// time, so `['a,b', 'c']` stays two entries here.
+/// A decorator query's predicate reduced to selector strings (`string[]` arm of
+/// `R3QueryMetadata.predicate`). Each entry is kept unsplit until `getQueryPredicate` splits on
+/// commas at compile time.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct QuerySelectors(pub Vec<String>);
 
 impl FromResolved for QuerySelectors {
-    /// `None` means the predicate is emitted as the expression it was written as. ngtsc does
-    /// that for a `Reference` and for a `DynamicValue`. A syntax-mode hole takes the same path:
-    /// the verbatim expression evaluates to the same predicate at runtime, which
-    /// `TQueryMetadata_` splits on commas if it is a string.
+    /// `None` means the predicate is emitted verbatim as an expression (`Reference`,
+    /// `DynamicValue`, or syntax-mode hole).
     ///
-    /// TODO(parity): ngtsc rejects every other value with `VALUE_HAS_WRONG_TYPE` (a number, a
-    /// boolean, an enum member, an object, or an array holding a non-string). Those also lower
-    /// to `None` here and are emitted verbatim instead of being reported.
+    /// TODO(parity): non-string/non-reference values also lower to `None` instead of raising
+    /// `VALUE_HAS_WRONG_TYPE`.
     fn from_value(value: &ResolvedValue, _origin: crate::query::FileId) -> Option<Self> {
         match value.unwrap_named() {
             ResolvedValue::String(s) => Some(QuerySelectors(vec![s.clone()])),
