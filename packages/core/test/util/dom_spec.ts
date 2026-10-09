@@ -45,5 +45,23 @@ describe('comment node text escaping', () => {
       expect(escapeCommentText('.->')).toEqual('.->');
       expect(escapeCommentText('<!-.')).toEqual('<!-.');
     });
+
+    it('should escape markers which share characters', () => {
+      // The `--` belongs to both the `<!--` and the `--!>`/`-->` marker.
+      expect(escapeCommentText('<!--!>')).toEqual('\u200b<\u200b!--!\u200b>\u200b');
+      expect(escapeCommentText('<!--->')).toEqual('\u200b<\u200b!---\u200b>\u200b');
+      expect(escapeCommentText('<!--!><img src="x">')).toEqual(
+        '\u200b<\u200b!--!\u200b>\u200b<img src="x">',
+      );
+    });
+
+    it('should not escape a bare ">" or "->" in the middle of the text', () => {
+      // A previous attempt dropped the anchors and escaped these mid-text, which changed the
+      // serialized output of any comment containing a plain `>`. They must stay untouched.
+      expect(escapeCommentText('a>b')).toEqual('a>b');
+      expect(escapeCommentText('a->b')).toEqual('a->b');
+      expect(escapeCommentText('.>')).toEqual('.>');
+      expect(escapeCommentText('.->')).toEqual('.->');
+    });
   });
 });
