@@ -390,6 +390,39 @@ describe('ShadowCss', () => {
     it('should handle adjacent comments', () => {
       expect(shim('/* comment 1 */ /* comment 2 */ b {}', 'contenta')).toBe('  b[contenta] {}');
     });
+
+    it('should not scope comments that are placed between a selector and its block', () => {
+      expect(shim('.a /* comment */ {}', 'contenta')).toBe('.a[contenta]    {}');
+    });
+
+    it('should not scope comments that are placed between selectors of a list', () => {
+      expect(shim('.a, /* comment */ .b {}', 'contenta')).toBe('.a[contenta],    .b[contenta] {}');
+      expect(shim('.a /* comment */, .b {}', 'contenta')).toBe('.a[contenta]   , .b[contenta] {}');
+    });
+
+    it('should not scope comments that are placed between compound selectors', () => {
+      expect(shim('.a /* comment */ .b {}', 'contenta')).toBe('.a[contenta]      .b[contenta] {}');
+      expect(shim('.a > /* comment */ .b {}', 'contenta')).toBe(
+        '.a[contenta]    >    .b[contenta] {}',
+      );
+      expect(shim('.a /* c1 */ /* c2 */ .b {}', 'contenta')).toBe(
+        '.a[contenta]         .b[contenta] {}',
+      );
+    });
+
+    it('should not scope comments inside of :host and pseudo selector functions', () => {
+      expect(shim(':host /* comment */ .b {}', 'contenta', 'a-host')).toBe(
+        '[a-host]      .b[contenta] {}',
+      );
+      expect(shim(':is(.a, /* comment */ .b) {}', 'contenta')).toBe(
+        ':is(.a[contenta],    .b[contenta]) {}',
+      );
+    });
+
+    it('should scope compound selectors that contain a comment', () => {
+      expect(shim('.a/* comment */.b {}', 'contenta')).toBe('.a.b[contenta] {}');
+      expect(shim('.a/* comment */:hover {}', 'contenta')).toBe('.a[contenta]:hover {}');
+    });
   });
 
   describe('CSS variable namespacing', () => {
