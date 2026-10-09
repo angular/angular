@@ -18,6 +18,8 @@ ts_project(
         "//:node_modules/typescript",
         "//packages/compiler",
         "//packages/compiler-cli/preprocessor",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/test/compliance/test_helpers",
     ],
 )
 
@@ -29,6 +31,7 @@ jasmine_test(
         "//packages/common:npm_package",
         "//packages/compiler-cli/preprocessor/ng-analyze:ng_analyze_wasm",
         "//packages/compiler-cli/preprocessor/ng-analyze:package_json",
+        "//packages/compiler-cli/test/compliance/test_cases",
         "//packages/core:npm_package",
     ] + glob(["golden/**"]),
     shard_count = 4,

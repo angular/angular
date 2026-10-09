@@ -7,6 +7,7 @@ ts_project(
         ["**/*.ts"],
     ),
     visibility = [
+        "//packages/compiler-cli/preprocessor/test:__pkg__",
         "//packages/compiler-cli/test/compliance:__subpackages__",
     ],
     deps = [
