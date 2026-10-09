@@ -134,6 +134,10 @@ export class IndexerBoundTemplate implements AbstractBoundTemplate<ClassEntity> 
 export async function getIndexedComponents(
   compiler: HybridCompiler,
 ): Promise<Map<string, IndexedComponent>> {
+  return getIndexedComponentsSync(compiler);
+}
+
+export function getIndexedComponentsSync(compiler: HybridCompiler): Map<string, IndexedComponent> {
   const indexedComponents = new Map<string, IndexedComponent>();
 
   for (const [filePath, fileAnalysis] of compiler.fileCache.entries()) {
@@ -141,7 +145,7 @@ export async function getIndexedComponents(
     if (!templatesByClass) continue;
 
     const boundTargetsByClass = fileAnalysis?.preparedTcbData?.boundTargetMap;
-    const result = await compiler.analyzer.getMetadataForFile(filePath);
+    const result = compiler.analyzer.getMetadataForFileSync(filePath);
     if (!result) continue;
 
     for (const cls of result.classes) {

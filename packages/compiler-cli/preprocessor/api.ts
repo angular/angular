@@ -31,9 +31,14 @@ export {SidecarAnalyzer} from './src/analyzer_sidecar.js';
 export {run} from './ngp.js';
 export type {RunOptions} from './ngp.js';
 
-export {buildTypeCheckingConfig} from './src/tcb.js';
+export {buildTypeCheckingConfig, type NgpTypeCheckingConfig} from './src/tcb.js';
 export {resolveWorkspaceConfig} from './src/workspace.js';
 export type {WorkspaceConfig} from './src/workspace.js';
+export {WasmAnalyzer, type WasmInner} from './src/analyzer_wasm.js';
+export type {WasmHostFs, HostDirEntry, HostFileStat} from './src/wasm_host_fs.js';
+export type {NgDiagnostic} from './src/types.js';
+export {IndexerBoundTemplate} from './src/indexing/indexer.js';
+export type {ClassEntity} from './src/indexer_api.js';
 
 export type {AnalyzerBackend, LoadAnalyzerOptions, LoadedAnalyzer};
 
