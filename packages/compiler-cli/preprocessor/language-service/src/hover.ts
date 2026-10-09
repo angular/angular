@@ -18,7 +18,7 @@ import {
   createDollarAnyQuickInfo,
   createNgTemplateQuickInfo,
 } from './quick_info_built_ins.js';
-import {getTextSpanOfNode, getDirectiveMatchesForAttribute} from './utils.js';
+import {getTextSpanOfNode, getDirectiveMatchesForAttribute, isWithin} from './utils.js';
 import {offsetToPosition} from '../../src/tcb_ls_util.js';
 import {
   PropertyRead,
@@ -52,7 +52,7 @@ export async function getHover(
   if (!setup) {
     return null;
   }
-  const {tsFilePath, parsedTemplate, isHostBinding, hostElement} = setup;
+  const {parsedTemplate, isHostBinding, hostElement} = setup;
 
   let target;
   if (isHostBinding && hostElement) {
@@ -394,13 +394,6 @@ function cleanupTcbText(
     return `\`\`\`tsx\n${code}\n\`\`\`${doc}`;
   }
   return `${code}${doc}`;
-}
-
-function isWithin(
-  position: number,
-  span: {start: {offset: number}; end: {offset: number}},
-): boolean {
-  return span.start.offset <= position && position < span.end.offset;
 }
 
 function createQuickInfoForBuiltIn(

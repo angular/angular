@@ -34,7 +34,7 @@ import {URI} from 'vscode-uri';
 import {fileURLToPath} from 'node:url';
 import {createRequire} from 'node:module';
 import {canonicalizePath} from '../src/utils.js';
-import {TestFileManager} from './test_file_manager';
+import {TestFileManager} from './test_file_manager.js';
 
 /** Directory containing this file (and the spec files). */
 const TESTS_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -166,25 +166,8 @@ export async function resolveTsGoPath(): Promise<string> {
   const platformName = `@typescript/native-preview-${process.platform}-${process.arch}`;
   const localCandidates = [
     path.join(workspaceRoot, 'node_modules', platformName, 'lib', 'tsgo'),
-    path.join(
-      workspaceRoot,
-      'reference',
-      'typescript-go',
-      'built',
-      'local',
-      `tsgo${process.platform === 'win32' ? '.exe' : ''}`,
-    ),
     path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsgo.js'),
     path.join(workspaceRoot, 'node_modules', '@typescript', 'native-preview', 'bin', 'tsgo'),
-    path.join(
-      workspaceRoot,
-      'reference',
-      'typescript-go',
-      '_packages',
-      'native-preview',
-      'bin',
-      'tsgo',
-    ),
   ];
 
   for (const candidate of localCandidates) {
@@ -312,18 +295,6 @@ export class TestEnv {
     }
     const cleanPath = filePath.startsWith('file://') ? fileURLToPath(filePath) : filePath;
     this.openedFiles.push(cleanPath);
-  }
-
-  async updateFiles(updates: {filePath: string; text: string; version: number}[]) {
-    for (const update of updates) {
-      if (this.connection) {
-        const uri = await toUri(update.filePath);
-        await this.connection.sendNotification('textDocument/didChange', {
-          textDocument: {uri, version: update.version},
-          contentChanges: [{text: update.text}],
-        });
-      }
-    }
   }
 
   async closeFile(filePath: string) {
@@ -579,40 +550,6 @@ export function expectDoesNotContain(
     expect(found)
       .withContext(`Expected completions NOT to contain entry "${name}" of kind "${kind}"`)
       .toBe(false);
-  }
-}
-
-export function expectReplacementText(
-  completions: CompletionList | null | undefined,
-  text: string,
-  replacementText: string,
-) {
-  if (!completions) {
-    return;
-  }
-
-  for (const entry of completions.items) {
-    expect(entry.textEdit).toBeDefined();
-    if (entry.textEdit && 'range' in entry.textEdit) {
-      // Check range replacement
-      expect(entry.textEdit.newText).toBe(replacementText);
-    }
-  }
-}
-
-export function expectContainInsertText(
-  completions: CompletionList | null | undefined,
-  kind: CompletionItemKind | string,
-  insertTexts: string[],
-) {
-  expect(completions).toBeDefined();
-  for (const insertText of insertTexts) {
-    const found = completions!.items.some(
-      (e) => (e.insertText === insertText || e.label === insertText) && matchesKind(e.kind, kind),
-    );
-    expect(found)
-      .withContext(`Expected completions to contain insertText "${insertText}" of kind "${kind}"`)
-      .toBe(true);
   }
 }
 

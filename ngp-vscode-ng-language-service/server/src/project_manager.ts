@@ -1,3 +1,11 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import * as fs from 'node:fs/promises';
 import {readConfiguration} from '@angular/compiler-cli';
 import {API, Snapshot} from '@typescript/native-preview/unstable/async';
@@ -54,10 +62,6 @@ export class ProjectManager {
   setApi(api: API): void {
     this.api = api;
     this.currentSnapshot = undefined;
-  }
-
-  getApi(): API | undefined {
-    return this.api;
   }
 
   getLoadedProjects(): readonly ProjectInstance[] {

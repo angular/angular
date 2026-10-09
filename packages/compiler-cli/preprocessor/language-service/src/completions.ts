@@ -68,7 +68,6 @@ import {
 } from '@angular/language-service/private';
 import {isBoundEventWithSyntheticHandler, isWithin} from './utils.js';
 import {HybridCompiler} from '../../src/hybrid_compiler.js';
-import {TemplateTypeChecker} from './type_checker.js';
 import {TsGoFacade} from './facade.js';
 import {getSetup, SetupResult} from './type_checker_setup.js';
 import {offsetToPosition} from '../../src/tcb_ls_util.js';
@@ -82,10 +81,7 @@ export enum CompletionNodeContext {
   TwoWayBinding,
 }
 
-function buildBlockSnippet(insertSnippet: boolean, blockName: string, withParens: boolean): string {
-  if (!insertSnippet) {
-    return blockName;
-  }
+function buildBlockSnippet(blockName: string, withParens: boolean): string {
   if (blockName === 'for') {
     return `${blockName} (\${1:item} of \${2:items}; track \${3:\\$index}) {$4}`;
   }
@@ -99,12 +95,10 @@ export class CompletionBuilder {
   private readonly node: AST | TmplAstNode;
   private readonly nodeParent: AST | TmplAstNode | null;
   private readonly nodeContext: CompletionNodeContext;
-  private readonly template: TmplAstTemplate | null;
   private readonly position: number;
 
   constructor(
     private readonly hybridCompiler: HybridCompiler,
-    private readonly templateTypeChecker: TemplateTypeChecker,
     private readonly facade: TsGoFacade,
     private readonly setup: SetupResult,
     private readonly targetDetails: TemplateTarget,
@@ -115,7 +109,6 @@ export class CompletionBuilder {
         : this.targetDetails.context.node;
     this.nodeParent = this.targetDetails.parent;
     this.nodeContext = nodeContextFromTarget(this.targetDetails.context);
-    this.template = this.targetDetails.template;
     this.position = this.targetDetails.position;
   }
 
@@ -491,7 +484,6 @@ export class CompletionBuilder {
           if (this.node instanceof TmplAstBoundAttribute) continue;
           break;
         case AttributeCompletionKind.DomAttribute:
-        case AttributeCompletionKind.DomProperty:
           if (this.node instanceof TmplAstBoundEvent) continue;
           break;
         case AttributeCompletionKind.DirectiveInput:
@@ -665,15 +657,6 @@ export class CompletionBuilder {
   }
 
   private getBlockCompletions(): CompletionList | null {
-    let hasLeadingAt = false;
-    if (this.node instanceof TmplAstText) {
-      const positionInText = this.position - this.node.sourceSpan.start.offset;
-      const textToLeft = this.node.value.substring(0, positionInText);
-      hasLeadingAt = Boolean(textToLeft.match(/(?:^|\s)@[a-zA-Z]*$/));
-    } else if (this.node instanceof TmplAstElement) {
-      hasLeadingAt = this.node.name.startsWith('@');
-    }
-
     let blocks: {name: string; withParens: boolean}[];
     if (this.nodeParent instanceof TmplAstSwitchBlock || this.node instanceof TmplAstSwitchBlock) {
       blocks = [
@@ -691,8 +674,7 @@ export class CompletionBuilder {
 
     const items: CompletionItem[] = blocks.map((b) => {
       const label = b.name;
-      const insertSnippet = true;
-      const snippet = buildBlockSnippet(insertSnippet, b.name, b.withParens);
+      const snippet = buildBlockSnippet(b.name, b.withParens);
       return {
         label,
         kind: CompletionItemKind.Keyword,
@@ -927,9 +909,7 @@ export async function getCompletionsAtPosition(
   filePath: string,
   offset: number,
   position: {line: number; character: number},
-  fileContent: string,
   hybridCompiler: HybridCompiler,
-  templateTypeChecker: TemplateTypeChecker,
   facade: TsGoFacade,
 ): Promise<CompletionList | null> {
   const setup = getSetup(hybridCompiler, filePath, position);
@@ -993,13 +973,7 @@ export async function getCompletionsAtPosition(
     return null;
   }
 
-  const builder = new CompletionBuilder(
-    hybridCompiler,
-    templateTypeChecker,
-    facade,
-    setup,
-    targetDetails,
-  );
+  const builder = new CompletionBuilder(hybridCompiler, facade, setup, targetDetails);
   return builder.getCompletions();
 }
 
@@ -1007,9 +981,7 @@ export async function getCompletionEntryDetails(
   filePath: string,
   offset: number,
   position: {line: number; character: number},
-  fileContent: string,
   hybridCompiler: HybridCompiler,
-  templateTypeChecker: TemplateTypeChecker,
   facade: TsGoFacade,
   item: CompletionItem | string,
 ): Promise<CompletionItem | null> {
@@ -1028,13 +1000,7 @@ export async function getCompletionEntryDetails(
     return null;
   }
 
-  const builder = new CompletionBuilder(
-    hybridCompiler,
-    templateTypeChecker,
-    facade,
-    setup,
-    targetDetails,
-  );
+  const builder = new CompletionBuilder(hybridCompiler, facade, setup, targetDetails);
 
   const completionItem: CompletionItem = typeof item === 'string' ? {label: item} : item;
 
