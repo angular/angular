@@ -26,3 +26,14 @@ jasmine_test(
         ":test_lib",
     ],
 )
+
+jasmine_test(
+    name = "test_ngp",
+    data = [
+        ":test_lib",
+        "//packages/compiler-cli/preprocessor/ng-analyze:wasm",
+    ],
+    env = {
+        "NG_COMPILER_BACKEND": "ngp",
+    },
+)

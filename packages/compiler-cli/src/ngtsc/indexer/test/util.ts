@@ -21,10 +21,10 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem} from '../../file_system';
 import {Reference} from '../../imports';
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
-import {getDeclaration, makeProgram} from '../../testing';
+import {createNgpBoundTemplate, getDeclaration, isNgpTestMode, makeProgram} from '../../testing';
 
 export interface ComponentMeta extends DirectiveMeta {
   ref: {key: string; node: DeclarationNode};
@@ -72,6 +72,9 @@ export function getBoundTemplate(
     declaration: ClassDeclaration;
   }> = [],
 ): AbstractBoundTemplate<DeclarationNode> {
+  if (isNgpTestMode()) {
+    return createNgpBoundTemplate(getFileSystem(), template, options, components, pipes);
+  }
   const componentsMeta = components.map(({selector, declaration, inputs = {}, outputs = {}}) => ({
     ref: new Reference(declaration),
     selector,
