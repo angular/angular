@@ -10,10 +10,8 @@
  * Which golden cases exist, and the pipeline options each one runs under.
  */
 
-import * as fs from 'node:fs/promises';
 import * as fsSync from 'node:fs';
 import * as path from 'path';
-import {pathExists} from './utils.js';
 
 export function resolveGoldenRoot(): string {
   if (process.env['BUILD_WORKSPACE_DIRECTORY']) {
@@ -52,8 +50,6 @@ export function resolveGoldenRoot(): string {
   return path.resolve(import.meta.dirname, 'golden');
 }
 
-export const GOLDEN_ROOT: string = resolveGoldenRoot();
-
 /** The two compilation modes a case can pin, named after the golden that holds each one. */
 export type GoldenMode = 'standard' | 'optimize';
 
@@ -63,7 +59,7 @@ export interface GoldenPipelineOptions {
 }
 
 /**
- * Walks the golden tree synchronously. Returns case paths relative to `GOLDEN_ROOT`.
+ * Walks the golden tree synchronously. Returns case paths relative to `resolveGoldenRoot()`.
  */
 export function collectGoldenCasesSync(dir: string = resolveGoldenRoot()): string[] {
   if (!fsSync.existsSync(dir)) {
@@ -84,31 +80,6 @@ export function collectGoldenCasesSync(dir: string = resolveGoldenRoot()): strin
   }
 
   return results;
-}
-
-/**
- * Walks the golden tree. A directory holding `source.md` is a case; directories above it are
- * grouping. Returns case paths relative to `GOLDEN_ROOT`.
- */
-export async function collectGoldenCases(dir: string = resolveGoldenRoot()): Promise<string[]> {
-  if (!(await pathExists(dir))) {
-    return [];
-  }
-
-  const root = resolveGoldenRoot();
-  const entries = await fs.readdir(dir, {withFileTypes: true});
-  const subdirs = entries.filter((e) => e.isDirectory()).map((e) => path.join(dir, e.name));
-
-  const results = await Promise.all(
-    subdirs.map(async (fullPath) => {
-      if (await pathExists(path.join(fullPath, 'source.md'))) {
-        return [path.relative(root, fullPath)];
-      }
-      return collectGoldenCases(fullPath);
-    }),
-  );
-
-  return results.flat();
 }
 
 /**
