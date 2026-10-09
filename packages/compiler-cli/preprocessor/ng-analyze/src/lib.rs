@@ -45,11 +45,5 @@ pub use utils::QueryCache;
 
 pub use types::*;
 
-#[cfg(target_arch = "wasm32")]
-pub use wasm::wasm_block_on as block_on;
-
-#[cfg(not(target_arch = "wasm32"))]
-pub use futures::executor::block_on;
-
 #[cfg(test)]
 mod test_utils;

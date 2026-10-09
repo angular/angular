@@ -3366,7 +3366,7 @@ impl ClassData {
                 })
         });
         let template = self.read_optional_string(&c.template, cx, "component.template")?;
-        let template_dynamic = c.template_dynamic || (c.template.is_some() && template.is_none());
+        let template_dynamic = c.template.is_some() && template.is_none();
         let encapsulation = self.read_core_enum_field(
             &c.encapsulation,
             c.encapsulation_span,

@@ -6,7 +6,7 @@ use crate::fs::OverlayFileSystem;
 use crate::AnalysisResult;
 use futures::StreamExt;
 
-use oxc_resolver::{FileSystem, TsConfig};
+use oxc_resolver::FileSystem;
 use std::path::{Path, PathBuf};
 
 use oxc_allocator::Allocator;
@@ -24,39 +24,14 @@ pub fn create_test_fs(files: &[(&str, &str)]) -> OverlayFileSystem {
     fs
 }
 
-/// Preserved for future parity tests that resolve real `@angular/core` from `node_modules`.
-#[allow(dead_code)]
-pub fn create_test_fs_with_fallback(files: &[(&str, &str)]) -> OverlayFileSystem {
-    let fs = OverlayFileSystem::new_with_overlay();
-    for (path, content) in files {
-        fs.upsert_file(PathBuf::from(*path), content.to_string());
-    }
-    fs
-}
-
 /// Run the analyzer on a test filesystem and collect all results.
 pub fn run_analyzer(
     fs: OverlayFileSystem,
     tsconfig_path: &str,
     optimize: bool,
 ) -> Vec<AnalysisResult> {
-    let tsconfig_path = PathBuf::from(tsconfig_path);
-
-    // Parse tsconfig.json
-    let json = fs
-        .read_to_string(&tsconfig_path)
-        .expect("tsconfig.json must exist in virtual filesystem");
-    let config = TsConfig::parse(true, &tsconfig_path, &tsconfig_path, json)
-        .expect("Failed to parse tsconfig");
-
-    let _files: Vec<PathBuf> = config.files.expect("tsconfig must have files array");
-    let _base_dir = tsconfig_path
-        .parent()
-        .unwrap_or(Path::new("/"))
-        .to_path_buf();
-
     let options = crate::AnalyzerOptions {
-        tsconfig_path: tsconfig_path.to_string_lossy().into_owned(),
+        tsconfig_path: tsconfig_path.to_string(),
         optimize: Some(optimize),
         ..Default::default()
     };

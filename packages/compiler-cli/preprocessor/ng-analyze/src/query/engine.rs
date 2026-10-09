@@ -36,8 +36,8 @@ const R3_SYMBOLS_FILE_NAME: &str = "r3_symbols.ts";
 /// ambient analysis state (`fs`, `resolver`, `resource_registry`, `entrypoints`) so query bodies
 /// don't have to thread it; the cross-file symbol table lives on the `AnalyzeFileSyntax` results.
 ///
-/// `Fs` is kept generic so a future virtual-filesystem-only WASM backend can be plugged in; the
-/// concrete `Analyzer` instantiates `QueryEngine<OverlayFileSystem>` today.
+/// `Fs` is generic over [`ResourceResolverFs`]; the concrete `Analyzer` instantiates
+/// `QueryEngine<OverlayFileSystem>`.
 pub struct QueryEngine<Fs: ResourceResolverFs + Clone + 'static> {
     pub(crate) fs: Fs,
     pub(crate) resolver: Arc<ResolverGeneric<Fs>>,
@@ -307,14 +307,6 @@ impl<Fs: ResourceResolverFs + Clone + 'static> QueryEngine<Fs> {
             }
             crate::compiler::analyzer::step_local_pool();
         }
-    }
-
-    pub fn parse_file_blocking(
-        self: &Arc<Self>,
-        path: impl AsRef<Path>,
-    ) -> Arc<std::sync::Mutex<crate::ParsedFile>> {
-        let file_id = self.intern_path(path);
-        self.parse_file_by_id_blocking(file_id)
     }
 
     async fn parse_file_body(
