@@ -124,7 +124,10 @@ export class RouterModule {
    * @return The new `NgModule`.
    *
    */
-  static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule> {
+  static forRoot(
+    routes: Readonly<Routes>,
+    config?: ExtraOptions,
+  ): ModuleWithProviders<RouterModule> {
     return {
       ngModule: RouterModule,
       providers: [
@@ -179,7 +182,7 @@ export class RouterModule {
    * @return The new NgModule.
    *
    */
-  static forChild(routes: Routes): ModuleWithProviders<RouterModule> {
+  static forChild(routes: Readonly<Routes>): ModuleWithProviders<RouterModule> {
     return {
       ngModule: RouterModule,
       providers: [{provide: ROUTES, multi: true, useValue: routes}],
